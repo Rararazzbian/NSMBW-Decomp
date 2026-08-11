@@ -207,3 +207,63 @@ void LCEnable(void) {
     __LCEnable();
     OSRestoreInterrupts(enabled);
 }
+
+asm void LCDisable(void) {
+    nofralloc
+    lis r3, 0xe000
+    li r4, 0x200
+    mtctr r4
+_lcdis:
+    dcbi r0, r3
+    addi r3, r3, 0x20
+    bdnz _lcdis
+    mfspr r4, 920 // HID2
+    rlwinm r4, r4, 0, 4, 2
+    mtspr 920, r4
+    blr
+}
+
+asm void LCLoadBlocks(void *dst, const void *src, u32 blocks) {
+    nofralloc
+    extrwi r6, r5, 5, 25
+    clrlwi r4, r4, 3
+    or r6, r6, r4
+    mtspr 922, r6 // DMA_U
+    clrlslwi r6, r5, 30, 2
+    or r6, r6, r3
+    ori r6, r6, 0x12
+    mtspr 923, r6 // DMA_L
+    blr
+}
+
+asm void LCStoreBlocks(void *dst, const void *src, u32 blocks) {
+    nofralloc
+    extrwi r6, r5, 5, 25
+    clrlwi r3, r3, 3
+    or r6, r6, r3
+    mtspr 922, r6 // DMA_U
+    clrlslwi r6, r5, 30, 2
+    or r6, r6, r4
+    ori r6, r6, 0x2
+    mtspr 923, r6 // DMA_L
+    blr
+}
+
+u32 LCStoreData(void *dst, const void *src, u32 len) {
+    u32 blocks = (len + 31) >> 5;
+    u32 queued = (blocks + 127) >> 7;
+
+    while (blocks != 0) {
+        if (blocks < 128) {
+            LCStoreBlocks(dst, src, blocks);
+            blocks = 0;
+        } else {
+            LCStoreBlocks(dst, src, 0);
+            blocks -= 128;
+            dst = (u8 *)dst + 0x1000;
+            src = (const u8 *)src + 0x1000;
+        }
+    }
+
+    return queued;
+}
