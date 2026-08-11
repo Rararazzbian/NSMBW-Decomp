@@ -215,40 +215,59 @@ is *not* the answer: it degenerates into integer `lwz`/`stw` pairs.
 Note: `WGPIPE` in `GXHardware.h` has no paired-single member. The matrix loaders
 will need one added.
 
-### 3. `GXSetTevColor` / `GXSetTevColorS10` (196 B) — recharacterised
+### 3. `GXSetTevColor` / `GXSetTevColorS10` (196 B)
 
-Previously filed under register allocation. **It is not** — it is a load-merging
-difference, which makes it a different (and possibly solvable) problem.
-
-The target loads the whole 4-byte `GXColor` once and extracts each channel by
-varying the `rlwimi` rotate:
-
-```
-lwz    r8, 0x0(r4)
-rlwimi r7, r8, 8, 24, 31     # red   (byte 0 -> bits 24..31)
-rlwimi r7, r8, 12, 12, 19    # alpha (byte 3 -> bits 12..19)
-```
-
-The natural source (below) instead emits four separate `lbz` byte loads plus
-rotate-0 inserts — 29 instructions against the target's 24. The logic is
-otherwise correct and the field positions are confirmed right.
+**Now instruction-for-instruction identical to the target** — 24/24 and 25/25
+instructions, same opcodes in the same order. All that remains is a three-way
+rotation of the volatile temps. Full working source is in
+`scratchpad/GXTev.c.best`; the shape is:
 
 ```c
-reg = 0;
-reg = GX_BITSET(reg, 0, 8, GX_BP_REG_TEVREG0LO + id * 2);
-reg = GX_BITSET(reg, 24, 8, color.r);
-reg = GX_BITSET(reg, 12, 8, color.a);
-GX_BP_LOAD_REG(reg);            /* then TEVREG0HI with b, g, loaded 3x */
+void GXSetTevColor(GXTevRegID id, GXColor color) {
+    u32 c = *(u32 *)&color;
+    u32 regLo, regHi;
+
+    regLo = (GX_BP_REG_TEVREG0LO + id * 2) << 24;
+    regLo = GX_BITSET(regLo, 24, 8, c >> 24);   /* red   */
+    regLo = GX_BITSET(regLo, 12, 8, c);         /* alpha */
+    GX_BP_LOAD_REG(regLo);
+
+    regHi = (GX_BP_REG_TEVREG0HI + id * 2) << 24;
+    regHi = GX_BITSET(regHi, 24, 8, c >> 8);    /* blue  */
+    regHi = GX_BITSET(regHi, 12, 8, c >> 16);   /* green */
+    GX_BP_LOAD_REG(regHi);                      /* BG is written three times */
+    GX_BP_LOAD_REG(regHi);
+    GX_BP_LOAD_REG(regHi);
+
+    gxdt->lastWriteWasXF = FALSE;
+}
 ```
 
-Working hypothesis: CodeWarrior will only merge the four byte loads into one
-word load if it can prove 4-byte alignment. `GXColor` is four `u8`s, so its
-natural alignment is 1. Worth testing a struct-alignment compiler flag on this
-slice, or checking whether the SDK's `GXColor` carries an alignment attribute.
-The rlwimi rotate amounts confirm the intent: rotate = (src_bit - dst_bit) mod 32.
+Two findings got it there, both reusable elsewhere:
 
-Cracking these 196 bytes unlocks the largest fully-described run in the DOL
-(2,464 B, 15 functions, 100% header coverage — the whole `GXSetTevKColor` …
+- **Read the colour through a `u32`, not through `color.r` / `color.a`.** The
+  target loads the struct once (`lwz r8`) and selects each channel purely by
+  varying the `rlwimi` rotate. Field access instead emits four `lbz` byte loads
+  (29 instructions) — CodeWarrior will not merge them, presumably because
+  `GXColor` is four `u8`s and so has alignment 1. Writing `c >> 24` etc. lets it
+  fold the shift into the rotate and reproduces the target's encodings exactly.
+  The rule is **rotate = (src_bit − dst_bit) mod 32**.
+- **Build the BP register address with a shift, not `GX_BITSET` on zero.**
+  `reg = 0; reg = GX_BITSET(reg, 0, 8, addr);` costs `li 0` + `rlwimi`;
+  `reg = addr << 24;` gives the target's single `slwi`. (Note `GXSetFieldMask` in
+  the already-matched `GXPixel.c` sets the address *last* — that pattern is not
+  what these two use.)
+
+Remaining gap, `GXSetTevColor`: target assigns r4 = WGPIPE base, r5 = 0x61,
+r6 = `regHi`; CodeWarrior assigns r5, r6, r4 respectively. Five source shapes
+tried (single `reg` reused, separate `regLo`/`regHi`, `regHi` scoped to an inner
+block after the first FIFO write, declaration reordering, initialiser vs
+assignment) — the allocation is **invariant across all of them**. Do not retry
+these. `-align mac68k4byte` is not an option: it would repad `GXData` and break
+the four functions in this TU that already match.
+
+Cracking the remaining rotation unlocks the largest fully-described run in the
+DOL (2,464 B, 15 functions, 100% header coverage — the whole `GXSetTevKColor` …
 `GXSetFogRangeAdj` stretch).
 
 ## Next targets
@@ -269,8 +288,8 @@ Ranked by expected cost:
    `GXSetChanAmbColor` / `GXSetChanMatColor` (216 B each).
 2. **`GXAttr.c` forward** — 1,884 B from `0x801C4910`, contiguous with the
    current slice. Gated on `GXSetTexCoordGen2` (580 B).
-3. **`GXSetTevColor` pair** (196 B) — unlocks 2,464 B. See blocker #3; the
-   alignment hypothesis there is untested and cheap to try.
+3. **`GXSetTevColor` pair** (196 B) — unlocks 2,464 B. See blocker #3. Now
+   instruction-identical; only a temp-register rotation is left.
 4. **`GXGetViewportv`** (32 B) — unlocks 1,064 B. See blocker #2; only the
    store scheduling remains.
 5. **`OSAlloc.c`** (368 B) — needs the `Heap` struct reconstructed; it is
