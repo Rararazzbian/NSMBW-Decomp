@@ -1,4 +1,5 @@
 #include <revolution/AX/AXAlloc.h>
+#include <revolution/OS/OSInterrupt.h>
 
 extern AXVPB *__AXStackHead[AX_PRIORITY_MAX + 1];
 extern AXVPB *__AXStackTail[AX_PRIORITY_MAX + 1];
@@ -92,4 +93,22 @@ void __AXRemoveFromStack(AXVPB *vpb) {
         prev->next = next;
         next->prev = prev;
     }
+}
+
+void AXFreeVoice(AXVPB *vpb) {
+    BOOL old = OSDisableInterrupts();
+
+    __AXRemoveFromStack(vpb);
+
+    if (vpb->pb.state == AX_VOICE_RUN) {
+        vpb->depop = 1;
+    }
+
+    __AXSetPBDefault(vpb);
+
+    vpb->next = __AXStackHead[AX_PRIORITY_FREE];
+    __AXStackHead[AX_PRIORITY_FREE] = vpb;
+    vpb->priority = AX_PRIORITY_FREE;
+
+    OSRestoreInterrupts(old);
 }
