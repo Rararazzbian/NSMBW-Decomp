@@ -5,9 +5,9 @@ Working notes for continuing the SDK decompilation work on branch
 
 ## Current state
 
-- **Progress: 8.451%** (549,368 / 6,500,368 code bytes)
+- **Progress: 8.453%** (549,496 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- 27 commits, all pushed
+- Development moved to **native Windows**; see "Local setup" below.
 
 Per-binary:
 
@@ -118,6 +118,24 @@ Two things worth knowing:
   `psq_st` (see `dAcPy_c::eatMove` in `d_a_player.cpp`). Through a bare `f32 *`
   parameter it cannot prove alignment, which is when the explicit type is needed.
 
+### Declaration order controls register assignment
+
+This is the lever the earlier sessions were missing. **CodeWarrior assigns
+registers in order of local declaration**, so when output is instruction-identical
+but register-shuffled, reorder the declarations rather than restructuring the code.
+
+- **GPRs — first-declared gets the *highest* register.** `AXAcquireVoice` put
+  `old` in r30 and `vpb` in r31; the target had them swapped. Moving
+  `BOOL old = OSDisableInterrupts();` above the other locals fixed all 23
+  non-volatile mismatches in one pass. (A declaration with an initialiser can
+  legally precede other declarations in C89.)
+- **FPRs — first-declared gets the *lowest* register**, i.e. the opposite.
+  `GXGetViewportv` needed `f2, f1, f0` in load order; declaring the locals in
+  reverse (`v2f near, sx, ox;`) and then assigning them in address order
+  produced exactly that.
+
+Try this before concluding a function has hit the register-allocation wall.
+
 ### Size-delta heuristic
 
 - Your function is **shorter** than the target → you factored out something the
@@ -161,28 +179,101 @@ them without finding a lever. Worth studying how the large already-matched units
 
 ### 2. `GXGetViewportv` (32 B)
 
-Blocks a 536-byte matrix-loader run (`GXLoadPosMtxImm` family) because it sits
-between that run and the current `GXTransform.c` slice.
+Gates extending `GXTransform.c` **backward** — 1,064 bytes across 14
+header-described functions (`__GXSetViewport`, the `GXLoadPosMtxImm` family,
+`GXProject`, …) sit between it and the current slice start.
 
-Correct size, correct offsets, correct load grouping. Remaining gap: target uses
-`f2, f1, f0` where CodeWarrior picks `f0, f1, f2`, and uses `psq_st` at offset 0
-where CodeWarrior picks `psq_stx`. Seven formulations tried. Same wall as #1.
+**Now much closer.** Exact size, and the first four instructions — the `__GXData`
+load and all three `psq_l` with immediate offsets 0x544/0x54c/0x554 — match
+exactly, as do the `f2, f1, f0` register choices (fixed via the declaration-order
+lever above). Best formulation is saved in the scratchpad and reproduced here:
+
+```c
+typedef __vec2x32float__ v2f;
+
+void GXGetViewportv(f32 view[GX_VIEWPORT_SZ]) {
+    v2f near, sx, ox;           // reverse order => ox=f2, sx=f1, near=f0
+
+    ox = *(v2f *)&gxdt->vpOx;
+    sx = *(v2f *)&gxdt->vpSx;
+    near = *(v2f *)&gxdt->vpNear;
+
+    *(v2f *)view = ox;
+    *(v2f *)&view[2] = sx;
+    *(v2f *)&view[4] = near;
+}
+```
+
+Remaining gap is **only the three stores**: the target emits them in order
+(`psq_st f2,0(r3)`, `f1,8(r3)`, `f0,0x10(r3)`); CodeWarrior emits them as
+`0x10`, then `psq_stx f2,r0,r3` for offset 0, then `0x8`. Four store
+formulations tried (array index, `&view[n]`, bare deref, struct field
+assignment) — all produce the identical scrambled order, so the store scheduling
+does not appear to be source-controllable from this shape. A whole-struct copy
+is *not* the answer: it degenerates into integer `lwz`/`stw` pairs.
 
 Note: `WGPIPE` in `GXHardware.h` has no paired-single member. The matrix loaders
 will need one added.
 
+### 3. `GXSetTevColor` / `GXSetTevColorS10` (196 B) — recharacterised
+
+Previously filed under register allocation. **It is not** — it is a load-merging
+difference, which makes it a different (and possibly solvable) problem.
+
+The target loads the whole 4-byte `GXColor` once and extracts each channel by
+varying the `rlwimi` rotate:
+
+```
+lwz    r8, 0x0(r4)
+rlwimi r7, r8, 8, 24, 31     # red   (byte 0 -> bits 24..31)
+rlwimi r7, r8, 12, 12, 19    # alpha (byte 3 -> bits 12..19)
+```
+
+The natural source (below) instead emits four separate `lbz` byte loads plus
+rotate-0 inserts — 29 instructions against the target's 24. The logic is
+otherwise correct and the field positions are confirmed right.
+
+```c
+reg = 0;
+reg = GX_BITSET(reg, 0, 8, GX_BP_REG_TEVREG0LO + id * 2);
+reg = GX_BITSET(reg, 24, 8, color.r);
+reg = GX_BITSET(reg, 12, 8, color.a);
+GX_BP_LOAD_REG(reg);            /* then TEVREG0HI with b, g, loaded 3x */
+```
+
+Working hypothesis: CodeWarrior will only merge the four byte loads into one
+word load if it can prove 4-byte alignment. `GXColor` is four `u8`s, so its
+natural alignment is 1. Worth testing a struct-alignment compiler flag on this
+slice, or checking whether the SDK's `GXColor` carries an alignment attribute.
+The rlwimi rotate amounts confirm the intent: rotate = (src_bit - dst_bit) mod 32.
+
+Cracking these 196 bytes unlocks the largest fully-described run in the DOL
+(2,464 B, 15 functions, 100% header coverage — the whole `GXSetTevKColor` …
+`GXSetFogRangeAdj` stretch).
+
 ## Next targets
 
-Ranked by expected cost. The first is the natural continuation.
+`AXFreeVoice` landed. `AXAcquireVoice` is parked (see blockers), and because a
+slice must be one contiguous range, everything after it in `AXAlloc.c`
+(`AXSetVoicePriority`, and `__AXAuxInit` in `AXAux.c`) is gated behind it.
 
-1. **`AXAlloc.c` forward** — `AXFreeVoice` (124 B) then `AXAcquireVoice` (388 B)
-   at `0x801A0440`, contiguous with the current slice. Plain C, linked lists, no
-   float or register-shaping content. Same style as the six that just landed.
-2. **`AXAlloc.c` remainder** — `AXSetVoicePriority` (156 B), `__AXAuxInit` (276 B).
-3. **`GXTev.c` forward** — `GXSetTevKColorSel`, `GXSetTevKAlphaSel`,
-   `GXSetTevSwapMode` (220 B). Plain BP register writes, but they sit behind the
-   TEV colour trio, which is blocked on #1 above.
-4. **`OSAlloc.c`** (368 B) — needs the `Heap` struct reconstructed; it is
+Ranked by expected cost:
+
+1. **`GXLight.c` forward** — 1,560 B across 11 functions from `0x801C65B0`,
+   contiguous with the current slice, all header-described. Gated on
+   `GXInitLightSpot` (412 B): a 7-way switch over `GXSpotFn` with ~11 `.sdata2`
+   float constants at `0x8042E4A0`–`0x8042E4C8`, so it needs a `.sdata2` range
+   added to the slice (see "Data-section slicing"). Behind it sit five trivial
+   field-copy functions (`GXInitLightPos` 16 B, `GXGetLightPos` 28 B,
+   `GXInitLightDir` 28 B, `GXGetLightDir` 40 B, `GXInitLightColor` 12 B) and
+   `GXSetChanAmbColor` / `GXSetChanMatColor` (216 B each).
+2. **`GXAttr.c` forward** — 1,884 B from `0x801C4910`, contiguous with the
+   current slice. Gated on `GXSetTexCoordGen2` (580 B).
+3. **`GXSetTevColor` pair** (196 B) — unlocks 2,464 B. See blocker #3; the
+   alignment hypothesis there is untested and cheap to try.
+4. **`GXGetViewportv`** (32 B) — unlocks 1,064 B. See blocker #2; only the
+   store scheduling remains.
+5. **`OSAlloc.c`** (368 B) — needs the `Heap` struct reconstructed; it is
    file-local, not in `OSAlloc.h`.
 
 ### Finding new targets
@@ -191,9 +282,28 @@ Rank candidates by whether the project's headers already describe everything the
 function touches. That predictor has been near-perfect: units with complete
 headers match first try, units needing new struct reconstruction do not.
 
-A useful scan is to cross-reference declarations in `include/lib/revolution/**/*.h`
-against contiguous undecompiled runs in `bin/dtk/wiimj2d_symbols.txt`, ranked by
-density (bytes of named undecompiled code per byte of address span).
+`tools/find_targets.py` automates this — it cross-references declarations in the
+project's include dirs against contiguous undecompiled runs in
+`bin/dtk/wiimj2d_symbols.txt` and ranks them:
+
+```bash
+python tools/find_targets.py 300 100000 0.85
+```
+
+Args are `min_size`, `max_size`, `min_coverage`. Runs break on a decompiled
+function or a gap wider than CodeWarrior's 16-byte intra-TU function alignment.
+
+What it currently reports, and the important caveat: only **two** runs in the DOL
+score above 85% header coverage, and *both* are gated behind the blockers above.
+Lowering the threshold to 0.5 surfaces much larger runs — 69,644 B at
+`0x801B3280` (63%), 37,888 B at `0x801A04C0` (58%), 25,488 B at `0x801AC980`
+(57%) — but these span several translation units and contain functions with no
+header declaration, so they need reconstruction work first.
+
+Note the tool reports *runs*, not translation units. A new slice may start at any
+TU boundary (the `bin/dtkspl/obj/auto_NN_ADDR_text.o` split points are good
+candidates) and cover a prefix of that TU, but it cannot skip a function in the
+middle of its own range, and a source file gets exactly one slice entry.
 
 ## What not to repeat
 
