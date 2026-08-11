@@ -12,7 +12,7 @@ extern "C" {
 
 typedef u32 OSModuleID;
 
-struct OSModuleInfo;
+typedef struct OSModuleInfo OSModuleInfo;
 
 typedef struct OSModuleQueue {
     OSModuleInfo* head;
