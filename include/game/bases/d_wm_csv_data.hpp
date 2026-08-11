@@ -49,6 +49,37 @@ public:
     void initialize(int worldNo, int fileNo);
     void RouteInfoInit();
     void ReadCsvData();
+
+    /// @brief Reads the point's name field.
+    void ReadPointName(char *csv, int &pos);
+
+    /// @brief Reads the point's type field, which sets the action and route flags.
+    void ReadPointType(char *csv, int &pos);
+
+    /// @brief Reads the names of the points this point opens up.
+    /// @param normal Whether to read into the normal fields, rather than the secret exit ones.
+    void ReadOpenPointName(char *csv, int &pos, bool normal);
+
+    /// @brief Reads the names of the routes this point opens up.
+    /// @param normal Whether to read into the normal fields, rather than the secret exit ones.
+    void ReadOpenRouteName(char *csv, int &pos, bool normal);
+
+    /// @brief Reads the point's flag data field.
+    /// @param normal Whether to read into the normal fields, rather than the secret exit ones.
+    void ReadFlagData(char *csv, int &pos, bool normal);
+
+    /// @brief Reads the name of the route animated by this point.
+    void ReadAnimeRouteName(char *csv, int &pos);
+
+    /// @brief Reads the sub route's action field.
+    void ReadAction(char *csv, int &pos);
+
+    /// @brief Reads the sub route's flag field.
+    void ReadRouteFlag(char *csv, int &pos);
+
+    /// @brief Whether the given position is at a CRLF line terminator.
+    bool isLineEnd(char *csv, int pos);
+
     const char *GetPointName(int) const;
 
     int mWorldNo;                        ///< The world this data belongs to.
