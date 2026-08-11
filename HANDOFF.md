@@ -79,6 +79,12 @@ For Linux setup instructions, see the main README and `tools/linux_env/`.
   `syms.txt` — that is a duplicate definition.
 - `deadstrip` in `slices/wiimj2d.json` keys on bare symbol name and is global.
   Safe for mangled C++ names; unsafe for C names that collide across units.
+- **`.data` must be contiguous too, and it constrains which `.text` you can take.**
+  Your object emits string literals and vtables in source order, so a partial TU
+  can leave them at the wrong addresses even when every function matches. If a
+  TU's data pool ends with a vtable, you generally must decompile *every*
+  literal-emitting function up to that point in one pass, or omit the function
+  that pulls the vtable in. This bit `d_wm_csvdata.cpp` — see below.
 
 ### Diagnosing failures
 
@@ -378,6 +384,37 @@ and it *terminates*, whereas the GPR wall above has no known source-level lever.
 Useful technique found: **`__sinit_<file>_cpp` symbols recover the original TU
 filenames** — 180 in the DOL, 129 of them in fully-undone TUs. Filenames are not
 guesswork.
+
+#### `d_wm_csvdata.cpp` — in progress, and the proof this pool works
+
+Four functions matched byte-for-byte (`read`, `~dCsvData_c`, `initialize`,
+`RouteInfoInit` — 1,380 B). **No register-allocation wall was hit.** The hardest
+function in the TU (`RouteInfoInit`, 996 B of scheduled `stb` storms) went from
+first draft to byte-exact in ~6 iterations, every one a shape question with an
+objective answer. That is the contrast with the SDK work, and it is why this pool
+is the right place to spend effort.
+
+The `dCsvData_c` layout (0x16518) is fully reconstructed and verified in
+`include/game/bases/d_wm_csv_data.hpp`, so **the expensive shared prerequisite is
+already paid** — remaining functions read their offsets straight out of the header.
+
+**Next run: `ReadCsvData` → `ReadAction` (~7.4 KB, 12 functions).** Two things
+gate it:
+
+1. **Unblock `d_res_mng.hpp` first.** `ReadCsvData` calls the 3-argument
+   `dRes_c::getResSilently` through `dResMng_c::mRes`, which is private with no
+   3-arg wrapper. Adding two inline overloads is one line each and has no codegen
+   effect elsewhere (unused inlines), but nothing can proceed without it.
+2. **The `.data` pool must close in one pass.** The TU's data runs
+   `0x8031C030`–`0x8031C144` and ends with `__vt__10dCsvData_c` at `0x8031C138`.
+   Any partial set of literal-emitting functions puts the vtable at the wrong
+   address. So everything from `ReadCsvData` to `ReadAction` lands together, or
+   not at all.
+
+If fanning out agents here: functions can be **authored** in parallel (each diffs
+independently against the target disassembly), but they must be **banked in a
+single integration pass** because of that `.data` constraint. One agent per
+function, then one integration commit.
 
 Best game-code candidates (`fp%` = float instruction density; keep it low, since
 float/virtual-heavy code is where allocation actually goes wrong):
