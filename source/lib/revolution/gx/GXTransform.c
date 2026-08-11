@@ -2,6 +2,8 @@
 
 #include <revolution/GX/GXHardware.h>
 #include <revolution/GX/GXHardwareBP.h>
+#include <revolution/GX/GXHardwareCP.h>
+#include <revolution/GX/GXHardwareXF.h>
 #include <revolution/GX/GXInit.h>
 
 #define GX_SCISSOR_BIAS 0x156
@@ -42,4 +44,21 @@ void GXSetScissorBoxOffset(u32 ox, u32 oy) {
 
     GX_BP_LOAD_REG(reg);
     gxdt->lastWriteWasXF = FALSE;
+}
+
+void GXSetClipMode(GXClipMode mode) {
+    GX_XF_LOAD_REG(GX_XF_REG_CLIPDISABLE, mode);
+    gxdt->lastWriteWasXF = TRUE;
+}
+
+void __GXSetMatrixIndex(GXAttr index) {
+    if (index < GX_VA_TEX4MTXIDX) {
+        GX_CP_LOAD_REG(0x30, gxdt->matrixIndex0);
+        GX_XF_LOAD_REG(0x1018, gxdt->matrixIndex0);
+    } else {
+        GX_CP_LOAD_REG(0x40, gxdt->matrixIndex1);
+        GX_XF_LOAD_REG(0x1019, gxdt->matrixIndex1);
+    }
+
+    gxdt->lastWriteWasXF = TRUE;
 }
