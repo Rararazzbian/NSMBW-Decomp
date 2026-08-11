@@ -161,6 +161,38 @@ pops the callback stack inline at both sites rather than via a helper).
 - Library/SDK files want `-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int
   -RTTI off` (no `-inline noauto`), set per-slice via `compilerFlags`.
 
+## The register-allocation wall
+
+Five SDK functions now stop at the same place: **exact size, exact instruction
+sequence, wrong register numbers**. Treat this as one shared blocker rather than
+five separate puzzles.
+
+Affected: `MEMAllocFromFrmHeapEx`, `OSAllocFromMEM1ArenaLo`, `AXAcquireVoice`,
+`GXSetTevColor` + `GXSetTevColorS10`, `GXInitLightSpot`, and the store half of
+`GXGetViewportv`. Every one is a Revolution SDK file. Everything already matched
+in these units is simple enough that allocation is unambiguous; divergence
+begins exactly where register pressure gives the allocator a real choice.
+
+**Ruled out** (do not re-test):
+
+- *Compiler version.* `GXInitLightSpot` was built with Wii 1.0, 1.1, 1.3 and 1.7.
+  All four produce byte-identical output.
+- *Optimisation flags.* Swept `-O3`, `-O4`, `-opt speed`, `-opt space`,
+  `-opt all`, `-opt nopeephole`, `-schedule off`, `-ipa file`, `-inline auto`,
+  `-inline nobottomup`. `-O4` (the current setting) is already the best; nothing
+  changes the allocation.
+- *Struct alignment.* `-align mac68k4byte` would repad `GXData` and break the
+  functions that already match.
+- *Source shape.* Declaration order, scoping, live-range splitting and variable
+  coalescing all move which *named* local gets which register — but never fix
+  the last one or two. See the per-function notes below for what was tried.
+
+The declaration-order lever (below) reliably places named locals, so start
+there; but when only compiler-generated temporaries are left, no source-level
+lever has been found. The most plausible remaining explanation is that the
+SDK objects were produced by a CodeWarrior build not present in
+`compilers_20230715.zip`. Confirming that would need a different compiler drop.
+
 ## Open blockers
 
 Both are "which C formulation produces this codegen" problems, not
@@ -280,12 +312,72 @@ Ranked by expected cost:
 
 1. **`GXLight.c` forward** — 1,560 B across 11 functions from `0x801C65B0`,
    contiguous with the current slice, all header-described. Gated on
-   `GXInitLightSpot` (412 B): a 7-way switch over `GXSpotFn` with ~11 `.sdata2`
-   float constants at `0x8042E4A0`–`0x8042E4C8`, so it needs a `.sdata2` range
-   added to the slice (see "Data-section slicing"). Behind it sit five trivial
-   field-copy functions (`GXInitLightPos` 16 B, `GXGetLightPos` 28 B,
-   `GXInitLightDir` 28 B, `GXGetLightDir` 40 B, `GXInitLightColor` 12 B) and
-   `GXSetChanAmbColor` / `GXSetChanMatColor` (216 B each).
+   `GXInitLightSpot` (412 B), which is **one register away** — see the
+   reconstruction below. Behind it sit five trivial field-copy functions
+   (`GXInitLightPos` 16 B, `GXGetLightPos` 28 B, `GXInitLightDir` 28 B,
+   `GXGetLightDir` 40 B, `GXInitLightColor` 12 B) and `GXSetChanAmbColor` /
+   `GXSetChanMatColor` (216 B each).
+
+   The reconstruction below gives **exact size (412 B), 103/103 instructions in
+   the same order, and a byte-identical `.sdata2` literal pool**. `aa`=f3,
+   `ac`=f6 and `cr`=f5 all match the target; only `ab` lands in f2 where the
+   target uses f1. Requires `cos=0x802E82AC` in `syms.txt` (already added),
+   `#include <math.h>`, slice `.text` `0x1bfdf0-0x1bffd0` and `.sdata2`
+   `0x3140-0x316c`.
+
+   Note the `.sdata2` pool order is fixed by *source order of first use* —
+   `0.0, 90.0, M_PI, 180.0, -1000.0, 1000.0, 1.0, 2.0, -4.0, 4.0, -2.0` — so the
+   statement order inside each case is load-bearing and must not be rearranged.
+
+```c
+void GXInitLightSpot(GXLightObj *light, f32 angle, GXSpotFn fn) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
+    f32 cr;
+    f32 aa, ab, ac;
+
+    if (angle <= 0.0f || angle > 90.0f) {
+        fn = GX_SP_OFF;
+    }
+
+    cr = cos(angle * M_PI / 180.0f);
+
+    switch (fn) {
+    case GX_SP_FLAT:
+        aa = -1000.0f * cr;  ab = 1000.0f;  ac = 0.0f;  break;
+    case GX_SP_COS:
+        ab = 1.0f / (1.0f - cr);  aa = -cr * ab;  ac = 0.0f;  break;
+    case GX_SP_COS2:
+        ac = 1.0f / (1.0f - cr);  ab = -cr * ac;  aa = 0.0f;  break;
+    case GX_SP_SHARP: {
+        f32 d = 1.0f / ((1.0f - cr) * (1.0f - cr));
+        aa = d * (cr * (cr - 2.0f));  ab = 2.0f * d;  ac = -d;  break;
+    }
+    case GX_SP_RING1: {
+        f32 d = 1.0f / ((1.0f - cr) * (1.0f - cr));
+        ab = -4.0f * (1.0f + cr) * d;  ac = 4.0f * d;  aa = ac * cr;  break;
+    }
+    case GX_SP_RING2: {
+        f32 d = 1.0f / ((1.0f - cr) * (1.0f - cr));
+        ab = 4.0f * cr * d;  ac = -2.0f * d;
+        aa = 1.0f - d * (2.0f * cr * cr);  break;
+    }
+    case GX_SP_OFF:
+    default:
+        aa = 1.0f;  ab = 0.0f;  ac = 0.0f;  break;
+    }
+
+    impl->aa = aa;
+    impl->ab = ab;
+    impl->ac = ac;
+}
+```
+
+   Tried without effect on `ab`: every ordering of the `aa`/`ab`/`ac`
+   declarations; `d` at function scope first, last, and scoped per case; an
+   explicit `r = angle * M_PI / 180.0f` intermediate; and writing the `GX_SP_COS`
+   case as `ab = 1.0f - cr; ab = 1.0f / ab;` to force coalescing (that one does
+   coalesce, but the allocator then puts the whole chain in f2 and moves the
+   constant to f1, so it is strictly worse).
 2. **`GXAttr.c` forward** — 1,884 B from `0x801C4910`, contiguous with the
    current slice. Gated on `GXSetTexCoordGen2` (580 B).
 3. **`GXSetTevColor` pair** (196 B) — unlocks 2,464 B. See blocker #3. Now
