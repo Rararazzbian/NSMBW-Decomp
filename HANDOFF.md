@@ -484,7 +484,57 @@ Useful technique found: **`__sinit_<file>_cpp` symbols recover the original TU
 filenames** — 180 in the DOL, 129 of them in fully-undone TUs. Filenames are not
 guesswork.
 
-#### `d_wm_csvdata.cpp` — in progress, and the proof this pool works
+#### `d_wm_csvdata.cpp` — 8 more functions authored but NOT bankable yet
+
+**All twelve functions in this TU now compile to the target instructions**, but
+only the first four are banked. The other eight live on branch
+**`wip/d_wm_csvdata-full`** (parked `nonMatching`). Do not merge that branch as-is:
+`nonMatching` un-banks the four that already verify, a net loss of 1,392 bytes.
+
+**Why it is blocked — the TU's `.data` starts at `0x8031C000`, not `0x8031C024`.**
+The first object in it is `sc_ForceList__6dWmLib` (0x24 B), emitted by
+`include/game/bases/d_wm_lib.hpp`, which the original TU includes. Evidence: dtk's
+string ids `@54232`/`@54233`/`@54478` and `__arraydtor$54234` form one contiguous
+numbering block, i.e. one TU. Adding `#include <game/bases/d_wm_lib.hpp>` puts
+`l_actionName` at `0x8031C0E8` and `__vt__` at `0x8031C138` — exactly right,
+confirmed by compiling.
+
+But that include also emits `__sinit_\d_wm_csvdata_cpp`, which MWCC places at the
+**end of the TU's `.text`** (`0x800F6050`) — past any partial bank. So the leading
+`sc_ForceList` can only be claimed once the **whole TU** is done: roughly 28 more
+functions, `0x800F5240`–`0x800F60E0`, ending at `isLineEnd` (`0x800F6020`).
+
+**Next step is therefore the rest of the TU, not a smaller slice.** The eight
+authored functions are already correct and waiting on the branch.
+
+##### Alignment rule (verified across all 140 compiled objects, 682 placements)
+
+**MWCC gives a `.data`/`.rodata` object 8-byte alignment iff its size is a
+multiple of 8; otherwise 4.** It is a property of size alone — no source-level
+change alters it. Do not waste time trying to re-shape a declaration to move an
+object to a 4-mod-8 offset; if an object will not sit where you expect, the
+section's *base address* is wrong, not its alignment.
+
+##### Corrections to earlier notes in this file
+
+- The `.sdata2` value `0x14` at `0x8042D244` is **`c_GHOST_ID__10dCsvData_c`**, not
+  the inferred `c_ACTION_NAME_LEN`. The value matching 20 was a coincidence, and it
+  was wrongly cited as confirmation. The TU's real `.sdata2` is
+  `0x8042D230`–`0x8042D26C`: three floats from `sc_ForceList`'s `mVec3_c`, four
+  unidentified bytes, then eleven `dCsvData_c::c_*_ID` constants
+  (`c_COURSE_ID` … `c_PEACH_ID`) which this TU must **define**.
+- The `.sdata` base is `0x80428C18` (`"F7C0"`, `"W7C0"` first), not `0x80428C28`.
+- The static-numbering rule (first unsuffixed, then `@0`, `@1`, …) **is** correct —
+  independently verified on `createLayout` in `d_CourseSelectGuide.cpp`, which has
+  eight statics numbered exactly that way.
+
+##### Gotcha for `nonMatching` slices
+
+Both ends of a `nonMatching` range must be **8-aligned** (16 for `.text`), or the
+filler objects get re-aligned and everything after them shifts. An end of `0x1f0c`
+on `.sdata2` produced 6,523 byte diffs.
+
+#### The original `d_wm_csvdata.cpp` result — the proof this pool works
 
 Four functions matched byte-for-byte (`read`, `~dCsvData_c`, `initialize`,
 `RouteInfoInit` — 1,380 B). **No register-allocation wall was hit.** The hardest
