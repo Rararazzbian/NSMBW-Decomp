@@ -57,3 +57,39 @@ void __AXPushCallbackStack(AXVPB *vpb) {
     vpb->next1 = __AXCallbackStack;
     __AXCallbackStack = vpb;
 }
+
+void __AXRemoveFromStack(AXVPB *vpb) {
+    u32 prio = vpb->priority;
+    AXVPB *head = __AXStackHead[prio];
+    AXVPB *tail = __AXStackTail[prio];
+
+    if (head == tail) {
+        __AXStackTail[prio] = NULL;
+        __AXStackHead[prio] = NULL;
+        return;
+    }
+
+    if (vpb == head) {
+        AXVPB *next = (AXVPB *)vpb->next;
+
+        __AXStackHead[prio] = next;
+        next->prev = NULL;
+        return;
+    }
+
+    if (vpb == tail) {
+        AXVPB *prev = (AXVPB *)vpb->prev;
+
+        __AXStackTail[prio] = prev;
+        prev->next = NULL;
+        return;
+    }
+
+    {
+        AXVPB *prev = (AXVPB *)vpb->prev;
+        AXVPB *next = (AXVPB *)vpb->next;
+
+        prev->next = next;
+        next->prev = prev;
+    }
+}
