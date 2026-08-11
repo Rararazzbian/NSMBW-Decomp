@@ -60,3 +60,42 @@ void GXSetPixelFmt(GXPixelFmt fmt, GXZFmt16 zFmt) {
 
     gxdt->lastWriteWasXF = FALSE;
 }
+
+void GXSetDither(GXBool enable) {
+    u32 reg = gxdt->blendMode;
+
+    GX_BP_SET_BLENDMODE_DITHER(reg, enable);
+    GX_BP_LOAD_REG(reg);
+    gxdt->blendMode = reg;
+    gxdt->lastWriteWasXF = FALSE;
+}
+
+void GXSetDstAlpha(GXBool enable, u8 alpha) {
+    u32 reg = gxdt->dstAlpha;
+
+    reg = GX_BITSET(reg, 24, 8, alpha);
+    reg = GX_BITSET(reg, 23, 1, enable);
+    GX_BP_LOAD_REG(reg);
+    gxdt->dstAlpha = reg;
+    gxdt->lastWriteWasXF = FALSE;
+}
+
+void GXSetFieldMask(GXBool enableEven, GXBool enableOdd) {
+    u32 reg = 0;
+
+    reg = GX_BITSET(reg, 31, 1, enableOdd);
+    reg = GX_BITSET(reg, 30, 1, enableEven);
+    reg = GX_BITSET(reg, 0, 8, GX_BP_REG_FIELDMASK);
+
+    GX_BP_LOAD_REG(reg);
+    gxdt->lastWriteWasXF = FALSE;
+}
+
+void GXSetFieldMode(GXBool texLOD, GXBool adjustAR) {
+    gxdt->linePtWidth = GX_BITSET(gxdt->linePtWidth, 9, 1, adjustAR);
+    GX_BP_LOAD_REG(gxdt->linePtWidth);
+    __GXFlushTextureState();
+
+    GX_BP_LOAD_REG(texLOD | 0x68000000);
+    __GXFlushTextureState();
+}
