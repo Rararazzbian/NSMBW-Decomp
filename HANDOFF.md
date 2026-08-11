@@ -21,36 +21,46 @@ Per-binary:
 
 ## Local setup
 
+Development now happens **natively on Windows**. CodeWarrior is a Windows
+binary, so no `wibo`/WINE layer is involved and the Shift-JIS hazard described
+in `tools/linux_env/README.md` does not apply here.
+
 1. Clone and check out the branch.
 2. Place the original binaries in `original/` (see the main README, steps 1–4).
-   Verify with `md5sum original/*` against the README's list.
-3. Extract CodeWarrior into `compilers/` so `compilers/Wii/1.1/mwcceppc.exe` exists.
-4. Run `sudo ./tools/linux_env/setup.sh`. This builds a patched `wibo` and
-   installs `objdiff-cli`. See `tools/linux_env/README.md` for why the patch is
-   needed — a stock `wibo` mishandles Shift-JIS source encoding and silently
-   breaks the `wiimj2d.dol` match.
-5. `pip install ninja pyyaml`
+   Verify their MD5s against the README's list.
+3. Extract CodeWarrior into `compilers/` so `compilers\Wii\1.1\mwcceppc.exe` exists.
+4. `pip install ninja pyyaml`
 
 Build and verify:
 
 ```bash
-python3 configure.py && ninja && python3 progress.py --verify-bin
+python configure.py; ninja; python progress.py --verify-bin
 ```
 
 `prepare_objdiff.py` regenerates `bin/dtk/` symbol maps and the dtk splits. Run
-it once after setup; it downloads dtk into `bin/`.
+it once after setup; it fetches dtk v1.8.0 into `bin/` if not already present.
+
+### Windows tool locations
+
+- dtk: `bin\dtk-windows-x86_64.exe`
+- readelf: `C:\devkitPro\devkitPPC\bin\powerpc-eabi-readelf.exe` (not on `PATH`;
+  invoke by full path)
+- `objdiff-cli` is not installed; the objdiff GUI reads the generated
+  `objdiff.json` directly.
+
+For Linux setup instructions, see the main README and `tools/linux_env/`.
 
 ## The working loop
 
 1. Pick a target (see "Next targets" below).
 2. Disassemble the region that contains it:
-   `./bin/dtk-linux-x86_64 elf disasm bin/dtkspl/obj/<auto_..._text.o> /tmp/out`
+   `.\bin\dtk-windows-x86_64.exe elf disasm bin\dtkspl\obj\<auto_..._text.o> <out>`
 3. Write the C, add a slice entry to `slices/wiimj2d.json`, add any call targets
    to `syms.txt`.
-4. `python3 configure.py && ninja`
+4. `python configure.py; ninja`
 5. **Check the object's function sizes against the target first**, before reading
    any diff:
-   `readelf -sW bin/compiled/wiimj2d/<path>.o`
+   `& "C:\devkitPro\devkitPPC\bin\powerpc-eabi-readelf.exe" -sW bin\compiled\wiimj2d\<path>.o`
 6. If sizes match but verification fails, disassemble your own object and diff it
    against the target instruction by instruction.
 

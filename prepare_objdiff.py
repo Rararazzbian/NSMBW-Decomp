@@ -88,7 +88,9 @@ def get_dtk(tag: str) -> str:
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
 
-    return bin_path
+    # Windows' CreateProcess cannot resolve a relative path containing forward
+    # slashes, so hand back a native, absolute path.
+    return str(Path(bin_path).resolve())
 
 # Whether a section contains code or data
 SECTION_TYPES = {
