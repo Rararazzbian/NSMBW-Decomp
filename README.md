@@ -47,6 +47,7 @@ ddab9e5dca53d8c18bf4051b927e822e  original/wiimj2d.dol
 5. Download the CodeWarrior for Embedded PowerPC binaries from [here](https://files.decomp.dev/compilers_20230715.zip) and extract it into the `compilers/` directory. The compiler should be located at `compilers/Wii/1.1/mwcceppc.exe`.
    - **Windows users**: No additional setup is required.
    - **Linux/macOS users**: Install [wibo](https://github.com/decompals/WiBo) or use [WINE](https://www.winehq.org/). `wibo` is recommended for faster compilation and is used automatically if detected on `PATH`.
+     - On Linux, `tools/linux_env/setup.sh` builds a suitable `wibo` and installs `objdiff-cli`. See [tools/linux_env/README.md](tools/linux_env/README.md) — a stock `wibo` build mishandles Shift-JIS source encoding, which breaks the `wiimj2d.dol` match.
 
 6. Install `ninja` (if not already installed):
 

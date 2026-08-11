@@ -1,0 +1,213 @@
+diff --git a/dll/kernel32/stringapiset.cpp b/dll/kernel32/stringapiset.cpp
+index c85a159..bec637e 100644
+--- a/dll/kernel32/stringapiset.cpp
++++ b/dll/kernel32/stringapiset.cpp
+@@ -6,22 +6,122 @@
+ #include "internal.h"
+ #include "strutil.h"
+ 
++#include <cerrno>
+ #include <cstring>
+ #include <cwctype>
++#include <iconv.h>
+ #include <string>
+ #include <vector>
+ 
++#define ERROR_NO_UNICODE_TRANSLATION 1113
++
++#define MB_ERR_INVALID_CHARS 0x00000008
++#define WC_NO_BEST_FIT_CHARS 0x00000400
++
+ namespace kernel32 {
+ 
++namespace {
++
++/**
++ * Maps a Windows code page to the equivalent iconv character set name.
++ *
++ * Only code pages whose encoding differs meaningfully from the naive
++ * "one byte is one wide character" mapping are listed here; everything else
++ * falls back to the legacy conversion path below.
++ */
++const char *iconvCharsetForCodePage(UINT codePage) {
++	switch (codePage) {
++	case 932: // Shift-JIS
++		return "CP932";
++	case 936: // GBK
++		return "CP936";
++	case 949: // Korean
++		return "CP949";
++	case 950: // Big5
++		return "CP950";
++	case 1361: // Johab
++		return "JOHAB";
++	case 65001: // UTF-8
++		return "UTF-8";
++	default:
++		return nullptr;
++	}
++}
++
++enum class ConvResult {
++	Ok,
++	Unsupported,   // iconv does not know the charset; caller should fall back
++	Incomplete,    // input ends in the middle of a multi-byte sequence
++	InvalidSequence, // input contains a byte sequence with no mapping
++};
++
++/**
++ * Runs an iconv conversion over the whole input, appending to @p out.
++ *
++ * Invalid sequences are reported to the caller rather than being silently
++ * dropped, since MultiByteToWideChar and WideCharToMultiByte both need to
++ * distinguish "unmappable" from "truncated" input.
++ */
++ConvResult iconvConvert(const char *fromCharset, const char *toCharset, const char *src, size_t srcLen,
++						std::string &out, size_t unitSize, bool stopOnInvalid, const std::string &replacement,
++						bool *usedReplacement) {
++	iconv_t cd = iconv_open(toCharset, fromCharset);
++	if (cd == reinterpret_cast<iconv_t>(-1)) {
++		return ConvResult::Unsupported;
++	}
++
++	char *inPtr = const_cast<char *>(src);
++	size_t inLeft = srcLen;
++	char buffer[512];
++
++	while (inLeft > 0) {
++		char *outPtr = buffer;
++		size_t outLeft = sizeof(buffer);
++		size_t rc = iconv(cd, &inPtr, &inLeft, &outPtr, &outLeft);
++		out.append(buffer, sizeof(buffer) - outLeft);
++		if (rc != static_cast<size_t>(-1)) {
++			continue;
++		}
++		if (errno == E2BIG) {
++			continue; // output buffer full, flush and keep going
++		}
++		if (errno == EINVAL) {
++			iconv_close(cd);
++			return ConvResult::Incomplete;
++		}
++		if (errno == EILSEQ) {
++			if (stopOnInvalid) {
++				iconv_close(cd);
++				return ConvResult::InvalidSequence;
++			}
++			// Substitute the replacement character and skip one input unit,
++			// matching Windows' behaviour when MB_ERR_INVALID_CHARS is clear.
++			out.append(replacement);
++			if (usedReplacement) {
++				*usedReplacement = true;
++			}
++			size_t skip = std::min(unitSize, inLeft);
++			inPtr += skip;
++			inLeft -= skip;
++			continue;
++		}
++		iconv_close(cd);
++		return ConvResult::Unsupported;
++	}
++
++	iconv_close(cd);
++	return ConvResult::Ok;
++}
++
++} // namespace
++
+ int WINAPI WideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar,
+ 							   LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar) {
+ 	HOST_CONTEXT_GUARD();
+ 	VERBOSE_LOG("WideCharToMultiByte(%u, %u, %p, %d, %p, %d, %p, %p)\n", CodePage, dwFlags, lpWideCharStr, cchWideChar,
+ 				lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
+ 
+-	(void)CodePage;
+ 	(void)dwFlags;
+-	(void)lpDefaultChar;
+ 
+ 	if (!lpWideCharStr || cchWideChar == 0 || cchWideChar < -1 || cbMultiByte < 0 ||
+ 		(cbMultiByte > 0 && !lpMultiByteStr)) {
+@@ -34,6 +134,38 @@ int WINAPI WideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharSt
+ 	if (cchWideChar == -1) {
+ 		cchWideChar = static_cast<int>(wstrlen(lpWideCharStr)) + 1;
+ 	}
++
++	if (const char *charset = iconvCharsetForCodePage(CodePage)) {
++		std::string defaultChar = lpDefaultChar ? std::string(1, *lpDefaultChar) : std::string("?");
++		std::string converted;
++		bool usedDefault = false;
++		ConvResult result =
++			iconvConvert("UTF-16LE", charset, reinterpret_cast<const char *>(lpWideCharStr),
++						 static_cast<size_t>(cchWideChar) * 2, converted, 2,
++						 (dwFlags & WC_NO_BEST_FIT_CHARS) != 0, defaultChar, &usedDefault);
++		if (result == ConvResult::Incomplete || result == ConvResult::InvalidSequence) {
++			setLastError(ERROR_NO_UNICODE_TRANSLATION);
++			return 0;
++		}
++		if (result == ConvResult::Ok) {
++			if (lpUsedDefaultChar) {
++				*lpUsedDefaultChar = usedDefault ? TRUE : FALSE;
++			}
++			int needed = static_cast<int>(converted.size());
++			if (cbMultiByte == 0) {
++				return needed;
++			}
++			if (cbMultiByte < needed) {
++				setLastError(ERROR_INSUFFICIENT_BUFFER);
++				return 0;
++			}
++			std::memcpy(lpMultiByteStr, converted.data(), converted.size());
++			VERBOSE_LOG("Converted %d wide chars to %d bytes (cp %u)\n", cchWideChar, needed, CodePage);
++			return needed;
++		}
++		// ConvResult::Unsupported: fall through to the legacy path below.
++	}
++
+ 	if (cbMultiByte == 0) {
+ 		return cchWideChar;
+ 	}
+@@ -58,9 +190,6 @@ int WINAPI MultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteSt
+ 	HOST_CONTEXT_GUARD();
+ 	VERBOSE_LOG("MultiByteToWideChar(%u, %u, %d, %d)\n", CodePage, dwFlags, cbMultiByte, cchWideChar);
+ 
+-	(void)CodePage;
+-	(void)dwFlags;
+-
+ 	if (!lpMultiByteStr || cbMultiByte == 0 || cbMultiByte < -1 || cchWideChar < 0 ||
+ 		(cchWideChar > 0 && !lpWideCharStr)) {
+ 		setLastError(ERROR_INVALID_PARAMETER);
+@@ -70,6 +199,34 @@ int WINAPI MultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteSt
+ 		cbMultiByte = static_cast<int>(strlen(lpMultiByteStr)) + 1;
+ 	}
+ 
++	if (const char *charset = iconvCharsetForCodePage(CodePage)) {
++		// U+FFFD REPLACEMENT CHARACTER, encoded as UTF-16LE.
++		static const std::string kReplacement("\xFD\xFF", 2);
++		std::string converted;
++		ConvResult result = iconvConvert(charset, "UTF-16LE", lpMultiByteStr, static_cast<size_t>(cbMultiByte),
++										 converted, 1, (dwFlags & MB_ERR_INVALID_CHARS) != 0, kReplacement, nullptr);
++		// A truncated multi-byte sequence always fails, regardless of dwFlags. The
++		// compilers wibo runs rely on this to probe which bytes are DBCS lead bytes.
++		if (result == ConvResult::Incomplete || result == ConvResult::InvalidSequence) {
++			setLastError(ERROR_NO_UNICODE_TRANSLATION);
++			return 0;
++		}
++		if (result == ConvResult::Ok) {
++			int needed = static_cast<int>(converted.size() / 2);
++			if (cchWideChar == 0) {
++				return needed;
++			}
++			if (cchWideChar < needed) {
++				setLastError(ERROR_INSUFFICIENT_BUFFER);
++				return 0;
++			}
++			std::memcpy(lpWideCharStr, converted.data(), converted.size());
++			VERBOSE_LOG("Converted %d bytes to %d wide chars (cp %u)\n", cbMultiByte, needed, CodePage);
++			return needed;
++		}
++		// ConvResult::Unsupported: fall through to the legacy path below.
++	}
++
+ 	if (cchWideChar == 0) {
+ 		return cbMultiByte;
+ 	}
