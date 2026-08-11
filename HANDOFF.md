@@ -163,9 +163,29 @@ pops the callback stack inline at both sites rather than via a helper).
 
 ## The register-allocation wall
 
-Five SDK functions now stop at the same place: **exact size, exact instruction
-sequence, wrong register numbers**. Treat this as one shared blocker rather than
-five separate puzzles.
+**The broad "wrong compiler" theory is dead.** `GXSetTevColorIn` matches
+byte-exactly while using **10 live GPRs** — more than `GXSetTevColor` (7), in the
+same file, with the same flags and the same idiom. `OSLockMutex` matches with
+five calls and four callee-saved registers. The compiler in this repo
+demonstrably reproduces Nintendo's allocation under real pressure, so for
+integer/GPR code a mismatch means **our reconstruction is shaped wrong**, not
+that the toolchain is.
+
+`GXGetViewportv` is the counter-case that proves this is not about pressure at
+all: 8 instructions and 6 registers, less than ~24 functions that already match.
+
+**One narrow compiler-shaped exception survives — paired singles.** mwcceppc
+never emits a paired-single load/store with a literal 0 displacement; it always
+picks the indexed form (`psq_stx f2, r0, r3` instead of `psq_st f2, 0x0(r3)`).
+Verified by minimal probe on Wii 1.0/1.1/1.3/1.7 **and** GC 3.0/3.0a3. The
+immediate form only appears after the -O2+ address-folding pass creates a
+displacement node, and offset 0 has nothing to fold. The same quirk blocks
+`__GXSetProjection` / `GXLoadPosMtxImm`. Corroborating: GC 3.0 compiles the
+identical source to `lwz r4` — the target's register — where Wii 1.1 gives r6.
+So a compiler hunt is justified **only for paired-single code**, not generally.
+
+The remaining GPR cases stop at the same place: **exact size, exact instruction
+sequence, wrong register numbers**.
 
 Affected: `MEMAllocFromFrmHeapEx`, `OSAllocFromMEM1ArenaLo`, `AXAcquireVoice`,
 `GXSetTevColor` + `GXSetTevColorS10`, `GXInitLightSpot`, and the store half of
@@ -290,13 +310,48 @@ Two findings got it there, both reusable elsewhere:
   the already-matched `GXPixel.c` sets the address *last* — that pattern is not
   what these two use.)
 
-Remaining gap, `GXSetTevColor`: target assigns r4 = WGPIPE base, r5 = 0x61,
-r6 = `regHi`; CodeWarrior assigns r5, r6, r4 respectively. Five source shapes
-tried (single `reg` reused, separate `regLo`/`regHi`, `regHi` scoped to an inner
-block after the first FIFO write, declaration reordering, initialiser vs
-assignment) — the allocation is **invariant across all of them**. Do not retry
-these. `-align mac68k4byte` is not an option: it would repad `GXData` and break
-the four functions in this TU that already match.
+**`GXSetTevColorS10` now MATCHES byte-exactly** (25/25, verified). The winning
+shape declares *both* registers as initialised locals up front:
+
+```c
+void GXSetTevColorS10(GXTevRegID id, GXColorS10 color) {
+    u32 rg = ((u32 *)&color)[0];
+    u32 ba = ((u32 *)&color)[1];
+    u32 regLo = (GX_BP_REG_TEVREG0LO + id * 2) << GX_BP_OPCODE_SHIFT;
+    u32 regHi = (GX_BP_REG_TEVREG0HI + id * 2) << GX_BP_OPCODE_SHIFT;
+
+    GX_BP_SET_TEVREGLO_RED(regLo, rg >> 16);
+    GX_BP_SET_TEVREGLO_ALPHA(regLo, ba);
+    GX_BP_SET_TEVREGHI_BLUE(regHi, ba >> 16);
+    GX_BP_SET_TEVREGHI_GREEN(regHi, rg);
+
+    GX_BP_LOAD_REG(regLo);
+    GX_BP_LOAD_REG(regHi);
+    GX_BP_LOAD_REG(regHi);
+    GX_BP_LOAD_REG(regHi);
+
+    gxdt->lastWriteWasXF = FALSE;
+}
+```
+
+It cannot be banked alone: a slice is one contiguous range, and `GXSetTevColor`
+sits immediately before it. Both must match together.
+
+Remaining gap, `GXSetTevColor` only: target assigns r4 = WGPIPE base, r5 = 0x61,
+r6 = `regHi`; CodeWarrior assigns r5, r6, r4. `c` = r8 and `regLo` = r7 already
+match. **The whole problem is that `regHi` is treated as a compiler temporary
+rather than a declared local**, so it takes the lowest free register (r4) instead
+of continuing the declaration-order sequence into r6.
+
+Eight source shapes tried, allocation **invariant across all of them** — do not
+retry: single `reg` reused; separate `regLo`/`regHi`; `regHi` scoped to an inner
+block after the first FIFO write; both registers initialised up front (this is
+what fixed S10, but for `GXSetTevColor` it also perturbs the schedule and moves
+`c` off r8); both up front with the FIFO writes interleaved; `regHi`'s
+initialiser hoisted between the two `regLo` `GX_BITSET`s so the live ranges
+overlap; declaring `regHi` before `regLo`; initialiser vs plain assignment.
+`-align mac68k4byte` is not an option: it would repad `GXData` and break the four
+functions in this TU that already match.
 
 Cracking the remaining rotation unlocks the largest fully-described run in the
 DOL (2,464 B, 15 functions, 100% header coverage — the whole `GXSetTevKColor` …
@@ -308,7 +363,39 @@ DOL (2,464 B, 15 functions, 100% header coverage — the whole `GXSetTevKColor` 
 slice must be one contiguous range, everything after it in `AXAlloc.c`
 (`AXSetVoicePriority`, and `__AXAuxInit` in `AXAux.c`) is gated behind it.
 
-Ranked by expected cost:
+### Game code in `wiimj2d.dol` — the better pool
+
+A survey of all ~90 undone game-code TUs corrected a long-standing assumption:
+**header completeness is mostly a *consequence* of a TU being finished, not a
+resource available beforehand.** Most `include/game/**` headers covering undone
+classes are on-demand stubs (`u8 mPad[0x74]`), declaring only what some
+already-finished file needed to call. Only `dIceMng_c` and `daPyDemoMng_c` have
+genuinely useful pre-existing layout. So game code does trade register-allocation
+stalls for class reconstruction — but that trade is worth taking, because class
+reconstruction is mechanical (read member offsets off `lwz`/`stw` displacements)
+and it *terminates*, whereas the GPR wall above has no known source-level lever.
+
+Useful technique found: **`__sinit_<file>_cpp` symbols recover the original TU
+filenames** — 180 in the DOL, 129 of them in fully-undone TUs. Filenames are not
+guesswork.
+
+Best game-code candidates (`fp%` = float instruction density; keep it low, since
+float/virtual-heavy code is where allocation actually goes wrong):
+
+| Start | Bytes | Fn | TU | fp% | Notes |
+|---|---|---|---|---|---|
+| `0x800F3550` | 10,740 | 41 | `d_wm_csvdata.cpp` | **0%** | zero indirect calls, 6 ext classes all declared; cleanest object in the DOL |
+| `0x800E5510` | 7,380 | 36 | `d_tag_processor.cpp` | 19% | `.cpp` + header already exist, 0x30 done; extend backwards |
+| `0x8003C9F0` | 4,576 | 46 | `d_a_en_super_bigpile.cpp` | 9% | smallest complete enemy actor; prices the actor-TU pattern for ~40 near-identical siblings |
+
+Avoid until the method is proven: `dBc_c` (fp 36%), `dBg_c` (39%), `daMask_c`
+(27%), `dWmSpline_c` (45%), `daYoshi_c` (55 external classes).
+
+Caveat worth keeping in view: ~99% of all remaining work is in the four `.rel`
+modules, which have 0.3–2.3% symbol coverage and are not workable until a symbol
+map exists. DOL game code is a 2.47 MB pool drained a few kB at a time.
+
+### SDK targets, ranked by expected cost:
 
 1. **`GXLight.c` forward** — 1,560 B across 11 functions from `0x801C65B0`,
    contiguous with the current slice, all header-described. Gated on
