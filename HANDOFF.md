@@ -1,7 +1,106 @@
 # Handoff
 
-Working notes for continuing the SDK decompilation work on branch
+Working notes for continuing the decompilation work on branch
 `claude/game-decompilation-setup-bw30s7`.
+
+---
+
+# START HERE: the parallel work plan
+
+**Strategy in one line:** stop pushing on Revolution SDK code (it stalls on
+register allocation with no known lever) and drain game code in `wiimj2d.dol`,
+where the recently-completed `d_wm_csvdata` work hit **no such wall at all**.
+
+## What parallelises, and what does not
+
+| Stage | Parallel? | Why |
+|---|---|---|
+| Authoring a function | **Yes** | Each agent writes its own `.cpp` in scratch, compiles it standalone, and diffs against the target disassembly. No shared state. |
+| Reconstructing a class layout | **No** | It is the shared prerequisite for every function in the TU. Parallel agents would invent conflicting layouts. One agent, first. |
+| Banking (slice + full build + verify) | **No** | `slices/wiimj2d.json`, `syms.txt`, `bin/` and `ninja` are all shared. One integrator, serially. |
+
+**The rule that follows:** agents *author*, the lead *integrates*. Never let two
+agents run `ninja` in the same checkout — they clobber each other's objects and
+each other's diffs.
+
+### How an agent iterates without the shared build
+
+An agent does not need `configure.py`/`ninja` to check one function. Compile the
+file standalone and diff the disassembly:
+
+```bash
+compilers\Wii\1.1\mwcceppc.exe -c -proc gekko -fp hard -O4 -inline noauto \
+  -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS \
+  <scratch>\draft.cpp -o <scratch>\draft.o -DREVOLUTION -I- \
+  -i include -i include\lib -i include\lib\MSL -i include\lib\MSL\internal
+.\bin\dtk-windows-x86_64.exe elf disasm <scratch>\draft.o <scratch>\draft.txt
+python <scratch>\fndiff.py <target.txt> <scratch>\draft.txt <FunctionName>
+```
+
+Build the argument list as a PowerShell array and splat it (`& $exe @args`);
+long inline arg lists are fragile.
+
+## Concrete next tracks
+
+Track A is the priority — it is unblocked, sized, and 4x what is needed to
+cross 8.5%.
+
+- **Track A — `d_wm_csvdata.cpp`, `ReadCsvData` → `ReadAction`** (~7.4 KB, 12
+  functions, from `0x800F3AE0`). The `dCsvData_c` layout is already reconstructed
+  and verified, so this is pure per-function work. The `d_res_mng.hpp` blocker is
+  **already fixed** (3-arg `getRes`/`getResSilently` wrappers added).
+  **All 12 must be banked in one pass** — see the `.data` contiguity rule.
+  Suggested shape: 3–4 agents, ~3 functions each, then one integration commit.
+- **Track B — `d_tag_processor.cpp`** (7,380 B, 36 fn, from `0x800E5510`).
+  Independent TU, so fully parallel with Track A. The `.cpp` and header already
+  exist with 0x30 done; extend the slice backwards. Needs its own layout pass
+  first (`TagProcessor_c`, 99% of the TU) — one agent, then fan out.
+- **Track C — `d_a_en_super_bigpile.cpp`** (4,576 B, 46 fn, from `0x8003C9F0`).
+  Lower value on its own, but it **prices the actor-TU pattern**: ~40 near-identical
+  enemy TUs follow it, and every base class it needs is already decompiled with
+  zero padding. Run this once, sequentially, to build the playbook.
+
+Do **not** start Tracks B and C until Track A's integration has landed, unless
+you are willing to run several integration passes — each one is a full build plus
+`--verify-bin`, and they must be serialised anyway.
+
+## Briefing template for authoring agents
+
+Every agent brief should carry, at minimum:
+
+1. The exact function(s) it owns and their addresses/sizes.
+2. Where the target disassembly already is (do not make them re-derive it).
+3. The standalone compile+diff loop above — and that they must **not** run
+   `ninja` or edit `slices/wiimj2d.json`.
+4. **Deliverable is source code in the reply**, not edits to the shared tree.
+5. The hard-won context: declaration order controls register assignment (GPRs
+   first-declared → highest; FPRs → lowest); the size-delta heuristic; bisect
+   before theorising.
+6. Environment gotchas: dtk relative paths with forward slashes fail on Windows;
+   PowerShell 5.1 parses 8-hex-digit literals as negative Int32, so do address
+   maths in Python; splat native-exe arguments.
+7. **No background processes.** Everything foreground, confirm exits, check for
+   strays before finishing. (One agent leaked a script that span at 100% CPU for
+   21 minutes.)
+
+## Monitoring agents — what actually works
+
+Most obvious signals are useless. Verified this session:
+
+- Agent transcript files under `tasks/` are **always 0 bytes**, including for
+  agents that completed successfully. Not a liveness signal.
+- The short-random-name `.output` files in `tasks/` are the **lead's own** shell
+  invocations, not agent activity.
+- Process listings only catch the instant a command runs; `Read`/`Grep` spawn
+  nothing at all.
+
+The only real signal is **writes to the repo or scratchpad**. And note that a
+healthy agent on a task like this ran **35 minutes with 97 tool calls** and was
+silent for the first several minutes while reading reference material. Do not
+set an impatient kill threshold — a working agent was nearly killed at 12
+minutes on exactly that mistake.
+
+---
 
 ## Current state
 
