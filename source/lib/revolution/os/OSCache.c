@@ -267,3 +267,20 @@ u32 LCStoreData(void *dst, const void *src, u32 len) {
 
     return queued;
 }
+
+asm u32 LCQueueLength(void) {
+    nofralloc
+    mfspr r4, 920 // HID2
+    extrwi r3, r4, 4, 4
+    blr
+}
+
+asm void LCQueueWait(u32 len) {
+    nofralloc
+_lcwait:
+    mfspr r4, 920 // HID2
+    extrwi r4, r4, 4, 4
+    cmpw r4, r3
+    bgt _lcwait
+    blr
+}
