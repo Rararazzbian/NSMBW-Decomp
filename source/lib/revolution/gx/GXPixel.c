@@ -32,3 +32,9 @@ void GXSetZMode(GXBool enableTest, GXCompare func, GXBool enableUpdate) {
     gxdt->zMode = reg;
     gxdt->lastWriteWasXF = FALSE;
 }
+
+void GXSetZCompLoc(GXBool beforeTex) {
+    GX_BP_SET_ZCONTROL_BEFORE_TEX(gxdt->zControl, beforeTex);
+    GX_BP_LOAD_REG(gxdt->zControl);
+    gxdt->lastWriteWasXF = FALSE;
+}
