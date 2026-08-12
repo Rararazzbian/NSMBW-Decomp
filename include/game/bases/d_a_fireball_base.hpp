@@ -6,7 +6,7 @@
 #include <game/mLib/m_effect.hpp>
 
 /// @brief Base implementation of a fireball-like projectile.
-/// @unofficial Reconstructed from the vtable and constructor of daFireBall_Player_c.
+/// @ingroup bases
 class daFireBall_Base_c : public dActorState_c {
 public:
     daFireBall_Base_c() : mIsDead(0), mLiquidType(0), m_414(1), m_428(0) {}
@@ -49,7 +49,7 @@ public:
     dHeapAllocator_c mAllocator;   ///< 0x3D0
     dCircleLightMask_c mLightMask; ///< 0x3EC
     u32 mIsDead;                   ///< 0x408 Set by kill(), checked by preExecute().
-    u32 mKillTimer;                ///< 0x40C Set to 10 by initializeState_Kill().
+    int mKillTimer;                ///< 0x40C Set to 10 by initializeState_Kill().
     int mLiquidType;               ///< 0x410 dBc_c::WATER_TYPE_e
     u32 m_414;                     ///< 0x414 Initialized to 1.
     float mLiquidHeight;           ///< 0x418
@@ -57,6 +57,6 @@ public:
     u32 m_428;                     ///< 0x428
     mEf::levelEffect_c mEffect;    ///< 0x42C
 
-    static const float smc_GRAVITY;
     static const float smc_MAXFALLSPEED;
+    static const float smc_GRAVITY;
 };

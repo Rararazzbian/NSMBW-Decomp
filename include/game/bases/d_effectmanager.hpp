@@ -9,6 +9,7 @@ public:
     static void setResource(void *breff, void *breft);
     static void SetIceBallMissshitEffect(mVec3_c *);
     static void SetIceBallEffect(mVec3_c *);
+    static void SetFireBallEffect(mVec3_c *); ///< @unofficial
     static void calcGroupForWm();
     static void calcGroup();
     static void SetVsHitEffect(mVec3_c *); ///< @unofficial
