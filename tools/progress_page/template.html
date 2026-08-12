@@ -271,6 +271,19 @@
     </div>
   </section>
 
+  <section class="panel" id="cmp-panel" hidden>
+    <div class="panel-head">
+      <h2>This fork against the project it branched from</h2>
+      <span class="note" id="cmp-note">…</span>
+    </div>
+    <div class="rows" id="cmp"></div>
+    <div class="legend" style="border-top:1px solid var(--line)">
+      Upstream figures are decomp.dev's public numbers, measured by objdiff over a slightly
+      different total than <code style="font-family:var(--mono)">progress.py</code> uses here —
+      so read the gap as indicative, not exact.
+    </div>
+  </section>
+
   <section class="panel">
     <div class="panel-head">
       <h2>The five files that make up the game</h2>
@@ -356,6 +369,35 @@
       '</div>';
   });
   barsHost.innerHTML = barsHtml;
+
+  /* ---------- comparison with the parent project ---------- */
+  var up = DATA.upstream;
+  if (up && up.pct != null) {
+    function bar(label, theirs, mine, delta, digits) {
+      var span = Math.max(theirs, mine, 1);
+      return '<div class="row">' +
+          '<div class="name">' + label + "</div>" +
+          '<div class="track" style="position:relative">' +
+            '<div class="fill" style="width:' + (theirs / span * 100) + '%;opacity:.32"></div>' +
+            '<div class="fill" style="position:absolute;top:0;left:0;height:100%;width:' +
+              (mine / span * 100) + '%"></div>' +
+          "</div>" +
+          '<div class="pctcell" style="color:var(--matched);font-weight:600">' +
+            (delta >= 0 ? "+" : "") + delta.toFixed(digits) + "</div>" +
+        "</div>";
+    }
+    var dol = (DATA.totals["wiimj2d.dol"] || {}).pct;
+    var html = bar("Overall", up.pct, DATA.grand.pct, DATA.grand.pct - up.pct, 2);
+    if (dol != null && up.dol != null) {
+      html += bar("Main game", up.dol, dol, dol - up.dol, 2);
+    }
+    html += bar("Files fully matched", up.units_done, DATA.counts.done,
+                DATA.counts.done - up.units_done, 0);
+    $("cmp").innerHTML = html;
+    $("cmp-note").textContent = "Solid = this fork · faded = upstream" +
+      (up.commit ? " at " + up.commit : "");
+    $("cmp-panel").hidden = false;
+  }
 
   /* ---------- treemap ---------- */
   var cv = $("map"), ctx = cv.getContext("2d"), tip = $("tip");

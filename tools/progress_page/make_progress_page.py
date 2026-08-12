@@ -30,6 +30,40 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+UPSTREAM_API = 'https://decomp.dev/NSMBW-Community/NSMBW-Decomp.json'
+
+
+def fetch_upstream():
+    """Public decomp.dev figures for the parent project, or None if offline.
+
+    NOTE: these are objdiff's measure over its own denominator (total_code
+    6,263,216 at the time of writing), while our headline comes from
+    progress.py (6,500,368). The two are close but NOT the same basis, so the
+    page labels them separately rather than subtracting one from the other.
+    """
+    import urllib.request
+    try:
+        req = urllib.request.Request(UPSTREAM_API, headers={'User-Agent': 'nsmbw-progress-page'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            d = json.loads(resp.read().decode('utf-8'))
+    except Exception as exc:
+        print('upstream comparison unavailable (%s)' % exc.__class__.__name__)
+        return None
+    m = d.get('measures') or {}
+    cats = {c['id']: c['measures'] for c in d.get('report_categories', [])}
+    commit = d.get('commit') or {}
+    return {
+        'pct': m.get('matched_code_percent'),
+        'done': m.get('matched_code'),
+        'total': m.get('total_code'),
+        'units_done': m.get('complete_units'),
+        'units_total': m.get('total_units'),
+        'dol': (cats.get('dol') or {}).get('matched_code_percent'),
+        'modules': (cats.get('modules') or {}).get('matched_code_percent'),
+        'commit': (commit.get('sha') or '')[:7] if isinstance(commit, dict) else '',
+    }
+
+
 def git(*args, default=''):
     try:
         out = subprocess.run(['git'] + list(args), cwd=ROOT,
@@ -96,6 +130,7 @@ def main():
         'commit': git('log', '-1', '--format=%h', default='working tree'),
         'subject': git('log', '-1', '--format=%s', default=''),
         'when': git('log', '-1', '--format=%cI', default=''),
+        'upstream': fetch_upstream(),
     }
 
     with open(os.path.join(HERE, 'template.html'), encoding='utf-8') as fh:
