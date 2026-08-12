@@ -40,38 +40,130 @@ python <scratch>\fndiff.py <target.txt> <scratch>\draft.txt <FunctionName>
 Build the argument list as a PowerShell array and splat it (`& $exe @args`);
 long inline arg lists are fragile.
 
-## Concrete next tracks
+## Where the work now stands
 
-**Track A is DONE** — `d_wm_csvdata.cpp` landed complete at 8.624%. Tracks B and
-C below are unstarted and remain the next work.
+**All three planned tracks are DONE.** This session took the project from 8.475%
+to **8.823%** — three TUs, 22,688 bytes, each banked *whole*:
 
-**Before splitting any TU across agents, check its section bounds first.** Track
-A's authoring was fast (28 functions, six agents, ~15 min wall-clock, all
-matching); the cost was entirely in the slice's `memoryRanges`. Establish the
-full set of sections the TU needs — including `.ctors`, `.bss`, `.sbss`, which
-are easy to omit — before fanning out.
+| TU | Functions | Notes |
+|---|---|---|
+| `d_wm_csvdata.cpp` | 41 | World-map CSV parsing |
+| `d_a_en_super_bigpile.cpp` | 46 | Enemy actor; **see the actor playbook below** |
+| `d_tag_processor.cpp` | 39 | Message formatting tags |
 
-**Do not trust `tools/find_targets.py` ranking blindly.** Its two top-ranked runs
-(`0x801C8570`, 2,464 B, 100% header coverage; `0x801C91E0`, 2,904 B, 95%) are both
-**gated by the two known register-wall functions**: `GXSetTevColor` sits at the
-head of `GXTev.c`'s queue, and `GXGetViewportv` sits immediately before
-`GXTransform.c`'s banked start, so extending backwards must cross it. A slice
-gets one contiguous range per section, so neither can be skipped. High header
-coverage says the *types* exist, not that the run is reachable.
+### THE lesson: authoring is cheap, section bounds are not
 
-- **Track B — `d_tag_processor.cpp`** (7,380 B, 36 fn, from `0x800E5510`).
-  Independent TU, so fully parallel with Track A. The `.cpp` and header already
-  exist with 0x30 done; extend the slice backwards. Needs its own layout pass
-  first (`TagProcessor_c`, 99% of the TU) — one agent, then fan out.
-- **Track C — `d_a_en_super_bigpile.cpp`** (4,576 B, 46 fn, from `0x8003C9F0`).
-  Lower value on its own, but it **prices the actor-TU pattern**: ~40 near-identical
-  enemy TUs follow it, and every base class it needs is already decompiled with
-  zero padding. Run this once, sequentially, to build the playbook.
+In all three files the **code was essentially right on the first full build**.
+Every hour after that went into the slice's `memoryRanges`. Plan for this.
 
-Track A has landed, so B and C are both open. Still run their integrations one
-at a time, unless
-you are willing to run several integration passes — each one is a full build plus
-`--verify-bin`, and they must be serialised anyway.
+**Establish the full set of sections a TU needs before splitting work up.**
+`.ctors`, `.bss` and `.sbss` are easy to omit entirely and were missing from the
+first `d_wm_csvdata` attempt. Read the true bounds out of
+`bin/dtk/wiimj2d_symbols.txt` by listing the symbols on **either side** of the
+TU's objects — the neighbours pin down both ends. A previous TU's slice ending
+exactly at your TU's start in every section is strong corroboration.
+
+**Diagnose in this order, cheapest first:**
+
+1. Compare **section sizes**. A short `.text` means a missing function.
+2. Compare **per-function sizes** against the symbol map. If they all match, the
+   code is right and the problem is placement — stop reading instructions.
+3. Only then compare bytes.
+
+**Scattered single-byte diffs spread across the whole binary, at odd addresses,
+thousands of functions away from your file, mean a wrong small-data bound — never
+wrong code.** A 4-byte shortfall in one `.sdata2` bound produced ~6,800 diffs,
+none of them in the file being worked on. This symptom cost hours the first time
+and one step the third time.
+
+Useful constants for decoding SDA references:
+`_SDA_BASE_` (r13) = `.sdata` base + 0x8000 = **0x8042F980**;
+`_SDA2_BASE_` (r2) = `.sdata2` base + 0x8000 = **0x80433360**.
+Decoding the r2 offsets in a target `__sinit` settled a `.sdata2` layout question
+in one minute that had absorbed two hours of theorising.
+
+### Whole-TU or nothing
+
+A slice gets **one contiguous range per section**, so a TU with any data object
+in the middle of its range cannot be partially banked. Both `d_wm_csvdata` and
+`d_tag_processor` hit this: in the latter, `preProcess`'s jump table sits between
+another function's table and the vtable in `.data`, so dropping any function
+after `getScissor` would leave a hole. Budget for the whole file up front.
+
+Also: **the TU may be bigger than the plan says.** `d_tag_processor` was recorded
+as 38 functions / 7,380 B; it is 39 / 8,384. `preProcess` began at exactly the
+address the file was thought to end, and was found only because an agent noticed
+a 0x50 block in `.data` that nothing in the file referenced. Verify the end of a
+TU by checking what follows it, not by trusting a prior note.
+
+## Next targets
+
+`tools/find_targets.py` still ranks by header coverage. **Do not follow it
+blindly**: its two top-ranked runs (`0x801C8570`, 2,464 B, 100% coverage;
+`0x801C91E0`, 2,904 B, 95%) are both **gated by the two known register-wall
+functions**. `GXSetTevColor` sits at the head of `GXTev.c`'s queue and
+`GXGetViewportv` immediately before `GXTransform.c`'s banked start, so extending
+backwards must cross it. One contiguous range per section means neither can be
+skipped. High header coverage says the *types* exist, not that the run is
+reachable.
+
+**The best next move is the ~40 remaining enemy actor TUs**, using the playbook
+below. `d_a_en_super_bigpile.cpp` was run specifically to price that pattern, and
+it matched 46/46 on the first integration.
+
+## The actor-TU playbook
+
+Look up first, in this order — ~10 minutes for 80% of the file:
+
+1. `grep '18daEnXxx_c' bin/dtk/wiimj2d_symbols.txt` → function list with sizes,
+   the `__vt__` address, the `StateID_*` and `.bss` objects.
+2. **Disassemble the `auto_*_data.o` containing the vtable.** With slot offsets
+   computed, `__vt__` *is* the class declaration: base class, which base virtuals
+   are overridden, the new virtuals **in declaration order**, and the state names.
+   Do this before writing a line.
+3. Disassemble the matching `auto_*_rodata.o` / `_sdata2.o` / `auto_sinit_*.o` —
+   free float values and the `__sinit`.
+4. Read `source/dol/bases/d_a_en_shell.cpp` and `d_a_en_super_bigpile.cpp` for
+   house style.
+
+**Boilerplate — copy it:**
+- The four `baseID_Xxx<10sStateID_c>` stubs and the **entire `__sinit`** are
+  generated by one `STATE_VIRTUAL_DEFINE(Class, Name);` per state, in vtable
+  order. `__sinit` runs ~0xDE per state — 888 bytes in bigpile that nobody wrote
+  or debugged.
+- `.bss` is always `n × (0xC dtor-chain record + 0x34 sFStateVirtualID_c)`,
+  stride 0x40. Plain `STATE_DEFINE` states are 0x30.
+- `.data` always carries 3 ptmf constants (0xC each) and one
+  `"Class::StateID_Name"` string per state.
+- The 8 `sFStateID_c<T>` / `sFStateVirtualID_c<T>` instantiations after `__sinit`
+  come out automatically.
+
+**Per-actor:** resource/model/anim names, param bit layout, state logic, the
+rodata float table, SE id, effect name.
+
+**Traps:**
+1. **Inline wrappers change stack-temp slots.** Temps for arguments of *directly
+   called* out-of-line functions are allocated top-down first in source order;
+   temps created inside *inlined* wrapper calls come after. If a function differs
+   *only* in `addi rN, r1, 0x..` offsets, toggle inline-wrapper vs explicit-full-args
+   calls — do not touch the logic. This is how the missing
+   `anmTexSrt_c::create` wrappers were found.
+2. **Every empty virtual must be defined out of line**, never in the class body,
+   or it is implicitly inline, vanishes from the TU, and the vtable slot breaks.
+3. **`float * int` evaluates its calls right-to-left.** To get "call A, then B,
+   then `fmuls fD, A, B`", split: `float d = getA(); s16 r = d * getB();`.
+4. **A 2-float `static const` array lands in `.sdata2`, a 4-float one in
+   `.rodata`.** One `.rodata` label with offsets 0/4/8/0xC is *one* array.
+5. Sound uses `dAudio::SoundEffectID_t(ID).playMapSound(pos, 0)`, not
+   `g_pSndObjMap->startSound(...)` — the helper takes the object as a parameter,
+   so it loads into a saved register before the argument expressions.
+6. `extrwi. rX, rX, 1, N` is `ACTOR_PARAM(bitfield)`; `clrlslwi. r3, r0, 24, 4`
+   is `ACTOR_PARAM(byte) * 16`. Use `ACTOR_PARAM_CONFIG`, don't hand-roll shifts.
+7. `fBase_c`'s vtable pointer is at object offset **0x60**, not 0. Slot index =
+   `(0xNNN - 8) / 4`.
+8. Compile flags need the seven extra `-i include\lib
+evolution\BTE\...` paths
+   from `build.ninja`, or anything including `d_audio.hpp` fails.
 
 ## Briefing template for authoring agents
 
@@ -83,8 +175,15 @@ Every agent brief should carry, at minimum:
    `ninja` or edit `slices/wiimj2d.json`.
 4. **Deliverable is source code in the reply**, not edits to the shared tree.
 5. The hard-won context: declaration order controls register assignment (GPRs
-   first-declared → highest; FPRs → lowest); the size-delta heuristic; bisect
-   before theorising.
+   first-declared → highest, ending at r9; **FPR direction is not fixed — sweep
+   it**); adding one extra local can fix colouring at zero instruction cost; the
+   size-delta heuristic; bisect before theorising.
+8. **Report data objects with their sections.** The lead needs string literals,
+   floats, statics and vtables for the slice bounds — that is where integration
+   time actually goes.
+9. **Do not claim MATCHING unless the diff tool printed nothing.** Say so
+   explicitly. A well-characterised near-miss is far more useful than a false
+   pass, which has cost this project a full day.
 6. Environment gotchas: dtk relative paths with forward slashes fail on Windows;
    PowerShell 5.1 parses 8-hex-digit literals as negative Int32, so do address
    maths in Python; splat native-exe arguments.
@@ -107,22 +206,57 @@ The only real signal is **writes to the repo or scratchpad**. And note that a
 healthy agent on a task like this ran **35 minutes with 97 tool calls** and was
 silent for the first several minutes while reading reference material. Do not
 set an impatient kill threshold — a working agent was nearly killed at 12
-minutes on exactly that mistake.
+minutes on exactly that mistake. Agents on the hardest functions here ran 30–45
+minutes and 60–115 tool calls, and all of them succeeded.
+
+## Verify your verification tool
+
+`fndiff.py` silently reported **`IDENTICAL` when it could not find the function
+at all**. Template-mangled names (anything with `PrintContext<w>`) appear
+*quoted* in the dtk dump, the name comparison never matched, and empty-vs-empty
+compared equal. Nine in-flight functions were affected.
+
+It is fixed two ways: it strips quotes from both sides, **and it hard-exits with
+an error if either extraction is empty**. A tool that cannot find the function
+must say so, not congratulate you. One agent then confirmed the fix with a
+deliberate negative control before trusting its own results — do that.
+
+**Treat the verification tooling with the same scepticism as the code.**
+
+## Relay findings between running agents
+
+Several results only emerged because one agent's finding reached another
+mid-flight (`SendMessage`). Worth relaying immediately:
+
+- A matched caller pins down its callees' exact signatures — `SetRouteInfo`
+  handed five signatures to two agents still guessing.
+- A statement-ordering trick found in one function often applies verbatim to a
+  sibling another agent owns.
+- Corrections to rules *you* gave them. Both the FPR direction and a `.sdata`
+  vs `.sbss` slip were caught by agents and had to be pushed back out.
+
+## Check `syms.txt` before inferring a name
+
+Two functions believed unnamed were already named there, one of them called by an
+already-matching destructor. Grep `syms.txt` and `bin/dtk/wiimj2d_symbols.txt`
+first; mark genuinely inferred names `@unofficial`.
 
 ---
 
 ## Current state
 
-- **Progress: 8.624%** (560,616 / 6,500,368 code bytes)
+- **Progress: 8.823%** (573,528 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
 - Development moved to **native Windows**; see "Local setup" below.
-- `d_wm_csvdata.cpp` is complete and banked (all 41 functions).
+- Three TUs completed and banked whole this session (22,688 bytes):
+  `d_wm_csvdata.cpp` (41 fns), `d_a_en_super_bigpile.cpp` (46 fns),
+  `d_tag_processor.cpp` (39 fns).
 
 Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 16.64% |
+| `wiimj2d.dol` | 17.06% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.06% |
 | `d_basesNP.rel` | 1.02% |
@@ -244,12 +378,122 @@ but register-shuffled, reorder the declarations rather than restructuring the co
   `BOOL old = OSDisableInterrupts();` above the other locals fixed all 23
   non-volatile mismatches in one pass. (A declaration with an initialiser can
   legally precede other declarations in C89.)
-- **FPRs — first-declared gets the *lowest* register**, i.e. the opposite.
-  `GXGetViewportv` needed `f2, f1, f0` in load order; declaring the locals in
-  reverse (`v2f near, sx, ox;`) and then assigning them in address order
-  produced exactly that.
+- **FPRs — the direction is NOT fixed. Reorder and bisect; do not assume.**
+  This file previously stated "first-declared gets the lowest", on the strength
+  of `GXGetViewportv` (which needed `f2, f1, f0` in load order, produced by
+  declaring the locals in reverse and assigning them in address order). That
+  generalisation is **wrong**. In `d_tag_processor.cpp`, `setScissorStart` gave
+  first-declared the *highest* FPR (f31 down to f28) while `setScissorCursorX`
+  in the same file gave it the *lowest* (f28 up to f29). Treat FPR order as a
+  lever to sweep, not a formula.
 
-Try this before concluding a function has hit the register-allocation wall.
+### The GPR block rule (verified over ~140 recompiles on `getScissor`)
+
+- Locals in the **leading declaration block** take the top *N* of r6–r9,
+  **ascending in declaration order, ending at r9**.
+- Values created **later** — CSE temps, and locals declared mid-body — fill
+  **downward from just below that block**.
+
+Verified directly by inserting a materialised local at each of four positions
+and watching it land on r6/r7/r8/r9 in step.
+
+### Adding a variable fixes register allocation — three independent proofs
+
+The strongest lever found this session, and it is counter-intuitive: **declaring
+one extra local, changing no logic, fixes register colouring at zero instruction
+cost.** It worked three separate times on three different kinds of value:
+
+1. **A pointer.** `setScissorStart` was instruction-identical but used four
+   scratch GPRs where the target used three. Adding
+   `nw4r::lyt::DrawInfo *info = mScissor[idx].mpDrawInfo;` before the block
+   fixed it.
+2. **A float constant.** `RuBySet` — `f32 rubyScale = c_RUBY_SCALE;` on the line
+   before its use moved the folded constant off `f0` and corrected **nine**
+   register assignments at once.
+3. **A raw integer offset.** `getScissor` — see below; this is the subtle one.
+
+**But the lever is not universal, and knowing when it is excluded matters.** In
+`getScissor` a named `f32 negate = -1.0f;` is structurally impossible: the
+target *re-materialises* `0.0f` after `-1.0f` clobbers `f0` between two
+compares, and a named local pins the constant into a live FPR across the
+branches, deleting that reload. **The trick only applies where the constant is
+used unconditionally.**
+
+### `getScissor`: offset vs pointer — why a pointer local always failed
+
+Two agents spent ~140 recompiles at 82/82 instructions with r6 and r8
+transposed. The answer was a **fourth leading local holding a raw byte offset**,
+declared before `idx` and assigned after it:
+
+```cpp
+nw4r::lyt::Pane *pane = info->mScissorPane;          // r6
+nw4r::lyt::DrawInfo *drawInfo = info->mScissorDrawInfo;  // r7
+int entryOffset;                                     // r8 — slot, no instruction
+u16 idx = info->mScissorIndex;                       // r9
+entryOffset = idx * sizeof(ScissorEntry_s);
+```
+
+It costs nothing because MWCC CSEs it with the index scaling `mScissor[idx]`
+already performs — hence exactly one `mulli`. The second half is essential:
+**the first store block must use `mScissor[idx]` and the second must use the
+byte-pointer form.** Pointer form in both makes `(u8 *)mScissor + entryOffset` a
+source-level CSE and collapses the target's *two* `add`s into one; `mScissor[idx]`
+in both leaves `entryOffset` with nothing to do.
+
+That is why every `ScissorEntry_s *entry` attempt failed: a **pointer** local is
+`this + off`, which CSEs the add. Only a raw **offset** keeps them apart.
+
+Try all of this before concluding a function has hit the register-allocation wall.
+
+### `.sdata2` ordering within a TU — three buckets
+
+Established on `d_tag_processor.cpp`; it took that file from 6,872 differing
+bytes to 10. MWCC emits a TU's `.sdata2` in this order:
+
+1. **File-scope named objects**, in *definition* order.
+2. **Anonymous folded literals**, in *first-use* order (i.e. following function
+   order in the file).
+3. **Function-local `static`s — last**, after everything else.
+
+Bucket 3 is the surprise. A `static const u16 cTagCode[4]` declared *inside*
+`MsgIDSet`, a function in the middle of the file, landed at the **end** of the
+TU's `.sdata2`. Lifting the same array to file scope put it first, matching the
+original.
+
+**If a TU's `.sdata2` content is right but in the wrong order, move the
+definitions — do not reshape the code.**
+
+### A constant appearing twice is evidence, not redundancy
+
+A `static const f32` **class member** is emitted as a real named object *and*
+its uses are constant-folded into fresh anonymous duplicates — **but only if the
+definition precedes the use in the file.** With the definitions below the
+functions that use them, the uses referenced the named symbols and no anonymous
+duplicates appeared.
+
+So the original's `.sdata2` containing both `c_RUBY_SCALE` (0.6f) and an
+anonymous 0.6f proves the definitions sit **above** the ruby functions in the
+source. Read duplicate constants as a layout clue.
+
+### A function-scope `static const int` allocates storage
+
+`c_ACTION_NAME_LEN` had to become `enum { c_ACTION_NAME_LEN = 20 };`. As a
+function-local `static const int`, MWCC emits a real word into `.sdata2` even
+though the value is folded into an immediate at the use site. **Use `enum` for
+function-scope integer constants unless the binary shows an object.**
+
+### `va_list` must be an array of one
+
+```c
+typedef struct __va_list_struct { ... } __va_list_struct;
+typedef __va_list_struct va_list[1];
+```
+
+As a plain struct, `va_arg` passes all 16 bytes **by value** and MWCC copies
+them to the stack before every `__va_arg` call — six extra instructions. The
+original passes the pointer, which only happens when the type decays. Found via
+`preProcess`; verified codegen-neutral for the already-matching
+`d_lyttextbox.cpp` (all 310 words identical both ways).
 
 ### Size-delta heuristic
 
@@ -753,6 +997,37 @@ Note the tool reports *runs*, not translation units. A new slice may start at an
 TU boundary (the `bin/dtkspl/obj/auto_NN_ADDR_text.o` split points are good
 candidates) and cover a prefix of that TU, but it cannot skip a function in the
 middle of its own range, and a source file gets exactly one slice entry.
+
+## Original-game bugs found — reproduce, do not fix
+
+Three this session. Each is required for the match and each will look like our
+error later:
+
+- `getOkCancellDisp(MsgRes_c*, void*)` and `getCourseSelectIcon` /
+  `getCourseSelectButtonFunction` leave their message-id local **uninitialised**
+  on the fall-through path. The target never sets `r6` before the tail call.
+  No `default:`, no final `else`.
+- `RuBySet` sets the ruby scale **transposed** — `mScale.x` from `mScale.y` and
+  `mScale.y` from `mScale.x`.
+
+Source idioms that are load-bearing and look like mistakes — all commented in
+place, do not tidy:
+
+- `(&route->mChildPointName[n * 5])[5] = '0';` in `SearchChildPointName`.
+  Folded to `[n * 5 + 5]`, MWCC computes `(n + 1) * 5`.
+- `appendChildFromModel` re-reads the child chain through a **separate non-const**
+  `ResNode`; reading through the const parameter lets MWCC CSE it away.
+- `ScaleCalcRect` makes three `GetFontHeight`/`GetFontDescent` calls whose
+  results are **discarded**. Keep them, in order.
+- `SetRouteInfo` increments a counter and immediately uses `counter - 1`.
+- `x / 2.0f` and `x * 0.5f` are **not** interchangeable: MWCC folds the divide
+  into `fmuls` by 0.5f but keeps the converted value as the *left* operand. Both
+  orders legitimately coexist in one function.
+- `switch` and `else if` are **not** interchangeable: a `switch` emits all
+  compares up front then the bodies; interleaved compare/body/branch means an
+  `else if` chain.
+- `GX_U16`, not `GX_S16`, for `GX_VA_TEX0` (compType 2). The nw4r-idiomatic
+  choice is the wrong one.
 
 ## What not to repeat
 
