@@ -124,6 +124,35 @@ Second preference is a TU whose *shape* is already solved elsewhere — e.g.
 `d_a_rot_objs_base.cpp`, whose `searchParent_*` functions were reported as
 sharing an existing implementation verbatim.
 
+### All five binaries failing at once means a section changed size
+
+This looks catastrophic and is usually trivial. `d_a_fireball_base.cpp` matched
+51/51 functions and every data section, and still failed the hash on all five
+binaries — including `d_profileNP.rel`, which it cannot touch.
+
+**Diagnose from the DOL header, not the bytes.** Decode the section table of
+`bin/wiimj2d.dol` and `original/wiimj2d.dol` and compare sizes:
+
+```python
+off = struct.unpack('>18I', d[0x00:0x48])   # file offsets
+adr = struct.unpack('>18I', d[0x48:0x90])   # load addresses
+siz = struct.unpack('>18I', d[0x90:0xD8])   # sizes
+```
+
+`.text` was 64 bytes short, so every later section sat 0x40 low and every hash
+broke. The delta *is* the missing object: search the TU's address range for a
+function of exactly that size. Here it was `__dt__18dCircleLightMask_cFv`, 0x40.
+
+**Cause: an unreferenced weak function your TU emits gets deadstripped.** The
+original kept it, the linker drops it. Fix is one line — add the mangled name to
+`keepWeak` in `slices/wiimj2d.json`. Note `deadstrip` and `keepWeak` are
+separate lists there and neither is inferred; a weak symbol in neither list is
+dropped if unreferenced.
+
+Byte-diffing the two DOLs first is a trap: a size change shifts everything, so
+you get hundreds of thousands of diff runs and no signal. Section sizes first,
+always.
+
 ### The target list is incomplete: TUs with no `__sinit` are invisible
 
 `tu_extent.py` delimits TUs by `__sinit` symbols. **A TU with no file-scope
@@ -559,6 +588,38 @@ original.
 
 **If a TU's `.sdata2` content is right but in the wrong order, move the
 definitions — do not reshape the code.**
+
+### Levers found while decompiling the rot/fireball/cursor batch
+
+Each of these was the single change that closed a function; all are zero- or
+near-zero cost at the source level.
+
+- **Weak/implicit functions flush right after the function that first needs
+  them**, not at end of TU. `__dt__12daRotBlock_cFv` sat at position 3 in the
+  target and position 40 in the draft; declaring `~daRotBlock_c()` and defining
+  it out of line dragged it — and two more implicit dtors — into the right slots.
+- **`fmuls` operand order cannot be set by writing `x * 1.5f` vs `1.5f * x`.**
+  MWCC canonicalises the literal to the first operand either way. Only the
+  compound form `size = x; size *= 1.5f;` produces the target's variable-first
+  `fmuls f6, f7, f6`.
+- **Hoist a loop bound into a local** (`dBg_ctr_c *end = mpBgCtrEnd;`) to turn a
+  reload-every-iteration loop into the target's hoisted `do…while`. Three
+  functions in one file needed it.
+- **Assign struct fields directly rather than through a `set()` helper** when the
+  helper builds a temporary: routing through `set()`'s `mPos = mVec3_c(x,y,z)`
+  leaves a dead 12-byte stack temp.
+- **A named local pins a value across two calls.** `u32 flags = mLayer << 16;`
+  hoisted as its own local is what keeps the shift in r31 across both calls.
+- **Return the base type, not the derived one, when the target copies.**
+  `GetPos` returning `mVec3_c` lets NRV collapse it into a 5-instruction tail
+  call; returning `nw4r::math::VEC3` forces the target's 12-instruction bitwise
+  copy. This alone took the function from 5 instructions to a byte match.
+- **Do not declare a constructor the original does not have.** An implicit ctor
+  is fully inlined into the class-init function; declaring one emits a
+  `__ct__` symbol that is simply absent from the target.
+- **Bind a reference before consecutive stores through a pointer member.**
+  `mVec3_c &pos = p->mPos; pos.x = …; pos.y = …;` — writing `p->mPos.x` twice
+  reloads `p` between the stores.
 
 ### A constant appearing twice is evidence, not redundancy
 
