@@ -1224,6 +1224,33 @@ points at.** After a match, read the object's relocations for any `.rodata` or
 `.data` template you emit and confirm the target symbol by name. Two death-info
 templates in this TU differ only in fields that are relocations plus three words.
 
+**And it is worse than "check the relocations" — checking the `.text` ones is
+not enough.** On `d_a_en_jimen_pakkun_base.cpp` an agent deliberately broke
+`setDeathInfo_Quake` with a bare `&StateID_DieOther` where the original binds
+`&dEn_c::StateID_DieOther`, then ran every check this project has:
+
+| check | verdict on knowingly-wrong code |
+|---|---|
+| `harness.diff_fn` | **MATCH** |
+| raw instruction-byte comparison | **MATCH** |
+| `.text` relocation symbol names | **MATCH** |
+
+All three pass, because the wrong binding never appears in `.text` at all — the
+state-ID address is baked into a **`.rodata` template's data relocation**
+(`@73419`, +0x10 into the object). Only reading `.rela.rodata` catches it.
+
+**So: any function that reaches a symbol through a compound-literal or aggregate
+initialiser must have its DATA relocations checked, not just its code.** Both
+directions genuinely occur in the same file — `setDeathInfo_IceBreak`'s template
+binds this class's own `StateID_DieIceBreak` (unqualified is correct) while
+`setDeathInfo_Quake`'s binds the base's `StateID_DieOther` (qualification
+required). Never infer the direction; read it.
+
+Related lever from the same TU: a call feeding a `(sDeathInfoData){...}`
+initialiser must be hoisted into a **named local first**. Written inline the call
+is scheduled after the template copy and costs +7 instructions;
+`d_enemy_death.cpp` writes it the hoisted way.
+
 ### Verify your verification tool — again
 
 `harness.py`'s pool-symbol normaliser was wrong in both directions and reported
@@ -1238,6 +1265,30 @@ Fixed by numbering each distinct pool symbol by first appearance **per side**, s
 A caveat survives and is now printed with every match: this proves the *pattern*
 of references, not the values. Read the emitted constant and check it against the
 target's pool slot.
+
+### Verify your verification tool — a third time, and this was the worst
+
+The same comparator **erased branch destinations**. `extract` strips the byte
+column, then `ADDR_SUFFIX_INLINE` reduced both `.L_8005DB2C` and `.L_00000B38`
+to a bare `.L` — so two functions whose branches went to *different places*
+compared **equal**. Every loop, conditional and switch in the project was being
+diffed with its control flow invisible.
+
+Fixed in `7fe054f` by keeping the raw instruction word for local branches. Those
+are PC-relative and carry no relocation, so identical code always yields an
+identical word on both sides — exact, not heuristic.
+
+**The instructive part is the fix that did not work.** Numbering labels per side
+by first appearance — the same trick that fixed the pool symbols — *looks*
+right and fails, because it numbers by **use** order: swap two branches and both
+sides renumber identically, so the wrong-branch case still passes. It was caught
+only because the negative control was written before the fix was trusted.
+
+Nothing already banked was affected: re-running a landed TU gave an identical
+result, and every TU banked as matching passed the full-link MD5 check, which
+this defect could never fool. **That is the real lesson — the link is the only
+check that cannot be fooled by a bad comparator.** Per-function diffs are for
+iteration speed, not for proof.
 
 Three separate agents hit this independently and worked around it before the fix
 reached them. That is the second verification tool in this project to have
