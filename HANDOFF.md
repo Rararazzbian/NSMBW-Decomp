@@ -664,6 +664,31 @@ near-zero cost at the source level.
   `mVec3_c &pos = p->mPos; pos.x = …; pos.y = …;` — writing `p->mPos.x` twice
   reloads `p` between the stores.
 
+### `.sdata2` literal pooling — the per-function rules
+
+Established by standalone micro-benchmark while closing `d_a_enemy_ice.cpp`, and
+they explain `.sdata2` orders that otherwise look arbitrary:
+
+1. Literals are pooled **per function, in source order** within that function.
+2. `if (x == A) { x = B; }` creates **B before A**.
+3. The int→float conversion magic double is **appended last** within its own
+   function's group.
+4. A **dead** literal is still pooled. This is the useful one: if the target's
+   `.sdata2` order requires a constant to exist before one you can account for,
+   the original had code there that you cannot see — most likely leftover or
+   debug code. Reproducing the bytes may require a dead local. Comment it as a
+   reconstruction; do not pretend it is the original text.
+
+### The 4-byte-gap boundary signal needs a referencing check
+
+The inter-TU 8-byte alignment rule is sharp but **not sufficient on its own**.
+`d_a_en_net_nokonoko_base.cpp` has a 4-byte `.rodata` gap at 0x802EE974 that is
+*not* a TU boundary: the two `sDeathInfoData` pools after it belong to the
+previous TU, one of them referenced from `setDeathInfo_Hasami__17daEnLkuriboBase_c`.
+
+Before splitting on a gap, **find who references the objects on each side**. A
+reference from the earlier TU settles it immediately.
+
 ### A constant appearing twice is evidence, not redundancy
 
 A `static const f32` **class member** is emitted as a real named object *and*
