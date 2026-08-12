@@ -85,7 +85,7 @@ public:
     void preProcess(
         const wchar_t *text, wchar_t *buf,
         unsigned long bufLen, int *writeLen,
-        long param, va_list *vargs,
+        long param, va_list vargs,
         MsgRes_c *bmg
     );
 
@@ -94,4 +94,9 @@ public:
     u8 mFontIndex;              ///< The index of the font in use. @unofficial
 
     static bool isZeroWidthSpace; ///< @unofficial
+
+    /// @brief The scale of ruby text relative to the main text.
+    static const f32 c_RUBY_SCALE;
+    /// @brief The factor applied to the line height when offsetting ruby text upwards.
+    static const f32 c_RUBY_WRITE_SCALE_Y;
 };

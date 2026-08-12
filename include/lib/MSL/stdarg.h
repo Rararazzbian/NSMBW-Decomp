@@ -18,7 +18,12 @@ typedef struct __va_list_struct {
     char fpr;
     char* input_arg_area;
     char* reg_save_area;
-} va_list;
+} __va_list_struct;
+
+/// @brief An array of one, so that it decays to a pointer when passed on.
+/// Declaring this as a plain struct makes MWCC copy all 16 bytes to the stack
+/// before each `__va_arg` call; the original passes the pointer.
+typedef __va_list_struct va_list[1];
 
 void* __va_arg(va_list argp, int type);
 

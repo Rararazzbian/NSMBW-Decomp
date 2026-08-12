@@ -28,12 +28,12 @@ private:
     /// @param messageGroup The group of the message to display.
     /// @param placeholderCount The number of placeholders in the message.
     /// @param vargs A va_list of values for placeholders in the message.
-    void setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long placeholderCount, va_list *vargs);
+    void setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long placeholderCount, va_list vargs);
 
     /// @brief Sets the text to display in the text box with a va_list.
     /// @param text The text to display.
     /// @param placeholderCount The number of placeholders in the text.
     /// @param vargs A va_list of values for placeholders in the text.
     /// @param bmg The BMG resource.
-    void setText(const wchar_t *text, long placeholderCount, va_list *vargs, MsgRes_c *bmg);
+    void setText(const wchar_t *text, long placeholderCount, va_list vargs, MsgRes_c *bmg);
 };

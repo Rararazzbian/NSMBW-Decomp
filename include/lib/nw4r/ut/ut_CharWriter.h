@@ -122,6 +122,7 @@ public:
         return mFont;
     }
 
+    void SetFontSize(f32 size);
     void SetFontSize(f32 width, f32 height);
 
     f32 GetFontWidth() const;

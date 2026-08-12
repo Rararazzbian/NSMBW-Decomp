@@ -11,7 +11,7 @@ void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID
 
     va_list args;
     va_start(args, param);
-    setMessage(bmg, messageGroup, messageID, param, &args);
+    setMessage(bmg, messageGroup, messageID, param, args);
     va_end(args);
 }
 
@@ -23,7 +23,7 @@ void LytTextBox_c::ExtensionUserDataSetup() {
     }
 }
 
-void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long param, va_list *vargs) {
+void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long param, va_list vargs) {
     nw4r::lyt::Size fontSize = GetFontSize();
 
     u8 fontIndex = bmg->getFont(messageGroup, messageID);
@@ -77,11 +77,11 @@ void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID
 void LytTextBox_c::setText(const wchar_t *text, long placeholderCount, ...) {
     va_list args;
     va_start(args, placeholderCount);
-    setText(text, placeholderCount, &args, nullptr);
+    setText(text, placeholderCount, args, nullptr);
     va_end(args);
 }
 
-void LytTextBox_c::setText(const wchar_t *text, long placeholderCount, va_list *vargs, MsgRes_c *bmg) {
+void LytTextBox_c::setText(const wchar_t *text, long placeholderCount, va_list vargs, MsgRes_c *bmg) {
     static wchar_t Buffer[0x200];
     int count = 0;
     LytBase_c::s_TagPrc.preProcess(text, Buffer, ARRAY_SIZE(Buffer), &count, placeholderCount, vargs, bmg);
