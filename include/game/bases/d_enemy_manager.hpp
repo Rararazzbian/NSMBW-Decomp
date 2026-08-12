@@ -16,6 +16,8 @@ public:
     int m_154;
     u8 mPad3[0x4];
     int m_15c;
+    u8 mPad4[0x4];
+    int mWireTurn; ///< Whether a chainlink fence is currently being flipped. @unofficial
 
     static dEnemyMng_c *m_instance;
 };
