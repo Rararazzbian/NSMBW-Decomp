@@ -173,6 +173,32 @@ def sweep_variants(src_text, fn_name):
 
 # ---------------------------------------------------------------- model client
 
+def model_keys(cfg):
+    """Every model defined in the config, in file order.
+
+    Any dict-valued key that does not start with '_' is a model, so adding one
+    to config.json is all that is needed -- nothing here is hardcoded.
+    """
+    return [k for k, v in cfg.items() if not k.startswith('_') and isinstance(v, dict)]
+
+
+def ladder_of(cfg):
+    """Escalation order: cheapest first, last resort last.
+
+    Defaults to the order the models appear in config.json, so you control the
+    ladder by ordering the file. Override with an explicit "_ladder" list if you
+    want a different order from the definition order.
+    """
+    keys = model_keys(cfg)
+    declared = cfg.get('_ladder')
+    if declared:
+        unknown = [k for k in declared if k not in keys]
+        if unknown:
+            sys.exit('_ladder names models that are not in the config: %s' % ', '.join(unknown))
+        return list(declared)
+    return keys
+
+
 def ask(cfg, messages):
     """OpenAI-compatible chat completion. Works for llama.cpp/LM Studio/Ollama
     and for Gemini via its OpenAI-compatible endpoint."""
@@ -322,6 +348,8 @@ def run(cfg, unit, fn, target_txt, workdir, budget, model_mode='auto'):
     obj = os.path.join(workdir, 'draft.o')
     txt = os.path.join(workdir, 'draft.txt')
     history = []
+    ladder = ladder_of(cfg)
+    rungs_climbed = 0
 
     print('\n' + '=' * 78)
     print(' TARGET: %s' % fn)
@@ -372,15 +400,20 @@ def run(cfg, unit, fn, target_txt, workdir, budget, model_mode='auto'):
         history.append(report)
         stuck = len(history) >= 3 and len(set(history[-3:])) == 1
 
-        if model_mode in ('cheap', 'strong'):
+        if model_mode != 'auto':
             which_key = model_mode
-            which = cfg[which_key]
         else:
-            which_key = 'strong' if (stuck or attempt > budget // 2) else 'cheap'
-            which = cfg[which_key]
+            # Walk the ladder: start at the bottom, climb one rung per plateau,
+            # and climb once more past the halfway point of the budget so a
+            # slow-but-not-identical failure still reaches a better model.
+            rung = rungs_climbed + (1 if attempt > budget // 2 else 0)
+            which_key = ladder[min(rung, len(ladder) - 1)]
+        which = cfg[which_key]
 
         if stuck and model_mode == 'auto':
-            print(' - Escalation: Plateau detected -> querying [%s: %s] with COUPLED prompt...' % (which_key, which['model']))
+            rungs_climbed = min(rungs_climbed + 1, len(ladder) - 1)
+            print(' - Plateau -> escalating to [%s: %s] with a COUPLED prompt...'
+                  % (which_key, which['model']))
         else:
             print(' - Querying [%s: %s]...' % (which_key, which['model']))
 
@@ -465,10 +498,13 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--unit', help='e.g. dol/bases/d_a_foo.cpp')
     ap.add_argument('--fn', help='mangled function name to close')
-    ap.add_argument('--model', choices=['auto', 'cheap', 'strong'], default='auto',
-                    help='isolate to a single model: "cheap" (local), "strong" (gemini), or "auto" (default: cheap with auto-escalation)')
-    ap.add_argument('--test-model', choices=['cheap', 'strong', 'all'],
-                    help='test endpoint connectivity for a model without running a decomp')
+    ap.add_argument('--model', default='auto',
+                    help='pin to one model named in config.json, or "auto" (default) '
+                         'to start at the bottom of the ladder and escalate on a plateau')
+    ap.add_argument('--test-model',
+                    help='test endpoint connectivity for one model, or "all"')
+    ap.add_argument('--list-models', action='store_true',
+                    help='show the models in config.json and the escalation order')
     ap.add_argument('--all', action='store_true', help='run all unfinished functions in target')
     ap.add_argument('--status', action='store_true', help='check match status of all functions in draft')
     ap.add_argument('--target', help='target disassembly txt (default: work/<unit>/target.txt)')
@@ -481,13 +517,31 @@ def main():
         sys.exit('no config at %s -- copy config.example.json and fill it in' % args.config)
     cfg = json.load(open(args.config, encoding='utf-8'))
 
-    if args.test_model:
-        if args.test_model == 'all':
-            test_endpoint(cfg, 'cheap')
-            test_endpoint(cfg, 'strong')
-        else:
-            test_endpoint(cfg, args.test_model)
+    known = model_keys(cfg)
+    if not known:
+        sys.exit('no models in %s -- a model is any dict-valued key not starting with "_"'
+                 % args.config)
+
+    if args.list_models:
+        ladder = ladder_of(cfg)
+        print('Models in %s:' % os.path.basename(args.config))
+        for k in known:
+            v = cfg[k]
+            print('  %-10s %-18s %s' % (k, v.get('model', '?'), v.get('base_url', '?')))
+        print('\nEscalation order (--model auto): %s' % ' -> '.join(ladder))
+        print('Set "_ladder": [...] in the config to change it; otherwise it is file order.')
         return
+
+    if args.test_model:
+        targets = known if args.test_model == 'all' else [args.test_model]
+        if args.test_model != 'all' and args.test_model not in known:
+            sys.exit('unknown model "%s" -- config has: %s' % (args.test_model, ', '.join(known)))
+        ok = all([test_endpoint(cfg, k) for k in targets])
+        sys.exit(0 if ok else 1)
+
+    if args.model != 'auto' and args.model not in known:
+        sys.exit('unknown model "%s" -- config has: %s (or "auto")'
+                 % (args.model, ', '.join(known)))
 
     if not args.unit:
         sys.exit('--unit is required (e.g. --unit dol/bases/d_a_en_lkuribo_base.cpp)')
