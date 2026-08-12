@@ -112,6 +112,26 @@ FN_END = re.compile(r'^\.endfn\b')
 INSN = re.compile(r'^/\*.*?\*/\s*(\S.*)$')
 ADDR_SUFFIX = re.compile(r'_[0-9A-Fa-f]{8}$')
 
+# Same line, but keeping the raw instruction word. Needed only for local
+# branches -- see LOCAL_BRANCH below.
+INSN_WORD = re.compile(r'^/\*\s*\S+\s+\S+\s+'
+                       r'((?:[0-9A-Fa-f]{2}\s+){3}[0-9A-Fa-f]{2})'
+                       r'\s*\*/\s*(\S.*)$')
+
+# A branch to a local label. The label NAME is useless for comparison -- the
+# target names them by absolute address (`.L_8005DB2C`), a fresh object by
+# section offset (`.L_00000B38`) -- and canonicalise() reduces both to a bare
+# `.L`. That erased control flow entirely: two functions whose branches went to
+# DIFFERENT places compared equal, so every loop, conditional and switch in the
+# project was being diffed blind. Found by an authoring agent, confirmed by
+# direct test.
+#
+# The fix is to compare the branch's raw instruction word instead. Local
+# branches are PC-relative and carry no relocation, so identical code always
+# produces an identical word on both sides -- it is an exact check, not a
+# heuristic, and it needs no label bookkeeping.
+LOCAL_BRANCH = re.compile(r'\.L_[0-9A-Fa-f]{8}\b')
+
 
 def norm_name(n):
     return ADDR_SUFFIX.sub('', n.strip().strip('"'))
@@ -188,6 +208,12 @@ def extract(path, name):
                     return canonicalise(body) if body else None
                 continue
             if body is not None:
+                mw = INSN_WORD.match(s)
+                if mw and LOCAL_BRANCH.search(mw.group(2)):
+                    # Keep the raw word so the branch displacement is compared.
+                    word = ''.join(mw.group(1).split())
+                    body.append('%s |%s|' % (mw.group(2).strip(), word))
+                    continue
                 mi = INSN.match(s)
                 if mi:
                     body.append(mi.group(1).strip())
