@@ -21,6 +21,11 @@ public:
         daEnDpakkunBase_c *mpOwner; ///< 0x04 @unofficial
     };
 
+    /// @brief Constructs the enemy.
+    /// @details Binds the bone callback to its owner; @ref nodeCallback_c::timingA
+    /// dereferences @p mpOwner and nothing else ever assigns it.
+    daEnDpakkunBase_c() { mNodeCallback.mpOwner = this; }
+
     /// @brief Destroys the enemy.
     /// @details Defined inline: the surviving out-of-line copy is linked from
     /// @p d_a_en_dfpakkun.cpp, not from @p d_a_en_dpakkun_base.cpp.

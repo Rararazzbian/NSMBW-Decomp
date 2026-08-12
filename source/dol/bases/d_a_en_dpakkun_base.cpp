@@ -223,15 +223,15 @@ bool daEnDpakkunBase_c::hitCallback_Fire(dCc_c *self, dCc_c *other) {
     }
 
     daPlBase_c *player = (daPlBase_c *) other->mpOwner;
-    mVec3_c pos;
-    pos.y = getCenterY();
-    pos.x = getCenterX();
-    pos.z = mPos.z;
+    mVec3_c pos = mPos;
+    pos.x += mCenterOffs.x;
+    pos.y += mCenterOffs.y;
     pos = pos; // @reconstruction: forces the (otherwise dead) aggregate to keep an address
 
+    dScoreMng_c *scoreMng;
     u32 plrNo = player->getPlrNo();
     if (plrNo <= 3) {
-        dScoreMng_c *scoreMng = dScoreMng_c::m_instance;
+        scoreMng = dScoreMng_c::m_instance;
         scoreMng->ScoreSet(this, mCombo.getDamageScore(), plrNo);
     }
 
@@ -250,13 +250,12 @@ bool daEnDpakkunBase_c::hitCallback_YoshiFire(dCc_c *self, dCc_c *other) {
     }
 
     daPlBase_c *player = (daPlBase_c *) other->mpOwner;
-    mVec3_c pos;
-    pos.y = getCenterY();
-    pos.x = getCenterX();
-    pos.z = mPos.z;
-    pos = pos; // @reconstruction: forces the (otherwise dead) aggregate to keep an address
+    mVec3_c pos = mPos;
+    pos.x += mCenterOffs.x;
+    pos.y += mCenterOffs.y;
 
     player->slideComboSE(player->mComboMultiplier, false);
+    pos = pos; // @reconstruction: forces the (otherwise dead) aggregate to keep an address
 
     player->mComboMultiplier++;
     if (player->mComboMultiplier >= 8) {
@@ -303,10 +302,9 @@ bool daEnDpakkunBase_c::hitCallback_Star(dCc_c *self, dCc_c *other) {
     }
 
     daPlBase_c *player = (daPlBase_c *) other->mpOwner;
-    mVec3_c pos;
-    pos.y = getCenterY();
-    pos.x = getCenterX();
-    pos.z = mPos.z;
+    mVec3_c pos = mPos;
+    pos.x += mCenterOffs.x;
+    pos.y += mCenterOffs.y;
     pos = pos; // @reconstruction: forces the (otherwise dead) aggregate to keep an address
 
     player->slideComboSE(player->getStarCount(), false);
@@ -442,7 +440,7 @@ void daEnDpakkunBase_c::setDeathInfo_IceBreak() {
     killIce();
 
     mIsDying = 1;
-    u8 dir = mIceDeathDirection;
+    const u8 dir = mIceDeathDirection;
 
     mDeathInfo = (sDeathInfoData) {
         l_base_fall_speed_x[dir],
