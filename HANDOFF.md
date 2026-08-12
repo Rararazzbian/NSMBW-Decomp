@@ -60,9 +60,10 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 10.131%** (658,536 / 6,500,368); `wiimj2d.dol` **19.849%**. Five
-  binaries verify, tree clean. The 10% mark was crossed by landing the pakkun
-  pair; the rule that unblocked them is "Overrides are a free lever" below.
+- **Position: 10.267%** (667,384 / 6,500,368); `wiimj2d.dol` **20.139%**. Five
+  binaries verify, tree clean.
+- **23 commits are unpushed.** Nothing has been pushed for the whole of the
+  2026-08-12/13 session. Ask before pushing.
 - **The pakkun pair is DONE and linked** — `d_a_en_dpakkun_base.cpp` 64/64 and
   `d_a_en_dfpakkun.cpp` 33/33, both matching. `d_a_en_jimen_pakkun_base.cpp` is
   the next pakkun-family target and should inherit their idioms nearly wholesale.
@@ -224,10 +225,36 @@ comparator every authoring agent should import rather than rewriting, and
 `land.py`'s all-or-nothing gate is a sound way to land a TU without leaving a
 half-applied change behind. The `--auto` loop has never been run end to end.
 
+**Two caveats on `prepare.py`, both found the hard way.** Its fuzzy `__sinit`
+matcher once picked the *derived* actor's `__sinit` instead of the base's and
+handed an agent a target **missing a 1,348-byte function** — a range sweep never
+sees the omission. And a target usually spans several split objects and carries
+functions from neighbouring TUs, so "N functions in target.txt" is not "N
+functions in your TU". Cross-check the function list against
+`bin/dtk/wiimj2d_symbols.txt` for your address range before trusting a count.
+
+**`bin/dtkspl` is stale** — it predates `d_a_en_dfpakkun.cpp` and
+`d_a_en_lkuribo_base.cpp` landing, so neither has a split object there. For
+those, ground truth is the `auto_*` objects or our own compiled output.
+
 ## Where the work now stands
 
-**9.826%** (638,728 / 6,500,368 bytes); `wiimj2d.dol` at **19.200%**. Five
-binaries verifying, working tree clean.
+**10.267%** (667,384 / 6,500,368 bytes); `wiimj2d.dol` at **20.139%**. Five
+binaries verifying, working tree clean, **23 commits unpushed**.
+
+The 2026-08-12/13 session landed three TUs (~30,000 bytes), took the project
+past 10%, fixed one tool bug and added several rules below. The last TU
+(`d_a_en_jimen_pakkun_base.cpp`, 67/67) landed on its **first build** with no
+linker archaeology at all, which is the clearest sign the accumulated rules are
+now doing real work up front.
+
+Tooling changed this session, all committed:
+- `tools/auto_decomp/harness.py` — **branch destinations are no longer erased**
+  (`7fe054f`). This was silently comparing every loop and conditional in the
+  project blind.
+- `tools/sibmap.py` — target range moved to argv; two real bugs fixed.
+- `tools/datarefs.py` — clobber-tracking bug fixed; it was corrupting every
+  address chained off a `lis`/`addi` pair.
 
 The most recent session added `d_a_en_lkuribo_base.cpp` (58 functions, 9,456
 bytes, every function matching on its first compile) using the sibling-mapping
@@ -391,8 +418,8 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | TU | Bytes | Fns | Notes |
 |---|---|---|---|
 | `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, landed and linked |
-| `d_a_en_jimen_pakkun_base` | 8,848 | 67 | **IN PROGRESS.** Bounds exact (both neighbours banked), no hidden TU. Third pakkun — family idioms should transfer wholesale |
-| `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
+| `d_a_en_jimen_pakkun_base` | 8,848 | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
+| `d_a_en_bros_base` | 12,072 | 97 | **NEXT UP.** Largest clean base; a base unblocks its family |
 | `d_a_en_blockmain` | 12,392 | 90 | |
 | `d_a_player_manager` | 10,764 | 68 | |
 | `d_a_player_demo_manager` | 9,276 | 51 | |
@@ -404,7 +431,7 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | `d_a_wm_player_static` | 3,268 | 24 | |
 | `d_a_boss_demo` | 2,772 | 49 | **BLOCKED** — see below |
 | `d_a_wm_Map_static` | 2,308 | 17 | **17/18 done**, blocked on a 0x9C8 table — see below |
-| `d_a_player_hio_ADJ` | 2,032 | 15 | **DONE 12/15**, banked `nonMatching` — it is one TU |
+| `d_a_player_hio_ADJ` | 2,032 | 15 | **15/16**, banked `nonMatching`. One function left, well-characterised — see below |
 | `d_a_en_hatena_balloon` | 18,376 | 76 | |
 | `d_a_farBG` | 18,808 | 53 | |
 | `d_a_ice` | 31,880 | 147 | |
@@ -862,7 +889,7 @@ first; mark genuinely inferred names `@unofficial`.
 
 ## Current state
 
-- **Progress: 10.131%** (658,536 / 6,500,368 code bytes)
+- **Progress: 10.267%** (667,384 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
 - Development happens on **native Windows**; see "Local setup" below.
 - Last TU banked: `d_a_en_lkuribo_base.cpp` (58 fns, 9,456 bytes), whole and
@@ -874,17 +901,22 @@ first; mark genuinely inferred names `@unofficial`.
   `d_a_en_super_bigpile.cpp` (46), `d_tag_processor.cpp` (39).
 - `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) are landed
   and linked.
-- `d_a_player_hio_ADJ.cpp` is banked `nonMatching` at **12/15**. The three open
-  functions are documented in `@note` comments in the file itself, with what was
-  already tried. The most promising is `resetParam__14dPyModel_HIO_cFi`, whose
-  residual is an `-ipa file` address-sharing optimisation that likely needs the
-  TU's `.rodata` tables actually **defined** rather than declared `extern`.
+- `d_a_player_hio_ADJ.cpp` is banked `nonMatching` at **15/16**, with `.rodata`
+  and `.sdata2` byte-identical. Defining the TU's `.rodata` for real (rather
+  than `extern`) reproduced the address sharing and closed two of three; the
+  `const` lever above closed them. **One function is left**,
+  `resetParam__14dPyModel_HIO_cFi`: 46/53 words match and the residual is a
+  single two-register permutation. ~400 variants were swept, and the useful
+  negative result is that **every 53-instruction form puts the base in r7 and
+  every form that puts it in r8 costs 54** — the two have never been obtained
+  together, which points at a virtual-register count this source shape does not
+  reproduce. Do not grind that axis further without a new idea.
 
 Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 19.849% |
+| `wiimj2d.dol` | 20.139% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -1208,6 +1240,48 @@ is how a **missing overload in `m3d::anmChrBlend_c`** was found rather than
 ground at with register permutations. Do not reach for the register levers on
 this signature; it is a source-shape problem.
 
+Quantified on `daEnJimenPakkunBase_c::createMdl`, which needed the same fix in
+`m3d::anmMatClr_c`: **of the 12 plausible overload combinations exactly one
+matched** (4-arg / 3-arg / 3-arg). So enumerate rather than guess. The
+diagnostic that tells you an object is outside the temp pool: with N pool temps
+MWCC allocates top-down from `0x8 + 4*(N-1)`, so a sequence that starts one slot
+below the top and wraps means something is not in the pool.
+
+### `const` on a source table changes the whole copy strategy
+
+The highest-value lever found this session, and it is invisible in the
+statements — only the qualifier moves.
+
+**MWCC copies a struct field by field. When it can see the source cannot change
+under it — a `const` object, or a source reached through a pointer it must
+assume aliases the destination — it hoists every load ahead of every store.**
+Drop the `const` and the identical source interleaves them one load/store pair
+at a time.
+
+The batched form is what produces a big `_savegpr_14`/`_restgpr_14` frame and a
+pile of spill slots. On `dAcPy_HIO_Speed_c::init` the target's 157 instructions
+with ten spill slots are simply the batched form of two struct assignments; the
+same source without `const` emits the same 60 loads and stores in 127
+instructions with no saved registers.
+
+**If the target has far more live registers and stack spill than your version,
+and the statements already look right, suspect this before touching statement
+order.** It also explains "an FPR pair lands swapped" — that was the same cause
+on `dPyAnm_HIO_c::resetParam`, not a register-allocation problem at all.
+Roughly 30 register-permutation builds were spent on that function before a
+three-build micro-benchmark found the qualifier.
+
+### A non-zero constant in a brace initialiser can become a static template
+
+`{ 1, offset, mVec3_c(...) }` emitted 93 instructions — MWCC built a `.data`
+template and copied it in word by word. Routing the value through a plain
+`int mode = 1;` gave the target's 76. **`const int` folds and does NOT work.**
+
+The sibling actor escapes this only because its equivalent value is `0`, so a
+precedent that looks identical can be silently inapplicable. If a brace
+initialiser comes out far longer than the target and you see a `.data` template
+you did not expect, this is why.
+
 ### A shadowed state ID compiles, diffs clean, and is wrong
 
 `daEnLkuriboBase_c` declares its own `StateID_DieFall`, shadowing `dEn_c`'s.
@@ -1293,6 +1367,35 @@ iteration speed, not for proof.
 Three separate agents hit this independently and worked around it before the fix
 reached them. That is the second verification tool in this project to have
 silently lied; assume the third exists.
+
+### The fourth view: `diff_fn` is blind to source ORDER
+
+Not a bug — a structural limit, and worth stating because this project fails on
+emission order regularly (the lkuribo 32 bytes, the pakkun flush block, `downSE`).
+
+**`diff_fn` looks a function up by name and compares its contents. Moving a
+definition changes where it LANDS, not what it contains, so every per-function
+check passes on a file whose functions are in the wrong order.** All four of the
+usual views — canonicalised text, raw bytes, relocation names, pool values —
+share this blindness.
+
+So verify the **sequence** as its own check: extract your object's function
+order and compare it against the target's address order. Control it by
+deliberately moving one definition and confirming the check fires. On
+`d_a_en_jimen_pakkun_base.cpp` that control caught a misplaced `downSE` at
+position 36, and it is the only view that would have.
+
+### Resolve relocations to (section, offset), not just to names
+
+`canonicalise()` numbers pool symbols by first appearance **per side**, which
+means a function whose first pool reference points at a *different literal* on
+each side still compares equal. Comparing relocation *names* does not close this
+either, because the pool symbols are anonymous.
+
+The check that does close it: resolve every `.text` relocation to
+`(section, offset)` and compare those. The target embeds the address in names
+like `@73081_803536E0`, so both sides are resolvable. Done on the jimen TU for
+all 67 functions.
 
 ### Levers found while decompiling the rot/fireball/cursor batch
 
