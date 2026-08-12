@@ -42,14 +42,36 @@ long inline arg lists are fragile.
 
 ## Where the work now stands
 
-**All three planned tracks are DONE.** This session took the project from 8.475%
-to **8.823%** — three TUs, 22,688 bytes, each banked *whole*:
+**9.480%** (616,216 / 6,500,368 bytes); `wiimj2d.dol` at **18.06%**. Five
+binaries verifying, working tree clean.
+
+The most recent session took the project from 9.133% to 9.480% across two
+batches of parallel agents. What landed, all banked *whole*:
 
 | TU | Functions | Notes |
 |---|---|---|
-| `d_wm_csvdata.cpp` | 41 | World-map CSV parsing |
-| `d_a_en_super_bigpile.cpp` | 46 | Enemy actor; **see the actor playbook below** |
-| `d_tag_processor.cpp` | 39 | Message formatting tags |
+| `d_a_fireball_base.cpp` | 51 | Validated the guessed header of its own derived TU |
+| `d_a_en_net_nokonoko_base.cpp` | 37 | Verified by raw instruction-word compare |
+| `d_a_enemy_ice.cpp` | 37 | Derives from `dActorState_c`, **not** `dEn_c` |
+| `d_a_rot_objs_base.cpp` | 31 | Range turned out to be two TUs |
+| `d_a_spin_child_base.cpp` | 23 | |
+| `d_a_sink_dokan.cpp` | 14 | **Was not on any target list** |
+| `d_a_cursor.cpp` | 9 | Smallest TU in the project |
+| `d_a_rot_block.cpp` | 5 | **Was not on any target list** |
+
+Plus `d_a_en_dpakkun_base.cpp` at **60/64**, landed `nonMatching` — see the wall
+note below. Its header is fully resolved and validated, so it is ready to serve
+`d_a_en_dfpakkun.cpp` even before the last four functions close.
+
+**Three TUs were discovered mid-batch** that our enumeration cannot see, and the
+`.text` end boundary was wrong on **five** separate assignments, always the same
+way. Both failure modes and their fixes are documented below — read those two
+sections before assigning anything.
+
+### Earlier session, for context
+
+8.475% → 8.823%: `d_wm_csvdata.cpp` (41), `d_a_en_super_bigpile.cpp` (46, the
+file the actor playbook was written from), `d_tag_processor.cpp` (39).
 
 ### THE lesson: authoring is cheap, section bounds are not
 
@@ -110,6 +132,49 @@ reachable.
 **The best next move is the remaining ~29 actor TUs**, using the playbook below.
 `d_a_en_super_bigpile.cpp` was run specifically to price that pattern, and it
 matched 46/46 on the first integration.
+
+### The remaining actor TUs, with what is known about each
+
+Regenerate with `scratchpad/tu_extent.py`; cross-check with `tools/tu_split.py`.
+Sizes are `.text` bytes. Annotations are hard-won — read them before assigning.
+
+| TU | Bytes | Fns | Notes |
+|---|---|---|---|
+| `d_a_en_dfpakkun` | 9,688 | 59 | **Ready** — its base's header is resolved and validated |
+| `d_a_en_kuribo_base` | 8,192 | 66 | In flight |
+| `d_a_en_door` | 5,492 | 60 | In flight |
+| `d_a_en_jimen_pakkun_base` | 7,896 | 58 | Pakkun family; likely shares idioms with the base |
+| `d_a_en_lkuribo_base` | 9,552 | 75 | Owns `.rodata` pools that look like they belong to its neighbour |
+| `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
+| `d_a_en_blockmain` | 12,392 | 90 | |
+| `d_a_player_manager` | 10,764 | 68 | |
+| `d_a_player_demo_manager` | 9,276 | 51 | |
+| `d_a_bullet` | 7,316 | 73 | |
+| `d_a_lift_down_on_base` | 6,280 | 58 | **3–4 TUs** — see `tu_split.py` |
+| `d_a_move_pipe` | 5,380 | 29 | **2–3 TUs** |
+| `d_a_en_obj_coinblock` | 5,096 | 34 | |
+| `d_a_en_coin_main` | 4,312 | 27 | |
+| `d_a_wm_player_static` | 3,268 | 24 | |
+| `d_a_boss_demo` | 2,772 | 49 | **BLOCKED** — see below |
+| `d_a_wm_Map_static` | 2,308 | 17 | **17/18 done**, blocked on a 0x9C8 table — see below |
+| `d_a_player_hio_ADJ` | 2,172 | 20 | Five HIO classes; check whether it is one TU |
+| `d_a_en_hatena_balloon` | 18,376 | 76 | |
+| `d_a_farBG` | 18,808 | 53 | |
+| `d_a_ice` | 31,880 | 147 | |
+| `d_a_yoshi` | 39,944 | 239 | Largest; also contains `daPlyIce_c` |
+
+### `d_a_wm_Map_static.cpp` is 17/18 — one table away
+
+Everything except `__sinit` matches. The gap is a guard-protected `mVec3_c` init
+inside a **0x9C8-byte static object at 0x8031CCC8** (guard byte at 0x8042A470) —
+a world-map parameter table whose initialiser pulls in 18 `.data` string
+literals (`"desert01"`…`"group04_2"`), ~0x220 of `.sdata` literals, and one
+`.sdata2` float. None of it emits code, which is why all 16 real functions match
+without it. Reconstructing it means naming ~2,500 bytes of struct fields.
+
+**Its slice ranges are unusable until that table is written** — a partial object
+would place the table's contents at the wrong addresses. Do not bank it early.
+Two signature findings from that work are already in the levers list.
 
 ### `d_a_boss_demo.cpp` is blocked on `d_en_boss.cpp` — schedule it after
 
