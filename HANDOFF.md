@@ -617,6 +617,18 @@ near-zero cost at the source level.
 - **Do not declare a constructor the original does not have.** An implicit ctor
   is fully inlined into the class-init function; declaring one emits a
   `__ct__` symbol that is simply absent from the target.
+- **Inlined parameter binding perturbs FPR colouring — field stores do not.**
+  This is a distinct lever from declaration order and it closed `checkQuakeDeath`
+  after ~120 failed builds. Writing `check[i].set(a, b)` binds two parameters
+  into an inlined call, and that binding is what moves the float registers; the
+  identical arithmetic written as `check[i].x = a; check[i].y = b;` does not.
+  Pair it with reading inputs as individual accessor calls rather than one
+  `getBounds(&a, &b, &c, &d)` — neither change works alone.
+- **Deadness, not construction form, triggers scalar replacement.** An unused
+  local aggregate gets split into scattered stack slots no matter how you build
+  it; make it genuinely live and MWCC keeps it contiguous. If the target has a
+  contiguous dead-looking aggregate, look for the use you have not modelled
+  rather than for a cleverer way to spell the construction.
 - **Bind a reference before consecutive stores through a pointer member.**
   `mVec3_c &pos = p->mPos; pos.x = …; pos.y = …;` — writing `p->mPos.x` twice
   reloads `p` between the stores.
