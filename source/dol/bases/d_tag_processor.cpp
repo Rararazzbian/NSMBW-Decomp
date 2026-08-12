@@ -534,9 +534,14 @@ int TagProcessor_c::getMenuButton(MsgRes_c *bmg, void *arg) {
 
 int TagProcessor_c::getScissor(void *arg) {
     dInfo_c *info = dInfo_c::m_instance;
-    nw4r::lyt::DrawInfo *drawInfo = info->mScissorDrawInfo;
     nw4r::lyt::Pane *pane = info->mScissorPane;
+    nw4r::lyt::DrawInfo *drawInfo = info->mScissorDrawInfo;
+    // Declared here but assigned below: it must take the register slot ahead of
+    // idx, and MWCC folds it into the index scaling mScissor[idx] already does.
+    int entryOffset;
     u16 idx = info->mScissorIndex;
+
+    entryOffset = idx * sizeof(ScissorEntry_s);
 
     mScissor[idx].mpPane = pane;
     mScissor[idx].mPaneSizeX = pane->GetSize().width;
@@ -554,8 +559,12 @@ int TagProcessor_c::getScissor(void *arg) {
         scaleY *= -1.0f;
     }
 
-    mScissor[idx].mScreenScaleX = mVideo::m_video->getWidth() / scaleX;
-    mScissor[idx].mScreenScaleY = mVideo::m_video->getHeight() / scaleY;
+    // The second block must use the byte-offset form: using mScissor[idx] in
+    // both blocks leaves entryOffset with nothing to do, and using the pointer
+    // form in both collapses the two address computations into one.
+    ScissorEntry_s *entry = (ScissorEntry_s *)((u8 *)mScissor + entryOffset);
+    entry->mScreenScaleX = mVideo::m_video->getWidth() / scaleX;
+    entry->mScreenScaleY = mVideo::m_video->getHeight() / scaleY;
 
     u16 tagChar = idx << 4;
     tagChar |= (u16)(*(u8 *)arg + 1);
