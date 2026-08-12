@@ -27,6 +27,21 @@ namespace m3d {
         float getFrameMax(long idx) const;
         float getFrameStart(long idx) const;
 
+        /// @brief Convenience overloads, mirroring the chain m3d::anmTexPat_c
+        /// already carries.
+        /// @details Reaching @ref create through an inline forwarder is what
+        /// places the caller's by-value argument temporaries in the
+        /// inline-expansion pass rather than the direct-call pass, which fixes
+        /// their stack slot numbering. daEnJimenPakkunBase_c::createMdl does not
+        /// match without them.
+        bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, mAllocator_c *allocator, long count) {
+            return create(mdl, anmClr, allocator, nullptr, count);
+        }
+
+        bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, mAllocator_c *allocator) {
+            return create(mdl, anmClr, allocator, 1);
+        }
+
         class child_c : public fanm_c {
         public:
             virtual banm_c::anmType_e getType() const { return banm_c::TYPE_ANM_MAT_CLR; };
