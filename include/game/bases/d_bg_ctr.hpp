@@ -34,6 +34,7 @@ public:
     void entry();
     void release();
     void set(dActor_c*, float, float, float, float, CallbackF *, CallbackH *, CallbackW *, u8, u8, mVec3_c *);
+    void set(dActor_c*, mVec2_c, mVec2_c, CallbackF *, CallbackH *, CallbackW *, u8, u8, mVec3_c *);
     void setOfs(float, float, float, float, mVec3_c *);
     void calc();
 
