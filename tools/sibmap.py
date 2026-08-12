@@ -14,6 +14,20 @@ Usage:
     python sibmap.py disasm      # build the disassembly cache
     python sibmap.py map         # emit the correspondence report (JSON + text)
     python sibmap.py selftest    # negative control for the comparator
+    python sibmap.py pair TGT CORPUS_TAG CORPUS_FN
+
+Target selection (all commands that need a target):
+    --lo 0x8002EF50 --hi 0x800311E0     address range, inclusive-exclusive
+    --target a.txt,b.txt                disassembly files, comma separated or
+                                        repeated; names are relative to the
+                                        disassembly cache dir
+    --dis DIR                           disassembly cache dir (else $SIBMAP_DIS)
+    --out DIR                           where sibmap.json / sibmap.txt land
+    --objs a.o,b.o                      disassemble these .o into the cache and
+                                        use them as the target files
+Equivalent environment variables: SIBMAP_LO, SIBMAP_HI, SIBMAP_TARGETS,
+SIBMAP_DIS, SIBMAP_OUT.  With none of them given the module defaults below
+apply, so old invocations keep working.
 """
 import os
 import re
@@ -29,7 +43,10 @@ SCR = os.path.dirname(os.path.abspath(__file__))
 DIS = os.environ.get('SIBMAP_DIS') or os.path.join(
     os.path.dirname(SCR) if os.path.basename(SCR) == 'dfpakkun-shared' else SCR, 'dis')
 DTK = os.path.join(ROOT, 'bin', 'dtk-windows-x86_64.exe')
+OUT = os.environ.get('SIBMAP_OUT') or SCR
 
+# Defaults kept so that a bare `python sibmap.py map` still reproduces the
+# d_a_en_dfpakkun.cpp run; override with --lo/--hi/--target or the env vars.
 TARGET_LO, TARGET_HI = 0x800281C0, 0x8002AB40
 TARGET_FILES = ['a.txt', 'sinit.txt', 'b.txt']   # produced by hand, address order
 
@@ -126,7 +143,9 @@ def parse(path):
                 cur['words'].append(w)
                 cur['texts'].append(txt)
                 cur['reloc'].append(bool(RELOC_HINT.search(txt)))
-    return [f for f in fns if not f['name'].startswith('gap_')]
+    return [f for f in fns
+            if not f['name'].startswith('gap_')
+            and not f['name'].startswith('pad_')]
 
 
 RELOC_HINT = re.compile(r'@(ha|l|sda21)\b|^bl\s+[A-Za-z_"]|^b\s+[A-Za-z_"]')
@@ -264,10 +283,31 @@ def selftest():
     """Negative control: the comparator must NOT call different things equal."""
     tgt = load_target()
     assert tgt, 'no target functions parsed'
-    a, b = tgt[0]['words'], tgt[1]['words']
-    assert sim(a, a) == 1.0, 'self-similarity broken'
-    assert sim(a, b) < 1.0, 'NEGATIVE CONTROL FAILED: two different functions equal'
-    print('negative control ok: sim(f,f)=1.0, sim(f0,f1)=%.3f' % sim(a, b))
+    # positive control: every function is 1.000 against itself
+    for f in tgt:
+        assert sim(f['words'], f['words']) == 1.0, 'self-similarity broken on ' + f['name']
+    # negative control: the largest and the smallest function must not be equal.
+    # (Do NOT use tgt[0] vs tgt[1] -- adjacent thunks are often genuinely
+    # word-identical, which makes that check fire on a true positive.)
+    big = max(tgt, key=lambda f: len(f['words']))
+    small = min(tgt, key=lambda f: len(f['words']))
+    s = sim(big['words'], small['words'])
+    assert s < 1.0, 'NEGATIVE CONTROL FAILED: two different functions equal'
+    # mutation control: flipping one word must drop the score below 1.0
+    mut = list(big['words'])
+    mut[len(mut) // 2] ^= 0x00010000
+    assert sim(big['words'], mut) < 1.0, 'MUTATION CONTROL FAILED'
+    print('positive control ok: sim(f,f)=1.000 for all %d target functions' % len(tgt))
+    print('negative control ok: sim(%s,%s)=%.3f' % (big['name'][:24], small['name'][:24], s))
+    print('mutation control ok: one flipped word -> %.4f'
+          % sim(big['words'], mut))
+    # word-identical clusters inside the target itself (reported, not asserted)
+    from collections import defaultdict as _dd
+    cl = _dd(list)
+    for f in tgt:
+        cl[tuple(f['words'])].append(f['name'])
+    dup = [v for v in cl.values() if len(v) > 1]
+    print('word-identical in-file clusters: %d' % len(dup))
     # parity between a dtk split object and our own compiled object
     sp = {f['name']: f['words'] for f in parse(os.path.join(DIS, 'corpus_dol_bases_d_a_en_dpakkun.txt'))}
     cm = {f['name']: f['words'] for f in parse(os.path.join(DIS, 'corpus_CMP_dol_bases_d_a_en_dpakkun.txt'))}
@@ -361,12 +401,12 @@ def report():
             'twins_shape': [x for x in by_shape[tuple(f['shape'])] if x != f['name']],
         })
 
-    with open(os.path.join(SCR, 'sibmap.json'), 'w') as fh:
+    with open(os.path.join(OUT, 'sibmap.json'), 'w') as fh:
         json.dump(results, fh, indent=1)
     print('wrote sibmap.json')
 
     # human-readable dump
-    with open(os.path.join(SCR, 'sibmap.txt'), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(OUT, 'sibmap.txt'), 'w', encoding='utf-8') as fh:
         for r in results:
             fh.write('\n%08X  %-70s %4d insns / %5d B\n'
                      % (r['addr'], r['name'], r['insns'], r['bytes']))
@@ -382,13 +422,90 @@ def report():
     print('wrote sibmap.txt')
 
 
-if __name__ == '__main__':
-    cmd = sys.argv[1] if len(sys.argv) > 1 else 'map'
+def apply_options(argv):
+    """Consume --lo/--hi/--target/--dis/--out/--objs; return the rest.
+
+    Options may also arrive as environment variables, and anything left unset
+    keeps the module-level default, so pre-argv invocations are unchanged.
+    """
+    global TARGET_LO, TARGET_HI, TARGET_FILES, DIS, OUT
+    rest = []
+    opts = {}
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a.startswith('--'):
+            key = a[2:]
+            if '=' in key:
+                key, val = key.split('=', 1)
+            else:
+                i += 1
+                if i >= len(argv):
+                    sys.exit('option --%s needs a value' % key)
+                val = argv[i]
+            if key not in ('lo', 'hi', 'target', 'dis', 'out', 'objs'):
+                sys.exit('unknown option --%s' % key)
+            if key in ('target', 'objs'):
+                opts.setdefault(key, []).extend(
+                    v for v in val.replace(';', ',').split(',') if v)
+            else:
+                opts[key] = val
+        else:
+            rest.append(a)
+        i += 1
+
+    env_lo, env_hi = os.environ.get('SIBMAP_LO'), os.environ.get('SIBMAP_HI')
+    env_tg = os.environ.get('SIBMAP_TARGETS')
+    if 'dis' in opts:
+        DIS = os.path.abspath(opts['dis'])
+    OUT = os.path.abspath(opts['out']) if 'out' in opts else (
+        os.environ.get('SIBMAP_OUT') or OUT)
+    lo = opts.get('lo', env_lo)
+    hi = opts.get('hi', env_hi)
+    if lo is not None:
+        TARGET_LO = int(lo, 0)
+    if hi is not None:
+        TARGET_HI = int(hi, 0)
+    if TARGET_HI <= TARGET_LO:
+        sys.exit('empty target range %08X-%08X' % (TARGET_LO, TARGET_HI))
+
+    files = opts.get('target')
+    if not files and env_tg:
+        files = [v for v in env_tg.replace(';', ',').split(',') if v]
+    if 'objs' in opts:
+        os.makedirs(DIS, exist_ok=True)
+        produced = []
+        for o in opts['objs']:
+            src = o if os.path.isabs(o) else os.path.join(ROOT, o)
+            if not os.path.exists(src):
+                sys.exit('no such object: %s' % src)
+            name = os.path.splitext(os.path.basename(src))[0] + '.txt'
+            out = os.path.join(DIS, name)
+            if not os.path.exists(out) and sh(DTK, 'elf', 'disasm', src, out) != 0:
+                sys.exit('disasm failed: %s' % src)
+            produced.append(name)
+        files = (files or []) + produced
+    if files:
+        TARGET_FILES = files
+    return rest
+
+
+def main(argv):
+    argv = apply_options(argv)
+    cmd = argv[0] if argv else 'map'
     if cmd == 'disasm':
         build_cache()
     elif cmd == 'selftest':
         selftest()
     elif cmd == 'pair':
-        pair(sys.argv[2], sys.argv[3], sys.argv[4])
-    else:
+        if len(argv) < 4:
+            sys.exit('usage: sibmap.py pair TARGET_FN CORPUS_TAG CORPUS_FN')
+        pair(argv[1], argv[2], argv[3])
+    elif cmd in ('map', 'report'):
         report()
+    else:
+        sys.exit('unknown command %r (disasm|map|selftest|pair)' % cmd)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
