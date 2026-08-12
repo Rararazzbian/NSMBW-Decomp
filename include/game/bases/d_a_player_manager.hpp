@@ -11,6 +11,7 @@ public:
     static dAcPy_c *getPlayer(int);
     static dAcPy_c *getCtrlPlayer(int);
     static daYoshi_c *getYoshi(int);
+    static void incCoin(int);
     static void addScore(int, int);
     static void setHipAttackQuake(int, u8);
     static int getNumInGame();
