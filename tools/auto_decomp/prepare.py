@@ -56,12 +56,26 @@ def find_split_objects(lo, hi, unit):
                         sym, addr_str = m.group(1), m.group(2)
                         sinit_addrs[sym] = int(addr_str, 16)
 
+    # An object's extent runs from its own address to the NEXT object's address.
+    # Selecting on "start falls inside the range" silently drops an object that
+    # begins before the range and reaches into it -- exactly the containment vs
+    # overlap bug that made tu_extent.py report nine TUs starting inside already
+    # decompiled territory. Test for overlap.
+    addressed = sorted(
+        (int(m.group(1), 16), name)
+        for name in os.listdir(OBJ)
+        for m in [re.search(r'_([0-9A-Fa-f]{8})_(?:text|sinit)', name)] if m)
+
     hits = []
+    for i, (addr, name) in enumerate(addressed):
+        end = addressed[i + 1][0] if i + 1 < len(addressed) else addr + (1 << 24)
+        if addr < hi and end > lo:          # overlap, not containment
+            hits.append((addr, name))
+
     for name in os.listdir(OBJ):
-        m = re.search(r'_([0-9A-Fa-f]{8})_(?:text|sinit)', name)
-        if m and lo <= int(m.group(1), 16) < hi:
-            hits.append((int(m.group(1), 16), name))
-        elif name.startswith('auto_sinit_') and name.endswith('_text.o'):
+        if re.search(r'_([0-9A-Fa-f]{8})_(?:text|sinit)', name):
+            continue
+        if name.startswith('auto_sinit_') and name.endswith('_text.o'):
             tag = name[len('auto_sinit_'):-len('_text.o')].lstrip('_')
             for sym, saddr in sinit_addrs.items():
                 clean_sym = sym.replace('\\', '').replace('__sinit_', '').replace('.cpp', '')

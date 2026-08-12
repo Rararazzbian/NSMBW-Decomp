@@ -259,6 +259,15 @@ SYSTEM = """You reconstruct C++ that CodeWarrior 1.1 compiles to byte-identical 
 Non-negotiable rules for this codebase:
 - Same instructions, same order, same REGISTERS. Registers differing is a failure.
 - Never invent a member offset. If unsure, say so instead of guessing.
+- USE NAMED MEMBERS. `mParentID = parent->mUniqueID;` -- never
+  `*(u32*)((u8*)this + 0x3d0) = *(u32*)parent;`. A raw offset cast will always
+  reproduce the bytes, which is exactly why it is not an answer: it matches
+  without explaining anything, and it is unreadable to the next person. Reach
+  for a cast ONLY when the field belongs to a class that has genuinely not been
+  decompiled, and then say so in a one-line comment.
+- Ship no reasoning in the source. No "likely", "seems odd", "let's assume". If
+  you are unsure, put it in prose OUTSIDE the code block. Comments in the code
+  are for load-bearing facts only.
 - Empty virtuals must be defined out of line, never in the class body.
 - A function-scope `static const int` allocates storage; use an enum instead.
 
