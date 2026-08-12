@@ -23,6 +23,9 @@ public:
 
     void startPatternRumble(const char *, int, bool);
 
+    /// @brief Gets the number of DPD light sources currently detected.
+    int getDpdNumMarks() const;
+
     int mNum;
 };
 
