@@ -1,5 +1,12 @@
 #pragma once
 #include <types.h>
+
+namespace nw4r {
+namespace lyt {
+class Pane;
+class DrawInfo;
+} // namespace lyt
+} // namespace nw4r
 #include <game/bases/d_cyuukan.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
@@ -77,13 +84,19 @@ public:
     bool mClearCyuukan; ///< Clear the checkpoint data if this is @p true. [Used for the backdoor entrance of 7-C]
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
-    u8 pad8[0x14];
+    int mTotalCollectionCoin;              ///< 0x3bc The total collection coin count. @unofficial
+    int mSaveFileNumber;                   ///< 0x3c0 The save file number. @unofficial
+    int mPlayerNum;                        ///< 0x3c4 The number of players. @unofficial
+    int mScissorIndex;                     ///< 0x3c8 The scissor stack index. @unofficial
+    int mPlayNumber;                       ///< 0x3cc The play count. @unofficial
     int mTextBoxMessageGroup;
     int mTextBoxMessageID;
     u8 pad9[0x1];
     bool mExtensionAttached;
     u8 m_3da;
-    u8 pad10[0x7];
+    u8 pad10[0x1];
+    nw4r::lyt::Pane *mScissorPane;         ///< 0x3dc The pane the scissor box applies to. @unofficial
+    nw4r::lyt::DrawInfo *mScissorDrawInfo; ///< 0x3e0 That pane's draw info. @unofficial
     int mCourseSelectPageNum;
     int mCourseSelectIndexInPage;
     u8 pad11[0x712];
