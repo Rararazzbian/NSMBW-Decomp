@@ -9,14 +9,17 @@ Working notes for continuing the decompilation work on branch
 
 **Strategy in one line:** stop pushing on Revolution SDK code (it stalls on
 register allocation with no known lever) and drain game code in `wiimj2d.dol`,
-where the recently-completed `d_wm_csvdata` work hit **no such wall at all**.
+where actor TUs hit **no such wall at all** — the last one matched 58/58 with
+every function correct on its first compile.
 
 ## What parallelises, and what does not
 
 | Stage | Parallel? | Why |
 |---|---|---|
+| Mapping the TU against solved siblings | **Yes, and do it first** | Pure reference work, no shared state. It is what makes the authoring stage cheap. |
+| Reconstructing a class layout | **No** | It is the shared prerequisite for every function in the TU. Parallel agents would invent conflicting layouts. One agent, first — but it runs *alongside* the bounds and mapping agents. |
+| Deriving section bounds | **Yes** | Symbol-map arithmetic, independent of the code. Run it while the class is being reconstructed. |
 | Authoring a function | **Yes** | Each agent writes its own `.cpp` in scratch, compiles it standalone, and diffs against the target disassembly. No shared state. |
-| Reconstructing a class layout | **No** | It is the shared prerequisite for every function in the TU. Parallel agents would invent conflicting layouts. One agent, first. |
 | Banking (slice + full build + verify) | **No** | `slices/wiimj2d.json`, `syms.txt`, `bin/` and `ninja` are all shared. One integrator, serially. |
 
 **The rule that follows:** agents *author*, the lead *integrates*. Never let two
@@ -26,19 +29,34 @@ each other's diffs.
 ### How an agent iterates without the shared build
 
 An agent does not need `configure.py`/`ninja` to check one function. Compile the
-file standalone and diff the disassembly:
+file standalone and diff the disassembly. **The seven `BTE` include paths are
+required** — without them anything including `d_audio.hpp` fails, which is most
+actor code:
 
-```bash
-compilers\Wii\1.1\mwcceppc.exe -c -proc gekko -fp hard -O4 -inline noauto \
-  -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS \
-  <scratch>\draft.cpp -o <scratch>\draft.o -DREVOLUTION -I- \
+```
+compilers\Wii\1.1\mwcceppc.exe -c -proc gekko -fp hard -O4 -inline noauto
+  -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS -DREVOLUTION -I-
+  <scratch>\draft.cpp -o <scratch>\draft.o
   -i include -i include\lib -i include\lib\MSL -i include\lib\MSL\internal
-.\bin\dtk-windows-x86_64.exe elf disasm <scratch>\draft.o <scratch>\draft.txt
-python <scratch>\fndiff.py <target.txt> <scratch>\draft.txt <FunctionName>
+  -i include\lib\revolution\BTE\include -i include\lib\revolution\BTE\stack\include
+  -i include\lib\revolution\BTE\stack\btm -i include\lib\revolution\BTE\bta\include
+  -i include\lib\revolution\BTE\bta\sys -i include\lib\revolution\BTE\gki\common
+  -i include\lib\revolution\BTE\gki\platform
+
+bin\dtk-windows-x86_64.exe elf disasm <scratch>\draft.o <scratch>\draft.txt
 ```
 
+Then diff with `tools/auto_decomp/harness.py`'s `extract` / `diff_fn` — import
+them, do not write your own, and **run a negative control first** (compare a
+function against a different one and confirm it reports differences). That
+comparator has been wrong twice; see "Verify your verification tool" below, twice.
+
+`harness.compile_draft(src, obj)` already encodes the flags above, so calling it
+directly is less error-prone than reproducing the command line.
+
 Build the argument list as a PowerShell array and splat it (`& $exe @args`);
-long inline arg lists are fragile.
+long inline arg lists are fragile on PowerShell 5.1. An earlier version of this
+section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
@@ -135,6 +153,43 @@ that declaration and none of them had to touch it.
   `d_a_en_dpakkun_base.cpp` complete at 60/64. `progress.py` is the authority;
   the local progress page corrects for this, decomp.dev will not.
 
+- **The scratchpad is not tracked, and things have been lost in it.**
+  `scratchpad/tu_extent.py`, `scratchpad/GXTev.c.best` and `diffall.py` are all
+  referenced below and none of them still exist. Anything worth keeping —
+  a generator, a best-known-formulation, a comparator — belongs under `tools/`
+  and committed, or pasted into this file.
+
+### `tools/auto_decomp/` — the unattended harness, and what it is good for
+
+Built to let a cheap model grind functions without supervision. Three parts,
+deliberately separated so a weak model cannot damage the project:
+
+- **`harness.py`** proposes, compiles, disassembles and diffs, writing only to
+  `tools/auto_decomp/work/`. The model never reports success — it emits source,
+  and the harness computes the match from real bytes — so a hallucinated "this
+  matches" is structurally ignored. A missing function is a hard failure.
+  `--auto` grinds a whole TU smallest-first and logs to `work/<unit>/decomp_log.jsonl`.
+- **`land.py`** is the only script that touches `source/`, `include/`, `slices/`
+  or `syms.txt`. It refuses a dirty tree, then runs configure, ninja and
+  `progress.py --verify-bin`; unless all five binaries are byte-identical it
+  restores every file it touched and exits non-zero. It never commits.
+- **`prepare.py`** collects a TU's split objects into a work directory.
+- `config.json` is gitignored and holds model endpoints. **It contains an API
+  key — do not print it or paste it into a report.**
+
+**The honest assessment: the cheap models cannot do this work.** A ~90-minute
+unattended run against `d_a_en_lkuribo_base.cpp` closed exactly one function, an
+empty one, and its final draft contained pseudo-C that does not compile —
+`stfs(vol, 0xf8(this))`, a float declared as a string literal. The same TU was
+then finished by six Claude agents with every function matching on its first
+compile. Do not spend budget re-testing this; spend it on the sibling-mapping
+method at the top of this file.
+
+What the harness *is* still good for: its `extract` / `diff_fn` are the shared
+comparator every authoring agent should import rather than rewriting, and
+`land.py`'s all-or-nothing gate is a sound way to land a TU without leaving a
+half-applied change behind. The `--auto` loop has never been run end to end.
+
 ## Where the work now stands
 
 **9.826%** (638,728 / 6,500,368 bytes); `wiimj2d.dol` at **19.200%**. Five
@@ -229,18 +284,30 @@ backwards must cross it. One contiguous range per section means neither can be
 skipped. High header coverage says the *types* exist, not that the run is
 reachable.
 
-**The best next move is the remaining ~29 actor TUs**, using the playbook below.
-`d_a_en_super_bigpile.cpp` was run specifically to price that pattern, and it
-matched 46/46 on the first integration.
+**The best next move is the remaining ~28 actor TUs**, using the playbook below.
+`d_a_en_super_bigpile.cpp` was run specifically to price that pattern and matched
+46/46 on the first integration; `d_a_en_lkuribo_base.cpp` then did 58/58 with
+every function matching on its first compile, so the pattern is now well priced.
+
+**Start with `d_a_en_dfpakkun.cpp`.** Its base's header is already resolved and
+validated, which is the expensive prerequisite. Note `tu_split.py` reports its
+range also contains **11 `daEnDpakkunBase_c` weak copies** — do not stretch the
+slice to cover them; read them instead as evidence that those members are inline
+in the base's header. Its base is still `nonMatching` at 60/64, which does not
+block authoring but does mean the base's four open functions should be revisited
+before assuming the header is final.
 
 ### The remaining actor TUs, with what is known about each
 
-Regenerate with `scratchpad/tu_extent.py`; cross-check with `tools/tu_split.py`.
+Cross-check with `tools/tu_split.py`. (`scratchpad/tu_extent.py`, which
+originally generated this table, was **lost** — the scratchpad is not tracked.
+`tools/tu_split.py` and `tools/find_targets.py` survive; re-derive from those, or
+from the `__sinit_<file>_cpp` symbols in `bin/dtk/wiimj2d_symbols.txt`.)
 Sizes are `.text` bytes. Annotations are hard-won — read them before assigning.
 
 | TU | Bytes | Fns | Notes |
 |---|---|---|---|
-| `d_a_en_dfpakkun` | 9,688 | 59 | **Ready** — its base's header is resolved and validated |
+| `d_a_en_dfpakkun` | 9,688 | 59 | **Next up** — base's header resolved and validated |
 | `d_a_en_jimen_pakkun_base` | 7,896 | 58 | Pakkun family; likely shares idioms with the base |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
 | `d_a_en_blockmain` | 12,392 | 90 | |
@@ -505,33 +572,98 @@ evolution\BTE\...` paths
 
 **Track D per-function false-diff note:** compiler-pool symbol names differ
 run-to-run (`...data.0` and friends). Normalise them away before diffing or you
-will chase phantom differences — `diffall.py` already does.
+will chase phantom differences. `tools/auto_decomp/harness.py`'s `extract` does
+this correctly; the older `diffall.py` it referred to is **lost with the
+scratchpad**.
 
-## Briefing template for authoring agents
+## Briefing authoring agents
 
-Every agent brief should carry, at minimum:
+**Write the shared material to files and point every agent at them, rather than
+pasting it into each brief.** On `d_a_en_lkuribo_base.cpp` that was two files —
+a `prelude.cpp` holding the verified class declaration and file-scope data, which
+each agent pasted at the top of its draft verbatim, and a `SHARED-BRIEF.md` with
+the compile loop, the levers, the data inventory and the rules. The per-agent
+brief then shrank to its own function list plus what was specific to it.
 
-1. The exact function(s) it owns and their addresses/sizes.
-2. Where the target disassembly already is (do not make them re-derive it).
-3. The standalone compile+diff loop above — and that they must **not** run
-   `ninja` or edit `slices/wiimj2d.json`.
-4. **Deliverable is source code in the reply**, not edits to the shared tree.
-5. The hard-won context: declaration order controls register assignment (GPRs
-   first-declared → highest, ending at r9; **FPR direction is not fixed — sweep
-   it**); adding one extra local can fix colouring at zero instruction cost; the
-   size-delta heuristic; bisect before theorising.
-8. **Report data objects with their sections.** The lead needs string literals,
-   floats, statics and vtables for the slice bounds — that is where integration
-   time actually goes.
-9. **Do not claim MATCHING unless the diff tool printed nothing.** Say so
-   explicitly. A well-characterised near-miss is far more useful than a false
+Two reasons this beats duplicating the text. Six copies of a fact drift, and when
+one turns out to be wrong you must correct it six times — this session shipped a
+vtable displacement table that was one slot off, and fixing the shared file plus
+one relay each was the whole remedy. And an agent that pastes a *shared* class
+declaration cannot quietly fork it, which is the failure that would poison an
+entire TU.
+
+State plainly: **do not modify the class declaration; if you believe it is
+wrong, stop and report that.** Six agents did, none had to.
+
+Each per-agent brief still needs:
+
+1. The exact functions it owns, with addresses and sizes, in target order.
+2. Where the target disassembly already is — never make them re-derive it.
+3. Its entry from the sibling correspondence map, which is usually most of the
+   answer. See "The method that works" at the top of this file.
+4. Anything already read out of the target for those functions: statement
+   orders, member offsets, sound ids, resource names.
+5. Which of its callees belong to *other* agents, and that it must call but not
+   author them.
+6. **Deliverable is source code in the reply**, not edits to the shared tree, and
+   it must **not** run `ninja` or edit `slices/wiimj2d.json`.
+7. **Report every data object with its section** — string literals, floats,
+   statics, vtables. The lead needs these for the slice bounds, and that is where
+   integration time actually goes.
+8. **Do not claim MATCHING unless the diff printed nothing**, said explicitly,
+   per function. A well-characterised near-miss is far more useful than a false
    pass, which has cost this project a full day.
-6. Environment gotchas: dtk relative paths with forward slashes fail on Windows;
+9. Environment gotchas: dtk relative paths with forward slashes fail on Windows;
    PowerShell 5.1 parses 8-hex-digit literals as negative Int32, so do address
    maths in Python; splat native-exe arguments.
-7. **No background processes.** Everything foreground, confirm exits, check for
-   strays before finishing. (One agent leaked a script that span at 100% CPU for
-   21 minutes.)
+10. **No background processes.** Everything foreground, confirm exits, check for
+    strays before finishing. (One agent leaked a script that span at 100% CPU for
+    21 minutes.)
+
+Tell them where the shared comparator is (`harness.py`'s `extract` / `diff_fn`)
+so they do not each write one — but tell them to run a **negative control**
+before trusting it, because it has been wrong twice now.
+
+### Splitting a TU between agents
+
+Group by *cohesion*, not by size: lifecycle, collision, callbacks, one group per
+family of states. Related functions share idioms, data and often whole bodies, so
+a group that owns all three of a near-identical trio solves it once. On lkuribo
+one group's twelve functions collapsed into effectively three distinct bodies.
+
+Watch for groups that are the dependency of others — the one owning the shared
+helpers should be told so, and told to report a signature change immediately
+rather than at the end.
+
+**Interleave, do not concatenate, when assembling.** Source order controls
+emission order for the literal pools, and one-line stubs belonging to one group
+routinely sit in the middle of another group's run. Write the canonical order out
+from the symbol map before the reports start arriving.
+
+## Monitoring agents — what actually works
+
+Most obvious signals are useless. Verified across two sessions:
+
+- Agent transcript files under `tasks/` are **always 0 bytes**, including for
+  agents that completed successfully. Not a liveness signal.
+- The short-random-name `.output` files in `tasks/` are the **lead's own** shell
+  invocations, not agent activity.
+- Process listings only catch the instant a command runs; `Read`/`Grep` spawn
+  nothing at all.
+
+The only real signal is **writes to the repo or scratchpad**. And note that a
+healthy agent on a task like this ran **35 minutes with 97 tool calls** and was
+silent for the first several minutes while reading reference material. Do not
+set an impatient kill threshold — a working agent was nearly killed at 12
+minutes on exactly that mistake. Agents on the hardest functions here ran 30–45
+minutes and 60–115 tool calls, and all of them succeeded. The lkuribo batch ran
+7–24 minutes per authoring agent, and the one that solved the flush rule ran 24
+minutes across 77 tool calls.
+
+**Use the wait productively.** While agents author, the lead can verify the
+baseline build, derive the slice entry from the neighbouring banked slices, and
+write out the canonical source order. All of that is independent of the code and
+it is most of the integration work.
 
 ## Monitoring agents — what actually works
 
@@ -551,7 +683,13 @@ set an impatient kill threshold — a working agent was nearly killed at 12
 minutes on exactly that mistake. Agents on the hardest functions here ran 30–45
 minutes and 60–115 tool calls, and all of them succeeded.
 
-## Verify your verification tool
+## Verify your verification tool — the comparator has lied twice
+
+Both incidents are recorded because the pattern matters more than either bug: a
+diff tool that is wrong does not merely waste time, it manufactures false
+confidence. **Run a deliberate negative control before trusting any comparator**,
+including the current one. The second incident is under "Verify your verification
+tool — again" further down; this is the first.
 
 `fndiff.py` silently reported **`IDENTICAL` when it could not find the function
 at all**. Template-mangled names (anything with `PrintContext<w>`) appear
@@ -568,14 +706,34 @@ deliberate negative control before trusting its own results — do that.
 ## Relay findings between running agents
 
 Several results only emerged because one agent's finding reached another
-mid-flight (`SendMessage`). Worth relaying immediately:
+mid-flight (`SendMessage`). It is cheap and it has paid every time. Worth
+relaying immediately:
 
-- A matched caller pins down its callees' exact signatures — `SetRouteInfo`
-  handed five signatures to two agents still guessing.
-- A statement-ordering trick found in one function often applies verbatim to a
-  sibling another agent owns.
-- Corrections to rules *you* gave them. Both the FPR direction and a `.sdata`
-  vs `.sbss` slip were caught by agents and had to be pushed back out.
+- **A bug in the shared tooling.** The pool-normaliser bug reached three agents
+  before they wasted time on phantom diffs; two had already hit it and worked
+  around it independently.
+- **Corrections to rules *you* gave them.** The FPR direction, a `.sdata` vs
+  `.sbss` slip, a vtable displacement table that was one slot off, and a wrong
+  claim about which state called a shared helper — all originated with the lead
+  and had to be pushed back out.
+- **A matched caller pins down its callees' exact signatures.** `SetRouteInfo`
+  handed five signatures to two agents still guessing; on lkuribo, a matched
+  `create()` confirmed a pointer-to-member signature for the agent still writing
+  the callee.
+- **A statement-ordering trick** found in one function often applies verbatim to
+  a sibling another agent owns.
+- **Corrections to the correspondence map.** Its structural claims held
+  throughout, but three statement-level details were wrong, and each correction
+  transferred: one told an agent to hoist a call into its own statement when the
+  target needed the opposite — both calls inlined into the argument list, letting
+  right-to-left argument evaluation do the ordering.
+- **Which pool literals are already accounted for.** As groups finish, the
+  unclaimed `.sdata2` slots narrow, and telling the remaining agents which are
+  uniquely theirs turns the pool into a positive check on their hardest function.
+
+Relay results *between* groups too, not just corrections: "group 6 matched using
+slot 0x2E8, so the corrected table is confirmed by bytes rather than inference"
+is worth more than repeating the table.
 
 ## Check `syms.txt` before inferring a name
 
@@ -589,10 +747,15 @@ first; mark genuinely inferred names `@unofficial`.
 
 - **Progress: 9.826%** (638,728 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- Development moved to **native Windows**; see "Local setup" below.
-- Three TUs completed and banked whole this session (22,688 bytes):
-  `d_wm_csvdata.cpp` (41 fns), `d_a_en_super_bigpile.cpp` (46 fns),
-  `d_tag_processor.cpp` (39 fns).
+- Development happens on **native Windows**; see "Local setup" below.
+- Last TU banked: `d_a_en_lkuribo_base.cpp` (58 fns, 9,456 bytes), whole and
+  byte-exact. Before that: `d_a_en_kuribo_base.cpp` (66), `d_a_en_door.cpp` (50),
+  `d_a_fireball_base.cpp` (51), `d_a_en_net_nokonoko_base.cpp` (37),
+  `d_a_enemy_ice.cpp` (37), `d_a_rot_objs_base.cpp` (31),
+  `d_a_spin_child_base.cpp` (23), `d_a_sink_dokan.cpp` (14), `d_a_cursor.cpp` (9),
+  `d_a_rot_block.cpp` (5), and earlier `d_wm_csvdata.cpp` (41),
+  `d_a_en_super_bigpile.cpp` (46), `d_tag_processor.cpp` (39).
+- `d_a_en_dpakkun_base.cpp` is banked `nonMatching` at 60/64.
 
 Per-binary:
 
@@ -1152,7 +1315,8 @@ will need one added.
 **Now instruction-for-instruction identical to the target** — 24/24 and 25/25
 instructions, same opcodes in the same order. All that remains is a three-way
 rotation of the volatile temps. Full working source is in
-`scratchpad/GXTev.c.best`; the shape is:
+`scratchpad/GXTev.c.best` — **which is lost with the scratchpad**, so the shape
+below is now the only surviving record of it:
 
 ```c
 void GXSetTevColor(GXTevRegID id, GXColor color) {
@@ -1530,6 +1694,16 @@ error later:
   No `default:`, no final `else`.
 - `RuBySet` sets the ruby scale **transposed** — `mScale.x` from `mScale.y` and
   `mScale.y` from `mScale.x`.
+
+- `d_a_en_lkuribo_base.cpp`'s `.data` holds a **fourth** pointer-to-member
+  constant `{0, -1, &nonBoyoProc}` at 0x80305104 that nothing references — all
+  three `setBoyoFunc` call sites are accounted for by the other three. The
+  original had a statement after `fireBoyoProc` that materialises the constant
+  without emitting code. Reproduced with a dead local, **commented in place as a
+  reconstruction rather than passed off as the original text**; it can sit in any
+  function between `fireBoyoProc` and the vtable. This is the same phenomenon as
+  the dead-literal rule in the `.sdata2` pooling section: a pooled object you
+  cannot account for means there was code there you cannot see.
 
 Source idioms that are load-bearing and look like mistakes — all commented in
 place, do not tidy:
