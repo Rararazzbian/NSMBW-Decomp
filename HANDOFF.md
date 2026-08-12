@@ -107,9 +107,33 @@ backwards must cross it. One contiguous range per section means neither can be
 skipped. High header coverage says the *types* exist, not that the run is
 reachable.
 
-**The best next move is the ~40 remaining enemy actor TUs**, using the playbook
-below. `d_a_en_super_bigpile.cpp` was run specifically to price that pattern, and
-it matched 46/46 on the first integration.
+**The best next move is the remaining ~29 actor TUs**, using the playbook below.
+`d_a_en_super_bigpile.cpp` was run specifically to price that pattern, and it
+matched 46/46 on the first integration.
+
+### Prefer base classes — they unblock families
+
+Ranking by size alone is wrong. A *base* actor TU is worth more than its byte
+count because derived TUs cannot be attempted honestly until it exists, and any
+placeholder header written from a derived class's usage carries guesses that
+will mislead later work. The pakkun family is the clearest case:
+`d_a_en_dpakkun_base.cpp` (~8.2 KB) gates `d_a_en_dfpakkun.cpp` (~9.7 KB), and
+its placeholder header still has an unidentified 68-byte member region.
+
+Second preference is a TU whose *shape* is already solved elsewhere — e.g.
+`d_a_rot_objs_base.cpp`, whose `searchParent_*` functions were reported as
+sharing an existing implementation verbatim.
+
+### `tu_extent.py` had a boundary bug — check the ranges it gave you
+
+Its "banked slice tightens the start" test was containment
+(`prev_end <= lo < addr`) when it should have been **overlap** (`lo < addr and
+hi > prev_end`). A banked slice that *straddled* `prev_end` was silently
+ignored, so nine TUs were reported starting inside already-decompiled
+territory — `d_a_en_dpakkun_base` by 1,000 bytes, `d_a_fireball_base` by 992,
+`d_a_rot_objs_base` by 932. Fixed, but the lesson generalises: **a heuristic
+range is a starting hypothesis, and every agent must re-derive its own bounds
+from the symbol map and `slices/wiimj2d.json` before writing code.**
 
 ## The actor-TU playbook
 
@@ -164,6 +188,20 @@ rodata float table, SE id, effect name.
 8. Compile flags need the seven extra `-i include\lib
 evolution\BTE\...` paths
    from `build.ninja`, or anything including `d_audio.hpp` fails.
+9. **`.text` is always 16-aligned**, so a run of zero bytes at the start of what
+   looks like your TU belongs to the *previous* one. Do not include it.
+10. **Argument string literals are emitted right-to-left.** If a call takes two
+    literals, the second one appears first in `.rodata`.
+11. When a TU defines a profile, **delete its `g_profile_<NAME>` line from
+    `syms.txt`** or the link fails on a duplicate.
+12. **CFront mangling does not mark static members.** If `r3` holds a real
+    argument rather than `this`, the function is `static`.
+13. **Base actor classes can have pure virtuals.** Do not assume every vtable
+    slot needs a body in the base TU.
+
+**Track D per-function false-diff note:** compiler-pool symbol names differ
+run-to-run (`...data.0` and friends). Normalise them away before diffing or you
+will chase phantom differences — `diffall.py` already does.
 
 ## Briefing template for authoring agents
 
@@ -445,19 +483,35 @@ That is why every `ScissorEntry_s *entry` attempt failed: a **pointer** local is
 
 Try all of this before concluding a function has hit the register-allocation wall.
 
-### `.sdata2` ordering within a TU — three buckets
+### `.sdata2` ordering within a TU — creation order, not three buckets
 
-Established on `d_tag_processor.cpp`; it took that file from 6,872 differing
-bytes to 10. MWCC emits a TU's `.sdata2` in this order:
+**An earlier version of this section claimed named objects always come first,
+then anonymous literals. That is wrong — do not act on it.** There is one
+ordering, not three buckets:
 
-1. **File-scope named objects**, in *definition* order.
-2. **Anonymous folded literals**, in *first-use* order (i.e. following function
-   order in the file).
-3. **Function-local `static`s — last**, after everything else.
+1. **Creation order.** Named file-scope objects and anonymous folded literals
+   share a single sequence, ordered by *where in the TU the object is first
+   created* — a definition for a named object, a first use for a literal. They
+   interleave freely.
+2. **Function-local `static`s — last**, after everything else.
 
-Bucket 3 is the surprise. A `static const u16 cTagCode[4]` declared *inside*
-`MsgIDSet`, a function in the middle of the file, landed at the **end** of the
-TU's `.sdata2`. Lifting the same array to file scope put it first, matching the
+The refutation is `d_a_player_base.cpp`, visible in the symbol map without
+compiling anything: twelve named `sc_*` constants, then ~46 anonymous literals,
+then five more named `scDokan*` constants. Under "named first" that layout is
+impossible. It is exactly what creation order predicts, because the `scDokan*`
+definitions sit further down the file, next to the dokan functions that use
+them. `d_actor.cpp` agrees (four named statics, then `l_Ami_Line`/`l_Ami_Zpos`,
+then anonymous).
+
+To check this for yourself on any decompiled TU, list the `.sdata2` symbols
+inside its slice range in address order and mark which are named — the shape
+falls straight out. Beware `lbl_########` names: those are dtk placeholders for
+objects it could *not* name, so they count as anonymous, not named.
+
+Rule 2 came from `d_tag_processor.cpp` and still holds: a
+`static const u16 cTagCode[4]` declared *inside* `MsgIDSet`, a function in the
+middle of the file, landed at the **end** of the TU's `.sdata2`. Lifting the
+same array to file scope moved it up to its definition position, matching the
 original.
 
 **If a TU's `.sdata2` content is right but in the wrong order, move the
