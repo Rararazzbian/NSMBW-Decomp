@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import urllib.request
@@ -78,14 +79,57 @@ def norm_name(n):
     return ADDR_SUFFIX.sub('', n.strip().strip('"'))
 
 
-def list_functions(path):
-    out = []
+SIZE_HINT = re.compile(r'size:\s*(0x[0-9A-Fa-f]+|\d+)')
+
+
+def list_functions(path, with_size=False):
+    """Function names in target order; optionally with their byte size.
+
+    dtk precedes each .fn with a comment carrying the size, e.g.
+        # .text:0x0 | 0x800331E0 | size: 0xC
+    """
+    out, pending = [], None
     with open(path, encoding='utf-8', errors='replace') as fh:
         for line in fh:
-            m = FN_START.match(line.strip())
+            s = line.strip()
+            if s.startswith('#'):
+                m = SIZE_HINT.search(s)
+                if m:
+                    pending = int(m.group(1), 16 if m.group(1).startswith('0x') else 10)
+                continue
+            m = FN_START.match(s)
             if m and not m.group(1).startswith('gap_'):
-                out.append(norm_name(m.group(1)))
+                out.append((norm_name(m.group(1)), pending or 0) if with_size
+                           else norm_name(m.group(1)))
+                pending = None
     return out
+
+
+CLASS_TAG = re.compile(r'__(\d+)([A-Za-z_0-9]+)')
+
+
+def owning_class(names):
+    """The class most of these functions belong to.
+
+    prepare.py collects whole split objects, and those are not TU-aligned, so a
+    target usually carries a few functions from a neighbour. Those can never
+    match from this draft, and grinding them would burn the whole budget on
+    something structurally impossible.
+    """
+    counts = {}
+    for n in names:
+        m = CLASS_TAG.search(n)
+        if m:
+            cls = m.group(2)[:int(m.group(1))]
+            counts[cls] = counts.get(cls, 0) + 1
+    return max(counts, key=counts.get) if counts else None
+
+
+def in_scope(name, cls):
+    if not cls:
+        return True
+    m = CLASS_TAG.search(name)
+    return cls in name if not m else m.group(2)[:int(m.group(1))] == cls or cls in name
 
 
 def extract(path, name):
@@ -443,6 +487,102 @@ def run(cfg, unit, fn, target_txt, workdir, budget, model_mode='auto'):
     return False
 
 
+def log_event(workdir, **fields):
+    """Append one line to the audit trail. Every function the harness closes,
+    every one it gives up on, and every landing attempt is recorded here."""
+    path = os.path.join(workdir, 'decomp_log.jsonl')
+    fields.setdefault('at', __import__('datetime').datetime.now().isoformat(timespec='seconds'))
+    with open(path, 'a', encoding='utf-8') as fh:
+        fh.write(json.dumps(fields) + '\n')
+    return path
+
+
+def auto_mode(cfg, unit, target_txt, workdir, budget, model_mode, land_with=None):
+    """Grind a whole TU smallest-function-first, then try to land it.
+
+    Smallest first is deliberate: the little ones are boilerplate and accessors,
+    they close fast, and each one that lands makes the file more correct for the
+    harder ones that follow. It also front-loads the evidence about whether this
+    model can do the job at all, before spending a long budget finding out.
+    """
+    src_path = os.path.join(workdir, 'draft.cpp')
+    if not os.path.exists(src_path):
+        sys.exit('no draft at %s -- seed it first' % src_path)
+    obj, txt = os.path.join(workdir, 'draft.o'), os.path.join(workdir, 'draft.txt')
+
+    sized = list_functions(target_txt, with_size=True)
+    cls = owning_class([n for n, _ in sized])
+    scoped = [(n, s) for n, s in sized if in_scope(n, cls)]
+    skipped = [n for n, _ in sized if not in_scope(n, cls)]
+    if skipped:
+        print('Ignoring %d function(s) from other TUs in this split object:' % len(skipped))
+        for n in skipped[:6]:
+            print('   - %s' % n)
+        log_event(workdir, event='out_of_scope', unit=unit, functions=skipped)
+
+    print('\nTarget class: %s   %d functions in scope' % (cls, len(scoped)))
+    log_event(workdir, event='auto_start', unit=unit, owning_class=cls,
+              in_scope=len(scoped), model=model_mode, budget=budget)
+
+    closed, failed = [], []
+    order = sorted(scoped, key=lambda p: (p[1], p[0]))  # smallest first
+    for idx, (fn, size) in enumerate(order, 1):
+        already = False
+        if compile_draft(src_path, obj)[0] and disasm(obj, txt)[0]:
+            already, _ = diff_fn(target_txt, txt, fn)
+        if already:
+            print('[%d/%d] already matching (%d B) %s' % (idx, len(order), size, fn))
+            closed.append(fn)
+            continue
+        print('\n[%d/%d] %s  (%d bytes)' % (idx, len(order), fn, size))
+        before = open(src_path, encoding='utf-8').read()
+        ok = run(cfg, unit, fn, target_txt, workdir, budget, model_mode=model_mode)
+        if ok:
+            closed.append(fn)
+            # run() writes MATCHED.cpp; promote it so the next function builds on it
+            matched = os.path.join(workdir, 'MATCHED.cpp')
+            if os.path.exists(matched):
+                shutil.copyfile(matched, src_path)
+            log_event(workdir, event='closed', unit=unit, function=fn, size=size)
+        else:
+            failed.append(fn)
+            open(src_path, 'w', encoding='utf-8').write(before)  # never keep a failed draft
+            log_event(workdir, event='gave_up', unit=unit, function=fn, size=size)
+
+    print('\n%s\n %d closed, %d not closed, of %d in scope' %
+          ('=' * 78, len(closed), len(failed), len(scoped)))
+    log_event(workdir, event='auto_done', unit=unit,
+              closed=len(closed), failed=len(failed), total=len(scoped))
+
+    if failed:
+        print('\nNot landing: a TU only counts when EVERY function matches.')
+        print('Unclosed: %s' % ', '.join(failed[:8]))
+        return False
+
+    print('\nAll functions match. Attempting to land behind the build gate...')
+    return attempt_land(unit, workdir, land_with)
+
+
+def attempt_land(unit, workdir, land_with):
+    """Hand the finished draft to land.py, which is the only thing that writes
+    to the project -- and only if the full build plus a five-binary hash check
+    passes. Anything less and it restores every file it touched."""
+    if not land_with:
+        print('No --land-with slice ranges given, so stopping here.')
+        print('Draft is at %s/draft.cpp' % workdir)
+        log_event(workdir, event='land_skipped', unit=unit, reason='no slice ranges')
+        return False
+    cmd = [sys.executable, os.path.join(HERE, 'land.py'), '--unit', unit,
+           '--cpp', os.path.join(workdir, 'draft.cpp'), '--slice', land_with]
+    print('  $ ' + ' '.join(cmd[1:]))
+    p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+    out = (p.stdout or '') + (p.stderr or '')
+    print(out.strip()[-1200:])
+    log_event(workdir, event='land_result', unit=unit, accepted=(p.returncode == 0),
+              output=out.strip()[-600:])
+    return p.returncode == 0
+
+
 def test_endpoint(cfg, model_key):
     """Test connectivity to a specific model endpoint in config.json."""
     if model_key not in cfg:
@@ -506,6 +646,12 @@ def main():
     ap.add_argument('--list-models', action='store_true',
                     help='show the models in config.json and the escalation order')
     ap.add_argument('--all', action='store_true', help='run all unfinished functions in target')
+    ap.add_argument('--auto', action='store_true',
+                    help='grind the whole TU smallest-function-first, log every '
+                         'result, and try to land it once every function matches')
+    ap.add_argument('--land-with', metavar='JSON',
+                    help='slice memoryRanges, e.g. \'{".text": "0x1000-0x2000"}\'. '
+                         'Required for --auto to land; without it, it stops at the draft.')
     ap.add_argument('--status', action='store_true', help='check match status of all functions in draft')
     ap.add_argument('--target', help='target disassembly txt (default: work/<unit>/target.txt)')
     ap.add_argument('--list', action='store_true', help='list functions in the target and exit')
@@ -565,6 +711,14 @@ def main():
             sys.exit('no target disassembly at %s' % target)
         check_status(target, workdir)
         return
+
+    if args.auto:
+        if not os.path.exists(target):
+            sys.exit('no target disassembly at %s' % target)
+        ok = auto_mode(cfg, args.unit, target, workdir, args.budget,
+                       args.model, args.land_with)
+        print('\nAudit trail: %s' % os.path.join(workdir, 'decomp_log.jsonl'))
+        sys.exit(0 if ok else 1)
 
     if args.all:
         if not os.path.exists(target):
