@@ -55,7 +55,7 @@ public:
 
     virtual void setDeathInfo_Quake(int);
     virtual void setDeathInfo_IceBreak();
-    virtual bool isQuakeDamage();
+    virtual BOOL isQuakeDamage();
     virtual void setIceAnm();
     virtual void YoshiFumiJumpSet(dActor_c *actor);
     virtual void YoshiFumiScoreSet(dActor_c *actor);

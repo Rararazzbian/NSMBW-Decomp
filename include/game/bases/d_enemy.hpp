@@ -155,7 +155,7 @@ public:
     void setDeathInfo_YoshiFumi(dActor_c *killedBy);
     void setDeathInfo_SpinFumi(dActor_c *killedBy, int);
 
-    virtual bool isQuakeDamage();
+    virtual BOOL isQuakeDamage() { return mBc.mFlags & (dBc_c::FLAG_13 | dBc_c::FLAG_14 | dBc_c::FLAG_15 | dBc_c::FLAG_16 | dBc_c::FLAG_17 | dBc_c::FLAG_18 | dBc_c::FLAG_19 | dBc_c::FLAG_20); }
     virtual void hitYoshiEat(dCc_c *self, dCc_c *other);
 
     virtual void setDeathSound_HipAttk();
@@ -190,16 +190,16 @@ public:
 
     void boyonInit();
     virtual void boyonBegin();
-    virtual void calcBoyonScale();
+    virtual void calcBoyonScale() { mBoyoMng.execute(); }
 
     virtual bool createIceActor();
     virtual void setIceAnm();
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();
 
-    virtual void beginFunsui();
-    virtual void endFunsui();
-    virtual BOOL isFunsui() const;
+    virtual void beginFunsui() {}
+    virtual void endFunsui() {}
+    virtual BOOL isFunsui() const { return FALSE; }
 
     virtual bool checkComboClap(int max);
 
