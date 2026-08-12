@@ -147,6 +147,24 @@ entry. Run a negative control (swap two entries; the comparator must report
 exactly 2 diffs) so the pass is not vacuous. Six agents then authored against
 that declaration and none of them had to touch it.
 
+**A vtable proof does not prove the data members**, and a constructor's own
+store pattern is not sufficient evidence for a layout. `dPyMdlBase_HIO_c` was
+reconstructed from its constructor, matched byte-for-byte locally, summed to the
+class's independently known `sizeof`, and was **still wrong**: the constructor's
+stores were consistent with `float m_08[8]` starting at 0x4, but the real layout
+is a separate `float` at 0x4 and `m_08[7]` starting at 0x8. Both models produce
+identical constructor bytes and identical totals.
+
+What caught it was an **external consumer**: `daPlBase_c::setLandSmokeEffectLight`
+in the already-banked, already-matching `d_a_player_base.cpp` indexes
+`m_hio.m_08[]` from a fixed address **+8**, not +4. That file could not be
+wrong, so the header was.
+
+**So: for any member another file touches, grep the repo for its uses and
+confirm your layout agrees with already-matching code.** Local self-consistency
+is not proof. It also means the real test of a layout is the full link, not the
+per-function diff — this one only surfaced when the TU was actually linked.
+
 ### Infrastructure state (as of the 2026-08-12 session)
 
 - `tools/progress_page/make_progress_page.py` renders a local treemap from the
@@ -373,7 +391,7 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | TU | Bytes | Fns | Notes |
 |---|---|---|---|
 | `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, landed and linked |
-| `d_a_en_jimen_pakkun_base` | 7,896 | 58 | **Best fresh target.** Pakkun family — the anim-setter and state idioms in `d_a_en_dfpakkun.cpp` should transfer nearly wholesale |
+| `d_a_en_jimen_pakkun_base` | 8,848 | 67 | **IN PROGRESS.** Bounds exact (both neighbours banked), no hidden TU. Third pakkun — family idioms should transfer wholesale |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
 | `d_a_en_blockmain` | 12,392 | 90 | |
 | `d_a_player_manager` | 10,764 | 68 | |
@@ -386,7 +404,7 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | `d_a_wm_player_static` | 3,268 | 24 | |
 | `d_a_boss_demo` | 2,772 | 49 | **BLOCKED** — see below |
 | `d_a_wm_Map_static` | 2,308 | 17 | **17/18 done**, blocked on a 0x9C8 table — see below |
-| `d_a_player_hio_ADJ` | 2,172 | 20 | Five HIO classes; check whether it is one TU |
+| `d_a_player_hio_ADJ` | 2,032 | 15 | **DONE 12/15**, banked `nonMatching` — it is one TU |
 | `d_a_en_hatena_balloon` | 18,376 | 76 | |
 | `d_a_farBG` | 18,808 | 53 | |
 | `d_a_ice` | 31,880 | 147 | |
@@ -513,6 +531,40 @@ went wrong here. The slot at `0x4c` belonged to the undecompiled
 Entries are in link order, so a TU's index follows its slice position. Sanity
 check by confirming the neighbouring words point at the `__sinit` addresses of
 the neighbouring TUs.
+
+### A constant shift in SDA-relative operands means an `.sbss` size error
+
+Third distinct whole-binary signature, and the cheapest to misdiagnose because
+**every section size matches and the `.ctors` table is byte-identical**. Symptom:
+the DOL fails, section sizes all agree, and a byte diff yields many single-byte
+differences scattered across `.text`, each one the low byte of a `d13`/`r13`
+operand, all off by the **same constant**:
+
+```
+ours 3bedb740   orig 3bedb738     addi r31, r13, ...   <-- +8
+ours 386db728   orig 386db720     addi r3,  r13, ...   <-- +8
+```
+
+Every affected instruction is SDA-relative (`ra == 13`). That is not a content
+error — it is your `.sbss` claim being the wrong *size*, which shifts every
+downstream `.sbss`-relative reference project-wide.
+
+**The rule: every `.sbss` claim in this project is a multiple of 8.** A 4-byte
+claim links cleanly, passes `--verify-obj`, and produces exactly the failure
+above. Check with:
+
+```python
+for sl in slices:
+    r = sl['memoryRanges'].get('.sbss')
+    if r:
+        lo, hi = (int(x, 16) for x in r.split('-'))
+        assert (hi - lo) % 8 == 0, sl['source']
+```
+
+Bisect it by removing the `.sbss` claim entirely and rebuilding: if the shift
+moves or changes character, `.sbss` is where to look. Note that a *symbol* in
+`.sbss` may genuinely be 4 bytes (`ms_num_of_instance` is `size:0x4`) — it is
+the **slice claim**, not the symbol, that must round up to 8.
 
 ### The target list is incomplete: TUs with no `__sinit` are invisible
 
@@ -821,7 +873,12 @@ first; mark genuinely inferred names `@unofficial`.
   `d_a_rot_block.cpp` (5), and earlier `d_wm_csvdata.cpp` (41),
   `d_a_en_super_bigpile.cpp` (46), `d_tag_processor.cpp` (39).
 - `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) are landed
-  and linked. No TU is currently banked `nonMatching`.
+  and linked.
+- `d_a_player_hio_ADJ.cpp` is banked `nonMatching` at **12/15**. The three open
+  functions are documented in `@note` comments in the file itself, with what was
+  already tried. The most promising is `resetParam__14dPyModel_HIO_cFi`, whose
+  residual is an `-ipa file` address-sharing optimisation that likely needs the
+  TU's `.rodata` tables actually **defined** rather than declared `extern`.
 
 Per-binary:
 
