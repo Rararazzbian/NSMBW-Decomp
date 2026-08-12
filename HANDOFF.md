@@ -42,15 +42,23 @@ long inline arg lists are fragile.
 
 ## Concrete next tracks
 
-Track A is the priority — it is unblocked, sized, and 4x what is needed to
-cross 8.5%.
+**Track A is DONE** — `d_wm_csvdata.cpp` landed complete at 8.624%. Tracks B and
+C below are unstarted and remain the next work.
 
-- **Track A — `d_wm_csvdata.cpp`, `ReadCsvData` → `ReadAction`** (~7.4 KB, 12
-  functions, from `0x800F3AE0`). The `dCsvData_c` layout is already reconstructed
-  and verified, so this is pure per-function work. The `d_res_mng.hpp` blocker is
-  **already fixed** (3-arg `getRes`/`getResSilently` wrappers added).
-  **All 12 must be banked in one pass** — see the `.data` contiguity rule.
-  Suggested shape: 3–4 agents, ~3 functions each, then one integration commit.
+**Before splitting any TU across agents, check its section bounds first.** Track
+A's authoring was fast (28 functions, six agents, ~15 min wall-clock, all
+matching); the cost was entirely in the slice's `memoryRanges`. Establish the
+full set of sections the TU needs — including `.ctors`, `.bss`, `.sbss`, which
+are easy to omit — before fanning out.
+
+**Do not trust `tools/find_targets.py` ranking blindly.** Its two top-ranked runs
+(`0x801C8570`, 2,464 B, 100% header coverage; `0x801C91E0`, 2,904 B, 95%) are both
+**gated by the two known register-wall functions**: `GXSetTevColor` sits at the
+head of `GXTev.c`'s queue, and `GXGetViewportv` sits immediately before
+`GXTransform.c`'s banked start, so extending backwards must cross it. A slice
+gets one contiguous range per section, so neither can be skipped. High header
+coverage says the *types* exist, not that the run is reachable.
+
 - **Track B — `d_tag_processor.cpp`** (7,380 B, 36 fn, from `0x800E5510`).
   Independent TU, so fully parallel with Track A. The `.cpp` and header already
   exist with 0x30 done; extend the slice backwards. Needs its own layout pass
@@ -60,7 +68,8 @@ cross 8.5%.
   enemy TUs follow it, and every base class it needs is already decompiled with
   zero padding. Run this once, sequentially, to build the playbook.
 
-Do **not** start Tracks B and C until Track A's integration has landed, unless
+Track A has landed, so B and C are both open. Still run their integrations one
+at a time, unless
 you are willing to run several integration passes — each one is a full build plus
 `--verify-bin`, and they must be serialised anyway.
 
@@ -104,15 +113,16 @@ minutes on exactly that mistake.
 
 ## Current state
 
-- **Progress: 8.453%** (549,496 / 6,500,368 code bytes)
+- **Progress: 8.624%** (560,616 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
 - Development moved to **native Windows**; see "Local setup" below.
+- `d_wm_csvdata.cpp` is complete and banked (all 41 functions).
 
 Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 16.20% |
+| `wiimj2d.dol` | 16.64% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.06% |
 | `d_basesNP.rel` | 1.02% |
@@ -484,28 +494,80 @@ Useful technique found: **`__sinit_<file>_cpp` symbols recover the original TU
 filenames** — 180 in the DOL, 129 of them in fully-undone TUs. Filenames are not
 guesswork.
 
-#### `d_wm_csvdata.cpp` — 8 more functions authored but NOT bankable yet
+#### `d_wm_csvdata.cpp` — DONE, all 41 functions banked
 
-**All twelve functions in this TU now compile to the target instructions**, but
-only the first four are banked. The other eight live on branch
-**`wip/d_wm_csvdata-full`** (parked `nonMatching`). Do not merge that branch as-is:
-`nonMatching` un-banks the four that already verify, a net loss of 1,392 bytes.
+Landed in full: 8.475% → **8.624%** (+9,728 bytes), all five binaries verifying.
+The 28 remaining functions were authored by six parallel agents and **every one
+matched**. This TU is closed; the notes below are kept for what they teach.
 
-**Why it is blocked — the TU's `.data` starts at `0x8031C000`, not `0x8031C024`.**
-The first object in it is `sc_ForceList__6dWmLib` (0x24 B), emitted by
-`include/game/bases/d_wm_lib.hpp`, which the original TU includes. Evidence: dtk's
-string ids `@54232`/`@54233`/`@54478` and `__arraydtor$54234` form one contiguous
-numbering block, i.e. one TU. Adding `#include <game/bases/d_wm_lib.hpp>` puts
-`l_actionName` at `0x8031C0E8` and `__vt__` at `0x8031C138` — exactly right,
-confirmed by compiling.
+The blocker recorded earlier was real but narrower than it looked.
+`d_wm_lib.hpp` *is* required — it supplies `sc_ForceList__6dWmLib` at
+`0x8031C000`, where the TU's `.data` starts — and the `__sinit` it drags in lands
+correctly at `0x800F6050`, immediately after `isLineEnd`. It only looked fatal
+while the TU was being banked in pieces. **Whole-TU-or-nothing was the right
+diagnosis; "the include is poison" was not.**
 
-But that include also emits `__sinit_\d_wm_csvdata_cpp`, which MWCC places at the
-**end of the TU's `.text`** (`0x800F6050`) — past any partial bank. So the leading
-`sc_ForceList` can only be claimed once the **whole TU** is done: roughly 28 more
-functions, `0x800F5240`–`0x800F60E0`, ending at `isLineEnd` (`0x800F6020`).
+##### The real cost was section bounds, not code
 
-**Next step is therefore the rest of the TU, not a smaller slice.** The eight
-authored functions are already correct and waiting on the branch.
+All 42 functions compiled to the right instructions on the first full build. The
+next two hours went entirely into the slice's `memoryRanges`, which were missing
+`.ctors`, `.bss` and `.sbss` **entirely**, and whose `.sdata` stopped 8 bytes
+short of `ReadRouteFlag`'s `"A"`/`"B"`/`"C"` literals.
+
+**Every wrong bound shifts every `r2`/`r13`-relative offset after it**, and that
+shows up as hundreds of scattered single-byte diffs spread across the *whole*
+binary — 846 bytes in 447 regions, nearly all of them thousands of functions away
+from the file being worked on. Do not chase those individually. When diffs are
+one byte wide, land on odd addresses, and are spread binary-wide, the cause is a
+small-data section bound, not code.
+
+Diagnostic order that worked, cheapest first:
+
+1. Compare **section sizes** first (`.text` short by 0x20 → a missing function).
+2. Then per-**function sizes** ours vs the symbol map — if they all match, the
+   code is right and the problem is placement.
+3. Only then compare bytes.
+
+Read the true bounds out of `bin/dtk/wiimj2d_symbols.txt` by listing the symbols
+on either side of the TU's objects; the neighbours give both ends exactly.
+
+##### `.sdata2` order is not what it looks like
+
+The TU's `.sdata2` is **constants first, then the three `__sinit` floats**
+(`0x8042D240`–`0x8042D278`), not floats-then-constants. The floats at
+`0x8042D230` belong to the previous TU. The only way to see this is to **decode
+the `r2`-relative offsets in the original `__sinit`**: `_SDA2_BASE_` = `.sdata2`
+start + `0x8000` = `0x80433360`, so `lfs f2, -0x60F4(r2)` resolves to
+`0x8042D26C` — after the constants, not before. Two hours of layout theorising
+collapsed into one arithmetic check; do that check first next time.
+
+##### `static const int` at function scope allocates storage
+
+`c_ACTION_NAME_LEN` had to become an `enum { ... }`. As a function-local
+`static const int` MWCC emits a real word into `.sdata2`, which the original does
+not have — even though the value itself is folded into an immediate at the use
+site. Use `enum` for function-scope integer constants unless the binary shows an
+object.
+
+##### Two source idioms that are load-bearing
+
+Both are in the file with comments; do not "clean them up":
+
+- `SearchChildPointName` writes its sentinel through
+  `(&route->mChildPointName[n * 5])[5]`. Folded to `[n * 5 + 5]`, MWCC computes
+  `(n + 1) * 5` and emits `addi/slwi/add/stbx` instead of the target's `stb` with
+  a `0x5` displacement.
+- `appendChildFromModel` re-reads the child chain through a separate *non-const*
+  `ResNode`. Read through the const parameter, MWCC common-subexpresses the load
+  with the one at function entry and loses an instruction.
+
+##### Names: check `syms.txt` before inferring
+
+Two of the six "unnamed" functions were already named.
+`RouteData_t::deleteChildPointName` (`0x800F5B90`) was sitting in `syms.txt` all
+along, and `appendChildFromModel`'s exact signature fell out of `SetRouteInfo`'s
+call sites once that matched. **Grep `syms.txt` and the symbol map before
+inventing a name.** Genuinely inferred names are marked `@unofficial`.
 
 ##### Alignment rule (verified across all 140 compiled objects, 682 placements)
 
@@ -519,10 +581,13 @@ section's *base address* is wrong, not its alignment.
 
 - The `.sdata2` value `0x14` at `0x8042D244` is **`c_GHOST_ID__10dCsvData_c`**, not
   the inferred `c_ACTION_NAME_LEN`. The value matching 20 was a coincidence, and it
-  was wrongly cited as confirmation. The TU's real `.sdata2` is
-  `0x8042D230`–`0x8042D26C`: three floats from `sc_ForceList`'s `mVec3_c`, four
-  unidentified bytes, then eleven `dCsvData_c::c_*_ID` constants
-  (`c_COURSE_ID` … `c_PEACH_ID`) which this TU must **define**.
+  was wrongly cited as confirmation. **Superseded:** the TU's `.sdata2` is
+  `0x8042D240`–`0x8042D278` — the eleven `c_*_ID` constants **first**, then three
+  `__sinit` floats. The earlier reading (`0x8042D230`–`0x8042D26C`, floats first)
+  was also wrong; see "`.sdata2` order is not what it looks like" above.
+  The eleven values are `c_COURSE_ID` 0, `c_GHOST_ID` 20, `c_TOWER_ID` 21,
+  `c_CASTLE_ID` 23, `c_KINOKO_ID` 25, `c_ENEMY_ID` 32, `c_CANON_ID` 35,
+  `c_TRSHIP_ID` 36, `c_AIRSHIP_ID` 37, `c_START_ID` 38, `c_PEACH_ID` 40.
 - The `.sdata` base is `0x80428C18` (`"F7C0"`, `"W7C0"` first), not `0x80428C28`.
 - The static-numbering rule (first unsuffixed, then `@0`, `@1`, …) **is** correct —
   independently verified on `createLayout` in `d_CourseSelectGuide.cpp`, which has
