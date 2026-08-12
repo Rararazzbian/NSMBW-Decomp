@@ -57,25 +57,30 @@ public:
     /// @brief Clears the message text buffer. @unofficial
     void TextBufClear();
 
-    void MsgIDSet(MsgRes_c *bmg, ulong messageGroup, ulong messageID);
+    /// @brief Substitutes a message into the text buffer.
+    /// @return The number of wide characters written, including the tag header.
+    int MsgIDSet(MsgRes_c *bmg, ulong messageGroup, ulong messageID);
 
-    void getWorldNum(void *arg);
-    void getCourseNum();
-    void getOkCancellDisp(MsgRes_c *bmg);
-    void getOkCancellDisp(MsgRes_c *bmg, void *arg);
-    void getTotalCollectionCoin();
-    void getCrossKeyDisp(MsgRes_c *bmg);
-    void getCourseSelectIcon(MsgRes_c *bmg, void *arg);
-    void getSaveFileNumber();
-    void getCourseSelectButtonFunction(MsgRes_c *bmg, void *arg);
-    void setSize(void *arg);
-    void setRuBi(void *arg);
-    void getMenuButton(MsgRes_c *bmg, void *arg);
-    void getScissor(void *arg);
-    void getEasyPairing(MsgRes_c *bmg, void *arg);
-    void getDebugDisp();
-    void getPlayNumber();
-    void getRedBlock(MsgRes_c *bmg, void *arg);
+    int getWorldNum(void *arg);
+    int getCourseNum();
+    int getOkCancellDisp(MsgRes_c *bmg);
+    int getOkCancellDisp(MsgRes_c *bmg, void *arg);
+    int getTotalCollectionCoin();
+    int getCrossKeyDisp(MsgRes_c *bmg);
+    int getCourseSelectIcon(MsgRes_c *bmg, void *arg);
+    int getSaveFileNumber();
+    int getCourseSelectButtonFunction(MsgRes_c *bmg, void *arg);
+    int setSize(void *arg);
+    int setRuBi(void *arg);
+    int getMenuButton(MsgRes_c *bmg, void *arg);
+    int getScissor(void *arg);
+    int getEasyPairing(MsgRes_c *bmg, void *arg);
+    int getDebugDisp();
+    int getPlayNumber();
+
+    /// @brief Substitutes the number of players. @unofficial
+    int getPlayerNum();
+    int getRedBlock(MsgRes_c *bmg, void *arg);
 
     void preProcess(
         const wchar_t *text, wchar_t *buf,
