@@ -124,6 +124,49 @@ Second preference is a TU whose *shape* is already solved elsewhere — e.g.
 `d_a_rot_objs_base.cpp`, whose `searchParent_*` functions were reported as
 sharing an existing implementation verbatim.
 
+### The target list is incomplete: TUs with no `__sinit` are invisible
+
+`tu_extent.py` delimits TUs by `__sinit` symbols. **A TU with no file-scope
+static objects emits no `__sinit`**, so it does not appear in the list at all —
+it is silently absorbed into a neighbouring TU's reported range. This is not
+hypothetical: `d_a_sink_dokan.cpp` (`daSinkDokan_c`, ~0x920 bytes) was found
+sitting undetected between `d_a_rot_objs_base` and `d_a_spin_child_base`.
+
+`scratchpad/tu_split.py` detects the condition. It demangles the class name out
+of every function in a reported range and counts them; a *second* class with a
+double-digit count means the range is two or more TUs. Current output:
+
+| Reported as | Actually contains |
+|---|---|
+| `d_a_lift_down_on_base` | `daLiftDownOnBase_c`, `daIceAshibaBase_c`, `daFlyDokan_c`, `daKawanagareObj_c` |
+| `d_a_move_pipe` | `daLiftRemoconMain_c`, `daMovePipe_c`, `daLiftMain_c` |
+| `d_a_yoshi` | `daYoshi_c`, `daPlyIce_c` |
+| `d_a_en_dfpakkun` | `daEnDfpakkun_c`, plus 11 `daEnDpakkunBase_c` weak copies |
+
+Counts of 1–5 are usually inlined helpers or genuinely co-located effect classes
+(`d_a_ice.cpp`'s four `dIce*Ef_c`), not separate files. Treat ≥6 as the signal
+and verify before acting. The hidden TUs are a *bonus* — they are small and
+self-contained — but only once you know they exist.
+
+### A class's functions can appear outside its own TU — weak copies
+
+Header-defined and inline members are emitted by **every** TU that includes the
+header, and the linker keeps an arbitrary one. So a symbol map can attribute a
+function to your class at an address nowhere near your TU. `daEnDpakkunBase_c`
+has eleven such functions living inside `d_a_en_dfpakkun.cpp`'s range;
+`daSpinChildBase_c`'s destructor links from `d_a_obj_spin_child_base.cpp`.
+
+Do **not** stretch your slice to cover them — one contiguous range per section
+means that boundary is unreachable. Read them instead as evidence about *where
+the definition belongs*: a member whose surviving copy sits in another TU is
+almost certainly **inline in the header**, not out-of-line in your `.cpp`.
+Virtuals remain the exception — an empty virtual defined in the class body is
+inlined away by `-ipa file` and breaks the vtable slot.
+
+The verification that closes the loop: compile, then check the weak copies your
+object emits are byte-identical to the ones the original linked elsewhere. That
+validates your header for the TU that owns those bytes, before anyone starts it.
+
 ### `tu_extent.py` had a boundary bug — check the ranges it gave you
 
 Its "banked slice tightens the start" test was containment
