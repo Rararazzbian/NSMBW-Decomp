@@ -60,12 +60,12 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 9.826%** (638,728 / 6,500,368); `wiimj2d.dol` **19.200%**. Five
-  binaries verify, tree clean.
-- **`d_a_en_dfpakkun.cpp` is authored and banked `nonMatching`** — all 33
-  functions byte-exact and correctly placed, blocked only by the weak-copy tail.
-  See "The pakkun pair" below before touching it. `d_a_en_jimen_pakkun_base.cpp`
-  is the other pakkun-family one and is now the best *fresh* target.
+- **Position: 10.131%** (658,536 / 6,500,368); `wiimj2d.dol` **19.849%**. Five
+  binaries verify, tree clean. The 10% mark was crossed by landing the pakkun
+  pair; the rule that unblocked them is "Overrides are a free lever" below.
+- **The pakkun pair is DONE and linked** — `d_a_en_dpakkun_base.cpp` 64/64 and
+  `d_a_en_dfpakkun.cpp` 33/33, both matching. `d_a_en_jimen_pakkun_base.cpp` is
+  the next pakkun-family target and should inherit their idioms nearly wholesale.
 - **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
   establish. The levers list and the two whole-binary failure signatures below
   are the most valuable part of this file.
@@ -230,11 +230,10 @@ banked *whole*:
 | `d_a_en_door.cpp` | 50 | Closed on a coupled pair after ~300 failed builds |
 | `d_a_rot_block.cpp` | 5 | **Was not on any target list** |
 
-Plus the pakkun pair, both authored complete and both still `nonMatching`:
-`d_a_en_dpakkun_base.cpp` at **64/64** and `d_a_en_dfpakkun.cpp` at **33/33**.
-Neither is blocked by a function; they are blocked by each other. Read "The
-pakkun pair, and the trap that holds both of them" before touching either —
-the flag is not an annotation, it decides whether your object is linked at all.
+Plus the pakkun pair, landed together: `d_a_en_dpakkun_base.cpp` (**64/64**) and
+`d_a_en_dfpakkun.cpp` (**33/33**), 19,808 bytes, which crossed 10%. They had to
+be flipped in one commit — see "The pakkun pair — DONE, and the two rules it
+cost".
 
 **Three TUs were discovered mid-batch** that our enumeration cannot see, and the
 `.text` end boundary was wrong on **five** separate assignments, always the same
@@ -307,50 +306,61 @@ reachable.
 46/46 on the first integration; `d_a_en_lkuribo_base.cpp` then did 58/58 with
 every function matching on its first compile, so the pattern is now well priced.
 
-### The pakkun pair, and the trap that holds both of them
+### The pakkun pair — DONE, and the two rules it cost
 
-**Both `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) have
-every function byte-exact and are still banked `nonMatching`.** Neither is
-blocked by a function. They are blocked by each other, and understanding why is
-worth more than either file.
+Both TUs are landed and linked: `d_a_en_dpakkun_base.cpp` 64/64 and
+`d_a_en_dfpakkun.cpp` 33/33, 19,808 bytes, the jump from 9.826% to **10.131%**.
+Two lessons are worth more than the files.
 
-**A `nonMatching` slice is not linked at all.** `gen_lcf.py`, `slice_dol.py` and
-`configure.py` all skip it and the original bytes are spliced in. So the flag is
-not a progress annotation — it decides whether your object participates in the
-link, and flipping it is the *first* real test your object has ever had.
-Everything below only appears at that moment.
+#### A `nonMatching` slice is not linked at all
 
-**The weak-copy deadlock.** Inline members are emitted by every TU that includes
-the header, and the linker keeps one arbitrary copy. The original kept
-`daEnDpakkunBase_c`'s inline members in `d_a_en_dfpakkun.cpp`. So:
+`gen_lcf.py`, `slice_dol.py` and `configure.py` all skip it and splice the
+original bytes in. So the flag is not a progress annotation — it decides whether
+your object participates in the link, and **clearing it is the first real test
+your object has ever had**. Per-function diffs cannot see any of what follows.
 
-- Flip the *base* on while dfpakkun is unlinked and the base object becomes the
-  only provider of ~35 weak copies. It keeps them, `.text` grows 0xE0, all five
-  binaries fail.
-- Flip *dfpakkun* on and its object emits `__dt__Q33m3d5mdl_c10callback_cFv` and
-  the `timingB`/`timingC` stubs, which the original resolves from a still
-  undecompiled TU at 0x80026080. Ours becomes the only real definition, so the
-  linker takes it and `.text` grows again.
+Three things surfaced only at that moment, and all three will recur:
 
-The second is fixable with `syms.txt` entries pointing at the original
-addresses; the first is not, until dfpakkun links. **They likely have to be
-flipped together.**
+- **Weak-copy deadlock.** Inline members are emitted by every TU that includes
+  the header and the linker keeps one copy. The original kept
+  `daEnDpakkunBase_c`'s in `d_a_en_dfpakkun.cpp`. Flip the base on alone and its
+  object becomes the sole provider of ~35 weak copies, `.text` grows 0xE0, all
+  five binaries fail. **The pair had to be flipped together.** Expect this
+  whenever a base and its derived TU are both in flight.
+- **`.text` too long, from a symbol you are the only one defining.** Your object
+  emits a weak inline member the original resolved from a **still undecompiled**
+  TU; spliced bytes are not a definition the linker can see, so your copy wins.
+  Fix with a `syms.txt` entry at the original's address — that is what removed
+  `__dt__Q33m3d5mdl_c10callback_cFv` and the `timingB`/`timingC` stubs here.
+- **`keepWeak` and `syms.txt` are global, not per-slice.** Adding the entries a
+  `nonMatching` TU will need forces those symbols in whichever sibling *is*
+  linked, and breaks the build. They must land in the **same commit** as the
+  flag clears.
 
-**`keepWeak` and `syms.txt` are global, not per-slice.** Adding the entries
-dfpakkun needs while dfpakkun is `nonMatching` forces those same symbols in the
-sibling `d_a_en_dpakkun.cpp`, which *is* linked — and breaks all five binaries.
-This is why the working entries are recorded in commit `163e715`'s message
-rather than in the files. Restore them at the same moment you clear the flag.
+#### Overrides are a free lever — the flush-order rule
 
-**What is actually left on dfpakkun.** In a full link every one of the 72
-in-range symbols lands at its exact original address and every section size
-matches. The only defect is the eight-member `daEnDpakkunBase_c` flush block at
-0x8002A140: ours comes out in **reverse declaration order**, the original wants
-`updateCc, finalUpdate, initPakkunDir, YoshiFumiScoreSet, PenguinSlide, Slip,
-HipAttk, Spin`. Moving the definitions out of the class body was tried and
-changed nothing, so *definition* order is not the lever. Declaration order is,
-and that is pinned by the vtable — so the answer is something else, and finding
-it closes both TUs at once.
+**Within a class, the end-of-TU inline flush block is emitted in strict reverse
+declaration order.** Declaration order is pinned by the vtable only for virtuals
+the class *introduces*; an **override** inherits its slot from the base and can
+be declared anywhere without moving the vtable. So for overrides, declaration
+order is free — and it is the *only* lever that moves the flush block.
+
+**Between classes, groups come out in reverse parse order**, base before derived,
+so `#include` order is the lever: parsing a class earlier pushes its flush group
+later. This mirrors exactly where the weak vtables land in `.data`, which gives
+you a second, independent way to check it.
+
+Eliminated, so nobody repeats them: out-of-class `inline` definitions, access
+specifiers, const-qualification, signature changes, interleaved members, taking a
+member's address — none of them move anything. Only *being called* moves a
+function, and that removes it from the block entirely.
+
+A ~120-TU sweep found **zero real inversions across every banked TU**, so the
+rule holds project-wide and was simply mis-declared here. `tools/` has no
+committed version of that sweep; it is worth rebuilding if this recurs.
+
+The concrete fix was two declaration moves and one `#include`, with no function
+body touched — see commit `5dc4095`.
 
 ### The remaining actor TUs, with what is known about each
 
@@ -362,7 +372,7 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 
 | TU | Bytes | Fns | Notes |
 |---|---|---|---|
-| `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, banked `nonMatching` — see "The pakkun pair" |
+| `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, landed and linked |
 | `d_a_en_jimen_pakkun_base` | 7,896 | 58 | **Best fresh target.** Pakkun family — the anim-setter and state idioms in `d_a_en_dfpakkun.cpp` should transfer nearly wholesale |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
 | `d_a_en_blockmain` | 12,392 | 90 | |
@@ -800,7 +810,7 @@ first; mark genuinely inferred names `@unofficial`.
 
 ## Current state
 
-- **Progress: 9.826%** (638,728 / 6,500,368 code bytes)
+- **Progress: 10.131%** (658,536 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
 - Development happens on **native Windows**; see "Local setup" below.
 - Last TU banked: `d_a_en_lkuribo_base.cpp` (58 fns, 9,456 bytes), whole and
@@ -810,15 +820,14 @@ first; mark genuinely inferred names `@unofficial`.
   `d_a_spin_child_base.cpp` (23), `d_a_sink_dokan.cpp` (14), `d_a_cursor.cpp` (9),
   `d_a_rot_block.cpp` (5), and earlier `d_wm_csvdata.cpp` (41),
   `d_a_en_super_bigpile.cpp` (46), `d_tag_processor.cpp` (39).
-- `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) are both
-  banked `nonMatching`, each complete at the function level. Clearing the flags
-  is a linkage problem, not an authoring one — see "The pakkun pair".
+- `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) are landed
+  and linked. No TU is currently banked `nonMatching`.
 
 Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 19.200% |
+| `wiimj2d.dol` | 19.849% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -1117,17 +1126,12 @@ address falls** as well.
 
 ### `.text` too long? Look for weak symbols you are the only one defining
 
-Distinct from the deadstrip signature (`.text` short) and worth its own entry,
-because the fix is the opposite. Your object emits a weak inline member; the
-original resolved it from a TU that is **still undecompiled**, so in that build
-your copy loses and in ours it wins, because spliced original bytes are not a
-definition the linker can see.
-
-Diagnose by listing your object's `FUNC` symbols against the original's symbols
-in your address range: anything of yours that the original places *elsewhere* is
-a candidate. Fix with a `syms.txt` entry at the original's address — that is what
-removed `__dt__Q33m3d5mdl_c10callback_cFv` and the `timingB`/`timingC` stubs
-from `d_a_en_dfpakkun.cpp`'s range.
+The mirror of the deadstrip signature (`.text` short), and the fix is the
+opposite one. Diagnose by listing your object's `FUNC` symbols against the
+original's symbols in your address range: anything of yours that the original
+places *elsewhere* is a candidate, and the fix is a `syms.txt` entry at the
+original's address. Full account, with the two other link-time failures that
+travel with it, under "The pakkun pair — DONE, and the two rules it cost".
 
 ### New lever: all words identical, only the `0xNN(r1)` slots wrong
 
