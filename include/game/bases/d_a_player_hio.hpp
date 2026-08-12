@@ -36,14 +36,30 @@ public:
     sSpeedData mDataStar;
 
     /// @unofficial
-    /// @note Constructed as a plain static array, so each element runs the
-    /// default constructor above at static-init time -- including element 0,
-    /// whose constructor calls init(ms_num_of_instance), i.e. init(0), which
-    /// copies sc_playerSpeedDt[0] into itself before that element exists. The
-    /// observed effect is harmless (a self-copy of still-zeroed memory) but the
-    /// reason the original ships this ordering is not understood; flagged for
-    /// follow-up rather than asserted.
-    static dAcPy_HIO_Speed_c sc_playerSpeedDt[2];
+    /// @note An array of sSpeedData, NOT of this class: the generated
+    /// __sinit for this TU contains no constructor calls at all, only four
+    /// straight 0x78-byte block copies from the four sc_player_* tables below
+    /// into offsets 0/0x78/0xf0/0x168 of this object. That is what a plain
+    /// aggregate initialiser over a non-constant source compiles to; an array
+    /// of dAcPy_HIO_Speed_c would instead emit a construct loop and an
+    /// __arraydtor. init() indexes it with a 0xF0 stride, which fixes the
+    /// outer dimension at 2 and the inner at 2.
+    /// @note `const` with a *dynamic* initialiser, so it still lives in .bss
+    /// rather than .rodata. The const is load-bearing for init()'s codegen --
+    /// see the note there.
+    static const sSpeedData sc_playerSpeedDt[2][2];
+
+    /// @unofficial
+    /// @note The four shipped default speed records, in .rodata immediately
+    /// ahead of scStoopOffset/scYoshiOffset/scCloudOffset. Their real data has
+    /// to live in this TU for dPyModel_HIO_c::resetParam to compile: it
+    /// addresses those three tables as this object's own @ha/@l pair plus a
+    /// compile-time delta, which MWCC can only do when it lays all of them out
+    /// itself.
+    static const sSpeedData sc_player_mame;
+    static const sSpeedData sc_player_mame_star;
+    static const sSpeedData sc_player_normal;
+    static const sSpeedData sc_player_normal_star;
 
     /// @unofficial
     static int ms_num_of_instance;
