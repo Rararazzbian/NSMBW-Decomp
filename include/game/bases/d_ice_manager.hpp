@@ -49,6 +49,7 @@ public:
     ~dIceMng_c();
 
     void initialize();
+    void setIceStatus(int, int, int); ///< @unofficial
     PROC_e manageProc();
     void breakEffect();
     void removeIce();
