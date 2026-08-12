@@ -42,13 +42,76 @@ long inline arg lists are fragile.
 
 ## Read this first if you are picking the project up
 
-- **Position: 9.681%** (629,272 / 6,500,368); `wiimj2d.dol` **18.891%**. Five
-  binaries verify, tree clean, `master` and the working branch both pushed.
-- **Next target is `d_a_en_lkuribo_base.cpp`** — pre-surveyed, bounds and vtable
-  already verified. See its section below. `d_a_en_dfpakkun.cpp` is also ready.
+- **Position: 9.826%** (638,728 / 6,500,368); `wiimj2d.dol` **19.200%**. Five
+  binaries verify, tree clean.
+- **Next target is `d_a_en_dfpakkun.cpp`** — its base's header is resolved and
+  validated. `d_a_en_jimen_pakkun_base.cpp` is the other pakkun-family one.
 - **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
   establish. The levers list and the two whole-binary failure signatures below
   are the most valuable part of this file.
+- **Read "The method that works" immediately below before assigning anything.**
+  It took `d_a_en_lkuribo_base.cpp` — 58 functions, 9,456 bytes — from nothing to
+  byte-perfect with every function matching on its first compile.
+
+## The method that works: map the siblings BEFORE authoring
+
+This is the single biggest process finding so far, and it is worth more than any
+individual lever in this file.
+
+Before fanning out authoring agents, run **one agent whose only job is to
+mechanically compare the target's instruction words against every
+already-matching function in the repo**, masking branch targets and `@ha`/`@l`
+halves (those are relocations). It produces, per function, the precedent to copy
+and what specifically to take from it.
+
+On `d_a_en_lkuribo_base.cpp` that map found:
+
+- one function **byte-for-byte identical** to its Goomba counterpart;
+- four more differing from theirs in **1–6 words out of 31–84**, every difference
+  a relocation — i.e. the register allocation was already correct;
+- three state initialisers **bit-identical to each other**, and two state
+  bodies differing in **one word**;
+- two sound functions bit-identical, a third differing in one immediate;
+- and, just as usefully, the **four functions with no precedent anywhere**, so
+  effort could be concentrated there instead of spread evenly.
+
+Result: 58 functions, six parallel authoring agents, **every function matched on
+the first compile** and only two needed any sweeping at all. Compare with the
+previous session, where a single function cost ~300 builds across 8 sweeps and
+then closed in half an hour once someone finally compared it against a sibling.
+
+**Cost one agent. Do it every time.** Also give every authoring agent the
+verified class declaration up front (see below) so nobody re-derives it.
+
+### The order that worked
+
+1. **Two agents in parallel, blocking:** one reconstructs the class from the
+   vtable and *proves* it byte-exact; one derives the section bounds. These are
+   independent, and the bounds work is pure symbol-map arithmetic that needs no
+   code.
+2. **The mapping agent**, in parallel with those.
+3. **Six authoring agents**, each given the verified class, the map's entry for
+   its functions, and the shared data inventory.
+4. **The lead assembles, integrates and builds.** Never let an agent run `ninja`.
+
+Relaying findings between agents mid-flight paid repeatedly — a corrected vtable
+table, a comparator bug, a caller-set correction and an argument-ordering lever
+all reached agents while they were still working.
+
+### Bounds are nearly free when both neighbours are banked
+
+If the TUs on either side are already banked and verifying, **your TU is exactly
+the gap between them in every section** — subtract, do not derive. All seven
+ranges for lkuribo fell straight out, including the `.ctors` index, which is
+otherwise the source of the one-byte whole-binary failure documented below.
+
+### Prove the class before anyone writes against it
+
+Compile the class declaration plus an out-of-line stub for every virtual,
+disassemble, and compare the emitted `__vt__` against the original's, entry for
+entry. Run a negative control (swap two entries; the comparator must report
+exactly 2 diffs) so the pass is not vacuous. Six agents then authored against
+that declaration and none of them had to touch it.
 
 ### Infrastructure state (as of the 2026-08-12 session)
 
@@ -74,11 +137,14 @@ long inline arg lists are fragile.
 
 ## Where the work now stands
 
-**9.681%** (629,272 / 6,500,368 bytes); `wiimj2d.dol` at **18.891%**. Five
+**9.826%** (638,728 / 6,500,368 bytes); `wiimj2d.dol` at **19.200%**. Five
 binaries verifying, working tree clean.
 
-The most recent session took the project from 9.133% to 9.681% across two
-batches of parallel agents. What landed, all banked *whole*:
+The most recent session added `d_a_en_lkuribo_base.cpp` (58 functions, 9,456
+bytes, every function matching on its first compile) using the sibling-mapping
+method documented at the top of this file. The session before took the project
+from 9.133% to 9.681% across two batches of parallel agents. What landed, all
+banked *whole*:
 
 | TU | Functions | Notes |
 |---|---|---|
@@ -176,7 +242,6 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 |---|---|---|---|
 | `d_a_en_dfpakkun` | 9,688 | 59 | **Ready** — its base's header is resolved and validated |
 | `d_a_en_jimen_pakkun_base` | 7,896 | 58 | Pakkun family; likely shares idioms with the base |
-| `d_a_en_lkuribo_base` | 9,552 | 75 | **Pre-surveyed, ready** — see below |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
 | `d_a_en_blockmain` | 12,392 | 90 | |
 | `d_a_player_manager` | 10,764 | 68 | |
@@ -195,28 +260,18 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | `d_a_ice` | 31,880 | 147 | |
 | `d_a_yoshi` | 39,944 | 239 | Largest; also contains `daPlyIce_c` |
 
-### `d_a_en_lkuribo_base.cpp` is pre-surveyed — start here
+### `d_a_en_lkuribo_base.cpp` — DONE, 58/58, banked whole
 
-Handed over by the `d_a_en_kuribo_base.cpp` agent, bounds already verified:
+Landed byte-exact: 9.681% -> **9.826%** (+9,456 bytes), `wiimj2d.dol` 18.891% ->
+**19.200%**. Six parallel authoring agents, every function matching on its first
+compile. The method that produced that is documented at the top of this file; the
+three findings it cost are the lazy-flush rule, the shadowed-state-ID trap and
+the comparator bug, all recorded below.
 
-- `.text` **0x800331E0 – 0x800356D0** (0x24F0; the next TU is `daEnNetNoko_c`,
-  already decompiled, so both ends are pinned)
-- `.ctors` index 21 (`0x50-0x54`… **recheck against the index rule above**),
-  `.rodata` 0x802EE950 – 0x802EE9B8, `.sdata` 0x80427BA8 – 0x80427BC8,
-  `.sdata2` 0x8042B7E8 – 0x8042B810
-- `__vt__17daEnLkuriboBase_c` at `.data:0x80305110`, size 0x2F0 — the same size
-  as the base's, so it adds no new virtuals and only overrides
-- States: Walk, Turn, Press, Split, HipSplit (new, `sStateID_c`-based) plus
-  DieFall overriding `dEn_c`'s
-
-**It is a sibling, not a subclass.** Despite the name it does not derive from
-`daEnKuriboBase_c` — it overrides `createMdl`/`calcMdl`/`calcJnt` where the base
-has `createModel`/`calcModel`. It is another `dEn_c` subclass, so expect the
-member layout to differ from the base's (allocator 0x524, model 0x544, anmChr
-0x584, texpat res 0x5BC / anm 0x5C0).
-
-Its `.rodata` also owns the two 0x20 death-info templates that sit past a 4-byte
-gap and look like they belong to the next TU — see the gap caveat above.
+Its `.rodata` owns the two 0x20 death-info templates that sit past a 4-byte gap
+and look like they belong to the next TU. They do not — `hitCallback_Fire` and
+`setDeathInfo_Hasami` reference them, and net_nokonoko's banked range starts
+exactly after them. The gap is alignment padding.
 
 ### `d_a_wm_Map_static.cpp` is 17/18 — one table away
 
@@ -418,8 +473,11 @@ rodata float table, SE id, effect name.
    *only* in `addi rN, r1, 0x..` offsets, toggle inline-wrapper vs explicit-full-args
    calls — do not touch the logic. This is how the missing
    `anmTexSrt_c::create` wrappers were found.
-2. **Every empty virtual must be defined out of line**, never in the class body,
-   or it is implicitly inline, vanishes from the TU, and the vtable slot breaks.
+2. **An empty virtual that is NEVER CALLED in the TU must be defined out of
+   line**, or it is implicitly inline, vanishes, and the vtable slot breaks.
+   **But one that IS called must be inline in the class body** — see the flush
+   rule below. This trap previously read "every empty virtual", which is too
+   strong and cost a full round trip on `d_a_en_lkuribo_base.cpp`.
 3. **`float * int` evaluates its calls right-to-left.** To get "call A, then B,
    then `fmuls fD, A, B`", split: `float d = getA(); s16 r = d * getB();`.
 4. **A 2-float `static const` array lands in `.sdata2`, a 4-float one in
@@ -529,7 +587,7 @@ first; mark genuinely inferred names `@unofficial`.
 
 ## Current state
 
-- **Progress: 8.823%** (573,528 / 6,500,368 code bytes)
+- **Progress: 9.826%** (638,728 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
 - Development moved to **native Windows**; see "Local setup" below.
 - Three TUs completed and banked whole this session (22,688 bytes):
@@ -540,11 +598,11 @@ Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 17.06% |
+| `wiimj2d.dol` | 19.200% |
 | `d_profileNP.rel` | 100% |
-| `d_enemiesNP.rel` | 2.06% |
-| `d_basesNP.rel` | 1.02% |
-| `d_en_bossNP.rel` | 0.03% |
+| `d_enemiesNP.rel` | 2.056% |
+| `d_basesNP.rel` | 1.015% |
+| `d_en_bossNP.rel` | 0.031% |
 
 ## Local setup
 
@@ -789,6 +847,73 @@ its final register. Each half alone fails: `int` + compound gave 47 diffs, 16-bi
 single-axis sweep plateaued.** Sweeps of 25, 115, ~120 and ~300 builds all failed
 where two simultaneous changes succeeded. Treat a hard floor as a signal to
 change axis, not to enumerate harder.
+
+### The lazy-flush rule: called inline virtuals and template instantiations
+
+This was the **last 32 bytes** of `d_a_en_lkuribo_base.cpp` — every function
+matched, every section was the right size, the DOL section table was identical,
+and the binary still failed because two adjacent functions came out swapped.
+
+**The rule.** A called-but-inline virtual and a template instantiation queued by
+the *same* caller are both flushed immediately after that caller, with the
+**inline virtual emitted first**. So:
+
+- an empty virtual that is **called** in the TU belongs **inline in the class
+  body** — an out-of-line copy is still emitted, lazily, at its first caller's
+  flush point, which is where the original has it;
+- defining it out of line instead emits it one slot too early, ahead of the
+  template instantiation the same caller queues.
+
+Confirmed against `d_a_en_shell.cpp`, which is byte-exact and has the identical
+shape: `block_hit_init` calls both `mStateMgr.initializeState()` and the inline
+`isBlockHitDeath()`, and the two flushed bodies follow it in exactly that order.
+
+**What was disproved on the way, so nobody repeats it:** the flush is *always*
+immediate, so moving the function's definition around does nothing — six
+placements were tried and every one produced the wrong order. Naming the member
+through the abstract base suppresses the instantiation entirely; dead code
+(`if (0)`) does not queue it at all, because MWCC drops the branch first. And the
+calling function is byte-identical under all eight variants, so **its own code
+can never tell you which form the original used** — only the neighbouring bytes
+can.
+
+Side effect to handle: inline-in-class flips the symbol from `GLOBAL` to `WEAK`,
+so it needs a `keepWeak` entry. If `.text` comes out 4–16 bytes short, that is why.
+
+### A shadowed state ID compiles, diffs clean, and is wrong
+
+`daEnLkuriboBase_c` declares its own `StateID_DieFall`, shadowing `dEn_c`'s.
+Written unqualified, the code compiles and the function diff is **clean**,
+because the field is a relocation and relocations read as zero in a `.o`. It was
+caught only by reading `.rela.rodata` directly. Write
+`&dEn_c::StateID_DieFall`.
+
+Note the trap arrives by *copying a correct line*: `d_a_en_kuribo_base.cpp` writes
+it unqualified and is right to, because that class has no `DieFall` of its own.
+
+**Generalise this: a function-body diff cannot see which symbol a relocated word
+points at.** After a match, read the object's relocations for any `.rodata` or
+`.data` template you emit and confirm the target symbol by name. Two death-info
+templates in this TU differ only in fields that are relocations plus three words.
+
+### Verify your verification tool — again
+
+`harness.py`'s pool-symbol normaliser was wrong in both directions and reported
+two already-byte-exact functions as failing. dtk names a pool object in the
+original `@71831_8042B7EC` (symbol plus address suffix) where a freshly compiled
+object has a bare `@21389`; collapsing both to one marker produced a spurious
+diff on **every** `.sdata2` reference. Worse, it erased *which* literal was
+referenced, so `0.0f` and `8.0f` compared equal and a wrong constant could pass.
+
+Fixed by numbering each distinct pool symbol by first appearance **per side**, so
+"the same literal twice" stays distinguishable from "two different literals".
+A caveat survives and is now printed with every match: this proves the *pattern*
+of references, not the values. Read the emitted constant and check it against the
+target's pool slot.
+
+Three separate agents hit this independently and worked around it before the fix
+reached them. That is the second verification tool in this project to have
+silently lied; assume the third exists.
 
 ### Levers found while decompiling the rot/fireball/cursor batch
 

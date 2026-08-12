@@ -46,8 +46,46 @@ INCLUDES = ['include', 'include/lib', 'include/lib/MSL', 'include/lib/MSL/intern
             'include/lib/revolution/BTE/bta/sys', 'include/lib/revolution/BTE/gki/common',
             'include/lib/revolution/BTE/gki/platform']
 
-# Compiler-pool symbols get fresh numbers every run; they are not real differences.
-POOL = re.compile(r'@\d+|\.\.\.(?:data|rodata|bss|sdata2?)\.\d+|lbl_[0-9A-Fa-f]{8}|_[0-9A-Fa-f]{8}\b')
+# Compiler-pool symbols get fresh numbers every run, so they cannot be compared
+# literally. The original binary names one `@71831_8042B7EC` -- symbol plus dtk's
+# address suffix -- where a freshly compiled object has a bare `@21389`. Match the
+# combined form first so a reference stays ONE token on both sides.
+POOL_SYM = re.compile(r'@\d+(?:_[0-9A-Fa-f]{8})?'
+                      r'|lbl_[0-9A-Fa-f]{8}'
+                      r'|\.\.\.(?:data|rodata|bss|sdata2?)\.\d+')
+
+# dtk also appends _<ADDR> to ordinary symbols to disambiguate duplicate names.
+# Applied AFTER pool numbering, so it cannot eat an `lbl_########`.
+ADDR_SUFFIX_INLINE = re.compile(r'_[0-9A-Fa-f]{8}\b')
+
+
+def canonicalise(lines):
+    """Rewrite pool references so the two sides are comparable.
+
+    An earlier version rewrote every pool symbol to one shared marker. That was
+    wrong twice over. It reported a spurious difference on every .sdata2
+    reference, because the target's two-part name produced two markers against a
+    draft's one -- two functions that were in fact byte-exact were reported as
+    failing. And it erased *which* literal was referenced, so 0.0f and 8.0f
+    compared equal and a wrong constant could pass.
+
+    Numbering each distinct symbol by first appearance, per side, fixes both:
+    the naming still cannot leak in, but "the same literal twice" stays
+    distinguishable from "two different literals".
+
+    A caveat survives and callers must respect it: this proves the *pattern* of
+    references matches, not that the underlying constants are equal. Two
+    functions each referencing a single distinct float compare equal whatever
+    those floats are. Read the emitted value out of the object and check it
+    against the target's pool slot before trusting a match.
+    """
+    mapping = {}
+    out = []
+    for line in lines:
+        def number(m):
+            return mapping.setdefault(m.group(0), 'SYM%d' % len(mapping))
+        out.append(ADDR_SUFFIX_INLINE.sub('', POOL_SYM.sub(number, line)))
+    return out
 
 
 # ---------------------------------------------------------------- build & diff
@@ -147,13 +185,13 @@ def extract(path, name):
                 continue
             if FN_END.match(s):
                 if body is not None:
-                    return body or None
+                    return canonicalise(body) if body else None
                 continue
             if body is not None:
                 mi = INSN.match(s)
                 if mi:
-                    body.append(POOL.sub('@P', mi.group(1).strip()))
-    return body or None
+                    body.append(mi.group(1).strip())
+    return canonicalise(body) if body else None
 
 
 def diff_fn(target_txt, draft_txt, name):
@@ -164,7 +202,13 @@ def diff_fn(target_txt, draft_txt, name):
     if got is None:
         return False, 'DRAFT MISSING: %s not emitted' % name
     if want == got:
-        return True, 'MATCHING (%d instructions)' % len(want)
+        msg = 'MATCHING (%d instructions)' % len(want)
+        if any('SYM' in line for line in want):
+            msg += ('\n  NOTE: this function references pooled literals. Their names cannot be\n'
+                    '  compared directly, so the check is on the PATTERN of references, not on\n'
+                    '  the values -- a lone 0.0f and a lone 8.0f compare equal here. Read the\n'
+                    '  emitted value out of your object and check it against the target slot.')
+        return True, msg
     lines = ['size: target %d, draft %d' % (len(want), len(got))]
     for i in range(max(len(want), len(got))):
         a = want[i] if i < len(want) else '<none>'
