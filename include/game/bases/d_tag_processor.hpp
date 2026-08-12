@@ -4,17 +4,77 @@
 #include <game/bases/d_message.hpp>
 #include <nw4r/ut.h>
 
+namespace nw4r {
+namespace lyt {
+class Pane;
+class DrawInfo;
+} // namespace lyt
+} // namespace nw4r
+
+/// @brief Processes the formatting tags embedded in a message.
 class TagProcessor_c : public nw4r::ut::WideTagProcessor {
 public:
-    TagProcessor_c();
-    ~TagProcessor_c();
+    /// @brief A saved scissor box and the pane it was derived from. @unofficial
+    struct ScissorEntry_s {
+        u32 mSavedScissorX;              ///< The scissor box's saved left edge.
+        u32 mSavedScissorY;              ///< The scissor box's saved top edge.
+        u32 mSavedScissorWidth;          ///< The scissor box's saved width.
+        u32 mSavedScissorHeight;         ///< The scissor box's saved height.
+        f32 mScreenScaleX;               ///< The horizontal screen scale.
+        f32 mScreenScaleY;               ///< The vertical screen scale.
+        nw4r::lyt::Pane *mpPane;         ///< The pane the scissor box applies to.
+        f32 mPaneSizeX;                  ///< The pane's width.
+        f32 mPaneSizeY;                  ///< The pane's height.
+        nw4r::lyt::DrawInfo *mpDrawInfo; ///< The pane's draw info.
+    };
 
-    u8 mPad[0xc0];
-    u8 mFontIndex;
+    TagProcessor_c();
+    virtual ~TagProcessor_c();
+
+    void SetupGXCommon();
+    void SetupGXTevSet();
+    void SetupVertexFormat();
+
+    void FontChange(nw4r::ut::PrintContext<wchar_t> *ctx);
+    void ScaleSet(nw4r::ut::PrintContext<wchar_t> *ctx);
+    void RuBySet(nw4r::ut::PrintContext<wchar_t> *ctx);
+
+    void setScissorStart(int idx);
+    void setScissorEnd(int idx);
+    void setScissorCursorX(nw4r::ut::PrintContext<wchar_t> *ctx);
+    void setScissor(nw4r::ut::PrintContext<wchar_t> *ctx);
+
+    virtual Operation Process(u16 tag, nw4r::ut::PrintContext<wchar_t> *ctx);
+
+    void PictureFontCalcRect(nw4r::ut::Rect *rect, nw4r::ut::PrintContext<wchar_t> *ctx);
+    void ScaleCalcRect(nw4r::ut::PrintContext<wchar_t> *ctx);
+    void RuByCalcRect(nw4r::ut::Rect *rect, nw4r::ut::PrintContext<wchar_t> *ctx);
+    virtual Operation CalcRect(nw4r::ut::Rect *rect, u16 tag, nw4r::ut::PrintContext<wchar_t> *ctx);
+
+    /// @brief Gets the number of digits needed to display the given value. @unofficial
+    int PlaceCheck(int value);
+
+    /// @brief Clears the message text buffer. @unofficial
+    void TextBufClear();
 
     void MsgIDSet(MsgRes_c *bmg, ulong messageGroup, ulong messageID);
 
+    void getWorldNum(void *arg);
+    void getCourseNum();
     void getOkCancellDisp(MsgRes_c *bmg);
+    void getOkCancellDisp(MsgRes_c *bmg, void *arg);
+    void getTotalCollectionCoin();
+    void getCrossKeyDisp(MsgRes_c *bmg);
+    void getCourseSelectIcon(MsgRes_c *bmg, void *arg);
+    void getSaveFileNumber();
+    void getCourseSelectButtonFunction(MsgRes_c *bmg, void *arg);
+    void setSize(void *arg);
+    void setRuBi(void *arg);
+    void getMenuButton(MsgRes_c *bmg, void *arg);
+    void getScissor(void *arg);
+    void getEasyPairing(MsgRes_c *bmg, void *arg);
+    void getDebugDisp();
+    void getPlayNumber();
     void getRedBlock(MsgRes_c *bmg, void *arg);
 
     void preProcess(
@@ -23,6 +83,10 @@ public:
         long param, va_list *vargs,
         MsgRes_c *bmg
     );
+
+    wchar_t mTextBuf[16];       ///< The buffer the substituted text is built in. @unofficial
+    ScissorEntry_s mScissor[4]; ///< The scissor box stack. @unofficial
+    u8 mFontIndex;              ///< The index of the font in use. @unofficial
 
     static bool isZeroWidthSpace; ///< @unofficial
 };

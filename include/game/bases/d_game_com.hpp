@@ -106,6 +106,7 @@ namespace dGameCom {
     void SelectCursorSetup(nw4r::lyt::Pane *pane, int index, bool useSpecialDraw);
 
     void WindowPaneColorSet(nw4r::lyt::Window *, int);
+    float getDispCenterX();
     float getDispCenterY();
 
     void DispSizeScale(nw4r::math::VEC2 &scale);
