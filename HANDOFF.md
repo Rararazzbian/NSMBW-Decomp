@@ -42,10 +42,10 @@ long inline arg lists are fragile.
 
 ## Where the work now stands
 
-**9.480%** (616,216 / 6,500,368 bytes); `wiimj2d.dol` at **18.06%**. Five
+**9.681%** (629,272 / 6,500,368 bytes); `wiimj2d.dol` at **18.891%**. Five
 binaries verifying, working tree clean.
 
-The most recent session took the project from 9.133% to 9.480% across two
+The most recent session took the project from 9.133% to 9.681% across two
 batches of parallel agents. What landed, all banked *whole*:
 
 | TU | Functions | Notes |
@@ -57,6 +57,8 @@ batches of parallel agents. What landed, all banked *whole*:
 | `d_a_spin_child_base.cpp` | 23 | |
 | `d_a_sink_dokan.cpp` | 14 | **Was not on any target list** |
 | `d_a_cursor.cpp` | 9 | Smallest TU in the project |
+| `d_a_en_kuribo_base.cpp` | 66 | Goomba base; pre-surveyed its sibling on the way past |
+| `d_a_en_door.cpp` | 50 | Closed on a coupled pair after ~300 failed builds |
 | `d_a_rot_block.cpp` | 5 | **Was not on any target list** |
 
 Plus `d_a_en_dpakkun_base.cpp` at **60/64**, landed `nonMatching` — see the wall
@@ -141,8 +143,6 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | TU | Bytes | Fns | Notes |
 |---|---|---|---|
 | `d_a_en_dfpakkun` | 9,688 | 59 | **Ready** — its base's header is resolved and validated |
-| `d_a_en_kuribo_base` | 8,192 | 66 | In flight |
-| `d_a_en_door` | 5,492 | 60 | In flight |
 | `d_a_en_jimen_pakkun_base` | 7,896 | 58 | Pakkun family; likely shares idioms with the base |
 | `d_a_en_lkuribo_base` | 9,552 | 75 | **Pre-surveyed, ready** — see below |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
@@ -730,6 +730,33 @@ original.
 
 **If a TU's `.sdata2` content is right but in the wrong order, move the
 definitions — do not reshape the code.**
+
+### Before sweeping, check whether a sibling TU already solved the shape
+
+`rotation_move` in `d_a_en_door.cpp` cost ~300 builds across 8 sweeps and then
+closed in half an hour once someone compared it against `rotation_move` in
+`d_a_right_base.cpp`, which was **already byte-exact and used the answer
+verbatim**. Actor TUs repeat each other heavily. Grep the decompiled sources for
+a function of the same name or shape *first*; it is the cheapest lever available
+and nothing else in this file comes close to that return.
+
+### Narrowing to 16 bits is a reassociation barrier
+
+The lever that closed it, worth its own entry. With an `int` intermediate MWCC
+rewrites `(raw + 0x4000) + base` into `(raw + base) + 0x4000` and then
+rematerialises the `addi` at every use. Narrowing the intermediate to `s16`
+(or `mAng`, or `short`) is a barrier it will not reassociate across, so the add
+stays eager and single.
+
+It only works **combined** with the compound form — `angle = raw; angle += K;`
+rather than `angle = raw + K;` — which is what makes the value load straight into
+its final register. Each half alone fails: `int` + compound gave 47 diffs, 16-bit
++ eager gave 45. `u16` does not work either; zero-extension changes the load.
+
+**Four separate functions this session needed a coupled pair after a large
+single-axis sweep plateaued.** Sweeps of 25, 115, ~120 and ~300 builds all failed
+where two simultaneous changes succeeded. Treat a hard floor as a signal to
+change axis, not to enumerate harder.
 
 ### Levers found while decompiling the rot/fireball/cursor batch
 
