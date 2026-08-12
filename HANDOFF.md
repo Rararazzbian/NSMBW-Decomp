@@ -111,6 +111,37 @@ reachable.
 `d_a_en_super_bigpile.cpp` was run specifically to price that pattern, and it
 matched 46/46 on the first integration.
 
+### `d_a_boss_demo.cpp` is blocked on `d_en_boss.cpp` — schedule it after
+
+Do not assign this TU yet. It was surveyed and deliberately not authored, which
+was the right call: `initializeState_BattleIn` calls `dEnBoss_c::setBattleReady`
+through vtable slot 0x2C8, and this TU *emits* that empty weak function. Getting
+the slot right means declaring the whole `dEn_c` → `dEnBoss_c` virtual chain —
+115 undecompiled symbols — and `d_en_boss.hpp` does not exist. Any stand-in
+would be a fabricated 176-slot class in a *shared* header.
+
+Everything else is banked ready for when it unblocks:
+
+- True `.text` is **0x8001CBB0–0x8001DA50** (0xEA0, 59 functions), not the
+  heuristic end — the eight template instantiations and `__arraydtor$70930`
+  after `__sinit` are ours. It ends where `daBullet_c`'s first stub begins.
+- Ranges: `.text 0x16430-0x172d0`, `.ctors 0x20-0x24`, `.data 0x3140-0x3420`,
+  `.bss 0xfd8-0x10e8`, `.sdata 0x180-0x190`, `.sbss 0x90-0x98`,
+  `.sdata2 0x188-0x198`. No `.rodata`.
+- The class definition is **verified byte-exact**: compiled against real headers
+  it emits a `__vt__12daBossDemo_c` identical to the target's, all 79 entries.
+- Its `.data` opens with `sc_ForceList__6dWmLib` and `.sbss` holds
+  `c_StartPointKinokoHouseID__6dWmLib` — header-scope statics duplicated into
+  every TU including `d_wm_lib.hpp`. Including that header reproduces them, their
+  dynamic initialisers in `__sinit`, and the `.bss` dtor record.
+
+**Integration hazard, flagged in advance:** this TU owns `finalUpdate`,
+`GetActorType`, `funsuiMoveX`, `setCarryFall`, `isSpinLiftUpEnable`, `getPlrNo`
+and `vf68` at 0x8001D1B0–0x8001D218. All seven are currently supplied by
+`syms.txt`, and four are in the global `deadstrip` list. When it lands, delete
+those `syms.txt` lines **and move those four from `deadstrip` to `keepWeak`**, or
+`.text` comes out short and every binary fails.
+
 ### Prefer base classes — they unblock families
 
 Ranking by size alone is wrong. A *base* actor TU is worth more than its byte
