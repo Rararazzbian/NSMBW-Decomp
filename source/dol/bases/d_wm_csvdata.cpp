@@ -3,6 +3,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <game/bases/d_res_mng.hpp>
+#include <game/bases/d_wm_lib.hpp>
+#include <game/mLib/m_3d/mdl.hpp>
+#include <lib/nw4r/g3d/res/g3d_resnode.h>
 #include <string.h>
 
 /// @brief Reads a single comma-separated field out of a CSV line.
@@ -572,7 +575,7 @@ void dCsvData_c::ReadAnimeRouteName(char *csv, int &offset) {
 }
 
 void dCsvData_c::ReadAction(char *csv, int &offset) {
-    static const int c_ACTION_NAME_LEN = 20;
+    enum { c_ACTION_NAME_LEN = 20 };
 
     static const char *l_actionName[] = {
         "ìπ", "çª", "ñÿ", "ÉWÉÉÉìÉv", "ÇÕÇµÇ≤",
@@ -599,3 +602,368 @@ void dCsvData_c::ReadAction(char *csv, int &offset) {
         }
     }
 }
+
+void dCsvData_c::ReadRouteFlag(char *csv, int &pos) {
+    if (csv[pos] == '\r' && csv[pos + 1] == '\n') {
+        return;
+    }
+
+    int quoted = 0;
+    if (csv[pos] == '"') {
+        quoted = 1;
+        pos++;
+    }
+
+    char buf[32];
+
+    while (true) {
+        int i = 0;
+
+        while (true) {
+            if (csv[pos] == ',' || csv[pos] == '"' || (csv[pos] == '\r' && csv[pos + 1] == '\n')) {
+                buf[i] = '\0';
+                break;
+            }
+
+            buf[i] = csv[pos];
+            i++;
+            pos++;
+        }
+
+        if (mSubRouteData[mSubRouteNum].mPointName[0] != '0') {
+            if (strcmp(buf, "A") == 0) {
+                mSubRouteData[mSubRouteNum].mFlag |= 0x1;
+            } else if (strcmp(buf, "B") == 0) {
+                mSubRouteData[mSubRouteNum].mFlag |= 0x2;
+            } else if (strcmp(buf, "C") == 0) {
+                mSubRouteData[mSubRouteNum].mFlag |= 0x4;
+            }
+        }
+
+        if (csv[pos] == '"') {
+            pos++;
+            break;
+        }
+
+        if (quoted == 0 && csv[pos] == ',') {
+            break;
+        }
+
+        if (csv[pos] == '\r' && csv[pos + 1] == '\n') {
+            break;
+        }
+
+        pos++;
+    }
+}
+
+int dCsvData_c::GetActionLabel(const char *name) {
+    for (int i = 0; i < mSubRouteNum; i++) {
+        if (strcmp(mSubRouteData[i].mPointName, name) == 0) {
+            return mSubRouteData[i].mRouteIdx;
+        }
+    }
+
+    return -1;
+}
+
+int dCsvData_c::GetIndexFromPointName(const char *name) {
+    for (int i = 0; i < mPointNum; i++) {
+        if (strcmp(mPointData[i].mPointName, name) == 0) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void dCsvData_c::addKeyPoint(const m3d::mdl_c &mdl) {
+    nw4r::g3d::ResMdl resMdl = mdl.getResMdl();
+
+    for (int i = 0; i < resMdl.GetResNodeNumEntries(); i++) {
+        const char *name = resMdl.GetResNode(i).GetName();
+
+        if (name[0] == 'K') {
+            strncpy(mPointData[mPointNum].mPointName, name, 5);
+            mPointNum++;
+        }
+    }
+}
+
+void dCsvData_c::SetRouteInfo(const m3d::mdl_c &mdl) {
+    char startName[5];
+    char endName[5];
+    nw4r::g3d::ResMdl resMdl = mdl.getResMdl();
+
+    for (int i = 0; i < resMdl.GetResNodeNumEntries(); i++) {
+        nw4r::g3d::ResNode node = resMdl.GetResNode(i);
+        const char *name = node.GetName();
+
+        if (strlen(name) == 9 && name[0] == 'R' && name[4] >= '0' && name[4] <= '9' &&
+            name[8] >= '0' && name[8] <= '9') {
+
+            strncpy(mRouteData[mRouteNum].mPointName, name, 10);
+            dWmLib::GetStartPointNameFromRouteName(mRouteData[mRouteNum].mPointName, startName);
+            dWmLib::GetEndPointNameFromRouteName(mRouteData[mRouteNum].mPointName, endName);
+
+            mRouteData[mRouteNum].newChildPointName(20);
+            SearchRouteCost(startName, endName, &mRouteData[mRouteNum], 20, true);
+            SearchChildPointName(startName, endName, &mRouteData[mRouteNum], 20, true);
+
+            mRouteNum++;
+            reverseChildPointName(&mRouteData[mRouteNum - 1]);
+            appendChildFromModel(node, mRouteNum - 1);
+        }
+    }
+}
+
+const char *dCsvData_c::GetPointName(int idx) const {
+    return mPointData[idx].mPointName;
+}
+
+const char *dCsvData_c::GetOpenPointName(bool normal, int idx, int no) const {
+    if (normal) {
+        return mPointData[idx].mOpenPointName[no];
+    } else {
+        return mPointData[idx].mOpenPointNameSecret[no];
+    }
+}
+
+int dCsvData_c::GetOpenPointNum(bool normal, int idx) const {
+    if (normal) {
+        return mPointData[idx].mOpenPointNum;
+    } else {
+        return mPointData[idx].mOpenPointNumSecret;
+    }
+}
+
+const char *dCsvData_c::GetOpenRouteName(bool normal, int idx, int no) const {
+    if (normal) {
+        return mPointData[idx].mOpenRouteName[no];
+    } else {
+        return mPointData[idx].mOpenRouteNameSecret[no];
+    }
+}
+
+int dCsvData_c::GetOpenRouteNum(bool normal, int idx) const {
+    if (normal) {
+        return mPointData[idx].mOpenRouteNum;
+    } else {
+        return mPointData[idx].mOpenRouteNumSecret;
+    }
+}
+
+u32 dCsvData_c::GetAction(int idx, u32 action) {
+    return mPointData[idx].mAction & action;
+}
+
+u32 dCsvData_c::GetRouteFlag(int idx, u32 flag) {
+    return mPointData[idx].mRouteFlag & flag;
+}
+
+u8 dCsvData_c::GetPointParam(int idx) {
+    return mPointData[idx].mPointParam;
+}
+
+char *dCsvData_c::GetRouteName(int idx) {
+    return mRouteData[idx].mPointName;
+}
+
+char *dCsvData_c::GetChildPointName(int idx, int no) {
+    return &mRouteData[idx].mChildPointName[no * 5];
+}
+
+char *dCsvData_c::GetSubRouteName(int idx) {
+    return mSubRouteData[idx].mPointName;
+}
+
+int dCsvData_c::GetSubRouteIdx(const char *pointName1, const char *pointName2) {
+    for (int i = 0; i < mSubRouteNum; i++) {
+        const char *name1 = GetSubRouteName(i) + 1;
+        const char *name2 = GetSubRouteName(i) + 5;
+
+        if ((strncmp(name1, pointName1, 4) == 0 && strncmp(name2, pointName2, 4) == 0) ||
+            (strncmp(name2, pointName1, 4) == 0 && strncmp(name1, pointName2, 4) == 0)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int dCsvData_c::GetPointNum(int routeNo) {
+    return mRouteData[routeNo].mPointNum;
+}
+
+u8 dCsvData_c::GetSubRouteFlag(int subRouteNo) {
+    return mSubRouteData[subRouteNo].mFlag;
+}
+
+int dCsvData_c::GetRouteAnimNum(bool normal, int pointNo) {
+    if (normal) {
+        return mPointData[pointNo].mAnimeRouteNum;
+    }
+
+    return mPointData[pointNo].mAnimeRouteNumSecret;
+}
+
+const char *dCsvData_c::GetRouteAnimName(bool normal, int pointNo, int animNo) {
+    if (normal) {
+        return mPointData[pointNo].mAnimeRouteName[animNo];
+    }
+
+    return mPointData[pointNo].mAnimeRouteNameSecret[animNo];
+}
+
+void dCsvData_c::RouteData_t::newChildPointName(int num) {
+    mChildPointName = new char[num * 5];
+
+    for (int i = 0; i < num; i++) {
+        memset(&mChildPointName[i * 5], 0, 5);
+    }
+
+    mPointNum = 0;
+    mCost = 99999;
+}
+
+void dCsvData_c::RouteData_t::deleteChildPointName() {
+    delete[] mChildPointName;
+}
+
+bool dCsvData_c::SearchChildPointName(const char *startName, const char *endName,
+                                      RouteData_t *route, int maxDepth, bool reset) {
+    static int depth;
+
+    char startBuf[5];
+    char endBuf[5];
+    bool found = false;
+
+    if (reset) {
+        depth = 0;
+    }
+
+    depth++;
+
+    if (depth >= maxDepth) {
+        depth--;
+        return false;
+    }
+
+    for (int i = 0; i < mSubRouteNum; i++) {
+        dWmLib::GetStartPointNameFromRouteName(mSubRouteData[i].mPointName, startBuf);
+
+        if (strncmp(startBuf, startName, 4) == 0) {
+            dWmLib::GetEndPointNameFromRouteName(mSubRouteData[i].mPointName, endBuf);
+
+            if (strncmp(endBuf, endName, 4) == 0) {
+                if (route->mCost == depth) {
+                    found = true;
+                }
+                break;
+            }
+
+            if (SearchChildPointName(endBuf, endName, route, maxDepth, false)) {
+                strncpy(&route->mChildPointName[route->mPointNum * 5], endBuf, 4);
+                (&route->mChildPointName[route->mPointNum * 5])[5] = '0';
+                found = true;
+                route->mPointNum++;
+                break;
+            }
+        }
+    }
+
+    depth--;
+    return found;
+}
+
+static int l_searchCount;
+
+bool dCsvData_c::SearchRouteCost(const char *fromName, const char *toName, RouteData_t *route,
+                                 int maxDepth, bool isFirst) {
+    char startName[5];
+    char endName[5];
+
+    if (isFirst) {
+        l_searchCount = 0;
+    }
+
+    bool found = false;
+
+    l_searchCount++;
+    if (l_searchCount >= maxDepth) {
+        l_searchCount--;
+        return false;
+    }
+
+    for (int i = 0; i < mSubRouteNum; i++) {
+        dWmLib::GetStartPointNameFromRouteName(mSubRouteData[i].mPointName, startName);
+        if (strncmp(startName, fromName, 4) == 0) {
+            dWmLib::GetEndPointNameFromRouteName(mSubRouteData[i].mPointName, endName);
+            if (strncmp(endName, toName, 4) == 0) {
+                if (route->mCost > l_searchCount) {
+                    route->mCost = l_searchCount;
+                }
+                found = true;
+                break;
+            }
+
+            SearchRouteCost(endName, toName, route, maxDepth, false);
+        }
+    }
+
+    l_searchCount--;
+    return found;
+}
+
+void dCsvData_c::appendChildFromModel(const nw4r::g3d::ResNode &node, int routeNo) {
+    nw4r::g3d::ResNode child = node.GetChildNode();
+    int num = 0;
+
+    while (child.IsValid()) {
+        num++;
+        child = child.GetChildNode();
+    }
+
+    if (num >= mRouteData[routeNo].mPointNum) {
+        nw4r::g3d::ResNode work((void *)node.ptr());
+        child = work.GetChildNode();
+        mRouteData[routeNo].mPointNum = 0;
+
+        while (child.IsValid()) {
+            strncpy(&mRouteData[routeNo].mChildPointName[mRouteData[routeNo].mPointNum * 5],
+                    child.GetName(), 5);
+            mRouteData[routeNo].mPointNum++;
+            child = child.GetChildNode();
+        }
+    }
+}
+
+static char l_swapName[5];
+
+void dCsvData_c::reverseChildPointName(RouteData_t *route) {
+    int num = route->mPointNum;
+
+    if (num > 1) {
+        for (int i = 0; i < num / 2; i++) {
+            strncpy(l_swapName, &route->mChildPointName[i * 5], 5);
+            strncpy(&route->mChildPointName[i * 5], &route->mChildPointName[(num - i - 1) * 5], 5);
+            strncpy(&route->mChildPointName[(num - i - 1) * 5], l_swapName, 5);
+        }
+    }
+}
+
+bool dCsvData_c::isLineEnd(char *csv, int pos) {
+    return csv[pos] == '\r' && csv[pos + 1] == '\n';
+}
+
+const int dCsvData_c::c_COURSE_ID = 0;
+const int dCsvData_c::c_GHOST_ID = 20;
+const int dCsvData_c::c_TOWER_ID = 21;
+const int dCsvData_c::c_CASTLE_ID = 23;
+const int dCsvData_c::c_KINOKO_ID = 25;
+const int dCsvData_c::c_ENEMY_ID = 32;
+const int dCsvData_c::c_CANON_ID = 35;
+const int dCsvData_c::c_TRSHIP_ID = 36;
+const int dCsvData_c::c_AIRSHIP_ID = 37;
+const int dCsvData_c::c_START_ID = 38;
+const int dCsvData_c::c_PEACH_ID = 40;

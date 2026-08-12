@@ -1,6 +1,9 @@
 #pragma once
 #include <types.h>
 
+namespace m3d { class mdl_c; }
+namespace nw4r { namespace g3d { class ResNode; } }
+
 /// @brief World map route data, parsed from the world's CSV file.
 class dCsvData_c {
 public:
@@ -35,6 +38,9 @@ public:
 
     /// @brief Information about a single world map route. @unofficial
     struct RouteData_t {
+        /// @brief Allocates and clears the route's child point name buffer. @unofficial
+        void newChildPointName(int num);
+
         /// @brief Frees the route's child point name buffer.
         void deleteChildPointName();
 
@@ -81,6 +87,79 @@ public:
     bool isLineEnd(char *csv, int pos);
 
     const char *GetPointName(int) const;
+
+    /// @brief Gets the action of the sub route with the given point name pair.
+    int GetActionLabel(const char *pointName);
+
+    /// @brief Gets the index of the point with the given name.
+    int GetIndexFromPointName(const char *pointName);
+
+    /// @brief Records the world map's key points from the given model. @unofficial
+    void addKeyPoint(const m3d::mdl_c &mdl);
+
+    /// @brief Builds the route information from the given model. @unofficial
+    void SetRouteInfo(const m3d::mdl_c &mdl);
+
+    /// @brief Gets the name of a point the given point opens up.
+    const char *GetOpenPointName(bool, int, int) const;
+
+    /// @brief Gets the amount of points the given point opens up.
+    int GetOpenPointNum(bool, int) const;
+
+    /// @brief Gets the name of a route the given point opens up.
+    const char *GetOpenRouteName(bool, int, int) const;
+
+    /// @brief Gets the amount of routes the given point opens up.
+    int GetOpenRouteNum(bool, int) const;
+
+    /// @brief Gets the given point's actions, masked by @p action . @unofficial
+    u32 GetAction(int, u32);
+
+    /// @brief Gets the given point's route flags, masked by @p flag . @unofficial
+    u32 GetRouteFlag(int, u32);
+
+    /// @brief Gets the given point's parameter.
+    u8 GetPointParam(int);
+
+    /// @brief Gets the given route's point name pair.
+    char *GetRouteName(int);
+
+    /// @brief Gets the name of a point making up the given route.
+    char *GetChildPointName(int, int);
+
+    /// @brief Gets the given sub route's point name pair.
+    char *GetSubRouteName(int);
+
+    /// @brief Gets the index of the sub route connecting the two given points.
+    int GetSubRouteIdx(const char *pointName1, const char *pointName2);
+
+    /// @brief Gets the amount of points making up the given route.
+    int GetPointNum(int routeNo);
+
+    /// @brief Gets the given sub route's flags.
+    u8 GetSubRouteFlag(int subRouteNo);
+
+    /// @brief Gets the amount of routes animated by the given point.
+    int GetRouteAnimNum(bool normal, int pointNo);
+
+    /// @brief Gets the name of a route animated by the given point.
+    const char *GetRouteAnimName(bool normal, int pointNo, int animNo);
+
+    /// @brief Recursively walks the sub routes to record the chain of points from
+    ///        @p startName to @p endName into @p route . @unofficial
+    bool SearchChildPointName(const char *startName, const char *endName, RouteData_t *route,
+                              int maxDepth, bool reset);
+
+    /// @brief Recursively walks the sub routes to find the cheapest chain of points
+    ///        from @p fromName to @p toName , recording its cost. @unofficial
+    bool SearchRouteCost(const char *fromName, const char *toName, RouteData_t *route,
+                         int maxDepth, bool isFirst);
+
+    /// @brief Fills the route's child point names from the model node's child chain.
+    void appendChildFromModel(const nw4r::g3d::ResNode &node, int routeNo);
+
+    /// @brief Reverses the order of the route's child point names. @unofficial
+    void reverseChildPointName(RouteData_t *route);
 
     int mWorldNo;                        ///< The world this data belongs to.
     int mFileNo;                         ///< The index of the CSV file this data was read from.
