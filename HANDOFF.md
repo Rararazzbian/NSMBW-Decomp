@@ -64,9 +64,15 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
   binaries verify, tree clean.
 - **23 commits are unpushed.** Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
-- **The pakkun pair is DONE and linked** — `d_a_en_dpakkun_base.cpp` 64/64 and
-  `d_a_en_dfpakkun.cpp` 33/33, both matching. `d_a_en_jimen_pakkun_base.cpp` is
-  the next pakkun-family target and should inherit their idioms nearly wholesale.
+- **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
+  64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
+  last of those landed on its **first build** with no `keepWeak`, no `syms.txt`
+  entry and no deadstrip diagnosis — the accumulated rules now front-load that
+  work instead of paying for it in failed builds.
+- **Next target: `d_a_en_bros_base.cpp`** (12,072 B, 97 fns, largest clean
+  base). Bases unblock families, and the six-agent pipeline is well priced now.
+  `d_a_player_hio_ADJ.cpp` has one function left but it is a characterised dead
+  end on its current axis — see its entry below before spending on it.
 - **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
   establish. The levers list and the two whole-binary failure signatures below
   are the most valuable part of this file.
