@@ -47,10 +47,11 @@ void daEnDoor_c::setParentInfo(dActor_c *parent) {
 }
 
 void daEnDoor_c::rotation_move(dActor_c *parent) {
-    int angle = parent->mAngle.z.mAngle + 0x4000;
+    mAng angle = parent->mAngle.z;
+    angle += 0x4000;
     mVec3_c pos = parent->mPos;
 
-    mAngle.z = angle + mBaseAngle;
+    mAngle.z = angle.mAngle + mBaseAngle;
 
     float cos = nw4r::math::CosIdx(angle);
     float sin = nw4r::math::SinIdx(angle);
