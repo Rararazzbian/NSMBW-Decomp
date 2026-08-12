@@ -1,0 +1,551 @@
+<title>NSMBW Decompilation Progress</title>
+
+<style>
+  :root {
+    --ground: #f5f6f8;
+    --surface: #ffffff;
+    --sunk: #eceef2;
+    --line: #d9dde4;
+    --ink: #121620;
+    --dim: #5b6577;
+    --faint: #8b94a5;
+    --matched: #0e8f6e;
+    --matched-soft: #d3ede4;
+    --partial: #a8681a;
+    --partial-soft: #f6e6cf;
+    --todo-tile: #ccd2dc;
+    --tile-line: rgba(255, 255, 255, 0.55);
+    --shadow: 0 1px 2px rgba(18, 22, 32, .06), 0 8px 24px -12px rgba(18, 22, 32, .18);
+    --radius: 10px;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0e1014;
+      --surface: #161a21;
+      --sunk: #11141a;
+      --line: #262d39;
+      --ink: #e8ebf2;
+      --dim: #8792a6;
+      --faint: #667186;
+      --matched: #4fd1a5;
+      --matched-soft: #16342c;
+      --partial: #e3a857;
+      --partial-soft: #35291a;
+      --todo-tile: #232935;
+      --tile-line: rgba(0, 0, 0, 0.45);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -14px rgba(0, 0, 0, .7);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --ground: #f5f6f8; --surface: #ffffff; --sunk: #eceef2; --line: #d9dde4;
+    --ink: #121620; --dim: #5b6577; --faint: #8b94a5;
+    --matched: #0e8f6e; --matched-soft: #d3ede4;
+    --partial: #a8681a; --partial-soft: #f6e6cf;
+    --todo-tile: #ccd2dc; --tile-line: rgba(255, 255, 255, 0.55);
+    --shadow: 0 1px 2px rgba(18, 22, 32, .06), 0 8px 24px -12px rgba(18, 22, 32, .18);
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0e1014; --surface: #161a21; --sunk: #11141a; --line: #262d39;
+    --ink: #e8ebf2; --dim: #8792a6; --faint: #667186;
+    --matched: #4fd1a5; --matched-soft: #16342c;
+    --partial: #e3a857; --partial-soft: #35291a;
+    --todo-tile: #232935; --tile-line: rgba(0, 0, 0, 0.45);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -14px rgba(0, 0, 0, .7);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 32px 20px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* ---- masthead ---- */
+  .mast { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+  .mast h1 {
+    margin: 0; font-size: 19px; font-weight: 650; letter-spacing: -0.01em;
+  }
+  .mast .sep { color: var(--faint); }
+  .mast .branch {
+    font-family: var(--mono); font-size: 12px; color: var(--dim);
+    background: var(--sunk); border: 1px solid var(--line);
+    padding: 2px 8px; border-radius: 999px;
+  }
+
+  /* ---- headline figure ---- */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 26px 28px;
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: 8px 40px;
+    align-items: center;
+  }
+  @media (max-width: 700px) { .hero { grid-template-columns: 1fr; gap: 18px; } }
+
+  .figure { display: flex; align-items: baseline; gap: 4px; }
+  .figure .num {
+    font-family: var(--mono);
+    font-size: clamp(44px, 9vw, 68px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--matched);
+  }
+  .figure .pct {
+    font-family: var(--mono); font-size: 22px; font-weight: 500;
+    color: var(--matched); opacity: .65;
+  }
+  .figure-label {
+    display: block; margin-top: 10px;
+    font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--faint);
+  }
+
+  .hero-side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .bytes { font-family: var(--mono); font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .bytes b { color: var(--ink); font-weight: 600; }
+
+  .tally { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; padding: 4px 11px 4px 9px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--sunk);
+  }
+  .chip .dot { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+  .chip b { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .dot-done { background: var(--matched); }
+  .dot-wip { background: var(--partial); }
+  .dot-todo { background: var(--todo-tile); }
+
+  /* ---- per-binary bars ---- */
+  .panel {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .panel-head {
+    padding: 14px 18px; border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px;
+  }
+  .panel-head h2 { margin: 0; font-size: 13px; font-weight: 650; letter-spacing: -0.005em; }
+  .panel-head .note { font-size: 12px; color: var(--faint); }
+
+  .rows { display: flex; flex-direction: column; }
+  .row {
+    display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr) 74px;
+    align-items: center; gap: 16px;
+    padding: 11px 18px;
+    border-top: 1px solid var(--line);
+  }
+  .row:first-child { border-top: 0; }
+  .row .name { font-family: var(--mono); font-size: 12.5px; color: var(--ink); overflow-wrap: anywhere; }
+  .row .pctcell {
+    font-family: var(--mono); font-size: 12.5px; text-align: right;
+    font-variant-numeric: tabular-nums; color: var(--dim);
+  }
+  .row.full .pctcell { color: var(--matched); font-weight: 600; }
+  .track { height: 8px; border-radius: 999px; background: var(--sunk); overflow: hidden; border: 1px solid var(--line); }
+  .fill { height: 100%; background: var(--matched); border-radius: 999px; }
+  @media (max-width: 560px) {
+    .row { grid-template-columns: minmax(0,1fr) 64px; }
+    .row .track { grid-column: 1 / -1; }
+  }
+
+  /* ---- treemap ---- */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    padding: 12px 18px; border-bottom: 1px solid var(--line);
+  }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    font: inherit; font-size: 12px; padding: 5px 13px; border: 0; cursor: pointer;
+    background: var(--surface); color: var(--dim); border-left: 1px solid var(--line);
+  }
+  .seg button:first-child { border-left: 0; }
+  .seg button[aria-pressed="true"] { background: var(--matched-soft); color: var(--matched); font-weight: 600; }
+  .seg button:focus-visible, #q:focus-visible { outline: 2px solid var(--matched); outline-offset: 2px; }
+
+  #q {
+    font: inherit; font-size: 12.5px; font-family: var(--mono);
+    padding: 6px 11px; border-radius: 8px; flex: 1 1 200px; min-width: 0;
+    border: 1px solid var(--line); background: var(--sunk); color: var(--ink);
+  }
+  #q::placeholder { color: var(--faint); }
+
+  .canvas-hold { position: relative; padding: 14px; }
+  canvas { display: block; width: 100%; height: auto; border-radius: 6px; }
+
+  #tip {
+    position: absolute; pointer-events: none; opacity: 0;
+    transition: opacity .1s;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 11px; box-shadow: var(--shadow);
+    font-family: var(--mono); font-size: 12px; max-width: 320px; z-index: 5;
+  }
+  #tip .t-name { color: var(--ink); overflow-wrap: anywhere; }
+  #tip .t-meta { color: var(--dim); margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 18px;
+    padding: 12px 18px; border-top: 1px solid var(--line); font-size: 12px; color: var(--dim);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  /* ---- filter results (keyboard/AT path to the same data) ---- */
+  #results { display: none; border-top: 1px solid var(--line); max-height: 320px; overflow-y: auto; }
+  #results.on { display: block; }
+  #results table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  #results th {
+    text-align: left; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--faint); font-weight: 600; padding: 9px 18px; position: sticky; top: 0;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  #results td { padding: 7px 18px; border-top: 1px solid var(--line); font-family: var(--mono); }
+  #results td:last-child, #results th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .state { font-size: 11px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .s-done { background: var(--matched-soft); color: var(--matched); }
+  .s-wip { background: var(--partial-soft); color: var(--partial); }
+  .s-todo { background: var(--sunk); color: var(--faint); }
+  .empty { padding: 18px; color: var(--faint); font-size: 13px; }
+
+  footer {
+    font-size: 12px; color: var(--faint); line-height: 1.7;
+    border-top: 1px solid var(--line); padding-top: 18px;
+  }
+  footer code {
+    font-family: var(--mono); font-size: 11.5px;
+    background: var(--sunk); border: 1px solid var(--line);
+    padding: 1px 6px; border-radius: 5px; color: var(--dim);
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <div class="mast">
+    <h1>New Super Mario Bros. Wii</h1>
+    <span class="sep">/</span>
+    <span class="branch" id="m-branch">…</span>
+    <span class="branch" id="m-commit">…</span>
+  </div>
+
+  <section class="hero">
+    <div>
+      <div class="figure">
+        <span class="num" id="h-num">0.000</span><span class="pct">%</span>
+      </div>
+      <span class="figure-label">Reproduced byte-for-byte</span>
+    </div>
+    <div class="hero-side">
+      <div class="bytes">
+        <b id="h-done">0</b> of <b id="h-total">0</b> bytes of the original game rebuilt from source
+      </div>
+      <div class="tally">
+        <span class="chip"><i class="dot dot-done"></i><b id="c-done">0</b>&nbsp;files exact</span>
+        <span class="chip"><i class="dot dot-wip"></i><b id="c-wip">0</b>&nbsp;nearly there</span>
+        <span class="chip"><i class="dot dot-todo"></i><b id="c-todo">0</b>&nbsp;untouched</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>The five files that make up the game</h2>
+      <span class="note">Each must match the original exactly</span>
+    </div>
+    <div class="rows" id="bars"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Every piece of the game, sized by how big it is</h2>
+      <span class="note" id="map-note">…</span>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Which part of the game to show">
+        <button type="button" data-cat="all" aria-pressed="true">Everything</button>
+        <button type="button" data-cat="dol" aria-pressed="false">Main game</button>
+        <button type="button" data-cat="modules" aria-pressed="false">Add-on modules</button>
+      </div>
+      <input id="q" type="search" placeholder="Filter by name, e.g. kuribo" aria-label="Filter by name" autocomplete="off">
+    </div>
+    <div class="canvas-hold">
+      <canvas id="map" role="img" aria-label="Treemap of the game's code, coloured by whether it has been reproduced"></canvas>
+      <div id="tip" role="status" aria-live="off"></div>
+    </div>
+    <div id="results"></div>
+    <div class="legend">
+      <span><i style="background:var(--matched)"></i> Matches the original exactly</span>
+      <span><i style="background:var(--partial)"></i> Nearly matching, not yet counted</span>
+      <span><i style="background:var(--todo-tile)"></i> Not started</span>
+    </div>
+  </section>
+
+  <footer>
+    Snapshot taken at commit <code id="f-commit">…</code> — <span id="f-subject"></span><br>
+    Figures come from the project's own <code>progress.py</code>; the map is built from the
+    unit list <code>objdiff.json</code>, the same data the public decomp.dev tracker reads.
+    A file only counts once <em>every</em> byte it produces is identical to the original,
+    so partial work shows as amber and adds nothing to the percentage.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA = __DATA__;
+  var BRANCH = "__BRANCH__";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return n.toLocaleString("en-US"); };
+
+  /* ---------- headline ---------- */
+  $("h-num").textContent = DATA.grand.pct.toFixed(3);
+  $("h-done").textContent = fmt(DATA.grand.done);
+  $("h-total").textContent = fmt(DATA.grand.total);
+  $("c-done").textContent = fmt(DATA.counts.done);
+  $("c-wip").textContent = fmt(DATA.counts.wip);
+  $("c-todo").textContent = fmt(DATA.counts.todo);
+  $("m-branch").textContent = BRANCH;
+  $("m-commit").textContent = DATA.commit;
+  $("f-commit").textContent = DATA.commit;
+  $("f-subject").textContent = DATA.subject;
+
+  /* ---------- per-binary bars ---------- */
+  var FRIENDLY = {
+    "wiimj2d.dol": "Main game",
+    "d_profileNP.rel": "Actor registry",
+    "d_basesNP.rel": "Level objects",
+    "d_enemiesNP.rel": "Enemies",
+    "d_en_bossNP.rel": "Bosses"
+  };
+  var barsHost = $("bars"), barsHtml = "";
+  Object.keys(DATA.totals).forEach(function (k) {
+    var t = DATA.totals[k];
+    var full = t.pct >= 100 ? " full" : "";
+    barsHtml +=
+      '<div class="row' + full + '">' +
+        '<div class="name">' + (FRIENDLY[k] || k) + '</div>' +
+        '<div class="track"><div class="fill" style="width:' + Math.max(t.pct, 0.35) + '%"></div></div>' +
+        '<div class="pctcell">' + t.pct.toFixed(2) + '%</div>' +
+      '</div>';
+  });
+  barsHost.innerHTML = barsHtml;
+
+  /* ---------- treemap ---------- */
+  var cv = $("map"), ctx = cv.getContext("2d"), tip = $("tip");
+  var cat = "all", query = "";
+  var rects = [];
+
+  function pool() {
+    return DATA.units.filter(function (u) { return cat === "all" || u.g === cat; });
+  }
+
+  /* squarified treemap (Bruls, Huizing, van Wijk) */
+  function squarify(items, x, y, w, h, out) {
+    var i = 0;
+    while (i < items.length) {
+      var vertical = w < h;
+      var side = vertical ? w : h;
+      var free = (vertical ? h : w);
+      var remaining = 0;
+      for (var k = i; k < items.length; k++) remaining += items[k].v;
+      if (remaining <= 0 || side <= 0 || free <= 0) break;
+
+      var run = 0, best = Infinity, count = 0;
+      for (var j = i; j < items.length; j++) {
+        var next = run + items[j].v;
+        var depth = next / side;
+        if (depth <= 0) { count++; run = next; continue; }
+        var worst = 0;
+        for (var m = i; m <= j; m++) {
+          var len = items[m].v / depth;
+          var r = len > 0 ? Math.max(depth / len, len / depth) : Infinity;
+          if (r > worst) worst = r;
+        }
+        if (worst > best && count > 0) break;
+        best = worst; run = next; count++;
+      }
+      if (count === 0) { count = 1; run = items[i].v; }
+
+      var depth2 = run / side;
+      var off = 0;
+      for (var p = i; p < i + count; p++) {
+        var len2 = run > 0 ? (items[p].v / run) * side : 0;
+        var rx, ry, rw, rh;
+        if (vertical) { rx = x; ry = y + off; rw = depth2; rh = len2; }
+        else { rx = x + off; ry = y; rw = len2; rh = depth2; }
+        out.push({ x: rx, y: ry, w: rw, h: rh, u: items[p].u });
+        off += len2;
+      }
+      if (vertical) { x += depth2; w -= depth2; }
+      else { y += depth2; h -= depth2; }
+      i += count;
+    }
+  }
+
+  function colourOf(u, dim) {
+    var css = getComputedStyle(document.documentElement);
+    var c = u.s === "done" ? css.getPropertyValue("--matched")
+          : u.s === "wip" ? css.getPropertyValue("--partial")
+          : css.getPropertyValue("--todo-tile");
+    return { c: c.trim(), dim: dim };
+  }
+
+  function draw() {
+    var units = pool();
+    var cssW = cv.clientWidth || 900;
+    var cssH = Math.max(320, Math.round(cssW * 0.52));
+    var dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(cssW * dpr);
+    cv.height = Math.round(cssH * dpr);
+    cv.style.height = cssH + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    var total = 0;
+    units.forEach(function (u) { total += u.c + u.d; });
+    if (!total) { rects = []; return; }
+
+    var scale = (cssW * cssH) / total;
+    var items = units.map(function (u) { return { v: (u.c + u.d) * scale, u: u }; });
+
+    rects = [];
+    squarify(items, 0, 0, cssW, cssH, rects);
+
+    var css = getComputedStyle(document.documentElement);
+    var cDone = css.getPropertyValue("--matched").trim();
+    var cWip = css.getPropertyValue("--partial").trim();
+    var cTodo = css.getPropertyValue("--todo-tile").trim();
+    var cLine = css.getPropertyValue("--tile-line").trim();
+    var q = query;
+
+    rects.forEach(function (r) {
+      var u = r.u;
+      var hit = !q || u.n.toLowerCase().indexOf(q) !== -1;
+      ctx.globalAlpha = hit ? 1 : 0.12;
+      ctx.fillStyle = u.s === "done" ? cDone : u.s === "wip" ? cWip : cTodo;
+      ctx.fillRect(r.x, r.y, Math.max(r.w, 0.5), Math.max(r.h, 0.5));
+      if (r.w > 2.5 && r.h > 2.5) {
+        ctx.globalAlpha = hit ? 1 : 0.12;
+        ctx.strokeStyle = cLine;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1);
+      }
+    });
+    ctx.globalAlpha = 1;
+
+    $("map-note").textContent = fmt(units.length) + " pieces · " +
+      fmt(Math.round(total / 1024)) + " KB";
+  }
+
+  /* ---------- hover ---------- */
+  function at(px, py) {
+    for (var i = rects.length - 1; i >= 0; i--) {
+      var r = rects[i];
+      if (px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h) return r;
+    }
+    return null;
+  }
+
+  cv.addEventListener("mousemove", function (e) {
+    var b = cv.getBoundingClientRect();
+    var r = at(e.clientX - b.left, e.clientY - b.top);
+    if (!r) { tip.style.opacity = 0; return; }
+    var u = r.u;
+    var label = u.s === "done" ? "matches exactly"
+              : u.s === "wip" ? "nearly matching" : "not started";
+    tip.innerHTML =
+      '<div class="t-name">' + u.n.replace(/</g, "&lt;") + "</div>" +
+      '<div class="t-meta">' + fmt(u.c + u.d) + " bytes · " + label + "</div>";
+    tip.style.opacity = 1;
+    var hold = cv.parentElement.getBoundingClientRect();
+    var tw = tip.offsetWidth, th = tip.offsetHeight;
+    var lx = e.clientX - hold.left + 14;
+    var ly = e.clientY - hold.top + 14;
+    if (lx + tw > hold.width - 6) lx = e.clientX - hold.left - tw - 14;
+    if (ly + th > hold.height - 6) ly = e.clientY - hold.top - th - 14;
+    tip.style.left = Math.max(6, lx) + "px";
+    tip.style.top = Math.max(6, ly) + "px";
+  });
+  cv.addEventListener("mouseleave", function () { tip.style.opacity = 0; });
+
+  /* ---------- filter ---------- */
+  function renderResults() {
+    var host = $("results");
+    if (!query) { host.className = ""; host.innerHTML = ""; return; }
+    var hits = pool().filter(function (u) { return u.n.toLowerCase().indexOf(query) !== -1; });
+    host.className = "on";
+    if (!hits.length) {
+      host.innerHTML = '<div class="empty">Nothing matches “' +
+        query.replace(/</g, "&lt;") + "”.</div>";
+      return;
+    }
+    var rowsHtml = hits.slice(0, 300).map(function (u) {
+      var cls = u.s === "done" ? "s-done" : u.s === "wip" ? "s-wip" : "s-todo";
+      var txt = u.s === "done" ? "exact" : u.s === "wip" ? "nearly" : "not started";
+      return "<tr><td>" + u.n.replace(/</g, "&lt;") + "</td>" +
+             '<td><span class="state ' + cls + '">' + txt + "</span></td>" +
+             "<td>" + fmt(u.c + u.d) + "</td></tr>";
+    }).join("");
+    host.innerHTML =
+      "<table><thead><tr><th>Name</th><th>State</th><th>Bytes</th></tr></thead><tbody>" +
+      rowsHtml + "</tbody></table>";
+  }
+
+  $("q").addEventListener("input", function (e) {
+    query = e.target.value.trim().toLowerCase();
+    draw(); renderResults();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
+    b.addEventListener("click", function () {
+      Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (o) {
+        o.setAttribute("aria-pressed", String(o === b));
+      });
+      cat = b.dataset.cat;
+      draw(); renderResults();
+    });
+  });
+
+  /* ---------- lifecycle ---------- */
+  var t;
+  window.addEventListener("resize", function () {
+    clearTimeout(t); t = setTimeout(draw, 120);
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", draw);
+  }
+  new MutationObserver(draw).observe(document.documentElement, {
+    attributes: true, attributeFilter: ["data-theme"]
+  });
+
+  draw();
+})();
+</script>
