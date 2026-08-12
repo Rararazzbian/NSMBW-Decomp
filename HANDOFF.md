@@ -62,8 +62,10 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 - **Position: 9.826%** (638,728 / 6,500,368); `wiimj2d.dol` **19.200%**. Five
   binaries verify, tree clean.
-- **Next target is `d_a_en_dfpakkun.cpp`** — its base's header is resolved and
-  validated. `d_a_en_jimen_pakkun_base.cpp` is the other pakkun-family one.
+- **`d_a_en_dfpakkun.cpp` is authored and banked `nonMatching`** — all 33
+  functions byte-exact and correctly placed, blocked only by the weak-copy tail.
+  See "The pakkun pair" below before touching it. `d_a_en_jimen_pakkun_base.cpp`
+  is the other pakkun-family one and is now the best *fresh* target.
 - **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
   establish. The levers list and the two whole-binary failure signatures below
   are the most valuable part of this file.
@@ -100,6 +102,20 @@ then closed in half an hour once someone finally compared it against a sibling.
 
 **Cost one agent. Do it every time.** Also give every authoring agent the
 verified class declaration up front (see below) so nobody re-derives it.
+
+**`tools/sibmap.py` now does the mechanical part.** It disassembles a target
+range and scores every function against a corpus built from all matching slices
+*plus* our own compiled objects — the latter matters, because those carry the
+weak copies the linker discarded. Two views per pair: raw instruction words, and
+a shape view with immediates masked so "same code, different member offsets"
+still scores high. On `d_a_en_dfpakkun.cpp` it found seven animation setters
+that are one body, 34% of the file. Its target range is still hardcoded; move it
+to argv. `tools/datarefs.py` is its counterpart for data bounds — see below.
+
+Repeated on `d_a_en_dfpakkun.cpp` (72 functions, six agents): **33/33 authored
+functions matched on first compile**, including a 944-byte state machine and a
+572-byte `createMdl`, neither with any precedent. The method is now confirmed
+twice at scale.
 
 ### The order that worked
 
@@ -214,9 +230,11 @@ banked *whole*:
 | `d_a_en_door.cpp` | 50 | Closed on a coupled pair after ~300 failed builds |
 | `d_a_rot_block.cpp` | 5 | **Was not on any target list** |
 
-Plus `d_a_en_dpakkun_base.cpp` at **60/64**, landed `nonMatching` — see the wall
-note below. Its header is fully resolved and validated, so it is ready to serve
-`d_a_en_dfpakkun.cpp` even before the last four functions close.
+Plus the pakkun pair, both authored complete and both still `nonMatching`:
+`d_a_en_dpakkun_base.cpp` at **64/64** and `d_a_en_dfpakkun.cpp` at **33/33**.
+Neither is blocked by a function; they are blocked by each other. Read "The
+pakkun pair, and the trap that holds both of them" before touching either —
+the flag is not an annotation, it decides whether your object is linked at all.
 
 **Three TUs were discovered mid-batch** that our enumeration cannot see, and the
 `.text` end boundary was wrong on **five** separate assignments, always the same
@@ -289,13 +307,50 @@ reachable.
 46/46 on the first integration; `d_a_en_lkuribo_base.cpp` then did 58/58 with
 every function matching on its first compile, so the pattern is now well priced.
 
-**Start with `d_a_en_dfpakkun.cpp`.** Its base's header is already resolved and
-validated, which is the expensive prerequisite. Note `tu_split.py` reports its
-range also contains **11 `daEnDpakkunBase_c` weak copies** — do not stretch the
-slice to cover them; read them instead as evidence that those members are inline
-in the base's header. Its base is still `nonMatching` at 60/64, which does not
-block authoring but does mean the base's four open functions should be revisited
-before assuming the header is final.
+### The pakkun pair, and the trap that holds both of them
+
+**Both `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) have
+every function byte-exact and are still banked `nonMatching`.** Neither is
+blocked by a function. They are blocked by each other, and understanding why is
+worth more than either file.
+
+**A `nonMatching` slice is not linked at all.** `gen_lcf.py`, `slice_dol.py` and
+`configure.py` all skip it and the original bytes are spliced in. So the flag is
+not a progress annotation — it decides whether your object participates in the
+link, and flipping it is the *first* real test your object has ever had.
+Everything below only appears at that moment.
+
+**The weak-copy deadlock.** Inline members are emitted by every TU that includes
+the header, and the linker keeps one arbitrary copy. The original kept
+`daEnDpakkunBase_c`'s inline members in `d_a_en_dfpakkun.cpp`. So:
+
+- Flip the *base* on while dfpakkun is unlinked and the base object becomes the
+  only provider of ~35 weak copies. It keeps them, `.text` grows 0xE0, all five
+  binaries fail.
+- Flip *dfpakkun* on and its object emits `__dt__Q33m3d5mdl_c10callback_cFv` and
+  the `timingB`/`timingC` stubs, which the original resolves from a still
+  undecompiled TU at 0x80026080. Ours becomes the only real definition, so the
+  linker takes it and `.text` grows again.
+
+The second is fixable with `syms.txt` entries pointing at the original
+addresses; the first is not, until dfpakkun links. **They likely have to be
+flipped together.**
+
+**`keepWeak` and `syms.txt` are global, not per-slice.** Adding the entries
+dfpakkun needs while dfpakkun is `nonMatching` forces those same symbols in the
+sibling `d_a_en_dpakkun.cpp`, which *is* linked — and breaks all five binaries.
+This is why the working entries are recorded in commit `163e715`'s message
+rather than in the files. Restore them at the same moment you clear the flag.
+
+**What is actually left on dfpakkun.** In a full link every one of the 72
+in-range symbols lands at its exact original address and every section size
+matches. The only defect is the eight-member `daEnDpakkunBase_c` flush block at
+0x8002A140: ours comes out in **reverse declaration order**, the original wants
+`updateCc, finalUpdate, initPakkunDir, YoshiFumiScoreSet, PenguinSlide, Slip,
+HipAttk, Spin`. Moving the definitions out of the class body was tried and
+changed nothing, so *definition* order is not the lever. Declaration order is,
+and that is pinned by the vtable — so the answer is something else, and finding
+it closes both TUs at once.
 
 ### The remaining actor TUs, with what is known about each
 
@@ -307,8 +362,8 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 
 | TU | Bytes | Fns | Notes |
 |---|---|---|---|
-| `d_a_en_dfpakkun` | 9,688 | 59 | **Next up** — base's header resolved and validated |
-| `d_a_en_jimen_pakkun_base` | 7,896 | 58 | Pakkun family; likely shares idioms with the base |
+| `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, banked `nonMatching` — see "The pakkun pair" |
+| `d_a_en_jimen_pakkun_base` | 7,896 | 58 | **Best fresh target.** Pakkun family — the anim-setter and state idioms in `d_a_en_dfpakkun.cpp` should transfer nearly wholesale |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
 | `d_a_en_blockmain` | 12,392 | 90 | |
 | `d_a_player_manager` | 10,764 | 68 | |
@@ -755,7 +810,9 @@ first; mark genuinely inferred names `@unofficial`.
   `d_a_spin_child_base.cpp` (23), `d_a_sink_dokan.cpp` (14), `d_a_cursor.cpp` (9),
   `d_a_rot_block.cpp` (5), and earlier `d_wm_csvdata.cpp` (41),
   `d_a_en_super_bigpile.cpp` (46), `d_tag_processor.cpp` (39).
-- `d_a_en_dpakkun_base.cpp` is banked `nonMatching` at 60/64.
+- `d_a_en_dpakkun_base.cpp` (64/64) and `d_a_en_dfpakkun.cpp` (33/33) are both
+  banked `nonMatching`, each complete at the function level. Clearing the flags
+  is a linkage problem, not an authoring one — see "The pakkun pair".
 
 Per-binary:
 
@@ -1042,6 +1099,53 @@ can.
 
 Side effect to handle: inline-in-class flips the symbol from `GLOBAL` to `WEAK`,
 so it needs a `keepWeak` entry. If `.text` comes out 4–16 bytes short, that is why.
+
+**`d_a_en_dfpakkun.cpp` added a third case, so the rule is now three-way** and
+each case was measured against the alternative rather than argued:
+
+| The empty virtual is… | Put it | Why |
+|---|---|---|
+| never called, and sits at a natural source position | **out of line** | `-ipa file` would inline it away and break the vtable slot |
+| called | **inline in the class body** | flushes at its first caller, which is where the original has it |
+| never called, but sits **inside the end-of-TU flush block** | **inline in the class body** | out of line it is emitted at its source position, which is always ahead of that block, so it can never reach the address |
+
+`calcFirePrm` is the third case: it is called nowhere in the entire DOL, yet it
+lives at 0x8002A1E0 between `hitCallback_Spin` and `m3d::banm_c::play`. Two
+never-called virtuals in the *same file* went out of line and two others went
+inline, so "is it called?" alone does not decide it — **check where the target
+address falls** as well.
+
+### `.text` too long? Look for weak symbols you are the only one defining
+
+Distinct from the deadstrip signature (`.text` short) and worth its own entry,
+because the fix is the opposite. Your object emits a weak inline member; the
+original resolved it from a TU that is **still undecompiled**, so in that build
+your copy loses and in ours it wins, because spliced original bytes are not a
+definition the linker can see.
+
+Diagnose by listing your object's `FUNC` symbols against the original's symbols
+in your address range: anything of yours that the original places *elsewhere* is
+a candidate. Fix with a `syms.txt` entry at the original's address — that is what
+removed `__dt__Q33m3d5mdl_c10callback_cFv` and the `timingB`/`timingC` stubs
+from `d_a_en_dfpakkun.cpp`'s range.
+
+### New lever: all words identical, only the `0xNN(r1)` slots wrong
+
+MWCC allocates by-value argument temporaries in **two passes**: temps for calls
+written directly in the function body first, downward from the top of the temp
+area, then temps created while expanding an **inline wrapper**, below them. Each
+pass is in first-use order.
+
+So a diff where every instruction word is right and *only* stack displacements
+are wrong means some calls go through an inline wrapper in the real source and
+yours do not. Counting the two descending blocks tells you exactly how many.
+
+On `createMdl` the target's blocks were 6 and 6. Writing all four `create()`
+calls explicitly gave one block and 22 wrong slots; switching three of them to
+their inline `nullptr`-defaulting overloads fixed 10 and left exactly 2 — which
+is how a **missing overload in `m3d::anmChrBlend_c`** was found rather than
+ground at with register permutations. Do not reach for the register levers on
+this signature; it is a source-shape problem.
 
 ### A shadowed state ID compiles, diffs clean, and is wrong
 
