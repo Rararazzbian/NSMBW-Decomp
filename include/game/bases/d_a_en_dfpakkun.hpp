@@ -1,4 +1,10 @@
 #pragma once
+/// @note Included first on purpose. Classes flush their end-of-TU inline blocks
+/// in reverse parse order, so parsing m3d::mdl_c::callback_c ahead of
+/// anmChrBlend_c and anmChr_c is what pushes its block last, where the original
+/// has it. The same reordering shows up in .data, where the original's three
+/// weak vtables start with anmChrBlend_c.
+#include <game/mLib/m_3d/mdl.hpp>
 #include <game/bases/d_a_en_dpakkun_base.hpp>
 #include <game/mLib/m_3d/anm_chr_blend.hpp>
 

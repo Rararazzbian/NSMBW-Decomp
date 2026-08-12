@@ -42,9 +42,6 @@ public:
     virtual void deleteReady();
 
     /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
-    virtual void finalUpdate() { calcMdl(); }
-
-    /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
     virtual void removeCc() {
         dActor_c::mCc.release();
         mCc.release();
@@ -60,13 +57,13 @@ public:
     virtual bool hitCallback_Star(dCc_c *self, dCc_c *other);
 
     /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
-    virtual bool hitCallback_Slip(dCc_c *self, dCc_c *other) { return false; }
-
-    /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
     virtual bool hitCallback_Spin(dCc_c *self, dCc_c *other) { return false; }
 
     /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
     virtual bool hitCallback_HipAttk(dCc_c *self, dCc_c *other) { return false; }
+
+    /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
+    virtual bool hitCallback_Slip(dCc_c *self, dCc_c *other) { return false; }
 
     virtual bool hitCallback_YoshiHipAttk(dCc_c *self, dCc_c *other);
 
@@ -103,6 +100,16 @@ public:
 
     /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
     virtual void initPakkunDir() {}
+
+    /// @details Defined inline; the linked copy comes from @p d_a_en_dfpakkun.cpp.
+    /// @note Declared here, in the middle of the new virtuals, rather than up
+    /// with the other base overrides. It is an *override*, so its vtable slot
+    /// comes from @ref dEn_c and is unaffected by where it appears -- and
+    /// uncalled inline members are flushed at the end of the TU in reverse
+    /// declaration order, so this position is what puts it where the original
+    /// has it. Same reason @ref hitCallback_Spin, @ref hitCallback_HipAttk and
+    /// @ref hitCallback_Slip are declared in that order above.
+    virtual void finalUpdate() { calcMdl(); }
 
     virtual void createMdl();
     virtual void setVanishAnm();
