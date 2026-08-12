@@ -4,6 +4,12 @@
 
 class dPyAnm_HIO_c {
 public:
+    dPyAnm_HIO_c();
+
+    /// @brief Resets this animation's rate/blend-duration to the default for
+    /// player-model animation @p id. @unofficial
+    void resetParam(int id);
+
     u8 mID;
     float mRate;
     float mBlendDuration;
@@ -11,6 +17,11 @@ public:
 
 class dPyAnmMain_HIO_c {
 public:
+    dPyAnmMain_HIO_c();
+
+    /// @unofficial
+    void resetParam();
+
     dPyAnm_HIO_c mAnm[177];
 };
 
@@ -21,6 +32,11 @@ struct dPyModelData_s {
 
 class dPyModel_HIO_c {
 public:
+    dPyModel_HIO_c();
+
+    /// @unofficial
+    void resetParam(int id);
+
     float mData[5];
 
     dPyModelData_s getModelData(u8 index) {
@@ -32,11 +48,19 @@ public:
 
 class dYoshiModel_HIO_c {
 public:
+    dYoshiModel_HIO_c();
+
+    /// @unofficial
+    void resetParam();
+
     float mData[4];
 };
 
 class dPyMdlBase_HIO_c {
 public:
+    dPyMdlBase_HIO_c();
+    ~dPyMdlBase_HIO_c();
+
     u8 changeHioType(u8 hioType);
     float getValue(dPyModelData_s model, u8 powerup); ///< @unofficial
 
@@ -51,11 +75,35 @@ public:
         return m_08[index];
     }
 
-    u8 mPad[0x8];
-    float m_08[8];
+    u8 mPad[0x4];
+
+    /// @unofficial
+    /// @note NOT part of m_08 below, despite sitting immediately before it.
+    /// Confirmed by an already-banked external caller
+    /// (daPlBase_c::setLandSmokeEffectLight, source/dol/bases/
+    /// d_a_player_base.cpp) that indexes m_hio.m_08[] via a static address
+    /// computed as &m_hio + 8, not +4 -- so m_08 starts at 0x8, and this field
+    /// occupies 0x4-0x7 on its own.
+    float m_04;
+
+    /// @unofficial
+    /// @note Seven elements, not eight -- the eighth slot the original array
+    /// declaration implied is actually m_24 below. Verified two ways: the
+    /// constructor stores exactly 7 values here (offsets 0x8-0x20), and 7
+    /// elements is what makes the class sum to dPyMdlMng_c::m_hio's known
+    /// size (0x950) once m_04 above is also accounted for.
+    float m_08[7];
+    u8 m_24; ///< @unofficial
+    u8 pad_25[3]; ///< @unused
     dPyAnmMain_HIO_c mPyAnm;
     dPyModel_HIO_c mPyModel[3];
-    dYoshiModel_HIO_c mYoshiModel[3];
+
+    /// @note A single object, not an array. The constructor makes exactly one
+    /// call to dYoshiModel_HIO_c's constructor and one to resetParam(), with no
+    /// loop -- contrast mPyModel above, which the constructor builds with an
+    /// explicit 3-iteration loop. Confirmed against dPyMdlMng_c::m_hio's known
+    /// size (0x950): an array of 3 here would make the class 0x970.
+    dYoshiModel_HIO_c mYoshiModel;
 };
 
 enum AnmID_e {

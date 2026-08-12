@@ -68,17 +68,25 @@ def scan(d, secs, start, end, sda, sda2):
                 hi.pop(rd, None)
         elif op in (14, 24) or op in DFORM:   # addi / ori / load / store
             mn = {14: 'addi', 24: 'ori'}.get(op, DFORM.get(op))
+            resolved = None
             if ra == 2:
-                refs.append((a, mn, (sda2 + signed16(imm)) & 0xFFFFFFFF, 'r2'))
+                resolved = (sda2 + signed16(imm)) & 0xFFFFFFFF
+                refs.append((a, mn, resolved, 'r2'))
             elif ra == 13:
-                refs.append((a, mn, (sda + signed16(imm)) & 0xFFFFFFFF, 'r13'))
+                resolved = (sda + signed16(imm)) & 0xFFFFFFFF
+                refs.append((a, mn, resolved, 'r13'))
             elif ra in hi:
                 base = hi[ra]
-                tgt = (base + (imm if op == 24 else signed16(imm))) & 0xFFFFFFFF
-                refs.append((a, mn, tgt, 'ha/l'))
-            # addi/ori write rd, killing any tracked hi for it
+                resolved = (base + (imm if op == 24 else signed16(imm))) & 0xFFFFFFFF
+                refs.append((a, mn, resolved, 'ha/l'))
+            # addi/ori write rd. A resolved address becomes rd's new tracked
+            # base, so a later instruction chained off rd (very common for
+            # `lis r8,sym@ha; addi r8,r8,sym@l` where rd==ra) computes from
+            # the just-resolved address rather than a stale pre-add one.
             if op in (14, 24):
-                if rd != ra or ra not in hi:
+                if resolved is not None:
+                    hi[rd] = resolved
+                else:
                     hi.pop(rd, None)
             elif op in DFORM and 32 <= op <= 47:
                 # integer load writes rd
