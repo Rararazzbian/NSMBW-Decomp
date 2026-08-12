@@ -144,7 +144,7 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | `d_a_en_kuribo_base` | 8,192 | 66 | In flight |
 | `d_a_en_door` | 5,492 | 60 | In flight |
 | `d_a_en_jimen_pakkun_base` | 7,896 | 58 | Pakkun family; likely shares idioms with the base |
-| `d_a_en_lkuribo_base` | 9,552 | 75 | Owns `.rodata` pools that look like they belong to its neighbour |
+| `d_a_en_lkuribo_base` | 9,552 | 75 | **Pre-surveyed, ready** — see below |
 | `d_a_en_bros_base` | 12,072 | 97 | Largest clean base |
 | `d_a_en_blockmain` | 12,392 | 90 | |
 | `d_a_player_manager` | 10,764 | 68 | |
@@ -162,6 +162,29 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 | `d_a_farBG` | 18,808 | 53 | |
 | `d_a_ice` | 31,880 | 147 | |
 | `d_a_yoshi` | 39,944 | 239 | Largest; also contains `daPlyIce_c` |
+
+### `d_a_en_lkuribo_base.cpp` is pre-surveyed — start here
+
+Handed over by the `d_a_en_kuribo_base.cpp` agent, bounds already verified:
+
+- `.text` **0x800331E0 – 0x800356D0** (0x24F0; the next TU is `daEnNetNoko_c`,
+  already decompiled, so both ends are pinned)
+- `.ctors` index 21 (`0x50-0x54`… **recheck against the index rule above**),
+  `.rodata` 0x802EE950 – 0x802EE9B8, `.sdata` 0x80427BA8 – 0x80427BC8,
+  `.sdata2` 0x8042B7E8 – 0x8042B810
+- `__vt__17daEnLkuriboBase_c` at `.data:0x80305110`, size 0x2F0 — the same size
+  as the base's, so it adds no new virtuals and only overrides
+- States: Walk, Turn, Press, Split, HipSplit (new, `sStateID_c`-based) plus
+  DieFall overriding `dEn_c`'s
+
+**It is a sibling, not a subclass.** Despite the name it does not derive from
+`daEnKuriboBase_c` — it overrides `createMdl`/`calcMdl`/`calcJnt` where the base
+has `createModel`/`calcModel`. It is another `dEn_c` subclass, so expect the
+member layout to differ from the base's (allocator 0x524, model 0x544, anmChr
+0x584, texpat res 0x5BC / anm 0x5C0).
+
+Its `.rodata` also owns the two 0x20 death-info templates that sit past a 4-byte
+gap and look like they belong to the next TU — see the gap caveat above.
 
 ### `d_a_wm_Map_static.cpp` is 17/18 — one table away
 
@@ -248,6 +271,29 @@ dropped if unreferenced.
 Byte-diffing the two DOLs first is a trap: a size change shifts everything, so
 you get hundreds of thousands of diff runs and no signal. Section sizes first,
 always.
+
+### A one-byte whole-binary diff means a `.ctors` index error
+
+Distinct from the size-change failure above, and even easier to fix. Symptom:
+the DOL fails but the RELs pass, the two section tables are **identical**, and a
+byte-diff yields exactly **one** differing byte.
+
+That is your `__sinit` pointer written into the wrong `.ctors` slot. Decode the
+words either side and the off-by-one is immediately visible:
+
+```
+0x802edd2c  built 80032ab0   orig 80030ab0   <-- ours, one slot early
+0x802edd30  built 80032ab0   orig 80032ab0   <-- where it belongs
+```
+
+`.ctors` offsets are relative to **0x802edce0 directly**. Do not subtract the
+`"offset": "0x4"` that appears on the `.ctors` entry in `meta` — that is what
+went wrong here. The slot at `0x4c` belonged to the undecompiled
+`d_a_en_jimen_pakkun_base`, whose `__sinit` is at 0x80030ab0.
+
+Entries are in link order, so a TU's index follows its slice position. Sanity
+check by confirming the neighbouring words point at the `__sinit` addresses of
+the neighbouring TUs.
 
 ### The target list is incomplete: TUs with no `__sinit` are invisible
 
