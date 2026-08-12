@@ -1,0 +1,23 @@
+{
+  "_comment": "Copy to config.json and fill in. config.json is gitignored - never commit an API key.",
+
+  "cheap": {
+    "_use": "Local unlimited model. Does the grinding: boilerplate, obvious fixes, first drafts.",
+    "base_url": "http://localhost:1234/v1",
+    "api_key": "not-needed-for-local",
+    "model": "your-local-model-name",
+    "temperature": 0.3,
+    "max_tokens": 4096,
+    "timeout": 300
+  },
+
+  "strong": {
+    "_use": "Gemini via its OpenAI-compatible endpoint. Only called on a plateau, where reasoning pays.",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+    "api_key": "PUT-YOUR-GEMINI-KEY-HERE",
+    "model": "gemini-2.5-pro",
+    "temperature": 0.2,
+    "max_tokens": 8192,
+    "timeout": 300
+  }
+}

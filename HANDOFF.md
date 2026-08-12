@@ -40,6 +40,38 @@ python <scratch>\fndiff.py <target.txt> <scratch>\draft.txt <FunctionName>
 Build the argument list as a PowerShell array and splat it (`& $exe @args`);
 long inline arg lists are fragile.
 
+## Read this first if you are picking the project up
+
+- **Position: 9.681%** (629,272 / 6,500,368); `wiimj2d.dol` **18.891%**. Five
+  binaries verify, tree clean, `master` and the working branch both pushed.
+- **Next target is `d_a_en_lkuribo_base.cpp`** — pre-surveyed, bounds and vtable
+  already verified. See its section below. `d_a_en_dfpakkun.cpp` is also ready.
+- **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
+  establish. The levers list and the two whole-binary failure signatures below
+  are the most valuable part of this file.
+
+### Infrastructure state (as of the 2026-08-12 session)
+
+- `tools/progress_page/make_progress_page.py` renders a local treemap from the
+  **working tree**, including uncommitted work, and pulls upstream's public
+  figures from `https://decomp.dev/{owner}/{repo}.json` for comparison. No
+  token, no CI. This is the fastest way to see where things stand.
+- A self-hosted decomp.dev lives at `C:\Users\Razz\Documents\Projects\decomp.dev`
+  (see its `START-HERE.md`). Upstream's project loads in it; **this fork does
+  not**, and cannot until CI produces a report artifact.
+- **CI is blocked**, and not by our code. The `ci` job dies at ~18s on
+  "Download and decrypt blob" because the fork has no `BLOB_URL` /
+  `BLOB_PASSPHRASE` secrets. Those come from a token at
+  `rootcubed.dev/decomp-token`, whose submission endpoint was returning **500**
+  on 2026-08-12. Retry later; nothing else is missing. `workflow_dispatch` has
+  been added so a re-run needs no throwaway commit.
+- The `deploy` job also fails (404) because GitHub Pages is not enabled on the
+  fork. Harmless — decomp.dev only reads the report artifact.
+- **`objdiff.json` over-reports.** It marks a unit complete whenever a source
+  file exists, including `nonMatching` slices, so it currently calls
+  `d_a_en_dpakkun_base.cpp` complete at 60/64. `progress.py` is the authority;
+  the local progress page corrects for this, decomp.dev will not.
+
 ## Where the work now stands
 
 **9.681%** (629,272 / 6,500,368 bytes); `wiimj2d.dol` at **18.891%**. Five
