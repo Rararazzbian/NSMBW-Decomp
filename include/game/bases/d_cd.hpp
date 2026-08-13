@@ -98,8 +98,8 @@ public:
     static void createInstance(EGG::Heap *heap);
     static void deleteInstance();
 
-    dCdFile_c *getFileP(int idx) {
-        dCdFile_c *file = &mFiles[idx];
+    static dCdFile_c *getFileP(int idx) {
+        dCdFile_c *file = &m_instance->mFiles[idx];
         if (file->mpAreas != nullptr) {
             return file;
         }
