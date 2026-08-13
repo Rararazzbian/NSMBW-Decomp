@@ -22,18 +22,14 @@
 //   setGoalDemoRunCastle   BYTE-EXACT (verified)
 //   isAllPlayerGoalIn      BYTE-EXACT (verified)
 //   setHanabiEffect        very close, NOT byte-exact -- see report
-//   executeGoalCastle      NOT byte-exact, TODO: this file was edited but
-//                          NOT recompiled/rediffed after the last change to
-//                          the isCourseDataFlag "ok" logic below -- recompile
-//                          and re-diff against target FIRST, see report for
-//                          exactly what to check.
-//
-// This file was compiled, during authoring, against a SCRATCH-ONLY patched
-// copy of d_s_stage.hpp/d_info.hpp (outside the repo, see report) because
-// executeGoalCastle needs three fields that do not exist in the tracked
-// include/ headers: dScStage_c::m_OtehonClear_p, dScStage_c::m_goalType,
-// dInfo_c's two fields hidden in its documented pad4[0x8]. It will NOT
-// compile as-is against the real, currently-committed include/ headers.
+//   executeGoalCastle      BYTE-EXACT (verified: verify.py MATCH, and
+//                          confirmed with harness.extract()'s stricter
+//                          raw-branch-word comparison, 173/173, 0 diffs).
+//                          dScStage_c::m_OtehonClear_p/m_goalType and
+//                          dInfo_c::m_64/m_68 are now real fields in the
+//                          tracked include/ headers, so this compiles
+//                          against them directly -- no scratch override
+//                          needed for this function anymore.
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
@@ -242,25 +238,70 @@ void daPyDemoMng_c::setHanabiEffect() {
 }
 
 // ---------------------------------------------------------------------------
-// executeGoalCastle -- 0x8005C410, 692 B
+// executeGoalCastle -- 0x8005C410, 692 B -- BYTE-EXACT (173/173 instructions)
 //
-// BLOCKED on two dScStage_c statics not present in the frozen
-// include/game/bases/d_s_stage.hpp: dScStage_c::m_OtehonClear_p (.sbss
-// 0x8042A4D0, 4 bytes) and dScStage_c::m_goalType (.sbss 0x8042A4DC, 4
-// bytes) -- see report. Written against a SCRATCH-ONLY local copy of that
-// header (not committed, not touching include/) that adds:
-//   static u8 *m_OtehonClear_p;
-//   static int m_goalType;
-// so the logic below can be authored and verified; the lead must add the
-// real fields (with real types/names) to the tracked header before this
-// function will compile against it.
+// Key structural findings, for whoever assembles the final file:
+//
+// - case 0's early "if (m_54 < 0x168) return;" is actually a `break;` --
+//   its `blt` branches to the switch's shared exit block (which still calls
+//   calcGoalCenterPos()), not straight to the epilogue. verify.py's table
+//   could not see this (its canonicaliser strips branch-target addresses
+//   down to a bare ".L", so "branches somewhere" reads the same as
+//   "branches to the right somewhere") -- only harness.extract()'s
+//   raw-branch-word comparison (which keeps the encoded displacement)
+//   caught the 2-instruction offset this caused. Worth flagging generally:
+//   a verify.py MATCH is necessary but not sufficient for control-flow
+//   correctness; extract()'s stricter form is the real check for functions
+//   with any internal branching. (verify.py's own module docstring says
+//   the same about pooled-literal values, for the same underlying reason.)
+//
+// - case 2's OTEHON-fail logic is NOT a simple if/else between the two
+//   isCourseDataFlag() checks, and NOT a bool accumulator either (a bool
+//   `ok` variable forces a `mr r4,r3` register-preserving copy the target
+//   does not have, because it defers the failure test past the second
+//   call). The target tests each call's result *immediately*: the 0x90
+//   check's failure branches forward past the whole second check straight
+//   to the (shared) OTEHON-write block; the 0x120 check's failure falls
+//   through into that same block with no branch instruction at all, because
+//   the block is laid out immediately after it. That shared-fail-block
+//   shape needed an explicit `goto` -- writing the fail code twice in
+//   source (once per check) does not get folded by MWCC and was measured
+//   6 instructions too many; an `ok` accumulator was 2 too many (the
+//   `mr r4,r3` pair). `if (mGoalType == 0 || save->isCourseDataFlag(...))
+//   goto castle_success;` reproduces the target's short-circuit branch
+//   pair exactly.
+//
+// - dInfo_c::getInstance()->m_68/m_64 must NOT be cached in a local
+//   `dInfo_c *info` across the `if (m_42)` branch: the target reloads
+//   `dInfo_c::m_instance` fresh at each of the three uses (three separate
+//   `lwz ...,m_instance__7dInfo_c@sda21(r0)`, including once more at the
+//   post-branch merge point) rather than keeping it live in a register.
+//   Caching it in one register was 2 instructions too few.
+//
+// - `dScStage_c::m_OtehonClear_p` (a plain, non-const global pointer)
+//   reloads at EVERY dereference if you write
+//   `dScStage_c::m_OtehonClear_p[i] = ...` three times in a row; hoisting
+//   it to `u8 *otehon = dScStage_c::m_OtehonClear_p;` once per block
+//   collapses that to a single load, matching target exactly (this cost 4
+//   instructions -- 2 redundant reloads x 2 duplicated OTEHON-write sites).
+//
+// - The final case-2 success call is `dFader_c::FADER_CIRCLE_TARGET` (5),
+//   not `FADER_MARIO` (4) -- confirmed from the raw `li r6, 0x5` in target;
+//   an earlier guess had this wrong.
+//
+// - Signedness lever confirmed on a second axis (see HANDOFF.md "Signedness
+//   is visible and load-bearing"): the `world <= 9 && level <= 0x29` bound
+//   check needs the raw `u8` locals compared directly (-> `cmplwi`), but the
+//   `level == 3 && world == 2` equality check right after needs those same
+//   byte values copied into fresh `int` locals first (-> `cmpwi`) -- same
+//   two registers, same values, different instruction per operator kind.
 // ---------------------------------------------------------------------------
 void daPyDemoMng_c::executeGoalCastle() {
     switch (m_08) {
     case 0:
         if (m_40 != 0) {
             if (m_54 < 0x168) {
-                return;
+                break;
             }
             m_44 = m_41;
             m_0c = 10;

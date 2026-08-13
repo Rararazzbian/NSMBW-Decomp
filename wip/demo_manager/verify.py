@@ -43,30 +43,56 @@ def map_functions():
     return out
 
 
-def parse_by_addr(path):
-    """-> {addr: [canonicalised instruction lines]} from a dtk disassembly."""
-    fns, cur, addr, raw = {}, None, None, []
+# dtk instruction line: /* ADDR OFFSET  AA BB CC DD */\tmnemonic ...
+WORD_RE = re.compile(
+    r'^/\*\s*([0-9A-F]{8})\s+[0-9A-F]{8}\s+((?:[0-9A-F]{2} ){3}[0-9A-F]{2})\s*\*/')
+
+
+def parse_two_views(path):
+    """-> {addr_or_name: (canonical_lines, raw_words)}.
+
+    TWO views, because each is blind to what the other catches:
+
+    * canonical text -- immune to the draft sitting at different addresses, but
+      it rewrites branch TARGETS to a bare marker, so a `return` written where
+      the target had `break` compares EQUAL. That happened on
+      executeGoalCastle and the table reported a match.
+    * raw instruction words -- position-independent for relative branches (the
+      displacement is encoded in the word), and dtk zeroes relocated fields on
+      both sides, so callee addresses do not leak in. This view sees branch
+      targets; the canonical one does not.
+
+    Neither view sees a wrong CONSTANT in a data table. Nothing here does.
+    """
+    by_addr, by_name = {}, {}
+    cur = addr = None
+    lines, words = [], []
     with open(path, encoding='utf-8', errors='replace') as fh:
         for line in fh:
             s = line.strip()
             m = H.FN_START.match(s)
             if m:
-                cur, addr, raw = m.group(1), None, []
+                cur, addr, lines, words = m.group(1), None, [], []
                 continue
             if H.FN_END.match(s):
-                if cur and raw and addr is not None:
-                    fns[addr] = H.canonicalise(raw)
+                if cur and lines:
+                    val = (H.canonicalise(lines), words)
+                    if addr is not None:
+                        by_addr[addr] = val
+                    by_name[H.norm_name(cur)] = val
                 cur = None
                 continue
             if cur is None:
                 continue
-            m = re.match(r'^/\*\s*([0-9A-F]{8})\s', s)
-            if m and addr is None:
-                addr = int(m.group(1), 16)
+            mw = WORD_RE.match(s)
+            if mw:
+                if addr is None:
+                    addr = int(mw.group(1), 16)
+                words.append(mw.group(2).replace(' ', ''))
             m2 = H.INSN.match(s)
             if m2:
-                raw.append(m2.group(1))
-    return fns
+                lines.append(m2.group(1))
+    return by_addr, by_name
 
 
 def main():
@@ -85,62 +111,48 @@ def main():
         print('DISASM FAILED\n' + log[-1000:])
         return 1
 
-    tgt = parse_by_addr(TARGET)
-    drf_by_addr = parse_by_addr(txt)
-    # the draft is a standalone object, so its addresses are file offsets, not
-    # DOL addresses -- index it by NAME instead and pair via the symbol map.
-    drf_by_name = {}
-    with open(txt, encoding='utf-8', errors='replace') as fh:
-        cur, raw = None, []
-        for line in fh:
-            s = line.strip()
-            m = H.FN_START.match(s)
-            if m:
-                cur, raw = m.group(1), []
-                continue
-            if H.FN_END.match(s):
-                if cur and raw:
-                    drf_by_name[H.norm_name(cur)] = H.canonicalise(raw)
-                cur = None
-                continue
-            if cur is None:
-                continue
-            m2 = H.INSN.match(s)
-            if m2:
-                raw.append(m2.group(1))
+    tgt, _ = parse_two_views(TARGET)
+    _, drf = parse_two_views(txt)
 
-    exact = close = missing = 0
+    exact = close = branch_only = 0
     print('%-52s %6s  %s' % ('function', 'bytes', 'result'))
     print('-' * 78)
     for a, size, name in map_functions():
         t = tgt.get(a)
         if t is None:
             continue
-        if len(t) * 4 != size:
+        if len(t[0]) * 4 != size:
             print('%-52s %6d  !! TARGET count*4=%d != map size' %
-                  (name[:52], size, len(t) * 4))
+                  (name[:52], size, len(t[0]) * 4))
             continue
-        d = drf_by_name.get(H.norm_name(name))
+        d = drf.get(H.norm_name(name))
         if d is None:
             continue          # not this batch's function
-        if t == d:
+        text_ok, word_ok = (t[0] == d[0]), (t[1] == d[1])
+        if text_ok and word_ok:
             print('%-52s %6d  MATCH' % (name[:52], size))
             exact += 1
+        elif text_ok and not word_ok:
+            n = sum(1 for x, y in zip(t[1], d[1]) if x != y)
+            print('%-52s %6d  !! BRANCH/WORD DIFF (%d words) -- canonical text '
+                  'matches, raw words do NOT' % (name[:52], size, n))
+            branch_only += 1
         else:
-            n = sum(1 for x, y in zip(t, d) if x != y) + abs(len(t) - len(d))
+            n = sum(1 for x, y in zip(t[0], d[0]) if x != y) + abs(len(t[0]) - len(d[0]))
             print('%-52s %6d  DIFF  target=%d draft=%d  (~%d lines)' %
-                  (name[:52], size, len(t), len(d), n))
+                  (name[:52], size, len(t[0]), len(d[0]), n))
             close += 1
 
     named = {H.norm_name(n) for _, _, n in map_functions()}
-    extras = [n for n in drf_by_name if n not in named]
+    extras = [n for n in drf if n not in named]
     if extras:
         print('\nEmitted but not named in the symbol map (invented names -- map these\n'
               'back to addresses at assembly, do NOT discard them):')
         for n in sorted(extras):
-            print('   %s  (%d instructions)' % (n, len(drf_by_name[n])))
+            print('   %s  (%d instructions)' % (n, len(drf[n][0])))
 
-    print('\n%d exact, %d differing' % (exact, close))
+    print('\n%d exact, %d differing, %d matching-text-but-wrong-branches'
+          % (exact, close, branch_only))
     print('\n!! THIS TOOL CANNOT SEE A WRONG CONSTANT. It compares canonicalised\n'
           '   instruction text, so pool references are compared by PATTERN, not by\n'
           '   value -- a lone 0.0f and a lone 8.0f are equal here, and a corrupted\n'
@@ -155,13 +167,12 @@ def main():
         # negative control: the comparator must notice a corrupted target body
         for a, size, name in map_functions():
             key = H.norm_name(name)
-            if key in drf_by_name and tgt.get(a) == drf_by_name[key]:
-                bad = list(tgt[a])
-                bad[0] = bad[0] + ' ;CORRUPTED'
-                fired = (bad != drf_by_name[key])
-                print('\nnegative control on %s: %s' %
-                      (name, 'FIRED (comparator works)' if fired
-                       else '!! DID NOT FIRE -- comparator is vacuous'))
+            if key in drf and tgt.get(a) and tgt[a] == drf[key]:
+                bad_words = list(tgt[a][1])
+                bad_words[0] = '00000000'
+                fired = (bad_words != drf[key][1])
+                print('\nnegative control (raw words) on %s: %s' %
+                      (name, 'FIRED' if fired else '!! DID NOT FIRE -- vacuous'))
                 break
         else:
             print('\nnegative control: no matching function to corrupt')

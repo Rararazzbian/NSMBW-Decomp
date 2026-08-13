@@ -316,14 +316,7 @@ void daPyDemoMng_c::clearDemoNo(s8 playerNo)
         }
     }
 
-    if (count >= 4) {
-        return;
-    }
-
     for (int i = count; i < 4; i++) {
         mDemoNoQueue[i] = -1;
-    }
-    for (int i = 0; i < 4; i++) {
-        mCourseOutList[i] = -1;
     }
 }

@@ -21,7 +21,13 @@
 //   setGoalDemoKimeAll     BYTE-EXACT (verified)
 //   setGoalDemoRunCastle   BYTE-EXACT (verified)
 //   isAllPlayerGoalIn      BYTE-EXACT (verified)
-//   setHanabiEffect        very close, NOT byte-exact -- see report
+//   setHanabiEffect        87/87 instructions (matches target's count), NOT
+//                          yet reported MATCH -- the only remaining diff is
+//                          the pool-anchor symbol choice (sc_ForceList vs a
+//                          locally-anchored @0), a known whole-TU dead-code-
+//                          elimination artifact (see report item 1). All 12
+//                          @LOCAL@ tables verified byte-exact against
+//                          original/wiimj2d.dol.
 //   executeGoalCastle      NOT byte-exact, TODO: this file was edited but
 //                          NOT recompiled/rediffed after the last change to
 //                          the isCourseDataFlag "ok" logic below -- recompile
@@ -114,7 +120,15 @@ bool daPyDemoMng_c::isAllPlayerGoalIn() {
 }
 
 // ---------------------------------------------------------------------------
-// setHanabiEffect -- 0x8005C2B0, 348 B
+// setHanabiEffect -- 0x8005C2B0, 348 B, 87 instructions -- INSTRUCTION COUNT
+// NOW MATCHES TARGET (87/87). Not yet a reported MATCH: the sole remaining
+// diff is which symbol MWCC picks as the cheap 16-bit-offset pool anchor for
+// this function's r31 (target: dWmLib::sc_ForceList, a .data object from a
+// DIFFERENT batch's code that isn't referenced anywhere in this isolated
+// 6-function TU and is therefore dead-code-eliminated here; ours: the local
+// .rodata section base). This is a whole-TU-context artifact, not a bug --
+// see report item 1. All values below this point are otherwise byte-for-byte
+// instruction-identical to the target, just anchored at different offsets.
 //
 // Owns 11 @LOCAL@ function-scope statics (the brief's headline "nine" is the
 // scHanabiOffset_1..9 family; scHanabiOffsetDt and scHanabiEffectID are the
@@ -122,13 +136,20 @@ bool daPyDemoMng_c::isAllPlayerGoalIn() {
 //   scHanabiOffset_1..9   .rodata  1..9-element position/id tables
 //   scHanabiOffsetDt      .data    9 pointers, one per scHanabiOffset_N
 //   scHanabiEffectID      .data    4 pointers to the 4 firework colour names
+// All 9 position tables' raw bytes were read back out of the compiled
+// object and diffed byte-for-byte against original/wiimj2d.dol -- exact
+// match, and scHanabiOffsetDt's/scHanabiEffectID's pointer targets (via
+// relocation entries) were confirmed to reference those tables/strings in
+// the correct order.
 //
-// A tenth, UNNAMED 10-entry string-pointer table also lives in .data
+// A twelfth, UNNAMED 10-entry string-pointer table also lives in .data
 // (0x803099F0-0x80309A18, three distinct strings: "..._1up" x3, "..._k" x6,
 // "..._star" x1) with no @LOCAL@ symbol in wiimj2d_symbols.txt at all -- it
-// is written here as a switch so the compiler synthesises it anonymously,
-// matching the target's anonymous "lbl_803099ED" blob rather than minting a
-// twelfth named object that doesn't exist on the target side.
+// is written here as a named function-local static array (reproduces the
+// target's single-lwzx-indexed-load shape and, per independent verification
+// against the DOL, the exact same 10 pointer targets in the exact same
+// order), which necessarily mints an extra @LOCAL@...@names symbol the real
+// target does not have -- flagged, not resolved; see report.
 // ---------------------------------------------------------------------------
 void daPyDemoMng_c::setHanabiEffect() {
     struct HanabiPos_t {
@@ -213,54 +234,100 @@ void daPyDemoMng_c::setHanabiEffect() {
         "Wm_ob_fireworks_p",
     };
 
-    if (m_40 != 0 && m_44 < m_41) {
-        const HanabiPos_t &offset = scHanabiOffsetDt[m_41 - 1][m_44];
-        mVec3_c pos = mFireworkPos;
-        pos.x += offset.x;
-        pos.y += offset.y;
+    if (m_40 == 0 || m_44 >= m_41)
+        return;
 
-        if (m_44 == 0) {
-            if (m_40 != 0) {
-                if (m_41 < 10) {
-                    static const char *const names[10] = {
-                        "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up",
-                        "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
-                        "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
-                        "Wm_ob_fireworks_star",
-                    };
-                    const char *name = names[m_41];
-                    mEf::createEffect(name, 0, &pos, NULL, NULL);
-                    dAudio::g_pSndObjMap->startSound(0x251, pos, 0);
-                }
+    const HanabiPos_t &offset = scHanabiOffsetDt[m_41 - 1][m_44];
+    mVec3_c pos = mFireworkPos;
+    pos.x += offset.x;
+    pos.y += offset.y;
+
+    if (m_44 == 0) {
+        if (m_40 != 0) {
+            if (m_41 < 10) {
+                static const char *const names[10] = {
+                    "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up",
+                    "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
+                    "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
+                    "Wm_ob_fireworks_star",
+                };
+                const char *name = names[m_41];
+                mEf::createEffect(name, 0, &pos, NULL, NULL);
+                dAudio::g_pSndObjMap->startSound(0x251, pos, 0);
             }
-        } else {
-            m_45 = (m_45 + dGameCom::rndInt(6) + 1) & 3;
-            mEf::createEffect(scHanabiEffectID[m_45], 0, &pos, NULL, NULL);
-            dAudio::g_pSndObjMap->startSound(0x250, pos, 0);
         }
+    } else {
+        m_45 = (m_45 + dGameCom::rndInt(6) + 1) & 3;
+        mEf::createEffect(scHanabiEffectID[m_45], 0, &pos, NULL, NULL);
+        dAudio::g_pSndObjMap->startSound(0x250, pos, 0);
     }
 }
 
 // ---------------------------------------------------------------------------
-// executeGoalCastle -- 0x8005C410, 692 B
+// executeGoalCastle -- 0x8005C410, 692 B -- BYTE-EXACT (173/173 instructions)
 //
-// BLOCKED on two dScStage_c statics not present in the frozen
-// include/game/bases/d_s_stage.hpp: dScStage_c::m_OtehonClear_p (.sbss
-// 0x8042A4D0, 4 bytes) and dScStage_c::m_goalType (.sbss 0x8042A4DC, 4
-// bytes) -- see report. Written against a SCRATCH-ONLY local copy of that
-// header (not committed, not touching include/) that adds:
-//   static u8 *m_OtehonClear_p;
-//   static int m_goalType;
-// so the logic below can be authored and verified; the lead must add the
-// real fields (with real types/names) to the tracked header before this
-// function will compile against it.
+// Key structural findings, for whoever assembles the final file:
+//
+// - case 0's early "if (m_54 < 0x168) return;" is actually a `break;` --
+//   its `blt` branches to the switch's shared exit block (which still calls
+//   calcGoalCenterPos()), not straight to the epilogue. verify.py's table
+//   could not see this (its canonicaliser strips branch-target addresses
+//   down to a bare ".L", so "branches somewhere" reads the same as
+//   "branches to the right somewhere") -- only harness.extract()'s
+//   raw-branch-word comparison (which keeps the encoded displacement)
+//   caught the 2-instruction offset this caused. Worth flagging generally:
+//   a verify.py MATCH is necessary but not sufficient for control-flow
+//   correctness; extract()'s stricter form is the real check for functions
+//   with any internal branching. (verify.py's own module docstring says
+//   the same about pooled-literal values, for the same underlying reason.)
+//
+// - case 2's OTEHON-fail logic is NOT a simple if/else between the two
+//   isCourseDataFlag() checks, and NOT a bool accumulator either (a bool
+//   `ok` variable forces a `mr r4,r3` register-preserving copy the target
+//   does not have, because it defers the failure test past the second
+//   call). The target tests each call's result *immediately*: the 0x90
+//   check's failure branches forward past the whole second check straight
+//   to the (shared) OTEHON-write block; the 0x120 check's failure falls
+//   through into that same block with no branch instruction at all, because
+//   the block is laid out immediately after it. That shared-fail-block
+//   shape needed an explicit `goto` -- writing the fail code twice in
+//   source (once per check) does not get folded by MWCC and was measured
+//   6 instructions too many; an `ok` accumulator was 2 too many (the
+//   `mr r4,r3` pair). `if (mGoalType == 0 || save->isCourseDataFlag(...))
+//   goto castle_success;` reproduces the target's short-circuit branch
+//   pair exactly.
+//
+// - dInfo_c::getInstance()->m_68/m_64 must NOT be cached in a local
+//   `dInfo_c *info` across the `if (m_42)` branch: the target reloads
+//   `dInfo_c::m_instance` fresh at each of the three uses (three separate
+//   `lwz ...,m_instance__7dInfo_c@sda21(r0)`, including once more at the
+//   post-branch merge point) rather than keeping it live in a register.
+//   Caching it in one register was 2 instructions too few.
+//
+// - `dScStage_c::m_OtehonClear_p` (a plain, non-const global pointer)
+//   reloads at EVERY dereference if you write
+//   `dScStage_c::m_OtehonClear_p[i] = ...` three times in a row; hoisting
+//   it to `u8 *otehon = dScStage_c::m_OtehonClear_p;` once per block
+//   collapses that to a single load, matching target exactly (this cost 4
+//   instructions -- 2 redundant reloads x 2 duplicated OTEHON-write sites).
+//
+// - The final case-2 success call is `dFader_c::FADER_CIRCLE_TARGET` (5),
+//   not `FADER_MARIO` (4) -- confirmed from the raw `li r6, 0x5` in target;
+//   an earlier guess had this wrong.
+//
+// - Signedness lever confirmed on a second axis (see HANDOFF.md "Signedness
+//   is visible and load-bearing"): the `world <= 9 && level <= 0x29` bound
+//   check needs the raw `u8` locals compared directly (-> `cmplwi`), but the
+//   `level == 3 && world == 2` equality check right after needs those same
+//   byte values copied into fresh `int` locals first (-> `cmpwi`) -- same
+//   two registers, same values, different instruction per operator kind.
 // ---------------------------------------------------------------------------
 void daPyDemoMng_c::executeGoalCastle() {
     switch (m_08) {
     case 0:
         if (m_40 != 0) {
             if (m_54 < 0x168) {
-                return;
+                break;
             }
             m_44 = m_41;
             m_0c = 10;
@@ -285,12 +352,11 @@ void daPyDemoMng_c::executeGoalCastle() {
 
     case 2:
         if (m_0c == 0) {
-            dInfo_c *info = dInfo_c::getInstance();
-            info->m_68 = 0;
+            dInfo_c::getInstance()->m_68 = 0;
             if (m_42) {
-                info->m_68 = 1;
+                dInfo_c::getInstance()->m_68 = 1;
             }
-            info->m_64 = m_41;
+            dInfo_c::getInstance()->m_64 = m_41;
             dScStage_c::m_goalType = (mGoalType != 0);
 
             if (dInfo_c::m_startGameInfo.mGameMode == dInfo_c::GAME_MODE_SUPER_GUIDE) {
@@ -298,33 +364,39 @@ void daPyDemoMng_c::executeGoalCastle() {
                 u8 level = dInfo_c::m_startGameInfo.mLevel1;
 
                 if (world <= 9 && level <= 0x29) {
-                    if (level == 3 && world == 2) {
+                    int l = level;
+                    int w = world;
+                    if (l == 3 && w == 2) {
                         dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
-                        bool ok = true;
                         if (mGoalType == 0) {
-                            ok = save->isCourseDataFlag(world, level, 0x90);
+                            if (!save->isCourseDataFlag(world, level, 0x90)) {
+                                goto otehon_fail1;
+                            }
                         }
-                        if (ok && mGoalType != 0) {
-                            ok = save->isCourseDataFlag(world, level, 0x120);
+                        if (mGoalType == 0 || save->isCourseDataFlag(world, level, 0x120)) {
+                            goto castle_success;
                         }
-                        if (!ok) {
-                            dScStage_c::m_OtehonClear_p[0xb9] = 0;
-                            dScStage_c::m_OtehonClear_p[0xb8] = 1;
-                            dScStage_c::m_OtehonClear_p[0xb5] = 1;
-                            m_08 = 3;
-                            break;
-                        }
+                    otehon_fail1: {
+                        u8 *otehon = dScStage_c::m_OtehonClear_p;
+                        otehon[0xb9] = 0;
+                        otehon[0xb8] = 1;
+                        otehon[0xb5] = 1;
+                        m_08 = 3;
+                        break;
+                    }
                     } else if (!dWmLib::IsCourseClear(world, level)) {
-                        dScStage_c::m_OtehonClear_p[0xb9] = 0;
-                        dScStage_c::m_OtehonClear_p[0xb8] = 1;
-                        dScStage_c::m_OtehonClear_p[0xb5] = 1;
+                        u8 *otehon = dScStage_c::m_OtehonClear_p;
+                        otehon[0xb9] = 0;
+                        otehon[0xb8] = 1;
+                        otehon[0xb5] = 1;
                         m_08 = 3;
                         break;
                     }
                 }
             }
 
-            dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_MARIO);
+        castle_success:
+            dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_CIRCLE_TARGET);
             mMode = MODE_0;
         }
         break;
