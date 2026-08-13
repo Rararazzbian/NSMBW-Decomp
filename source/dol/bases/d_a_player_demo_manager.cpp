@@ -743,13 +743,13 @@ void daPyDemoMng_c::setHanabiEffect() {
         { -64.0f, 32.0f, 20, 0 },
     };
 
-    static const HanabiPos_t *const scHanabiOffsetDt[9] = {
+    static const HanabiPos_t *scHanabiOffsetDt[9] = {
         scHanabiOffset_1, scHanabiOffset_2, scHanabiOffset_3,
         scHanabiOffset_4, scHanabiOffset_5, scHanabiOffset_6,
         scHanabiOffset_7, scHanabiOffset_8, scHanabiOffset_9,
     };
 
-    static const char *const scHanabiEffectID[4] = {
+    static const char *scHanabiEffectID[4] = {
         "Wm_ob_fireworks_y",
         "Wm_ob_fireworks_b",
         "Wm_ob_fireworks_g",
@@ -767,7 +767,7 @@ void daPyDemoMng_c::setHanabiEffect() {
     if (m_44 == 0) {
         if (m_40 != 0) {
             if (m_41 < 10) {
-                static const char *const names[10] = {
+                static const char *names[10] = {
                     "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up",
                     "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
                     "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
@@ -1440,4 +1440,15 @@ void daPyDemoMng_c::setEnemyStageClearDemo(int playerNo) {
         }
     }
 }
+
+
+/// @brief Unreferenced anywhere in this TU (a whole-binary pointer scan found
+/// no reference at all), but the original still emits 0x30 of `.data` here,
+/// at 0x80309A28, between our vtable and the next TU (`d_a_right_base.cpp`)'s
+/// read byte-for-byte out of `original/wiimj2d.dol`.
+/// @note `extern` is load-bearing, same precedent as `l_speed_ratiodt` in
+/// `d_a_en_hatena_balloon.cpp`: at namespace scope a `const` array has
+/// internal linkage in C++, so as a plain `static`/`const` array with no
+/// reference anywhere in this TU it would be stripped as unused and `.data`
+/// would come out short. @unofficial
 
