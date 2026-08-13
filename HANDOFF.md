@@ -758,6 +758,78 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
+### In flight: `d_nand_thread.cpp` — 13 of 19 authored functions byte-exact
+
+`0x800CED00`–`0x800CFCE0`, **24 emitted functions, 0xF48 (3,912) B of code in a
+0xFE0 span.** Five of the 24 are compiler-emitted weak flushes nobody authors
+(`__dt__Q23EGG5MutexFv`, `__dt__6mMutexFv`, and `EGG::Thread`'s `onExit` /
+`onEnter` / `run`), all landing in the right places. Scaffolding is in
+`wip/nand_thread/`; `SHARED-BRIEF.md` there is the authoritative fact sheet.
+
+**Six near-misses remain**: `__ct__`, `__dt__`, `spaceCheck`, `save`,
+`writeBanner`, `load`. Three of them turn on one unresolved idiom — see the
+bool-materialisation lever below.
+
+**The header is landed and all five binaries verify with it.** It went from an
+18-line `u8 mPad[0x74]` stub to the real class. The three vtables read out of
+the DOL pin `EGG::Thread`'s virtual order as `~Thread`, `run`, `onEnter`,
+`onExit`, and confirm that `dNandThread_c` introduces no new virtuals.
+
+#### Nine signature corrections, and only two were visible to the symbol map
+
+This unit is the strongest evidence yet for how blind symbol comparison is.
+
+**Provable by name — check these mechanically, every time:**
+
+- `setNandError` takes `long`, not `s32`. The symbol is
+  `setNandError__13dNandThread_cFl`; `s32` is `signed int` here and mangles `Fi`.
+- `EGG::Thread`'s constructor takes `unsigned long`, not `u32` — symbol
+  `__ct__Q23EGG6ThreadFUliiPQ23EGG4Heap`, `Ul`. Same trap, same cause.
+- `sCrc::calcCRC32` takes `unsigned long` — `calcCRC32__4sCrcFPCvUl`.
+
+**Invisible to the symbol map — CFront omits return types entirely:** the four
+`cmd*` functions are `bool` not `void`; `save`, `load` and `writeBanner` are
+`s32` not `bool`; `deleteFile` is `void` not `bool`. Each was settled by
+codegen alone. Two witnesses exist and both are worth using: **`run()`'s own
+consumption of a result** (it tests `save() == 2`, which is not a truth test),
+and **the function's own epilogue shape** (`li r3,1` / `li r3,0` converging at
+one epilogue is `return true`/`return false`, not falling off the end).
+
+#### The bool-materialisation lever — proven, and probably general
+
+Writing `if (!OSTryLockMutex(...))` emits a plain `cmpwi`+`beq`. Writing
+
+```cpp
+bool locked = OSTryLockMutex(&mMutex.mOSMutex);
+if (locked) { ... }
+```
+
+emits the target's three-instruction normalise sequence (`neg`/`or`/`srwi.`),
+because assigning an arbitrary int-typed value into a real `bool` forces MWCC to
+canonicalise it to 0/1 — and the flag-setting shift is then reused as the branch
+condition, with no separate compare. Confirmed by A/B compile; it closed four
+functions.
+
+**`cntlzw`+`srwi` is the same family** — that is MWCC materialising `(x == 0)`
+as a *value* rather than as a branch. Two batches independently failed on it and
+neither connected it to the lever above. If a target function materialises a
+condition instead of branching on it, try storing it into a `bool` first.
+
+#### Two process findings from running it
+
+- **A wrong data bound was caught before authoring, not after.** The pre-flight
+  put `.data` at `0x80317D48`; the true low bound is `0x80317CD8`, `0x70` lower,
+  and the missing objects were three banner strings and a 16-entry jump table
+  belonging to `setNandError`. Both the terminal-vtable rule and the
+  consecutive-pool-ID rule catch it. **Walk backwards from every claimed low
+  bound and ask what the object below it belongs to** — subtracting correctly
+  from a wrong starting point still gives a wrong answer.
+- **The shared brief's own hypothesis was wrong and an agent said so.** It
+  predicted the five `cmd*` functions were one body with one constant changed.
+  They are not: one writes three fields, three write two, one adds a `memcpy`.
+  The agent wrote the correction into the relay file the other batches read,
+  which is what stopped it propagating into three more functions.
+
 ### Recommended: `d_a_player_manager.cpp` — `daPyMng_c`
 
 `0x8005E9A0`–`0x800613B0`, 10,768 B span / 10,300 B code / 68 fns.
