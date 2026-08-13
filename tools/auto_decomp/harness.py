@@ -133,8 +133,23 @@ INSN_WORD = re.compile(r'^/\*\s*\S+\s+\S+\s+'
 LOCAL_BRANCH = re.compile(r'\.L_[0-9A-Fa-f]{8}\b')
 
 
+# Placeholder names dtk invents for functions with no symbol: the whole name is
+# the prefix plus the address, so stripping the address suffix would leave a
+# bare "fn"/"lbl"/"func" that collides with every other unnamed function in the
+# file. That is not a missed lookup -- extract() would silently return the FIRST
+# unnamed body in the file and diff it against yours, which reads as a real
+# result. d_a_en_blockmain.cpp has ten unnamed functions, and every diff against
+# one of them was comparing the wrong function.
+PLACEHOLDER_FN = re.compile(r'^(?:fn|lbl|func)_[0-9A-Fa-f]{8}$')
+
+
 def norm_name(n):
-    return ADDR_SUFFIX.sub('', n.strip().strip('"'))
+    n = n.strip().strip('"')
+    # dtk disambiguates duplicate symbol names by appending _<addr>; strip that.
+    # But never strip it from a placeholder name, where the address IS the name.
+    if PLACEHOLDER_FN.match(n):
+        return n
+    return ADDR_SUFFIX.sub('', n)
 
 
 SIZE_HINT = re.compile(r'size:\s*(0x[0-9A-Fa-f]+|\d+)')
@@ -191,10 +206,30 @@ def in_scope(name, cls):
 
 
 def extract(path, name):
-    """Pull one function's instruction lines out of a dtk disassembly."""
+    """Pull one function's instruction lines out of a dtk disassembly.
+
+    Returns the FIRST function whose normalised name matches. If more than one
+    function in the file normalises to the same name that is ambiguous, and
+    silently taking the first is how a whole batch of diffs once compared the
+    wrong body -- so warn loudly rather than pick.
+    """
     if not os.path.exists(path):
         return None
     want = norm_name(name)
+    # Pre-pass: a name that matches more than one function is ambiguous, and
+    # extract() returns at the first match, so the collision is otherwise
+    # invisible. Must be counted before extracting, not during.
+    hits = 0
+    with open(path, encoding='utf-8', errors='replace') as fh:
+        for line in fh:
+            m = FN_START.match(line.strip())
+            if m and norm_name(m.group(1)) == want:
+                hits += 1
+    if hits > 1:
+        sys.stderr.write(
+            'harness: WARNING: %r matches %d functions in %s -- returning the '
+            'first. Select by address instead; a silent wrong-function compare '
+            'reads exactly like a real result.\n' % (name, hits, path))
     body = None
     with open(path, encoding='utf-8', errors='replace') as fh:
         for line in fh:
