@@ -50,6 +50,13 @@ public:
     static dScStage_c *getInstance() { return m_instance; }
     static NOINLINE Exit_e getExitMode() { return m_exitMode; }
 
+    /// @brief Whether the game is transitioning into a stage scene.
+    /// @note `NOINLINE` for the same reason as getExitMode(): the original
+    /// emits an out-of-line copy and a `bl` to it. That copy is at
+    /// `0x8005EC90`, flushed inside `d_a_player_manager.cpp`, and it is the
+    /// only copy of the symbol in the binary. @unofficial
+    static NOINLINE bool getCourseIn() { return m_isCourseIn; }
+
     static float getLoopPosX(float x);
     /// @brief [.sbss:0x8042A4D0] Pointer into the "otehon" (demo playback)
     /// clear-flag block; indexed with byte loads/stores at +0xb5..+0xb9.
@@ -68,6 +75,10 @@ public:
 
     static const char mCdArcName[];
 
+    /// @brief [.sbss:0x8042A4FC] Whether the game is transitioning from a
+    /// non-stage scene into a stage scene. Declared before m_isCourseOut to
+    /// match .sbss address order. @unofficial
+    static bool m_isCourseIn;
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
     static bool m_KoopaJrEscape;
     static dInfo_c::GameMode_e m_gameMode;
