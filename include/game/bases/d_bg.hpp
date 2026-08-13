@@ -21,7 +21,12 @@ public:
     float m_8fe00;
     u8 mPad2[0x2c];
     float mLoopOffset;
-    u8 mPad3[0x20];
+    u8 mPad3[0x4];
+    /// @brief [0x8FEA8] Screen-tracking X used by @p daEnHatenaBalloon_c. @unofficial
+    float m_8fea8;
+    /// @brief [0x8FEAC] Screen-tracking Y used by @p daEnHatenaBalloon_c. @unofficial
+    float m_8feac;
+    u8 mPad3b[0x14];
     float mLiquidHeight;
     u8 mPad4[0x144];
     float mDispScale;
