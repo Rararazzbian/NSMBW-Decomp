@@ -25,9 +25,22 @@ would otherwise have been lost. Delete the whole directory once the unit lands.
   the symbol map's size, so the disassembly tiles the range exactly.
 - **Two of eight authoring batches produced drafts before the session ended**:
   `hb-b5.cpp` (background/terrain checks) and `hb-b6.cpp` (flight physics plus
-  the unit's one file-static). **Neither is confirmed byte-exact** — they were
-  copied out mid-flight, before their agents reported. Treat them as starting
-  points and re-verify every function.
+  the unit's one file-static).
+- **`hb-b5.cpp` is now CONFIRMED byte-exact** — all four functions
+  (`pointBgCheck`, `goalpole_check`, `floor_check`, `all_bgcheck`) and
+  `s_someCheckData`. See `verify_b5.py` for the checks, which include the
+  `.sdata2` literal *values* and three negative controls that each fire on
+  exactly one check. **`hb-b6.cpp` is still unconfirmed** — it was copied out
+  mid-flight, before its agent reported. Re-verify every function in it.
+- **`hb-b1.cpp` (lifecycle, class layout, `__sinit`, `sFStateID_c` tail) is
+  CONFIRMED** — 11 of its 12 functions compare byte-exact, and the twelfth,
+  `__sinit`, is exact once the 0x80 of `.data` string literals that B2 and B7
+  will contribute is stood in for (see below). `verify_b1/` holds the checks:
+  `run.py` (per-function diff + the count×4 == map-size assertion),
+  `vals.py` (every referenced pool literal read out of `wiimj2d.dol` and
+  compared against the object's own `.sdata2`), `iso.py` (structural equality
+  under a symbol *bijection*, for the one place where the two sides legitimately
+  spell a symbol differently) and `sbs.py` (side-by-side dump).
 
 ## The one correction that matters most
 
@@ -84,11 +97,53 @@ Established with evidence, not inference:
   `mVec3_c` into a 0x24-byte stack array at `0x8(r1)`, and indexes it with
   `mulli r0,r0,0xc` by the size class from a virtual call on the owning player,
   storing the result to `0x7D4`. That is ~30 instructions of `create`'s body.
+  (The data-ownership table in `HATENA-BALLOON-SIBMAP.md` still says the
+  opposite — "no `.text` reference anywhere in the range". That row is wrong;
+  this paragraph is right.)
 
-- **`s_someCheckData`** (`.rodata`, 0x50) is modelled as 4 rows of 0x14 — four
-  floats plus a `u32` mask — derived from the loop strides in `all_bgcheck`
-  (outer +0x14 × 4, inner +8 × 2). **This is a reading of the strides, not
-  byte-proven.** Confirm it against the DOL before relying on it.
+- **Where `sm_bg_check_size_*` is DEFINED is load-bearing, and the earlier note
+  saying "last file-scope definitions in the TU" was wrong.** They must be
+  defined **after the six `STATE_DEFINE`s and before `create()`**. All three,
+  and `StateID_DispFlyWait`, are addressed by `create` off ONE base register
+  (`lis r31, <TU .bss base>; addi r6, r31, 0x180; ... addi r4, r31, 0x10`), and
+  MWCC only anchors a static that way once it has seen its **definition**;
+  with the definitions below `create` it emits a separate `lis`/`addi` per
+  symbol and `create` misses by ~40 instructions. Moving them costs nothing
+  elsewhere: their `.sdata2` literals (1.5 / 18 / 10 / 22) are materialised
+  only inside `__sinit`, which is emitted last whatever the source order, so
+  they still land at the end of the pool (0x8042D6F0, 0x8042D704–0x8042D70C)
+  exactly as in the original. Values, byte-proven: mame (1.5, 1.5, 16),
+  normal (4, 4, 18), super (4, 10, 22).
+
+- **`__sinit` cannot be closed by B1 alone, and that is expected.** It addresses
+  the TU's `.data` through a base register, and between `g_profile` (0x80323620)
+  and `__vt__19daEnHatenaBalloon_c` (0x803236B0) the original has **0x80 bytes
+  of string literals owned by B2 and B7** — `"g3d/balloon.brres"`,
+  `"balloon_back"`, `"float_back"`, `"g3d/I_kinoko.brres"`, `"I_kinoko"`,
+  `"float_back"` (a second copy), `"vibrate_back"` (whose tail is the `"back"`
+  at 0x80323690) and `"Wm_mr_balloonburst"`. Standalone, every `.data`-relative
+  offset in `__sinit` therefore reads 0x80 low. Standing that 0x80 in reduces
+  the difference to **zero**. Nothing for B1 to fix; it closes at integration.
+
+- **`s_someCheckData`** (`.rodata`, 0x50) is 4 rows of 0x14 — four floats plus
+  a `u32` mask. Originally inferred from the loop strides in `all_bgcheck`
+  (outer +0x14 × 4, inner +8 × 2); **now byte-proven** against
+  `original/wiimj2d.dol` at 0x802F4E20. The values are in `hb-b5.cpp`.
+
+- **A new lever, found closing `all_bgcheck`, that generalises past this unit.**
+  When a stack `mVec3_c` is built from another vector plus per-component
+  offsets, the *spelling* of the construction permutes the FP temporaries
+  without changing a single instruction or its order. Writing
+  `mVec3_c pt(base.x + dx, base.y + dy, base.z)` and writing
+  `mVec3_c pt(base); pt.x += dx; pt.y += dy;` emit the same 11 instructions in
+  the same order, with f0–f3 permuted 4 ways. Only the second matches here.
+  Sixteen spellings were swept; the ranking is in `sweep_b5.py`, and the
+  near-misses (6–8 differing lines) came from hoisting operands into named
+  locals. **If a function is down to a pure FP-register rotation with the
+  schedule already correct, sweep the vector-construction spelling before
+  anything else.** The GPR analogue — declaring loop locals at the top of the
+  function body rather than at their point of use — was also load-bearing in
+  the same function, and is documented inline in `hb-b5.cpp`.
 
 - **`fn_80112040`** (0x88 B) is the unit's only unnamed function: a file-static
   **free** function taking the actor in r3, reading only `mPos.x`, returning a
@@ -100,6 +155,13 @@ Established with evidence, not inference:
   assembling: `s_someCheckData`, then `l_hatenaballoon_cullinfo` and
   `l_cc_data`, then `l_create_diff`. The `.sdata2` literal pool is owned by
   nobody — its order is first-use, so keep functions in `.text` address order.
+
+- **One header defect found by B1.** `daEnHatenaBalloon_c::m_814` is declared
+  `int`, but `create` compares it with **`cmplwi`**, so it is unsigned. It
+  should be `u32` (it holds `ACTOR_PARAM(SUB_TYPE)`). `hb-b1.cpp` currently
+  works around it with a `(u32)` cast at the one comparison; drop the cast when
+  the header is corrected. `m_814` has no other reader in the unit, so the
+  change is safe for every other batch.
 
 - **Landing hazard:** `g_profile_EN_HATENA_BALLOON` must be deleted from
   `syms.txt` in the same commit that lands this unit.
@@ -120,3 +182,18 @@ tools and each returned a *confident wrong answer*, so:
 5. verify emitted symbol **order** against target address order;
 6. only the full link + MD5 is authoritative, and `--verify-bin` will happily
    pass on **stale** binaries after a failed link, so confirm the build linked.
+
+Two more traps, both found while closing B1, both of which read as a clean
+result rather than an error:
+
+7. **CodeWarrior derives the `__sinit` symbol from the SOURCE FILE NAME.** A
+   draft compiled as `hb-b1.cpp` emits `__sinit_\hb-b1_cpp`, so looking up
+   `__sinit_\d_a_en_hatena_balloon_cpp` reports "DRAFT MISSING" — which looks
+   like "the compiler did not emit it" rather than "you compiled the wrong
+   filename". Copy the draft to `d_a_en_hatena_balloon.cpp` before compiling;
+   `verify_b1/run.py` does this.
+8. **`harness.extract()` already runs `canonicalise()`.** Any check that greps
+   its output for a raw pool name (`@80861_8042D658`) matches nothing and
+   reports success while testing nothing — this happened, and the script said
+   "0 problems". Re-extract the raw lines for value checks;
+   `verify_b1/vals.py` has a `raw_extract` that does.

@@ -9,19 +9,20 @@
 // so `static` is correct.  Name invented -- see the report.
 static float bg_dispx_get(daEnHatenaBalloon_c *balloon) {
     float bgX = dBg_c::m_bg_p->m_8fea8;
-    float diff = std::fabs(bgX - dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(balloon->mPos.x));
-    if (diff >= dBgParameter_c::ms_Instance_p->mSize.x) {
+    if (std::fabs(bgX - dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(balloon->mPos.x))
+        >= dBgParameter_c::ms_Instance_p->mSize.x) {
         return dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(balloon->mPos.x);
     }
-    return bgX;
+    return dBg_c::m_bg_p->m_8fea8;
 }
 
 // ---------------------------------------------------------------- 0x80112950
 void daEnHatenaBalloon_c::fly_yspeed_set() {
-    float half = 0.5f * dBgParameter_c::ms_Instance_p->mSize.y;
+    float sy = dBgParameter_c::ms_Instance_p->mSize.y;
+    float half = 0.5f * sy;
     float midY = dBgParameter_c::ms_Instance_p->mPos.y - half;
-    float unit = half * 0.125f;
     float dist = std::fabs((16.0f + mPos.y) - midY);
+    float unit = half * 0.125f;
     float r = dGameCom::rnd();
     int flip = 0;
     if (dist < 6.0f * unit) {
@@ -72,8 +73,10 @@ void daEnHatenaBalloon_c::fly_yspeed_set() {
 
 // ---------------------------------------------------------------- 0x80112B00
 void daEnHatenaBalloon_c::fly_xspeed_set(bool force) {
+    float sp = 0.4f;
     if (!force) {
-        float half = 0.5f * dBgParameter_c::ms_Instance_p->mSize.x;
+        float sx = dBgParameter_c::ms_Instance_p->mSize.x;
+        float half = 0.5f * sx;
         float midX = half + dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x);
         float unit = half / 6.0f;
         float dist = std::fabs(mPos.x - midX);
@@ -92,9 +95,9 @@ void daEnHatenaBalloon_c::fly_xspeed_set(bool force) {
         }
         if (flip != 0) {
             if (mPos.x < midX) {
-                mSpeedF = 0.4f;
+                mSpeedF = sp;
             } else {
-                mSpeedF = -0.4f;
+                mSpeedF = -sp;
             }
             return;
         }
@@ -103,21 +106,22 @@ void daEnHatenaBalloon_c::fly_xspeed_set(bool force) {
     float r2 = dGameCom::rnd();
     if (r2 < 0.8f || force) {
         if (r2 < 0.3f) {
-            mSpeedF = 0.4f;
+            mSpeedF = sp;
         } else {
-            mSpeedF = -0.4f;
+            mSpeedF = -sp;
         }
     }
 }
 
 // ---------------------------------------------------------------- 0x80112C70
 bool daEnHatenaBalloon_c::fly_ydisp_check(bool bounce) {
+    float lim = 7.0f;
     float scroll = -(dBg_c::m_bg_p->m_8feac - dBgParameter_c::ms_Instance_p->mPos.y);
-    if (scroll < -7.0f) {
-        scroll = -7.0f;
+    if (scroll < -lim) {
+        scroll = -lim;
     }
-    if (scroll > 7.0f) {
-        scroll = 7.0f;
+    if (scroll > lim) {
+        scroll = lim;
     }
 
     float ySpeed = mSpeed.y;
@@ -150,12 +154,13 @@ bool daEnHatenaBalloon_c::fly_ydisp_check(bool bounce) {
 
 // ---------------------------------------------------------------- 0x80112D50
 bool daEnHatenaBalloon_c::fly_xdisp_check(bool bounce) {
+    float lim = 7.0f;
     float scroll = -(bg_dispx_get(this) - dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x));
-    if (scroll < -7.0f) {
-        scroll = -7.0f;
+    if (scroll < -lim) {
+        scroll = -lim;
     }
-    if (scroll > 7.0f) {
-        scroll = 7.0f;
+    if (scroll > lim) {
+        scroll = lim;
     }
 
     int hit = 0;
@@ -168,13 +173,13 @@ bool daEnHatenaBalloon_c::fly_xdisp_check(bool bounce) {
             mSpeedF = 0.5f * scroll;
         }
     } else {
-        float right = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
-                    + dBgParameter_c::ms_Instance_p->mSize.x - 16.0f;
+        float w = dBgParameter_c::ms_Instance_p->mSize.x;
+        float right = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w - 16.0f;
         if (mPos.x > right) {
             float speedF = mSpeedF;
             hit = 2;
-            mPos.x = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
-                   + dBgParameter_c::ms_Instance_p->mSize.x - 16.0f;
+            float w2 = dBgParameter_c::ms_Instance_p->mSize.x;
+            mPos.x = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w2 - 16.0f;
             if (speedF > scroll) {
                 mSpeedF = 0.5f * scroll;
             }
@@ -195,26 +200,28 @@ bool daEnHatenaBalloon_c::fly_xdisp_check(bool bounce) {
 
 // ---------------------------------------------------------------- 0x80112EF0
 bool daEnHatenaBalloon_c::fly_dispin_check() {
-    if (mPos.y <= dBgParameter_c::ms_Instance_p->mPos.y - 24.0f
-        && mPos.y >= dBgParameter_c::ms_Instance_p->mPos.y - dBgParameter_c::ms_Instance_p->mSize.y
-        && mPos.x >= 16.0f + dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
-        && mPos.x <= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
-                     + dBgParameter_c::ms_Instance_p->mSize.x - 16.0f) {
-        return true;
+    float by = dBgParameter_c::ms_Instance_p->mPos.y;
+    if (mPos.y <= by - 24.0f
+        && mPos.y >= by - dBgParameter_c::ms_Instance_p->mSize.y
+        && mPos.x >= 16.0f + dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)) {
+        float w = dBgParameter_c::ms_Instance_p->mSize.x;
+        if (mPos.x <= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w - 16.0f) {
+            return true;
+        }
     }
     return false;
 }
 
 // ---------------------------------------------------------------- 0x80112FC0
 bool daEnHatenaBalloon_c::escape_dispout_check() {
-    // NEGATIVE CONTROL: 47.0f is deliberately wrong (the target uses 48.0f).
-    if (mPos.y <= 32.0f + dBgParameter_c::ms_Instance_p->mPos.y
-        && mPos.y >= dBgParameter_c::ms_Instance_p->mPos.y
-                     - dBgParameter_c::ms_Instance_p->mSize.y - 32.0f
-        && mPos.x >= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) - 47.0f
-        && mPos.x <= 47.0f + (dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
-                              + dBgParameter_c::ms_Instance_p->mSize.x)) {
-        return true;
+    float by = dBgParameter_c::ms_Instance_p->mPos.y;
+    if (mPos.y <= 32.0f + by
+        && mPos.y >= by - dBgParameter_c::ms_Instance_p->mSize.y - 32.0f
+        && mPos.x >= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) - 48.0f) {
+        float w = dBgParameter_c::ms_Instance_p->mSize.x;
+        if (mPos.x <= 48.0f + (dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w)) {
+            return true;
+        }
     }
     return false;
 }

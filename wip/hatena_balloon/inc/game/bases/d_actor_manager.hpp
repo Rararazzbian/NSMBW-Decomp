@@ -2,6 +2,12 @@
 
 #include <game/mLib/m_vec.hpp>
 
+// SHADOW COPY of include/game/bases/d_actor_manager.hpp, rebased on the revision
+// that added mGoalPoleX at +0x44. The ONLY delta is envAllWaterCheck(), which
+// d_a_en_hatena_balloon.cpp's model_set() calls twice and which the real header
+// does not yet declare. Landing this unit needs that one line added upstream;
+// it is layout-neutral (non-virtual, no data members touched).
+
 class dActorMng_c {
 public:
     u8 mPad1[0x28];

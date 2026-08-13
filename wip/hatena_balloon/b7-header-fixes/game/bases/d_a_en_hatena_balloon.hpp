@@ -94,10 +94,7 @@ public:
     virtual bool hitCallback_Fire(dCc_c *self, dCc_c *other);          ///< [vt 0x130] 0x801112F0.
     virtual bool hitCallback_YoshiBullet(dCc_c *self, dCc_c *other);   ///< [vt 0x138] 0x801113D0. 8 bytes (`li r3,0; blr`).
     virtual bool hitCallback_Cannon(dCc_c *self, dCc_c *other);        ///< [vt 0x128] 0x801113E0. 0x24 bytes.
-    virtual bool hitCallback_Ice(dCc_c *self, dCc_c *other);           ///< [vt 0x134] 0x80111410. **4 bytes, but NOT an empty body:** the word is
-    /// `48 00 00 00` = `b hitCallback_Fire`, a tail call, i.e.
-    /// `return hitCallback_Fire(self, other);`. An empty body would emit
-    /// `4E 80 00 20`. Contrast @ref block_hit_init, which genuinely is a bare `blr`.
+    virtual bool hitCallback_Ice(dCc_c *self, dCc_c *other);           ///< [vt 0x134] 0x80111410. **4 bytes -- a bare `blr`, i.e. an empty body with no return statement.** Must be defined out of line.
     virtual bool hitCallback_Star(dCc_c *self, dCc_c *other);          ///< [vt 0x100] 0x80111420. 0x24 bytes.
     virtual bool hitCallback_Large(dCc_c *self, dCc_c *other);         ///< [vt 0x108] 0x80111450. 0x24 bytes.
     virtual bool hitCallback_Spin(dCc_c *self, dCc_c *other);          ///< [vt 0x10C] 0x80111480. 0x24 bytes.
@@ -118,11 +115,7 @@ public:
     // ------------------------------------------------------------------
 
     /// @brief 0x80110C50, 0x4C bytes. @unofficial
-    /// @note Returns `u32`, not `bool`: dBc_c::checkWireNet returns u32 and the
-    /// target tail-jumps `b checkWireNet` with no neg/or/srwi normalisation and
-    /// no stack frame. `bool` forces the conversion and a frame -- 28 words
-    /// instead of 19. @unofficial
-    u32 ccLineCheck(float a, float b);
+    bool ccLineCheck(float a, float b);
 
     /// @brief 0x80110CA0, 0x138 bytes. Rebuilds the collider line from the
     /// balloon's current size / facing. @unofficial
@@ -137,11 +130,7 @@ public:
 
     /// @brief 0x801118E0, 0xB0 bytes. @unofficial
     /// @note Mangles @p FSc7mVec3_c -- @p s8 then @p mVec3_c **by value**.
-    /// @note Returns `mVec3_c` BY VALUE, not void. Proven from the call sites:
-    /// they emit `addi r3, r1, N` (the hidden sret pointer) with `this` in r4,
-    /// the s8 in r5 and the by-value vector in r6. Declaring it void shifts every
-    /// argument register by one. @unofficial
-    mVec3_c hipattackhit(s8 dir, mVec3_c pos);
+    void hipattackhit(s8 dir, mVec3_c pos);
 
     /// @brief 0x80111990, 0x414 bytes. Builds every model / animation member.
     /// @details Order, and it is the order the members are declared in:
@@ -153,12 +142,10 @@ public:
 
     void item_draw_calc(mVec3_c *out); ///< 0x80111DB0, 0x10C bytes. Writes #mItemDrawPos. @unofficial
     void anm_set(int anmNo);           ///< 0x80111EC0, 0xCC bytes. Stores @p anmNo in #mAnmNo. @unofficial
-    /// @note Returns `u8`, not void: tail is `lbz r3,0x81d(r31)` / `li r3,0` -- u8, not bool. @unofficial
     u8 pause_check();                ///< 0x80111F90, 0xA8 bytes. @unofficial
     void shake_disp_check();           ///< 0x801120D0, 0x34 bytes. @unofficial
     void createItem();                 ///< 0x80112110, 0xAC bytes. @unofficial
     void break_balloon(s16 mode);      ///< 0x801121C0, 0xA0 bytes. Mangles @p Fs -- a `short`, not an `int`. @unofficial
-    /// @note Returns `bool`, not void: `li r3,1` / `li r3,0`. @unofficial
     bool player_set();                 ///< 0x80112260, 0x8C bytes. @unofficial
 
     /// @brief 0x801122F0, 0x28C bytes. @unofficial
@@ -168,27 +155,22 @@ public:
     /// either way, so only a callee-symbol comparison catches it.
     u32 pointBgCheck(const mVec3_c &pos, unsigned long a, unsigned long b, unsigned long c);
 
-    /// @note Returns `bool`, not void -- callers consume it. CFront does not
-    /// mangle return types, so this changes no symbol. @unofficial
-    bool goalpole_check();             ///< 0x80112580, 0x3C bytes.
-    u8 floor_check();                  ///< 0x801125C0, 0x214 bytes. Returns `u8`, not void. @unofficial
-    u8 all_bgcheck(u8 &result);        ///< 0x801127E0, 0x164 bytes. Returns `u8`, not void. Walks #s_someCheckData 4x2 and calls @ref pointBgCheck for each entry. @unofficial
+    void goalpole_check();             ///< 0x80112580, 0x3C bytes. @unofficial
+    void floor_check();                ///< 0x801125C0, 0x214 bytes. @unofficial
+    int all_bgcheck(u8 &result);      ///< 0x801127E0, 0x164 bytes. Walks #s_someCheckData 4x2 and calls @ref pointBgCheck for each entry. @unofficial
     void fly_yspeed_set();             ///< 0x80112950, 0x1AC bytes. @unofficial
     void fly_xspeed_set(bool a);       ///< 0x80112B00, 0x164 bytes. @unofficial
-    bool fly_ydisp_check(bool a);      ///< 0x80112C70, 0xDC bytes. @unofficial
-    bool fly_xdisp_check(bool a);      ///< 0x80112D50, 0x198 bytes. @unofficial
+    void fly_ydisp_check(bool a);      ///< 0x80112C70, 0xDC bytes. @unofficial
+    void fly_xdisp_check(bool a);      ///< 0x80112D50, 0x198 bytes. @unofficial
     bool fly_dispin_check();           ///< 0x80112EF0, 0xC8 bytes. @unofficial
-    bool escape_dispout_check();       ///< 0x80112FC0, 0xCC bytes. @unofficial
+    void escape_dispout_check();       ///< 0x80112FC0, 0xCC bytes. @unofficial
     void remocon_speed_set();          ///< 0x80113090, 0x308 bytes. @unofficial
-    /// @note Returns `bool`, not void: `neg/or/srwi r3` on cLib::chasePos's result. @unofficial
     bool break_speed_set();            ///< 0x801133A0, 0x58 bytes. @unofficial
     void remocon_times_check();        ///< 0x80113400, 0x54 bytes. @unofficial
-    /// @note Returns `bool`, not void: `li r3,1` / `li r3,0`. @unofficial
     bool player_out_check();           ///< 0x80113460, 0x8C bytes. @unofficial
     void remocon_shake_check();        ///< 0x801134F0, 0xC0 bytes. @unofficial
     void ButtonPlayerColSet();         ///< 0x801135B0, 0x18 bytes. @unofficial
     void break_effect();               ///< 0x801135D0, 0x6C bytes. @unofficial
-    /// @note Returns `bool`, not void: `li r3,1` / `li r3,0`. @unofficial
     bool dispInFlyInitCheck(int mode); ///< 0x80113640, 0x100 bytes. @unofficial
     void create_wait_pos_set();        ///< 0x80113740, 0x190 bytes. @unofficial
 
@@ -319,7 +301,7 @@ public:
     u8 m_80c;           ///< [0x80C] Zeroed by @ref create in the #mBalloonType == 1 branch. @unofficial
     u8 m_80d[0x810 - 0x80D]; ///< [0x80D] @unused
     int mPlayerNo;      ///< [0x810] @p ACTOR_PARAM(PLAYER_NO); fed straight to @p daPyMng_c::getPlayer. @unofficial
-    u32 m_814;          ///< [0x814] @p ACTOR_PARAM(SUB_TYPE). @unofficial  ///< @note Unsigned: `create` compares it with `cmplwi`.
+    u32 m_814;          ///< [0x814] @p ACTOR_PARAM(SUB_TYPE). @unofficial
     u16 m_818;          ///< [0x818] @ref execute only. @unofficial
     u8 m_81a;           ///< [0x81A] @unused
     u8 m_81b;           ///< [0x81B] @ref execute only. @unofficial

@@ -194,7 +194,7 @@ On the last two units a single shared helper blocked four batches. Here the bloc
 | `__vt__34sFStateID_c<19daEnHatenaBalloon_c>` | `.data` 0x80323B2C | 0x34 | **B1** | template tail |
 | `StateID_DispFlyWait/DispFlyMove/Fly/Escape/HipAttack/SearchSpace` | `.bss` 0x80375408, 0x448, 0x488, 0x4C8, 0x508, 0x548 | 0x30 each | **B1** | B3, B4, B7, B8 |
 | `sm_hio_gravity`, `sm_hio_base_fly_timer_x`, `sm_hio_fly_yspeed`, `sm_hio_mask_size`, `sm_hio_mask_y_diff` | `.sdata` 0x80429570-0x80429583 | 4 each | **B1** (declares + initialises) | `create`, `execute`, `initializeState_Fly`, `executeState_Fly` |
-| `sm_bg_check_size_mame/normal/super` | `.bss` 0x80375578, 0x584, 0x590 | 0xC each | **B1** | **no `.text` reference anywhere in the range** - declare them and leave them; do not hunt for a caller |
+| `sm_bg_check_size_mame/normal/super` | `.bss` 0x80375578, 0x584, 0x590 | 0xC each | **B1** | **CORRECTED: `create` (0x80110410) DOES read all three** - it copies them into a 0x24-byte stack array and indexes it by the player's size class. Define them after the six `STATE_DEFINE`s and BEFORE `create`, or `create` cannot match - see README.md |
 | `l_hatenaballoon_cullinfo` | `.rodata` 0x802F4E70 | 0x10 | **B1** | `create` |
 | `l_cc_data` | `.rodata` 0x802F4E80 | 0x24 | **B1** | `create` |
 | `s_someCheckData__19daEnHatenaBalloon_c` | `.rodata` 0x802F4E20 | 0x50 (float) | **B5** | `all_bgcheck` only |

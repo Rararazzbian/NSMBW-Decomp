@@ -1,0 +1,13 @@
+#pragma once
+#include <types.h>
+#include <game/mLib/m_vec.hpp>
+/// @file
+
+/// @brief Provides common utilities.
+/// @ingroup clib
+namespace cLib {
+
+    s16 targetAngleY(const mVec3_c &vec1, const mVec3_c &vec2);
+    int chasePos(mVec3_c *pos, const mVec3_c &target, float step);
+
+} // namespace cLib

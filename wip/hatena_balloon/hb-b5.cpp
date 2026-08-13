@@ -6,10 +6,23 @@
 // ---------------------------------------------------------------------------
 // BATCH 5 -- background / terrain checks.
 //
+// All four functions verified byte-exact against original/wiimj2d.dol, in
+// .text address order: pointBgCheck 0x801122F0 (0x28C), goalpole_check
+// 0x80112580 (0x3C), floor_check 0x801125C0 (0x214), all_bgcheck 0x801127E0
+// (0x164). s_someCheckData verified byte-exact at 0x802F4E20 (0x50).
+//
 // .rodata ownership: s_someCheckData is the FIRST .rodata object of the TU
 // (0x802F4E20), ahead of l_hatenaballoon_cullinfo / l_cc_data (B1, 0x802F4E70)
 // and l_create_diff (B6, 0x802F4EA8). Its definition must therefore sit at the
 // very top of the merged d_a_en_hatena_balloon.cpp, above create().
+//
+// Header note for whoever merges this: the committed
+// include/game/bases/d_a_en_hatena_balloon.hpp declares goalpole_check /
+// floor_check / all_bgcheck as returning void. They return bool / u8 / u8 --
+// all three return a value here and callers in other batches consume it.
+// CodeWarrior does not mangle return types, so the symbol names are unchanged
+// and this is a safe header edit. d_actor_manager.hpp also needs
+// dActorMng_c::mGoalPoleX at +0x44 and floorEntryBufferCheck(mVec2_c *).
 // ---------------------------------------------------------------------------
 
 const daEnHatenaBalloon_c::checkData_s daEnHatenaBalloon_c::s_someCheckData[4] = {
@@ -119,7 +132,28 @@ u8 daEnHatenaBalloon_c::floor_check() {
     return ret;
 }
 
+// Two shapes in this function are load-bearing for register allocation. Both
+// were established by compiling the alternatives and diffing, not by taste:
+//
+//  * The loop variables are DECLARED HERE and assigned below. Moving each
+//    declaration down to its natural point of use leaves the code semantically
+//    identical and byte-identical in length, but rotates the callee-saved GPRs
+//    (r27/r28/r29/r31 swap roles) and the function stops matching. Do not
+//    "clean this up".
+//  * The probe point is built as a copy of mPos with the two offsets added in
+//    place, NOT as mVec3_c pt(mPos.x + ofs[0], mPos.y + ofs[1], mPos.z). The
+//    constructor form emits the same instructions in the same order but with a
+//    4-way permutation of f0-f3. Fifteen other spellings were tried; this is
+//    the only one that colours the FP temporaries the way the original does.
 u8 daEnHatenaBalloon_c::all_bgcheck(u8 &floorFlags) {
+    u32 flag;
+    const checkData_s *row;
+    const float *ofs;
+    u8 ret;
+    u32 i;
+    u32 hit;
+    u32 j;
+
     if (goalpole_check()) {
         floorFlags = 0xFF;
         return 0xF;
@@ -132,14 +166,16 @@ u8 daEnHatenaBalloon_c::all_bgcheck(u8 &floorFlags) {
         }
     }
 
-    u8 ret = 0;
-    const checkData_s *row = s_someCheckData;
-    for (u32 i = 0; i < 4; i++) {
-        u32 flag = row->mFlag;
-        const float *ofs = &row->mOffsetX;
-        u32 hit = 0;
-        for (u32 j = 0; j < 2; j++) {
-            mVec3_c pt(mPos.x + ofs[0], mPos.y + ofs[1], mPos.z);
+    ret = 0;
+    row = s_someCheckData;
+    for (i = 0; i < 4; i++) {
+        flag = row->mFlag;
+        ofs = &row->mOffsetX;
+        hit = 0;
+        for (j = 0; j < 2; j++) {
+            mVec3_c pt(mPos);
+            pt.x += ofs[0];
+            pt.y += ofs[1];
             if (!(ret & flag)) {
                 hit |= pointBgCheck(pt, 1, 1, hit);
                 if (hit != 0) {
