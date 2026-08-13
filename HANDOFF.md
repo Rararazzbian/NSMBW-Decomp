@@ -64,9 +64,9 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 10.657%** (692,728 / 6,500,368); `wiimj2d.dol` **20.968%**. Five
+- **Position: 10.657%** (692,744 / 6,500,368); `wiimj2d.dol` **20.969%**. Five
   binaries verify, tree clean.
-- **34 commits are unpushed.** Nothing has been pushed for the whole of the
+- **40 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
@@ -84,10 +84,25 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
   `d_enemiesNP.rel`. **Ten of its functions are file-statics with no symbol-map
   name** (2,800 B, 22% of the unit, including its two largest); the names in our
   source are invented and marked `@unofficial`.
-- **Next target: `d_a_en_hatena_balloon.cpp`** — all seven section bounds are
-  already derived, one unnamed function, 43% sibling precedent by bytes. The
-  full evidence is under "Next target" below; read it before assigning anything.
-  `d_a_player_hio_ADJ.cpp` still has one function left but it is a characterised
+- **`d_a_en_hatena_balloon.cpp` IS ASSEMBLED AND 80/81 BYTE-EXACT — resume here.**
+  18,216 B of bodies, emitted symbol order matching the target's address order,
+  everything committed under `wip/hatena_balloon/`. It is **not landed**: a
+  matching slice cannot contain a non-matching function, so the slice entry has
+  not been added. **The single gap is `fly_ydisp_check`, 2 words of 55** — two
+  adjacent independent `lfs` scheduled in the opposite order, same registers,
+  same instruction count. Its agent swept ~85 variants across ten axes without
+  moving it; read `wip/hatena_balloon/README.md` before spending anything on it,
+  and consider landing the unit `nonMatching` as a checkpoint if it resists.
+  **Do not re-derive anything else about this unit** — the class is proven and
+  committed, the map is done, all eight batch drafts and their verifiers are in
+  `wip/hatena_balloon/`.
+- **The "43% sibling precedent by bytes" figure for hatena_balloon was WRONG**,
+  and the way it was wrong generalises: it was true at the *name* level and false
+  at the *body* level. `model_set` and `setCcLine` both score **e=0.077** against
+  their same-named banked counterparts, and `model_set` has no body precedent
+  anywhere. **Name-sharing is not body-sharing** — check a score before planning
+  around reuse.
+- `d_a_player_hio_ADJ.cpp` still has one function left but it is a characterised
   dead end on its current axis; see its entry below before spending on it.
 - **New headers this session:** `d_a_en_bros_base.hpp`, `d_a_en_blockmain.hpp`,
   `d_block_mng.hpp`. `d_a_en_blockmain.hpp` is now the best model in the repo
@@ -526,8 +541,8 @@ ones.
 
 ## Where the work now stands
 
-**10.657%** (692,728 / 6,500,368 bytes); `wiimj2d.dol` at **20.968%**. Five
-binaries verifying, working tree clean, **34 commits unpushed**.
+**10.657%** (692,744 / 6,500,368 bytes); `wiimj2d.dol` at **20.969%**. Five
+binaries verifying, working tree clean, **40 commits unpushed**.
 
 The 2026-08-12/13 session landed five TUs (~55,000 bytes), took the project
 past 10%, landed five tool fixes across three tools and added the rules below.
@@ -942,7 +957,7 @@ sizes; they are not the same number and neither is a typo for the other.
 | `d_a_en_jimen_pakkun_base` | 8,848 | — | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
 | `d_a_en_bros_base` | 12,112 | 12,112 | 99 | **DONE 99/99**, landed and linked. Derives from `dEn_c` |
 | `d_a_en_blockmain` | 13,232 | 12,604 | 97 | **DONE 97/97**, landed and linked. Ten file-static functions (2,800 B, 22%) have no symbol-map name; the names in our source are invented |
-| `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **RECOMMENDED NEXT** — all seven bounds derived; see above |
+| `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **ASSEMBLED, 80/81 byte-exact, NOT landed** — one 2-word gap in `fly_ydisp_check`; everything in `wip/hatena_balloon/` |
 | `d_a_player_manager` | 10,768 | 10,300 | 68 | Runner-up; all-static class, no vtable |
 | `d_a_player_demo_manager` | 9,280 | 8,976 | 51 | Runner-up; 3-slot vtable |
 | `d_a_bullet` | 7,316 | — | 73 | |
@@ -1704,9 +1719,9 @@ invented and marked `@unofficial`. Two consequences, both paid for:
 
 ## Current state
 
-- **Progress: 10.657%** (692,728 / 6,500,368 code bytes)
+- **Progress: 10.657%** (692,744 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- **34 commits unpushed.** Ask before pushing.
+- **40 commits unpushed.** Ask before pushing.
 - Development happens on **native Windows**; see "Local setup" below.
 - Last TU banked: `d_a_en_blockmain.cpp` (97 fns, 12,604 bytes of code in a
   13,232-byte span), whole and byte-exact. Before that:
@@ -1735,7 +1750,7 @@ Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 20.968% |
+| `wiimj2d.dol` | 20.969% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -2353,6 +2368,161 @@ pops the callback stack inline at both sites rather than via a helper).
 - Library/SDK files want `-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int
   -RTTI off` (no `-inline noauto`), set per-slice via `compilerFlags`.
 
+### What eight parallel batches cost, and what only assembly can catch
+
+The hatena_balloon run used eight authoring batches instead of six. Seven
+reported byte-exact; assembly still found four defects, and **three of them were
+invisible to every per-batch check** because they were disagreements *between*
+batches, each of which was locally correct:
+
+- **A return type two batches disagreed on.** `all_bgcheck` returns `int`, not
+  `u8` — `u8` makes callers emit a `clrlwi` mask the target does not have. The
+  callee's author said `u8`, the caller's author said `int`; the caller was
+  right, and only linking them together showed it.
+- **A member signedness two batches disagreed on**, in the opposite direction.
+  `dEnemyMng_c::m_110` is `u32`, not `int`.
+- **A `.data` ordering defect that surfaced as seven wrong words in a function
+  that was byte-exact standalone** (see the string-literal lever below).
+
+**So: when two batches disagree about a shared declaration, do not pick the more
+confident report — record both and let assembly decide.** Both disagreements
+here were resolved correctly by the byte evidence at assembly, and both would
+have been landed wrong if I had chosen at briefing time.
+
+Also worth carrying forward: **agents shadow-copy shared headers rather than
+editing them**, which worked well across eight batches — but a *stale* shadow
+tree left by a previous run masked a real header fix and cost a build cycle.
+Tell agents to delete any pre-existing `inc/` shadow before starting.
+
+And **preserve drafts to the repo, not the scratch directory.** A session limit
+killed all eight mid-flight; the two batches whose drafts had been copied into
+`wip/` resumed from real work, the six that had not started cold. One agent
+repointed its verifiers at the repo's own target dump so they still run after
+the session ends — copy that habit.
+
+### Levers from d_a_en_hatena_balloon (81 functions, eight batches)
+
+Added by the hatena_balloon run. Several sharpen or contradict entries above —
+where they do, this section is the later measurement.
+
+#### A literal can be unwriteable as itself
+
+The target holds **0x3ED70A3E** in a slot where the literal `0.42f` compiles to
+**0x3ED70A3D** — one ULP off, and no decimal spelling reaches it. `0.3f * 1.4f`
+folds at compile time to exactly 0x3ED70A3E. The surrounding branch is
+`base x 1.4f` throughout (0.9/0.3/1.8/0.45), and the other three fold identically
+either way, so only that slot discriminates — and only in favour of the product.
+
+**A one-ULP miss is a folding question, not a wrong number.** The original wrote
+an expression; you cannot always write the result back as a decimal. Verified
+independently.
+
+#### Vector-construction spelling permutes FP temporaries with no instruction change
+
+`mVec3_c pt(base.x + dx, base.y + dy, base.z)` and
+`mVec3_c pt(base); pt.x += dx; pt.y += dy;` emit **the same 11 instructions in
+the same order**, with f0-f3 permuted four ways. Sixteen spellings were swept;
+hoisting operands into named locals reached 6-8 differing lines and only the
+copy-then-offset form landed. **If a function is down to a pure FP rotation with
+the schedule already correct, sweep the construction spelling before anything
+else.** `pos.y += K` versus `pos.y = pos.y + K` cost **38 words** in another
+function — the sharpest confirmation of the compound-assignment form yet.
+
+#### Naming a local fixes whichever operand you name into first position
+
+The strongest single lever in this unit, and it cuts both ways:
+
+- Three functions stuck at 2 differing lines closed by **deleting** the local:
+  `getLoopScrollDispPosX(mPos.x) + xSize() - 16.0f` with no `float w`. Binding
+  either operand to a name produced the wrong order, and "bind BOTH operands"
+  made it *worse* (10 lines).
+- Another function needed the opposite: binding only the **left** value
+  (`float y = ...; mPos.y = y + l_create_diff[m_7f0];`) flipped `fadds` to
+  (value, diff).
+- A third closed only by binding **both**, declared in the target's load order,
+  after 13 variants had plateaued at 2.
+
+So the rule is not "locals are good" or "locals are bad". **A named local forces
+that operand into first position; choose which one you need there.** Related:
+**declaration order is evaluation order, not argument order** — `float dy = ...;
+float dx = ...; mVec3_c diff(dx, dy, 0.0f);` with `dy` declared first though it
+is the second argument. Unnamed temps number right-to-left; named ones number in
+declaration order. And **a named local for a value being read can force an extra
+callee-saved FPR** — reading the member directly at the comparison closed a frame
+that `float speedF = mSpeedF` had widened by 4 words.
+
+#### Use the class's inline accessors
+
+`dBgParameter_c::xSize()/ySize()/yStart()/yEnd()` versus open-coded `mSize.x` /
+`mPos.y` **transposes f0 and f2** on the surrounding `fmuls`/`fsubs`. Four
+functions closed only with the accessor form. Same rule as `getCenterX()` above,
+now confirmed on a second class. A shimmed variant that read members directly
+inside the accessors made no difference, so the lever is about *calling* the
+accessor, not how it is written.
+
+#### A stubborn `fmuls` operand order may be a folded divide
+
+`fmuls f29, f4, f0` came from `half / 8.0f`, not `half * 0.125f`. CodeWarrior
+folds a power-of-two divide and the folded form emits `fmuls(numerator,
+reciprocal)`. The already-matching sibling `fly_xspeed_set`'s `half / 6.0f` is
+what pointed at it. **When a `fmuls` against a power-of-two constant has stubborn
+operand order, try spelling it as a divide.**
+
+#### Signedness is visible and load-bearing
+
+- A **`u8` return makes callers emit `clrlwi. r0,r3,24`**; `bool` and `int`
+  returns both emit `cmpwi r3,0x0`. So `u8` is distinguishable from the object
+  code but **`bool` vs `int` is not** — identical codegen in callee and caller.
+  Do not sweep that axis; do check for the mask.
+- A **`u8` member compared to a constant gives `cmplwi` read directly, `cmpwi`
+  copied into an `int` local first.** Both shapes occur in one file.
+- `m_110--` followed by `> 3` is an **unsigned wrap check**: the member must be
+  `u32` or the compare comes out `cmpwi` instead of `cmplwi`.
+- **`unsigned long` vs `u32` remains invisible except in the mangled name.**
+
+#### A switch whose compare order differs from its body order is not a switch
+
+Proven by exhaustive probe — all six case permutations against four default
+positions — that a plain `switch` **always** emits compares and bodies in source
+order. Reproducing compares 1, 0, 3 with bodies 2, 3, 0, default needs a **shared
+case arm with an inner test**, where the inner condition folds into the case
+dispatch compare and costs nothing:
+
+```cpp
+case 1: mDirection = 2; break;
+case 0:
+case 3: if (dir == 3) mDirection = 3; else mDirection = 0; break;
+default: mDirection = 1; break;
+```
+
+#### Guard shape
+
+`if (cond) { body; return X; } return Y;` rather than an early-return guard — the
+tell is a branch-if-true to a trailing block. An `||` early return costs an extra
+`beq +8; b end` and duplicates the `li r3,1`. Separately, **an unreachable
+trailing branch in the target is a positive signal** to write explicit `if/else`,
+not evidence the shape is wrong.
+
+#### `const` on a by-value parameter, and memory across calls
+
+A top-level **`const` on a by-value `mVec3_c` parameter** lets MWCC prove it
+cannot alias the sret buffer, hoisting all loads above all stores and freeing an
+FPR. It closed a function that had plateaued at 11-12 lines across ~45 variants,
+and it is invisible in the mangled name. Separately, **CodeWarrior invalidates
+memory across calls**: two source reads of one global separated by a call become
+two real loads, and reading it into a local *before* the call is what forces the
+callee-saved register the target uses.
+
+#### String-literal order in `.data` follows declaration position
+
+This cost an assembly cycle and surfaced as **seven wrong words in an unrelated
+function**. A file-scope `static const char *[]` declared at the top of the file
+put its strings at `g_profile+0xC`, displacing the strings the target has there
+and shifting every later literal. Moving the array next to its only user fixed
+it. **Declare literal-bearing file-scope data next to the function that uses it,
+not in a preamble block** — and if a function differs only in a `.data`-base
+displacement, suspect ordering rather than code.
+
 ### Code-generation levers from the bros/blockmain pair
 
 `d_a_en_bros_base.cpp` (99 functions) and `d_a_en_blockmain.cpp` (97 functions)
@@ -2950,7 +3120,7 @@ Still worth avoiding on the same reasoning: `dBc_c` (fp 36%), `dBg_c` (39%),
 `daMask_c` (27%), `dWmSpline_c` (45%), `daYoshi_c` (55 external classes).
 
 **Where the remaining work actually is.** The DOL holds **2,950,464 B** of the
-6,500,368-B total (45.4%) and is 20.968% done, so **~2.33 MB of undone work is
+6,500,368-B total (45.4%) and is 20.969% done, so **~2.33 MB of undone work is
 DOL game code — roughly 40% of everything remaining, and it is workable today**.
 The other ~60% is in the four `.rel` modules, which have 0.3–2.3% symbol
 coverage and are not workable until a symbol map exists. (An earlier version of
