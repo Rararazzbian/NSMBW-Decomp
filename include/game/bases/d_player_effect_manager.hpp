@@ -17,6 +17,12 @@
 /// @unofficial
 class dPyEffect_c {
 public:
+    /// @note Declared, NOT defined inline. dPyEffectMng_c embeds ten of these
+    /// by value, so an implicit constructor would make MWCC synthesise one
+    /// here -- and it would drag in weak copies of followEffect_c's,
+    /// mEf::effect_c's and mVec3_c's constructors and destructors, none of
+    /// which the original emits in this TU. The real one is at 0x800D2AE0.
+    dPyEffect_c();
     virtual ~dPyEffect_c();
 
     void update();
@@ -39,6 +45,9 @@ STATIC_ASSERT(sizeof(dPyEffect_c) == 0x13C);
 /// stride 0x13C, and `4 + 10 * 0x13C = 0xC5C` exactly. @unofficial
 class dPyEffectMng_c {
 public:
+    /// @note Declared, NOT defined inline -- same reason as dPyEffect_c's.
+    /// The real one is at 0x800D2D10 and it is what daPyMng_c's __sinit calls.
+    dPyEffectMng_c();
     virtual ~dPyEffectMng_c();
 
     void update();

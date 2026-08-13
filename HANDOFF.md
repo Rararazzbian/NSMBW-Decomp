@@ -3366,3 +3366,52 @@ place, do not tidy:
 - Do not spend more than two or three attempts on a function whose size has
   stopped changing. That is the register-allocation wall, and further guesses do
   not converge. Park it and move on; a function left in the filler costs nothing.
+
+## STATE: `d_a_player_manager.cpp` assembled, pre-trial-link
+
+`wip/player_manager/assembled.cpp` holds all 65 authored functions plus the
+static storage, in target address order. **42 of 65 byte-exact**, zero
+regressions from the batches' own numbers, verified with
+`tools/unit_verify.py --lo 0x8005E9A0 --hi 0x800613B0 --unit
+dol_bases_d_a_player_manager` (its target lives at
+`tools/auto_decomp/work/dol_bases_d_a_player_manager/target.txt`).
+
+### The next problem, and it is not the 23 near-misses
+
+The unit **emits functions the target does not have.** These add bytes to
+`.text` and would shift the whole unit, and no per-function diff can see them:
+
+| Emitted | Size | Status |
+|---|---|---|
+| `__dt__7mVec2_cFv`, `__dt__Q23EGG8Vector2fFv`, `__dt__Q23EGG8Vector3fFv` | 16 insns each | **Unexplained — start here** |
+| `getPlrNo__8dActor_cFv` | 2 | Weak copy; the real one is at `0x8001D200` in banked `d_actor.cpp` |
+| `isItemKinopio__7dAcPy_cFv` | 5 | Weak inline flush |
+| `executeLastAll__10daPlBase_cFv`, `executeLastPlayer__10daPlBase_cFv` | 1 each | Weak inline flushes |
+| `fn_8005f4d0__9daPyMng_cFP7mVec3_cii`, `fn_80060DB0__Fv` | 39, 78 | **Fine** — ours, just unnamed in the map |
+
+Four more were already fixed: embedding `dPyEffect_c` by value made MWCC
+synthesise a constructor, which dragged in weak copies of `followEffect_c`'s,
+`mEf::effect_c`'s and `mVec3_c`'s ctors/dtors. **Declaring `dPyEffect_c();` and
+`dPyEffectMng_c();` without bodies fixed it** — the real ones are at `0x800D2AE0`
+and `0x800D2D10`. `__sinit` went from 52 instructions to 40 against a target of
+39. The same trick is the first thing to try on the three `__dt__` leftovers.
+
+**This is the general trap: giving a class a real member instead of a pad can
+make the compiler synthesise functions the original never emitted.** A more
+accurate header is not automatically a better one.
+
+### A `.rodata` contradiction, unresolved
+
+The bounds derivation says our `.rodata` claim is **one object**, `scModelTypeDt`
+at `0x802EF608`. But `createCourseInit`'s `scOfsX[4]`/`scOfsY[4]` compile into
+`.rodata` too, and the target has an unnamed `lbl_802EF5D8` (`0x20`) plus a
+pooled `@77211` (`0x10`) sitting immediately before `scModelTypeDt`. Two agents
+found this independently. If those three are ours the claim is `0x40` starting at
+`0x802EF5D8`, not `0x10` — and `@77211` between two of our objects is almost
+certainly ours too. **Settle this before the trial link**, because a short
+`.rodata` bound is the exact shape that fails four of five binaries.
+
+### Then trial-link
+
+Slice entry in, `nonMatching` cleared, and let the link speak. Do not wait for
+the 23 near-misses.
