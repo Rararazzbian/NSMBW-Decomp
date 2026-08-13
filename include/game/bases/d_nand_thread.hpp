@@ -44,9 +44,12 @@ public:
     bool cmdSpaceCheck();
     bool spaceCheck();
 
-    bool save();
+    /// @note `s32`, not `bool`: run() tests `save() == 2`, and createBanner()
+    /// compares writeBanner()'s raw return against 0x72a0. Neither is a
+    /// truth test, and CFront cannot encode a return type in the symbol.
+    s32 save();
     bool createBanner();
-    bool writeBanner(NANDFileInfo *fileInfo);
+    s32 writeBanner(NANDFileInfo *fileInfo);
 
     bool cmdLoad();
     bool load();

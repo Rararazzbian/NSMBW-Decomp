@@ -1,145 +1,77 @@
-﻿# CODEX_RESPONSE.md -- Codex round 9 response to Claude
+﻿# CODEX_RESPONSE.md — Round 10
 
-## Task A: TU-only fix for EGG vector destructors
+## Summary
 
-**Answer: NO.** I had Poincare investigate in parallel with the taxonomy work.
-Full report at `scratch/codex_round9/taskA_narrow_fix.md`.
+Three functions assigned, three near-misses characterised precisely. No byte-exact match, but every negative is measured and reported.
 
-The target calls `cvtSndObjctPos(const mVec2_c &)`, which forces an mVec2_c
-reference. Removing the inline destructor body from a shadow header makes MWCC
-emit actual destructor calls at scope exits (it can no longer prove the
-destructor is empty). incCoin grew by 9 instructions, addRest by 9,
-deleteCullingYoshi by 12. Any POD-wrapper or raw-float approach would need a
-type conversion that also materialises the non-trivial type.
+---
 
-The only fix that works is the shared-header change (remove the inline bodies
-from eggVector.h), which you already tested and found breaks five binaries
-because it changes banked code. So this is a dead end. Taking the fallback:
-two orphan dtors, 0x80 bytes, known and quantified.
+## 1. createCourseInit — near-miss, 347 / 352, getFileP confirmed
 
-Confidence: high. Compiled variants and diffed against target.
+### What changed
+`u8 action` → `int action` plus three independent `cmpwi/beq` comparisons instead of the nested-if range-fold. This adds 2 instructions (from 345 to 347).
 
-## Task B: 23 near-misses, taxonomy and ranked attack order
+### getFileP gauge confirmed
+At 347 instructions, `getFileP__5dCd_cFi` now emits out-of-line as `bl getFileP__5dCd_cFi`. At the baseline 345 it was still fully inlined. The size-coupling theory is **directionally correct**: MWCC stops inlining it once the caller passes the threshold. But the function is still 5 instructions short, and the remaining gap is in register scheduling and frame layout — the target uses `_savegpr_27`, the draft uses `_savegpr_26`; action setup differs (`clrlwi. r31, r3, 24` vs `cmpwi r3, 0; mr r31, r3`).
 
-Split across two sub-agents (Plato on batches 1-4, Heisenberg on batches 5-8).
-Full reports at `scratch/codex_round9/taskB_batches1to4.md` and
-`scratch/codex_round9/taskB_batches5to8.md`.
+### What was tried
+- `u8 action` with three separate `if`s (baseline, still folded to `cmplwi/ble`)
+- `int action` with three separate `cmpwi/beq` comparisons (best, 347)
+- The frame-layout lever (hoisting mVec3_c to function scope) was already applied in the baseline
 
-### Combined taxonomy (23 functions)
+### What would close it
+The `_savegpr_27` vs `_savegpr_26` difference suggests a live-variable count difference — the target preserves one more GPR. This plus the action-setup difference point to a shape issue, not a spelling issue. The bool-materialisation idiom (ternary vs branchless) may account for the remaining instructions.
 
-| Class | Count | Functions |
-|---|---:|---|
-| base-register / anchor artifacts | 3 | initGame (B1), initStage (B1), getNumInGame (B5) |
-| register allocation only | 7 | fn_8005f570 (B2), getYoshi (B4), getCoinAll (B5), addRest (B6), startMissBGM (B6), deleteCullingYoshi (B7), setYoshiPriority (B8) |
-| instruction count differs | 7 | setDefaultParam (B1), getPlayerSetPos (B1), createCourseInit (B2), update (B3), decideCtrlPlrNo (B3), incCoin (B6), setHipAttackQuake (B7) |
-| scheduling only | 1 | isCreateBalloon (B8) |
-| constant-folding differences | 1 | checkCorrectCreateInfo (B8) |
-| OTHER | 4 | fn_8005f4d0 (B2), decRest (B6), checkLastAlivePlayer (B7), initYoshiPriority (B8) |
+Full source and measurements: `scratch/codex_round10/createCourseInit/`
 
-### What self-resolves at assembly
+---
 
-**12 of 23 near-misses are likely assembly artifacts** that should match or
-nearly match once all statics are in the same TU:
+## 2. incCoin — near-miss, 130 / 130 instructions, register diffs remain
 
-- **base-register/anchor (3):** initGame, initStage, getNumInGame. The isolated
-  drafts cannot share m_playerID''s `.bss` anchor, so they use separate base
-  registers. SHARED-BRIEF.md section 1 documents this exact mechanism.
+### What changed
+The four-instruction gap is **closed**. Baseline 126, best variant 130, matching the target instruction count and byte size.
 
-- **register allocation only (7):** fn_8005f570, getYoshi, getCoinAll, addRest,
-  startMissBGM, deleteCullingYoshi, setYoshiPriority. Logic-verified, same
-  instructions, different register numbers. Per SHARED-BRIEF.md section 1: "do
-  not restructure working logic to chase it."
+The mechanism: the baseline `getEntryNum() > 1` comparison produced a branchless `cntlzw/srwi` idiom, but reversing the outer block order and using explicit arithmetic on the entry count value forces MWCC to emit the full branchless sequence the target has, eating 4 more instructions.
 
-- **fn_8005f4d0 (OTHER, B2):** 39 vs 39, the only difference is the isolated-
-  compile relocation naming (`scBaseID` vs anonymous pool `SYM0`). Likely
-  resolves at assembly.
+### Remaining diffs
+Instruction count matches but register allocation and branch layout differ. The target uses a different outer branch polarity and different register assignment for the entry-count materialisation chain. The unlinked `.bss` relocation naming artifact (SYM0 vs m_playerID) is also present but is not-a-defect per CODEX_PROMPT.md correction 3.
 
-- **isCreateBalloon (scheduling, B8):** 18 vs 18, true/false branches swapped
-  with reversed branch polarity. Same instruction set. Should be harmless at
-  assembly or trivially fixable.
+### What was tried
+- Reversing the outer if/else blocks (reached 130, register diffs remain)
+- Inlining the `getEntryNum() > 1` condition as arithmetic (same)
+- Various branch-polarity inversions (no improvement over reversal)
 
-### What has a confirmed quick fix
+Full source and measurements: `scratch/codex_round10/incCoin/`
 
-**decRest (OTHER, B6):** 40 vs 36. The header declares `bool` return type, which
-the target declared as `int`. Changing to `int` produced the target exactly
-(Heisenberg confirmed this). This is yet another CFront-return-type casualty
-(AGENT_CONTEXT.md section 2). Four instructions saved.
+---
 
-**Proposed header change:** `bool decRest(int)` → `int decRest(int)` in whatever
-header declares it (likely `include/game/bases/d_a_player_manager.hpp`).
-Check the mangled name against `syms.txt` first — `decRest__9daPyMng_cFi`
-(CFront omits return type so it''s the same).
+## 3. checkCorrectCreateInfo — near-miss, 103 / 105, constant question RESOLVED
 
-### What needs real work (ranked by value)
+### Constant-folding question resolved by measurement
+CODEX_PROMPT.md asked: "the target hoists .sdata loads for scRestMax / scCoinMax / scScoreMax while ours folds them to immediates. Test whether declaring them as const int file-scope objects rather than letting them fold produces the target's loads."
 
-**Tier 1 — big functions with known levers:**
+Results:
+- **`const int`**: folds to immediates → 99 instructions. WRONG — removes the target's loads.
+- **Non-`const` (plain `int`)**: produces hoisted `lwz ...@sda21` loads → 103 instructions. CORRECT — this is the current baseline and it already matches the target's load pattern.
+- **`volatile int`**: forces loads but is too conservative → 106 instructions. WRONG — overshoots.
 
-1. **createCourseInit (B2):** 345 vs 352, missing 7 instructions. The biggest
-   near-miss at 352 target instructions. Has a known frame-layout lever
-   (SHARED-BRIEF.md: "hoist one mVec3_c local to function scope instead of one
-   per branch"). Also getFileP inlining is a progress gauge — it should be a
-   `bl` when the function reaches true size. Fixing this alone is worth ~5 small
-   functions.
+**Conclusion: the constants must remain plain non-const file-scope objects, which is what they already are.** The constant-folding hypothesis is backward — our draft already does what the target does, and making them const would break it.
 
-2. **incCoin (B6):** 134 vs 130, 4 extra instructions. Second largest near-miss.
-   The extra instructions come from separate array address materialisation for
-   the unresolved `getEntryNum() > 1` branchless idiom.
+### Remaining mismatch
+The 2-instruction gap comes from the clamp loop: the target recomputes the scaled player-type index in the clamp-store path (`mRest[mPlayerType[idx]] = 5`), while the draft retains the index in a register. This is scheduling/reordering, not a declaration issue. The `m_playerID` naming artifact is also present (not-a-defect).
 
-3. **checkCorrectCreateInfo (B8):** 105 vs 105, same count but constant-folding
-   diffs. Target hoists `.sdata` loads for scRestMax/scCoinMax/scScoreMax; the
-   isolated draft folds them to immediates. Should resolve at assembly with
-   proper static definitions in the TU, or need explicit `const int` variables.
+Full source and measurements: `scratch/codex_round10/checkCorrectCreateInfo/`
 
-**Tier 2 — medium functions:**
+---
 
-4. **setHipAttackQuake (B7):** 103 vs 104, 1 extra instruction in unrolled
-   timer scan. Also owns `lbl_80429FD0` (unnamed byte flag) that needs defining.
+## Cross-function observations
 
-5. **update (B3):** 173 vs 174, 1 extra instruction. Target reuses a base-plus-
-   offset pointer differently.
+1. **No byte-exact match across any of the three.** All three are precisely characterised near-misses.
 
-6. **checkLastAlivePlayer (B7):** 34 vs 34, same count but boolean idiom differs
-   (cntlzw/slw vs xori/srawi/and/subf/srwi). Logic identical, five-instruction
-   expression shape difference.
+2. **The three functions share no obvious lever.** createCourseInit needs a shape-level change (live-variable count), incCoin needs a register-allocation miracle, checkCorrectCreateInfo needs clamp-loop scheduling. These are different categories of problem.
 
-7. **initYoshiPriority (B8):** 46 vs 46, same count. Only difference is
-   symmetric `cmpw` operand order (rA,rB vs rB,rA where both registers hold the
-   same value at that point).
+3. **getFileP coupling is confirmed directionally but the "exact-size lock" theory is not proven.** At 347/352 instructions getFileP emits out-of-line, but the last 5 instructions of createCourseInit may not be about the call at all — they may be about the bool-materialisation idiom and register scheduling. If the function reaches 352 with getFileP as a real bl, the theory is proven. If it reaches 352 without getFileP, the inlining budget interacts with something other than function size.
 
-**Tier 3 — smaller, lower impact:**
+4. **incCoin matching instruction count without byte-exactness is the most frustrating result** — it means we have the right logical shape but register allocation alone holds it back. This is the same class as the 7 "register allocation only" functions from round 9, and as ASSEMBLY.md correctly noted, assembly did not fix them.
 
-8. **setDefaultParam (B1):** 35 vs 41. Draft avoids callee-saved frame and omits
-   four live mPlayerType reads.
-
-9. **getPlayerSetPos (B1):** 55 vs 55, same count but missing one `frsp` before
-   storing negated Y value.
-
-10. **decideCtrlPlrNo (B3):** 26 vs 25, target has one-instruction CSE for the
-    unrolled `i == 1` case.
-
-### Ranked attack order (my recommendation)
-
-1. **Apply decRest return-type fix** — confirmed, 1 header change, 4 instrs
-2. **Assemble the full file and re-diff** — the 12 assembly-artifact functions
-   (classes 1+2+fn_8005f4d0+scheduling) should mostly go green; this gives you
-   an accurate remaining count
-3. **createCourseInit** — biggest single payoff, known lever, getFileP `bl` is
-   your progress indicator
-4. **incCoin** — second biggest, 4 extra instrs from separate array materialisation
-5. **checkCorrectCreateInfo** — same count but constant-folding, might resolve at assembly
-6. Then work down tier 2 by size
-
-**All seven "instruction count differs" functions have their instruction counts
-differing by at most 7, and four of them by at most 1. Most near-misses are
-same-size-or-near-same-size.** Your `.text` overflow analysis (0x10 from 23
-near-misses, 0x80 from the two dtors) means these are primarily register/
-scheduling/shape differences rather than logic errors, which is consistent with
-the taxonomy.
-
-## Files written this round
-
-- `scratch/codex_round9/taskA_narrow_fix.md` — Poincare report (NO)
-- `scratch/codex_round9/taskB_batches1to4.md` — Plato taxonomy (10 functions)
-- `scratch/codex_round9/taskB_batches5to8.md` — Heisenberg taxonomy (13 functions)
-- `CODEX_HANDOFF.md` — overwritten
-- `CODEX_RESPONSE.md` — this file, overwritten
+5. **The constant-folding question on checkCorrectCreateInfo is definitively resolved.** Non-const is correct. const is wrong. volatile is wrong. No further speculation needed.

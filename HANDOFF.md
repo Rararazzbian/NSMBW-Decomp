@@ -478,6 +478,42 @@ binaries still resolve its profile symbol from `syms.txt` and the line must
 flag clears and the object really links, that same line becomes a duplicate
 definition and must **go**, in the same commit.
 
+#### An object may be LARGER than its slice claims — unreferenced weak symbols are not placed
+
+**This one cost three peer-AI rounds and two shared-header changes before anyone
+checked it, and it invalidates the obvious reading of a section-size comparison.**
+
+`bin/compiled/wiimj2d/dol/bases/d_multi_manager.o` — landed, banked, byte-exact,
+verifying in all five binaries **right now** — emits thirteen functions. Ten are
+its own. The other three are weak inline destructors pulled in by an `mVec2_c`
+local: `__dt__7mVec2_cFv`, `__dt__Q23EGG8Vector2fFv`, `__dt__Q23EGG8Vector3fFv`.
+Its slice claims `.text 0xc8170-0xc8580`, exactly `0x410`, which is the ten real
+functions and nothing else. **The object is `0xC0` bigger than its claim and the
+DOL is byte-identical to retail.**
+
+So: **an unreferenced weak symbol emitted into an object does not have to fit
+inside that object's slice `.text` claim.** The linker does not place it. Every
+banked unit in this project that touches an `mVec2_c` or `mVec3_c` local has been
+carrying `__dt__Q23EGG8Vector2fFv` / `__dt__Q23EGG8Vector3fFv` the whole time,
+invisibly and harmlessly — neither has ever existed in the retail symbol map.
+
+Two expensive consequences, both of which actually happened:
+
+- **Comparing a compiled OBJECT's section size against a slice claim is not a
+  link-time overflow measurement**, and must not be written up as one.
+  `wip/player_manager/TRIAL_LINK.md` does exactly that — its table is correctly
+  headed "compiled object vs claim" and was then read as though `.text`
+  overflowed by `0x90`. `0x80` of that `0x90` is those two destructors, which
+  will never be placed.
+- **Both peer AIs independently proposed removing the inline destructors from
+  `eggVector.h`**, from two different units, with good evidence each time. It was
+  applied once and **failed all five binaries** — because it removes something
+  the whole project legitimately relies on. Do not propose it again.
+
+The boundary is presumably referenced-vs-unreferenced: a weak symbol that is the
+surviving definition for some other object must occupy space. That half is not
+yet proven and is queued as a peer task.
+
 #### Keep the name→address mapping from the merge
 
 A mistake the lead made and paid for. Units contain file-static functions with

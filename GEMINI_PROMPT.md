@@ -1,132 +1,134 @@
-# Work order for Gemini — round 8
+# Work order for Gemini — round 9
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 8.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 9.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 7 verdict: green light accepted, and the pre-flight is complete
+## First: I sent you to pre-flight a unit that was already finished. My fault.
 
-`m_pad.cpp` came back finished. The three things I most wanted are all there and
-all evidenced rather than asserted:
+`d_multi_mng.cpp` is landed. It has been landed for some time. The source file is
+`source/dol/bases/d_multi_manager.cpp` — note the spelling, `manager` not `mng`,
+which is why my check for `d_multi_mng` came back empty — and it is registered in
+`slices/wiimj2d.json` at line 719 and verifying in all five binaries.
 
-- **The namespace-vs-class question is settled the right way.** "None of its 12
-  functions take a `this` pointer" is a proof, not an inference, and it makes the
-  unit far cheaper than `d_nand_thread.cpp` was.
-- **The green light is a recommendation with a measurement behind it.** Five
-  probe functions byte-exact on the first try is exactly the evidence that
-  answers "is this the register-allocation wall or not", and it is the shape of
-  answer I asked for. I would have accepted a recommendation *against* on the
-  same standard; you gave me the same standard pointing the other way.
-- **The `__sinit` / `.ctors` work** — `__construct_array` over
-  `g_PadAdditionalData[4]`, `__arraydtor$13953` registered via
-  `__register_global_object` — is the part `d_nand_thread.cpp` never had, and it
-  is the part that cannot be fixed up after the fact.
+You even noticed this and said so plainly in §6.1: *"already recorded with exact
+ranges"*. You reported it as an audit result rather than stopping, which was the
+right call given the instruction you were handed, but you should not have been
+handed it. I did not check before assigning. **The `sizeof(dMultiMng_c) == 0x5C`
+confirmation is still genuinely useful** — it was an unproven assumption in
+`d_a_player_manager.cpp`'s `.bss` and now it is not — and you derived it
+independently rather than reading it off the landed header, which is what makes
+it worth anything. The rest of Task B was wasted motion and that is on me.
 
-`m_pad.cpp` is now queued for authoring behind `d_nand_thread.cpp`.
+## Second: §5's hazard is refuted by the very file you were analysing
 
-## What happened to your round-6 unit, and the one defect in it
+You reported that the inline destructors in `m_vec.hpp` / `eggVector.h` cause
+MWCC to emit `__dt__7mVec2_cFv`, `__dt__Q23EGG8Vector2fFv` and
+`__dt__Q23EGG8Vector3fFv` into `d_multi_manager.o`, expanding `.text` from
+`0x410` to `0x4D0`, and you proposed removing them.
 
-**I am authoring `d_nand_thread.cpp` right now**, off your round-6 pre-flight.
-The class layout, the pin list and the `0x4C` gap all held up under the real
-disassembly, and the vtable I read out of the DOL independently confirms your
-`sizeof(EGG::Thread) == 0x4C` conclusion. The header is landed and all five
-binaries verify.
-
-**One thing in it was wrong, and it is the one class of error that matters.**
-
-Your `.data` claim was `0x196a8-0x196d8` — i.e. starting at `0x80317D48`, the
-first vtable. The true low bound is **`0x80317CD8`**, `0x70` bytes lower. The
-missing `0x70` is four objects this TU owns:
+**The emission is real. The hazard is not.** Here is the current, verifying
+build's own object, `bin/compiled/wiimj2d/dol/bases/d_multi_manager.o`:
 
 ```
-0x80317CD8  0x0E  @66576  "save_icon.bti"
-0x80317CE8  0x13  @67228  "save_banner_EU.bti"
-0x80317CFC  0x0C  @67229  "save_banner"
-0x80317D08  0x40  @67342  jump table, 16 entries, every one inside setNandError
+__ct__11dMultiMng_cFv, global          initStage__11dMultiMng_cFv, global
+__dt__11dMultiMng_cFv, global          __dt__7mVec2_cFv, weak
+__dt__Q23EGG8Vector2fFv, weak          setClapSE__11dMultiMng_cFv, global
+setRest__11dMultiMng_cFii, global      addScore__11dMultiMng_cFii, global
+incCoin__11dMultiMng_cFi, global       incEnemyDown__11dMultiMng_cFi, global
+__dt__Q23EGG8Vector3fFv, weak          setBattleCoin__11dMultiMng_cFii, global
+setCollectionCoin__11dMultiMng_cFv, global
 ```
 
-Two independent arguments fix it, and **both were available before authoring**:
+All three weak destructors are present, the object is `0xC0` larger than the
+`0x410` its slice claims, **and the DOL is byte-identical to retail.**
 
-1. **The terminal-vtable rule.** `__vt__11dMultiMng_c` sits at `0x80317CC8`, and
-   MWCC emits a class's vtable as the unconditional **terminal** `.data` object
-   of its TU. So the previous TU ends at `0x80317CD8` and everything from there
-   to our own vtables is ours.
-2. **The consecutive-pool-ID rule.** `@67228` / `@67229` / `@67342` bracket the
-   `.sdata` object `@67269` that your own report already attributed to this TU.
+That is a general rule nobody in this project had written down, and it matters
+far beyond this unit: **an unreferenced weak symbol emitted into an object does
+not have to fit inside that object's slice `.text` claim. The linker does not
+place it.**
 
-A `0x70` shortfall in a `.data` bound is the signature that fails four of five
-binaries with thousands of scattered single-byte diffs and nothing wrong in any
-function. It cost nothing here because it was caught at integration, but it is
-worth the round-8 opening task below.
+Do not feel bad about the proposal — Codex reached the same conclusion from a
+different unit, I applied it, and it broke all five binaries. Your version was
+better evidenced than its. The reason it is wrong is a fact about linking that
+neither of you could see from a compile.
+
+**Do not propose removing those destructors again**, and treat any future
+"my object's `.text` is bigger than the slice claim" observation as an open
+question rather than a defect, until Task A below settles it.
 
 ---
 
-## Task A: run that exact check against your own `m_pad.cpp` claims
+## Task A: settle the weak-symbol placement rule properly
 
-Not "does my range subtract correctly" — you already did that, and it was
-correct as far as it went. The failure mode is different and more specific:
+This is now the highest-value forensic question in the project, it is exactly
+your kind of work, and it is blocking a real unit.
 
-**Is there an object BELOW your claimed low bound, in any section, that
-`m_pad.cpp` actually owns?**
+I have one data point: three unreferenced weak destructors in one object, not
+placed, binary still exact. I want the rule, with its boundary.
 
-Your claims are `.data 0x2b8c0-0x2b8d0`, `.sdata2 0x2cb0-0x2cd0`,
-`.bss 0x26608-0x26748`, `.sbss 0x8a0-0x8c0`, `.ctors 0x21c-0x220`. For each,
-walk **backwards** from the low bound and apply both rules above:
+Work it out from the link, not from compiles:
 
-- what is the last object before your low bound, and is it a **vtable**? If it
-  is, your bound is safe. If it is a pooled `@NNNNN` literal or an unnamed
-  object, it may well be yours.
-- what are the **pool IDs** of the objects immediately below your bound, and are
-  they consecutive with `m_pad.cpp`'s own known pool IDs?
+1. **How general is it?** Sweep the objects under
+   `bin/compiled/wiimj2d/` and find every case where an object emits symbols
+   whose total size exceeds its slice's `.text` claim. How many banked, verifying
+   units are carrying unplaced weak symbols? If the answer is "most of them",
+   that is the rule confirmed at scale.
+2. **What is the boundary?** A weak symbol that IS referenced by another linked
+   object must be placed. So the rule cannot be "weak symbols never count". Find
+   a banked unit where a weak symbol *is* the surviving definition and confirm it
+   occupies space inside its slice claim. The distinction I expect is
+   referenced-vs-unreferenced, but **prove it rather than assuming my phrasing.**
+3. **What does the project's own tooling do about it?** Read `tools/` — the lcf
+   generation, the slicer, and anything handling `keepWeak`. Is this deliberate
+   (a deadstrip directive somewhere) or is it the linker's default? If there is
+   a `keepWeak` mechanism, when does it force a weak symbol to be placed, and
+   would any of it apply here?
+4. **The payoff, and please state it explicitly.**
+   `wip/player_manager/TRIAL_LINK.md` measured `d_a_player_manager.cpp`'s
+   compiled object at `0x2AA0` against a `0x2A10` claim and called it a `0x90`
+   overflow. `0x80` of that is `__dt__Q23EGG8Vector2fFv` and
+   `__dt__Q23EGG8Vector3fFv`. **Given your rule, does that unit have a real
+   `.text` problem at all, and if so how big is it?** That is the question I
+   actually need answered.
 
-`m_pad.cpp` has 32 `mPrint::MyPrintBase` template methods that call `vsnprintf`
-and `vswprintf` and a `Flush()` that drives a `TextWriterBase` — that is a lot of
-format strings, and format strings pool into `.data`. A `.data` claim of only
-`0x10` for a TU with that much string-formatting code is worth a second look on
-its own merits, independent of the rule above.
+Write the rule up in a form I can paste into `HANDOFF.md`, with the evidence
+that establishes each half of it and the boundary case that limits it.
 
-Report per section: the bound, the object immediately below it, which rule
-clears it, or — if it does not clear — the objects you now believe are ours and
-the corrected range.
+## Task B: pre-flight `d_a_en_coin_main.cpp`
 
-## Task B: pre-flight `d_multi_mng.cpp`
+**I checked this time.** Not in `slices/wiimj2d.json`, no source file, not
+started.
 
-Small, and it pays for itself twice.
+`0x800272F0`–`0x800281C0`, 3,792 B span / 3,652 B code / 23 functions. It is a
+**base class** — `__vt__14daEnCoinMain_c` is `0x2EC`, the same size as
+`daEnBlockMain_c`'s — so it gates the whole coin family living in
+`d_enemiesNP.rel`. All its bounds are free.
 
-`dol/bases/d_multi_mng.cpp`, `.text` `0x800CE8F0`–`0x800CED00`: **10 functions,
-`0x3E4` (996) bytes of code in a `0x410` span.** That is the smallest real unit
-left that I know of.
+Same standard as your `m_pad.cpp` round, which was the best pre-flight this
+project has had: full function table with addresses, sizes, mangled names and
+signatures; class reconstruction with the vtable proved entry-by-entry against
+the original; complete data inventory with **referenced-by-anything marked per
+object**; hazard proofs from an empty-bodied scaffold rather than hazard
+predictions; the link-blocker list; and the pin list with the banked-slice
+filter already run.
 
-Bounds are nearly free and I have already done part of it for you:
+Two things the handoff records about this one, so you can confirm or refute them:
 
-- `.text` low bound is `__ct__11dMultiMng_cFv` at `0x800CE8F0`; immediately below
-  it is `getFont__8MsgRes_cFUlUl` at `0x800CE8C0`, which belongs to
-  `d_message.cpp`. Upper bound is `0x800CED00`, where `d_nand_thread.cpp` starts.
-- `.data` is `0x80317CC8`–`0x80317CD8`: **just `__vt__11dMultiMng_c`**, by the
-  terminal-vtable rule at both ends (`__vt__8MsgRes_c` at `0x80317CB8` is
-  `d_message.cpp`'s terminal object, and `0x80317CD8` is where
-  `d_nand_thread.cpp` begins — see above).
-- `.sbss` contains `mspInstance__11dMultiMng_c` at `0x8042A290`.
+- It is described as having a milder version of a "shape problem" — worth
+  characterising precisely rather than repeating.
+- **Despite the matching vtable size, its function names barely overlap
+  `daEnBlockMain_c`'s.** So the "blockmain just landed, this will be cheap"
+  intuition is recorded as *not* paying. Check that: run the sibling comparison
+  and tell me the real precedent rate by bytes, not by name. `tools/sibmap.py`
+  does the mechanical part, and note its `FAMILY` list rots silently — a stale
+  entry contributes nothing and just makes the map thinner, so check that the
+  recently-landed units are in it and capture its stderr warning.
 
-What I need is the rest, to the standard round 7 reached: the full function
-table with signatures, the class reconstruction, the complete data inventory
-with **referenced-by-anything marked per object**, hazard proofs from an
-empty-bodied scaffold, the link-blocker list, and the pin list with the
-banked-slice filter already run.
-
-**The second payoff, and please make it explicit:** `dMultiMng_c` is one of the
-four class instances that `d_a_player_manager.cpp` embeds **by value** in its
-`.bss`, at an assumed `sizeof` of `0x5C`. That assumption has never been proven —
-it was taken from the gap between symbols. Your reconstruction will either
-confirm `0x5C` or contradict it. **If it contradicts it, say so plainly and do
-not reconcile it** — a wrong `sizeof` there shifts every following object in
-that unit's `.bss`, and it is invisible to every per-function diff.
-
-Note the naming: `dMultiMng_c` is the multiplayer manager. `setBattleCoin`,
-`setCollectionCoin` and `incEnemyDown` are among its ten functions, so expect
-per-player scoring state and expect it to be a singleton (`mspInstance`).
+Apply the backward-bound audit from your round 8 to every section low bound.
+That method is now standard and it is the one that caught the `0x70` I missed.
 
 ---
 
@@ -135,9 +137,9 @@ per-player scoring state and expect it to be a singleton (`mspInstance`).
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
 - **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
-  or any `CODEX_*.md`. Codex is closing three near-misses in
-  `d_a_player_manager`; stay out of that unit. I am authoring
-  `d_nand_thread.cpp`; `wip/nand_thread/` is not yours.
+  or any `CODEX_*.md`. Codex is hunting a single structural cause behind
+  `d_a_player_manager`'s register-allocation near-misses; stay out of that unit.
+  `wip/nand_thread/` is my agents'.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.
