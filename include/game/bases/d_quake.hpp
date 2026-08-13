@@ -24,6 +24,11 @@ public:
     };
 
     void shockMotor(s8, TYPE_SHOCK_e, int, bool);
+    /// @brief Starts a shock for one player.
+    /// @note startShock__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eiib at
+    /// 0x800D8BF0. Undeclared until d_a_player_manager.cpp needed it.
+    /// @unofficial
+    void startShock(s8, TYPE_SHOCK_e, int, int, bool);
     void startShockAll(TYPE_SHOCK_e, int, int, bool);
 
     float mSpeed;

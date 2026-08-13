@@ -74,3 +74,19 @@ int daPyMng_c::mKinopioCarryCount;   // 0x80429FCC
 // read and written only by setHipAttackQuake. It is BATCH B7's to name and
 // define, and it is the last object in the unit's .sbss -- if it is missing the
 // section is 8 bytes short and four of five binaries fail.
+
+// --- NOT class statics, but they are in our .bss and nobody flagged them ---
+//
+// Three ints at 0x80355FB0, immediately after mEffectMng ends. dtk labels the
+// whole 0x10 there as `gap_08_80355FB0_bss` padding, and the bounds derivation
+// accepted that -- but batch B7 found setHipAttackQuake actually READS AND
+// WRITES them: a lazy one-shot 3-entry sound-id table.
+//
+// This is the "an unclaimed object is a finding, not noise" trap for the second
+// time on this project, and it is the same shape that failed the previous
+// unit's first link. Being 0xC of a 0x10 gap, it is invisible to the bound --
+// the section still ends at 0x80355FC0 either way -- so no bounds check would
+// ever have caught it. Only a function actually touching it does.
+//
+// They belong INSIDE setHipAttackQuake as a function-local static, which is why
+// they are not defined here. Listed so the assembly step confirms they exist.
