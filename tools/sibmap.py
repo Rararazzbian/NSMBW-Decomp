@@ -239,13 +239,22 @@ def load_corpus(exclude_tags=()):
     return list(seen.values())
 
 
+# Enemy-actor TUs whose bodies are close enough to each other to be worth
+# scoring as a family. KEEP THIS UP TO DATE: every newly landed enemy TU is a
+# corpus member for the next one, and the list going stale has been reported
+# twice as a reason a map missed precedents it should have found. The most
+# recently banked units are the most valuable entries, not the least --
+# d_a_en_bros_base alone contributed 99 matching functions.
 FAMILY = ('dol_bases_d_a_en_dpakkun', 'dol_bases_d_a_en_dpakkun_base',
           'CMP_d_a_en_dpakkun', 'CMP_dol_bases_d_a_en_dpakkun',
           'dol_bases_d_a_en_lkuribo_base', 'dol_bases_d_a_en_kuribo_base',
           'dol_bases_d_a_en_net_nokonoko_base', 'dol_bases_d_a_en_super_bigpile',
           'dol_bases_d_a_enemy_ice', 'dol_bases_d_a_en_togezo_base',
           'dol_bases_d_a_en_shell', 'dol_bases_d_a_en_bigpile',
-          'dol_bases_d_a_en_door', 'dol_bases_d_a_en_carry')
+          'dol_bases_d_a_en_door', 'dol_bases_d_a_en_carry',
+          'dol_bases_d_a_en_dfpakkun', 'dol_bases_d_a_en_jimen_pakkun_base',
+          'dol_bases_d_a_en_bros_base', 'dol_bases_d_a_fireball_base',
+          'dol_bases_d_a_en_eatcoin')
 
 BASENAME = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*(?:<[^>]*>)?)__')
 
