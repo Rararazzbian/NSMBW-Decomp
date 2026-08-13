@@ -726,15 +726,16 @@ roughly 100 functions per unit with nearly everything matching first compile.
 
 `.text 0x8005B3A0 - 0x8005D7E0`, 9,280 B span / 8,976 B code / **51 functions**.
 
-**STATUS: 43 of 51 functions are byte-exact and committed. RESUME HERE.**
-The front stage is COMPLETE and the class header is landed and verified. Five of six authoring batches are done or nearly done; only batch 3 was still
-mid-flight at the session limit, and its partial draft is banked.
+**STATUS: 47 of 51 functions are byte-exact and committed. RESUME HERE.**
+The front stage is COMPLETE and the class header is landed and verified. All six authoring batches have reported. Four functions remain: `setHanabiEffect`
+and `executeGoalCastle` (batch 3) and `clearDemoNo` (batch 5), each with a
+characterised gap, plus batch 3's twelfth data table.
 
 | Batch | Functions | State |
 |---|---|---|
 | 1 lifecycle | 16 | **DONE 16/16**, `wip/demo_manager/dm-b1.cpp` |
 | 2 goal-pole sequence | 6 | **DONE 6/6** incl. the 1,100 B `executeGoalDemo_Pole`, `dm-b2.cpp` |
-| 3 castle / fireworks | 6 | **PARTIAL**, `dm-b3.cpp` — owns `setHanabiEffect`'s NINE `@LOCAL@` tables |
+| 3 castle / fireworks | 6 | **4/6 byte-exact**, `dm-b3.cpp`. `setHanabiEffect` is 84-86 of 87 instructions; `executeGoalCastle` is mid-fix and **was not recompiled after its last edit** — recompile and re-diff is the exact next step. Owns **ELEVEN** `@LOCAL@` tables, not nine, plus an unnamed twelfth with no `@LOCAL@` symbol; all names/sizes/contents are in `dm-b3-report.md`, and the sibling map's `mVec3_c[]` guess for the 3rd field is WRONG — it is a `u16` pair |
 | 4 control-demo | 8 | **DONE 8/8**, `dm-b4.cpp` |
 | 5 toride / demo-queue | 11 | **DONE 10/11**, `dm-b5.cpp`. Gap: `clearDemoNo`, 97 vs 95 instructions — a register-allocation swap in 3 of 4 compaction blocks plus one redundant bounds check in the tail fill loop; algorithm and addressing verified correct, ruled-out variants in `dm-b5-report.md`. File-statics: `fn_8005CCD0` is NOT static (zero in-TU callers, contradicting the brief); `fn_8005CE50` IS static (3 in-TU callers) |
 | 6 big static + tail | 4 | **DONE 3/4**, `dm-b6.cpp`; `__sinit` differs only by an `__arraydtor$NNNNN` pool ID that a partial-file compile cannot assign — it resolves at full-file compile |
