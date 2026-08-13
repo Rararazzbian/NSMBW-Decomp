@@ -66,7 +66,7 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 - **Position: 10.946%** (711,512 / 6,500,368); `wiimj2d.dol` **21.583%**. Five
   binaries verify, tree clean.
-- **44 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
+- **53 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
@@ -584,7 +584,7 @@ ones.
 ## Where the work now stands
 
 **10.946%** (711,512 / 6,500,368 bytes); `wiimj2d.dol` at **21.583%**. Five
-binaries verifying, working tree clean, **44 commits unpushed**.
+binaries verifying, working tree clean, **53 commits unpushed**.
 
 The 2026-08-12/13 session landed six TUs (~74,000 bytes), took the project
 past 10%, landed five tool fixes across three tools and added the rules below.
@@ -724,8 +724,83 @@ roughly 100 functions per unit with nearly everything matching first compile.
 
 ### Recommended: `d_a_player_demo_manager.cpp` — `daPyDemoMng_c`
 
-`.text 0x8005B3A0 - 0x8005D7E0`, 9,280 B span / ~8,976 B code / ~51 functions.
-**Its front stage was in flight when this handoff was written** — a class-proof
+`.text 0x8005B3A0 - 0x8005D7E0`, 9,280 B span / 8,976 B code / **51 functions**.
+
+**STATUS: 33 of 51 functions are byte-exact and committed. RESUME HERE.**
+The front stage is COMPLETE and the class header is landed and verified. Four of
+six authoring batches finished byte-exact; two were still running when the
+session limit hit and their partial drafts are banked.
+
+| Batch | Functions | State |
+|---|---|---|
+| 1 lifecycle | 16 | **DONE 16/16**, `wip/demo_manager/dm-b1.cpp` |
+| 2 goal-pole sequence | 6 | **DONE 6/6** incl. the 1,100 B `executeGoalDemo_Pole`, `dm-b2.cpp` |
+| 3 castle / fireworks | 6 | **PARTIAL**, `dm-b3.cpp` — owns `setHanabiEffect`'s NINE `@LOCAL@` tables |
+| 4 control-demo | 8 | **DONE 8/8**, `dm-b4.cpp` |
+| 5 toride / demo-queue | 11 | **PARTIAL**, `dm-b5.cpp` — owns the two file-statics `fn_8005CCD0`, `fn_8005CE50` |
+| 6 big static + tail | 4 | **DONE 3/4**, `dm-b6.cpp`; `__sinit` differs only by an `__arraydtor$NNNNN` pool ID that a partial-file compile cannot assign — it resolves at full-file compile |
+
+**Do NOT re-derive the front stage.** The class is proven and committed
+(`include/game/bases/d_a_player_demo_manager.hpp`, `sizeof` 0x98, one virtual,
+no base class, verified byte-identical against the six TUs that include it); the
+bounds are in `wip/demo_manager/BOUNDS.md`; the map is in
+`wip/demo_manager/DEMO-MANAGER-SIBMAP.md`.
+
+**Ready-to-paste slice entry** (from BOUNDS.md; land it `nonMatching` first and
+trial-link, per "Trial-link early"):
+
+```json
+{
+  "source": "dol/bases/d_a_player_demo_manager.cpp",
+  "nonMatching": true,
+  "memoryRanges": {
+    ".text": "0x54c20-0x57060", ".ctors": "0x80-0x84", ".data": "0xb268-0xb3b8",
+    ".rodata": "0xec0-0x1120", ".bss": "0x35a0-0x35b0", ".sbss": "0xd0-0xd8",
+    ".sdata2": "0x998-0x9c8"
+  }
+}
+```
+
+**THE ASSEMBLY HAZARD, already identified — do not lose it.** The last 0x30
+bytes of `.data` are two strings, `"Wm_mr_vshipattack"` and
+`"Wm_mr_vshipattack_ind"`, at `0x80309A28`, that **nothing in the entire binary
+references** (a whole-binary pointer scan found nothing). No batch owns them
+because no function calls them. This is the same shape as `l_speed_ratiodt`,
+which cost the previous unit a failed link — see "Trial-link early". **Whoever
+assembles must write them deliberately**, and they may need `extern` to survive
+as unused.
+
+Levers this unit produced, all measured (details in the commits):
+- the shared 4-player loop must call **`daPyMng_c::checkPlayer(i)`**, not a
+  hand-written `mActPlayerInfo & (1 << plrNo)` — the hand-written mask emits
+  `lbz` before `slw` with no `clrlwi`. This was a mismatch on all six of one
+  batch's loop functions and affects 21 of the unit's 51;
+- **hoisting a loop-body pointer local out of the `for`** fixes register-order
+  swaps — confirmed independently by three batches on six functions;
+- a **bool-returning function may need its accumulator typed `int`**, or MWCC
+  proves it only ever holds 0/1 and skips the `neg/or/srwi` canonicalisation
+  tail the target has;
+- the byte-exact bool-return spelling is `if (A && B) { return true; } return
+  false;` — both `return A && B;` and the early-return form emit extra saved
+  registers;
+- virtual calls on player objects dispatch through the **secondary vtable at
+  object offset 0x60** (playbook trap 7); pinned slots: `0x12c` =
+  `setHideNotGoalPlayer()`, `0x6c` = `getPlrNo()` returning `s8&`;
+- a variable whose **address is passed to a callee** cannot live in a register
+  across the call, so it must be the *same* local as the accumulator that feeds
+  it — that is what closed the 1,100 B function;
+- `__sinit`'s "reads low by the other batches' `.data` bytes" effect from the
+  previous unit is **NOT universal** — it only applies when the TU addresses its
+  own `.data` through a base register. Here it did not, and no delta appeared.
+
+Header work already landed and verified byte-neutral across all five binaries:
+`daPyMng_c::mCourseInList` declared; `SndSceneMgr::startGoal(bool)` and
+`dScStage_c::ReplayEnd()` declared (both called by the target, declared
+nowhere); `daPyDemoMng_c::m_18` corrected `u32` -> `int` (the target compares it
+against 0 signed, a tautology if unsigned); `m_8c`/`m_90` doc comments corrected
+(init stores -1, not 0).
+
+The original front-stage note, for context: it was in flight — a class-proof
 agent, a sibling-map agent and a bounds agent, with deliverables landing in
 `wip/demo_manager/` (`d_a_player_demo_manager.hpp`, `DEMO-MANAGER-SIBMAP.md`,
 `BOUNDS.md`). **Read those three files before assigning anything**; if they are
@@ -1669,7 +1744,7 @@ invented and marked `@unofficial`. Two consequences, both paid for:
 
 - **Progress: 10.946%** (711,512 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- **44 commits unpushed.** Ask before pushing.
+- **53 commits unpushed.** Ask before pushing.
 - Development happens on **native Windows**; see "Local setup" below.
 - Last TU banked: `d_a_en_hatena_balloon.cpp` (81 fns, 18,216 bytes of code in an
   18,768-byte span) -- the largest single unit landed so far.
