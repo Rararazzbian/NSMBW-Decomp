@@ -354,7 +354,7 @@ void Pausewindow_c::executeState_PauseDisp() {
         mStateMgr.changeState(StateID_HitAnimeEndWait);
     } else {
         if (mActiveButton != mNextButton) {
-            SndAudioMgr::sInstance->startSystemSe(SE_SYS_CURSOR, 1);
+            SndAudioMgr::sInstance->startSystemSe((u32)SE_SYS_CURSOR, 1);
             mStateMgr.changeState(StateID_ButtonChangeAnimeEndWait);
         }
     }

@@ -3964,7 +3964,7 @@ void daPlBase_c::executeDemoGoal_KimePose() {
             } else {
                 if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_MULTIPLAYER_MODE && dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_BATTLE) {
                     if (mGoalDemoIndex == 0) {
-                        SndAudioMgr::sInstance->startSystemSe(SE_OBJ_GOAL_GET_COIN_BONUS, 1);
+                        SndAudioMgr::sInstance->startSystemSe((u32)SE_OBJ_GOAL_GET_COIN_BONUS, 1);
                     }
                     static const int scGoalCoin[] = {20, 15, 10, 5 };
                     dMultiMng_c::mspInstance->setBattleCoin(mPlayerNo, scGoalCoin[mGoalTouchOrder]);

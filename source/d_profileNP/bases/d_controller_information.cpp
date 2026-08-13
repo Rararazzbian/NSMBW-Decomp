@@ -84,7 +84,7 @@ int dControllerInformation_c::execute() {
                 break;
 
             case END:
-                SndAudioMgr::sInstance->startSystemSe(SE_SYS_BUTTON_SKIP, 1);
+                SndAudioMgr::sInstance->startSystemSe((u32)SE_SYS_BUTTON_SKIP, 1);
                 mLayout.AnimeEndSetup(IN2BTN);
                 mLayout.AnimeEndSetup(LOOP2BTN);
                 mLayout.AnimeStartSetup(HIT2BTN, false);

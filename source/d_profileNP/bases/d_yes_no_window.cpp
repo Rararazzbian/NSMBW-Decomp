@@ -286,7 +286,7 @@ static const int StartingCursorPositions[dYesNoWindow_c::WINDOW_TYPE_COUNT] = {
     dYesNoWindow_c::POS_OK   // PEACH_CASTLE_HINT2
 };
 
-const int SoundEffects[] = { SE_SYS_BACK, SE_SYS_DECIDE, SE_SYS_CURSOR, SE_SYS_DIALOGUE_IN };
+const u32 SoundEffects[] = { SE_SYS_BACK, SE_SYS_DECIDE, SE_SYS_CURSOR, SE_SYS_DIALOGUE_IN };
 
 void dYesNoWindow_c::populateLayout() {
     static int fillLeftReqStarCoins = 2;

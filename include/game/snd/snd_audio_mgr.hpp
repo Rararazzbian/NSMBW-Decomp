@@ -4,16 +4,18 @@
 
 class SndAudioMgr {
 public:
-    /// @note The map has TWO overloads: startSystemSe__11SndAudioMgrFUiUl
-    /// (0x801954C0), declared here, and startSystemSe__11SndAudioMgrFUlUl
-    /// (0x801954B0), which is NOT declared. Declaring both makes all seven
-    /// existing call sites ambiguous -- they pass enum/int-typed constants
-    /// that convert equally well to `unsigned int` and `unsigned long`, and
-    /// MWCC rejects them (error 10199). Adding the second overload therefore
-    /// requires first establishing each existing call site's true argument
-    /// type, which is its own piece of work. Tried and reverted; recorded so
-    /// the next person does not repeat it. @unofficial
+    /// @note BOTH overloads exist in the retail binary --
+    /// startSystemSe__11SndAudioMgrFUiUl (0x801954C0) and
+    /// startSystemSe__11SndAudioMgrFUlUl (0x801954B0). Declaring both once
+    /// failed to build: every existing call site passed an int-typed enum,
+    /// which converts to `unsigned int` and `unsigned long` at identical
+    /// rank, so MWCC rejected them all as ambiguous (error 10199). The fix
+    /// was not to the header but to the ARGUMENTS -- see the (u32) casts at
+    /// the three enum call sites and the `const u32 SoundEffects[]` in
+    /// d_yes_no_window.cpp. All seven call sites were confirmed against the
+    /// binary to target FUiUl.
     void startSystemSe(unsigned int soundID, unsigned long);
+    void startSystemSe(unsigned long soundID, unsigned long);
     u32 get3DCtrlFlag(unsigned long);
     void setSoundPosition(nw4r::snd::SoundHandle *p, const nw4r::math::VEC2 &pos);
 
