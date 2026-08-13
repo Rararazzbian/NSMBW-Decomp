@@ -21,5 +21,8 @@ public:
     /// @brief Whether the whole level is underwater. @unofficial
     bool envAllWaterCheck();
 
+    /// @brief Whether @p pt lies inside the level's floor-entry buffer. @unofficial
+    bool floorEntryBufferCheck(mVec2_c *pt);
+
     static dActorMng_c *m_instance;
 };

@@ -18,7 +18,13 @@ public:
     void multi_item_set(mVec3_c *pos, unsigned long *itemNos, unsigned long count,
                         int mode, unsigned long param, s8 playerNo, u8 layer);
 
-    u8 mPad1[0x138];
+    u8 mPad1[0x110];
+    /// @brief Rotating 0..3 wait-slot index that fans out the off-screen wait
+    /// positions. Compared with `cmplwi`, so readers copy it into a `u32`
+    /// local. Unsigned: `m_110--` followed by `> 3` is a wrap check, and the
+    /// target compares with `cmplwi`. @unofficial
+    u32 m_110;
+    u8 mPad1b[0x138 - 0x114];
     int m_138;
     u8 mPad2[0x18];
     int m_154;

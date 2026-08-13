@@ -1,3 +1,21 @@
+// Batch 6 of d_a_en_hatena_balloon.cpp -- flight physics + the TU's one file-static.
+//
+// SPELLING IS LOAD-BEARING HERE.  Four idioms in this file look like they could be
+// tidied and cannot be; each was found by sweeping variants against the original:
+//
+//   * `dBgParameter_c`'s inline accessors (xSize/ySize/xStart/yStart) instead of
+//     the open-coded members.  They transpose the FP pair on the surrounding
+//     fadds/fmuls.  Hoisting the same value into a named local does NOT work --
+//     the local is what produces the wrong operand order.
+//   * `half / 8.0f`, not `half * 0.125f`.  CodeWarrior folds the power-of-two
+//     divide to a reciprocal multiply, and the folded form carries operand order
+//     (numerator, reciprocal).  Sibling fly_xspeed_set uses `half / 6.0f`.
+//   * `if (!scroll)`, not `if (scroll == 0.0f)` -- see fly_ydisp_check.
+//   * `u32 hit`, not `int hit`, in fly_xdisp_check -- see the note there.
+//
+// 7 of the 8 functions are byte-exact; fly_ydisp_check is 2 words out.  Details
+// in the report and in the comment on that function.
+
 #include <game/bases/d_a_en_hatena_balloon.hpp>
 #include <game/bases/d_bg.hpp>
 #include <game/bases/d_bg_parameter.hpp>
@@ -10,7 +28,7 @@
 static float bg_dispx_get(daEnHatenaBalloon_c *balloon) {
     float bgX = dBg_c::m_bg_p->m_8fea8;
     if (std::fabs(bgX - dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(balloon->mPos.x))
-        >= dBgParameter_c::ms_Instance_p->mSize.x) {
+        >= dBgParameter_c::ms_Instance_p->xSize()) {
         return dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(balloon->mPos.x);
     }
     return dBg_c::m_bg_p->m_8fea8;
@@ -22,7 +40,10 @@ void daEnHatenaBalloon_c::fly_yspeed_set() {
     float half = 0.5f * sy;
     float midY = dBgParameter_c::ms_Instance_p->mPos.y - half;
     float dist = std::fabs((16.0f + mPos.y) - midY);
-    float unit = half * 0.125f;
+    // `half / 8.0f`, not `half * 0.125f`: MWCC folds the divide to a reciprocal
+    // multiply and the folded form emits fmuls(numerator, reciprocal).  Spelling
+    // it as an explicit multiply transposes the operands.
+    float unit = half / 8.0f;
     float r = dGameCom::rnd();
     int flip = 0;
     if (dist < 6.0f * unit) {
@@ -114,6 +135,12 @@ void daEnHatenaBalloon_c::fly_xspeed_set(bool force) {
 }
 
 // ---------------------------------------------------------------- 0x80112C70
+// NOT byte-exact: 2 words out of 55.  The original loads dBgParameter_c's mPos.y
+// BEFORE dBg_c's m_8feac; this spelling schedules them the other way round.  Same
+// registers, same instructions, same count -- purely the order of two adjacent,
+// independent lfs.  ~80 source variants were swept without moving it; the axes that
+// were eliminated are listed in the report.  Everything else in the function,
+// including the `!scroll` below, is confirmed exact.
 bool daEnHatenaBalloon_c::fly_ydisp_check(bool bounce) {
     float lim = 7.0f;
     float scroll = -(dBg_c::m_bg_p->m_8feac - dBgParameter_c::ms_Instance_p->mPos.y);
@@ -145,7 +172,10 @@ bool daEnHatenaBalloon_c::fly_ydisp_check(bool bounce) {
     }
 
     if (hit != 0 && bounce) {
-        if (scroll == 0.0f) {
+        // `!scroll`, not `scroll == 0.0f`: the explicit comparison emits
+        // fcmpu(0.0, scroll); this emits fcmpu(scroll, 0.0), which is what the
+        // original has.  Reversing the operands in the source does not help.
+        if (!scroll) {
             mSpeed.y = -ySpeed;
         }
     }
@@ -163,26 +193,24 @@ bool daEnHatenaBalloon_c::fly_xdisp_check(bool bounce) {
         scroll = lim;
     }
 
-    int hit = 0;
-    float left = 16.0f + dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x);
-    if (mPos.x < left) {
+    // `u32`, not `int`: the original compares `hit == 1` with cmplwi.  With a
+    // signed int MWCC emits cmpwi there (and `hit != 0` stays cmpwi either way).
+    u32 hit = 0;
+    if (mPos.x < 16.0f + dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)) {
         hit = 1;
-        float speedF = mSpeedF;
-        mPos.x = 16.0f + dBgParameter_c::ms_Instance_p->mPos.x;
-        if (speedF < scroll) {
+        mPos.x = 16.0f + dBgParameter_c::ms_Instance_p->xStart();
+        if (mSpeedF < scroll) {
             mSpeedF = 0.5f * scroll;
         }
-    } else {
-        float w = dBgParameter_c::ms_Instance_p->mSize.x;
-        float right = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w - 16.0f;
-        if (mPos.x > right) {
-            float speedF = mSpeedF;
-            hit = 2;
-            float w2 = dBgParameter_c::ms_Instance_p->mSize.x;
-            mPos.x = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w2 - 16.0f;
-            if (speedF > scroll) {
-                mSpeedF = 0.5f * scroll;
-            }
+    } else if (mPos.x > dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
+                            + dBgParameter_c::ms_Instance_p->xSize() - 16.0f) {
+        mPos.x = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
+                     + dBgParameter_c::ms_Instance_p->xSize() - 16.0f;
+        // `hit = 2` after the store, unlike `hit = 1` above: the original schedules
+        // the `li` late in this branch and early in the other one.
+        hit = 2;
+        if (mSpeedF > scroll) {
+            mSpeedF = 0.5f * scroll;
         }
     }
 
@@ -204,8 +232,8 @@ bool daEnHatenaBalloon_c::fly_dispin_check() {
     if (mPos.y <= by - 24.0f
         && mPos.y >= by - dBgParameter_c::ms_Instance_p->mSize.y
         && mPos.x >= 16.0f + dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)) {
-        float w = dBgParameter_c::ms_Instance_p->mSize.x;
-        if (mPos.x <= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w - 16.0f) {
+        if (mPos.x <= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
+                          + dBgParameter_c::ms_Instance_p->xSize() - 16.0f) {
             return true;
         }
     }
@@ -218,8 +246,8 @@ bool daEnHatenaBalloon_c::escape_dispout_check() {
     if (mPos.y <= 32.0f + by
         && mPos.y >= by - dBgParameter_c::ms_Instance_p->mSize.y - 32.0f
         && mPos.x >= dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) - 48.0f) {
-        float w = dBgParameter_c::ms_Instance_p->mSize.x;
-        if (mPos.x <= 48.0f + (dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x) + w)) {
+        if (mPos.x <= 48.0f + (dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x)
+                                   + dBgParameter_c::ms_Instance_p->xSize())) {
             return true;
         }
     }
@@ -239,17 +267,26 @@ void daEnHatenaBalloon_c::create_wait_pos_set() {
     float top = dBgParameter_c::ms_Instance_p->mPos.y;
     mPos.y = top;
 
+    // The three `float x`/`float y` locals below are required.  Adding the
+    // l_create_diff term directly to the full expression emits fadds(diff, value);
+    // binding the value first emits fadds(value, diff), which is the original.
+    // The mDirection == 3 branch is different again: there the original keeps BOTH
+    // stores to mPos.x, which only survives if the mPos.y statement sits between
+    // them.
     if (mDirection == 2) {
-        mPos.x = mPos.x + 0.5f * dBgParameter_c::ms_Instance_p->mSize.x + l_create_diff[m_7f0];
+        float x = mPos.x + 0.5f * dBgParameter_c::ms_Instance_p->xSize();
+        mPos.x = x + l_create_diff[m_7f0];
     } else if (mDirection == 3) {
-        mPos.x = mPos.x + 0.5f * dBgParameter_c::ms_Instance_p->mSize.x;
+        mPos.x = mPos.x + 0.5f * dBgParameter_c::ms_Instance_p->xSize();
+        mPos.y = top - (32.0f + dBgParameter_c::ms_Instance_p->ySize());
         mPos.x = mPos.x + l_create_diff[m_7f0];
-        mPos.y = top - (32.0f + dBgParameter_c::ms_Instance_p->mSize.y);
     } else if (mDirection == 0) {
-        mPos.x = mPos.x + (32.0f + dBgParameter_c::ms_Instance_p->mSize.x);
-        mPos.y = top - (32.0f + 0.5f * dBgParameter_c::ms_Instance_p->mSize.y) + l_create_diff[m_7f0];
+        mPos.x = mPos.x + (32.0f + dBgParameter_c::ms_Instance_p->xSize());
+        float y = top - (32.0f + 0.5f * dBgParameter_c::ms_Instance_p->ySize());
+        mPos.y = y + l_create_diff[m_7f0];
     } else {
         mPos.x = mPos.x - 32.0f;
-        mPos.y = top - (32.0f + 0.5f * dBgParameter_c::ms_Instance_p->mSize.y) + l_create_diff[m_7f0];
+        float y = top - (32.0f + 0.5f * dBgParameter_c::ms_Instance_p->ySize());
+        mPos.y = y + l_create_diff[m_7f0];
     }
 }

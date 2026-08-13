@@ -172,7 +172,7 @@ public:
     /// mangle return types, so this changes no symbol. @unofficial
     bool goalpole_check();             ///< 0x80112580, 0x3C bytes.
     u8 floor_check();                  ///< 0x801125C0, 0x214 bytes. Returns `u8`, not void. @unofficial
-    u8 all_bgcheck(u8 &result);        ///< 0x801127E0, 0x164 bytes. Returns `u8`, not void. Walks #s_someCheckData 4x2 and calls @ref pointBgCheck for each entry. @unofficial
+    int all_bgcheck(u8 &result);        ///< 0x801127E0, 0x164 bytes. Returns `u8`, not void. Walks #s_someCheckData 4x2 and calls @ref pointBgCheck for each entry. @unofficial
     void fly_yspeed_set();             ///< 0x80112950, 0x1AC bytes. @unofficial
     void fly_xspeed_set(bool a);       ///< 0x80112B00, 0x164 bytes. @unofficial
     bool fly_ydisp_check(bool a);      ///< 0x80112C70, 0xDC bytes. @unofficial

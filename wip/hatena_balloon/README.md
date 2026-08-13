@@ -26,12 +26,24 @@ would otherwise have been lost. Delete the whole directory once the unit lands.
 - **Two of eight authoring batches produced drafts before the session ended**:
   `hb-b5.cpp` (background/terrain checks) and `hb-b6.cpp` (flight physics plus
   the unit's one file-static).
+- **`hb-b6.cpp` is now CONFIRMED 7 of 8 byte-exact.** `bg_dispx_get`
+  (`fn_80112040`), `fly_yspeed_set`, `fly_xspeed_set`, `fly_xdisp_check`,
+  `fly_dispin_check`, `escape_dispout_check` and `create_wait_pos_set` all
+  compare equal on RAW words, callee names, emitted order, literal values and
+  `l_create_diff`'s bytes. **`fly_ydisp_check` is 2 words out** and is the
+  unit's one known gap -- two adjacent independent `lfs` scheduled in the
+  opposite order; same registers, same instruction count. `b6/verify.py` runs
+  the six checks and `b6/neg.py` proves all five of its negative controls fire,
+  including one (a wrong float literal) that the raw word comparator cannot see.
+  Those scripts read the repo's own
+  `tools/auto_decomp/work/dol_bases_d_a_en_hatena_balloon/target.txt`, so unlike
+  the earlier batches' harnesses they still run after the session ends.
 - **`hb-b5.cpp` is now CONFIRMED byte-exact** — all four functions
   (`pointBgCheck`, `goalpole_check`, `floor_check`, `all_bgcheck`) and
   `s_someCheckData`. See `verify_b5.py` for the checks, which include the
   `.sdata2` literal *values* and three negative controls that each fire on
-  exactly one check. **`hb-b6.cpp` is still unconfirmed** — it was copied out
-  mid-flight, before its agent reported. Re-verify every function in it.
+  exactly one check. `hb-b6.cpp` has since been re-verified from scratch against
+  the corrected shared header — see the batch-6 bullet above.
 - **`hb-b1.cpp` (lifecycle, class layout, `__sinit`, `sFStateID_c` tail) is
   CONFIRMED** — 11 of its 12 functions compare byte-exact, and the twelfth,
   `__sinit`, is exact once the 0x80 of `.data` string literals that B2 and B7
