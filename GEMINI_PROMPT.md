@@ -1,104 +1,87 @@
-# Work order for Gemini — round 3
+# Work order for Gemini — round 4
 
-**`AGENT_CONTEXT.md` is the standing briefing** — rules, tooling, evidence
-hierarchy, MWCC gotchas. This file is only round 3.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 4.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 2 verdict: both tasks landed, and Task A was the best work so far
+## Round 3 verdict: this is what a pre-flight should look like
 
-**The `startSystemSe` deadlock is broken and in the tree, all five binaries
-byte-identical.** I had tried this, failed, backed it out, and written it up as a
-dead end that would need "its own piece of work". It did — and you did it.
+I asked for the list of things that will go wrong rather than reassurance, and
+you produced five specific, mechanistic hazards. Three are the exact failure
+shapes that have cost this project units before:
 
-What made it work was that you **audited the binary instead of reasoning about
-the code**. All seven call sites target `FUiUl`; none targets `FUlUl`. So the
-default resolution was right — but it was right *by accident*, and nobody had
-checked, which is exactly the kind of unexamined assumption that turns into a
-four-binary failure later.
+- **The three `EGG::Thread` weak virtuals** (`run`, `onEnter`, `onExit`) emitted
+  at the end of `.text`, which vanish and leave the section `0x10` short if the
+  header declares them without inline bodies. That is the "an object nobody
+  references is still required" trap in its function form.
+- **Vtable emission order in `.data`** — `dNandThread_c` before `mMutex` before
+  `EGG::Mutex` — inverting if `mMutex` gets an out-of-line destructor.
+- **Function-scope statics** (`a_banner`, `c_icon_res`) that must be declared
+  *inside* `writeBanner()`, because hoisting them to file scope changes both
+  their section and their pool IDs.
 
-And you found the fix was **not in the header at all**. An `int` converts to
-`unsigned int` and to `unsigned long` at identical overload-resolution rank, so
-with both overloads visible nothing can resolve. Fixing the *arguments* — three
-`(u32)` casts, and `const int SoundEffects[]` → `const u32` — resolves everything
-and emits the same bytes. **I explicitly asked you to check for that root cause
-before proposing casts, and you did, and it was there.** Landed exactly as
-proposed, plus the `syms.txt` pin at `0x801954B0`.
+The class reconstruction is also complete rather than approximate: `sizeof 0x80`,
+`mMutex` embedded at `0x50` with `OSMutex` at `+0x04` and `OSCond` at `+0x1C`,
+all with compiled `STATIC_ASSERT`s. And you correctly checked whether the vtable
+pointer sits at object offset `0x60` — it does not, because this derives from
+`EGG::Thread` rather than `fBase_c`.
 
-One detail worth noting for your model of the build: it passed *before* I added
-the pin, because a declared-but-uncalled function needs no definition. The pin
-only starts mattering when `d_a_player_manager.cpp` lands and actually calls it.
-
-Task B's shortlist is good and I am acting on it below.
+`fn_800CF170` is the one I would have missed: an unnamed map entry that becomes
+`cmdSave__13dNandThread_cFPCv` once authored, so the pin has to be reconciled.
+That is exactly the class of thing that turns into a link failure.
 
 ---
 
-## Round 3: turn `d_nand_thread.cpp` into a ready-to-author unit
+## Task A (primary): prove the five hazards, do not leave them predicted
 
-You ranked it first: `0x800CED00`–`0x800CFCE0`, 24 functions, 4,064 B, **169 B
-per function**, **zero `__sinit`s**, hard-bracketed on both sides in
-`dtk_splits_wiimj2d.txt` by `d_multi_manager.cpp` and `d_next.cpp`. That is the
-cleanest candidate anyone has produced for this project, and the bytes-per-
-function figure is less than half the worst candidate on the list.
+A predicted hazard and a confirmed one are different things, and the difference
+is usually one compile. **Nobody is authoring `d_nand_thread.cpp` yet, so you can
+test the structure without touching anyone's work.**
 
-`d_a_player_manager.cpp` is close to landing. **I want to start this one the
-moment it does, without a reconnaissance round.** Produce the pre-flight.
+Build a **scaffold** `d_nand_thread.cpp` in `scratch/` — your proposed header,
+the anonymous-namespace data objects, the function-scope statics, and **empty or
+near-empty bodies** for the 24 functions. You are not decompiling it; you are
+testing whether the *structure* produces the right shape. Then compile it and
+read the object.
 
-### What I need, in this order
+Confirm or refute, each with the compiled evidence:
 
-**1. The class, from its vtable.** `__vt__13dNandThread_c` is at `0x80317D48`.
-With slot offsets computed, **the vtable IS the class declaration**: it gives the
-base class, which base virtuals are overridden, and the new virtuals *in
-declaration order*. Remember `(vtable size - 8) / 4` = the slot count, and that
-for `fBase_c`-derived classes the vtable pointer sits at object offset **0x60**,
-not 0 — check which applies here before computing anything.
+1. **Do the three `EGG::Thread` weak virtuals get emitted**, and at the end of
+   `.text`? Test it both ways — with inline bodies in `eggThread.h` and without —
+   and show the difference. If they only appear with inline bodies, that is a
+   shared-header change I need to make, and I want it proven before I make it.
+2. **Do the three vtables come out in the order `dNandThread_c`, `mMutex`,
+   `EGG::Mutex`?** Deliberately provoke the inversion you predicted (give
+   `mMutex` an out-of-line destructor) and confirm the order actually flips.
+   A hazard you can trigger on demand is one you understand.
+3. **Do the anonymous-namespace objects land in `.rodata` and `.bss`** as
+   predicted, and do the function-scope statics land in `.bss`/`.sdata` rather
+   than at file scope?
+4. **Does `sizeof(dNandThread_c)` come out `0x80`** with the real `EGG::Thread`
+   base rather than your test scaffold's? This is the one that matters most —
+   `mMutex` is embedded by value, so if the base's size is wrong every member
+   after `0x50` shifts and nothing in a per-function diff will show it.
+5. **Section sizes.** Compare each section of your scaffold object against the
+   claimed range. They will not match on `.text` (empty bodies), but `.rodata`,
+   `.sdata` and `.bss` should be close to exact, because they are structural.
 
-There is a second vtable in range: `__vt__6mMutex` at `0x80317D60`. Establish
-whether `mMutex` is a separate class this TU also defines, or a member. If
-`dNandThread_c` embeds an `mMutex` by value, its `sizeof` is load-bearing — that
-exact hazard is what made the current unit hard.
+**A refuted hazard is as valuable as a confirmed one.** If the weak virtuals come
+out fine without inline bodies, say so — that saves me a shared-header change
+that would touch every TU including `eggThread.h`.
 
-**2. The function table.** All 24, in address order, with mangled name, address,
-size, and one line on what each does. Flag any that are unnamed in the map
-(`fn_XXXXXXXX`) and say whether each is a class member or a file-scope static —
-**CFront mangling does not mark static members**, so the test is whether `r3`
-holds a real argument rather than a `this`.
+## Task B (secondary): pre-flight `m_pad.cpp`
 
-**3. Section bounds and a complete data inventory.** All eight sections, each
-labelled with how it was derived and how strong that is. Use
-`dtk_splits_wiimj2d.txt` for hard brackets.
+Only after Task A. Same treatment as round 3, so the queue stays full behind
+`d_nand_thread.cpp`: class from vtable, full function table, section bounds with
+`dtk_splits_wiimj2d.txt` brackets, complete data inventory with an explicit note
+on whether each object is referenced, external-call classification, and hazards.
 
-Then the part that actually decides whether a unit lands: **every data object in
-those ranges, with an explicit note on whether any function in the range
-references it.** On the last two units, *every* defect that blocked the link was
-in data placement, and none was visible to a per-function diff. Two specific
-traps to check for by name:
-
-- **An object nothing references is still ours to emit.** A 0x40 float table that
-  the entire binary never reads still failed a link when it was left out.
-- **An object dtk labels as padding may be real.** `setHipAttackQuake` reads and
-  writes three ints that dtk calls `gap_..._bss`. Because they sat inside a
-  larger gap, *no bounds check could have caught it* — only a function touching
-  them did.
-
-**4. SDK dependencies.** You flagged NAND SDK calls as the risk. Enumerate every
-external function the range calls, and for each say whether it is (a) already
-defined by a banked TU, (b) declared in a header but undecompiled — needing a
-`syms.txt` pin at its original address, or (c) not declared anywhere, needing a
-header addition. Category (b) is what fails a link with an undefined symbol, and
-it is the single most common blocker on this project.
-
-### What would make this round a failure
-
-Telling me it looks clean. I already believe that — you established it in round
-2. What I need is the **specific list of things that will go wrong**, because the
-last two units were both "clean" right up until the link.
-
-If some part cannot be settled from the binary, say which part and what would
-settle it. `AGENT_CONTEXT.md` §4 has the two occasions where an honest "I could
-not tell" was worth more than an answer.
+You ranked it second at `0x8016F330`–`0x80170AC0`, 6,032 B, with a `.ctors` slot
+and a `0x140` `.bss` claim. **The `.ctors` slot is worth attention** — it means a
+static constructor runs, which means a `__sinit`, which means construction order
+matters. `d_nand_thread.cpp` has none; this one does.
 
 ---
 
@@ -106,9 +89,11 @@ not tell" was worth more than an answer.
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
-- **Do not touch** `wip/` (agents are working `d_a_player_manager.cpp` there),
-  `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`, or any `CODEX_*.md`.
-  Codex is on link-blocker analysis and `EGG::Effect`; do not enter either.
+  That includes `eggThread.h`: **prove the change in `scratch/`, do not apply it.**
+- **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
+  or any `CODEX_*.md`. Codex is on `EGG::Effect`'s vtable — note that
+  `EGG::Thread` and `EGG::Effect` are different classes, so you are not in its
+  way, but do not touch `eggEffect.hpp`.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.
