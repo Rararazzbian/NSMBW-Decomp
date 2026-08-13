@@ -1082,15 +1082,22 @@ void daEnHatenaBalloon_c::fly_xspeed_set(bool force) {
 }
 
 // ---------------------------------------------------------------- 0x80112C70
-// NOT byte-exact: 2 words out of 55.  The original loads dBgParameter_c's mPos.y
-// BEFORE dBg_c's m_8feac; this spelling schedules them the other way round.  Same
-// registers, same instructions, same count -- purely the order of two adjacent,
-// independent lfs.  ~80 source variants were swept without moving it; the axes that
-// were eliminated are listed in the report.  Everything else in the function,
-// including the `!scroll` below, is confirmed exact.
+// TWO coupled requirements here; each alone is worse than the naive spelling.
+//   1. bgpY / bgDispY must be named locals, in this order -- the same idiom
+//      executeState_DispFlyMove needs.  Reading the two members inline instead
+//      transposes the two `lfs`, which is a 2-word miss.
+//   2. `lim` must be declared AFTER them.  Applying (1) alone puts the loads in
+//      the right order but rotates the FP allocation, landing `lim` in f2 rather
+//      than f3 and cascading ~30 differing lines through the rest of the body.
+// Sweeping either axis on its own therefore looks like a dead end; ~120 variants
+// across the expression spelling, the local ordering and the accessor spellings
+// were eliminated before the pair was tried together.  Note `pos().y` and
+// `yStart()` are NOT transparent substitutes for `mPos.y` at -O4 here.
 bool daEnHatenaBalloon_c::fly_ydisp_check(bool bounce) {
+    float bgpY = dBgParameter_c::ms_Instance_p->mPos.y;
+    float bgDispY = dBg_c::m_bg_p->m_8feac;
     float lim = 7.0f;
-    float scroll = -(dBg_c::m_bg_p->m_8feac - dBgParameter_c::ms_Instance_p->mPos.y);
+    float scroll = -(bgDispY - bgpY);
     if (scroll < -lim) {
         scroll = -lim;
     }
