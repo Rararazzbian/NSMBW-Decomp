@@ -270,13 +270,24 @@ FAMILY = ('dol_bases_d_a_en_dpakkun', 'dol_bases_d_a_en_dpakkun_base',
           'dol_bases_d_a_en_door', 'dol_bases_d_a_en_carry',
           'dol_bases_d_a_en_dfpakkun', 'dol_bases_d_a_en_jimen_pakkun_base',
           'dol_bases_d_a_en_bros_base', 'dol_bases_d_a_fireball_base',
-          'dol_bases_d_a_en_eatcoin', 'dol_bases_d_a_en_snake_block',
+          'dol_bases_d_a_en_eatcoin', 'dol_bases_d_a_en_blockmain',
+          'dol_bases_d_a_fireball_player',
+          # REL objects are tagged REL_<relpath>, not dol_bases_<file>.
+          'REL_d_enemiesNP_bases_d_a_en_snake_block',
           'd_a_en_dpakkun')
 
 
+# Corpus tags carry a source prefix: dtk split objects are `dol_...`/`lib_...`,
+# REL split objects `REL_...`, our own compiled objects `CMP_<same relpath>`.
+# A FAMILY entry should match its unit whichever source it came from.
 def in_family(tu):
-    """Family membership, tolerant of the CMP_ prefix on our own objects."""
-    return tu in FAMILY or (tu.startswith('CMP_') and tu[len('CMP_'):] in FAMILY)
+    """Family membership, tolerant of the source prefix on a corpus tag."""
+    if tu in FAMILY:
+        return True
+    for pfx in ('CMP_', 'REL_'):
+        if tu.startswith(pfx) and tu[len(pfx):] in FAMILY:
+            return True
+    return False
 
 
 def check_family(corpus_tags):
@@ -287,7 +298,10 @@ def check_family(corpus_tags):
     """
     live = set()
     for t in corpus_tags:
-        live.add(t[len('CMP_'):] if t.startswith('CMP_') else t)
+        live.add(t)
+        for pfx in ('CMP_', 'REL_'):
+            if t.startswith(pfx):
+                live.add(t[len(pfx):])
     dead = [n for n in FAMILY if n not in live]
     if dead:
         sys.stderr.write('sibmap: WARNING: %d FAMILY entries match no corpus '

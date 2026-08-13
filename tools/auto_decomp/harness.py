@@ -58,6 +58,15 @@ POOL_SYM = re.compile(r'@\d+(?:_[0-9A-Fa-f]{8})?'
 # Applied AFTER pool numbering, so it cannot eat an `lbl_########`.
 ADDR_SUFFIX_INLINE = re.compile(r'_[0-9A-Fa-f]{8}\b')
 
+# ...but `fn_########` / `func_########` are dtk PLACEHOLDER names for functions
+# with no symbol, where the address IS the whole name. Stripping the suffix from
+# an operand turns every unnamed callee into the bare token `fn`, so
+# `bl fn_800A1234` and `bl fn_800CDEF0` compare EQUAL -- a wrong callee passing
+# as a match. Fixing norm_name() alone did not cover this: that fixed which
+# function gets looked up, this is about what the compared TEXT says.
+PLACEHOLDER_CALLEE = re.compile(r'\b(fn|func)_([0-9A-Fa-f]{8})\b')
+_KEEP = '\x00'
+
 
 def canonicalise(lines):
     """Rewrite pool references so the two sides are comparable.
@@ -84,7 +93,12 @@ def canonicalise(lines):
     for line in lines:
         def number(m):
             return mapping.setdefault(m.group(0), 'SYM%d' % len(mapping))
-        out.append(ADDR_SUFFIX_INLINE.sub('', POOL_SYM.sub(number, line)))
+        s = POOL_SYM.sub(number, line)
+        # Shield placeholder callee names from the suffix strip below; their
+        # address is their identity, not a disambiguator.
+        s = PLACEHOLDER_CALLEE.sub(lambda m: m.group(1) + _KEEP + m.group(2), s)
+        s = ADDR_SUFFIX_INLINE.sub('', s)
+        out.append(s.replace(_KEEP, '_'))
     return out
 
 
