@@ -1,0 +1,162 @@
+.include "macros.inc"
+.file "OSArena.c"
+
+# 0x801ABFA0..0x801AC060 | size: 0xC0
+.text
+.balign 4
+
+# .text:0x0 | 0x801ABFA0 | size: 0x8
+.fn OSGetMEM1ArenaHi, global
+/* 801ABFA0 00000040  80 60 00 00 */	lwz r3, __OSArenaHi@sda21(r0)
+/* 801ABFA4 00000044  4E 80 00 20 */	blr
+.endfn OSGetMEM1ArenaHi
+
+# .text:0x8 | 0x801ABFA8 | size: 0x8
+.fn gap_03_801ABFA8_text, global
+.hidden gap_03_801ABFA8_text
+/* 801ABFA8 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801ABFAC 0000004C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801ABFA8_text
+
+# .text:0x10 | 0x801ABFB0 | size: 0x8
+.fn OSGetMEM2ArenaHi, global
+/* 801ABFB0 00000050  80 60 00 00 */	lwz r3, s_mem2ArenaHi@sda21(r0)
+/* 801ABFB4 00000054  4E 80 00 20 */	blr
+.endfn OSGetMEM2ArenaHi
+
+# .text:0x18 | 0x801ABFB8 | size: 0x8
+.fn gap_03_801ABFB8_text, global
+.hidden gap_03_801ABFB8_text
+/* 801ABFB8 00000058  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801ABFBC 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801ABFB8_text
+
+# .text:0x20 | 0x801ABFC0 | size: 0x8
+.fn OSGetArenaHi, global
+/* 801ABFC0 00000060  80 60 00 00 */	lwz r3, __OSArenaHi@sda21(r0)
+/* 801ABFC4 00000064  4E 80 00 20 */	blr
+.endfn OSGetArenaHi
+
+# .text:0x28 | 0x801ABFC8 | size: 0x8
+.fn gap_03_801ABFC8_text, global
+.hidden gap_03_801ABFC8_text
+/* 801ABFC8 00000068  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801ABFCC 0000006C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801ABFC8_text
+
+# .text:0x30 | 0x801ABFD0 | size: 0x8
+.fn OSGetMEM1ArenaLo, global
+/* 801ABFD0 00000070  80 60 00 00 */	lwz r3, __OSArenaLo@sda21(r0)
+/* 801ABFD4 00000074  4E 80 00 20 */	blr
+.endfn OSGetMEM1ArenaLo
+
+# .text:0x38 | 0x801ABFD8 | size: 0x8
+.fn gap_03_801ABFD8_text, global
+.hidden gap_03_801ABFD8_text
+/* 801ABFD8 00000078  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801ABFDC 0000007C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801ABFD8_text
+
+# .text:0x40 | 0x801ABFE0 | size: 0x8
+.fn OSGetMEM2ArenaLo, global
+/* 801ABFE0 00000080  80 60 00 00 */	lwz r3, s_mem2ArenaLo@sda21(r0)
+/* 801ABFE4 00000084  4E 80 00 20 */	blr
+.endfn OSGetMEM2ArenaLo
+
+# .text:0x48 | 0x801ABFE8 | size: 0x8
+.fn gap_03_801ABFE8_text, global
+.hidden gap_03_801ABFE8_text
+/* 801ABFE8 00000088  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801ABFEC 0000008C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801ABFE8_text
+
+# .text:0x50 | 0x801ABFF0 | size: 0x8
+.fn OSGetArenaLo, global
+/* 801ABFF0 00000090  80 60 00 00 */	lwz r3, __OSArenaLo@sda21(r0)
+/* 801ABFF4 00000094  4E 80 00 20 */	blr
+.endfn OSGetArenaLo
+
+# .text:0x58 | 0x801ABFF8 | size: 0x8
+.fn gap_03_801ABFF8_text, global
+.hidden gap_03_801ABFF8_text
+/* 801ABFF8 00000098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801ABFFC 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801ABFF8_text
+
+# .text:0x60 | 0x801AC000 | size: 0x8
+.fn OSSetMEM1ArenaHi, global
+/* 801AC000 000000A0  90 60 00 00 */	stw r3, __OSArenaHi@sda21(r0)
+/* 801AC004 000000A4  4E 80 00 20 */	blr
+.endfn OSSetMEM1ArenaHi
+
+# .text:0x68 | 0x801AC008 | size: 0x8
+.fn gap_03_801AC008_text, global
+.hidden gap_03_801AC008_text
+/* 801AC008 000000A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC00C 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC008_text
+
+# .text:0x70 | 0x801AC010 | size: 0x8
+.fn OSSetMEM2ArenaHi, global
+/* 801AC010 000000B0  90 60 00 00 */	stw r3, s_mem2ArenaHi@sda21(r0)
+/* 801AC014 000000B4  4E 80 00 20 */	blr
+.endfn OSSetMEM2ArenaHi
+
+# .text:0x78 | 0x801AC018 | size: 0x8
+.fn gap_03_801AC018_text, global
+.hidden gap_03_801AC018_text
+/* 801AC018 000000B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC01C 000000BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC018_text
+
+# .text:0x80 | 0x801AC020 | size: 0x8
+.fn OSSetArenaHi, global
+/* 801AC020 000000C0  90 60 00 00 */	stw r3, __OSArenaHi@sda21(r0)
+/* 801AC024 000000C4  4E 80 00 20 */	blr
+.endfn OSSetArenaHi
+
+# .text:0x88 | 0x801AC028 | size: 0x8
+.fn gap_03_801AC028_text, global
+.hidden gap_03_801AC028_text
+/* 801AC028 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC02C 000000CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC028_text
+
+# .text:0x90 | 0x801AC030 | size: 0x8
+.fn OSSetMEM1ArenaLo, global
+/* 801AC030 000000D0  90 60 00 00 */	stw r3, __OSArenaLo@sda21(r0)
+/* 801AC034 000000D4  4E 80 00 20 */	blr
+.endfn OSSetMEM1ArenaLo
+
+# .text:0x98 | 0x801AC038 | size: 0x8
+.fn gap_03_801AC038_text, global
+.hidden gap_03_801AC038_text
+/* 801AC038 000000D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC03C 000000DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC038_text
+
+# .text:0xA0 | 0x801AC040 | size: 0x8
+.fn OSSetMEM2ArenaLo, global
+/* 801AC040 000000E0  90 60 00 00 */	stw r3, s_mem2ArenaLo@sda21(r0)
+/* 801AC044 000000E4  4E 80 00 20 */	blr
+.endfn OSSetMEM2ArenaLo
+
+# .text:0xA8 | 0x801AC048 | size: 0x8
+.fn gap_03_801AC048_text, global
+.hidden gap_03_801AC048_text
+/* 801AC048 000000E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC04C 000000EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC048_text
+
+# .text:0xB0 | 0x801AC050 | size: 0x8
+.fn OSSetArenaLo, global
+/* 801AC050 000000F0  90 60 00 00 */	stw r3, __OSArenaLo@sda21(r0)
+/* 801AC054 000000F4  4E 80 00 20 */	blr
+.endfn OSSetArenaLo
+
+# .text:0xB8 | 0x801AC058 | size: 0x8
+.fn gap_03_801AC058_text, global
+.hidden gap_03_801AC058_text
+/* 801AC058 000000F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC05C 000000FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC058_text

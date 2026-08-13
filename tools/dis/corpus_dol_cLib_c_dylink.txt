@@ -1,0 +1,1361 @@
+.include "macros.inc"
+.file "c_dylink.cpp"
+
+# 0x8015FF90..0x80160C10 | size: 0xC80
+.text
+.balign 4
+
+# .text:0x0 | 0x8015FF90 | size: 0xA0
+# DynamicModuleControlBase::~DynamicModuleControlBase()
+.fn __dt__24DynamicModuleControlBaseFv, global
+/* 8015FF90 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015FF94 00000044  7C 08 02 A6 */	mflr r0
+/* 8015FF98 00000048  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015FF9C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015FFA0 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015FFA4 00000054  7C 7F 1B 78 */	mr r31, r3
+/* 8015FFA8 00000058  41 82 00 70 */	beq .L_80160018
+/* 8015FFAC 0000005C  80 A3 00 04 */	lwz r5, 0x4(r3)
+/* 8015FFB0 00000060  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8015FFB4 00000064  41 82 00 0C */	beq .L_8015FFC0
+/* 8015FFB8 00000068  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 8015FFBC 0000006C  90 05 00 08 */	stw r0, 0x8(r5)
+.L_8015FFC0:
+/* 8015FFC0 00000070  80 A3 00 08 */	lwz r5, 0x8(r3)
+/* 8015FFC4 00000074  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8015FFC8 00000078  41 82 00 0C */	beq .L_8015FFD4
+/* 8015FFCC 0000007C  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8015FFD0 00000080  90 05 00 04 */	stw r0, 0x4(r5)
+.L_8015FFD4:
+/* 8015FFD4 00000084  80 00 00 00 */	lwz r0, mFirst__24DynamicModuleControlBase@sda21(r0)
+/* 8015FFD8 00000088  7C 00 18 40 */	cmplw r0, r3
+/* 8015FFDC 0000008C  40 82 00 0C */	bne .L_8015FFE8
+/* 8015FFE0 00000090  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 8015FFE4 00000094  90 00 00 00 */	stw r0, mFirst__24DynamicModuleControlBase@sda21(r0)
+.L_8015FFE8:
+/* 8015FFE8 00000098  80 00 00 00 */	lwz r0, mLast__24DynamicModuleControlBase@sda21(r0)
+/* 8015FFEC 0000009C  7C 00 18 40 */	cmplw r0, r3
+/* 8015FFF0 000000A0  40 82 00 0C */	bne .L_8015FFFC
+/* 8015FFF4 000000A4  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8015FFF8 000000A8  90 00 00 00 */	stw r0, mLast__24DynamicModuleControlBase@sda21(r0)
+.L_8015FFFC:
+/* 8015FFFC 000000AC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80160000 000000B0  38 00 00 00 */	li r0, 0x0
+/* 80160004 000000B4  90 03 00 08 */	stw r0, 0x8(r3)
+/* 80160008 000000B8  90 03 00 04 */	stw r0, 0x4(r3)
+/* 8016000C 000000BC  40 81 00 0C */	ble .L_80160018
+/* 80160010 000000C0  7F E3 FB 78 */	mr r3, r31
+/* 80160014 000000C4  48 00 00 01 */	bl __dl__FPv
+.L_80160018:
+/* 80160018 000000C8  7F E3 FB 78 */	mr r3, r31
+/* 8016001C 000000CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160020 000000D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160024 000000D4  7C 08 03 A6 */	mtlr r0
+/* 80160028 000000D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016002C 000000DC  4E 80 00 20 */	blr
+.endfn __dt__24DynamicModuleControlBaseFv
+
+# .text:0xA0 | 0x80160030 | size: 0x48
+# DynamicModuleControlBase::DynamicModuleControlBase()
+.fn __ct__24DynamicModuleControlBaseFv, global
+/* 80160030 000000E0  3C 80 00 00 */	lis r4, __vt__24DynamicModuleControlBase@ha
+/* 80160034 000000E4  38 00 00 00 */	li r0, 0x0
+/* 80160038 000000E8  38 84 00 00 */	addi r4, r4, __vt__24DynamicModuleControlBase@l
+/* 8016003C 000000EC  90 83 00 0C */	stw r4, 0xc(r3)
+/* 80160040 000000F0  B0 03 00 00 */	sth r0, 0x0(r3)
+/* 80160044 000000F4  B0 03 00 02 */	sth r0, 0x2(r3)
+/* 80160048 000000F8  90 03 00 08 */	stw r0, 0x8(r3)
+/* 8016004C 000000FC  80 00 00 00 */	lwz r0, mFirst__24DynamicModuleControlBase@sda21(r0)
+/* 80160050 00000100  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160054 00000104  40 82 00 08 */	bne .L_8016005C
+/* 80160058 00000108  90 60 00 00 */	stw r3, mFirst__24DynamicModuleControlBase@sda21(r0)
+.L_8016005C:
+/* 8016005C 0000010C  80 80 00 00 */	lwz r4, mLast__24DynamicModuleControlBase@sda21(r0)
+/* 80160060 00000110  90 83 00 04 */	stw r4, 0x4(r3)
+/* 80160064 00000114  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80160068 00000118  41 82 00 08 */	beq .L_80160070
+/* 8016006C 0000011C  90 64 00 08 */	stw r3, 0x8(r4)
+.L_80160070:
+/* 80160070 00000120  90 60 00 00 */	stw r3, mLast__24DynamicModuleControlBase@sda21(r0)
+/* 80160074 00000124  4E 80 00 20 */	blr
+.endfn __ct__24DynamicModuleControlBaseFv
+
+# .text:0xE8 | 0x80160078 | size: 0x8
+.fn gap_03_80160078_text, global
+.hidden gap_03_80160078_text
+/* 80160078 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016007C 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160078_text
+
+# .text:0xF0 | 0x80160080 | size: 0x94
+# DynamicModuleControlBase::link()
+.fn link__24DynamicModuleControlBaseFv, global
+/* 80160080 00000130  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160084 00000134  7C 08 02 A6 */	mflr r0
+/* 80160088 00000138  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016008C 0000013C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160090 00000140  7C 7F 1B 78 */	mr r31, r3
+/* 80160094 00000144  A0 03 00 00 */	lhz r0, 0x0(r3)
+/* 80160098 00000148  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016009C 0000014C  40 82 00 4C */	bne .L_801600E8
+/* 801600A0 00000150  81 83 00 0C */	lwz r12, 0xc(r3)
+/* 801600A4 00000154  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 801600A8 00000158  7D 89 03 A6 */	mtctr r12
+/* 801600AC 0000015C  4E 80 04 21 */	bctrl
+/* 801600B0 00000160  81 9F 00 0C */	lwz r12, 0xc(r31)
+/* 801600B4 00000164  7F E3 FB 78 */	mr r3, r31
+/* 801600B8 00000168  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 801600BC 0000016C  7D 89 03 A6 */	mtctr r12
+/* 801600C0 00000170  4E 80 04 21 */	bctrl
+/* 801600C4 00000174  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801600C8 00000178  40 82 00 0C */	bne .L_801600D4
+/* 801600CC 0000017C  38 60 00 00 */	li r3, 0x0
+/* 801600D0 00000180  48 00 00 30 */	b .L_80160100
+.L_801600D4:
+/* 801600D4 00000184  A0 7F 00 02 */	lhz r3, 0x2(r31)
+/* 801600D8 00000188  28 03 FF FF */	cmplwi r3, 0xffff
+/* 801600DC 0000018C  40 80 00 0C */	bge .L_801600E8
+/* 801600E0 00000190  38 03 00 01 */	addi r0, r3, 0x1
+/* 801600E4 00000194  B0 1F 00 02 */	sth r0, 0x2(r31)
+.L_801600E8:
+/* 801600E8 00000198  A0 7F 00 00 */	lhz r3, 0x0(r31)
+/* 801600EC 0000019C  28 03 FF FF */	cmplwi r3, 0xffff
+/* 801600F0 000001A0  40 80 00 0C */	bge .L_801600FC
+/* 801600F4 000001A4  38 03 00 01 */	addi r0, r3, 0x1
+/* 801600F8 000001A8  B0 1F 00 00 */	sth r0, 0x0(r31)
+.L_801600FC:
+/* 801600FC 000001AC  38 60 00 01 */	li r3, 0x1
+.L_80160100:
+/* 80160100 000001B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160104 000001B4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160108 000001B8  7C 08 03 A6 */	mtlr r0
+/* 8016010C 000001BC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160110 000001C0  4E 80 00 20 */	blr
+.endfn link__24DynamicModuleControlBaseFv
+
+# .text:0x184 | 0x80160114 | size: 0xC
+.fn gap_03_80160114_text, global
+.hidden gap_03_80160114_text
+/* 80160114 000001C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160118 000001C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016011C 000001CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160114_text
+
+# .text:0x190 | 0x80160120 | size: 0x8
+# DynamicModuleControlBase::do_load()
+.fn do_load__24DynamicModuleControlBaseFv, weak
+/* 80160120 000001D0  38 60 00 01 */	li r3, 0x1
+/* 80160124 000001D4  4E 80 00 20 */	blr
+.endfn do_load__24DynamicModuleControlBaseFv
+
+# .text:0x198 | 0x80160128 | size: 0x8
+.fn gap_03_80160128_text, global
+.hidden gap_03_80160128_text
+/* 80160128 000001D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016012C 000001DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160128_text
+
+# .text:0x1A0 | 0x80160130 | size: 0x8
+# DynamicModuleControlBase::do_link()
+.fn do_link__24DynamicModuleControlBaseFv, weak
+/* 80160130 000001E0  38 60 00 01 */	li r3, 0x1
+/* 80160134 000001E4  4E 80 00 20 */	blr
+.endfn do_link__24DynamicModuleControlBaseFv
+
+# .text:0x1A8 | 0x80160138 | size: 0x8
+.fn gap_03_80160138_text, global
+.hidden gap_03_80160138_text
+/* 80160138 000001E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016013C 000001EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160138_text
+
+# .text:0x1B0 | 0x80160140 | size: 0x8
+# DynamicModuleControlBase::do_unlink()
+.fn do_unlink__24DynamicModuleControlBaseFv, weak
+/* 80160140 000001F0  38 60 00 01 */	li r3, 0x1
+/* 80160144 000001F4  4E 80 00 20 */	blr
+.endfn do_unlink__24DynamicModuleControlBaseFv
+
+# .text:0x1B8 | 0x80160148 | size: 0x8
+.fn gap_03_80160148_text, global
+.hidden gap_03_80160148_text
+/* 80160148 000001F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016014C 000001FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160148_text
+
+# .text:0x1C0 | 0x80160150 | size: 0x8
+# DynamicModuleControlBase::do_unload()
+.fn do_unload__24DynamicModuleControlBaseFv, weak
+/* 80160150 00000200  38 60 00 01 */	li r3, 0x1
+/* 80160154 00000204  4E 80 00 20 */	blr
+.endfn do_unload__24DynamicModuleControlBaseFv
+
+# .text:0x1C8 | 0x80160158 | size: 0x8
+.fn gap_03_80160158_text, global
+.hidden gap_03_80160158_text
+/* 80160158 00000208  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016015C 0000020C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160158_text
+
+# .text:0x1D0 | 0x80160160 | size: 0x24
+# DynamicModuleControlBase::load_async()
+.fn load_async__24DynamicModuleControlBaseFv, global
+/* 80160160 00000210  A0 03 00 00 */	lhz r0, 0x0(r3)
+/* 80160164 00000214  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160168 00000218  40 82 00 14 */	bne .L_8016017C
+/* 8016016C 0000021C  81 83 00 0C */	lwz r12, 0xc(r3)
+/* 80160170 00000220  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80160174 00000224  7D 89 03 A6 */	mtctr r12
+/* 80160178 00000228  4E 80 04 20 */	bctr
+.L_8016017C:
+/* 8016017C 0000022C  38 60 00 01 */	li r3, 0x1
+/* 80160180 00000230  4E 80 00 20 */	blr
+.endfn load_async__24DynamicModuleControlBaseFv
+
+# .text:0x1F4 | 0x80160184 | size: 0xC
+.fn gap_03_80160184_text, global
+.hidden gap_03_80160184_text
+/* 80160184 00000234  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160188 00000238  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016018C 0000023C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160184_text
+
+# .text:0x200 | 0x80160190 | size: 0x8
+# DynamicModuleControlBase::do_load_async()
+.fn do_load_async__24DynamicModuleControlBaseFv, weak
+/* 80160190 00000240  38 60 00 01 */	li r3, 0x1
+/* 80160194 00000244  4E 80 00 20 */	blr
+.endfn do_load_async__24DynamicModuleControlBaseFv
+
+# .text:0x208 | 0x80160198 | size: 0x8
+.fn gap_03_80160198_text, global
+.hidden gap_03_80160198_text
+/* 80160198 00000248  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016019C 0000024C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160198_text
+
+# .text:0x210 | 0x801601A0 | size: 0x4
+# DynamicModuleControlBase::dump()
+.fn dump__24DynamicModuleControlBaseFv, global
+/* 801601A0 00000250  4E 80 00 20 */	blr
+.endfn dump__24DynamicModuleControlBaseFv
+
+# .text:0x214 | 0x801601A4 | size: 0xC
+.fn gap_03_801601A4_text, global
+.hidden gap_03_801601A4_text
+/* 801601A4 00000254  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801601A8 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801601AC 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801601A4_text
+
+# .text:0x220 | 0x801601B0 | size: 0x8
+# DynamicModuleControlBase::getModuleSize() const
+.fn getModuleSize__24DynamicModuleControlBaseCFv, global
+/* 801601B0 00000260  38 60 00 00 */	li r3, 0x0
+/* 801601B4 00000264  4E 80 00 20 */	blr
+.endfn getModuleSize__24DynamicModuleControlBaseCFv
+
+# .text:0x228 | 0x801601B8 | size: 0x8
+.fn gap_03_801601B8_text, global
+.hidden gap_03_801601B8_text
+/* 801601B8 00000268  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801601BC 0000026C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801601B8_text
+
+# .text:0x230 | 0x801601C0 | size: 0x84
+# DynamicModuleControl::DynamicModuleControl(const char*, EGG::ExpHeap*)
+.fn __ct__20DynamicModuleControlFPCcPQ23EGG7ExpHeap, global
+/* 801601C0 00000270  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801601C4 00000274  7C 08 02 A6 */	mflr r0
+/* 801601C8 00000278  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801601CC 0000027C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 801601D0 00000280  7C BF 2B 78 */	mr r31, r5
+/* 801601D4 00000284  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 801601D8 00000288  7C 9E 23 78 */	mr r30, r4
+/* 801601DC 0000028C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 801601E0 00000290  7C 7D 1B 78 */	mr r29, r3
+/* 801601E4 00000294  48 00 00 01 */	bl __ct__24DynamicModuleControlBaseFv
+/* 801601E8 00000298  3C 60 00 00 */	lis r3, __vt__20DynamicModuleControl@ha
+/* 801601EC 0000029C  38 00 00 00 */	li r0, 0x0
+/* 801601F0 000002A0  38 63 00 00 */	addi r3, r3, __vt__20DynamicModuleControl@l
+/* 801601F4 000002A4  90 7D 00 0C */	stw r3, 0xc(r29)
+/* 801601F8 000002A8  7F A3 EB 78 */	mr r3, r29
+/* 801601FC 000002AC  90 1D 00 14 */	stw r0, 0x14(r29)
+/* 80160200 000002B0  90 1D 00 18 */	stw r0, 0x18(r29)
+/* 80160204 000002B4  90 1D 00 1C */	stw r0, 0x1c(r29)
+/* 80160208 000002B8  93 DD 00 20 */	stw r30, 0x20(r29)
+/* 8016020C 000002BC  98 1D 00 24 */	stb r0, 0x24(r29)
+/* 80160210 000002C0  98 1D 00 25 */	stb r0, 0x25(r29)
+/* 80160214 000002C4  B0 1D 00 26 */	sth r0, 0x26(r29)
+/* 80160218 000002C8  90 1D 00 28 */	stw r0, 0x28(r29)
+/* 8016021C 000002CC  90 1D 00 2C */	stw r0, 0x2c(r29)
+/* 80160220 000002D0  93 FD 00 30 */	stw r31, 0x30(r29)
+/* 80160224 000002D4  90 1D 00 34 */	stw r0, 0x34(r29)
+/* 80160228 000002D8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8016022C 000002DC  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80160230 000002E0  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80160234 000002E4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80160238 000002E8  7C 08 03 A6 */	mtlr r0
+/* 8016023C 000002EC  38 21 00 20 */	addi r1, r1, 0x20
+/* 80160240 000002F0  4E 80 00 20 */	blr
+.endfn __ct__20DynamicModuleControlFPCcPQ23EGG7ExpHeap
+
+# .text:0x2B4 | 0x80160244 | size: 0xC
+.fn gap_03_80160244_text, global
+.hidden gap_03_80160244_text
+/* 80160244 000002F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160248 000002F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016024C 000002FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160244_text
+
+# .text:0x2C0 | 0x80160250 | size: 0x68
+# DynamicModuleControl::~DynamicModuleControl()
+.fn __dt__20DynamicModuleControlFv, global
+/* 80160250 00000300  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160254 00000304  7C 08 02 A6 */	mflr r0
+/* 80160258 00000308  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016025C 0000030C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80160260 00000310  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160264 00000314  7C 9F 23 78 */	mr r31, r4
+/* 80160268 00000318  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8016026C 0000031C  7C 7E 1B 78 */	mr r30, r3
+/* 80160270 00000320  41 82 00 2C */	beq .L_8016029C
+/* 80160274 00000324  38 80 FF FF */	li r4, -0x1
+/* 80160278 00000328  38 63 00 34 */	addi r3, r3, 0x34
+/* 8016027C 0000032C  48 00 00 01 */	bl __dt__9DbMapFileFv
+/* 80160280 00000330  7F C3 F3 78 */	mr r3, r30
+/* 80160284 00000334  38 80 00 00 */	li r4, 0x0
+/* 80160288 00000338  48 00 00 01 */	bl __dt__24DynamicModuleControlBaseFv
+/* 8016028C 0000033C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80160290 00000340  40 81 00 0C */	ble .L_8016029C
+/* 80160294 00000344  7F C3 F3 78 */	mr r3, r30
+/* 80160298 00000348  48 00 00 01 */	bl __dl__FPv
+.L_8016029C:
+/* 8016029C 0000034C  7F C3 F3 78 */	mr r3, r30
+/* 801602A0 00000350  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801602A4 00000354  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 801602A8 00000358  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801602AC 0000035C  7C 08 03 A6 */	mtlr r0
+/* 801602B0 00000360  38 21 00 10 */	addi r1, r1, 0x10
+/* 801602B4 00000364  4E 80 00 20 */	blr
+.endfn __dt__20DynamicModuleControlFv
+
+# .text:0x328 | 0x801602B8 | size: 0x8
+.fn gap_03_801602B8_text, global
+.hidden gap_03_801602B8_text
+/* 801602B8 00000368  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801602BC 0000036C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801602B8_text
+
+# .text:0x330 | 0x801602C0 | size: 0x8
+# DynamicModuleControl::getModuleName() const
+.fn getModuleName__20DynamicModuleControlCFv, global
+/* 801602C0 00000370  80 63 00 20 */	lwz r3, 0x20(r3)
+/* 801602C4 00000374  4E 80 00 20 */	blr
+.endfn getModuleName__20DynamicModuleControlCFv
+
+# .text:0x338 | 0x801602C8 | size: 0x8
+.fn gap_03_801602C8_text, global
+.hidden gap_03_801602C8_text
+/* 801602C8 00000378  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801602CC 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801602C8_text
+
+# .text:0x340 | 0x801602D0 | size: 0x9C
+# DynamicModuleControl::initialize(EGG::ExpHeap*)
+.fn initialize__20DynamicModuleControlFPQ23EGG7ExpHeap, global
+/* 801602D0 00000380  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801602D4 00000384  7C 08 02 A6 */	mflr r0
+/* 801602D8 00000388  38 80 00 D0 */	li r4, 0xd0
+/* 801602DC 0000038C  38 A0 00 04 */	li r5, 0x4
+/* 801602E0 00000390  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801602E4 00000394  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801602E8 00000398  7C 7F 1B 78 */	mr r31, r3
+/* 801602EC 0000039C  90 60 00 00 */	stw r3, sDylinkHeap__20DynamicModuleControl@sda21(r0)
+/* 801602F0 000003A0  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801602F4 000003A4  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 801602F8 000003A8  7D 89 03 A6 */	mtctr r12
+/* 801602FC 000003AC  4E 80 04 21 */	bctrl
+/* 80160300 000003B0  90 60 00 00 */	stw r3, sDvdFile__20DynamicModuleControl@sda21(r0)
+/* 80160304 000003B4  7C 64 1B 78 */	mr r4, r3
+/* 80160308 000003B8  38 60 00 D0 */	li r3, 0xd0
+/* 8016030C 000003BC  48 00 00 01 */	bl __nw__FUlPv
+/* 80160310 000003C0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160314 000003C4  41 82 00 08 */	beq .L_8016031C
+/* 80160318 000003C8  48 00 00 01 */	bl __ct__Q23EGG7DvdFileFv
+.L_8016031C:
+/* 8016031C 000003CC  38 00 00 D0 */	li r0, 0xd0
+/* 80160320 000003D0  90 00 00 00 */	stw r0, sAllocBytes__20DynamicModuleControl@sda21(r0)
+/* 80160324 000003D4  7F E3 FB 78 */	mr r3, r31
+/* 80160328 000003D8  38 80 00 04 */	li r4, 0x4
+/* 8016032C 000003DC  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 80160330 000003E0  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 80160334 000003E4  7D 89 03 A6 */	mtctr r12
+/* 80160338 000003E8  4E 80 04 21 */	bctrl
+/* 8016033C 000003EC  90 60 00 00 */	stw r3, sHeapMinAllocatableSize__20DynamicModuleControl@sda21(r0)
+/* 80160340 000003F0  7F E3 FB 78 */	mr r3, r31
+/* 80160344 000003F4  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 80160348 000003F8  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 8016034C 000003FC  7D 89 03 A6 */	mtctr r12
+/* 80160350 00000400  4E 80 04 21 */	bctrl
+/* 80160354 00000404  90 60 00 00 */	stw r3, sHeapMinTotalFreeSize__20DynamicModuleControl@sda21(r0)
+/* 80160358 00000408  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016035C 0000040C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160360 00000410  7C 08 03 A6 */	mtlr r0
+/* 80160364 00000414  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160368 00000418  4E 80 00 20 */	blr
+.endfn initialize__20DynamicModuleControlFPQ23EGG7ExpHeap
+
+# .text:0x3DC | 0x8016036C | size: 0x4
+.fn gap_03_8016036C_text, global
+.hidden gap_03_8016036C_text
+/* 8016036C 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016036C_text
+
+# .text:0x3E0 | 0x80160370 | size: 0x10
+# DynamicModuleControl::callback(void*)
+.fn callback__20DynamicModuleControlFPv, global
+/* 80160370 00000420  81 83 00 0C */	lwz r12, 0xc(r3)
+/* 80160374 00000424  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 80160378 00000428  7D 89 03 A6 */	mtctr r12
+/* 8016037C 0000042C  4E 80 04 20 */	bctr
+.endfn callback__20DynamicModuleControlFPv
+
+# .text:0x3F0 | 0x80160380 | size: 0x84
+# DynamicModuleControl::checkHeapStatus()
+.fn checkHeapStatus__20DynamicModuleControlFv, global
+/* 80160380 00000430  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160384 00000434  7C 08 02 A6 */	mflr r0
+/* 80160388 00000438  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016038C 0000043C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160390 00000440  7C 7F 1B 78 */	mr r31, r3
+/* 80160394 00000444  80 83 00 30 */	lwz r4, 0x30(r3)
+/* 80160398 00000448  80 00 00 00 */	lwz r0, sDylinkHeap__20DynamicModuleControl@sda21(r0)
+/* 8016039C 0000044C  7C 04 00 40 */	cmplw r4, r0
+/* 801603A0 00000450  40 82 00 50 */	bne .L_801603F0
+/* 801603A4 00000454  7C 83 23 78 */	mr r3, r4
+/* 801603A8 00000458  38 80 00 04 */	li r4, 0x4
+/* 801603AC 0000045C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801603B0 00000460  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 801603B4 00000464  7D 89 03 A6 */	mtctr r12
+/* 801603B8 00000468  4E 80 04 21 */	bctrl
+/* 801603BC 0000046C  80 00 00 00 */	lwz r0, sHeapMinAllocatableSize__20DynamicModuleControl@sda21(r0)
+/* 801603C0 00000470  7C 00 18 40 */	cmplw r0, r3
+/* 801603C4 00000474  40 81 00 08 */	ble .L_801603CC
+/* 801603C8 00000478  90 60 00 00 */	stw r3, sHeapMinAllocatableSize__20DynamicModuleControl@sda21(r0)
+.L_801603CC:
+/* 801603CC 0000047C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 801603D0 00000480  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801603D4 00000484  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 801603D8 00000488  7D 89 03 A6 */	mtctr r12
+/* 801603DC 0000048C  4E 80 04 21 */	bctrl
+/* 801603E0 00000490  80 00 00 00 */	lwz r0, sHeapMinTotalFreeSize__20DynamicModuleControl@sda21(r0)
+/* 801603E4 00000494  7C 00 18 40 */	cmplw r0, r3
+/* 801603E8 00000498  40 81 00 08 */	ble .L_801603F0
+/* 801603EC 0000049C  90 60 00 00 */	stw r3, sHeapMinTotalFreeSize__20DynamicModuleControl@sda21(r0)
+.L_801603F0:
+/* 801603F0 000004A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801603F4 000004A4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801603F8 000004A8  7C 08 03 A6 */	mtlr r0
+/* 801603FC 000004AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160400 000004B0  4E 80 00 20 */	blr
+.endfn checkHeapStatus__20DynamicModuleControlFv
+
+# .text:0x474 | 0x80160404 | size: 0xC
+.fn gap_03_80160404_text, global
+.hidden gap_03_80160404_text
+/* 80160404 000004B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160408 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016040C 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160404_text
+
+# .text:0x480 | 0x80160410 | size: 0x28
+# calcSum2(const unsigned short*, unsigned long)
+.fn calcSum2__FPCUsUl, global
+/* 80160410 000004C0  38 A0 00 00 */	li r5, 0x0
+/* 80160414 000004C4  48 00 00 14 */	b .L_80160428
+.L_80160418:
+/* 80160418 000004C8  A0 03 00 00 */	lhz r0, 0x0(r3)
+/* 8016041C 000004CC  38 84 FF FE */	subi r4, r4, 0x2
+/* 80160420 000004D0  38 63 00 02 */	addi r3, r3, 0x2
+/* 80160424 000004D4  7C A5 02 14 */	add r5, r5, r0
+.L_80160428:
+/* 80160428 000004D8  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8016042C 000004DC  40 82 FF EC */	bne .L_80160418
+/* 80160430 000004E0  7C A3 2B 78 */	mr r3, r5
+/* 80160434 000004E4  4E 80 00 20 */	blr
+.endfn calcSum2__FPCUsUl
+
+# .text:0x4A8 | 0x80160438 | size: 0x8
+.fn gap_03_80160438_text, global
+.hidden gap_03_80160438_text
+/* 80160438 000004E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016043C 000004EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160438_text
+
+# .text:0x4B0 | 0x80160440 | size: 0x1AC
+# DynamicModuleControl::do_load()
+.fn do_load__20DynamicModuleControlFv, global
+/* 80160440 000004F0  94 21 FF A0 */	stwu r1, -0x60(r1)
+/* 80160444 000004F4  7C 08 02 A6 */	mflr r0
+/* 80160448 000004F8  90 01 00 64 */	stw r0, 0x64(r1)
+/* 8016044C 000004FC  39 61 00 60 */	addi r11, r1, 0x60
+/* 80160450 00000500  48 00 00 01 */	bl _savegpr_27
+/* 80160454 00000504  80 03 00 14 */	lwz r0, 0x14(r3)
+/* 80160458 00000508  7C 7F 1B 78 */	mr r31, r3
+/* 8016045C 0000050C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160460 00000510  41 82 00 0C */	beq .L_8016046C
+/* 80160464 00000514  38 60 00 01 */	li r3, 0x1
+/* 80160468 00000518  48 00 01 6C */	b .L_801605D4
+.L_8016046C:
+/* 8016046C 0000051C  80 03 00 30 */	lwz r0, 0x30(r3)
+/* 80160470 00000520  3B 60 00 00 */	li r27, 0x0
+/* 80160474 00000524  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160478 00000528  40 82 00 0C */	bne .L_80160484
+/* 8016047C 0000052C  80 00 00 00 */	lwz r0, sDylinkHeap__20DynamicModuleControl@sda21(r0)
+/* 80160480 00000530  90 03 00 30 */	stw r0, 0x30(r3)
+.L_80160484:
+/* 80160484 00000534  3B C0 00 00 */	li r30, 0x0
+/* 80160488 00000538  3F 80 00 00 */	lis r28, "@4051"@ha
+/* 8016048C 0000053C  3B A0 00 03 */	li r29, 0x3
+.L_80160490:
+/* 80160490 00000540  80 9F 00 14 */	lwz r4, 0x14(r31)
+/* 80160494 00000544  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80160498 00000548  41 82 00 1C */	beq .L_801604B4
+/* 8016049C 0000054C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 801604A0 00000550  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801604A4 00000554  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 801604A8 00000558  7D 89 03 A6 */	mtctr r12
+/* 801604AC 0000055C  4E 80 04 21 */	bctrl
+/* 801604B0 00000560  93 DF 00 14 */	stw r30, 0x14(r31)
+.L_801604B4:
+/* 801604B4 00000564  80 C0 00 00 */	lwz r6, sModulesDir__20DynamicModuleControl@sda21(r0)
+/* 801604B8 00000568  38 61 00 08 */	addi r3, r1, 0x8
+/* 801604BC 0000056C  80 FF 00 20 */	lwz r7, 0x20(r31)
+/* 801604C0 00000570  38 BC 00 00 */	addi r5, r28, "@4051"@l
+/* 801604C4 00000574  38 80 00 40 */	li r4, 0x40
+/* 801604C8 00000578  4C C6 31 82 */	crclr cr1eq
+/* 801604CC 0000057C  48 00 00 01 */	bl snprintf
+/* 801604D0 00000580  80 1F 00 14 */	lwz r0, 0x14(r31)
+/* 801604D4 00000584  2C 00 00 00 */	cmpwi r0, 0x0
+/* 801604D8 00000588  40 82 00 5C */	bne .L_80160534
+/* 801604DC 0000058C  80 BF 00 30 */	lwz r5, 0x30(r31)
+/* 801604E0 00000590  38 61 00 08 */	addi r3, r1, 0x8
+/* 801604E4 00000594  38 80 00 01 */	li r4, 0x1
+/* 801604E8 00000598  48 00 00 01 */	bl create__16mDvd_toMainRam_cFPCcUcPQ23EGG4Heap
+/* 801604EC 0000059C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801604F0 000005A0  90 60 00 00 */	stw r3, sDvdCommand@sda21(r0)
+/* 801604F4 000005A4  41 82 00 40 */	beq .L_80160534
+/* 801604F8 000005A8  48 00 00 01 */	bl waitDone__14mDvd_command_cCFv
+/* 801604FC 000005AC  7F E3 FB 78 */	mr r3, r31
+/* 80160500 000005B0  48 00 00 01 */	bl checkHeapStatus__20DynamicModuleControlFv
+/* 80160504 000005B4  80 60 00 00 */	lwz r3, sDvdCommand@sda21(r0)
+/* 80160508 000005B8  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 8016050C 000005BC  93 C3 00 10 */	stw r30, 0x10(r3)
+/* 80160510 000005C0  90 1F 00 14 */	stw r0, 0x14(r31)
+/* 80160514 000005C4  80 60 00 00 */	lwz r3, sDvdCommand@sda21(r0)
+/* 80160518 000005C8  48 00 00 01 */	bl destroy__14mDvd_command_cFv
+/* 8016051C 000005CC  93 C0 00 00 */	stw r30, sDvdCommand@sda21(r0)
+/* 80160520 000005D0  80 1F 00 14 */	lwz r0, 0x14(r31)
+/* 80160524 000005D4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160528 000005D8  41 82 00 0C */	beq .L_80160534
+/* 8016052C 000005DC  93 DF 00 28 */	stw r30, 0x28(r31)
+/* 80160530 000005E0  9B BF 00 24 */	stb r29, 0x24(r31)
+.L_80160534:
+/* 80160534 000005E4  80 7F 00 14 */	lwz r3, 0x14(r31)
+/* 80160538 000005E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016053C 000005EC  40 82 00 0C */	bne .L_80160548
+/* 80160540 000005F0  38 60 00 00 */	li r3, 0x0
+/* 80160544 000005F4  48 00 00 90 */	b .L_801605D4
+.L_80160548:
+/* 80160548 000005F8  80 9F 00 28 */	lwz r4, 0x28(r31)
+/* 8016054C 000005FC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80160550 00000600  40 81 00 64 */	ble .L_801605B4
+/* 80160554 00000604  48 00 00 01 */	bl calcSum2__FPCUsUl
+/* 80160558 00000608  88 9F 00 25 */	lbz r4, 0x25(r31)
+/* 8016055C 0000060C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80160560 00000610  40 82 00 14 */	bne .L_80160574
+/* 80160564 00000614  38 04 00 01 */	addi r0, r4, 0x1
+/* 80160568 00000618  B0 7F 00 26 */	sth r3, 0x26(r31)
+/* 8016056C 0000061C  98 1F 00 25 */	stb r0, 0x25(r31)
+/* 80160570 00000620  4B FF FF 20 */	b .L_80160490
+.L_80160574:
+/* 80160574 00000624  A0 1F 00 26 */	lhz r0, 0x26(r31)
+/* 80160578 00000628  54 63 04 3E */	clrlwi r3, r3, 16
+/* 8016057C 0000062C  7C 03 00 40 */	cmplw r3, r0
+/* 80160580 00000630  41 82 00 20 */	beq .L_801605A0
+/* 80160584 00000634  2C 1B 00 02 */	cmpwi r27, 0x2
+/* 80160588 00000638  9B DF 00 25 */	stb r30, 0x25(r31)
+/* 8016058C 0000063C  40 80 00 0C */	bge .L_80160598
+/* 80160590 00000640  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 80160594 00000644  4B FF FE FC */	b .L_80160490
+.L_80160598:
+/* 80160598 00000648  38 60 00 00 */	li r3, 0x0
+/* 8016059C 0000064C  48 00 00 38 */	b .L_801605D4
+.L_801605A0:
+/* 801605A0 00000650  28 04 00 FF */	cmplwi r4, 0xff
+/* 801605A4 00000654  40 80 00 24 */	bge .L_801605C8
+/* 801605A8 00000658  38 04 00 01 */	addi r0, r4, 0x1
+/* 801605AC 0000065C  98 1F 00 25 */	stb r0, 0x25(r31)
+/* 801605B0 00000660  48 00 00 18 */	b .L_801605C8
+.L_801605B4:
+/* 801605B4 00000664  88 7F 00 25 */	lbz r3, 0x25(r31)
+/* 801605B8 00000668  28 03 00 FF */	cmplwi r3, 0xff
+/* 801605BC 0000066C  40 80 00 0C */	bge .L_801605C8
+/* 801605C0 00000670  38 03 00 01 */	addi r0, r3, 0x1
+/* 801605C4 00000674  98 1F 00 25 */	stb r0, 0x25(r31)
+.L_801605C8:
+/* 801605C8 00000678  7F E3 FB 78 */	mr r3, r31
+/* 801605CC 0000067C  48 00 00 01 */	bl checkHeapStatus__20DynamicModuleControlFv
+/* 801605D0 00000680  38 60 00 01 */	li r3, 0x1
+.L_801605D4:
+/* 801605D4 00000684  39 61 00 60 */	addi r11, r1, 0x60
+/* 801605D8 00000688  48 00 00 01 */	bl _restgpr_27
+/* 801605DC 0000068C  80 01 00 64 */	lwz r0, 0x64(r1)
+/* 801605E0 00000690  7C 08 03 A6 */	mtlr r0
+/* 801605E4 00000694  38 21 00 60 */	addi r1, r1, 0x60
+/* 801605E8 00000698  4E 80 00 20 */	blr
+.endfn do_load__20DynamicModuleControlFv
+
+# .text:0x65C | 0x801605EC | size: 0x4
+.fn gap_03_801605EC_text, global
+.hidden gap_03_801605EC_text
+/* 801605EC 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801605EC_text
+
+# .text:0x660 | 0x801605F0 | size: 0x8C
+# DynamicModuleControl::do_load_async()
+.fn do_load_async__20DynamicModuleControlFv, global
+/* 801605F0 000006A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801605F4 000006A4  7C 08 02 A6 */	mflr r0
+/* 801605F8 000006A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801605FC 000006AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160600 000006B0  7C 7F 1B 78 */	mr r31, r3
+/* 80160604 000006B4  80 03 00 2C */	lwz r0, 0x2c(r3)
+/* 80160608 000006B8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016060C 000006BC  40 82 00 2C */	bne .L_80160638
+/* 80160610 000006C0  80 03 00 14 */	lwz r0, 0x14(r3)
+/* 80160614 000006C4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160618 000006C8  41 82 00 0C */	beq .L_80160624
+/* 8016061C 000006CC  38 60 00 01 */	li r3, 0x1
+/* 80160620 000006D0  48 00 00 48 */	b .L_80160668
+.L_80160624:
+/* 80160624 000006D4  3C 60 00 00 */	lis r3, callback__20DynamicModuleControlFPv@ha
+/* 80160628 000006D8  7F E4 FB 78 */	mr r4, r31
+/* 8016062C 000006DC  38 63 00 00 */	addi r3, r3, callback__20DynamicModuleControlFPv@l
+/* 80160630 000006E0  48 00 00 01 */	bl create__15mDvd_callback_cFPFPv_PvPv
+/* 80160634 000006E4  90 7F 00 2C */	stw r3, 0x2c(r31)
+.L_80160638:
+/* 80160638 000006E8  80 7F 00 2C */	lwz r3, 0x2c(r31)
+/* 8016063C 000006EC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160640 000006F0  41 82 00 24 */	beq .L_80160664
+/* 80160644 000006F4  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 80160648 000006F8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016064C 000006FC  41 82 00 18 */	beq .L_80160664
+/* 80160650 00000700  48 00 00 01 */	bl destroy__14mDvd_command_cFv
+/* 80160654 00000704  38 00 00 00 */	li r0, 0x0
+/* 80160658 00000708  90 1F 00 2C */	stw r0, 0x2c(r31)
+/* 8016065C 0000070C  38 60 00 01 */	li r3, 0x1
+/* 80160660 00000710  48 00 00 08 */	b .L_80160668
+.L_80160664:
+/* 80160664 00000714  38 60 00 00 */	li r3, 0x0
+.L_80160668:
+/* 80160668 00000718  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016066C 0000071C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160670 00000720  7C 08 03 A6 */	mtlr r0
+/* 80160674 00000724  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160678 00000728  4E 80 00 20 */	blr
+.endfn do_load_async__20DynamicModuleControlFv
+
+# .text:0x6EC | 0x8016067C | size: 0x4
+.fn gap_03_8016067C_text, global
+.hidden gap_03_8016067C_text
+/* 8016067C 0000072C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016067C_text
+
+# .text:0x6F0 | 0x80160680 | size: 0x54
+# DynamicModuleControl::do_unload()
+.fn do_unload__20DynamicModuleControlFv, global
+/* 80160680 00000730  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160684 00000734  7C 08 02 A6 */	mflr r0
+/* 80160688 00000738  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016068C 0000073C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160690 00000740  7C 7F 1B 78 */	mr r31, r3
+/* 80160694 00000744  80 83 00 14 */	lwz r4, 0x14(r3)
+/* 80160698 00000748  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8016069C 0000074C  41 82 00 20 */	beq .L_801606BC
+/* 801606A0 00000750  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 801606A4 00000754  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801606A8 00000758  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 801606AC 0000075C  7D 89 03 A6 */	mtctr r12
+/* 801606B0 00000760  4E 80 04 21 */	bctrl
+/* 801606B4 00000764  38 00 00 00 */	li r0, 0x0
+/* 801606B8 00000768  90 1F 00 14 */	stw r0, 0x14(r31)
+.L_801606BC:
+/* 801606BC 0000076C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801606C0 00000770  38 60 00 01 */	li r3, 0x1
+/* 801606C4 00000774  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801606C8 00000778  7C 08 03 A6 */	mtlr r0
+/* 801606CC 0000077C  38 21 00 10 */	addi r1, r1, 0x10
+/* 801606D0 00000780  4E 80 00 20 */	blr
+.endfn do_unload__20DynamicModuleControlFv
+
+# .text:0x744 | 0x801606D4 | size: 0xC
+.fn gap_03_801606D4_text, global
+.hidden gap_03_801606D4_text
+/* 801606D4 00000784  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801606D8 00000788  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801606DC 0000078C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801606D4_text
+
+# .text:0x750 | 0x801606E0 | size: 0x4
+# DynamicModuleControl::dump()
+.fn dump__20DynamicModuleControlFv, global
+/* 801606E0 00000790  4E 80 00 20 */	blr
+.endfn dump__20DynamicModuleControlFv
+
+# .text:0x754 | 0x801606E4 | size: 0xC
+.fn gap_03_801606E4_text, global
+.hidden gap_03_801606E4_text
+/* 801606E4 00000794  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801606E8 00000798  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801606EC 0000079C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801606E4_text
+
+# .text:0x760 | 0x801606F0 | size: 0x250
+# DynamicModuleControl::do_link()
+.fn do_link__20DynamicModuleControlFv, global
+/* 801606F0 000007A0  94 21 FF A0 */	stwu r1, -0x60(r1)
+/* 801606F4 000007A4  7C 08 02 A6 */	mflr r0
+/* 801606F8 000007A8  90 01 00 64 */	stw r0, 0x64(r1)
+/* 801606FC 000007AC  93 E1 00 5C */	stw r31, 0x5c(r1)
+/* 80160700 000007B0  93 C1 00 58 */	stw r30, 0x58(r1)
+/* 80160704 000007B4  93 A1 00 54 */	stw r29, 0x54(r1)
+/* 80160708 000007B8  7C 7D 1B 78 */	mr r29, r3
+/* 8016070C 000007BC  80 A3 00 14 */	lwz r5, 0x14(r3)
+/* 80160710 000007C0  2C 05 00 00 */	cmpwi r5, 0x0
+/* 80160714 000007C4  41 82 01 B8 */	beq .L_801608CC
+/* 80160718 000007C8  80 85 00 48 */	lwz r4, 0x48(r5)
+/* 8016071C 000007CC  7C A3 2B 78 */	mr r3, r5
+/* 80160720 000007D0  38 04 00 1F */	addi r0, r4, 0x1f
+/* 80160724 000007D4  54 1F 00 34 */	clrrwi r31, r0, 5
+/* 80160728 000007D8  7F C5 FA 14 */	add r30, r5, r31
+/* 8016072C 000007DC  48 00 00 01 */	bl getSizeForMBlock__Q23EGG7ExpHeapFPCv
+/* 80160730 000007E0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160734 000007E4  40 82 00 48 */	bne .L_8016077C
+/* 80160738 000007E8  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 8016073C 000007EC  38 A0 00 20 */	li r5, 0x20
+/* 80160740 000007F0  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 80160744 000007F4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80160748 000007F8  80 84 00 20 */	lwz r4, 0x20(r4)
+/* 8016074C 000007FC  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 80160750 00000800  7D 89 03 A6 */	mtctr r12
+/* 80160754 00000804  4E 80 04 21 */	bctrl
+/* 80160758 00000808  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016075C 0000080C  41 82 01 70 */	beq .L_801608CC
+/* 80160760 00000810  90 7D 00 18 */	stw r3, 0x18(r29)
+/* 80160764 00000814  7C 64 1B 78 */	mr r4, r3
+/* 80160768 00000818  80 7D 00 14 */	lwz r3, 0x14(r29)
+/* 8016076C 0000081C  48 00 00 01 */	bl OSLink
+/* 80160770 00000820  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160774 00000824  41 82 01 58 */	beq .L_801608CC
+/* 80160778 00000828  48 00 00 E0 */	b .L_80160858
+.L_8016077C:
+/* 8016077C 0000082C  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 80160780 00000830  80 04 00 20 */	lwz r0, 0x20(r4)
+/* 80160784 00000834  7C BF 02 14 */	add r5, r31, r0
+/* 80160788 00000838  7C 05 18 40 */	cmplw r5, r3
+/* 8016078C 0000083C  40 80 00 3C */	bge .L_801607C8
+/* 80160790 00000840  7C 83 23 78 */	mr r3, r4
+/* 80160794 00000844  7F C4 F3 78 */	mr r4, r30
+/* 80160798 00000848  48 00 00 01 */	bl OSLinkFixed
+/* 8016079C 0000084C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801607A0 00000850  41 82 01 2C */	beq .L_801608CC
+/* 801607A4 00000854  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 801607A8 00000858  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 801607AC 0000085C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801607B0 00000860  80 04 00 20 */	lwz r0, 0x20(r4)
+/* 801607B4 00000864  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 801607B8 00000868  7C BF 02 14 */	add r5, r31, r0
+/* 801607BC 0000086C  7D 89 03 A6 */	mtctr r12
+/* 801607C0 00000870  4E 80 04 21 */	bctrl
+/* 801607C4 00000874  48 00 00 94 */	b .L_80160858
+.L_801607C8:
+/* 801607C8 00000878  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 801607CC 0000087C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801607D0 00000880  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 801607D4 00000884  7D 89 03 A6 */	mtctr r12
+/* 801607D8 00000888  4E 80 04 21 */	bctrl
+/* 801607DC 0000088C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801607E0 00000890  40 81 00 1C */	ble .L_801607FC
+/* 801607E4 00000894  80 7D 00 14 */	lwz r3, 0x14(r29)
+/* 801607E8 00000898  7F C4 F3 78 */	mr r4, r30
+/* 801607EC 0000089C  48 00 00 01 */	bl OSLinkFixed
+/* 801607F0 000008A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801607F4 000008A4  41 82 00 D8 */	beq .L_801608CC
+/* 801607F8 000008A8  48 00 00 60 */	b .L_80160858
+.L_801607FC:
+/* 801607FC 000008AC  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 80160800 000008B0  38 A0 00 20 */	li r5, 0x20
+/* 80160804 000008B4  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 80160808 000008B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8016080C 000008BC  80 84 00 20 */	lwz r4, 0x20(r4)
+/* 80160810 000008C0  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 80160814 000008C4  7D 89 03 A6 */	mtctr r12
+/* 80160818 000008C8  4E 80 04 21 */	bctrl
+/* 8016081C 000008CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160820 000008D0  41 82 00 AC */	beq .L_801608CC
+/* 80160824 000008D4  90 7D 00 18 */	stw r3, 0x18(r29)
+/* 80160828 000008D8  7C 64 1B 78 */	mr r4, r3
+/* 8016082C 000008DC  80 7D 00 14 */	lwz r3, 0x14(r29)
+/* 80160830 000008E0  48 00 00 01 */	bl OSLinkFixed
+/* 80160834 000008E4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160838 000008E8  41 82 00 94 */	beq .L_801608CC
+/* 8016083C 000008EC  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 80160840 000008F0  7F E5 FB 78 */	mr r5, r31
+/* 80160844 000008F4  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 80160848 000008F8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8016084C 000008FC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80160850 00000900  7D 89 03 A6 */	mtctr r12
+/* 80160854 00000904  4E 80 04 21 */	bctrl
+.L_80160858:
+/* 80160858 00000908  81 9D 00 0C */	lwz r12, 0xc(r29)
+/* 8016085C 0000090C  7F A3 EB 78 */	mr r3, r29
+/* 80160860 00000910  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80160864 00000914  7D 89 03 A6 */	mtctr r12
+/* 80160868 00000918  4E 80 04 21 */	bctrl
+/* 8016086C 0000091C  80 00 00 00 */	lwz r0, sAllocBytes__20DynamicModuleControl@sda21(r0)
+/* 80160870 00000920  3C A0 00 00 */	lis r5, "@4100"@ha
+/* 80160874 00000924  38 A5 00 00 */	addi r5, r5, "@4100"@l
+/* 80160878 00000928  38 80 00 40 */	li r4, 0x40
+/* 8016087C 0000092C  7C 00 1A 14 */	add r0, r0, r3
+/* 80160880 00000930  90 00 00 00 */	stw r0, sAllocBytes__20DynamicModuleControl@sda21(r0)
+/* 80160884 00000934  38 61 00 08 */	addi r3, r1, 0x8
+/* 80160888 00000938  38 C0 00 00 */	li r6, "@4101"@sda21
+/* 8016088C 0000093C  80 FD 00 20 */	lwz r7, 0x20(r29)
+/* 80160890 00000940  4C C6 31 82 */	crclr cr1eq
+/* 80160894 00000944  48 00 00 01 */	bl snprintf
+/* 80160898 00000948  80 BD 00 14 */	lwz r5, 0x14(r29)
+/* 8016089C 0000094C  38 7D 00 34 */	addi r3, r29, 0x34
+/* 801608A0 00000950  38 81 00 08 */	addi r4, r1, 0x8
+/* 801608A4 00000954  48 00 00 01 */	bl RegisterOnDvd__9DbMapFileFPCcPC12OSModuleInfo
+/* 801608A8 00000958  80 7D 00 14 */	lwz r3, 0x14(r29)
+/* 801608AC 0000095C  81 83 00 34 */	lwz r12, 0x34(r3)
+/* 801608B0 00000960  7D 89 03 A6 */	mtctr r12
+/* 801608B4 00000964  4E 80 04 21 */	bctrl
+/* 801608B8 00000968  90 7D 00 1C */	stw r3, 0x1c(r29)
+/* 801608BC 0000096C  7F A3 EB 78 */	mr r3, r29
+/* 801608C0 00000970  48 00 00 01 */	bl checkHeapStatus__20DynamicModuleControlFv
+/* 801608C4 00000974  38 60 00 01 */	li r3, 0x1
+/* 801608C8 00000978  48 00 00 5C */	b .L_80160924
+.L_801608CC:
+/* 801608CC 0000097C  80 9D 00 18 */	lwz r4, 0x18(r29)
+/* 801608D0 00000980  3B E0 00 00 */	li r31, 0x0
+/* 801608D4 00000984  9B FD 00 25 */	stb r31, 0x25(r29)
+/* 801608D8 00000988  2C 04 00 00 */	cmpwi r4, 0x0
+/* 801608DC 0000098C  41 82 00 1C */	beq .L_801608F8
+/* 801608E0 00000990  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 801608E4 00000994  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801608E8 00000998  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 801608EC 0000099C  7D 89 03 A6 */	mtctr r12
+/* 801608F0 000009A0  4E 80 04 21 */	bctrl
+/* 801608F4 000009A4  93 FD 00 18 */	stw r31, 0x18(r29)
+.L_801608F8:
+/* 801608F8 000009A8  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 801608FC 000009AC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80160900 000009B0  41 82 00 20 */	beq .L_80160920
+/* 80160904 000009B4  80 7D 00 30 */	lwz r3, 0x30(r29)
+/* 80160908 000009B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8016090C 000009BC  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80160910 000009C0  7D 89 03 A6 */	mtctr r12
+/* 80160914 000009C4  4E 80 04 21 */	bctrl
+/* 80160918 000009C8  38 00 00 00 */	li r0, 0x0
+/* 8016091C 000009CC  90 1D 00 14 */	stw r0, 0x14(r29)
+.L_80160920:
+/* 80160920 000009D0  38 60 00 00 */	li r3, 0x0
+.L_80160924:
+/* 80160924 000009D4  80 01 00 64 */	lwz r0, 0x64(r1)
+/* 80160928 000009D8  83 E1 00 5C */	lwz r31, 0x5c(r1)
+/* 8016092C 000009DC  83 C1 00 58 */	lwz r30, 0x58(r1)
+/* 80160930 000009E0  83 A1 00 54 */	lwz r29, 0x54(r1)
+/* 80160934 000009E4  7C 08 03 A6 */	mtlr r0
+/* 80160938 000009E8  38 21 00 60 */	addi r1, r1, 0x60
+/* 8016093C 000009EC  4E 80 00 20 */	blr
+.endfn do_link__20DynamicModuleControlFv
+
+# .text:0x9B0 | 0x80160940 | size: 0xA4
+# DynamicModuleControl::do_unlink()
+.fn do_unlink__20DynamicModuleControlFv, global
+/* 80160940 000009F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160944 000009F4  7C 08 02 A6 */	mflr r0
+/* 80160948 000009F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016094C 000009FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160950 00000A00  7C 7F 1B 78 */	mr r31, r3
+/* 80160954 00000A04  80 83 00 14 */	lwz r4, 0x14(r3)
+/* 80160958 00000A08  81 84 00 38 */	lwz r12, 0x38(r4)
+/* 8016095C 00000A0C  7D 89 03 A6 */	mtctr r12
+/* 80160960 00000A10  4E 80 04 21 */	bctrl
+/* 80160964 00000A14  38 7F 00 34 */	addi r3, r31, 0x34
+/* 80160968 00000A18  48 00 00 01 */	bl Unregister__9DbMapFileFv
+/* 8016096C 00000A1C  80 7F 00 14 */	lwz r3, 0x14(r31)
+/* 80160970 00000A20  48 00 00 01 */	bl OSUnlink
+/* 80160974 00000A24  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160978 00000A28  40 82 00 0C */	bne .L_80160984
+/* 8016097C 00000A2C  38 60 00 00 */	li r3, 0x0
+/* 80160980 00000A30  48 00 00 50 */	b .L_801609D0
+.L_80160984:
+/* 80160984 00000A34  81 9F 00 0C */	lwz r12, 0xc(r31)
+/* 80160988 00000A38  7F E3 FB 78 */	mr r3, r31
+/* 8016098C 00000A3C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80160990 00000A40  7D 89 03 A6 */	mtctr r12
+/* 80160994 00000A44  4E 80 04 21 */	bctrl
+/* 80160998 00000A48  80 00 00 00 */	lwz r0, sAllocBytes__20DynamicModuleControl@sda21(r0)
+/* 8016099C 00000A4C  7C 03 00 50 */	subf r0, r3, r0
+/* 801609A0 00000A50  90 00 00 00 */	stw r0, sAllocBytes__20DynamicModuleControl@sda21(r0)
+/* 801609A4 00000A54  80 9F 00 18 */	lwz r4, 0x18(r31)
+/* 801609A8 00000A58  2C 04 00 00 */	cmpwi r4, 0x0
+/* 801609AC 00000A5C  41 82 00 20 */	beq .L_801609CC
+/* 801609B0 00000A60  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 801609B4 00000A64  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801609B8 00000A68  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 801609BC 00000A6C  7D 89 03 A6 */	mtctr r12
+/* 801609C0 00000A70  4E 80 04 21 */	bctrl
+/* 801609C4 00000A74  38 00 00 00 */	li r0, 0x0
+/* 801609C8 00000A78  90 1F 00 18 */	stw r0, 0x18(r31)
+.L_801609CC:
+/* 801609CC 00000A7C  38 60 00 01 */	li r3, 0x1
+.L_801609D0:
+/* 801609D0 00000A80  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801609D4 00000A84  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801609D8 00000A88  7C 08 03 A6 */	mtlr r0
+/* 801609DC 00000A8C  38 21 00 10 */	addi r1, r1, 0x10
+/* 801609E0 00000A90  4E 80 00 20 */	blr
+.endfn do_unlink__20DynamicModuleControlFv
+
+# .text:0xA54 | 0x801609E4 | size: 0xC
+.fn gap_03_801609E4_text, global
+.hidden gap_03_801609E4_text
+/* 801609E4 00000A94  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801609E8 00000A98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801609EC 00000A9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801609E4_text
+
+# .text:0xA60 | 0x801609F0 | size: 0x5C
+# DynamicModuleControl::getModuleSize() const
+.fn getModuleSize__20DynamicModuleControlCFv, global
+/* 801609F0 00000AA0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801609F4 00000AA4  7C 08 02 A6 */	mflr r0
+/* 801609F8 00000AA8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801609FC 00000AAC  80 03 00 14 */	lwz r0, 0x14(r3)
+/* 80160A00 00000AB0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160A04 00000AB4  7C 7F 1B 78 */	mr r31, r3
+/* 80160A08 00000AB8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160A0C 00000ABC  41 82 00 28 */	beq .L_80160A34
+/* 80160A10 00000AC0  7C 03 03 78 */	mr r3, r0
+/* 80160A14 00000AC4  48 00 00 01 */	bl getSizeForMBlock__Q23EGG7ExpHeapFPCv
+/* 80160A18 00000AC8  80 1F 00 18 */	lwz r0, 0x18(r31)
+/* 80160A1C 00000ACC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160A20 00000AD0  41 82 00 18 */	beq .L_80160A38
+/* 80160A24 00000AD4  80 9F 00 14 */	lwz r4, 0x14(r31)
+/* 80160A28 00000AD8  80 04 00 20 */	lwz r0, 0x20(r4)
+/* 80160A2C 00000ADC  7C 63 02 14 */	add r3, r3, r0
+/* 80160A30 00000AE0  48 00 00 08 */	b .L_80160A38
+.L_80160A34:
+/* 80160A34 00000AE4  38 60 00 00 */	li r3, 0x0
+.L_80160A38:
+/* 80160A38 00000AE8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160A3C 00000AEC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160A40 00000AF0  7C 08 03 A6 */	mtlr r0
+/* 80160A44 00000AF4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160A48 00000AF8  4E 80 00 20 */	blr
+.endfn getModuleSize__20DynamicModuleControlCFv
+
+# .text:0xABC | 0x80160A4C | size: 0x4
+.fn gap_03_80160A4C_text, global
+.hidden gap_03_80160A4C_text
+/* 80160A4C 00000AFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160A4C_text
+
+# .text:0xAC0 | 0x80160A50 | size: 0x18
+# DynamicModuleControl::getModuleTypeString() const
+.fn getModuleTypeString__20DynamicModuleControlCFv, global
+/* 80160A50 00000B00  88 03 00 24 */	lbz r0, 0x24(r3)
+/* 80160A54 00000B04  3C 60 00 00 */	lis r3, "@LOCAL@getModuleTypeString__20DynamicModuleControlCFv@c_ModuleTypeStrings"@ha
+/* 80160A58 00000B08  38 63 00 00 */	addi r3, r3, "@LOCAL@getModuleTypeString__20DynamicModuleControlCFv@c_ModuleTypeStrings"@l
+/* 80160A5C 00000B0C  54 00 17 3A */	clrlslwi r0, r0, 30, 2
+/* 80160A60 00000B10  7C 63 00 2E */	lwzx r3, r3, r0
+/* 80160A64 00000B14  4E 80 00 20 */	blr
+.endfn getModuleTypeString__20DynamicModuleControlCFv
+
+# .text:0xAD8 | 0x80160A68 | size: 0x8
+.fn gap_03_80160A68_text, global
+.hidden gap_03_80160A68_text
+/* 80160A68 00000B18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160A6C 00000B1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160A68_text
+
+# .text:0xAE0 | 0x80160A70 | size: 0x60
+# DbMapFile::~DbMapFile()
+.fn __dt__9DbMapFileFv, global
+/* 80160A70 00000B20  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160A74 00000B24  7C 08 02 A6 */	mflr r0
+/* 80160A78 00000B28  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80160A7C 00000B2C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80160A80 00000B30  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160A84 00000B34  7C 9F 23 78 */	mr r31, r4
+/* 80160A88 00000B38  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80160A8C 00000B3C  7C 7E 1B 78 */	mr r30, r3
+/* 80160A90 00000B40  41 82 00 24 */	beq .L_80160AB4
+/* 80160A94 00000B44  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 80160A98 00000B48  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80160A9C 00000B4C  41 82 00 08 */	beq .L_80160AA4
+/* 80160AA0 00000B50  48 00 00 01 */	bl Unregister__9DbMapFileFv
+.L_80160AA4:
+/* 80160AA4 00000B54  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80160AA8 00000B58  40 81 00 0C */	ble .L_80160AB4
+/* 80160AAC 00000B5C  7F C3 F3 78 */	mr r3, r30
+/* 80160AB0 00000B60  48 00 00 01 */	bl __dl__FPv
+.L_80160AB4:
+/* 80160AB4 00000B64  7F C3 F3 78 */	mr r3, r30
+/* 80160AB8 00000B68  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160ABC 00000B6C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80160AC0 00000B70  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160AC4 00000B74  7C 08 03 A6 */	mtlr r0
+/* 80160AC8 00000B78  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160ACC 00000B7C  4E 80 00 20 */	blr
+.endfn __dt__9DbMapFileFv
+
+# .text:0xB40 | 0x80160AD0 | size: 0x34
+# DbMapFile::RegisterOnDvd(const char*, const OSModuleInfo*)
+.fn RegisterOnDvd__9DbMapFileFPCcPC12OSModuleInfo, global
+/* 80160AD0 00000B80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160AD4 00000B84  7C 08 02 A6 */	mflr r0
+/* 80160AD8 00000B88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80160ADC 00000B8C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160AE0 00000B90  7C 7F 1B 78 */	mr r31, r3
+/* 80160AE4 00000B94  38 63 00 04 */	addi r3, r3, 0x4
+/* 80160AE8 00000B98  48 00 00 01 */	bl MapFile_RegistOnDvd__Q24nw4r2dbFPvPCcPC12OSModuleInfo
+/* 80160AEC 00000B9C  90 7F 00 00 */	stw r3, 0x0(r31)
+/* 80160AF0 00000BA0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160AF4 00000BA4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160AF8 00000BA8  7C 08 03 A6 */	mtlr r0
+/* 80160AFC 00000BAC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160B00 00000BB0  4E 80 00 20 */	blr
+.endfn RegisterOnDvd__9DbMapFileFPCcPC12OSModuleInfo
+
+# .text:0xB74 | 0x80160B04 | size: 0xC
+.fn gap_03_80160B04_text, global
+.hidden gap_03_80160B04_text
+/* 80160B04 00000BB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160B08 00000BB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160B0C 00000BBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160B04_text
+
+# .text:0xB80 | 0x80160B10 | size: 0x38
+# DbMapFile::Unregister()
+.fn Unregister__9DbMapFileFv, global
+/* 80160B10 00000BC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160B14 00000BC4  7C 08 02 A6 */	mflr r0
+/* 80160B18 00000BC8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80160B1C 00000BCC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160B20 00000BD0  7C 7F 1B 78 */	mr r31, r3
+/* 80160B24 00000BD4  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 80160B28 00000BD8  48 00 00 01 */	bl MapFile_Unregist__Q24nw4r2dbFPQ34nw4r2db7MapFile
+/* 80160B2C 00000BDC  38 00 00 00 */	li r0, 0x0
+/* 80160B30 00000BE0  90 1F 00 00 */	stw r0, 0x0(r31)
+/* 80160B34 00000BE4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160B38 00000BE8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160B3C 00000BEC  7C 08 03 A6 */	mtlr r0
+/* 80160B40 00000BF0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160B44 00000BF4  4E 80 00 20 */	blr
+.endfn Unregister__9DbMapFileFv
+
+# .text:0xBB8 | 0x80160B48 | size: 0x8
+.fn gap_03_80160B48_text, global
+.hidden gap_03_80160B48_text
+/* 80160B48 00000BF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160B4C 00000BFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160B48_text
+
+# .text:0xBC0 | 0x80160B50 | size: 0x4
+.fn ModuleUnresolved, global
+/* 80160B50 00000C00  4E 80 00 20 */	blr
+.endfn ModuleUnresolved
+
+# .text:0xBC4 | 0x80160B54 | size: 0xC
+.fn gap_03_80160B54_text, global
+.hidden gap_03_80160B54_text
+/* 80160B54 00000C04  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160B58 00000C08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160B5C 00000C0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160B54_text
+
+# .text:0xBD0 | 0x80160B60 | size: 0x44
+.fn ModuleConstructorsX, global
+/* 80160B60 00000C10  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160B64 00000C14  7C 08 02 A6 */	mflr r0
+/* 80160B68 00000C18  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80160B6C 00000C1C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160B70 00000C20  7C 7F 1B 78 */	mr r31, r3
+/* 80160B74 00000C24  48 00 00 10 */	b .L_80160B84
+.L_80160B78:
+/* 80160B78 00000C28  7D 89 03 A6 */	mtctr r12
+/* 80160B7C 00000C2C  4E 80 04 21 */	bctrl
+/* 80160B80 00000C30  3B FF 00 04 */	addi r31, r31, 0x4
+.L_80160B84:
+/* 80160B84 00000C34  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 80160B88 00000C38  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 80160B8C 00000C3C  40 82 FF EC */	bne .L_80160B78
+/* 80160B90 00000C40  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160B94 00000C44  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160B98 00000C48  7C 08 03 A6 */	mtlr r0
+/* 80160B9C 00000C4C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160BA0 00000C50  4E 80 00 20 */	blr
+.endfn ModuleConstructorsX
+
+# .text:0xC14 | 0x80160BA4 | size: 0xC
+.fn gap_03_80160BA4_text, global
+.hidden gap_03_80160BA4_text
+/* 80160BA4 00000C54  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160BA8 00000C58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160BAC 00000C5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160BA4_text
+
+# .text:0xC20 | 0x80160BB0 | size: 0x44
+.fn ModuleDestructorsX, global
+/* 80160BB0 00000C60  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80160BB4 00000C64  7C 08 02 A6 */	mflr r0
+/* 80160BB8 00000C68  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80160BBC 00000C6C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80160BC0 00000C70  7C 7F 1B 78 */	mr r31, r3
+/* 80160BC4 00000C74  48 00 00 10 */	b .L_80160BD4
+.L_80160BC8:
+/* 80160BC8 00000C78  7D 89 03 A6 */	mtctr r12
+/* 80160BCC 00000C7C  4E 80 04 21 */	bctrl
+/* 80160BD0 00000C80  3B FF 00 04 */	addi r31, r31, 0x4
+.L_80160BD4:
+/* 80160BD4 00000C84  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 80160BD8 00000C88  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 80160BDC 00000C8C  40 82 FF EC */	bne .L_80160BC8
+/* 80160BE0 00000C90  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80160BE4 00000C94  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80160BE8 00000C98  7C 08 03 A6 */	mtlr r0
+/* 80160BEC 00000C9C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80160BF0 00000CA0  4E 80 00 20 */	blr
+.endfn ModuleDestructorsX
+
+# .text:0xC64 | 0x80160BF4 | size: 0xC
+.fn gap_03_80160BF4_text, global
+.hidden gap_03_80160BF4_text
+/* 80160BF4 00000CA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160BF8 00000CA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160BFC 00000CAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160BF4_text
+
+# .text:0xC70 | 0x80160C00 | size: 0x8
+# DynamicModuleControlBase::getModuleTypeString() const
+.fn getModuleTypeString__24DynamicModuleControlBaseCFv, weak
+/* 80160C00 00000CB0  38 60 00 00 */	li r3, "@STRING@getModuleTypeString__24DynamicModuleControlBaseCFv"@sda21
+/* 80160C04 00000CB4  4E 80 00 20 */	blr
+.endfn getModuleTypeString__24DynamicModuleControlBaseCFv
+
+# .text:0xC78 | 0x80160C08 | size: 0x8
+.fn gap_03_80160C08_text, global
+.hidden gap_03_80160C08_text
+/* 80160C08 00000CB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80160C0C 00000CBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80160C08_text
+
+# 0x80328E08..0x80328E90 | size: 0x88
+.data
+.balign 8
+
+# .data:0x0 | 0x80328E08 | size: 0xC
+.obj "@4051", local
+	.4byte 0x25732F25
+	.4byte 0x734E502E
+	.4byte 0x72656C00
+.endobj "@4051"
+
+# .data:0xC | 0x80328E14 | size: 0xC
+.obj "@4100", local
+	.4byte 0x25732F25
+	.4byte 0x734E502E
+	.4byte 0x6D617000
+.endobj "@4100"
+
+# .data:0x18 | 0x80328E20 | size: 0x10
+# DynamicModuleControl::getModuleTypeString() const::c_ModuleTypeStrings
+.obj "@LOCAL@getModuleTypeString__20DynamicModuleControlCFv@c_ModuleTypeStrings", local
+	.4byte "@3855"
+	.4byte "@3856"
+	.4byte "@3857"
+	.4byte "@3858"
+.endobj "@LOCAL@getModuleTypeString__20DynamicModuleControlCFv@c_ModuleTypeStrings"
+
+# .data:0x28 | 0x80328E30 | size: 0x30
+# DynamicModuleControl::__vtable
+.obj __vt__20DynamicModuleControl, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__20DynamicModuleControlFv
+	.4byte getModuleName__20DynamicModuleControlCFv
+	.4byte getModuleSize__20DynamicModuleControlCFv
+	.4byte getModuleTypeString__20DynamicModuleControlCFv
+	.4byte dump__20DynamicModuleControlFv
+	.4byte do_load__20DynamicModuleControlFv
+	.4byte do_load_async__20DynamicModuleControlFv
+	.4byte do_unload__20DynamicModuleControlFv
+	.4byte do_link__20DynamicModuleControlFv
+	.4byte do_unlink__20DynamicModuleControlFv
+.endobj __vt__20DynamicModuleControl
+
+# .data:0x58 | 0x80328E60 | size: 0x30
+# DynamicModuleControlBase::__vtable
+.obj __vt__24DynamicModuleControlBase, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__24DynamicModuleControlBaseFv
+	.4byte getModuleName__24DynamicModuleControlBaseCFv
+	.4byte getModuleSize__24DynamicModuleControlBaseCFv
+	.4byte getModuleTypeString__24DynamicModuleControlBaseCFv
+	.4byte dump__24DynamicModuleControlBaseFv
+	.4byte do_load__24DynamicModuleControlBaseFv
+	.4byte do_load_async__24DynamicModuleControlBaseFv
+	.4byte do_unload__24DynamicModuleControlBaseFv
+	.4byte do_link__24DynamicModuleControlBaseFv
+	.4byte do_unlink__24DynamicModuleControlBaseFv
+.endobj __vt__24DynamicModuleControlBase
+
+# 0x80429708..0x80429740 | size: 0x38
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80429708 | size: 0x6
+.obj "@3688", local
+	.4byte 0x2F72656C
+	.2byte 0x7300
+.endobj "@3688"
+
+# .sdata:0x6 | 0x8042970E | size: 0x2
+.obj gap_09_8042970E_sdata, global
+.hidden gap_09_8042970E_sdata
+	.2byte 0x0000
+.endobj gap_09_8042970E_sdata
+
+# .sdata:0x8 | 0x80429710 | size: 0x4
+# DynamicModuleControl::sModulesDir
+.obj sModulesDir__20DynamicModuleControl, global
+	.4byte "@3688"
+.endobj sModulesDir__20DynamicModuleControl
+
+# .sdata:0xC | 0x80429714 | size: 0x6
+.obj "@4101", local
+	.4byte 0x2F6D6170
+	.2byte 0x7300
+.endobj "@4101"
+
+# .sdata:0x12 | 0x8042971A | size: 0x2
+.obj gap_09_8042971A_sdata, global
+.hidden gap_09_8042971A_sdata
+	.2byte 0x0000
+.endobj gap_09_8042971A_sdata
+
+# .sdata:0x14 | 0x8042971C | size: 0x5
+.obj "@3855", local
+	.4byte 0x3F3F3F3F
+	.byte 0x00
+.endobj "@3855"
+
+# .sdata:0x19 | 0x80429721 | size: 0x3
+.obj gap_09_80429721_sdata, global
+.hidden gap_09_80429721_sdata
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_80429721_sdata
+
+# .sdata:0x1C | 0x80429724 | size: 0x4
+.obj "@3856", local
+	.4byte 0x4D454D00
+.endobj "@3856"
+
+# .sdata:0x20 | 0x80429728 | size: 0x5
+.obj "@3857", local
+	.4byte 0x4152414D
+	.byte 0x00
+.endobj "@3857"
+
+# .sdata:0x25 | 0x8042972D | size: 0x3
+.obj gap_09_8042972D_sdata, global
+.hidden gap_09_8042972D_sdata
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_8042972D_sdata
+
+# .sdata:0x28 | 0x80429730 | size: 0x4
+.obj "@3858", local
+	.4byte 0x44564400
+.endobj "@3858"
+
+# .sdata:0x2C | 0x80429734 | size: 0x5
+# DynamicModuleControlBase::@STRING@getModuleTypeString() const
+.obj "@STRING@getModuleTypeString__24DynamicModuleControlBaseCFv", weak
+	.4byte 0x42617365
+	.byte 0x00
+.endobj "@STRING@getModuleTypeString__24DynamicModuleControlBaseCFv"
+
+# .sdata:0x31 | 0x80429739 | size: 0x7
+.obj gap_09_80429739_sdata, global
+.hidden gap_09_80429739_sdata
+	.4byte 0x00000000
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_80429739_sdata
+
+# 0x8042A650..0x8042A670 | size: 0x20
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A650 | size: 0x4
+# DynamicModuleControlBase::mFirst
+.obj mFirst__24DynamicModuleControlBase, global
+	.skip 0x4
+.endobj mFirst__24DynamicModuleControlBase
+
+# .sbss:0x4 | 0x8042A654 | size: 0x4
+# DynamicModuleControlBase::mLast
+.obj mLast__24DynamicModuleControlBase, global
+	.skip 0x4
+.endobj mLast__24DynamicModuleControlBase
+
+# .sbss:0x8 | 0x8042A658 | size: 0x4
+# DynamicModuleControl::sAllocBytes
+.obj sAllocBytes__20DynamicModuleControl, global
+	.skip 0x4
+.endobj sAllocBytes__20DynamicModuleControl
+
+# .sbss:0xC | 0x8042A65C | size: 0x4
+# DynamicModuleControl::sDvdFile
+.obj sDvdFile__20DynamicModuleControl, global
+	.skip 0x4
+.endobj sDvdFile__20DynamicModuleControl
+
+# .sbss:0x10 | 0x8042A660 | size: 0x4
+.obj sDvdCommand, global
+	.skip 0x4
+.endobj sDvdCommand
+
+# .sbss:0x14 | 0x8042A664 | size: 0x4
+# DynamicModuleControl::sDylinkHeap
+.obj sDylinkHeap__20DynamicModuleControl, global
+	.skip 0x4
+.endobj sDylinkHeap__20DynamicModuleControl
+
+# .sbss:0x18 | 0x8042A668 | size: 0x4
+# DynamicModuleControl::sHeapMinAllocatableSize
+.obj sHeapMinAllocatableSize__20DynamicModuleControl, global
+	.skip 0x4
+.endobj sHeapMinAllocatableSize__20DynamicModuleControl
+
+# .sbss:0x1C | 0x8042A66C | size: 0x4
+# DynamicModuleControl::sHeapMinTotalFreeSize
+.obj sHeapMinTotalFreeSize__20DynamicModuleControl, global
+	.skip 0x4
+.endobj sHeapMinTotalFreeSize__20DynamicModuleControl

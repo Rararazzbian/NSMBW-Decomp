@@ -1,0 +1,11 @@
+.include "macros.inc"
+.file "__init_cpp_exceptions.cpp"
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .dtors, "a"
+.balign 4
+
+# .dtors:0x0 | 0x0 | size: 0x4
+.obj __destroy_global_chain_reference, global
+	.4byte __destroy_global_chain
+.endobj __destroy_global_chain_reference

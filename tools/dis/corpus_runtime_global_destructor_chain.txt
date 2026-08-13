@@ -1,0 +1,55 @@
+.include "macros.inc"
+.file "global_destructor_chain.c"
+
+# 0x802DCA70..0x802DCAD0 | size: 0x60
+.text
+.balign 4
+
+# .text:0x0 | 0x802DCA70 | size: 0x18
+.fn __register_global_object, global
+/* 802DCA70 00000040  80 00 00 00 */	lwz r0, __global_destructor_chain@sda21(r0)
+/* 802DCA74 00000044  90 05 00 00 */	stw r0, 0x0(r5)
+/* 802DCA78 00000048  90 85 00 04 */	stw r4, 0x4(r5)
+/* 802DCA7C 0000004C  90 65 00 08 */	stw r3, 0x8(r5)
+/* 802DCA80 00000050  90 A0 00 00 */	stw r5, __global_destructor_chain@sda21(r0)
+/* 802DCA84 00000054  4E 80 00 20 */	blr
+.endfn __register_global_object
+
+# .text:0x18 | 0x802DCA88 | size: 0x48
+.fn __destroy_global_chain, global
+/* 802DCA88 00000058  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802DCA8C 0000005C  7C 08 02 A6 */	mflr r0
+/* 802DCA90 00000060  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802DCA94 00000064  48 00 00 20 */	b .L_802DCAB4
+.L_802DCA98:
+/* 802DCA98 00000068  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 802DCA9C 0000006C  38 80 FF FF */	li r4, -0x1
+/* 802DCAA0 00000070  90 00 00 00 */	stw r0, __global_destructor_chain@sda21(r0)
+/* 802DCAA4 00000074  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 802DCAA8 00000078  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 802DCAAC 0000007C  7D 89 03 A6 */	mtctr r12
+/* 802DCAB0 00000080  4E 80 04 21 */	bctrl
+.L_802DCAB4:
+/* 802DCAB4 00000084  80 60 00 00 */	lwz r3, __global_destructor_chain@sda21(r0)
+/* 802DCAB8 00000088  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802DCABC 0000008C  40 82 FF DC */	bne .L_802DCA98
+/* 802DCAC0 00000090  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802DCAC4 00000094  7C 08 03 A6 */	mtlr r0
+/* 802DCAC8 00000098  38 21 00 10 */	addi r1, r1, 0x10
+/* 802DCACC 0000009C  4E 80 00 20 */	blr
+.endfn __destroy_global_chain
+
+# 0x8042B2B8..0x8042B2C0 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042B2B8 | size: 0x4
+.obj __global_destructor_chain, global
+	.skip 0x4
+.endobj __global_destructor_chain
+
+# .sbss:0x4 | 0x8042B2BC | size: 0x4
+.obj gap_10_8042B2BC_sbss, global
+.hidden gap_10_8042B2BC_sbss
+	.skip 0x4
+.endobj gap_10_8042B2BC_sbss

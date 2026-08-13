@@ -1,0 +1,483 @@
+.include "macros.inc"
+.file "eggColorFader.cpp"
+
+# 0x802BB170..0x802BB6C0 | size: 0x550
+.text
+.balign 4
+
+# .text:0x0 | 0x802BB170 | size: 0xAC
+# EGG::ColorFader::ColorFader(float, float, float, float, nw4r::ut::Color, EGG::Fader::EStatus)
+.fn __ct__Q23EGG10ColorFaderFffffQ34nw4r2ut5ColorQ33EGG5Fader7EStatus, global
+/* 802BB170 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802BB174 00000044  7C 08 02 A6 */	mflr r0
+/* 802BB178 00000048  3D 00 00 00 */	lis r8, __vt__Q23EGG10ColorFader@ha
+/* 802BB17C 0000004C  EC 61 18 2A */	fadds f3, f1, f3
+/* 802BB180 00000050  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802BB184 00000054  EC 02 20 2A */	fadds f0, f2, f4
+/* 802BB188 00000058  38 E0 00 00 */	li r7, 0x0
+/* 802BB18C 0000005C  39 08 00 00 */	addi r8, r8, __vt__Q23EGG10ColorFader@l
+/* 802BB190 00000060  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802BB194 00000064  38 C0 00 14 */	li r6, 0x14
+/* 802BB198 00000068  38 00 FF FF */	li r0, -0x1
+/* 802BB19C 0000006C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802BB1A0 00000070  7C 7E 1B 78 */	mr r30, r3
+/* 802BB1A4 00000074  7C BF 2B 78 */	mr r31, r5
+/* 802BB1A8 00000078  91 03 00 00 */	stw r8, 0x0(r3)
+/* 802BB1AC 0000007C  98 E3 00 08 */	stb r7, 0x8(r3)
+/* 802BB1B0 00000080  B0 C3 00 0A */	sth r6, 0xa(r3)
+/* 802BB1B4 00000084  B0 E3 00 0C */	sth r7, 0xc(r3)
+/* 802BB1B8 00000088  90 03 00 10 */	stw r0, 0x10(r3)
+/* 802BB1BC 0000008C  D0 23 00 14 */	stfs f1, 0x14(r3)
+/* 802BB1C0 00000090  D0 43 00 18 */	stfs f2, 0x18(r3)
+/* 802BB1C4 00000094  D0 63 00 1C */	stfs f3, 0x1c(r3)
+/* 802BB1C8 00000098  D0 03 00 20 */	stfs f0, 0x20(r3)
+/* 802BB1CC 0000009C  80 04 00 00 */	lwz r0, 0x0(r4)
+/* 802BB1D0 000000A0  38 81 00 08 */	addi r4, r1, 0x8
+/* 802BB1D4 000000A4  90 01 00 08 */	stw r0, 0x8(r1)
+/* 802BB1D8 000000A8  48 00 00 01 */	bl setColor__Q23EGG10ColorFaderFQ34nw4r2ut5Color
+/* 802BB1DC 000000AC  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 802BB1E0 000000B0  7F C3 F3 78 */	mr r3, r30
+/* 802BB1E4 000000B4  7F E4 FB 78 */	mr r4, r31
+/* 802BB1E8 000000B8  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 802BB1EC 000000BC  7D 89 03 A6 */	mtctr r12
+/* 802BB1F0 000000C0  4E 80 04 21 */	bctrl
+/* 802BB1F4 000000C4  88 1E 00 08 */	lbz r0, 0x8(r30)
+/* 802BB1F8 000000C8  7F C3 F3 78 */	mr r3, r30
+/* 802BB1FC 000000CC  60 00 00 02 */	ori r0, r0, 0x2
+/* 802BB200 000000D0  98 1E 00 08 */	stb r0, 0x8(r30)
+/* 802BB204 000000D4  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802BB208 000000D8  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802BB20C 000000DC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802BB210 000000E0  7C 08 03 A6 */	mtlr r0
+/* 802BB214 000000E4  38 21 00 20 */	addi r1, r1, 0x20
+/* 802BB218 000000E8  4E 80 00 20 */	blr
+.endfn __ct__Q23EGG10ColorFaderFffffQ34nw4r2ut5ColorQ33EGG5Fader7EStatus
+
+# .text:0xAC | 0x802BB21C | size: 0x4
+.fn gap_03_802BB21C_text, global
+.hidden gap_03_802BB21C_text
+/* 802BB21C 000000EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB21C_text
+
+# .text:0xB0 | 0x802BB220 | size: 0x8
+# EGG::ColorFader::setFrame(unsigned short)
+.fn setFrame__Q23EGG10ColorFaderFUs, global
+/* 802BB220 000000F0  B0 83 00 0A */	sth r4, 0xa(r3)
+/* 802BB224 000000F4  4E 80 00 20 */	blr
+.endfn setFrame__Q23EGG10ColorFaderFUs
+
+# .text:0xB8 | 0x802BB228 | size: 0x8
+.fn gap_03_802BB228_text, global
+.hidden gap_03_802BB228_text
+/* 802BB228 000000F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BB22C 000000FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB228_text
+
+# .text:0xC0 | 0x802BB230 | size: 0x1C
+# EGG::ColorFader::setColor(nw4r::ut::Color)
+.fn setColor__Q23EGG10ColorFaderFQ34nw4r2ut5Color, global
+/* 802BB230 00000100  88 04 00 00 */	lbz r0, 0x0(r4)
+/* 802BB234 00000104  98 03 00 10 */	stb r0, 0x10(r3)
+/* 802BB238 00000108  88 04 00 01 */	lbz r0, 0x1(r4)
+/* 802BB23C 0000010C  98 03 00 11 */	stb r0, 0x11(r3)
+/* 802BB240 00000110  88 04 00 02 */	lbz r0, 0x2(r4)
+/* 802BB244 00000114  98 03 00 12 */	stb r0, 0x12(r3)
+/* 802BB248 00000118  4E 80 00 20 */	blr
+.endfn setColor__Q23EGG10ColorFaderFQ34nw4r2ut5Color
+
+# .text:0xDC | 0x802BB24C | size: 0x4
+.fn gap_03_802BB24C_text, global
+.hidden gap_03_802BB24C_text
+/* 802BB24C 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB24C_text
+
+# .text:0xE0 | 0x802BB250 | size: 0x38
+# EGG::ColorFader::setStatus(EGG::Fader::EStatus)
+.fn setStatus__Q23EGG10ColorFaderFQ33EGG5Fader7EStatus, global
+/* 802BB250 00000120  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802BB254 00000124  40 82 00 18 */	bne .L_802BB26C
+/* 802BB258 00000128  38 80 00 00 */	li r4, 0x0
+/* 802BB25C 0000012C  38 00 00 FF */	li r0, 0xff
+/* 802BB260 00000130  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BB264 00000134  98 03 00 13 */	stb r0, 0x13(r3)
+/* 802BB268 00000138  4E 80 00 20 */	blr
+.L_802BB26C:
+/* 802BB26C 0000013C  2C 04 00 01 */	cmpwi r4, 0x1
+/* 802BB270 00000140  4C 82 00 20 */	bnelr
+/* 802BB274 00000144  38 80 00 01 */	li r4, 0x1
+/* 802BB278 00000148  38 00 00 00 */	li r0, 0x0
+/* 802BB27C 0000014C  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BB280 00000150  98 03 00 13 */	stb r0, 0x13(r3)
+/* 802BB284 00000154  4E 80 00 20 */	blr
+.endfn setStatus__Q23EGG10ColorFaderFQ33EGG5Fader7EStatus
+
+# .text:0x118 | 0x802BB288 | size: 0x8
+.fn gap_03_802BB288_text, global
+.hidden gap_03_802BB288_text
+/* 802BB288 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BB28C 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB288_text
+
+# .text:0x120 | 0x802BB290 | size: 0x28
+# EGG::ColorFader::fadeIn()
+.fn fadeIn__Q23EGG10ColorFaderFv, global
+/* 802BB290 00000160  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 802BB294 00000164  7C 00 00 34 */	cntlzw r0, r0
+/* 802BB298 00000168  54 05 D9 7F */	srwi. r5, r0, 5
+/* 802BB29C 0000016C  41 82 00 14 */	beq .L_802BB2B0
+/* 802BB2A0 00000170  38 80 00 02 */	li r4, 0x2
+/* 802BB2A4 00000174  38 00 00 00 */	li r0, 0x0
+/* 802BB2A8 00000178  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BB2AC 0000017C  B0 03 00 0C */	sth r0, 0xc(r3)
+.L_802BB2B0:
+/* 802BB2B0 00000180  7C A3 2B 78 */	mr r3, r5
+/* 802BB2B4 00000184  4E 80 00 20 */	blr
+.endfn fadeIn__Q23EGG10ColorFaderFv
+
+# .text:0x148 | 0x802BB2B8 | size: 0x8
+.fn gap_03_802BB2B8_text, global
+.hidden gap_03_802BB2B8_text
+/* 802BB2B8 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BB2BC 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB2B8_text
+
+# .text:0x150 | 0x802BB2C0 | size: 0x2C
+# EGG::ColorFader::fadeOut()
+.fn fadeOut__Q23EGG10ColorFaderFv, global
+/* 802BB2C0 00000190  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 802BB2C4 00000194  38 04 FF FF */	subi r0, r4, 0x1
+/* 802BB2C8 00000198  7C 00 00 34 */	cntlzw r0, r0
+/* 802BB2CC 0000019C  54 05 D9 7F */	srwi. r5, r0, 5
+/* 802BB2D0 000001A0  41 82 00 14 */	beq .L_802BB2E4
+/* 802BB2D4 000001A4  38 80 00 03 */	li r4, 0x3
+/* 802BB2D8 000001A8  38 00 00 00 */	li r0, 0x0
+/* 802BB2DC 000001AC  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BB2E0 000001B0  B0 03 00 0C */	sth r0, 0xc(r3)
+.L_802BB2E4:
+/* 802BB2E4 000001B4  7C A3 2B 78 */	mr r3, r5
+/* 802BB2E8 000001B8  4E 80 00 20 */	blr
+.endfn fadeOut__Q23EGG10ColorFaderFv
+
+# .text:0x17C | 0x802BB2EC | size: 0x4
+.fn gap_03_802BB2EC_text, global
+.hidden gap_03_802BB2EC_text
+/* 802BB2EC 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB2EC_text
+
+# .text:0x180 | 0x802BB2F0 | size: 0xE4
+# EGG::ColorFader::calc()
+.fn calc__Q23EGG10ColorFaderFv, global
+/* 802BB2F0 000001C0  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 802BB2F4 000001C4  38 C0 00 00 */	li r6, 0x0
+/* 802BB2F8 000001C8  2C 00 00 01 */	cmpwi r0, 0x1
+/* 802BB2FC 000001CC  40 82 00 10 */	bne .L_802BB30C
+/* 802BB300 000001D0  38 00 00 00 */	li r0, 0x0
+/* 802BB304 000001D4  98 03 00 13 */	stb r0, 0x13(r3)
+/* 802BB308 000001D8  48 00 00 C4 */	b .L_802BB3CC
+.L_802BB30C:
+/* 802BB30C 000001DC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802BB310 000001E0  40 82 00 10 */	bne .L_802BB320
+/* 802BB314 000001E4  38 00 00 FF */	li r0, 0xff
+/* 802BB318 000001E8  98 03 00 13 */	stb r0, 0x13(r3)
+/* 802BB31C 000001EC  48 00 00 B0 */	b .L_802BB3CC
+.L_802BB320:
+/* 802BB320 000001F0  2C 00 00 02 */	cmpwi r0, 0x2
+/* 802BB324 000001F4  40 82 00 50 */	bne .L_802BB374
+/* 802BB328 000001F8  A0 83 00 0C */	lhz r4, 0xc(r3)
+/* 802BB32C 000001FC  A0 A3 00 0A */	lhz r5, 0xa(r3)
+/* 802BB330 00000200  38 04 00 01 */	addi r0, r4, 0x1
+/* 802BB334 00000204  B0 03 00 0C */	sth r0, 0xc(r3)
+/* 802BB338 00000208  7C 04 28 40 */	cmplw r4, r5
+/* 802BB33C 0000020C  40 81 00 18 */	ble .L_802BB354
+/* 802BB340 00000210  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 802BB344 00000214  38 80 00 01 */	li r4, 0x1
+/* 802BB348 00000218  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BB34C 0000021C  7C A4 2B 78 */	mr r4, r5
+/* 802BB350 00000220  54 06 07 FE */	clrlwi r6, r0, 31
+.L_802BB354:
+/* 802BB354 00000224  54 85 04 3E */	clrlwi r5, r4, 16
+/* 802BB358 00000228  54 84 42 2E */	clrlslwi r4, r4, 16, 8
+/* 802BB35C 0000022C  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 802BB360 00000230  7C 85 20 50 */	subf r4, r5, r4
+/* 802BB364 00000234  7C 04 03 D6 */	divw r0, r4, r0
+/* 802BB368 00000238  20 00 00 FF */	subfic r0, r0, 0xff
+/* 802BB36C 0000023C  98 03 00 13 */	stb r0, 0x13(r3)
+/* 802BB370 00000240  48 00 00 5C */	b .L_802BB3CC
+.L_802BB374:
+/* 802BB374 00000244  2C 00 00 03 */	cmpwi r0, 0x3
+/* 802BB378 00000248  40 82 00 54 */	bne .L_802BB3CC
+/* 802BB37C 0000024C  A0 E3 00 0C */	lhz r7, 0xc(r3)
+/* 802BB380 00000250  A0 A3 00 0A */	lhz r5, 0xa(r3)
+/* 802BB384 00000254  38 07 00 01 */	addi r0, r7, 0x1
+/* 802BB388 00000258  B0 03 00 0C */	sth r0, 0xc(r3)
+/* 802BB38C 0000025C  7C 07 28 40 */	cmplw r7, r5
+/* 802BB390 00000260  40 81 00 28 */	ble .L_802BB3B8
+/* 802BB394 00000264  38 05 00 01 */	addi r0, r5, 0x1
+/* 802BB398 00000268  7C 07 00 00 */	cmpw r7, r0
+/* 802BB39C 0000026C  40 81 00 14 */	ble .L_802BB3B0
+/* 802BB3A0 00000270  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 802BB3A4 00000274  38 80 00 00 */	li r4, 0x0
+/* 802BB3A8 00000278  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BB3AC 0000027C  54 06 FF FE */	extrwi r6, r0, 1, 30
+.L_802BB3B0:
+/* 802BB3B0 00000280  A0 A3 00 0A */	lhz r5, 0xa(r3)
+/* 802BB3B4 00000284  7C A7 2B 78 */	mr r7, r5
+.L_802BB3B8:
+/* 802BB3B8 00000288  54 E4 04 3E */	clrlwi r4, r7, 16
+/* 802BB3BC 0000028C  54 E0 42 2E */	clrlslwi r0, r7, 16, 8
+/* 802BB3C0 00000290  7C 04 00 50 */	subf r0, r4, r0
+/* 802BB3C4 00000294  7C 00 2B D6 */	divw r0, r0, r5
+/* 802BB3C8 00000298  98 03 00 13 */	stb r0, 0x13(r3)
+.L_802BB3CC:
+/* 802BB3CC 0000029C  7C C3 33 78 */	mr r3, r6
+/* 802BB3D0 000002A0  4E 80 00 20 */	blr
+.endfn calc__Q23EGG10ColorFaderFv
+
+# .text:0x264 | 0x802BB3D4 | size: 0xC
+.fn gap_03_802BB3D4_text, global
+.hidden gap_03_802BB3D4_text
+/* 802BB3D4 000002A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BB3D8 000002A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BB3DC 000002AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB3D4_text
+
+# .text:0x270 | 0x802BB3E0 | size: 0x29C
+# EGG::ColorFader::draw()
+.fn draw__Q23EGG10ColorFaderFv, global
+/* 802BB3E0 000002B0  94 21 FF 60 */	stwu r1, -0xa0(r1)
+/* 802BB3E4 000002B4  7C 08 02 A6 */	mflr r0
+/* 802BB3E8 000002B8  90 01 00 A4 */	stw r0, 0xa4(r1)
+/* 802BB3EC 000002BC  DB E1 00 90 */	stfd f31, 0x90(r1)
+/* 802BB3F0 000002C0  F3 E1 00 98 */	psq_st f31, 0x98(r1), 0, qr0
+/* 802BB3F4 000002C4  93 E1 00 8C */	stw r31, 0x8c(r1)
+/* 802BB3F8 000002C8  93 C1 00 88 */	stw r30, 0x88(r1)
+/* 802BB3FC 000002CC  93 A1 00 84 */	stw r29, 0x84(r1)
+/* 802BB400 000002D0  93 81 00 80 */	stw r28, 0x80(r1)
+/* 802BB404 000002D4  7C 7C 1B 78 */	mr r28, r3
+/* 802BB408 000002D8  88 03 00 13 */	lbz r0, 0x13(r3)
+/* 802BB40C 000002DC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802BB410 000002E0  41 82 02 44 */	beq .L_802BB654
+/* 802BB414 000002E4  C0 3C 00 18 */	lfs f1, 0x18(r28)
+/* 802BB418 000002E8  38 61 00 40 */	addi r3, r1, 0x40
+/* 802BB41C 000002EC  C0 5C 00 20 */	lfs f2, 0x20(r28)
+/* 802BB420 000002F0  C0 7C 00 14 */	lfs f3, 0x14(r28)
+/* 802BB424 000002F4  C0 9C 00 1C */	lfs f4, 0x1c(r28)
+/* 802BB428 000002F8  C0 A0 00 00 */	lfs f5, "@3552"@sda21(r0)
+/* 802BB42C 000002FC  C0 C0 00 00 */	lfs f6, "@3553"@sda21(r0)
+/* 802BB430 00000300  48 00 00 01 */	bl C_MTXOrtho
+/* 802BB434 00000304  38 61 00 40 */	addi r3, r1, 0x40
+/* 802BB438 00000308  38 80 00 01 */	li r4, 0x1
+/* 802BB43C 0000030C  48 00 00 01 */	bl GXSetProjection
+/* 802BB440 00000310  C0 7C 00 20 */	lfs f3, 0x20(r28)
+/* 802BB444 00000314  C0 3C 00 18 */	lfs f1, 0x18(r28)
+/* 802BB448 00000318  C0 5C 00 1C */	lfs f2, 0x1c(r28)
+/* 802BB44C 0000031C  EC 83 08 28 */	fsubs f4, f3, f1
+/* 802BB450 00000320  C0 1C 00 14 */	lfs f0, 0x14(r28)
+/* 802BB454 00000324  C0 3C 00 14 */	lfs f1, 0x14(r28)
+/* 802BB458 00000328  EC 62 00 28 */	fsubs f3, f2, f0
+/* 802BB45C 0000032C  C0 5C 00 18 */	lfs f2, 0x18(r28)
+/* 802BB460 00000330  C0 A0 00 00 */	lfs f5, "@3552"@sda21(r0)
+/* 802BB464 00000334  C0 C0 00 00 */	lfs f6, "@3553"@sda21(r0)
+/* 802BB468 00000338  48 00 00 01 */	bl GXSetViewport
+/* 802BB46C 0000033C  C0 3C 00 20 */	lfs f1, 0x20(r28)
+/* 802BB470 00000340  C0 1C 00 18 */	lfs f0, 0x18(r28)
+/* 802BB474 00000344  C0 5C 00 1C */	lfs f2, 0x1c(r28)
+/* 802BB478 00000348  EC 21 00 28 */	fsubs f1, f1, f0
+/* 802BB47C 0000034C  C0 1C 00 14 */	lfs f0, 0x14(r28)
+/* 802BB480 00000350  EF E2 00 28 */	fsubs f31, f2, f0
+/* 802BB484 00000354  48 00 00 01 */	bl __cvt_fp2unsigned
+/* 802BB488 00000358  FC 20 F8 90 */	fmr f1, f31
+/* 802BB48C 0000035C  7C 7D 1B 78 */	mr r29, r3
+/* 802BB490 00000360  48 00 00 01 */	bl __cvt_fp2unsigned
+/* 802BB494 00000364  C0 3C 00 18 */	lfs f1, 0x18(r28)
+/* 802BB498 00000368  7C 7E 1B 78 */	mr r30, r3
+/* 802BB49C 0000036C  48 00 00 01 */	bl __cvt_fp2unsigned
+/* 802BB4A0 00000370  C0 3C 00 14 */	lfs f1, 0x14(r28)
+/* 802BB4A4 00000374  7C 7F 1B 78 */	mr r31, r3
+/* 802BB4A8 00000378  48 00 00 01 */	bl __cvt_fp2unsigned
+/* 802BB4AC 0000037C  7F E4 FB 78 */	mr r4, r31
+/* 802BB4B0 00000380  7F C5 F3 78 */	mr r5, r30
+/* 802BB4B4 00000384  7F A6 EB 78 */	mr r6, r29
+/* 802BB4B8 00000388  48 00 00 01 */	bl GXSetScissor
+/* 802BB4BC 0000038C  38 61 00 10 */	addi r3, r1, 0x10
+/* 802BB4C0 00000390  48 00 00 01 */	bl PSMTXIdentity
+/* 802BB4C4 00000394  38 61 00 10 */	addi r3, r1, 0x10
+/* 802BB4C8 00000398  38 80 00 00 */	li r4, 0x0
+/* 802BB4CC 0000039C  48 00 00 01 */	bl GXLoadPosMtxImm
+/* 802BB4D0 000003A0  38 60 00 00 */	li r3, 0x0
+/* 802BB4D4 000003A4  48 00 00 01 */	bl GXSetCurrentMtx
+/* 802BB4D8 000003A8  48 00 00 01 */	bl GXClearVtxDesc
+/* 802BB4DC 000003AC  48 00 00 01 */	bl GXInvalidateVtxCache
+/* 802BB4E0 000003B0  38 60 00 09 */	li r3, 0x9
+/* 802BB4E4 000003B4  38 80 00 01 */	li r4, 0x1
+/* 802BB4E8 000003B8  48 00 00 01 */	bl GXSetVtxDesc
+/* 802BB4EC 000003BC  38 60 00 00 */	li r3, 0x0
+/* 802BB4F0 000003C0  38 80 00 09 */	li r4, 0x9
+/* 802BB4F4 000003C4  38 A0 00 01 */	li r5, 0x1
+/* 802BB4F8 000003C8  38 C0 00 04 */	li r6, 0x4
+/* 802BB4FC 000003CC  38 E0 00 00 */	li r7, 0x0
+/* 802BB500 000003D0  48 00 00 01 */	bl GXSetVtxAttrFmt
+/* 802BB504 000003D4  38 60 00 01 */	li r3, 0x1
+/* 802BB508 000003D8  48 00 00 01 */	bl GXSetNumChans
+/* 802BB50C 000003DC  80 1C 00 10 */	lwz r0, 0x10(r28)
+/* 802BB510 000003E0  38 81 00 08 */	addi r4, r1, 0x8
+/* 802BB514 000003E4  90 01 00 08 */	stw r0, 0x8(r1)
+/* 802BB518 000003E8  38 60 00 04 */	li r3, 0x4
+/* 802BB51C 000003EC  48 00 00 01 */	bl GXSetChanMatColor
+/* 802BB520 000003F0  38 60 00 04 */	li r3, 0x4
+/* 802BB524 000003F4  38 80 00 00 */	li r4, 0x0
+/* 802BB528 000003F8  38 A0 00 00 */	li r5, 0x0
+/* 802BB52C 000003FC  38 C0 00 00 */	li r6, 0x0
+/* 802BB530 00000400  38 E0 00 00 */	li r7, 0x0
+/* 802BB534 00000404  39 00 00 00 */	li r8, 0x0
+/* 802BB538 00000408  39 20 00 02 */	li r9, 0x2
+/* 802BB53C 0000040C  48 00 00 01 */	bl GXSetChanCtrl
+/* 802BB540 00000410  38 60 00 00 */	li r3, 0x0
+/* 802BB544 00000414  48 00 00 01 */	bl GXSetNumTexGens
+/* 802BB548 00000418  38 60 00 00 */	li r3, 0x0
+/* 802BB54C 0000041C  48 00 00 01 */	bl GXSetNumIndStages
+/* 802BB550 00000420  38 60 00 00 */	li r3, 0x0
+/* 802BB554 00000424  48 00 00 01 */	bl __GXSetIndirectMask
+/* 802BB558 00000428  38 60 00 01 */	li r3, 0x1
+/* 802BB55C 0000042C  48 00 00 01 */	bl GXSetNumTevStages
+/* 802BB560 00000430  38 60 00 00 */	li r3, 0x0
+/* 802BB564 00000434  38 80 00 04 */	li r4, 0x4
+/* 802BB568 00000438  48 00 00 01 */	bl GXSetTevOp
+/* 802BB56C 0000043C  38 60 00 00 */	li r3, 0x0
+/* 802BB570 00000440  38 80 00 FF */	li r4, 0xff
+/* 802BB574 00000444  38 A0 00 FF */	li r5, 0xff
+/* 802BB578 00000448  38 C0 00 04 */	li r6, 0x4
+/* 802BB57C 0000044C  48 00 00 01 */	bl GXSetTevOrder
+/* 802BB580 00000450  88 1C 00 13 */	lbz r0, 0x13(r28)
+/* 802BB584 00000454  28 00 00 FF */	cmplwi r0, 0xff
+/* 802BB588 00000458  40 82 00 1C */	bne .L_802BB5A4
+/* 802BB58C 0000045C  38 60 00 00 */	li r3, 0x0
+/* 802BB590 00000460  38 80 00 01 */	li r4, 0x1
+/* 802BB594 00000464  38 A0 00 00 */	li r5, 0x0
+/* 802BB598 00000468  38 C0 00 0F */	li r6, 0xf
+/* 802BB59C 0000046C  48 00 00 01 */	bl GXSetBlendMode
+/* 802BB5A0 00000470  48 00 00 18 */	b .L_802BB5B8
+.L_802BB5A4:
+/* 802BB5A4 00000474  38 60 00 01 */	li r3, 0x1
+/* 802BB5A8 00000478  38 80 00 04 */	li r4, 0x4
+/* 802BB5AC 0000047C  38 A0 00 05 */	li r5, 0x5
+/* 802BB5B0 00000480  38 C0 00 0F */	li r6, 0xf
+/* 802BB5B4 00000484  48 00 00 01 */	bl GXSetBlendMode
+.L_802BB5B8:
+/* 802BB5B8 00000488  38 60 00 01 */	li r3, 0x1
+/* 802BB5BC 0000048C  48 00 00 01 */	bl GXSetColorUpdate
+/* 802BB5C0 00000490  38 60 00 01 */	li r3, 0x1
+/* 802BB5C4 00000494  48 00 00 01 */	bl GXSetAlphaUpdate
+/* 802BB5C8 00000498  38 60 00 00 */	li r3, 0x0
+/* 802BB5CC 0000049C  38 80 00 00 */	li r4, 0x0
+/* 802BB5D0 000004A0  38 A0 00 00 */	li r5, 0x0
+/* 802BB5D4 000004A4  48 00 00 01 */	bl GXSetZMode
+/* 802BB5D8 000004A8  38 60 00 02 */	li r3, 0x2
+/* 802BB5DC 000004AC  48 00 00 01 */	bl GXSetCullMode
+/* 802BB5E0 000004B0  38 60 00 80 */	li r3, 0x80
+/* 802BB5E4 000004B4  38 80 00 00 */	li r4, 0x0
+/* 802BB5E8 000004B8  38 A0 00 04 */	li r5, 0x4
+/* 802BB5EC 000004BC  48 00 00 01 */	bl GXBegin
+/* 802BB5F0 000004C0  C0 3C 00 18 */	lfs f1, 0x18(r28)
+/* 802BB5F4 000004C4  3C 60 CC 01 */	lis r3, 0xcc01
+/* 802BB5F8 000004C8  C0 1C 00 14 */	lfs f0, 0x14(r28)
+/* 802BB5FC 000004CC  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB600 000004D0  D0 23 80 00 */	stfs f1, -0x8000(r3)
+/* 802BB604 000004D4  C0 00 00 00 */	lfs f0, "@3552"@sda21(r0)
+/* 802BB608 000004D8  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB60C 000004DC  C0 3C 00 18 */	lfs f1, 0x18(r28)
+/* 802BB610 000004E0  C0 1C 00 1C */	lfs f0, 0x1c(r28)
+/* 802BB614 000004E4  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB618 000004E8  D0 23 80 00 */	stfs f1, -0x8000(r3)
+/* 802BB61C 000004EC  C0 00 00 00 */	lfs f0, "@3552"@sda21(r0)
+/* 802BB620 000004F0  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB624 000004F4  C0 3C 00 20 */	lfs f1, 0x20(r28)
+/* 802BB628 000004F8  C0 1C 00 1C */	lfs f0, 0x1c(r28)
+/* 802BB62C 000004FC  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB630 00000500  D0 23 80 00 */	stfs f1, -0x8000(r3)
+/* 802BB634 00000504  C0 00 00 00 */	lfs f0, "@3552"@sda21(r0)
+/* 802BB638 00000508  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB63C 0000050C  C0 3C 00 20 */	lfs f1, 0x20(r28)
+/* 802BB640 00000510  C0 1C 00 14 */	lfs f0, 0x14(r28)
+/* 802BB644 00000514  D0 03 80 00 */	stfs f0, -0x8000(r3)
+/* 802BB648 00000518  D0 23 80 00 */	stfs f1, -0x8000(r3)
+/* 802BB64C 0000051C  C0 00 00 00 */	lfs f0, "@3552"@sda21(r0)
+/* 802BB650 00000520  D0 03 80 00 */	stfs f0, -0x8000(r3)
+.L_802BB654:
+/* 802BB654 00000524  80 01 00 A4 */	lwz r0, 0xa4(r1)
+/* 802BB658 00000528  E3 E1 00 98 */	psq_l f31, 0x98(r1), 0, qr0
+/* 802BB65C 0000052C  CB E1 00 90 */	lfd f31, 0x90(r1)
+/* 802BB660 00000530  83 E1 00 8C */	lwz r31, 0x8c(r1)
+/* 802BB664 00000534  83 C1 00 88 */	lwz r30, 0x88(r1)
+/* 802BB668 00000538  83 A1 00 84 */	lwz r29, 0x84(r1)
+/* 802BB66C 0000053C  83 81 00 80 */	lwz r28, 0x80(r1)
+/* 802BB670 00000540  7C 08 03 A6 */	mtlr r0
+/* 802BB674 00000544  38 21 00 A0 */	addi r1, r1, 0xa0
+/* 802BB678 00000548  4E 80 00 20 */	blr
+.endfn draw__Q23EGG10ColorFaderFv
+
+# .text:0x50C | 0x802BB67C | size: 0x4
+.fn gap_03_802BB67C_text, global
+.hidden gap_03_802BB67C_text
+/* 802BB67C 0000054C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BB67C_text
+
+# .text:0x510 | 0x802BB680 | size: 0x40
+# EGG::ColorFader::~ColorFader()
+.fn __dt__Q23EGG10ColorFaderFv, weak
+/* 802BB680 00000550  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BB684 00000554  7C 08 02 A6 */	mflr r0
+/* 802BB688 00000558  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802BB68C 0000055C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BB690 00000560  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BB694 00000564  7C 7F 1B 78 */	mr r31, r3
+/* 802BB698 00000568  41 82 00 10 */	beq .L_802BB6A8
+/* 802BB69C 0000056C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802BB6A0 00000570  40 81 00 08 */	ble .L_802BB6A8
+/* 802BB6A4 00000574  48 00 00 01 */	bl __dl__FPv
+.L_802BB6A8:
+/* 802BB6A8 00000578  7F E3 FB 78 */	mr r3, r31
+/* 802BB6AC 0000057C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BB6B0 00000580  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BB6B4 00000584  7C 08 03 A6 */	mtlr r0
+/* 802BB6B8 00000588  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BB6BC 0000058C  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG10ColorFaderFv
+
+# 0x80350218..0x80350240 | size: 0x28
+.data
+.balign 8
+
+# .data:0x0 | 0x80350218 | size: 0x24
+# EGG::ColorFader::__vtable
+.obj __vt__Q23EGG10ColorFader, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte setStatus__Q23EGG10ColorFaderFQ33EGG5Fader7EStatus
+	.4byte getStatus__Q23EGG10ColorFaderCFv
+	.4byte fadeIn__Q23EGG10ColorFaderFv
+	.4byte fadeOut__Q23EGG10ColorFaderFv
+	.4byte calc__Q23EGG10ColorFaderFv
+	.4byte draw__Q23EGG10ColorFaderFv
+	.4byte __dt__Q23EGG10ColorFaderFv
+.endobj __vt__Q23EGG10ColorFader
+
+# .data:0x24 | 0x8035023C | size: 0x4
+.obj gap_07_8035023C_data, global
+.hidden gap_07_8035023C_data
+	.4byte 0x00000000
+.endobj gap_07_8035023C_data
+
+# 0x8042F410..0x8042F418 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042F410 | size: 0x4
+.obj "@3552", local
+	.4byte 0x00000000
+.endobj "@3552"
+
+# .sdata2:0x4 | 0x8042F414 | size: 0x4
+.obj "@3553", local
+	.4byte 0x3F800000
+.endobj "@3553"

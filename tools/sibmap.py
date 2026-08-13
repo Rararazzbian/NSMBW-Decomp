@@ -278,6 +278,7 @@ FAMILY = ('dol_bases_d_a_en_dpakkun', 'dol_bases_d_a_en_dpakkun_base',
           # entries above contribute little to it). d_a_player_hio_ADJ is
           # banked nonMatching, so it resolves only via the CMP_ prefix (our
           # own compiled object); in_family() already tolerates that.
+          'dol_bases_d_a_player_demo_manager',
           'dol_bases_d_a_player_base', 'dol_bases_d_a_player',
           'dol_bases_d_ac_py_key', 'dol_bases_d_a_player_hio_ADJ',
           # REL objects are tagged REL_<relpath>, not dol_bases_<file>.

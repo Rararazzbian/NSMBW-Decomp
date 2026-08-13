@@ -1,0 +1,1318 @@
+.include "macros.inc"
+.file "d_a_rot_objs_base.cpp"
+
+# 0x80062300..0x80062F00 | size: 0xC00
+.text
+.balign 4
+
+# .text:0x0 | 0x80062300 | size: 0xC
+# const sStateIDIf_c& baseID_Search<sStateID_c>()
+.fn "baseID_Search<10sStateID_c>__Fv_RC12sStateIDIf_c", local
+/* 80062300 00000040  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 80062304 00000044  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 80062308 00000048  4E 80 00 20 */	blr
+.endfn "baseID_Search<10sStateID_c>__Fv_RC12sStateIDIf_c"
+
+# .text:0xC | 0x8006230C | size: 0x4
+.fn gap_03_8006230C_text, global
+.hidden gap_03_8006230C_text
+/* 8006230C 0000004C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006230C_text
+
+# .text:0x10 | 0x80062310 | size: 0xC
+# const sStateIDIf_c& baseID_Move<sStateID_c>()
+.fn "baseID_Move<10sStateID_c>__Fv_RC12sStateIDIf_c", local
+/* 80062310 00000050  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 80062314 00000054  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 80062318 00000058  4E 80 00 20 */	blr
+.endfn "baseID_Move<10sStateID_c>__Fv_RC12sStateIDIf_c"
+
+# .text:0x1C | 0x8006231C | size: 0x4
+.fn gap_03_8006231C_text, global
+.hidden gap_03_8006231C_text
+/* 8006231C 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006231C_text
+
+# .text:0x20 | 0x80062320 | size: 0x58
+# daRotObjsBase_c::searchParent_centerA(unsigned int)
+.fn searchParent_centerA__15daRotObjsBase_cFUi, global
+/* 80062320 00000060  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062324 00000064  7C 08 02 A6 */	mflr r0
+/* 80062328 00000068  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006232C 0000006C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062330 00000070  7C 7F 1B 78 */	mr r31, r3
+/* 80062334 00000074  38 60 00 00 */	li r3, 0x0
+/* 80062338 00000078  48 00 00 14 */	b .L_8006234C
+.L_8006233C:
+/* 8006233C 0000007C  88 03 03 9C */	lbz r0, 0x39c(r3)
+/* 80062340 00000080  7C 1F 00 40 */	cmplw r31, r0
+/* 80062344 00000084  40 82 00 08 */	bne .L_8006234C
+/* 80062348 00000088  48 00 00 1C */	b .L_80062364
+.L_8006234C:
+/* 8006234C 0000008C  7C 64 1B 78 */	mr r4, r3
+/* 80062350 00000090  38 60 01 A3 */	li r3, 0x1a3
+/* 80062354 00000094  48 00 00 01 */	bl searchBaseByProfName__10fManager_cFUsPC7fBase_c
+/* 80062358 00000098  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006235C 0000009C  40 82 FF E0 */	bne .L_8006233C
+/* 80062360 000000A0  38 60 00 00 */	li r3, 0x0
+.L_80062364:
+/* 80062364 000000A4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062368 000000A8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006236C 000000AC  7C 08 03 A6 */	mtlr r0
+/* 80062370 000000B0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062374 000000B4  4E 80 00 20 */	blr
+.endfn searchParent_centerA__15daRotObjsBase_cFUi
+
+# .text:0x78 | 0x80062378 | size: 0x8
+.fn gap_03_80062378_text, global
+.hidden gap_03_80062378_text
+/* 80062378 000000B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006237C 000000BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062378_text
+
+# .text:0x80 | 0x80062380 | size: 0x58
+# daRotObjsBase_c::searchParent_centerB(unsigned int)
+.fn searchParent_centerB__15daRotObjsBase_cFUi, global
+/* 80062380 000000C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062384 000000C4  7C 08 02 A6 */	mflr r0
+/* 80062388 000000C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006238C 000000CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062390 000000D0  7C 7F 1B 78 */	mr r31, r3
+/* 80062394 000000D4  38 60 00 00 */	li r3, 0x0
+/* 80062398 000000D8  48 00 00 14 */	b .L_800623AC
+.L_8006239C:
+/* 8006239C 000000DC  88 03 03 E2 */	lbz r0, 0x3e2(r3)
+/* 800623A0 000000E0  7C 1F 00 40 */	cmplw r31, r0
+/* 800623A4 000000E4  40 82 00 08 */	bne .L_800623AC
+/* 800623A8 000000E8  48 00 00 1C */	b .L_800623C4
+.L_800623AC:
+/* 800623AC 000000EC  7C 64 1B 78 */	mr r4, r3
+/* 800623B0 000000F0  38 60 01 A4 */	li r3, 0x1a4
+/* 800623B4 000000F4  48 00 00 01 */	bl searchBaseByProfName__10fManager_cFUsPC7fBase_c
+/* 800623B8 000000F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800623BC 000000FC  40 82 FF E0 */	bne .L_8006239C
+/* 800623C0 00000100  38 60 00 00 */	li r3, 0x0
+.L_800623C4:
+/* 800623C4 00000104  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800623C8 00000108  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800623CC 0000010C  7C 08 03 A6 */	mtlr r0
+/* 800623D0 00000110  38 21 00 10 */	addi r1, r1, 0x10
+/* 800623D4 00000114  4E 80 00 20 */	blr
+.endfn searchParent_centerB__15daRotObjsBase_cFUi
+
+# .text:0xD8 | 0x800623D8 | size: 0x8
+.fn gap_03_800623D8_text, global
+.hidden gap_03_800623D8_text
+/* 800623D8 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800623DC 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800623D8_text
+
+# .text:0xE0 | 0x800623E0 | size: 0x40
+# daRotObjsBase_c::searchParent(unsigned int)
+.fn searchParent__15daRotObjsBase_cFUi, global
+/* 800623E0 00000120  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800623E4 00000124  7C 08 02 A6 */	mflr r0
+/* 800623E8 00000128  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800623EC 0000012C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800623F0 00000130  7C 7F 1B 78 */	mr r31, r3
+/* 800623F4 00000134  48 00 00 01 */	bl searchParent_centerA__15daRotObjsBase_cFUi
+/* 800623F8 00000138  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800623FC 0000013C  41 82 00 08 */	beq .L_80062404
+/* 80062400 00000140  48 00 00 0C */	b .L_8006240C
+.L_80062404:
+/* 80062404 00000144  7F E3 FB 78 */	mr r3, r31
+/* 80062408 00000148  48 00 00 01 */	bl searchParent_centerB__15daRotObjsBase_cFUi
+.L_8006240C:
+/* 8006240C 0000014C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062410 00000150  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062414 00000154  7C 08 03 A6 */	mtlr r0
+/* 80062418 00000158  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006241C 0000015C  4E 80 00 20 */	blr
+.endfn searchParent__15daRotObjsBase_cFUi
+
+# .text:0x120 | 0x80062420 | size: 0x2C
+# daRotObjsBase_c::setParentInfo(const dActor_c*)
+.fn setParentInfo__15daRotObjsBase_cFPC8dActor_c, global
+/* 80062420 00000160  C0 63 00 B0 */	lfs f3, 0xb0(r3)
+/* 80062424 00000164  C0 44 00 B0 */	lfs f2, 0xb0(r4)
+/* 80062428 00000168  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 8006242C 0000016C  C0 04 00 AC */	lfs f0, 0xac(r4)
+/* 80062430 00000170  EC 43 10 28 */	fsubs f2, f3, f2
+/* 80062434 00000174  80 04 00 00 */	lwz r0, 0x0(r4)
+/* 80062438 00000178  EC 01 00 28 */	fsubs f0, f1, f0
+/* 8006243C 0000017C  90 03 03 D8 */	stw r0, 0x3d8(r3)
+/* 80062440 00000180  D0 03 03 D0 */	stfs f0, 0x3d0(r3)
+/* 80062444 00000184  D0 43 03 D4 */	stfs f2, 0x3d4(r3)
+/* 80062448 00000188  4E 80 00 20 */	blr
+.endfn setParentInfo__15daRotObjsBase_cFPC8dActor_c
+
+# .text:0x14C | 0x8006244C | size: 0x4
+.fn gap_03_8006244C_text, global
+.hidden gap_03_8006244C_text
+/* 8006244C 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006244C_text
+
+# .text:0x150 | 0x80062450 | size: 0xC4
+# daRotObjsBase_c::rotation_move(const dActor_c*)
+.fn rotation_move__15daRotObjsBase_cFPC8dActor_c, global
+/* 80062450 00000190  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80062454 00000194  7C 08 02 A6 */	mflr r0
+/* 80062458 00000198  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8006245C 0000019C  38 A1 00 0A */	addi r5, r1, 0xa
+/* 80062460 000001A0  DB E1 00 20 */	stfd f31, 0x20(r1)
+/* 80062464 000001A4  F3 E1 00 28 */	psq_st f31, 0x28(r1), 0, qr0
+/* 80062468 000001A8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8006246C 000001AC  AB E4 01 04 */	lha r31, 0x104(r4)
+/* 80062470 000001B0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80062474 000001B4  7C 9E 23 78 */	mr r30, r4
+/* 80062478 000001B8  3B FF 40 00 */	addi r31, r31, 0x4000
+/* 8006247C 000001BC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80062480 000001C0  7C 7D 1B 78 */	mr r29, r3
+/* 80062484 000001C4  B3 E3 01 04 */	sth r31, 0x104(r3)
+/* 80062488 000001C8  B3 E1 00 0A */	sth r31, 0xa(r1)
+/* 8006248C 000001CC  E0 25 B0 00 */	psq_l f1, 0x0(r5), 1, qr3
+/* 80062490 000001D0  C0 00 00 00 */	lfs f0, "@13463"@sda21(r0)
+/* 80062494 000001D4  EC 20 00 72 */	fmuls f1, f0, f1
+/* 80062498 000001D8  48 00 00 01 */	bl CosFIdx__Q24nw4r4mathFf
+/* 8006249C 000001DC  B3 E1 00 08 */	sth r31, 0x8(r1)
+/* 800624A0 000001E0  38 61 00 08 */	addi r3, r1, 0x8
+/* 800624A4 000001E4  FF E0 08 90 */	fmr f31, f1
+/* 800624A8 000001E8  E0 23 B0 00 */	psq_l f1, 0x0(r3), 1, qr3
+/* 800624AC 000001EC  C0 00 00 00 */	lfs f0, "@13463"@sda21(r0)
+/* 800624B0 000001F0  EC 20 00 72 */	fmuls f1, f0, f1
+/* 800624B4 000001F4  48 00 00 01 */	bl SinFIdx__Q24nw4r4mathFf
+/* 800624B8 000001F8  C0 5D 03 D0 */	lfs f2, 0x3d0(r29)
+/* 800624BC 000001FC  C0 DD 03 D4 */	lfs f6, 0x3d4(r29)
+/* 800624C0 00000200  EC A2 07 F2 */	fmuls f5, f2, f31
+/* 800624C4 00000204  C0 7E 00 AC */	lfs f3, 0xac(r30)
+/* 800624C8 00000208  EC 86 00 72 */	fmuls f4, f6, f1
+/* 800624CC 0000020C  C0 1E 00 B0 */	lfs f0, 0xb0(r30)
+/* 800624D0 00000210  EC 42 00 72 */	fmuls f2, f2, f1
+/* 800624D4 00000214  EC 26 07 F2 */	fmuls f1, f6, f31
+/* 800624D8 00000218  EC 85 20 28 */	fsubs f4, f5, f4
+/* 800624DC 0000021C  EC 22 08 2A */	fadds f1, f2, f1
+/* 800624E0 00000220  EC 43 20 2A */	fadds f2, f3, f4
+/* 800624E4 00000224  EC 00 08 2A */	fadds f0, f0, f1
+/* 800624E8 00000228  D0 5D 00 AC */	stfs f2, 0xac(r29)
+/* 800624EC 0000022C  D0 1D 00 B0 */	stfs f0, 0xb0(r29)
+/* 800624F0 00000230  E3 E1 00 28 */	psq_l f31, 0x28(r1), 0, qr0
+/* 800624F4 00000234  CB E1 00 20 */	lfd f31, 0x20(r1)
+/* 800624F8 00000238  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800624FC 0000023C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80062500 00000240  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80062504 00000244  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80062508 00000248  7C 08 03 A6 */	mtlr r0
+/* 8006250C 0000024C  38 21 00 30 */	addi r1, r1, 0x30
+/* 80062510 00000250  4E 80 00 20 */	blr
+.endfn rotation_move__15daRotObjsBase_cFPC8dActor_c
+
+# .text:0x214 | 0x80062514 | size: 0xC
+.fn gap_03_80062514_text, global
+.hidden gap_03_80062514_text
+/* 80062514 00000254  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062518 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006251C 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062514_text
+
+# .text:0x220 | 0x80062520 | size: 0x7C
+# daRotObjsBase_c::setParentInfo(unsigned int)
+.fn setParentInfo__15daRotObjsBase_cFUi, global
+/* 80062520 00000260  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062524 00000264  7C 08 02 A6 */	mflr r0
+/* 80062528 00000268  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006252C 0000026C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062530 00000270  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80062534 00000274  7C 7E 1B 78 */	mr r30, r3
+/* 80062538 00000278  7C 83 23 78 */	mr r3, r4
+/* 8006253C 0000027C  48 00 00 01 */	bl searchParent__15daRotObjsBase_cFUi
+/* 80062540 00000280  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062544 00000284  7C 7F 1B 78 */	mr r31, r3
+/* 80062548 00000288  41 82 00 38 */	beq .L_80062580
+/* 8006254C 0000028C  7F C3 F3 78 */	mr r3, r30
+/* 80062550 00000290  7F E4 FB 78 */	mr r4, r31
+/* 80062554 00000294  48 00 00 01 */	bl setParentInfo__15daRotObjsBase_cFPC8dActor_c
+/* 80062558 00000298  7F C3 F3 78 */	mr r3, r30
+/* 8006255C 0000029C  7F E4 FB 78 */	mr r4, r31
+/* 80062560 000002A0  48 00 00 01 */	bl rotation_move__15daRotObjsBase_cFPC8dActor_c
+/* 80062564 000002A4  81 9E 03 94 */	lwz r12, 0x394(r30)
+/* 80062568 000002A8  3C 80 00 00 */	lis r4, StateID_Move__15daRotObjsBase_c@ha
+/* 8006256C 000002AC  38 7E 03 94 */	addi r3, r30, 0x394
+/* 80062570 000002B0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80062574 000002B4  38 84 00 00 */	addi r4, r4, StateID_Move__15daRotObjsBase_c@l
+/* 80062578 000002B8  7D 89 03 A6 */	mtctr r12
+/* 8006257C 000002BC  4E 80 04 21 */	bctrl
+.L_80062580:
+/* 80062580 000002C0  7F E3 FB 78 */	mr r3, r31
+/* 80062584 000002C4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062588 000002C8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8006258C 000002CC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062590 000002D0  7C 08 03 A6 */	mtlr r0
+/* 80062594 000002D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062598 000002D8  4E 80 00 20 */	blr
+.endfn setParentInfo__15daRotObjsBase_cFUi
+
+# .text:0x29C | 0x8006259C | size: 0x4
+.fn gap_03_8006259C_text, global
+.hidden gap_03_8006259C_text
+/* 8006259C 000002DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006259C_text
+
+# .text:0x2A0 | 0x800625A0 | size: 0x54
+# daRotObjsBase_c::rotation_move()
+.fn rotation_move__15daRotObjsBase_cFv, global
+/* 800625A0 000002E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800625A4 000002E4  7C 08 02 A6 */	mflr r0
+/* 800625A8 000002E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800625AC 000002EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800625B0 000002F0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800625B4 000002F4  7C 7E 1B 78 */	mr r30, r3
+/* 800625B8 000002F8  80 63 03 D8 */	lwz r3, 0x3d8(r3)
+/* 800625BC 000002FC  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 800625C0 00000300  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800625C4 00000304  7C 7F 1B 78 */	mr r31, r3
+/* 800625C8 00000308  41 82 00 10 */	beq .L_800625D8
+/* 800625CC 0000030C  7F C3 F3 78 */	mr r3, r30
+/* 800625D0 00000310  7F E4 FB 78 */	mr r4, r31
+/* 800625D4 00000314  48 00 00 01 */	bl rotation_move__15daRotObjsBase_cFPC8dActor_c
+.L_800625D8:
+/* 800625D8 00000318  7F E3 FB 78 */	mr r3, r31
+/* 800625DC 0000031C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800625E0 00000320  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800625E4 00000324  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800625E8 00000328  7C 08 03 A6 */	mtlr r0
+/* 800625EC 0000032C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800625F0 00000330  4E 80 00 20 */	blr
+.endfn rotation_move__15daRotObjsBase_cFv
+
+# .text:0x2F4 | 0x800625F4 | size: 0xC
+.fn gap_03_800625F4_text, global
+.hidden gap_03_800625F4_text
+/* 800625F4 00000334  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800625F8 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800625FC 0000033C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800625F4_text
+
+# .text:0x300 | 0x80062600 | size: 0x10
+# daRotObjsBase_c::setBgData(dBg_ctr_c*, dBg_ctr_c*, daRotObjsBase_c::obj_bg_data_t*)
+.fn setBgData__15daRotObjsBase_cFP9dBg_ctr_cP9dBg_ctr_cPQ215daRotObjsBase_c13obj_bg_data_t, global
+/* 80062600 00000340  90 83 03 DC */	stw r4, 0x3dc(r3)
+/* 80062604 00000344  90 A3 03 E0 */	stw r5, 0x3e0(r3)
+/* 80062608 00000348  90 C3 03 E4 */	stw r6, 0x3e4(r3)
+/* 8006260C 0000034C  4E 80 00 20 */	blr
+.endfn setBgData__15daRotObjsBase_cFP9dBg_ctr_cP9dBg_ctr_cPQ215daRotObjsBase_c13obj_bg_data_t
+
+# .text:0x310 | 0x80062610 | size: 0x8C
+# daRotObjsBase_c::create()
+.fn create__15daRotObjsBase_cFv, global
+/* 80062610 00000350  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062614 00000354  7C 08 02 A6 */	mflr r0
+/* 80062618 00000358  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006261C 0000035C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062620 00000360  7C 7F 1B 78 */	mr r31, r3
+/* 80062624 00000364  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80062628 00000368  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 8006262C 0000036C  7D 89 03 A6 */	mtctr r12
+/* 80062630 00000370  4E 80 04 21 */	bctrl
+/* 80062634 00000374  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062638 00000378  40 82 00 0C */	bne .L_80062644
+/* 8006263C 0000037C  38 60 00 00 */	li r3, 0x0
+/* 80062640 00000380  48 00 00 48 */	b .L_80062688
+.L_80062644:
+/* 80062644 00000384  80 BF 00 04 */	lwz r5, 0x4(r31)
+/* 80062648 00000388  38 00 00 00 */	li r0, 0x0
+/* 8006264C 0000038C  90 1F 03 D8 */	stw r0, 0x3d8(r31)
+/* 80062650 00000390  7F E3 FB 78 */	mr r3, r31
+/* 80062654 00000394  54 A4 06 3E */	clrlwi r4, r5, 24
+/* 80062658 00000398  98 BF 03 E8 */	stb r5, 0x3e8(r31)
+/* 8006265C 0000039C  48 00 00 01 */	bl setParentInfo__15daRotObjsBase_cFUi
+/* 80062660 000003A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062664 000003A4  40 82 00 20 */	bne .L_80062684
+/* 80062668 000003A8  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 8006266C 000003AC  3C 80 00 00 */	lis r4, StateID_Search__15daRotObjsBase_c@ha
+/* 80062670 000003B0  38 7F 03 94 */	addi r3, r31, 0x394
+/* 80062674 000003B4  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80062678 000003B8  38 84 00 00 */	addi r4, r4, StateID_Search__15daRotObjsBase_c@l
+/* 8006267C 000003BC  7D 89 03 A6 */	mtctr r12
+/* 80062680 000003C0  4E 80 04 21 */	bctrl
+.L_80062684:
+/* 80062684 000003C4  38 60 00 01 */	li r3, 0x1
+.L_80062688:
+/* 80062688 000003C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006268C 000003CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062690 000003D0  7C 08 03 A6 */	mtlr r0
+/* 80062694 000003D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062698 000003D8  4E 80 00 20 */	blr
+.endfn create__15daRotObjsBase_cFv
+
+# .text:0x39C | 0x8006269C | size: 0x4
+.fn gap_03_8006269C_text, global
+.hidden gap_03_8006269C_text
+/* 8006269C 000003DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006269C_text
+
+# .text:0x3A0 | 0x800626A0 | size: 0xA4
+# daRotObjsBase_c::execute()
+.fn execute__15daRotObjsBase_cFv, global
+/* 800626A0 000003E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800626A4 000003E4  7C 08 02 A6 */	mflr r0
+/* 800626A8 000003E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800626AC 000003EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800626B0 000003F0  7C 7F 1B 78 */	mr r31, r3
+/* 800626B4 000003F4  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 800626B8 000003F8  81 8C 00 E4 */	lwz r12, 0xe4(r12)
+/* 800626BC 000003FC  7D 89 03 A6 */	mtctr r12
+/* 800626C0 00000400  4E 80 04 21 */	bctrl
+/* 800626C4 00000404  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800626C8 00000408  41 82 00 0C */	beq .L_800626D4
+/* 800626CC 0000040C  38 60 00 01 */	li r3, 0x1
+/* 800626D0 00000410  48 00 00 60 */	b .L_80062730
+.L_800626D4:
+/* 800626D4 00000414  80 1F 03 D8 */	lwz r0, 0x3d8(r31)
+/* 800626D8 00000418  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800626DC 0000041C  41 82 00 28 */	beq .L_80062704
+/* 800626E0 00000420  7F E3 FB 78 */	mr r3, r31
+/* 800626E4 00000424  48 00 00 01 */	bl rotation_move__15daRotObjsBase_cFv
+/* 800626E8 00000428  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800626EC 0000042C  40 82 00 18 */	bne .L_80062704
+/* 800626F0 00000430  7F E3 FB 78 */	mr r3, r31
+/* 800626F4 00000434  38 80 00 01 */	li r4, 0x1
+/* 800626F8 00000438  48 00 00 01 */	bl deleteActor__8dActor_cFUc
+/* 800626FC 0000043C  38 60 00 01 */	li r3, 0x1
+/* 80062700 00000440  48 00 00 30 */	b .L_80062730
+.L_80062704:
+/* 80062704 00000444  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 80062708 00000448  38 7F 03 94 */	addi r3, r31, 0x394
+/* 8006270C 0000044C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80062710 00000450  7D 89 03 A6 */	mtctr r12
+/* 80062714 00000454  4E 80 04 21 */	bctrl
+/* 80062718 00000458  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8006271C 0000045C  7F E3 FB 78 */	mr r3, r31
+/* 80062720 00000460  81 8C 00 E8 */	lwz r12, 0xe8(r12)
+/* 80062724 00000464  7D 89 03 A6 */	mtctr r12
+/* 80062728 00000468  4E 80 04 21 */	bctrl
+/* 8006272C 0000046C  38 60 00 01 */	li r3, 0x1
+.L_80062730:
+/* 80062730 00000470  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062734 00000474  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062738 00000478  7C 08 03 A6 */	mtlr r0
+/* 8006273C 0000047C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062740 00000480  4E 80 00 20 */	blr
+.endfn execute__15daRotObjsBase_cFv
+
+# .text:0x444 | 0x80062744 | size: 0xC
+.fn gap_03_80062744_text, global
+.hidden gap_03_80062744_text
+/* 80062744 00000484  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062748 00000488  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006274C 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062744_text
+
+# .text:0x450 | 0x80062750 | size: 0x4C
+# daRotObjsBase_c::preDraw()
+.fn preDraw__15daRotObjsBase_cFv, global
+/* 80062750 00000490  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062754 00000494  7C 08 02 A6 */	mflr r0
+/* 80062758 00000498  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006275C 0000049C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062760 000004A0  7C 7F 1B 78 */	mr r31, r3
+/* 80062764 000004A4  48 00 00 01 */	bl preDraw__8dActor_cFv
+/* 80062768 000004A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006276C 000004AC  40 82 00 0C */	bne .L_80062778
+/* 80062770 000004B0  38 60 00 00 */	li r3, 0x0
+/* 80062774 000004B4  48 00 00 14 */	b .L_80062788
+.L_80062778:
+/* 80062778 000004B8  80 7F 03 D8 */	lwz r3, 0x3d8(r31)
+/* 8006277C 000004BC  7C 03 00 D0 */	neg r0, r3
+/* 80062780 000004C0  7C 00 1B 78 */	or r0, r0, r3
+/* 80062784 000004C4  54 03 0F FE */	srwi r3, r0, 31
+.L_80062788:
+/* 80062788 000004C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006278C 000004CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062790 000004D0  7C 08 03 A6 */	mtlr r0
+/* 80062794 000004D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062798 000004D8  4E 80 00 20 */	blr
+.endfn preDraw__15daRotObjsBase_cFv
+
+# .text:0x49C | 0x8006279C | size: 0x4
+.fn gap_03_8006279C_text, global
+.hidden gap_03_8006279C_text
+/* 8006279C 000004DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006279C_text
+
+# .text:0x4A0 | 0x800627A0 | size: 0x58
+# daRotObjsBase_c::doDelete()
+.fn doDelete__15daRotObjsBase_cFv, global
+/* 800627A0 000004E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800627A4 000004E4  7C 08 02 A6 */	mflr r0
+/* 800627A8 000004E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800627AC 000004EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800627B0 000004F0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800627B4 000004F4  80 03 03 D8 */	lwz r0, 0x3d8(r3)
+/* 800627B8 000004F8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800627BC 000004FC  41 82 00 20 */	beq .L_800627DC
+/* 800627C0 00000500  83 E3 03 DC */	lwz r31, 0x3dc(r3)
+/* 800627C4 00000504  83 C3 03 E0 */	lwz r30, 0x3e0(r3)
+.L_800627C8:
+/* 800627C8 00000508  7F E3 FB 78 */	mr r3, r31
+/* 800627CC 0000050C  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 800627D0 00000510  3B FF 00 E4 */	addi r31, r31, 0xe4
+/* 800627D4 00000514  7C 1F F0 40 */	cmplw r31, r30
+/* 800627D8 00000518  41 80 FF F0 */	blt .L_800627C8
+.L_800627DC:
+/* 800627DC 0000051C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800627E0 00000520  38 60 00 01 */	li r3, 0x1
+/* 800627E4 00000524  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800627E8 00000528  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800627EC 0000052C  7C 08 03 A6 */	mtlr r0
+/* 800627F0 00000530  38 21 00 10 */	addi r1, r1, 0x10
+/* 800627F4 00000534  4E 80 00 20 */	blr
+.endfn doDelete__15daRotObjsBase_cFv
+
+# .text:0x4F8 | 0x800627F8 | size: 0x8
+.fn gap_03_800627F8_text, global
+.hidden gap_03_800627F8_text
+/* 800627F8 00000538  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800627FC 0000053C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800627F8_text
+
+# .text:0x500 | 0x80062800 | size: 0x8
+# daRotObjsBase_c::scroll_out_check()
+.fn scroll_out_check__15daRotObjsBase_cFv, global
+/* 80062800 00000540  38 80 00 00 */	li r4, 0x0
+/* 80062804 00000544  48 00 00 00 */	b ActorScrOutCheck__8dActor_cFUs
+.endfn scroll_out_check__15daRotObjsBase_cFv
+
+# .text:0x508 | 0x80062808 | size: 0x8
+.fn gap_03_80062808_text, global
+.hidden gap_03_80062808_text
+/* 80062808 00000548  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006280C 0000054C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062808_text
+
+# .text:0x510 | 0x80062810 | size: 0x4
+# daRotObjsBase_c::post_execute_state()
+.fn post_execute_state__15daRotObjsBase_cFv, global
+/* 80062810 00000550  4E 80 00 20 */	blr
+.endfn post_execute_state__15daRotObjsBase_cFv
+
+# .text:0x514 | 0x80062814 | size: 0xC
+.fn gap_03_80062814_text, global
+.hidden gap_03_80062814_text
+/* 80062814 00000554  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062818 00000558  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006281C 0000055C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062814_text
+
+# .text:0x520 | 0x80062820 | size: 0x4
+# daRotObjsBase_c::initializeState_Search()
+.fn initializeState_Search__15daRotObjsBase_cFv, global
+/* 80062820 00000560  4E 80 00 20 */	blr
+.endfn initializeState_Search__15daRotObjsBase_cFv
+
+# .text:0x524 | 0x80062824 | size: 0xC
+.fn gap_03_80062824_text, global
+.hidden gap_03_80062824_text
+/* 80062824 00000564  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062828 00000568  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006282C 0000056C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062824_text
+
+# .text:0x530 | 0x80062830 | size: 0x4
+# daRotObjsBase_c::finalizeState_Search()
+.fn finalizeState_Search__15daRotObjsBase_cFv, global
+/* 80062830 00000570  4E 80 00 20 */	blr
+.endfn finalizeState_Search__15daRotObjsBase_cFv
+
+# .text:0x534 | 0x80062834 | size: 0xC
+.fn gap_03_80062834_text, global
+.hidden gap_03_80062834_text
+/* 80062834 00000574  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062838 00000578  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006283C 0000057C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062834_text
+
+# .text:0x540 | 0x80062840 | size: 0x8
+# daRotObjsBase_c::executeState_Search()
+.fn executeState_Search__15daRotObjsBase_cFv, global
+/* 80062840 00000580  88 83 03 E8 */	lbz r4, 0x3e8(r3)
+/* 80062844 00000584  48 00 00 00 */	b setParentInfo__15daRotObjsBase_cFUi
+.endfn executeState_Search__15daRotObjsBase_cFv
+
+# .text:0x548 | 0x80062848 | size: 0x8
+.fn gap_03_80062848_text, global
+.hidden gap_03_80062848_text
+/* 80062848 00000588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006284C 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062848_text
+
+# .text:0x550 | 0x80062850 | size: 0xB8
+# daRotObjsBase_c::initializeState_Move()
+.fn initializeState_Move__15daRotObjsBase_cFv, global
+/* 80062850 00000590  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 80062854 00000594  7C 08 02 A6 */	mflr r0
+/* 80062858 00000598  90 01 00 44 */	stw r0, 0x44(r1)
+/* 8006285C 0000059C  39 61 00 40 */	addi r11, r1, 0x40
+/* 80062860 000005A0  48 00 00 01 */	bl _savegpr_26
+/* 80062864 000005A4  80 03 03 D8 */	lwz r0, 0x3d8(r3)
+/* 80062868 000005A8  7C 7A 1B 78 */	mr r26, r3
+/* 8006286C 000005AC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80062870 000005B0  41 82 00 80 */	beq .L_800628F0
+/* 80062874 000005B4  83 A3 03 E4 */	lwz r29, 0x3e4(r3)
+/* 80062878 000005B8  3B E0 00 01 */	li r31, 0x1
+/* 8006287C 000005BC  83 83 03 DC */	lwz r28, 0x3dc(r3)
+/* 80062880 000005C0  3B C0 00 00 */	li r30, 0x0
+/* 80062884 000005C4  83 63 03 E0 */	lwz r27, 0x3e0(r3)
+.L_80062888:
+/* 80062888 000005C8  C0 1D 00 04 */	lfs f0, 0x4(r29)
+/* 8006288C 000005CC  7F 83 E3 78 */	mr r3, r28
+/* 80062890 000005D0  C0 3D 00 00 */	lfs f1, 0x0(r29)
+/* 80062894 000005D4  7F 44 D3 78 */	mr r4, r26
+/* 80062898 000005D8  D0 21 00 18 */	stfs f1, 0x18(r1)
+/* 8006289C 000005DC  38 A1 00 18 */	addi r5, r1, 0x18
+/* 800628A0 000005E0  38 C1 00 10 */	addi r6, r1, 0x10
+/* 800628A4 000005E4  38 E0 00 00 */	li r7, 0x0
+/* 800628A8 000005E8  D0 01 00 1C */	stfs f0, 0x1c(r1)
+/* 800628AC 000005EC  39 00 00 00 */	li r8, 0x0
+/* 800628B0 000005F0  39 20 00 00 */	li r9, 0x0
+/* 800628B4 000005F4  39 40 00 03 */	li r10, 0x3
+/* 800628B8 000005F8  C0 1D 00 0C */	lfs f0, 0xc(r29)
+/* 800628BC 000005FC  C0 3D 00 08 */	lfs f1, 0x8(r29)
+/* 800628C0 00000600  D0 21 00 10 */	stfs f1, 0x10(r1)
+/* 800628C4 00000604  D0 01 00 14 */	stfs f0, 0x14(r1)
+/* 800628C8 00000608  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800628CC 0000060C  93 C1 00 0C */	stw r30, 0xc(r1)
+/* 800628D0 00000610  48 00 00 01 */	bl set__9dBg_ctr_cFP8dActor_c7mVec2_c7mVec2_cPFP8dActor_cP8dActor_c_vPFP8dActor_cP8dActor_c_vPFP8dActor_cP8dActor_cUc_vUcUcP7mVec3_c
+/* 800628D4 00000614  93 FC 00 D0 */	stw r31, 0xd0(r28)
+/* 800628D8 00000618  7F 83 E3 78 */	mr r3, r28
+/* 800628DC 0000061C  48 00 00 01 */	bl entry__9dBg_ctr_cFv
+/* 800628E0 00000620  3B 9C 00 E4 */	addi r28, r28, 0xe4
+/* 800628E4 00000624  3B BD 00 10 */	addi r29, r29, 0x10
+/* 800628E8 00000628  7C 1C D8 40 */	cmplw r28, r27
+/* 800628EC 0000062C  41 80 FF 9C */	blt .L_80062888
+.L_800628F0:
+/* 800628F0 00000630  39 61 00 40 */	addi r11, r1, 0x40
+/* 800628F4 00000634  48 00 00 01 */	bl _restgpr_26
+/* 800628F8 00000638  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 800628FC 0000063C  7C 08 03 A6 */	mtlr r0
+/* 80062900 00000640  38 21 00 40 */	addi r1, r1, 0x40
+/* 80062904 00000644  4E 80 00 20 */	blr
+.endfn initializeState_Move__15daRotObjsBase_cFv
+
+# .text:0x608 | 0x80062908 | size: 0x8
+.fn gap_03_80062908_text, global
+.hidden gap_03_80062908_text
+/* 80062908 00000648  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006290C 0000064C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062908_text
+
+# .text:0x610 | 0x80062910 | size: 0x4
+# daRotObjsBase_c::finalizeState_Move()
+.fn finalizeState_Move__15daRotObjsBase_cFv, global
+/* 80062910 00000650  4E 80 00 20 */	blr
+.endfn finalizeState_Move__15daRotObjsBase_cFv
+
+# .text:0x614 | 0x80062914 | size: 0xC
+.fn gap_03_80062914_text, global
+.hidden gap_03_80062914_text
+/* 80062914 00000654  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062918 00000658  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006291C 0000065C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062914_text
+
+# .text:0x620 | 0x80062920 | size: 0x54
+# daRotObjsBase_c::executeState_Move()
+.fn executeState_Move__15daRotObjsBase_cFv, global
+/* 80062920 00000660  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062924 00000664  7C 08 02 A6 */	mflr r0
+/* 80062928 00000668  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006292C 0000066C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062930 00000670  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80062934 00000674  80 03 03 D8 */	lwz r0, 0x3d8(r3)
+/* 80062938 00000678  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8006293C 0000067C  41 82 00 20 */	beq .L_8006295C
+/* 80062940 00000680  83 E3 03 DC */	lwz r31, 0x3dc(r3)
+/* 80062944 00000684  83 C3 03 E0 */	lwz r30, 0x3e0(r3)
+.L_80062948:
+/* 80062948 00000688  7F E3 FB 78 */	mr r3, r31
+/* 8006294C 0000068C  48 00 00 01 */	bl calc__9dBg_ctr_cFv
+/* 80062950 00000690  3B FF 00 E4 */	addi r31, r31, 0xe4
+/* 80062954 00000694  7C 1F F0 40 */	cmplw r31, r30
+/* 80062958 00000698  41 80 FF F0 */	blt .L_80062948
+.L_8006295C:
+/* 8006295C 0000069C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062960 000006A0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062964 000006A4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80062968 000006A8  7C 08 03 A6 */	mtlr r0
+/* 8006296C 000006AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062970 000006B0  4E 80 00 20 */	blr
+.endfn executeState_Move__15daRotObjsBase_cFv
+
+# .text:0x674 | 0x80062974 | size: 0xC
+.fn gap_03_80062974_text, global
+.hidden gap_03_80062974_text
+/* 80062974 000006B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062978 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006297C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062974_text
+
+# .text:0x680 | 0x80062980 | size: 0x1E0
+.fn "__sinit_\d_a_rot_objs_base_cpp", local
+/* 80062980 000006C0  94 21 FF 90 */	stwu r1, -0x70(r1)
+/* 80062984 000006C4  7C 08 02 A6 */	mflr r0
+/* 80062988 000006C8  90 01 00 74 */	stw r0, 0x74(r1)
+/* 8006298C 000006CC  39 61 00 70 */	addi r11, r1, 0x70
+/* 80062990 000006D0  48 00 00 01 */	bl _savegpr_26
+/* 80062994 000006D4  3F A0 00 00 */	lis r29, __vt__15daRotObjsBase_c@ha
+/* 80062998 000006D8  3F 80 00 00 */	lis r28, "@12822"@ha
+/* 8006299C 000006DC  3B BD 00 00 */	addi r29, r29, __vt__15daRotObjsBase_c@l
+/* 800629A0 000006E0  38 BD 01 04 */	addi r5, r29, 0x104
+/* 800629A4 000006E4  81 7D 01 04 */	lwz r11, 0x104(r29)
+/* 800629A8 000006E8  38 9D 01 10 */	addi r4, r29, 0x110
+/* 800629AC 000006EC  38 7D 01 1C */	addi r3, r29, 0x11c
+/* 800629B0 000006F0  81 45 00 04 */	lwz r10, 0x4(r5)
+/* 800629B4 000006F4  3B 9C 00 00 */	addi r28, r28, "@12822"@l
+/* 800629B8 000006F8  81 25 00 08 */	lwz r9, 0x8(r5)
+/* 800629BC 000006FC  3B 7D 01 50 */	addi r27, r29, 0x150
+/* 800629C0 00000700  81 1D 01 10 */	lwz r8, 0x110(r29)
+/* 800629C4 00000704  80 E4 00 04 */	lwz r7, 0x4(r4)
+/* 800629C8 00000708  80 C4 00 08 */	lwz r6, 0x8(r4)
+/* 800629CC 0000070C  80 BD 01 1C */	lwz r5, 0x11c(r29)
+/* 800629D0 00000710  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 800629D4 00000714  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 800629D8 00000718  91 61 00 2C */	stw r11, 0x2c(r1)
+/* 800629DC 0000071C  91 41 00 30 */	stw r10, 0x30(r1)
+/* 800629E0 00000720  91 21 00 34 */	stw r9, 0x34(r1)
+/* 800629E4 00000724  91 01 00 38 */	stw r8, 0x38(r1)
+/* 800629E8 00000728  90 E1 00 3C */	stw r7, 0x3c(r1)
+/* 800629EC 0000072C  90 C1 00 40 */	stw r6, 0x40(r1)
+/* 800629F0 00000730  90 A1 00 44 */	stw r5, 0x44(r1)
+/* 800629F4 00000734  90 81 00 48 */	stw r4, 0x48(r1)
+/* 800629F8 00000738  90 01 00 4C */	stw r0, 0x4c(r1)
+/* 800629FC 0000073C  48 00 00 01 */	bl "baseID_Search<10sStateID_c>__Fv_RC12sStateIDIf_c"
+/* 80062A00 00000740  7C 7A 1B 78 */	mr r26, r3
+/* 80062A04 00000744  7F 64 DB 78 */	mr r4, r27
+/* 80062A08 00000748  38 7C 00 0C */	addi r3, r28, 0xc
+/* 80062A0C 0000074C  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 80062A10 00000750  38 7C 00 0C */	addi r3, r28, 0xc
+/* 80062A14 00000754  83 61 00 44 */	lwz r27, 0x44(r1)
+/* 80062A18 00000758  81 81 00 48 */	lwz r12, 0x48(r1)
+/* 80062A1C 0000075C  3F C0 00 00 */	lis r30, "__vt__37sFStateVirtualID_c<15daRotObjsBase_c>"@ha
+/* 80062A20 00000760  81 61 00 4C */	lwz r11, 0x4c(r1)
+/* 80062A24 00000764  3B DE 00 00 */	addi r30, r30, "__vt__37sFStateVirtualID_c<15daRotObjsBase_c>"@l
+/* 80062A28 00000768  81 41 00 38 */	lwz r10, 0x38(r1)
+/* 80062A2C 0000076C  3F E0 00 00 */	lis r31, "__dt__37sFStateVirtualID_c<15daRotObjsBase_c>Fv"@ha
+/* 80062A30 00000770  81 21 00 3C */	lwz r9, 0x3c(r1)
+/* 80062A34 00000774  38 9F 00 00 */	addi r4, r31, "__dt__37sFStateVirtualID_c<15daRotObjsBase_c>Fv"@l
+/* 80062A38 00000778  81 01 00 40 */	lwz r8, 0x40(r1)
+/* 80062A3C 0000077C  38 BC 00 00 */	addi r5, r28, 0x0
+/* 80062A40 00000780  80 E1 00 2C */	lwz r7, 0x2c(r1)
+/* 80062A44 00000784  80 C1 00 30 */	lwz r6, 0x30(r1)
+/* 80062A48 00000788  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80062A4C 0000078C  93 63 00 0C */	stw r27, 0xc(r3)
+/* 80062A50 00000790  91 83 00 10 */	stw r12, 0x10(r3)
+/* 80062A54 00000794  91 63 00 14 */	stw r11, 0x14(r3)
+/* 80062A58 00000798  91 43 00 18 */	stw r10, 0x18(r3)
+/* 80062A5C 0000079C  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 80062A60 000007A0  91 03 00 20 */	stw r8, 0x20(r3)
+/* 80062A64 000007A4  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 80062A68 000007A8  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 80062A6C 000007AC  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 80062A70 000007B0  93 DC 00 0C */	stw r30, 0xc(r28)
+/* 80062A74 000007B4  93 43 00 30 */	stw r26, 0x30(r3)
+/* 80062A78 000007B8  48 00 00 01 */	bl __register_global_object
+/* 80062A7C 000007BC  38 BD 01 28 */	addi r5, r29, 0x128
+/* 80062A80 000007C0  38 9D 01 34 */	addi r4, r29, 0x134
+/* 80062A84 000007C4  38 7D 01 40 */	addi r3, r29, 0x140
+/* 80062A88 000007C8  81 7D 01 28 */	lwz r11, 0x128(r29)
+/* 80062A8C 000007CC  81 45 00 04 */	lwz r10, 0x4(r5)
+/* 80062A90 000007D0  3B 7D 01 70 */	addi r27, r29, 0x170
+/* 80062A94 000007D4  81 25 00 08 */	lwz r9, 0x8(r5)
+/* 80062A98 000007D8  81 1D 01 34 */	lwz r8, 0x134(r29)
+/* 80062A9C 000007DC  80 E4 00 04 */	lwz r7, 0x4(r4)
+/* 80062AA0 000007E0  80 C4 00 08 */	lwz r6, 0x8(r4)
+/* 80062AA4 000007E4  80 BD 01 40 */	lwz r5, 0x140(r29)
+/* 80062AA8 000007E8  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 80062AAC 000007EC  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 80062AB0 000007F0  91 61 00 08 */	stw r11, 0x8(r1)
+/* 80062AB4 000007F4  91 41 00 0C */	stw r10, 0xc(r1)
+/* 80062AB8 000007F8  91 21 00 10 */	stw r9, 0x10(r1)
+/* 80062ABC 000007FC  91 01 00 14 */	stw r8, 0x14(r1)
+/* 80062AC0 00000800  90 E1 00 18 */	stw r7, 0x18(r1)
+/* 80062AC4 00000804  90 C1 00 1C */	stw r6, 0x1c(r1)
+/* 80062AC8 00000808  90 A1 00 20 */	stw r5, 0x20(r1)
+/* 80062ACC 0000080C  90 81 00 24 */	stw r4, 0x24(r1)
+/* 80062AD0 00000810  90 01 00 28 */	stw r0, 0x28(r1)
+/* 80062AD4 00000814  48 00 00 01 */	bl "baseID_Move<10sStateID_c>__Fv_RC12sStateIDIf_c"
+/* 80062AD8 00000818  7C 7D 1B 78 */	mr r29, r3
+/* 80062ADC 0000081C  7F 64 DB 78 */	mr r4, r27
+/* 80062AE0 00000820  38 7C 00 4C */	addi r3, r28, 0x4c
+/* 80062AE4 00000824  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 80062AE8 00000828  38 7C 00 4C */	addi r3, r28, 0x4c
+/* 80062AEC 0000082C  83 61 00 20 */	lwz r27, 0x20(r1)
+/* 80062AF0 00000830  81 81 00 24 */	lwz r12, 0x24(r1)
+/* 80062AF4 00000834  38 9F 00 00 */	addi r4, r31, "__dt__37sFStateVirtualID_c<15daRotObjsBase_c>Fv"@l
+/* 80062AF8 00000838  81 61 00 28 */	lwz r11, 0x28(r1)
+/* 80062AFC 0000083C  38 BC 00 40 */	addi r5, r28, 0x40
+/* 80062B00 00000840  81 41 00 14 */	lwz r10, 0x14(r1)
+/* 80062B04 00000844  81 21 00 18 */	lwz r9, 0x18(r1)
+/* 80062B08 00000848  81 01 00 1C */	lwz r8, 0x1c(r1)
+/* 80062B0C 0000084C  80 E1 00 08 */	lwz r7, 0x8(r1)
+/* 80062B10 00000850  80 C1 00 0C */	lwz r6, 0xc(r1)
+/* 80062B14 00000854  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 80062B18 00000858  93 63 00 0C */	stw r27, 0xc(r3)
+/* 80062B1C 0000085C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 80062B20 00000860  91 63 00 14 */	stw r11, 0x14(r3)
+/* 80062B24 00000864  91 43 00 18 */	stw r10, 0x18(r3)
+/* 80062B28 00000868  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 80062B2C 0000086C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 80062B30 00000870  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 80062B34 00000874  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 80062B38 00000878  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 80062B3C 0000087C  93 DC 00 4C */	stw r30, 0x4c(r28)
+/* 80062B40 00000880  93 A3 00 30 */	stw r29, 0x30(r3)
+/* 80062B44 00000884  48 00 00 01 */	bl __register_global_object
+/* 80062B48 00000888  39 61 00 70 */	addi r11, r1, 0x70
+/* 80062B4C 0000088C  48 00 00 01 */	bl _restgpr_26
+/* 80062B50 00000890  80 01 00 74 */	lwz r0, 0x74(r1)
+/* 80062B54 00000894  7C 08 03 A6 */	mtlr r0
+/* 80062B58 00000898  38 21 00 70 */	addi r1, r1, 0x70
+/* 80062B5C 0000089C  4E 80 00 20 */	blr
+.endfn "__sinit_\d_a_rot_objs_base_cpp"
+
+# .text:0x860 | 0x80062B60 | size: 0x58
+# sFStateID_c<daRotObjsBase_c>::~sFStateID_c()
+.fn "__dt__30sFStateID_c<15daRotObjsBase_c>Fv", weak
+/* 80062B60 000008A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062B64 000008A4  7C 08 02 A6 */	mflr r0
+/* 80062B68 000008A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062B6C 000008AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062B70 000008B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062B74 000008B4  7C 9F 23 78 */	mr r31, r4
+/* 80062B78 000008B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80062B7C 000008BC  7C 7E 1B 78 */	mr r30, r3
+/* 80062B80 000008C0  41 82 00 1C */	beq .L_80062B9C
+/* 80062B84 000008C4  38 80 00 00 */	li r4, 0x0
+/* 80062B88 000008C8  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 80062B8C 000008CC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80062B90 000008D0  40 81 00 0C */	ble .L_80062B9C
+/* 80062B94 000008D4  7F C3 F3 78 */	mr r3, r30
+/* 80062B98 000008D8  48 00 00 01 */	bl __dl__FPv
+.L_80062B9C:
+/* 80062B9C 000008DC  7F C3 F3 78 */	mr r3, r30
+/* 80062BA0 000008E0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062BA4 000008E4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80062BA8 000008E8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062BAC 000008EC  7C 08 03 A6 */	mtlr r0
+/* 80062BB0 000008F0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062BB4 000008F4  4E 80 00 20 */	blr
+.endfn "__dt__30sFStateID_c<15daRotObjsBase_c>Fv"
+
+# .text:0x8B8 | 0x80062BB8 | size: 0x8
+.fn gap_03_80062BB8_text, global
+.hidden gap_03_80062BB8_text
+/* 80062BB8 000008F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062BBC 000008FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062BB8_text
+
+# .text:0x8C0 | 0x80062BC0 | size: 0x5C
+# sFStateVirtualID_c<daRotObjsBase_c>::~sFStateVirtualID_c()
+.fn "__dt__37sFStateVirtualID_c<15daRotObjsBase_c>Fv", weak
+/* 80062BC0 00000900  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062BC4 00000904  7C 08 02 A6 */	mflr r0
+/* 80062BC8 00000908  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062BCC 0000090C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062BD0 00000910  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062BD4 00000914  7C 9F 23 78 */	mr r31, r4
+/* 80062BD8 00000918  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80062BDC 0000091C  7C 7E 1B 78 */	mr r30, r3
+/* 80062BE0 00000920  41 82 00 20 */	beq .L_80062C00
+/* 80062BE4 00000924  41 82 00 0C */	beq .L_80062BF0
+/* 80062BE8 00000928  38 80 00 00 */	li r4, 0x0
+/* 80062BEC 0000092C  48 00 00 01 */	bl __dt__10sStateID_cFv
+.L_80062BF0:
+/* 80062BF0 00000930  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80062BF4 00000934  40 81 00 0C */	ble .L_80062C00
+/* 80062BF8 00000938  7F C3 F3 78 */	mr r3, r30
+/* 80062BFC 0000093C  48 00 00 01 */	bl __dl__FPv
+.L_80062C00:
+/* 80062C00 00000940  7F C3 F3 78 */	mr r3, r30
+/* 80062C04 00000944  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062C08 00000948  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80062C0C 0000094C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062C10 00000950  7C 08 03 A6 */	mtlr r0
+/* 80062C14 00000954  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062C18 00000958  4E 80 00 20 */	blr
+.endfn "__dt__37sFStateVirtualID_c<15daRotObjsBase_c>Fv"
+
+# .text:0x91C | 0x80062C1C | size: 0x4
+.fn gap_03_80062C1C_text, global
+.hidden gap_03_80062C1C_text
+/* 80062C1C 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062C1C_text
+
+# .text:0x920 | 0x80062C20 | size: 0xDC
+# sFStateVirtualID_c<daRotObjsBase_c>::number() const
+.fn "number__37sFStateVirtualID_c<15daRotObjsBase_c>CFv", weak
+/* 80062C20 00000960  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062C24 00000964  7C 08 02 A6 */	mflr r0
+/* 80062C28 00000968  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062C2C 0000096C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062C30 00000970  7C 7F 1B 78 */	mr r31, r3
+/* 80062C34 00000974  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 80062C38 00000978  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062C3C 0000097C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062C40 00000980  7D 89 03 A6 */	mtctr r12
+/* 80062C44 00000984  4E 80 04 21 */	bctrl
+/* 80062C48 00000988  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062C4C 0000098C  40 82 00 94 */	bne .L_80062CE0
+/* 80062C50 00000990  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062C54 00000994  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062C58 00000998  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062C5C 0000099C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062C60 000009A0  7D 89 03 A6 */	mtctr r12
+/* 80062C64 000009A4  4E 80 04 21 */	bctrl
+/* 80062C68 000009A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062C6C 000009AC  40 82 00 74 */	bne .L_80062CE0
+/* 80062C70 000009B0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062C74 000009B4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062C78 000009B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062C7C 000009BC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062C80 000009C0  7D 89 03 A6 */	mtctr r12
+/* 80062C84 000009C4  4E 80 04 21 */	bctrl
+/* 80062C88 000009C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062C8C 000009CC  40 82 00 54 */	bne .L_80062CE0
+/* 80062C90 000009D0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062C94 000009D4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062C98 000009D8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062C9C 000009DC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062CA0 000009E0  7D 89 03 A6 */	mtctr r12
+/* 80062CA4 000009E4  4E 80 04 21 */	bctrl
+/* 80062CA8 000009E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062CAC 000009EC  40 82 00 34 */	bne .L_80062CE0
+/* 80062CB0 000009F0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062CB4 000009F4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062CB8 000009F8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062CBC 000009FC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062CC0 00000A00  7D 89 03 A6 */	mtctr r12
+/* 80062CC4 00000A04  4E 80 04 21 */	bctrl
+/* 80062CC8 00000A08  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062CCC 00000A0C  41 82 00 08 */	beq .L_80062CD4
+/* 80062CD0 00000A10  48 00 00 10 */	b .L_80062CE0
+.L_80062CD4:
+/* 80062CD4 00000A14  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062CD8 00000A18  48 00 00 01 */	bl "superID__37sFStateVirtualID_c<15daRotObjsBase_c>CFv"
+/* 80062CDC 00000A1C  7C 7F 1B 78 */	mr r31, r3
+.L_80062CE0:
+/* 80062CE0 00000A20  7F E3 FB 78 */	mr r3, r31
+/* 80062CE4 00000A24  48 00 00 01 */	bl number__10sStateID_cCFv
+/* 80062CE8 00000A28  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062CEC 00000A2C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062CF0 00000A30  7C 08 03 A6 */	mtlr r0
+/* 80062CF4 00000A34  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062CF8 00000A38  4E 80 00 20 */	blr
+.endfn "number__37sFStateVirtualID_c<15daRotObjsBase_c>CFv"
+
+# .text:0x9FC | 0x80062CFC | size: 0x4
+.fn gap_03_80062CFC_text, global
+.hidden gap_03_80062CFC_text
+/* 80062CFC 00000A3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062CFC_text
+
+# .text:0xA00 | 0x80062D00 | size: 0xE0
+# sFStateVirtualID_c<daRotObjsBase_c>::superID() const
+.fn "superID__37sFStateVirtualID_c<15daRotObjsBase_c>CFv", weak
+/* 80062D00 00000A40  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062D04 00000A44  7C 08 02 A6 */	mflr r0
+/* 80062D08 00000A48  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062D0C 00000A4C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062D10 00000A50  7C 7F 1B 78 */	mr r31, r3
+/* 80062D14 00000A54  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 80062D18 00000A58  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062D1C 00000A5C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062D20 00000A60  7D 89 03 A6 */	mtctr r12
+/* 80062D24 00000A64  4E 80 04 21 */	bctrl
+/* 80062D28 00000A68  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062D2C 00000A6C  40 82 00 9C */	bne .L_80062DC8
+/* 80062D30 00000A70  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062D34 00000A74  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062D38 00000A78  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062D3C 00000A7C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062D40 00000A80  7D 89 03 A6 */	mtctr r12
+/* 80062D44 00000A84  4E 80 04 21 */	bctrl
+/* 80062D48 00000A88  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062D4C 00000A8C  40 82 00 74 */	bne .L_80062DC0
+/* 80062D50 00000A90  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062D54 00000A94  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062D58 00000A98  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062D5C 00000A9C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062D60 00000AA0  7D 89 03 A6 */	mtctr r12
+/* 80062D64 00000AA4  4E 80 04 21 */	bctrl
+/* 80062D68 00000AA8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062D6C 00000AAC  40 82 00 54 */	bne .L_80062DC0
+/* 80062D70 00000AB0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062D74 00000AB4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062D78 00000AB8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062D7C 00000ABC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062D80 00000AC0  7D 89 03 A6 */	mtctr r12
+/* 80062D84 00000AC4  4E 80 04 21 */	bctrl
+/* 80062D88 00000AC8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062D8C 00000ACC  40 82 00 34 */	bne .L_80062DC0
+/* 80062D90 00000AD0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80062D94 00000AD4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062D98 00000AD8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80062D9C 00000ADC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80062DA0 00000AE0  7D 89 03 A6 */	mtctr r12
+/* 80062DA4 00000AE4  4E 80 04 21 */	bctrl
+/* 80062DA8 00000AE8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062DAC 00000AEC  41 82 00 08 */	beq .L_80062DB4
+/* 80062DB0 00000AF0  48 00 00 10 */	b .L_80062DC0
+.L_80062DB4:
+/* 80062DB4 00000AF4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80062DB8 00000AF8  48 00 00 01 */	bl "superID__37sFStateVirtualID_c<15daRotObjsBase_c>CFv"
+/* 80062DBC 00000AFC  7C 7F 1B 78 */	mr r31, r3
+.L_80062DC0:
+/* 80062DC0 00000B00  7F E3 FB 78 */	mr r3, r31
+/* 80062DC4 00000B04  48 00 00 08 */	b .L_80062DCC
+.L_80062DC8:
+/* 80062DC8 00000B08  7F E3 FB 78 */	mr r3, r31
+.L_80062DCC:
+/* 80062DCC 00000B0C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062DD0 00000B10  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062DD4 00000B14  7C 08 03 A6 */	mtlr r0
+/* 80062DD8 00000B18  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062DDC 00000B1C  4E 80 00 20 */	blr
+.endfn "superID__37sFStateVirtualID_c<15daRotObjsBase_c>CFv"
+
+# .text:0xAE0 | 0x80062DE0 | size: 0x88
+# sFStateID_c<daRotObjsBase_c>::isSameName(const char*) const
+.fn "isSameName__30sFStateID_c<15daRotObjsBase_c>CFPCc", weak
+/* 80062DE0 00000B20  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062DE4 00000B24  7C 08 02 A6 */	mflr r0
+/* 80062DE8 00000B28  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062DEC 00000B2C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80062DF0 00000B30  7C 9F 23 78 */	mr r31, r4
+/* 80062DF4 00000B34  38 80 00 3A */	li r4, 0x3a
+/* 80062DF8 00000B38  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80062DFC 00000B3C  7C 7E 1B 78 */	mr r30, r3
+/* 80062E00 00000B40  7F E3 FB 78 */	mr r3, r31
+/* 80062E04 00000B44  48 00 00 01 */	bl strrchr
+/* 80062E08 00000B48  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062E0C 00000B4C  41 82 00 08 */	beq .L_80062E14
+/* 80062E10 00000B50  3B E3 00 01 */	addi r31, r3, 0x1
+.L_80062E14:
+/* 80062E14 00000B54  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80062E18 00000B58  7F C3 F3 78 */	mr r3, r30
+/* 80062E1C 00000B5C  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80062E20 00000B60  7D 89 03 A6 */	mtctr r12
+/* 80062E24 00000B64  4E 80 04 21 */	bctrl
+/* 80062E28 00000B68  38 80 00 3A */	li r4, 0x3a
+/* 80062E2C 00000B6C  48 00 00 01 */	bl strrchr
+/* 80062E30 00000B70  7F E4 FB 78 */	mr r4, r31
+/* 80062E34 00000B74  38 63 00 01 */	addi r3, r3, 0x1
+/* 80062E38 00000B78  48 00 00 01 */	bl strcmp
+/* 80062E3C 00000B7C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80062E40 00000B80  40 82 00 0C */	bne .L_80062E4C
+/* 80062E44 00000B84  38 60 00 01 */	li r3, 0x1
+/* 80062E48 00000B88  48 00 00 08 */	b .L_80062E50
+.L_80062E4C:
+/* 80062E4C 00000B8C  38 60 00 00 */	li r3, 0x0
+.L_80062E50:
+/* 80062E50 00000B90  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062E54 00000B94  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80062E58 00000B98  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80062E5C 00000B9C  7C 08 03 A6 */	mtlr r0
+/* 80062E60 00000BA0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062E64 00000BA4  4E 80 00 20 */	blr
+.endfn "isSameName__30sFStateID_c<15daRotObjsBase_c>CFPCc"
+
+# .text:0xB68 | 0x80062E68 | size: 0x8
+.fn gap_03_80062E68_text, global
+.hidden gap_03_80062E68_text
+/* 80062E68 00000BA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80062E6C 00000BAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80062E68_text
+
+# .text:0xB70 | 0x80062E70 | size: 0x30
+# sFStateID_c<daRotObjsBase_c>::initializeState(daRotObjsBase_c&) const
+.fn "initializeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c", weak
+/* 80062E70 00000BB0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062E74 00000BB4  7C 08 02 A6 */	mflr r0
+/* 80062E78 00000BB8  7C 65 1B 78 */	mr r5, r3
+/* 80062E7C 00000BBC  7C 83 23 78 */	mr r3, r4
+/* 80062E80 00000BC0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062E84 00000BC4  39 85 00 0C */	addi r12, r5, 0xc
+/* 80062E88 00000BC8  48 00 00 01 */	bl __ptmf_scall
+/* 80062E8C 00000BCC  60 00 00 00 */	nop
+/* 80062E90 00000BD0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062E94 00000BD4  7C 08 03 A6 */	mtlr r0
+/* 80062E98 00000BD8  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062E9C 00000BDC  4E 80 00 20 */	blr
+.endfn "initializeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+
+# .text:0xBA0 | 0x80062EA0 | size: 0x30
+# sFStateID_c<daRotObjsBase_c>::executeState(daRotObjsBase_c&) const
+.fn "executeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c", weak
+/* 80062EA0 00000BE0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062EA4 00000BE4  7C 08 02 A6 */	mflr r0
+/* 80062EA8 00000BE8  7C 65 1B 78 */	mr r5, r3
+/* 80062EAC 00000BEC  7C 83 23 78 */	mr r3, r4
+/* 80062EB0 00000BF0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062EB4 00000BF4  39 85 00 18 */	addi r12, r5, 0x18
+/* 80062EB8 00000BF8  48 00 00 01 */	bl __ptmf_scall
+/* 80062EBC 00000BFC  60 00 00 00 */	nop
+/* 80062EC0 00000C00  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062EC4 00000C04  7C 08 03 A6 */	mtlr r0
+/* 80062EC8 00000C08  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062ECC 00000C0C  4E 80 00 20 */	blr
+.endfn "executeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+
+# .text:0xBD0 | 0x80062ED0 | size: 0x30
+# sFStateID_c<daRotObjsBase_c>::finalizeState(daRotObjsBase_c&) const
+.fn "finalizeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c", weak
+/* 80062ED0 00000C10  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80062ED4 00000C14  7C 08 02 A6 */	mflr r0
+/* 80062ED8 00000C18  7C 65 1B 78 */	mr r5, r3
+/* 80062EDC 00000C1C  7C 83 23 78 */	mr r3, r4
+/* 80062EE0 00000C20  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80062EE4 00000C24  39 85 00 24 */	addi r12, r5, 0x24
+/* 80062EE8 00000C28  48 00 00 01 */	bl __ptmf_scall
+/* 80062EEC 00000C2C  60 00 00 00 */	nop
+/* 80062EF0 00000C30  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80062EF4 00000C34  7C 08 03 A6 */	mtlr r0
+/* 80062EF8 00000C38  38 21 00 10 */	addi r1, r1, 0x10
+/* 80062EFC 00000C3C  4E 80 00 20 */	blr
+.endfn "finalizeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+
+# 0x802EDD70..0x802EDD74 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_a_rot_objs_base_cpp"
+
+# 0x80309D40..0x80309F38 | size: 0x1F8
+.data
+.balign 8
+
+# .data:0x0 | 0x80309D40 | size: 0x104
+# daRotObjsBase_c::__vtable
+.obj __vt__15daRotObjsBase_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__15daRotObjsBase_cFv
+	.4byte preCreate__8dActor_cFv
+	.4byte postCreate__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__15daRotObjsBase_cFv
+	.4byte preDelete__8dActor_cFv
+	.4byte postDelete__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__15daRotObjsBase_cFv
+	.4byte preExecute__8dActor_cFv
+	.4byte postExecute__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__7fBase_cFv
+	.4byte preDraw__15daRotObjsBase_cFv
+	.4byte postDraw__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__15daRotObjsBase_cFv
+	.4byte getKindString__8dActor_cCFv
+	.4byte draw2D__12dBaseActor_cFv
+	.4byte draw2D_lyt2__12dBaseActor_cFv
+	.4byte GetActorType__12dBaseActor_cFv
+	.4byte finalUpdate__12dBaseActor_cFv
+	.4byte ActorDrawCullCheck__8dActor_cFv
+	.4byte block_hit_init__8dActor_cFv
+	.4byte vf68__8dActor_cFP9dBg_ctr_c
+	.4byte getPlrNo__8dActor_cFv
+	.4byte getLookatPos__8dActor_cCFv
+	.4byte isSpinLiftUpEnable__8dActor_cFv
+	.4byte setSpinLiftUpActor__8dActor_cFP8dActor_c
+	.4byte setCarryFall__8dActor_cFP8dActor_ci
+	.4byte setEatTongue__8dActor_cFP8dActor_c
+	.4byte setEatTongueOff__8dActor_cFP8dActor_c
+	.4byte setEatMouth__8dActor_cFP8dActor_c
+	.4byte setEatSpitOut__8dActor_cFP8dActor_c
+	.4byte setEatGlupDown__8dActor_cFP8dActor_c
+	.4byte eatMove__8dActor_cFP8dActor_c
+	.4byte removeCc__8dActor_cFv
+	.4byte reviveCc__8dActor_cFv
+	.4byte setAfterEatScale__8dActor_cFv
+	.4byte calcSpitOutPos__8dActor_cFP8dActor_c
+	.4byte calcEatScaleRate__8dActor_cFP8dActor_c
+	.4byte calcEatInScale__8dActor_cFP8dActor_c
+	.4byte allEnemyDeathEffSet__8dActor_cFv
+	.4byte vfb4__8dActor_cFv
+	.4byte funsuiMoveX__8dActor_cFv
+	.4byte cancelFunsuiActUpper__8dActor_cFv
+	.4byte cancelFunsuiActSide__8dActor_cFi
+	.4byte cancelFunsuiActVanish__8dActor_cFv
+	.4byte waterSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte yoganSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte poisonSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte initializeState_Gegneric__13dActorState_cFv
+	.4byte executeState_Gegneric__13dActorState_cFv
+	.4byte finalizeState_Gegneric__13dActorState_cFv
+	.4byte 0x00000000
+	.4byte scroll_out_check__15daRotObjsBase_cFv
+	.4byte post_execute_state__15daRotObjsBase_cFv
+	.4byte initializeState_Search__15daRotObjsBase_cFv
+	.4byte executeState_Search__15daRotObjsBase_cFv
+	.4byte finalizeState_Search__15daRotObjsBase_cFv
+	.4byte initializeState_Move__15daRotObjsBase_cFv
+	.4byte executeState_Move__15daRotObjsBase_cFv
+	.4byte finalizeState_Move__15daRotObjsBase_cFv
+.endobj __vt__15daRotObjsBase_c
+
+# .data:0x104 | 0x80309E44 | size: 0xC
+.obj "@13550", local
+	.4byte 0x00000000
+	.4byte 0x000000F4
+	.4byte 0x00000060
+.endobj "@13550"
+
+# .data:0x110 | 0x80309E50 | size: 0xC
+.obj "@13551", local
+	.4byte 0x00000000
+	.4byte 0x000000F0
+	.4byte 0x00000060
+.endobj "@13551"
+
+# .data:0x11C | 0x80309E5C | size: 0xC
+.obj "@13552", local
+	.4byte 0x00000000
+	.4byte 0x000000EC
+	.4byte 0x00000060
+.endobj "@13552"
+
+# .data:0x128 | 0x80309E68 | size: 0xC
+.obj "@13553", local
+	.4byte 0x00000000
+	.4byte 0x00000100
+	.4byte 0x00000060
+.endobj "@13553"
+
+# .data:0x134 | 0x80309E74 | size: 0xC
+.obj "@13554", local
+	.4byte 0x00000000
+	.4byte 0x000000FC
+	.4byte 0x00000060
+.endobj "@13554"
+
+# .data:0x140 | 0x80309E80 | size: 0xC
+.obj "@13555", local
+	.4byte 0x00000000
+	.4byte 0x000000F8
+	.4byte 0x00000060
+.endobj "@13555"
+
+# .data:0x14C | 0x80309E8C | size: 0x4
+.obj gap_07_80309E8C_data, global
+.hidden gap_07_80309E8C_data
+	.4byte 0x00000000
+.endobj gap_07_80309E8C_data
+
+# .data:0x150 | 0x80309E90 | size: 0x20
+.obj "@13557", local
+	.4byte 0x6461526F
+	.4byte 0x744F626A
+	.4byte 0x73426173
+	.4byte 0x655F633A
+	.4byte 0x3A537461
+	.4byte 0x74654944
+	.4byte 0x5F536561
+	.4byte 0x72636800
+.endobj "@13557"
+
+# .data:0x170 | 0x80309EB0 | size: 0x1E
+.obj "@13558", local
+	.4byte 0x6461526F
+	.4byte 0x744F626A
+	.4byte 0x73426173
+	.4byte 0x655F633A
+	.4byte 0x3A537461
+	.4byte 0x74654944
+	.4byte 0x5F4D6F76
+	.2byte 0x6500
+.endobj "@13558"
+
+# .data:0x18E | 0x80309ECE | size: 0x2
+.obj gap_07_80309ECE_data, global
+.hidden gap_07_80309ECE_data
+	.2byte 0x0000
+.endobj gap_07_80309ECE_data
+
+# .data:0x190 | 0x80309ED0 | size: 0x34
+# sFStateVirtualID_c<daRotObjsBase_c>::__vtable
+.obj "__vt__37sFStateVirtualID_c<15daRotObjsBase_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__37sFStateVirtualID_c<15daRotObjsBase_c>Fv"
+	.4byte isNull__10sStateID_cCFv
+	.4byte isEqual__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __eq__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __ne__10sStateID_cCFRC12sStateIDIf_c
+	.4byte "isSameName__30sFStateID_c<15daRotObjsBase_c>CFPCc"
+	.4byte name__10sStateID_cCFv
+	.4byte "number__37sFStateVirtualID_c<15daRotObjsBase_c>CFv"
+	.4byte "initializeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+	.4byte "executeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+	.4byte "finalizeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+.endobj "__vt__37sFStateVirtualID_c<15daRotObjsBase_c>"
+
+# .data:0x1C4 | 0x80309F04 | size: 0x34
+# sFStateID_c<daRotObjsBase_c>::__vtable
+.obj "__vt__30sFStateID_c<15daRotObjsBase_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__30sFStateID_c<15daRotObjsBase_c>Fv"
+	.4byte isNull__10sStateID_cCFv
+	.4byte isEqual__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __eq__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __ne__10sStateID_cCFRC12sStateIDIf_c
+	.4byte "isSameName__30sFStateID_c<15daRotObjsBase_c>CFPCc"
+	.4byte name__10sStateID_cCFv
+	.4byte number__10sStateID_cCFv
+	.4byte "initializeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+	.4byte "executeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+	.4byte "finalizeState__30sFStateID_c<15daRotObjsBase_c>CFR15daRotObjsBase_c"
+.endobj "__vt__30sFStateID_c<15daRotObjsBase_c>"
+
+# 0x80356040..0x803560C0 | size: 0x80
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | 0x80356040 | size: 0xC
+.obj "@12822", local
+	.skip 0xC
+.endobj "@12822"
+
+# .bss:0xC | 0x8035604C | size: 0x34
+# daRotObjsBase_c::StateID_Search
+.obj StateID_Search__15daRotObjsBase_c, global
+	.skip 0x34
+.endobj StateID_Search__15daRotObjsBase_c
+
+# .bss:0x40 | 0x80356080 | size: 0xC
+.obj "@12830", local
+	.skip 0xC
+.endobj "@12830"
+
+# .bss:0x4C | 0x8035608C | size: 0x34
+# daRotObjsBase_c::StateID_Move
+.obj StateID_Move__15daRotObjsBase_c, global
+	.skip 0x34
+.endobj StateID_Move__15daRotObjsBase_c
+
+# 0x8042BD98..0x8042BDA0 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042BD98 | size: 0x4
+.obj "@13463", local
+	.4byte 0x3B800000
+.endobj "@13463"
+
+# .sdata2:0x4 | 0x8042BD9C | size: 0x4
+.obj gap_11_8042BD9C_sdata2, global
+.hidden gap_11_8042BD9C_sdata2
+	.4byte 0x00000000
+.endobj gap_11_8042BD9C_sdata2

@@ -64,9 +64,9 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 10.946%** (711,512 / 6,500,368); `wiimj2d.dol` **21.583%**. Five
+- **Position: 11.088%** (720,792 / 6,500,368); `wiimj2d.dol` **21.887%**. Five
   binaries verify, tree clean.
-- **61 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
+- **70 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
@@ -583,8 +583,8 @@ ones.
 
 ## Where the work now stands
 
-**10.946%** (711,512 / 6,500,368 bytes); `wiimj2d.dol` at **21.583%**. Five
-binaries verifying, working tree clean, **61 commits unpushed**.
+**11.088%** (720,792 / 6,500,368 bytes); `wiimj2d.dol` at **21.887%**. Five
+binaries verifying, working tree clean, **70 commits unpushed**.
 
 The 2026-08-12/13 session landed six TUs (~74,000 bytes), took the project
 past 10%, landed five tool fixes across three tools and added the rules below.
@@ -722,126 +722,65 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
-### Recommended: `d_a_player_demo_manager.cpp` — `daPyDemoMng_c`
+### Recommended: `d_a_player_manager.cpp` — `daPyMng_c`
 
-`.text 0x8005B3A0 - 0x8005D7E0`, 9,280 B span / 8,976 B code / **51 functions**.
+`0x8005E9A0`–`0x800613B0`, 10,768 B span / 10,300 B code / 68 fns.
+**It is now unblocked**: it embeds `daPyDemoMng_c` by value in its `.bss` and
+needed that class's exact `sizeof`, which is 0x98, proven three independent ways
+and landed. `include/game/bases/d_a_player_manager.hpp` already exists with real
+signatures because the banked `d_a_player.cpp` and `d_a_player_base.cpp` call
+into it constantly, and this session added `mCourseInList` to it.
 
-**STATUS: 47 of 51 functions are byte-exact and committed. RESUME HERE.**
-The front stage is COMPLETE and the class header is landed and verified. All six authoring batches have reported. Four functions remain: `setHanabiEffect`
-and `executeGoalCastle` (batch 3) and `clearDemoNo` (batch 5), each with a
-characterised gap, plus batch 3's twelfth data table.
+The class is **all-static with no vtable**, so there is no layout to reconstruct
+— every static member is a named symbol with a size in the map. `.text`,
+`.ctors` (`0x88-0x8c`, one free slot), `.bss` (`0x3790-0x4640`), `.sbss`
+(`0xe0-0x110`) and `.sdata` (`0x280-0x290`) are exact by subtraction.
 
-| Batch | Functions | State |
-|---|---|---|
-| 1 lifecycle | 16 | **DONE 16/16**, `wip/demo_manager/dm-b1.cpp` |
-| 2 goal-pole sequence | 6 | **DONE 6/6** incl. the 1,100 B `executeGoalDemo_Pole`, `dm-b2.cpp` |
-| 3 castle / fireworks | 6 | **4/6 byte-exact**, `dm-b3.cpp`. `setHanabiEffect` is 84-86 of 87 instructions; `executeGoalCastle` is mid-fix and **was not recompiled after its last edit** — recompile and re-diff is the exact next step. Owns **ELEVEN** `@LOCAL@` tables, not nine, plus an unnamed twelfth with no `@LOCAL@` symbol; all names/sizes/contents are in `dm-b3-report.md`, and the sibling map's `mVec3_c[]` guess for the 3rd field is WRONG — it is a `u16` pair |
-| 4 control-demo | 8 | **DONE 8/8**, `dm-b4.cpp` |
-| 5 toride / demo-queue | 11 | **DONE 10/11**, `dm-b5.cpp`. Gap: `clearDemoNo`, 97 vs 95 instructions — a register-allocation swap in 3 of 4 compaction blocks plus one redundant bounds check in the tail fill loop; algorithm and addressing verified correct, ruled-out variants in `dm-b5-report.md`. File-statics: `fn_8005CCD0` is NOT static (zero in-TU callers, contradicting the brief); `fn_8005CE50` IS static (3 in-TU callers) |
-| 6 big static + tail | 4 | **DONE 3/4**, `dm-b6.cpp`; `__sinit` differs only by an `__arraydtor$NNNNN` pool ID that a partial-file compile cannot assign — it resolves at full-file compile |
+Three hazards, all pre-characterised:
 
-**Do NOT re-derive the front stage.** The class is proven and committed
-(`include/game/bases/d_a_player_demo_manager.hpp`, `sizeof` 0x98, one virtual,
-no base class, verified byte-identical against the six TUs that include it); the
-bounds are in `wip/demo_manager/BOUNDS.md`; the map is in
-`wip/demo_manager/DEMO-MANAGER-SIBMAP.md`.
+1. Its `.bss` embeds **four static class instances by value**, each with a 0xC
+   dtor record: `mDemoManager` (0x98, `daPyDemoMng_c` — **now done**),
+   `mMultiManager` (0x5C), `mAttention` (0x58), `mEffectMng` (0xC5C). The other
+   three `sizeof`s must be exact or the whole `.bss` shifts.
+2. Two **foreign weak inline copies sit mid-range** —
+   `getCourseIn__10dScStage_cFv` (8 B, `0x8005EC90`) and `getFileP__5dCd_cFi`
+   (32 B, `0x8005EE70`) — from classes whose TUs are already banked. That is the
+   weak-copy / `keepWeak` / `syms.txt` collision, and it surfaces only at the
+   full link. **Trial-link early** (see that section) rather than discovering it
+   at the end.
+3. `.data` (~`0xb388-0xb3b8`) and `.sdata2` (~`0xa18-0xa20`) need pool
+   attribution. **Note `.data 0xb388-0xb3b8` is exactly the 0x30 that
+   `d_a_player_demo_manager` was wrongly assumed to own** — the two strings
+   `"Wm_mr_vshipattack"` / `"Wm_mr_vshipattack_ind"` at `0x80309A28`. They
+   belong to whichever TU follows demo_manager in link order; check
+   `d_a_player_hio_ADJ` first, since its slice claims no `.data` only because it
+   is `nonMatching` and nobody ever derived one.
 
-**Ready-to-paste slice entry** (from BOUNDS.md; land it `nonMatching` first and
-trial-link, per "Trial-link early"):
+#### What `d_a_player_demo_manager` established, and what it cost
 
-```json
-{
-  "source": "dol/bases/d_a_player_demo_manager.cpp",
-  "nonMatching": true,
-  "memoryRanges": {
-    ".text": "0x54c20-0x57060", ".ctors": "0x80-0x84", ".data": "0xb268-0xb3b8",
-    ".rodata": "0xec0-0x1120", ".bss": "0x35a0-0x35b0", ".sbss": "0xd0-0xd8",
-    ".sdata2": "0x998-0x9c8"
-  }
-}
-```
+Landed 51/51. The functions were the easy part — **every one of the three
+defects that actually blocked the link was in DATA placement**, and none was
+visible to a per-function diff:
 
-**THE ASSEMBLY HAZARD, already identified — do not lose it.** The last 0x30
-bytes of `.data` are two strings, `"Wm_mr_vshipattack"` and
-`"Wm_mr_vshipattack_ind"`, at `0x80309A28`, that **nothing in the entire binary
-references** (a whole-binary pointer scan found nothing). No batch owns them
-because no function calls them. This is the same shape as `l_speed_ratiodt`,
-which cost the previous unit a failed link — see "Trial-link early". **Whoever
-assembles must write them deliberately**, and they may need `extern` to survive
-as unused.
-
-Levers this unit produced, all measured (details in the commits):
-- the shared 4-player loop must call **`daPyMng_c::checkPlayer(i)`**, not a
-  hand-written `mActPlayerInfo & (1 << plrNo)` — the hand-written mask emits
-  `lbz` before `slw` with no `clrlwi`. This was a mismatch on all six of one
-  batch's loop functions and affects 21 of the unit's 51;
-- **hoisting a loop-body pointer local out of the `for`** fixes register-order
-  swaps — confirmed independently by three batches on six functions;
-- a **bool-returning function may need its accumulator typed `int`**, or MWCC
-  proves it only ever holds 0/1 and skips the `neg/or/srwi` canonicalisation
-  tail the target has;
-- the byte-exact bool-return spelling is `if (A && B) { return true; } return
-  false;` — both `return A && B;` and the early-return form emit extra saved
-  registers;
-- virtual calls on player objects dispatch through the **secondary vtable at
-  object offset 0x60** (playbook trap 7); pinned slots: `0x12c` =
-  `setHideNotGoalPlayer()`, `0x6c` = `getPlrNo()` returning `s8&`;
-- a variable whose **address is passed to a callee** cannot live in a register
-  across the call, so it must be the *same* local as the accumulator that feeds
-  it — that is what closed the 1,100 B function;
-- `__sinit`'s "reads low by the other batches' `.data` bytes" effect from the
-  previous unit is **NOT universal** — it only applies when the TU addresses its
-  own `.data` through a base register. Here it did not, and no delta appeared.
-
-**One header change is still OUTSTANDING and unverified**, reported by batch 5
-at the cutoff: `daPyDemoMng_c::startControlDemoLandPlayer` must return **`bool`,
-not `void`** (proven in a scratch header copy, not applied). Apply it, then
-rebuild and confirm all five binaries before relying on it. `dScStage_c::
-ReplayEnd()` was the other half of that report and is already declared.
-
-Header work already landed and verified byte-neutral across all five binaries:
-`daPyMng_c::mCourseInList` declared; `SndSceneMgr::startGoal(bool)` and
-`dScStage_c::ReplayEnd()` declared (both called by the target, declared
-nowhere); `daPyDemoMng_c::m_18` corrected `u32` -> `int` (the target compares it
-against 0 signed, a tautology if unsigned); `m_8c`/`m_90` doc comments corrected
-(init stores -1, not 0).
-
-The original front-stage note, for context: it was in flight — a class-proof
-agent, a sibling-map agent and a bounds agent, with deliverables landing in
-`wip/demo_manager/` (`d_a_player_demo_manager.hpp`, `DEMO-MANAGER-SIBMAP.md`,
-`BOUNDS.md`). **Read those three files before assigning anything**; if they are
-absent or incomplete, that stage did not finish and should be re-run.
-
-Why it is the pick:
-
-1. **Fully bracketed by banked slices** — `d_a_player_base.cpp` below and
-   `d_a_player_hio_ADJ.cpp` above — so most bounds are pure subtraction.
-2. **`__vt__13daPyDemoMng_c` is 0xC — three slots.** The vtable proof is nearly
-   free. Singleton via `mspInstance__13daPyDemoMng_c` (`.sbss:0x80429F74`).
-3. **It unblocks `d_a_player_manager.cpp`**, which embeds a `daPyDemoMng_c` by
-   value in its `.bss` and needs its exact `sizeof` (0x98 by an earlier survey —
-   treat as unverified until the class agent confirms it).
-4. One `__sinit` at `0x8005D750`, so it is plausibly a single TU — but **confirm
-   that**, since several "single TU" gaps here turned out to be four to six.
-
-Known hazards, and one real wrinkle:
-
-- **`d_a_player_hio_ADJ.cpp` claims NO `.data` range**, so the `.data` gap above
-  `0xb268` is *not* bounded by the next slice in `.text` order and needs real
-  attribution rather than subtraction. `__vt__13daPyDemoMng_c` at `0x80309A18`
-  is inside that gap and is certainly ours; the rest must be read, not assumed.
-  This is the one range most likely to cost a day, and it is worth doing
-  carefully up front.
-- Only **~7% name-level precedent** by an earlier survey. Treat that as a
-  hypothesis: on the last unit the equivalent figure was "43%" and was true at
-  the name level and **false at the body level**. Either way, expect this unit's
-  leverage to be intra-file rather than from siblings.
-- `setHanabiEffect` carries `@LOCAL@...` function-scope static tables, which
-  have their own numbering rules.
-- Its `.data` opens with `sc_ForceList__6dWmLib` and its `.sbss` holds
-  `c_StartPointKinokoHouseID__6dWmLib` — the **`d_wm_lib.hpp` signature already
-  documented for `d_a_boss_demo.cpp`** below, so that hazard is pre-characterised.
-
+- **`T *const arr[]` is a const-qualified type and lands in `.rodata`.** The
+  original put the value tables in `.rodata` and the POINTER tables in `.data`.
+  Dropping the outer `const` moved them. Check the symbol map's section per
+  object rather than assuming a table is a table.
+- **MWCC emits a class's vtable as the TERMINAL `.data` object, unconditionally.**
+  Verified twice. So anything after the vtable in the target belongs to the NEXT
+  TU — which is a free upper bound on any `.data` claim, and it disproved a
+  bounds derivation that had been made by elimination.
+- **A header static with a non-trivial constructor is emitted into EVERY TU that
+  odr-uses it**, pooled strings and all. `dWmLib::sc_ForceList` has 30 such
+  copies in the original. That is why this TU had a `.sdata` claim its bounds
+  derivation had confidently called empty.
+- **Consecutive `@NNNNN` pool IDs identify a TU.** The two `.sdata` strings are
+  `@72502`/`@72503` and this TU's array destructor is `__arraydtor$72504`. When
+  ownership of an anonymous object is unclear, look at the neighbouring pool
+  numbers — it is the cheapest attribution evidence available.
+- **A "bounds by elimination" claim is the weakest kind**, and the bounds agent
+  said so at the time. Both of its two flagged weak spots turned out wrong, and
+  both were caught only by linking.
 
 ### Runners-up
 
@@ -988,7 +927,7 @@ sizes; they are not the same number and neither is a typo for the other.
 | `d_a_en_blockmain` | 13,232 | 12,604 | 97 | **DONE 97/97**, landed and linked. Ten file-static functions (2,800 B, 22%) have no symbol-map name; the names in our source are invented |
 | `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **DONE 81/81**, landed and linked. Derives from `dEn_c` |
 | `d_a_player_manager` | 10,768 | 10,300 | 68 | Runner-up; all-static class, no vtable |
-| `d_a_player_demo_manager` | 9,280 | 8,976 | 51 | Runner-up; 3-slot vtable |
+| `d_a_player_demo_manager` | 9,280 | 8,976 | 51 | **DONE 51/51**, landed and linked |
 | `d_a_bullet` | 7,316 | — | 73 | |
 | `d_a_lift_down_on_base` | 6,280 | — | 58 | **At least six TUs** across the wider gap — see `tu_split.py` and the traps list above |
 | `d_a_move_pipe` | 5,380 | — | 29 | Part of the same multi-TU gap |
@@ -1748,11 +1687,12 @@ invented and marked `@unofficial`. Two consequences, both paid for:
 
 ## Current state
 
-- **Progress: 10.946%** (711,512 / 6,500,368 code bytes)
+- **Progress: 11.088%** (720,792 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- **61 commits unpushed.** Ask before pushing.
+- **70 commits unpushed.** Ask before pushing.
 - Development happens on **native Windows**; see "Local setup" below.
-- Last TU banked: `d_a_en_hatena_balloon.cpp` (81 fns, 18,216 bytes of code in an
+- Last TU banked: `d_a_player_demo_manager.cpp` (51 fns, 9,280-byte span).
+- Before it: `d_a_en_hatena_balloon.cpp` (81 fns, 18,216 bytes of code in an
   18,768-byte span) -- the largest single unit landed so far.
 - Previously: `d_a_en_blockmain.cpp` (97 fns, 12,604 bytes of code in a
   13,232-byte span), whole and byte-exact. Before that:
@@ -1781,7 +1721,7 @@ Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 21.583% |
+| `wiimj2d.dol` | 21.887% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -3193,7 +3133,7 @@ Still worth avoiding on the same reasoning: `dBc_c` (fp 36%), `dBg_c` (39%),
 `daMask_c` (27%), `dWmSpline_c` (45%), `daYoshi_c` (55 external classes).
 
 **Where the remaining work actually is.** The DOL holds **2,950,464 B** of the
-6,500,368-B total (45.4%) and is 21.583% done, so **~2.31 MB of undone work is
+6,500,368-B total (45.4%) and is 21.887% done, so **~2.30 MB of undone work is
 DOL game code — roughly 40% of everything remaining, and it is workable today**.
 The other ~60% is in the four `.rel` modules, which have 0.3–2.3% symbol
 coverage and are not workable until a symbol map exists. (An earlier version of

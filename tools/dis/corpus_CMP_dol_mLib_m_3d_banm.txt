@@ -1,0 +1,241 @@
+.include "macros.inc"
+.file "banm.cpp"
+
+# 0x00000000..0x00000244 | size: 0x244
+.text
+.balign 16
+
+# .text:0x0 | size: 0x6C
+# m3d::banm_c::~banm_c()
+.fn __dt__Q23m3d6banm_cFv, global
+/* 00000000 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000000C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000010 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000014 00000054  7C 9F 23 78 */	mr r31, r4
+/* 00000018 00000058  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000001C 0000005C  7C 7E 1B 78 */	mr r30, r3
+/* 00000020 00000060  41 82 00 30 */	beq .L_00000050
+/* 00000024 00000064  3C 80 00 00 */	lis r4, __vt__Q23m3d6banm_c@ha
+/* 00000028 00000068  38 84 00 00 */	addi r4, r4, __vt__Q23m3d6banm_c@l
+/* 0000002C 0000006C  90 83 00 00 */	stw r4, 0x0(r3)
+/* 00000030 00000070  48 00 00 01 */	bl remove__Q23m3d6banm_cFv
+/* 00000034 00000074  38 7E 00 0C */	addi r3, r30, 0xc
+/* 00000038 00000078  38 80 FF FF */	li r4, -0x1
+/* 0000003C 0000007C  48 00 00 01 */	bl __dt__12mAllocator_cFv
+/* 00000040 00000080  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000044 00000084  40 81 00 0C */	ble .L_00000050
+/* 00000048 00000088  7F C3 F3 78 */	mr r3, r30
+/* 0000004C 0000008C  48 00 00 01 */	bl __dl__FPv
+.L_00000050:
+/* 00000050 00000090  7F C3 F3 78 */	mr r3, r30
+/* 00000054 00000094  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000058 00000098  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0000005C 0000009C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000060 000000A0  7C 08 03 A6 */	mtlr r0
+/* 00000064 000000A4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000068 000000A8  4E 80 00 20 */	blr
+.endfn __dt__Q23m3d6banm_cFv
+/* 0000006C 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x70 | size: 0x64
+# m3d::banm_c::remove()
+.fn remove__Q23m3d6banm_cFv, global
+/* 00000070 000000B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000074 000000B4  7C 08 02 A6 */	mflr r0
+/* 00000078 000000B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000007C 000000BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000080 000000C0  7C 7F 1B 78 */	mr r31, r3
+/* 00000084 000000C4  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 00000088 000000C8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0000008C 000000CC  41 82 00 1C */	beq .L_000000A8
+/* 00000090 000000D0  7C 03 03 78 */	mr r3, r0
+/* 00000094 000000D4  48 00 00 01 */	bl DetachFromParent__Q34nw4r3g3d6G3dObjFv
+/* 00000098 000000D8  80 7F 00 04 */	lwz r3, 0x4(r31)
+/* 0000009C 000000DC  48 00 00 01 */	bl Destroy__Q34nw4r3g3d6G3dObjFv
+/* 000000A0 000000E0  38 00 00 00 */	li r0, 0x0
+/* 000000A4 000000E4  90 1F 00 04 */	stw r0, 0x4(r31)
+.L_000000A8:
+/* 000000A8 000000E8  80 7F 00 08 */	lwz r3, 0x8(r31)
+/* 000000AC 000000EC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000000B0 000000F0  41 82 00 10 */	beq .L_000000C0
+/* 000000B4 000000F4  48 00 00 01 */	bl destroyFrmHeap__5mHeapFPQ23EGG7FrmHeap
+/* 000000B8 000000F8  38 00 00 00 */	li r0, 0x0
+/* 000000BC 000000FC  90 1F 00 08 */	stw r0, 0x8(r31)
+.L_000000C0:
+/* 000000C0 00000100  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000000C4 00000104  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000000C8 00000108  7C 08 03 A6 */	mtlr r0
+/* 000000CC 0000010C  38 21 00 10 */	addi r1, r1, 0x10
+/* 000000D0 00000110  4E 80 00 20 */	blr
+.endfn remove__Q23m3d6banm_cFv
+/* 000000D4 00000114  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000D8 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000DC 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE0 | size: 0xBC
+# m3d::banm_c::createAllocator(mAllocator_c*, unsigned long*)
+.fn createAllocator__Q23m3d6banm_cFP12mAllocator_cPUl, global
+/* 000000E0 00000120  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 000000E4 00000124  7C 08 02 A6 */	mflr r0
+/* 000000E8 00000128  90 01 00 24 */	stw r0, 0x24(r1)
+/* 000000EC 0000012C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 000000F0 00000130  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 000000F4 00000134  7C BE 2B 78 */	mr r30, r5
+/* 000000F8 00000138  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 000000FC 0000013C  7C 9D 23 78 */	mr r29, r4
+/* 00000100 00000140  38 80 00 20 */	li r4, 0x20
+/* 00000104 00000144  93 81 00 10 */	stw r28, 0x10(r1)
+/* 00000108 00000148  7C 7C 1B 78 */	mr r28, r3
+/* 0000010C 0000014C  80 65 00 00 */	lwz r3, 0x0(r5)
+/* 00000110 00000150  48 00 00 01 */	bl frmHeapCost__5mHeapFUlUl
+/* 00000114 00000154  7C 7F 1B 78 */	mr r31, r3
+/* 00000118 00000158  38 60 00 00 */	li r3, 0x0
+/* 0000011C 0000015C  38 80 00 20 */	li r4, 0x20
+/* 00000120 00000160  48 00 00 01 */	bl frmHeapCost__5mHeapFUlUl
+/* 00000124 00000164  38 1F 00 1F */	addi r0, r31, 0x1f
+/* 00000128 00000168  38 80 00 20 */	li r4, 0x20
+/* 0000012C 0000016C  54 00 00 34 */	clrrwi r0, r0, 5
+/* 00000130 00000170  7F E3 00 50 */	subf r31, r3, r0
+/* 00000134 00000174  7F E3 FB 78 */	mr r3, r31
+/* 00000138 00000178  48 00 00 01 */	bl frmHeapCost__5mHeapFUlUl
+/* 0000013C 0000017C  38 03 00 1F */	addi r0, r3, 0x1f
+/* 00000140 00000180  3C A0 00 00 */	lis r5, "@11054"@ha
+/* 00000144 00000184  54 00 00 34 */	clrrwi r0, r0, 5
+/* 00000148 00000188  90 1E 00 00 */	stw r0, 0x0(r30)
+/* 0000014C 0000018C  7F E3 FB 78 */	mr r3, r31
+/* 00000150 00000190  38 A5 00 00 */	addi r5, r5, "@11054"@l
+/* 00000154 00000194  80 9D 00 14 */	lwz r4, 0x14(r29)
+/* 00000158 00000198  38 E0 00 00 */	li r7, 0x0
+/* 0000015C 0000019C  80 C0 00 00 */	lwz r6, sHeapAlignment__Q23m3d6banm_c@sda21(r0)
+/* 00000160 000001A0  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 00000164 000001A4  90 7C 00 08 */	stw r3, 0x8(r28)
+/* 00000168 000001A8  7C 64 1B 78 */	mr r4, r3
+/* 0000016C 000001AC  38 7C 00 0C */	addi r3, r28, 0xc
+/* 00000170 000001B0  38 A0 00 20 */	li r5, 0x20
+/* 00000174 000001B4  48 00 00 01 */	bl attach__12mAllocator_cFPQ23EGG4Heapi
+/* 00000178 000001B8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0000017C 000001BC  38 60 00 01 */	li r3, 0x1
+/* 00000180 000001C0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 00000184 000001C4  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 00000188 000001C8  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 0000018C 000001CC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000190 000001D0  7C 08 03 A6 */	mtlr r0
+/* 00000194 000001D4  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000198 000001D8  4E 80 00 20 */	blr
+.endfn createAllocator__Q23m3d6banm_cFP12mAllocator_cPUl
+/* 0000019C 000001DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1A0 | size: 0x20
+# m3d::banm_c::IsBound() const
+.fn IsBound__Q23m3d6banm_cCFv, global
+/* 000001A0 000001E0  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 000001A4 000001E4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001A8 000001E8  40 82 00 0C */	bne .L_000001B4
+/* 000001AC 000001EC  38 60 00 00 */	li r3, 0x0
+/* 000001B0 000001F0  4E 80 00 20 */	blr
+.L_000001B4:
+/* 000001B4 000001F4  38 80 00 04 */	li r4, 0x4
+/* 000001B8 000001F8  48 00 00 00 */	b TestAnmFlag__Q34nw4r3g3d6AnmObjCFQ44nw4r3g3d6AnmObj7AnmFlag
+/* 000001BC 000001FC  4E 80 00 20 */	blr
+.endfn IsBound__Q23m3d6banm_cCFv
+
+# .text:0x1C0 | size: 0x14
+# m3d::banm_c::getFrame() const
+.fn getFrame__Q23m3d6banm_cCFv, global
+/* 000001C0 00000200  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 000001C4 00000204  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000001C8 00000208  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 000001CC 0000020C  7D 89 03 A6 */	mtctr r12
+/* 000001D0 00000210  4E 80 04 20 */	bctr
+.endfn getFrame__Q23m3d6banm_cCFv
+/* 000001D4 00000214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001D8 00000218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001DC 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1E0 | size: 0x14
+# m3d::banm_c::setFrameOnly(float)
+.fn setFrameOnly__Q23m3d6banm_cFf, global
+/* 000001E0 00000220  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 000001E4 00000224  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000001E8 00000228  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 000001EC 0000022C  7D 89 03 A6 */	mtctr r12
+/* 000001F0 00000230  4E 80 04 20 */	bctr
+.endfn setFrameOnly__Q23m3d6banm_cFf
+/* 000001F4 00000234  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001F8 00000238  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001FC 0000023C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x200 | size: 0x14
+# m3d::banm_c::getRate() const
+.fn getRate__Q23m3d6banm_cCFv, global
+/* 00000200 00000240  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 00000204 00000244  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000208 00000248  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 0000020C 0000024C  7D 89 03 A6 */	mtctr r12
+/* 00000210 00000250  4E 80 04 20 */	bctr
+.endfn getRate__Q23m3d6banm_cCFv
+/* 00000214 00000254  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000218 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000021C 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x220 | size: 0x14
+# m3d::banm_c::setRate(float)
+.fn setRate__Q23m3d6banm_cFf, global
+/* 00000220 00000260  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 00000224 00000264  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000228 00000268  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 0000022C 0000026C  7D 89 03 A6 */	mtctr r12
+/* 00000230 00000270  4E 80 04 20 */	bctr
+.endfn setRate__Q23m3d6banm_cFf
+/* 00000234 00000274  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000238 00000278  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000023C 0000027C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x240 | size: 0x4
+# m3d::banm_c::play()
+.fn play__Q23m3d6banm_cFv, weak
+/* 00000240 00000280  4E 80 00 20 */	blr
+.endfn play__Q23m3d6banm_cFv
+
+# 0x00000000..0x00000048 | size: 0x48
+.data
+.balign 8
+
+# .data:0x0 | size: 0x30
+.obj "@11054", local
+	.4byte 0x8341836A
+	.4byte 0x838190D8
+	.4byte 0x82E891D6
+	.4byte 0x82A69770
+	.4byte 0x8341838D
+	.4byte 0x8350815B
+	.4byte 0x835E286D
+	.4byte 0x33643A3A
+	.4byte 0x62616E6D
+	.4byte 0x5F633A3A
+	.4byte 0x6D5F6865
+	.4byte 0x61702900
+.endobj "@11054"
+
+# .data:0x30 | size: 0x18
+# m3d::banm_c::__vtable
+.obj __vt__Q23m3d6banm_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__Q23m3d6banm_cFv
+	.4byte 0x00000000
+	.4byte remove__Q23m3d6banm_cFv
+	.4byte play__Q23m3d6banm_cFv
+.endobj __vt__Q23m3d6banm_c
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | size: 0x4
+# m3d::banm_c::sHeapAlignment
+.obj sHeapAlignment__Q23m3d6banm_c, global
+	.skip 0x4
+.endobj sHeapAlignment__Q23m3d6banm_c

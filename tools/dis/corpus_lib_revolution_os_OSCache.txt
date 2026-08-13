@@ -1,0 +1,425 @@
+.include "macros.inc"
+.file "OSCache.c"
+
+# 0x801AC560..0x801AC980 | size: 0x420
+.text
+.balign 4
+
+# .text:0x0 | 0x801AC560 | size: 0x14
+.fn DCEnable, global
+/* 801AC560 00000040  7C 00 04 AC */	sync
+/* 801AC564 00000044  7C 70 FA A6 */	mfspr r3, HID0
+/* 801AC568 00000048  60 63 40 00 */	ori r3, r3, 0x4000
+/* 801AC56C 0000004C  7C 70 FB A6 */	mtspr HID0, r3
+/* 801AC570 00000050  4E 80 00 20 */	blr
+.endfn DCEnable
+
+# .text:0x14 | 0x801AC574 | size: 0xC
+.fn gap_03_801AC574_text, global
+.hidden gap_03_801AC574_text
+/* 801AC574 00000054  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC578 00000058  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC57C 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC574_text
+
+# .text:0x20 | 0x801AC580 | size: 0x2C
+.fn DCInvalidateRange, global
+/* 801AC580 00000060  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC584 00000064  4C 81 00 20 */	blelr
+/* 801AC588 00000068  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC58C 0000006C  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC590 00000070  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC594 00000074  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC598 00000078  7C 89 03 A6 */	mtctr r4
+.L_801AC59C:
+/* 801AC59C 0000007C  7C 00 1B AC */	dcbi r0, r3
+/* 801AC5A0 00000080  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC5A4 00000084  42 00 FF F8 */	bdnz .L_801AC59C
+/* 801AC5A8 00000088  4E 80 00 20 */	blr
+.endfn DCInvalidateRange
+
+# .text:0x4C | 0x801AC5AC | size: 0x4
+.fn gap_03_801AC5AC_text, global
+.hidden gap_03_801AC5AC_text
+/* 801AC5AC 0000008C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC5AC_text
+
+# .text:0x50 | 0x801AC5B0 | size: 0x30
+.fn DCFlushRange, global
+/* 801AC5B0 00000090  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC5B4 00000094  4C 81 00 20 */	blelr
+/* 801AC5B8 00000098  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC5BC 0000009C  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC5C0 000000A0  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC5C4 000000A4  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC5C8 000000A8  7C 89 03 A6 */	mtctr r4
+.L_801AC5CC:
+/* 801AC5CC 000000AC  7C 00 18 AC */	dcbf r0, r3
+/* 801AC5D0 000000B0  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC5D4 000000B4  42 00 FF F8 */	bdnz .L_801AC5CC
+/* 801AC5D8 000000B8  44 00 00 02 */	sc
+/* 801AC5DC 000000BC  4E 80 00 20 */	blr
+.endfn DCFlushRange
+
+# .text:0x80 | 0x801AC5E0 | size: 0x30
+.fn DCStoreRange, global
+/* 801AC5E0 000000C0  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC5E4 000000C4  4C 81 00 20 */	blelr
+/* 801AC5E8 000000C8  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC5EC 000000CC  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC5F0 000000D0  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC5F4 000000D4  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC5F8 000000D8  7C 89 03 A6 */	mtctr r4
+.L_801AC5FC:
+/* 801AC5FC 000000DC  7C 00 18 6C */	dcbst r0, r3
+/* 801AC600 000000E0  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC604 000000E4  42 00 FF F8 */	bdnz .L_801AC5FC
+/* 801AC608 000000E8  44 00 00 02 */	sc
+/* 801AC60C 000000EC  4E 80 00 20 */	blr
+.endfn DCStoreRange
+
+# .text:0xB0 | 0x801AC610 | size: 0x2C
+.fn DCFlushRangeNoSync, global
+/* 801AC610 000000F0  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC614 000000F4  4C 81 00 20 */	blelr
+/* 801AC618 000000F8  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC61C 000000FC  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC620 00000100  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC624 00000104  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC628 00000108  7C 89 03 A6 */	mtctr r4
+.L_801AC62C:
+/* 801AC62C 0000010C  7C 00 18 AC */	dcbf r0, r3
+/* 801AC630 00000110  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC634 00000114  42 00 FF F8 */	bdnz .L_801AC62C
+/* 801AC638 00000118  4E 80 00 20 */	blr
+.endfn DCFlushRangeNoSync
+
+# .text:0xDC | 0x801AC63C | size: 0x4
+.fn gap_03_801AC63C_text, global
+.hidden gap_03_801AC63C_text
+/* 801AC63C 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC63C_text
+
+# .text:0xE0 | 0x801AC640 | size: 0x2C
+.fn DCStoreRangeNoSync, global
+/* 801AC640 00000120  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC644 00000124  4C 81 00 20 */	blelr
+/* 801AC648 00000128  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC64C 0000012C  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC650 00000130  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC654 00000134  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC658 00000138  7C 89 03 A6 */	mtctr r4
+.L_801AC65C:
+/* 801AC65C 0000013C  7C 00 18 6C */	dcbst r0, r3
+/* 801AC660 00000140  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC664 00000144  42 00 FF F8 */	bdnz .L_801AC65C
+/* 801AC668 00000148  4E 80 00 20 */	blr
+.endfn DCStoreRangeNoSync
+
+# .text:0x10C | 0x801AC66C | size: 0x4
+.fn gap_03_801AC66C_text, global
+.hidden gap_03_801AC66C_text
+/* 801AC66C 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC66C_text
+
+# .text:0x110 | 0x801AC670 | size: 0x2C
+.fn DCZeroRange, global
+/* 801AC670 00000150  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC674 00000154  4C 81 00 20 */	blelr
+/* 801AC678 00000158  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC67C 0000015C  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC680 00000160  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC684 00000164  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC688 00000168  7C 89 03 A6 */	mtctr r4
+.L_801AC68C:
+/* 801AC68C 0000016C  7C 00 1F EC */	dcbz r0, r3
+/* 801AC690 00000170  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC694 00000174  42 00 FF F8 */	bdnz .L_801AC68C
+/* 801AC698 00000178  4E 80 00 20 */	blr
+.endfn DCZeroRange
+
+# .text:0x13C | 0x801AC69C | size: 0x4
+.fn gap_03_801AC69C_text, global
+.hidden gap_03_801AC69C_text
+/* 801AC69C 0000017C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC69C_text
+
+# .text:0x140 | 0x801AC6A0 | size: 0x34
+.fn ICInvalidateRange, global
+/* 801AC6A0 00000180  28 04 00 00 */	cmplwi r4, 0x0
+/* 801AC6A4 00000184  4C 81 00 20 */	blelr
+/* 801AC6A8 00000188  54 65 06 FE */	clrlwi r5, r3, 27
+/* 801AC6AC 0000018C  7C 84 2A 14 */	add r4, r4, r5
+/* 801AC6B0 00000190  38 84 00 1F */	addi r4, r4, 0x1f
+/* 801AC6B4 00000194  54 84 D9 7E */	srwi r4, r4, 5
+/* 801AC6B8 00000198  7C 89 03 A6 */	mtctr r4
+.L_801AC6BC:
+/* 801AC6BC 0000019C  7C 00 1F AC */	icbi r0, r3
+/* 801AC6C0 000001A0  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC6C4 000001A4  42 00 FF F8 */	bdnz .L_801AC6BC
+/* 801AC6C8 000001A8  7C 00 04 AC */	sync
+/* 801AC6CC 000001AC  4C 00 01 2C */	isync
+/* 801AC6D0 000001B0  4E 80 00 20 */	blr
+.endfn ICInvalidateRange
+
+# .text:0x174 | 0x801AC6D4 | size: 0xC
+.fn gap_03_801AC6D4_text, global
+.hidden gap_03_801AC6D4_text
+/* 801AC6D4 000001B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC6D8 000001B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC6DC 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC6D4_text
+
+# .text:0x180 | 0x801AC6E0 | size: 0x10
+.fn ICFlashInvalidate, global
+/* 801AC6E0 000001C0  7C 70 FA A6 */	mfspr r3, HID0
+/* 801AC6E4 000001C4  60 63 08 00 */	ori r3, r3, 0x800
+/* 801AC6E8 000001C8  7C 70 FB A6 */	mtspr HID0, r3
+/* 801AC6EC 000001CC  4E 80 00 20 */	blr
+.endfn ICFlashInvalidate
+
+# .text:0x190 | 0x801AC6F0 | size: 0x14
+.fn ICEnable, global
+/* 801AC6F0 000001D0  4C 00 01 2C */	isync
+/* 801AC6F4 000001D4  7C 70 FA A6 */	mfspr r3, HID0
+/* 801AC6F8 000001D8  60 63 80 00 */	ori r3, r3, 0x8000
+/* 801AC6FC 000001DC  7C 70 FB A6 */	mtspr HID0, r3
+/* 801AC700 000001E0  4E 80 00 20 */	blr
+.endfn ICEnable
+
+# .text:0x1A4 | 0x801AC704 | size: 0xC
+.fn gap_03_801AC704_text, global
+.hidden gap_03_801AC704_text
+/* 801AC704 000001E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC708 000001E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC70C 000001EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC704_text
+
+# .text:0x1B0 | 0x801AC710 | size: 0xCC
+.fn __LCEnable, global
+/* 801AC710 000001F0  7C A0 00 A6 */	mfmsr r5
+/* 801AC714 000001F4  60 A5 10 00 */	ori r5, r5, 0x1000
+/* 801AC718 000001F8  7C A0 01 24 */	mtmsr r5
+/* 801AC71C 000001FC  3C 60 80 00 */	lis r3, 0x8000
+/* 801AC720 00000200  38 80 04 00 */	li r4, 0x400
+/* 801AC724 00000204  7C 89 03 A6 */	mtctr r4
+.L_801AC728:
+/* 801AC728 00000208  7C 00 1A 2C */	dcbt r0, r3
+/* 801AC72C 0000020C  7C 00 18 6C */	dcbst r0, r3
+/* 801AC730 00000210  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC734 00000214  42 00 FF F4 */	bdnz .L_801AC728
+/* 801AC738 00000218  7C 98 E2 A6 */	mfspr r4, HID2
+/* 801AC73C 0000021C  64 84 10 0F */	oris r4, r4, 0x100f
+/* 801AC740 00000220  7C 98 E3 A6 */	mtspr HID2, r4
+/* 801AC744 00000224  60 00 00 00 */	nop
+/* 801AC748 00000228  60 00 00 00 */	nop
+/* 801AC74C 0000022C  60 00 00 00 */	nop
+/* 801AC750 00000230  60 00 00 00 */	nop
+/* 801AC754 00000234  60 00 00 00 */	nop
+/* 801AC758 00000238  60 00 00 00 */	nop
+/* 801AC75C 0000023C  60 00 00 00 */	nop
+/* 801AC760 00000240  60 00 00 00 */	nop
+/* 801AC764 00000244  60 00 00 00 */	nop
+/* 801AC768 00000248  60 00 00 00 */	nop
+/* 801AC76C 0000024C  60 00 00 00 */	nop
+/* 801AC770 00000250  60 00 00 00 */	nop
+/* 801AC774 00000254  3C 60 E0 00 */	lis r3, 0xe000
+/* 801AC778 00000258  60 63 00 02 */	ori r3, r3, 0x2
+/* 801AC77C 0000025C  7C 7F 83 A6 */	mtdbatl 3, r3
+/* 801AC780 00000260  60 63 01 FE */	ori r3, r3, 0x1fe
+/* 801AC784 00000264  7C 7E 83 A6 */	mtdbatu 3, r3
+/* 801AC788 00000268  4C 00 01 2C */	isync
+/* 801AC78C 0000026C  3C 60 E0 00 */	lis r3, 0xe000
+/* 801AC790 00000270  38 C0 02 00 */	li r6, 0x200
+/* 801AC794 00000274  7C C9 03 A6 */	mtctr r6
+/* 801AC798 00000278  38 C0 00 00 */	li r6, 0x0
+.L_801AC79C:
+/* 801AC79C 0000027C  10 06 1F EC */	dcbz_l r6, r3
+/* 801AC7A0 00000280  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC7A4 00000284  42 00 FF F8 */	bdnz .L_801AC79C
+/* 801AC7A8 00000288  60 00 00 00 */	nop
+/* 801AC7AC 0000028C  60 00 00 00 */	nop
+/* 801AC7B0 00000290  60 00 00 00 */	nop
+/* 801AC7B4 00000294  60 00 00 00 */	nop
+/* 801AC7B8 00000298  60 00 00 00 */	nop
+/* 801AC7BC 0000029C  60 00 00 00 */	nop
+/* 801AC7C0 000002A0  60 00 00 00 */	nop
+/* 801AC7C4 000002A4  60 00 00 00 */	nop
+/* 801AC7C8 000002A8  60 00 00 00 */	nop
+/* 801AC7CC 000002AC  60 00 00 00 */	nop
+/* 801AC7D0 000002B0  60 00 00 00 */	nop
+/* 801AC7D4 000002B4  60 00 00 00 */	nop
+/* 801AC7D8 000002B8  4E 80 00 20 */	blr
+.endfn __LCEnable
+
+# .text:0x27C | 0x801AC7DC | size: 0x4
+.fn gap_03_801AC7DC_text, global
+.hidden gap_03_801AC7DC_text
+/* 801AC7DC 000002BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC7DC_text
+
+# .text:0x280 | 0x801AC7E0 | size: 0x38
+.fn LCEnable, global
+/* 801AC7E0 000002C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801AC7E4 000002C4  7C 08 02 A6 */	mflr r0
+/* 801AC7E8 000002C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801AC7EC 000002CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801AC7F0 000002D0  48 00 00 01 */	bl OSDisableInterrupts
+/* 801AC7F4 000002D4  7C 7F 1B 78 */	mr r31, r3
+/* 801AC7F8 000002D8  48 00 00 01 */	bl __LCEnable
+/* 801AC7FC 000002DC  7F E3 FB 78 */	mr r3, r31
+/* 801AC800 000002E0  48 00 00 01 */	bl OSRestoreInterrupts
+/* 801AC804 000002E4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801AC808 000002E8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801AC80C 000002EC  7C 08 03 A6 */	mtlr r0
+/* 801AC810 000002F0  38 21 00 10 */	addi r1, r1, 0x10
+/* 801AC814 000002F4  4E 80 00 20 */	blr
+.endfn LCEnable
+
+# .text:0x2B8 | 0x801AC818 | size: 0x8
+.fn gap_03_801AC818_text, global
+.hidden gap_03_801AC818_text
+/* 801AC818 000002F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC81C 000002FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC818_text
+
+# .text:0x2C0 | 0x801AC820 | size: 0x28
+.fn LCDisable, global
+/* 801AC820 00000300  3C 60 E0 00 */	lis r3, 0xe000
+/* 801AC824 00000304  38 80 02 00 */	li r4, 0x200
+/* 801AC828 00000308  7C 89 03 A6 */	mtctr r4
+.L_801AC82C:
+/* 801AC82C 0000030C  7C 00 1B AC */	dcbi r0, r3
+/* 801AC830 00000310  38 63 00 20 */	addi r3, r3, 0x20
+/* 801AC834 00000314  42 00 FF F8 */	bdnz .L_801AC82C
+/* 801AC838 00000318  7C 98 E2 A6 */	mfspr r4, HID2
+/* 801AC83C 0000031C  54 84 01 04 */	rlwinm r4, r4, 0, 4, 2
+/* 801AC840 00000320  7C 98 E3 A6 */	mtspr HID2, r4
+/* 801AC844 00000324  4E 80 00 20 */	blr
+.endfn LCDisable
+
+# .text:0x2E8 | 0x801AC848 | size: 0x8
+.fn gap_03_801AC848_text, global
+.hidden gap_03_801AC848_text
+/* 801AC848 00000328  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC84C 0000032C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC848_text
+
+# .text:0x2F0 | 0x801AC850 | size: 0x24
+.fn LCLoadBlocks, global
+/* 801AC850 00000330  54 A6 F6 FE */	extrwi r6, r5, 5, 25
+/* 801AC854 00000334  54 84 00 FE */	clrlwi r4, r4, 3
+/* 801AC858 00000338  7C C6 23 78 */	or r6, r6, r4
+/* 801AC85C 0000033C  7C DA E3 A6 */	mtspr DMA_U, r6
+/* 801AC860 00000340  54 A6 17 3A */	clrlslwi r6, r5, 30, 2
+/* 801AC864 00000344  7C C6 1B 78 */	or r6, r6, r3
+/* 801AC868 00000348  60 C6 00 12 */	ori r6, r6, 0x12
+/* 801AC86C 0000034C  7C DB E3 A6 */	mtspr DMA_L, r6
+/* 801AC870 00000350  4E 80 00 20 */	blr
+.endfn LCLoadBlocks
+
+# .text:0x314 | 0x801AC874 | size: 0xC
+.fn gap_03_801AC874_text, global
+.hidden gap_03_801AC874_text
+/* 801AC874 00000354  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC878 00000358  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC87C 0000035C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC874_text
+
+# .text:0x320 | 0x801AC880 | size: 0x24
+.fn LCStoreBlocks, global
+/* 801AC880 00000360  54 A6 F6 FE */	extrwi r6, r5, 5, 25
+/* 801AC884 00000364  54 63 00 FE */	clrlwi r3, r3, 3
+/* 801AC888 00000368  7C C6 1B 78 */	or r6, r6, r3
+/* 801AC88C 0000036C  7C DA E3 A6 */	mtspr DMA_U, r6
+/* 801AC890 00000370  54 A6 17 3A */	clrlslwi r6, r5, 30, 2
+/* 801AC894 00000374  7C C6 23 78 */	or r6, r6, r4
+/* 801AC898 00000378  60 C6 00 02 */	ori r6, r6, 0x2
+/* 801AC89C 0000037C  7C DB E3 A6 */	mtspr DMA_L, r6
+/* 801AC8A0 00000380  4E 80 00 20 */	blr
+.endfn LCStoreBlocks
+
+# .text:0x344 | 0x801AC8A4 | size: 0xC
+.fn gap_03_801AC8A4_text, global
+.hidden gap_03_801AC8A4_text
+/* 801AC8A4 00000384  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC8A8 00000388  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC8AC 0000038C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC8A4_text
+
+# .text:0x350 | 0x801AC8B0 | size: 0xA0
+.fn LCStoreData, global
+/* 801AC8B0 00000390  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801AC8B4 00000394  7C 08 02 A6 */	mflr r0
+/* 801AC8B8 00000398  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801AC8BC 0000039C  38 05 00 1F */	addi r0, r5, 0x1f
+/* 801AC8C0 000003A0  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 801AC8C4 000003A4  54 1F D9 7E */	srwi r31, r0, 5
+/* 801AC8C8 000003A8  38 1F 00 7F */	addi r0, r31, 0x7f
+/* 801AC8CC 000003AC  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 801AC8D0 000003B0  54 1E C9 FE */	srwi r30, r0, 7
+/* 801AC8D4 000003B4  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 801AC8D8 000003B8  7C 9D 23 78 */	mr r29, r4
+/* 801AC8DC 000003BC  93 81 00 10 */	stw r28, 0x10(r1)
+/* 801AC8E0 000003C0  7C 7C 1B 78 */	mr r28, r3
+/* 801AC8E4 000003C4  48 00 00 40 */	b .L_801AC924
+.L_801AC8E8:
+/* 801AC8E8 000003C8  28 1F 00 80 */	cmplwi r31, 0x80
+/* 801AC8EC 000003CC  40 80 00 1C */	bge .L_801AC908
+/* 801AC8F0 000003D0  7F 83 E3 78 */	mr r3, r28
+/* 801AC8F4 000003D4  7F A4 EB 78 */	mr r4, r29
+/* 801AC8F8 000003D8  7F E5 FB 78 */	mr r5, r31
+/* 801AC8FC 000003DC  48 00 00 01 */	bl LCStoreBlocks
+/* 801AC900 000003E0  3B E0 00 00 */	li r31, 0x0
+/* 801AC904 000003E4  48 00 00 20 */	b .L_801AC924
+.L_801AC908:
+/* 801AC908 000003E8  7F 83 E3 78 */	mr r3, r28
+/* 801AC90C 000003EC  7F A4 EB 78 */	mr r4, r29
+/* 801AC910 000003F0  38 A0 00 00 */	li r5, 0x0
+/* 801AC914 000003F4  48 00 00 01 */	bl LCStoreBlocks
+/* 801AC918 000003F8  3B FF FF 80 */	subi r31, r31, 0x80
+/* 801AC91C 000003FC  3B 9C 10 00 */	addi r28, r28, 0x1000
+/* 801AC920 00000400  3B BD 10 00 */	addi r29, r29, 0x1000
+.L_801AC924:
+/* 801AC924 00000404  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 801AC928 00000408  40 82 FF C0 */	bne .L_801AC8E8
+/* 801AC92C 0000040C  7F C3 F3 78 */	mr r3, r30
+/* 801AC930 00000410  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 801AC934 00000414  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 801AC938 00000418  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 801AC93C 0000041C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 801AC940 00000420  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801AC944 00000424  7C 08 03 A6 */	mtlr r0
+/* 801AC948 00000428  38 21 00 20 */	addi r1, r1, 0x20
+/* 801AC94C 0000042C  4E 80 00 20 */	blr
+.endfn LCStoreData
+
+# .text:0x3F0 | 0x801AC950 | size: 0xC
+.fn LCQueueLength, global
+/* 801AC950 00000430  7C 98 E2 A6 */	mfspr r4, HID2
+/* 801AC954 00000434  54 83 47 3E */	extrwi r3, r4, 4, 4
+/* 801AC958 00000438  4E 80 00 20 */	blr
+.endfn LCQueueLength
+
+# .text:0x3FC | 0x801AC95C | size: 0x4
+.fn gap_03_801AC95C_text, global
+.hidden gap_03_801AC95C_text
+/* 801AC95C 0000043C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC95C_text
+
+# .text:0x400 | 0x801AC960 | size: 0x14
+.fn LCQueueWait, global
+/* 801AC960 00000440  7C 98 E2 A6 */	mfspr r4, HID2
+/* 801AC964 00000444  54 84 47 3E */	extrwi r4, r4, 4, 4
+/* 801AC968 00000448  7C 04 18 00 */	cmpw r4, r3
+/* 801AC96C 0000044C  41 81 00 00 */	bgt LCQueueWait
+/* 801AC970 00000450  4E 80 00 20 */	blr
+.endfn LCQueueWait
+
+# .text:0x414 | 0x801AC974 | size: 0xC
+.fn gap_03_801AC974_text, global
+.hidden gap_03_801AC974_text
+/* 801AC974 00000454  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC978 00000458  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801AC97C 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801AC974_text

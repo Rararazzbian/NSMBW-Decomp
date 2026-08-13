@@ -1,0 +1,664 @@
+.include "macros.inc"
+.file "d_res.cpp"
+
+# 0x800DF040..0x800DF770 | size: 0x730
+.text
+.balign 4
+
+# .text:0x0 | 0x800DF040 | size: 0x14
+# dRes_c::dRes_c()
+.fn __ct__6dRes_cFv, global
+/* 800DF040 00000040  38 00 00 00 */	li r0, 0x0
+/* 800DF044 00000044  90 03 00 00 */	stw r0, 0x0(r3)
+/* 800DF048 00000048  B0 03 00 04 */	sth r0, 0x4(r3)
+/* 800DF04C 0000004C  90 03 00 08 */	stw r0, 0x8(r3)
+/* 800DF050 00000050  4E 80 00 20 */	blr
+.endfn __ct__6dRes_cFv
+
+# .text:0x14 | 0x800DF054 | size: 0xC
+.fn gap_03_800DF054_text, global
+.hidden gap_03_800DF054_text
+/* 800DF054 00000054  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF058 00000058  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF05C 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF054_text
+
+# .text:0x20 | 0x800DF060 | size: 0x74
+# dRes_c::~dRes_c()
+.fn __dt__6dRes_cFv, global
+/* 800DF060 00000060  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800DF064 00000064  7C 08 02 A6 */	mflr r0
+/* 800DF068 00000068  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF06C 0000006C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800DF070 00000070  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800DF074 00000074  7C 9F 23 78 */	mr r31, r4
+/* 800DF078 00000078  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800DF07C 0000007C  7C 7E 1B 78 */	mr r30, r3
+/* 800DF080 00000080  41 82 00 38 */	beq .L_800DF0B8
+/* 800DF084 00000084  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 800DF088 00000088  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF08C 0000008C  41 82 00 1C */	beq .L_800DF0A8
+/* 800DF090 00000090  3C 80 00 00 */	lis r4, __dt__Q26dRes_c6info_cFv@ha
+/* 800DF094 00000094  38 84 00 00 */	addi r4, r4, __dt__Q26dRes_c6info_cFv@l
+/* 800DF098 00000098  48 00 00 01 */	bl __destroy_new_array
+/* 800DF09C 0000009C  38 00 00 00 */	li r0, 0x0
+/* 800DF0A0 000000A0  90 1E 00 00 */	stw r0, 0x0(r30)
+/* 800DF0A4 000000A4  B0 1E 00 04 */	sth r0, 0x4(r30)
+.L_800DF0A8:
+/* 800DF0A8 000000A8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800DF0AC 000000AC  40 81 00 0C */	ble .L_800DF0B8
+/* 800DF0B0 000000B0  7F C3 F3 78 */	mr r3, r30
+/* 800DF0B4 000000B4  48 00 00 01 */	bl __dl__FPv
+.L_800DF0B8:
+/* 800DF0B8 000000B8  7F C3 F3 78 */	mr r3, r30
+/* 800DF0BC 000000BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800DF0C0 000000C0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800DF0C4 000000C4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800DF0C8 000000C8  7C 08 03 A6 */	mtlr r0
+/* 800DF0CC 000000CC  38 21 00 10 */	addi r1, r1, 0x10
+/* 800DF0D0 000000D0  4E 80 00 20 */	blr
+.endfn __dt__6dRes_cFv
+
+# .text:0x94 | 0x800DF0D4 | size: 0xC
+.fn gap_03_800DF0D4_text, global
+.hidden gap_03_800DF0D4_text
+/* 800DF0D4 000000D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF0D8 000000D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF0DC 000000DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF0D4_text
+
+# .text:0xA0 | 0x800DF0E0 | size: 0x88
+# dRes_c::init(unsigned short, dRes_c::callback_c*)
+.fn init__6dRes_cFUsPQ26dRes_c10callback_c, global
+/* 800DF0E0 000000E0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF0E4 000000E4  7C 08 02 A6 */	mflr r0
+/* 800DF0E8 000000E8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF0EC 000000EC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800DF0F0 000000F0  7C BF 2B 78 */	mr r31, r5
+/* 800DF0F4 000000F4  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800DF0F8 000000F8  7C 9E 23 78 */	mr r30, r4
+/* 800DF0FC 000000FC  54 84 32 B2 */	clrlslwi r4, r4, 16, 6
+/* 800DF100 00000100  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800DF104 00000104  7C 7D 1B 78 */	mr r29, r3
+/* 800DF108 00000108  38 64 00 10 */	addi r3, r4, 0x10
+/* 800DF10C 0000010C  48 00 00 01 */	bl __nwa__FUl
+/* 800DF110 00000110  3C 80 00 00 */	lis r4, __ct__Q26dRes_c6info_cFv@ha
+/* 800DF114 00000114  3C A0 00 00 */	lis r5, __dt__Q26dRes_c6info_cFv@ha
+/* 800DF118 00000118  7F C7 F3 78 */	mr r7, r30
+/* 800DF11C 0000011C  38 C0 00 40 */	li r6, 0x40
+/* 800DF120 00000120  38 84 00 00 */	addi r4, r4, __ct__Q26dRes_c6info_cFv@l
+/* 800DF124 00000124  38 A5 00 00 */	addi r5, r5, __dt__Q26dRes_c6info_cFv@l
+/* 800DF128 00000128  48 00 00 01 */	bl __construct_new_array
+/* 800DF12C 0000012C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF130 00000130  90 7D 00 00 */	stw r3, 0x0(r29)
+/* 800DF134 00000134  40 82 00 0C */	bne .L_800DF140
+/* 800DF138 00000138  38 60 00 00 */	li r3, 0x0
+/* 800DF13C 0000013C  48 00 00 10 */	b .L_800DF14C
+.L_800DF140:
+/* 800DF140 00000140  B3 DD 00 04 */	sth r30, 0x4(r29)
+/* 800DF144 00000144  38 60 00 01 */	li r3, 0x1
+/* 800DF148 00000148  93 FD 00 08 */	stw r31, 0x8(r29)
+.L_800DF14C:
+/* 800DF14C 0000014C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF150 00000150  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800DF154 00000154  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800DF158 00000158  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800DF15C 0000015C  7C 08 03 A6 */	mtlr r0
+/* 800DF160 00000160  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF164 00000164  4E 80 00 20 */	blr
+.endfn init__6dRes_cFUsPQ26dRes_c10callback_c
+
+# .text:0x128 | 0x800DF168 | size: 0x8
+.fn gap_03_800DF168_text, global
+.hidden gap_03_800DF168_text
+/* 800DF168 00000168  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF16C 0000016C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF168_text
+
+# .text:0x130 | 0x800DF170 | size: 0xA8
+# dRes_c::setRes(const char*, const char*, unsigned char, EGG::Heap*)
+.fn setRes__6dRes_cFPCcPCcUcPQ23EGG4Heap, global
+/* 800DF170 00000170  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF174 00000174  7C 08 02 A6 */	mflr r0
+/* 800DF178 00000178  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF17C 0000017C  39 61 00 20 */	addi r11, r1, 0x20
+/* 800DF180 00000180  48 00 00 01 */	bl _savegpr_26
+/* 800DF184 00000184  7C 7A 1B 78 */	mr r26, r3
+/* 800DF188 00000188  7C 9B 23 78 */	mr r27, r4
+/* 800DF18C 0000018C  7C BC 2B 78 */	mr r28, r5
+/* 800DF190 00000190  7C DD 33 78 */	mr r29, r6
+/* 800DF194 00000194  7C FE 3B 78 */	mr r30, r7
+/* 800DF198 00000198  48 00 00 01 */	bl getResInfo__6dRes_cCFPCc
+/* 800DF19C 0000019C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF1A0 000001A0  7C 7F 1B 78 */	mr r31, r3
+/* 800DF1A4 000001A4  40 82 00 4C */	bne .L_800DF1F0
+/* 800DF1A8 000001A8  7F 43 D3 78 */	mr r3, r26
+/* 800DF1AC 000001AC  48 00 00 01 */	bl newResInfo__6dRes_cFv
+/* 800DF1B0 000001B0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF1B4 000001B4  7C 7F 1B 78 */	mr r31, r3
+/* 800DF1B8 000001B8  40 82 00 0C */	bne .L_800DF1C4
+/* 800DF1BC 000001BC  38 60 00 00 */	li r3, 0x0
+/* 800DF1C0 000001C0  48 00 00 40 */	b .L_800DF200
+.L_800DF1C4:
+/* 800DF1C4 000001C4  7F 64 DB 78 */	mr r4, r27
+/* 800DF1C8 000001C8  7F 85 E3 78 */	mr r5, r28
+/* 800DF1CC 000001CC  7F A6 EB 78 */	mr r6, r29
+/* 800DF1D0 000001D0  7F C7 F3 78 */	mr r7, r30
+/* 800DF1D4 000001D4  48 00 00 01 */	bl set__Q26dRes_c6info_cFPCcPCcUcPQ23EGG4Heap
+/* 800DF1D8 000001D8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF1DC 000001DC  40 82 00 14 */	bne .L_800DF1F0
+/* 800DF1E0 000001E0  7F E3 FB 78 */	mr r3, r31
+/* 800DF1E4 000001E4  48 00 00 01 */	bl cleanup__Q26dRes_c6info_cFv
+/* 800DF1E8 000001E8  38 60 00 00 */	li r3, 0x0
+/* 800DF1EC 000001EC  48 00 00 14 */	b .L_800DF200
+.L_800DF1F0:
+/* 800DF1F0 000001F0  A0 9F 00 20 */	lhz r4, 0x20(r31)
+/* 800DF1F4 000001F4  38 60 00 01 */	li r3, 0x1
+/* 800DF1F8 000001F8  38 04 00 01 */	addi r0, r4, 0x1
+/* 800DF1FC 000001FC  B0 1F 00 20 */	sth r0, 0x20(r31)
+.L_800DF200:
+/* 800DF200 00000200  39 61 00 20 */	addi r11, r1, 0x20
+/* 800DF204 00000204  48 00 00 01 */	bl _restgpr_26
+/* 800DF208 00000208  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF20C 0000020C  7C 08 03 A6 */	mtlr r0
+/* 800DF210 00000210  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF214 00000214  4E 80 00 20 */	blr
+.endfn setRes__6dRes_cFPCcPCcUcPQ23EGG4Heap
+
+# .text:0x1D8 | 0x800DF218 | size: 0x8
+.fn gap_03_800DF218_text, global
+.hidden gap_03_800DF218_text
+/* 800DF218 00000218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF21C 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF218_text
+
+# .text:0x1E0 | 0x800DF220 | size: 0x4C
+# dRes_c::deleteRes(const char*)
+.fn deleteRes__6dRes_cFPCc, global
+/* 800DF220 00000220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800DF224 00000224  7C 08 02 A6 */	mflr r0
+/* 800DF228 00000228  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800DF22C 0000022C  48 00 00 01 */	bl getResInfo__6dRes_cCFPCc
+/* 800DF230 00000230  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF234 00000234  40 82 00 0C */	bne .L_800DF240
+/* 800DF238 00000238  38 60 00 00 */	li r3, 0x0
+/* 800DF23C 0000023C  48 00 00 20 */	b .L_800DF25C
+.L_800DF240:
+/* 800DF240 00000240  A0 83 00 20 */	lhz r4, 0x20(r3)
+/* 800DF244 00000244  38 04 FF FF */	subi r0, r4, 0x1
+/* 800DF248 00000248  B0 03 00 20 */	sth r0, 0x20(r3)
+/* 800DF24C 0000024C  54 00 04 3F */	clrlwi. r0, r0, 16
+/* 800DF250 00000250  40 82 00 08 */	bne .L_800DF258
+/* 800DF254 00000254  48 00 00 01 */	bl cleanup__Q26dRes_c6info_cFv
+.L_800DF258:
+/* 800DF258 00000258  38 60 00 01 */	li r3, 0x1
+.L_800DF25C:
+/* 800DF25C 0000025C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800DF260 00000260  7C 08 03 A6 */	mtlr r0
+/* 800DF264 00000264  38 21 00 10 */	addi r1, r1, 0x10
+/* 800DF268 00000268  4E 80 00 20 */	blr
+.endfn deleteRes__6dRes_cFPCc
+
+# .text:0x22C | 0x800DF26C | size: 0x4
+.fn gap_03_800DF26C_text, global
+.hidden gap_03_800DF26C_text
+/* 800DF26C 0000026C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF26C_text
+
+# .text:0x230 | 0x800DF270 | size: 0x60
+# dRes_c::getRes(const char*, const char*) const
+.fn getRes__6dRes_cCFPCcPCc, global
+/* 800DF270 00000270  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800DF274 00000274  7C 08 02 A6 */	mflr r0
+/* 800DF278 00000278  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800DF27C 0000027C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800DF280 00000280  3B E0 00 00 */	li r31, 0x0
+/* 800DF284 00000284  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800DF288 00000288  7C BE 2B 78 */	mr r30, r5
+/* 800DF28C 0000028C  48 00 00 01 */	bl getResInfoLoaded__6dRes_cCFPCc
+/* 800DF290 00000290  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF294 00000294  41 82 00 20 */	beq .L_800DF2B4
+/* 800DF298 00000298  80 63 00 28 */	lwz r3, 0x28(r3)
+/* 800DF29C 0000029C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF2A0 000002A0  41 82 00 14 */	beq .L_800DF2B4
+/* 800DF2A4 000002A4  7F C4 F3 78 */	mr r4, r30
+/* 800DF2A8 000002A8  38 A0 00 00 */	li r5, 0x0
+/* 800DF2AC 000002AC  48 00 00 01 */	bl getFile__Q23EGG7ArchiveFPCcPQ33EGG7Archive8FileInfo
+/* 800DF2B0 000002B0  7C 7F 1B 78 */	mr r31, r3
+.L_800DF2B4:
+/* 800DF2B4 000002B4  7F E3 FB 78 */	mr r3, r31
+/* 800DF2B8 000002B8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800DF2BC 000002BC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800DF2C0 000002C0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800DF2C4 000002C4  7C 08 03 A6 */	mtlr r0
+/* 800DF2C8 000002C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 800DF2CC 000002CC  4E 80 00 20 */	blr
+.endfn getRes__6dRes_cCFPCcPCc
+
+# .text:0x290 | 0x800DF2D0 | size: 0x8C
+# dRes_c::getRes(const char*, const char*, unsigned long*) const
+.fn getRes__6dRes_cCFPCcPCcPUl, global
+/* 800DF2D0 000002D0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF2D4 000002D4  7C 08 02 A6 */	mflr r0
+/* 800DF2D8 000002D8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF2DC 000002DC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800DF2E0 000002E0  3B E0 00 00 */	li r31, 0x0
+/* 800DF2E4 000002E4  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800DF2E8 000002E8  3B C0 00 00 */	li r30, 0x0
+/* 800DF2EC 000002EC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800DF2F0 000002F0  7C DD 33 78 */	mr r29, r6
+/* 800DF2F4 000002F4  93 81 00 10 */	stw r28, 0x10(r1)
+/* 800DF2F8 000002F8  7C BC 2B 78 */	mr r28, r5
+/* 800DF2FC 000002FC  48 00 00 01 */	bl getResInfoLoaded__6dRes_cCFPCc
+/* 800DF300 00000300  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF304 00000304  41 82 00 30 */	beq .L_800DF334
+/* 800DF308 00000308  80 63 00 28 */	lwz r3, 0x28(r3)
+/* 800DF30C 0000030C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF310 00000310  41 82 00 24 */	beq .L_800DF334
+/* 800DF314 00000314  38 00 00 00 */	li r0, 0x0
+/* 800DF318 00000318  90 01 00 08 */	stw r0, 0x8(r1)
+/* 800DF31C 0000031C  7F 84 E3 78 */	mr r4, r28
+/* 800DF320 00000320  38 A1 00 08 */	addi r5, r1, 0x8
+/* 800DF324 00000324  90 01 00 0C */	stw r0, 0xc(r1)
+/* 800DF328 00000328  48 00 00 01 */	bl getFile__Q23EGG7ArchiveFPCcPQ33EGG7Archive8FileInfo
+/* 800DF32C 0000032C  7C 7F 1B 78 */	mr r31, r3
+/* 800DF330 00000330  83 C1 00 0C */	lwz r30, 0xc(r1)
+.L_800DF334:
+/* 800DF334 00000334  93 DD 00 00 */	stw r30, 0x0(r29)
+/* 800DF338 00000338  7F E3 FB 78 */	mr r3, r31
+/* 800DF33C 0000033C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800DF340 00000340  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800DF344 00000344  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800DF348 00000348  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 800DF34C 0000034C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF350 00000350  7C 08 03 A6 */	mtlr r0
+/* 800DF354 00000354  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF358 00000358  4E 80 00 20 */	blr
+.endfn getRes__6dRes_cCFPCcPCcPUl
+
+# .text:0x31C | 0x800DF35C | size: 0x4
+.fn gap_03_800DF35C_text, global
+.hidden gap_03_800DF35C_text
+/* 800DF35C 0000035C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF35C_text
+
+# .text:0x320 | 0x800DF360 | size: 0x124
+# dRes_c::getRes(const char*, const char*, unsigned long*, int*) const
+.fn getRes__6dRes_cCFPCcPCcPUlPi, global
+/* 800DF360 00000360  94 21 FE D0 */	stwu r1, -0x130(r1)
+/* 800DF364 00000364  7C 08 02 A6 */	mflr r0
+/* 800DF368 00000368  90 01 01 34 */	stw r0, 0x134(r1)
+/* 800DF36C 0000036C  39 61 01 30 */	addi r11, r1, 0x130
+/* 800DF370 00000370  48 00 00 01 */	bl _savegpr_27
+/* 800DF374 00000374  7C BF 2B 78 */	mr r31, r5
+/* 800DF378 00000378  7C DB 33 78 */	mr r27, r6
+/* 800DF37C 0000037C  7C FC 3B 78 */	mr r28, r7
+/* 800DF380 00000380  3B A0 00 00 */	li r29, 0x0
+/* 800DF384 00000384  48 00 00 01 */	bl getResInfoLoaded__6dRes_cCFPCc
+/* 800DF388 00000388  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF38C 0000038C  41 82 00 DC */	beq .L_800DF468
+/* 800DF390 00000390  83 C3 00 28 */	lwz r30, 0x28(r3)
+/* 800DF394 00000394  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 800DF398 00000398  41 82 00 D0 */	beq .L_800DF468
+/* 800DF39C 0000039C  7F C3 F3 78 */	mr r3, r30
+/* 800DF3A0 000003A0  7F E4 FB 78 */	mr r4, r31
+/* 800DF3A4 000003A4  48 00 00 01 */	bl convertPathToEntryID__Q23EGG7ArchiveFPCc
+/* 800DF3A8 000003A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF3AC 000003AC  7C 64 1B 78 */	mr r4, r3
+/* 800DF3B0 000003B0  41 80 00 48 */	blt .L_800DF3F8
+/* 800DF3B4 000003B4  3B E0 00 00 */	li r31, 0x0
+/* 800DF3B8 000003B8  93 E1 00 08 */	stw r31, 0x8(r1)
+/* 800DF3BC 000003BC  7F C3 F3 78 */	mr r3, r30
+/* 800DF3C0 000003C0  38 A1 00 08 */	addi r5, r1, 0x8
+/* 800DF3C4 000003C4  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800DF3C8 000003C8  48 00 00 01 */	bl getFileFast__Q23EGG7ArchiveFlPQ33EGG7Archive8FileInfo
+/* 800DF3CC 000003CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF3D0 000003D0  7C 7D 1B 78 */	mr r29, r3
+/* 800DF3D4 000003D4  41 82 00 94 */	beq .L_800DF468
+/* 800DF3D8 000003D8  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 800DF3DC 000003DC  41 82 00 08 */	beq .L_800DF3E4
+/* 800DF3E0 000003E0  93 FC 00 00 */	stw r31, 0x0(r28)
+.L_800DF3E4:
+/* 800DF3E4 000003E4  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 800DF3E8 000003E8  41 82 00 80 */	beq .L_800DF468
+/* 800DF3EC 000003EC  80 01 00 0C */	lwz r0, 0xc(r1)
+/* 800DF3F0 000003F0  90 1B 00 00 */	stw r0, 0x0(r27)
+/* 800DF3F4 000003F4  48 00 00 74 */	b .L_800DF468
+.L_800DF3F8:
+/* 800DF3F8 000003F8  7F E6 FB 78 */	mr r6, r31
+/* 800DF3FC 000003FC  38 61 00 10 */	addi r3, r1, 0x10
+/* 800DF400 00000400  38 80 01 00 */	li r4, 0x100
+/* 800DF404 00000404  38 A0 00 00 */	li r5, "@10727"@sda21
+/* 800DF408 00000408  4C C6 31 82 */	crclr cr1eq
+/* 800DF40C 0000040C  48 00 00 01 */	bl snprintf
+/* 800DF410 00000410  7F C3 F3 78 */	mr r3, r30
+/* 800DF414 00000414  38 81 00 10 */	addi r4, r1, 0x10
+/* 800DF418 00000418  48 00 00 01 */	bl convertPathToEntryID__Q23EGG7ArchiveFPCc
+/* 800DF41C 0000041C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF420 00000420  7C 64 1B 78 */	mr r4, r3
+/* 800DF424 00000424  41 80 00 44 */	blt .L_800DF468
+/* 800DF428 00000428  7F C3 F3 78 */	mr r3, r30
+/* 800DF42C 0000042C  38 A0 00 00 */	li r5, 0x0
+/* 800DF430 00000430  48 00 00 01 */	bl getFileFast__Q23EGG7ArchiveFlPQ33EGG7Archive8FileInfo
+/* 800DF434 00000434  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF438 00000438  7C 7D 1B 78 */	mr r29, r3
+/* 800DF43C 0000043C  41 82 00 2C */	beq .L_800DF468
+/* 800DF440 00000440  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 800DF444 00000444  41 82 00 10 */	beq .L_800DF454
+/* 800DF448 00000448  88 03 00 00 */	lbz r0, 0x0(r3)
+/* 800DF44C 0000044C  54 00 06 36 */	rlwinm r0, r0, 0, 24, 27
+/* 800DF450 00000450  90 1C 00 00 */	stw r0, 0x0(r28)
+.L_800DF454:
+/* 800DF454 00000454  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 800DF458 00000458  41 82 00 10 */	beq .L_800DF468
+/* 800DF45C 0000045C  7F A3 EB 78 */	mr r3, r29
+/* 800DF460 00000460  48 00 00 01 */	bl CXGetUncompressedSize
+/* 800DF464 00000464  90 7B 00 00 */	stw r3, 0x0(r27)
+.L_800DF468:
+/* 800DF468 00000468  39 61 01 30 */	addi r11, r1, 0x130
+/* 800DF46C 0000046C  7F A3 EB 78 */	mr r3, r29
+/* 800DF470 00000470  48 00 00 01 */	bl _restgpr_27
+/* 800DF474 00000474  80 01 01 34 */	lwz r0, 0x134(r1)
+/* 800DF478 00000478  7C 08 03 A6 */	mtlr r0
+/* 800DF47C 0000047C  38 21 01 30 */	addi r1, r1, 0x130
+/* 800DF480 00000480  4E 80 00 20 */	blr
+.endfn getRes__6dRes_cCFPCcPCcPUlPi
+
+# .text:0x444 | 0x800DF484 | size: 0xC
+.fn gap_03_800DF484_text, global
+.hidden gap_03_800DF484_text
+/* 800DF484 00000484  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF488 00000488  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF48C 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF484_text
+
+# .text:0x450 | 0x800DF490 | size: 0x10
+# dRes_c::copyRes(const void*, void*, int)
+.fn copyRes__6dRes_cFPCvPvi, global
+/* 800DF490 00000490  7C 60 1B 78 */	mr r0, r3
+/* 800DF494 00000494  7C 83 23 78 */	mr r3, r4
+/* 800DF498 00000498  7C 04 03 78 */	mr r4, r0
+/* 800DF49C 0000049C  48 00 00 00 */	b memcpy
+.endfn copyRes__6dRes_cFPCvPvi
+
+# .text:0x460 | 0x800DF4A0 | size: 0x10
+# dRes_c::copyRes(const void*, void*, int, int)
+.fn copyRes__6dRes_cFPCvPvii, global
+/* 800DF4A0 000004A0  2C 06 00 00 */	cmpwi r6, 0x0
+/* 800DF4A4 000004A4  40 82 00 08 */	bne .L_800DF4AC
+/* 800DF4A8 000004A8  48 00 00 00 */	b copyRes__6dRes_cFPCvPvi
+.L_800DF4AC:
+/* 800DF4AC 000004AC  48 00 00 00 */	b CXUncompressLZ
+.endfn copyRes__6dRes_cFPCvPvii
+
+# .text:0x470 | 0x800DF4B0 | size: 0x80
+# dRes_c::getResSilently(const char*, const char*) const
+.fn getResSilently__6dRes_cCFPCcPCc, global
+/* 800DF4B0 000004B0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF4B4 000004B4  7C 08 02 A6 */	mflr r0
+/* 800DF4B8 000004B8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF4BC 000004BC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800DF4C0 000004C0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800DF4C4 000004C4  3B C0 00 00 */	li r30, 0x0
+/* 800DF4C8 000004C8  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800DF4CC 000004CC  7C BD 2B 78 */	mr r29, r5
+/* 800DF4D0 000004D0  48 00 00 01 */	bl getResInfoLoaded__6dRes_cCFPCc
+/* 800DF4D4 000004D4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF4D8 000004D8  41 82 00 38 */	beq .L_800DF510
+/* 800DF4DC 000004DC  83 E3 00 28 */	lwz r31, 0x28(r3)
+/* 800DF4E0 000004E0  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800DF4E4 000004E4  41 82 00 2C */	beq .L_800DF510
+/* 800DF4E8 000004E8  7F E3 FB 78 */	mr r3, r31
+/* 800DF4EC 000004EC  7F A4 EB 78 */	mr r4, r29
+/* 800DF4F0 000004F0  48 00 00 01 */	bl convertPathToEntryID__Q23EGG7ArchiveFPCc
+/* 800DF4F4 000004F4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF4F8 000004F8  7C 64 1B 78 */	mr r4, r3
+/* 800DF4FC 000004FC  41 80 00 14 */	blt .L_800DF510
+/* 800DF500 00000500  7F E3 FB 78 */	mr r3, r31
+/* 800DF504 00000504  38 A0 00 00 */	li r5, 0x0
+/* 800DF508 00000508  48 00 00 01 */	bl getFileFast__Q23EGG7ArchiveFlPQ33EGG7Archive8FileInfo
+/* 800DF50C 0000050C  7C 7E 1B 78 */	mr r30, r3
+.L_800DF510:
+/* 800DF510 00000510  7F C3 F3 78 */	mr r3, r30
+/* 800DF514 00000514  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800DF518 00000518  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800DF51C 0000051C  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800DF520 00000520  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF524 00000524  7C 08 03 A6 */	mtlr r0
+/* 800DF528 00000528  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF52C 0000052C  4E 80 00 20 */	blr
+.endfn getResSilently__6dRes_cCFPCcPCc
+
+# .text:0x4F0 | 0x800DF530 | size: 0x94
+# dRes_c::getResSilently(const char*, const char*, unsigned long*) const
+.fn getResSilently__6dRes_cCFPCcPCcPUl, global
+/* 800DF530 00000530  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 800DF534 00000534  7C 08 02 A6 */	mflr r0
+/* 800DF538 00000538  90 01 00 34 */	stw r0, 0x34(r1)
+/* 800DF53C 0000053C  39 61 00 30 */	addi r11, r1, 0x30
+/* 800DF540 00000540  48 00 00 01 */	bl _savegpr_27
+/* 800DF544 00000544  7C BB 2B 78 */	mr r27, r5
+/* 800DF548 00000548  7C DC 33 78 */	mr r28, r6
+/* 800DF54C 0000054C  3B C0 00 00 */	li r30, 0x0
+/* 800DF550 00000550  3B A0 00 00 */	li r29, 0x0
+/* 800DF554 00000554  48 00 00 01 */	bl getResInfoLoaded__6dRes_cCFPCc
+/* 800DF558 00000558  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF55C 0000055C  41 82 00 48 */	beq .L_800DF5A4
+/* 800DF560 00000560  83 E3 00 28 */	lwz r31, 0x28(r3)
+/* 800DF564 00000564  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800DF568 00000568  41 82 00 3C */	beq .L_800DF5A4
+/* 800DF56C 0000056C  7F E3 FB 78 */	mr r3, r31
+/* 800DF570 00000570  7F 64 DB 78 */	mr r4, r27
+/* 800DF574 00000574  48 00 00 01 */	bl convertPathToEntryID__Q23EGG7ArchiveFPCc
+/* 800DF578 00000578  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF57C 0000057C  7C 64 1B 78 */	mr r4, r3
+/* 800DF580 00000580  41 80 00 24 */	blt .L_800DF5A4
+/* 800DF584 00000584  38 00 00 00 */	li r0, 0x0
+/* 800DF588 00000588  90 01 00 08 */	stw r0, 0x8(r1)
+/* 800DF58C 0000058C  7F E3 FB 78 */	mr r3, r31
+/* 800DF590 00000590  38 A1 00 08 */	addi r5, r1, 0x8
+/* 800DF594 00000594  90 01 00 0C */	stw r0, 0xc(r1)
+/* 800DF598 00000598  48 00 00 01 */	bl getFileFast__Q23EGG7ArchiveFlPQ33EGG7Archive8FileInfo
+/* 800DF59C 0000059C  7C 7E 1B 78 */	mr r30, r3
+/* 800DF5A0 000005A0  83 A1 00 0C */	lwz r29, 0xc(r1)
+.L_800DF5A4:
+/* 800DF5A4 000005A4  93 BC 00 00 */	stw r29, 0x0(r28)
+/* 800DF5A8 000005A8  39 61 00 30 */	addi r11, r1, 0x30
+/* 800DF5AC 000005AC  7F C3 F3 78 */	mr r3, r30
+/* 800DF5B0 000005B0  48 00 00 01 */	bl _restgpr_27
+/* 800DF5B4 000005B4  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 800DF5B8 000005B8  7C 08 03 A6 */	mtlr r0
+/* 800DF5BC 000005BC  38 21 00 30 */	addi r1, r1, 0x30
+/* 800DF5C0 000005C0  4E 80 00 20 */	blr
+.endfn getResSilently__6dRes_cCFPCcPCcPUl
+
+# .text:0x584 | 0x800DF5C4 | size: 0xC
+.fn gap_03_800DF5C4_text, global
+.hidden gap_03_800DF5C4_text
+/* 800DF5C4 000005C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF5C8 000005C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF5CC 000005CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF5C4_text
+
+# .text:0x590 | 0x800DF5D0 | size: 0x84
+# dRes_c::syncAllRes()
+.fn syncAllRes__6dRes_cFv, global
+/* 800DF5D0 000005D0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF5D4 000005D4  7C 08 02 A6 */	mflr r0
+/* 800DF5D8 000005D8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF5DC 000005DC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800DF5E0 000005E0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800DF5E4 000005E4  3B C0 00 00 */	li r30, 0x0
+/* 800DF5E8 000005E8  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800DF5EC 000005EC  7C 7D 1B 78 */	mr r29, r3
+/* 800DF5F0 000005F0  83 E3 00 00 */	lwz r31, 0x0(r3)
+/* 800DF5F4 000005F4  48 00 00 34 */	b .L_800DF628
+.L_800DF5F8:
+/* 800DF5F8 000005F8  80 1F 00 24 */	lwz r0, 0x24(r31)
+/* 800DF5FC 000005FC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800DF600 00000600  41 82 00 20 */	beq .L_800DF620
+/* 800DF604 00000604  80 9D 00 08 */	lwz r4, 0x8(r29)
+/* 800DF608 00000608  7F E3 FB 78 */	mr r3, r31
+/* 800DF60C 0000060C  48 00 00 01 */	bl setRes__Q26dRes_c6info_cFPQ26dRes_c10callback_c
+/* 800DF610 00000610  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF614 00000614  40 81 00 0C */	ble .L_800DF620
+/* 800DF618 00000618  38 60 00 01 */	li r3, 0x1
+/* 800DF61C 0000061C  48 00 00 1C */	b .L_800DF638
+.L_800DF620:
+/* 800DF620 00000620  3B FF 00 40 */	addi r31, r31, 0x40
+/* 800DF624 00000624  3B DE 00 01 */	addi r30, r30, 0x1
+.L_800DF628:
+/* 800DF628 00000628  A0 1D 00 04 */	lhz r0, 0x4(r29)
+/* 800DF62C 0000062C  7C 1E 00 00 */	cmpw r30, r0
+/* 800DF630 00000630  41 80 FF C8 */	blt .L_800DF5F8
+/* 800DF634 00000634  38 60 00 00 */	li r3, 0x0
+.L_800DF638:
+/* 800DF638 00000638  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF63C 0000063C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800DF640 00000640  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800DF644 00000644  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800DF648 00000648  7C 08 03 A6 */	mtlr r0
+/* 800DF64C 0000064C  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF650 00000650  4E 80 00 20 */	blr
+.endfn syncAllRes__6dRes_cFv
+
+# .text:0x614 | 0x800DF654 | size: 0xC
+.fn gap_03_800DF654_text, global
+.hidden gap_03_800DF654_text
+/* 800DF654 00000654  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF658 00000658  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF65C 0000065C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF654_text
+
+# .text:0x620 | 0x800DF660 | size: 0x8C
+# dRes_c::getResInfo(const char*) const
+.fn getResInfo__6dRes_cCFPCc, global
+/* 800DF660 00000660  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF664 00000664  7C 08 02 A6 */	mflr r0
+/* 800DF668 00000668  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF66C 0000066C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800DF670 00000670  A3 E3 00 04 */	lhz r31, 0x4(r3)
+/* 800DF674 00000674  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800DF678 00000678  83 C3 00 00 */	lwz r30, 0x0(r3)
+/* 800DF67C 0000067C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800DF680 00000680  3B A0 00 00 */	li r29, 0x0
+/* 800DF684 00000684  93 81 00 10 */	stw r28, 0x10(r1)
+/* 800DF688 00000688  7C 9C 23 78 */	mr r28, r4
+/* 800DF68C 0000068C  48 00 00 34 */	b .L_800DF6C0
+.L_800DF690:
+/* 800DF690 00000690  A0 1E 00 20 */	lhz r0, 0x20(r30)
+/* 800DF694 00000694  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800DF698 00000698  40 81 00 20 */	ble .L_800DF6B8
+/* 800DF69C 0000069C  7F 83 E3 78 */	mr r3, r28
+/* 800DF6A0 000006A0  7F C4 F3 78 */	mr r4, r30
+/* 800DF6A4 000006A4  48 00 00 01 */	bl strcmp
+/* 800DF6A8 000006A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF6AC 000006AC  40 82 00 0C */	bne .L_800DF6B8
+/* 800DF6B0 000006B0  7F C3 F3 78 */	mr r3, r30
+/* 800DF6B4 000006B4  48 00 00 18 */	b .L_800DF6CC
+.L_800DF6B8:
+/* 800DF6B8 000006B8  3B DE 00 40 */	addi r30, r30, 0x40
+/* 800DF6BC 000006BC  3B BD 00 01 */	addi r29, r29, 0x1
+.L_800DF6C0:
+/* 800DF6C0 000006C0  7C 1D F8 00 */	cmpw r29, r31
+/* 800DF6C4 000006C4  41 80 FF CC */	blt .L_800DF690
+/* 800DF6C8 000006C8  38 60 00 00 */	li r3, 0x0
+.L_800DF6CC:
+/* 800DF6CC 000006CC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF6D0 000006D0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800DF6D4 000006D4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800DF6D8 000006D8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800DF6DC 000006DC  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 800DF6E0 000006E0  7C 08 03 A6 */	mtlr r0
+/* 800DF6E4 000006E4  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF6E8 000006E8  4E 80 00 20 */	blr
+.endfn getResInfo__6dRes_cCFPCc
+
+# .text:0x6AC | 0x800DF6EC | size: 0x4
+.fn gap_03_800DF6EC_text, global
+.hidden gap_03_800DF6EC_text
+/* 800DF6EC 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF6EC_text
+
+# .text:0x6B0 | 0x800DF6F0 | size: 0x34
+# dRes_c::newResInfo()
+.fn newResInfo__6dRes_cFv, global
+/* 800DF6F0 000006F0  A0 03 00 04 */	lhz r0, 0x4(r3)
+/* 800DF6F4 000006F4  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 800DF6F8 000006F8  7C 09 03 A6 */	mtctr r0
+/* 800DF6FC 000006FC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800DF700 00000700  40 81 00 1C */	ble .L_800DF71C
+/* 800DF704 00000704  60 00 00 00 */	nop
+.L_800DF708:
+/* 800DF708 00000708  A0 03 00 20 */	lhz r0, 0x20(r3)
+/* 800DF70C 0000070C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800DF710 00000710  4D 82 00 20 */	beqlr
+/* 800DF714 00000714  38 63 00 40 */	addi r3, r3, 0x40
+/* 800DF718 00000718  42 00 FF F0 */	bdnz .L_800DF708
+.L_800DF71C:
+/* 800DF71C 0000071C  38 60 00 00 */	li r3, 0x0
+/* 800DF720 00000720  4E 80 00 20 */	blr
+.endfn newResInfo__6dRes_cFv
+
+# .text:0x6E4 | 0x800DF724 | size: 0xC
+.fn gap_03_800DF724_text, global
+.hidden gap_03_800DF724_text
+/* 800DF724 00000724  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF728 00000728  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF72C 0000072C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF724_text
+
+# .text:0x6F0 | 0x800DF730 | size: 0x40
+# dRes_c::getResInfoLoaded(const char*) const
+.fn getResInfoLoaded__6dRes_cCFPCc, global
+/* 800DF730 00000730  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800DF734 00000734  7C 08 02 A6 */	mflr r0
+/* 800DF738 00000738  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800DF73C 0000073C  48 00 00 01 */	bl getResInfo__6dRes_cCFPCc
+/* 800DF740 00000740  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF744 00000744  40 82 00 0C */	bne .L_800DF750
+/* 800DF748 00000748  38 60 00 00 */	li r3, 0x0
+/* 800DF74C 0000074C  48 00 00 14 */	b .L_800DF760
+.L_800DF750:
+/* 800DF750 00000750  80 03 00 28 */	lwz r0, 0x28(r3)
+/* 800DF754 00000754  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800DF758 00000758  40 82 00 08 */	bne .L_800DF760
+/* 800DF75C 0000075C  38 60 00 00 */	li r3, 0x0
+.L_800DF760:
+/* 800DF760 00000760  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800DF764 00000764  7C 08 03 A6 */	mtlr r0
+/* 800DF768 00000768  38 21 00 10 */	addi r1, r1, 0x10
+/* 800DF76C 0000076C  4E 80 00 20 */	blr
+.endfn getResInfoLoaded__6dRes_cCFPCc
+
+# 0x80428288..0x80428290 | size: 0x8
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80428288 | size: 0x6
+.obj "@10727", local
+	.4byte 0x25732E4C
+	.2byte 0x5A00
+.endobj "@10727"
+
+# .sdata:0x6 | 0x8042828E | size: 0x2
+.obj gap_09_8042828E_sdata, global
+.hidden gap_09_8042828E_sdata
+	.2byte 0x0000
+.endobj gap_09_8042828E_sdata
+
+# 0x8042A310..0x8042A318 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A310 | size: 0x4
+# dRes_c::mSetCallback
+.obj mSetCallback__6dRes_c, global
+	.skip 0x4
+.endobj mSetCallback__6dRes_c
+
+# .sbss:0x4 | 0x8042A314 | size: 0x4
+.obj gap_10_8042A314_sbss, global
+.hidden gap_10_8042A314_sbss
+	.skip 0x4
+.endobj gap_10_8042A314_sbss

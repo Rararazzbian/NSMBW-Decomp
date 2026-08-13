@@ -1,0 +1,86 @@
+.include "macros.inc"
+.file "__init_cpp_exceptions.cpp"
+
+# 0x802DD5D0..0x802DD640 | size: 0x70
+.text
+.balign 4
+
+# .text:0x0 | 0x802DD5D0 | size: 0x3C
+.fn __init_cpp_exceptions, global
+/* 802DD5D0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802DD5D4 00000044  7C 08 02 A6 */	mflr r0
+/* 802DD5D8 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802DD5DC 0000004C  80 00 00 00 */	lwz r0, fragmentID@sda21(r0)
+/* 802DD5E0 00000050  2C 00 FF FE */	cmpwi r0, -0x2
+/* 802DD5E4 00000054  40 82 00 18 */	bne .L_802DD5FC
+/* 802DD5E8 00000058  3C 60 00 00 */	lis r3, _eti_init_info@ha
+/* 802DD5EC 0000005C  7C 44 13 78 */	mr r4, r2
+/* 802DD5F0 00000060  38 63 00 00 */	addi r3, r3, _eti_init_info@l
+/* 802DD5F4 00000064  48 00 00 01 */	bl __register_fragment
+/* 802DD5F8 00000068  90 60 00 00 */	stw r3, fragmentID@sda21(r0)
+.L_802DD5FC:
+/* 802DD5FC 0000006C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802DD600 00000070  7C 08 03 A6 */	mtlr r0
+/* 802DD604 00000074  38 21 00 10 */	addi r1, r1, 0x10
+/* 802DD608 00000078  4E 80 00 20 */	blr
+.endfn __init_cpp_exceptions
+
+# .text:0x3C | 0x802DD60C | size: 0x34
+.fn __fini_cpp_exceptions, global
+/* 802DD60C 0000007C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802DD610 00000080  7C 08 02 A6 */	mflr r0
+/* 802DD614 00000084  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802DD618 00000088  80 60 00 00 */	lwz r3, fragmentID@sda21(r0)
+/* 802DD61C 0000008C  2C 03 FF FE */	cmpwi r3, -0x2
+/* 802DD620 00000090  41 82 00 10 */	beq .L_802DD630
+/* 802DD624 00000094  48 00 00 01 */	bl __unregister_fragment
+/* 802DD628 00000098  38 00 FF FE */	li r0, -0x2
+/* 802DD62C 0000009C  90 00 00 00 */	stw r0, fragmentID@sda21(r0)
+.L_802DD630:
+/* 802DD630 000000A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802DD634 000000A4  7C 08 03 A6 */	mtlr r0
+/* 802DD638 000000A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 802DD63C 000000AC  4E 80 00 20 */	blr
+.endfn __fini_cpp_exceptions
+
+# 0x802EDCE0..0x802EDCE4 | size: 0x4
+.section .ctors$10, "a"
+.balign 4
+
+# .ctors$10:0x0 | 0x802EDCE0 | size: 0x4
+.obj __init_cpp_exceptions_reference, global
+	.4byte __init_cpp_exceptions
+.endobj __init_cpp_exceptions_reference
+
+# 0x802EDFC0..0x802EDFC4 | size: 0x4
+.section .dtors$10, "a"
+.balign 4
+
+# .dtors$10:0x0 | 0x802EDFC0 | size: 0x4
+.obj __destroy_global_chain_reference, global
+	.4byte __destroy_global_chain
+.endobj __destroy_global_chain_reference
+
+# 0x802EDFC4..0x802EDFC8 | size: 0x4
+.section .dtors$15, "a"
+.balign 4
+
+# .dtors$15:0x0 | 0x802EDFC4 | size: 0x4
+.obj __fini_cpp_exceptions_reference, global
+	.4byte __fini_cpp_exceptions
+.endobj __fini_cpp_exceptions_reference
+
+# 0x80429E88..0x80429E90 | size: 0x8
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80429E88 | size: 0x4
+.obj fragmentID, local
+	.4byte 0xFFFFFFFE
+.endobj fragmentID
+
+# .sdata:0x4 | 0x80429E8C | size: 0x4
+.obj gap_09_80429E8C_sdata, global
+.hidden gap_09_80429E8C_sdata
+	.4byte 0x00000000
+.endobj gap_09_80429E8C_sdata
