@@ -15,6 +15,25 @@
 // ===========================================================================
 // batch 3 of 6 -- goal-demo tail, fireworks, castle
 // 0x8005C090-0x8005C6D0 (executeGoalCastle ends at 0x8005C6C4)
+//
+// STATUS (see wip/demo_manager/dm-b3-report.md for full detail):
+//   executeGoalDemo        BYTE-EXACT (verified)
+//   setGoalDemoKimeAll     BYTE-EXACT (verified)
+//   setGoalDemoRunCastle   BYTE-EXACT (verified)
+//   isAllPlayerGoalIn      BYTE-EXACT (verified)
+//   setHanabiEffect        very close, NOT byte-exact -- see report
+//   executeGoalCastle      NOT byte-exact, TODO: this file was edited but
+//                          NOT recompiled/rediffed after the last change to
+//                          the isCourseDataFlag "ok" logic below -- recompile
+//                          and re-diff against target FIRST, see report for
+//                          exactly what to check.
+//
+// This file was compiled, during authoring, against a SCRATCH-ONLY patched
+// copy of d_s_stage.hpp/d_info.hpp (outside the repo, see report) because
+// executeGoalCastle needs three fields that do not exist in the tracked
+// include/ headers: dScStage_c::m_OtehonClear_p, dScStage_c::m_goalType,
+// dInfo_c's two fields hidden in its documented pad4[0x8]. It will NOT
+// compile as-is against the real, currently-committed include/ headers.
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
