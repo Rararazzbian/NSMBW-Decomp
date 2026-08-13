@@ -167,8 +167,8 @@ public:
     int mPlayerNo;        ///< 0x80. CONFIRMED: daPlBase_c::setDemoGoal stores its own mPlayerNo here; setBossDownPlayerNo(int) also writes it (aliased with m_90). initStage() resets it to -1. (Same offset as the pre-existing include/ header's mPlayerNo.)
     int m_84;             ///< 0x84. CONFIRMED: read/written by dAcPy_c::stopOtherDownDemo/playOtherDownDemo in d_a_player.cpp. (Same offset as the pre-existing include/ header's m_84.)
     int m_88;             ///< 0x88. CONFIRMED, see get_88()/inc_88() above. (Same offset as the pre-existing include/ header's m_88.)
-    int m_8c;             ///< 0x8c. Zeroed by init(); read/written by executeStartToride().
-    int m_90;             ///< 0x90. Zeroed by init(); written together with mPlayerNo by setBossDownPlayerNo(int) (same value stored to both).
+    int m_8c;             ///< 0x8c. Set to -1 (not 0) by init(); read/written by executeStartToride().
+    int m_90;             ///< 0x90. Set to -1 (not 0) by init(); written together with mPlayerNo by setBossDownPlayerNo(int) (same value stored to both).
     int m_94;             ///< 0x94. CONFIRMED: read by daPlBase_c::checkSideViewLemit in d_a_player_base.cpp. (Same offset as the pre-existing include/ header's m_94.)
     // sizeof == 0x98 here.
 
