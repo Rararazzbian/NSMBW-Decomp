@@ -215,10 +215,12 @@ def load_target():
 
 def load_corpus(exclude_tags=()):
     out = []
+    tags = []
     for f in sorted(os.listdir(DIS)):
         if not f.startswith('corpus_'):
             continue
         tag = f[len('corpus_'):-len('.txt')]
+        tags.append(tag)
         if tag in exclude_tags:
             continue
         for fn in parse(os.path.join(DIS, f)):
@@ -236,6 +238,7 @@ def load_corpus(exclude_tags=()):
         cur = seen.get(key)
         if cur is None or (cur['tu'].startswith('CMP_') and not fn['tu'].startswith('CMP_')):
             seen[key] = fn
+    check_family(tags)
     return list(seen.values())
 
 
@@ -245,8 +248,21 @@ def load_corpus(exclude_tags=()):
 # twice as a reason a map missed precedents it should have found. The most
 # recently banked units are the most valuable entries, not the least --
 # d_a_en_bros_base alone contributed 99 matching functions.
+#
+# Write plain `dol_bases_<file>` names here. Do NOT add `CMP_` spellings: the
+# in_family() check below strips that prefix. This matters because `bin/dtkspl`
+# is regenerated rarely and lags the newest units, so a just-landed TU exists
+# ONLY as our own compiled `CMP_` object. Listing the plain name alone used to
+# silently resolve to nothing -- a whole family view went missing 199 functions
+# that way, with no error, because a name that matches no corpus file simply
+# contributes no hits.
+#
+# d_a_en_snake_block lives in slices/d_enemiesNP.json, not wiimj2d.json; it is
+# banked and matching, and the corpus builder does read REL objects. It scores
+# very low against block-like DOL actors (0.02-0.11 on daEnBlockMain_c's
+# callbacks) but the entry is correct, and a validity check that only reads
+# wiimj2d.json will wrongly reject it.
 FAMILY = ('dol_bases_d_a_en_dpakkun', 'dol_bases_d_a_en_dpakkun_base',
-          'CMP_d_a_en_dpakkun', 'CMP_dol_bases_d_a_en_dpakkun',
           'dol_bases_d_a_en_lkuribo_base', 'dol_bases_d_a_en_kuribo_base',
           'dol_bases_d_a_en_net_nokonoko_base', 'dol_bases_d_a_en_super_bigpile',
           'dol_bases_d_a_enemy_ice', 'dol_bases_d_a_en_togezo_base',
@@ -254,7 +270,31 @@ FAMILY = ('dol_bases_d_a_en_dpakkun', 'dol_bases_d_a_en_dpakkun_base',
           'dol_bases_d_a_en_door', 'dol_bases_d_a_en_carry',
           'dol_bases_d_a_en_dfpakkun', 'dol_bases_d_a_en_jimen_pakkun_base',
           'dol_bases_d_a_en_bros_base', 'dol_bases_d_a_fireball_base',
-          'dol_bases_d_a_en_eatcoin')
+          'dol_bases_d_a_en_eatcoin', 'dol_bases_d_a_en_snake_block',
+          'd_a_en_dpakkun')
+
+
+def in_family(tu):
+    """Family membership, tolerant of the CMP_ prefix on our own objects."""
+    return tu in FAMILY or (tu.startswith('CMP_') and tu[len('CMP_'):] in FAMILY)
+
+
+def check_family(corpus_tags):
+    """Warn about FAMILY names that resolve to no corpus file.
+
+    A dead name is invisible otherwise -- it just contributes no hits -- and
+    that is exactly how the list rotted the first time.
+    """
+    live = set()
+    for t in corpus_tags:
+        live.add(t[len('CMP_'):] if t.startswith('CMP_') else t)
+    dead = [n for n in FAMILY if n not in live]
+    if dead:
+        sys.stderr.write('sibmap: WARNING: %d FAMILY entries match no corpus '
+                         'file and contribute nothing:\n' % len(dead))
+        for n in dead:
+            sys.stderr.write('    %s\n' % n)
+    return dead
 
 BASENAME = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*(?:<[^>]*>)?)__')
 
@@ -391,7 +431,7 @@ def report():
         namehits.sort(key=lambda h: -(h['exact_sim'] * 2 + h['shape_sim']))
         famhits = []
         for c in corpus:
-            if c['tu'] not in FAMILY:
+            if not in_family(c['tu']):
                 continue
             if abs(len(c['words']) - n) > max(8, 0.8 * n):
                 continue
