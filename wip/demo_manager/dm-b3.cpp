@@ -281,15 +281,14 @@ void daPyDemoMng_c::executeGoalCastle() {
                 if (world <= 9 && level <= 0x29) {
                     if (level == 3 && world == 2) {
                         dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
+                        bool ok = true;
                         if (mGoalType == 0) {
-                            if (!save->isCourseDataFlag(world, level, 0x90)) {
-                                dScStage_c::m_OtehonClear_p[0xb9] = 0;
-                                dScStage_c::m_OtehonClear_p[0xb8] = 1;
-                                dScStage_c::m_OtehonClear_p[0xb5] = 1;
-                                m_08 = 3;
-                                break;
-                            }
-                        } else if (!save->isCourseDataFlag(world, level, 0x120)) {
+                            ok = save->isCourseDataFlag(world, level, 0x90);
+                        }
+                        if (ok && mGoalType != 0) {
+                            ok = save->isCourseDataFlag(world, level, 0x120);
+                        }
+                        if (!ok) {
                             dScStage_c::m_OtehonClear_p[0xb9] = 0;
                             dScStage_c::m_OtehonClear_p[0xb8] = 1;
                             dScStage_c::m_OtehonClear_p[0xb5] = 1;
