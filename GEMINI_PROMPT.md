@@ -1,111 +1,98 @@
-# Work order for Gemini — round 5
+# Work order for Gemini — round 6
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 5.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 6.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 4 verdict: all five hazards proven, and the section sizes are the proof that counts
+## Round 5 verdict: `eggThread.h` is landed, and the impact audit is why
 
-You did what I asked and then some. Every hazard now has compiled evidence
-instead of a prediction:
+The patch is **in the tree, all five binaries byte-identical.** The three
+virtuals now carry their inline bodies, the vtable pointer costs 4 bytes, the pad
+drops `0x4c` to `0x48`, and `sizeof(EGG::Thread)` stays `0x4C`.
 
-- **The weak virtuals are real.** With inline bodies, `onExit__Q23EGG6ThreadFv`
-  and `onEnter__Q23EGG6ThreadFv` are emitted at the tail of `.text`, marked
-  `weak`; without them, nothing is emitted and `.text` is `0x10` short. That is a
-  shared-header change to `eggThread.h` I now have evidence for rather than a
-  guess, which is the difference between applying it and gambling with it.
-- **You explained the vtable-order rule rather than just confirming it**:
-  non-weak vtables emit unconditionally and first, weak base/embedded ones follow
-  in derived-then-base order — and if `mMutex`'s destructor is out-of-line in
-  another TU its vtable is omitted entirely. That is a reusable rule, not a
-  fact about one unit.
-- **The section sizes are the headline.** `.rodata 0x28`, `.bss 0x17040`,
-  `.sbss 0x08`, `.sdata 0x0C`, `.data 0xA0`, all exact against the claims, from a
-  scaffold with empty function bodies. Data placement is where the last two units
-  actually failed — every blocker was in a section, none in a function — so a
-  scaffold that reproduces all five sections exactly is worth more than any
-  number of matched functions would be at this stage.
+**What made it applicable was the audit, not the patch.** You searched all 145
+slices and every header for other classes deriving from `EGG::Thread` and found
+exactly one — `mDvd::MyThread_c`, not banked. Then you compiled `d_system.cpp`,
+the one banked TU that reaches the header, before and after, and confirmed the
+allocation size stays `0x4C`, no weak virtuals or vtables appear in
+`d_system.o`, and the canonicalised instructions are 100% identical.
 
-`m_pad.cpp` is pre-flighted and queued behind it.
+That is the difference between a change I can apply and one I have to gamble on.
+Three shared-header changes have failed verification on this project; this one
+arrived with its blast radius already measured.
 
 ---
 
-## Round 5: make `d_nand_thread.cpp` landable, not just understood
+## Task A (primary): four bytes are unaccounted for, and they are load-bearing
 
-The analysis is done. What is missing is the set of artifacts I need in hand to
-start authoring the moment `d_a_player_manager.cpp` lands. Produce them.
+**Your own two rounds disagree, and I want you to resolve it rather than pick
+one.**
 
-### 1. The `eggThread.h` change, as a final diff
+- Round 5 establishes `sizeof(EGG::Thread) == 0x4C`, proven by `d_system.cpp`
+  allocating exactly `0x4c` — and that is now landed and verified.
+- Rounds 3 and 4 place `mMutex` at offset **`0x50`** inside `dNandThread_c`, with
+  `sizeof(dNandThread_c) == 0x80`, and round 4 stated `sizeof(EGG::Thread) ==
+  0x50`.
 
-You proved the three virtuals need inline bodies. Give me the exact patch, and
-say explicitly what else in the tree could be affected — `eggThread.h` is a
-library header and other TUs may include it. If any already-matching TU derives
-from `EGG::Thread`, adding inline bodies could flush weak copies into *it*, which
-is the trap that has bitten this project repeatedly. **Check that and say so
-either way**; if no other TU derives from it, that is exactly the sentence I need.
+If the base is `0x4C` and `mMutex` starts at `0x50`, **four bytes between `0x4C`
+and `0x50` belong to something.** Three readings, and they are not equally
+likely:
 
-### 2. `d_nand_thread.hpp`, final
+1. **`dNandThread_c` declares a member of its own at `0x4C`**, before `mMutex`.
+   A 4-byte field there would be invisible to your scaffold if the scaffold
+   padded to `0x50` instead of declaring it.
+2. **It is alignment padding.** Note `AGENT_CONTEXT.md` §6: MWCC aligns a `.bss`
+   object to 8 when its *size* is a multiple of 8 — but that is a placement rule
+   for whole objects, **not** a rule about member offsets inside a class, so it
+   does not explain this. If you think alignment explains it, say which
+   alignment and what forces it.
+3. **`sizeof(EGG::Thread)` is really `0x50`** and the `0x4C` allocation in
+   `d_system.cpp` is a different constructor path or a different class.
 
-Ready to drop into `include/game/bases/`. `sizeof 0x80`, `mMutex` embedded at
-`0x50`, `STATIC_ASSERT`s included, `@unofficial` on everything not from an
-official source, honest `u8 pad[N]` wherever the evidence runs out. Include
-`mMutex` and `EGG::Mutex` — say whether they belong in this header or their own,
-and why.
+**Why this matters more than it looks:** `mMutex` is embedded by value. If its
+offset is wrong, every byte from `0x50` to `0x80` shifts, and **nothing in a
+per-function diff will show it** — it surfaces only at the link, as the "wrong
+small-data bound" signature. The current unit lost a whole round to exactly this
+shape of error, in `.sbss`.
 
-### 3. The link-blocker list
+Settle it from the binary: the constructor at the TU's start writes the members
+in order, and `OSInitMutex`/`OSInitCond` are called on the mutex, so the address
+they receive gives you `mMutex`'s true offset directly. Then account for
+everything below it.
 
-Every external function the TU's `.text` calls, classified. This is the check
-that matters and it is easy to get backwards, so use this filter:
+**If it is a real member, name it only as well as the evidence supports.** If you
+cannot tell what it is, `u8 pad4C[4]` labelled as unexplained is the right answer
+— see `AGENT_CONTEXT.md` §4.
 
-```python
-import json
-d = json.load(open('slices/wiimj2d.json'))
-BASE = 0x80006780
-banked = []
-for s in d['slices']:
-    if s.get('nonMatching'):     # NOT linked -- a symbol it would define is still missing
-        continue
-    t = s['memoryRanges'].get('.text')
-    if t:
-        lo, hi = [int(x, 16) for x in t.split('-')]
-        banked.append((BASE + lo, BASE + hi, s['source']))
-# a candidate address inside one of these ranges must NOT be pinned -- it would
-# be a duplicate definition and fail the link
-```
+## Task B (secondary): audit your own 21-pin list with the filter
 
-Codex ran this task for the current unit and proposed 25 pins; **15 of them would
-have failed the link**, because it asked "is this symbol called?" rather than
-"who defines it?". The question is always **who defines it**. Note the
-`nonMatching` subtlety cuts the other way: those slices are not linked at all, so
-a symbol they would define still needs a pin.
+Your round 5 pin schedule proposes 21 additions. **Run the banked-slice filter
+over it yourself before I do**, using the code from round 5's brief: for each
+candidate address, is it inside the `.text` range of a slice that is *not*
+marked `nonMatching`?
 
-Give me lines to **add**, and separately any existing pin that
-`d_nand_thread.cpp` will itself define and which must therefore be **removed**
-when it lands.
+I am asking because Codex proposed 25 pins for the current unit and **15 of them
+would have failed the link** — every one an address inside a banked slice, every
+one a duplicate definition. Its list was built from "is this symbol called?"
+rather than "who defines it?", and the filter catches that in seconds.
 
-### 4. The NAND SDK dependency verdict
+Your list is mostly `NAND*` and `OS*` SDK functions, which are likelier to be
+genuinely unbanked — so I expect it to come back clean. **Report the result
+either way**, including the count you checked, because a self-audit that finds
+nothing is still evidence and takes a minute.
 
-You flagged this as the unit's main risk in round 3 and it is still open. For
-every `NAND*` call: does a declaration exist in `include/lib/revolution/`, does
-it match the mangled symbol, and is the SDK function itself decompiled or does it
-need a pin? A missing SDK prototype is a compile error and cheap; a wrong one is
-a link error and is not.
-
-### 5. The slice entry
-
-The exact `slices/wiimj2d.json` block for this unit — every section with its
-range — in the same shape as the existing entries. **Do not edit the file**;
-give me the block.
+Same for your 4 removals: confirm each is a symbol `d_nand_thread.cpp` will
+itself define.
 
 ---
 
-## What I do not need
+## What I do not need this round
 
-More analysis of whether this unit is a good choice. That is settled. If
-something in rounds 3–4 turns out to be wrong while you assemble these, say so
-loudly — a contradiction found now is worth far more than one found at the link.
+The NAND SDK header patches can wait — they are compile-time issues, which are
+cheap and surface immediately. The offset question is a link-time issue, which is
+neither.
 
 ---
 
@@ -114,9 +101,10 @@ loudly — a contradiction found now is worth far more than one found at the lin
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
 - **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
-  or any `CODEX_*.md`. Codex is on two stray `EGG::Vector2f`/`Vector3f`
-  destructors in the current unit — different header, but do not enter
-  `eggVector.hpp` this round.
-- Report contradictions rather than reconciling them; report a negative result
-  rather than manufacturing a positive one.
+  or any `CODEX_*.md`. Codex is on two stray `EGG::Vector` destructors in the
+  current unit; stay out of `eggVector.hpp`.
+- Report contradictions rather than reconciling them — including, as here, a
+  contradiction between two of your own rounds. Spotting that is not a
+  criticism; both rounds were careful, and the discrepancy is exactly the sort
+  that survives careful work.
 - Plain ASCII or clean UTF-8, LF, no BOM.
