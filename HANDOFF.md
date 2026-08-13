@@ -1176,6 +1176,50 @@ territory — `d_a_en_dpakkun_base` by 1,000 bytes, `d_a_fireball_base` by 992,
 range is a starting hypothesis, and every agent must re-derive its own bounds
 from the symbol map and `slices/wiimj2d.json` before writing code.**
 
+## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
+
+Regardless of the type's own alignment. This is a placement rule, not a fact
+about the class, and it is worth knowing before you spend a round on one.
+
+The situation that produced it: `daPyMng_c` embeds four managers by value, each
+preceded by a `0xC` `__register_global_object` destructor-chain node. Two of the
+four had a **4-byte hole** between the node and the object, and two did not. The
+obvious reading is that those two classes carry 8-byte alignment, which under
+MWCC means a `double` or a type containing one. Two workers reasoned about it
+that way, one concluded the alignment hypothesis was right, and the other
+correctly said it could not tell — because a survey of the class's code found no
+`lfd`/`stfd` anywhere, so there was no double to find.
+
+Both were wrong, and a four-line probe settled it. Compile some structs holding
+nothing but `int`s, interleaved with `0xC` nodes:
+
+| Object size | `size % 8` | Placed at | Gap after the 0xC node? |
+|---|---|---|---|
+| `0x98` | 0 | `0x10` | **yes, 4 bytes** |
+| `0x5C` | 4 | `0xB4` | no |
+| `0x58` | 0 | `0x120` | **yes, 4 bytes** |
+| `0xC5C` | 4 | `0x184` | no |
+
+That reproduces the original's pattern exactly, from types whose alignment is 4.
+The clincher is a `char[0x18]` — **alignment 1** — which still gets placed
+8-aligned, because `0x18 % 8 == 0`. The size, not the alignment, is doing it.
+
+**Three consequences:**
+
+1. **A 4-byte hole in `.bss` is not evidence about a class's members.** Do not
+   go looking for a `double` to explain one, and do not accept a reconstruction
+   that invents a member to produce alignment. `dAttention_c` is `0x58` with
+   nothing wider than an `int` in it.
+2. `sizeof % 8 == 0` is enough to get the placement right on its own, so a class
+   whose size is already correct needs no alignment work.
+3. **`__alignof__` is not the check.** An earlier instruction told a worker its
+   header was wrong if `__alignof__` did not come out to 8. That was wrong and
+   would have sent it hunting for a member that does not exist. It refused to
+   invent one and reported "cannot distinguish" instead, which was the right
+   call — the honest non-answer is what made the probe worth running.
+
+Probe it directly the moment a hole appears; it costs four lines and one compile.
+
 ## The actor-TU playbook
 
 Look up first, in this order — ~10 minutes for 80% of the file:
