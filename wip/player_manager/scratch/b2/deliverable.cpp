@@ -61,20 +61,11 @@ bool daPyMng_c::create(int plrNo, mVec3_c *pos, int type, u8 flag) {
     return false;
 }
 
-// TEST ONLY -- not part of the deliverable. Checking whether the shared
-// m_playerID-relative base-register codegen MAP.md flagged for initGame
-// (+0x40/+0x50/+0x60/+0x70) is a compile-time .bss-layout effect that shows
-// up once this TU's own data definitions are visible, or a link-time-only
-// effect invisible to an isolated per-function compile.
-int daPyMng_c::m_playerID[4];
-int daPyMng_c::m_yoshiID[4];
-int daPyMng_c::mCourseInList[4];
-int daPyMng_c::m_yoshiFruit[4];
-int daPyMng_c::mPlayerEntry[4];
-PLAYER_TYPE_e daPyMng_c::mPlayerType[4];
-PLAYER_POWERUP_e daPyMng_c::mPlayerMode[4];
-u32 daPyMng_c::mCreateItem[4];
-
+// .sdata2 literal -- indexed by `flag`, NOT hand-declared as a named object
+// per SHARED-BRIEF (0x8042BD70, {0x19, 0x1a}). File scope (not a function-
+// local static) is deliberate: a function-local `static const` here mangles
+// as `@LOCAL@fn_8005f4d0...@scBaseID` (proven -- see BATCH2.md), which does
+// NOT match the target's anonymous `lbl_8042BD70` pool form.
 static const int scBaseID[2] = {0x19, 0x1a};
 
 bool daPyMng_c::fn_8005f4d0(mVec3_c *pos, int mode, int flag) {
@@ -93,23 +84,28 @@ void daPyMng_c::createCourseInit() {
     u8 action = getPlayerCreateAction();
     mVec3_c pos;
 
+    // Written as three nested single-value checks, not `action != 0 && != 1
+    // && != 0x17`: the flattened form lets MWCC fold the 0/1 pair into one
+    // `cmplwi/ble` range test, but the target emits three separate `beq`s
+    // (see BATCH2.md) -- this shape is the closest source found that keeps
+    // them separate, though it did not fully suppress the fold either.
     if (action != 0) {
-    if (action != 1) {
-    if (action != 0x17) {
-        makeCourseInList(daPyDemoMng_c::mspInstance);
-        pos = getPlayerSetPos(stageField_0x120e(stage), stageField_0x1211(stage));
-        u8 flag;
-        if (pos.x <= dGameCom::getDispCenterX()) {
-            flag = 0;
-        } else {
-            flag = 1;
+        if (action != 1) {
+            if (action != 0x17) {
+                makeCourseInList(daPyDemoMng_c::mspInstance);
+                pos = getPlayerSetPos(stageField_0x120e(stage), stageField_0x1211(stage));
+                u8 flag;
+                if (pos.x <= dGameCom::getDispCenterX()) {
+                    flag = 0;
+                } else {
+                    flag = 1;
+                }
+                for (int i = 0; i < 4; i++) {
+                    create(i, &pos, action, flag);
+                }
+                return;
+            }
         }
-        for (int i = 0; i < 4; i++) {
-            create(i, &pos, action, flag);
-        }
-        return;
-    }
-    }
     }
 
     daPyDemoMng_c::mspInstance->init();

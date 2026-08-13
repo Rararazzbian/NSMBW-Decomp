@@ -1,0 +1,361 @@
+compile OK
+disasm OK
+======================================================================
+create__9daPyMng_cFiP7mVec3_ciUc -> MATCH (25 instructions)
+======================================================================
+createCourseInit__9daPyMng_cFv -> DIFF  size: target 352, draft 345
+    6 | want: bl _savegpr_27                               got: bl _savegpr_26
+   11 | want: clrlwi. r31, r3, 24                          got: clrlwi r31, r3, 24
+   12 | want: beq .L |41820074|                            got: cmplwi r31, 0x1
+   13 | want: cmpwi r31, 0x1                               got: ble .L |40810084|
+   14 | want: beq .L |4182006C|                            got: cmplwi r31, 0x17
+   15 | want: cmpwi r31, 0x17                              got: beq .L |4182007C|
+   16 | want: beq .L |41820064|                            got: lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+   17 | want: lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0) got: bl makeCourseInList__FP13daPyDemoMng_c
+   18 | want: bl fn_8005D280                               got: lbz r4, 0x120e(r30)
+   19 | want: lbz r4, 0x120e(r30)                          got: addi r3, r1, 0x20
+   20 | want: addi r3, r1, 0x5c                            got: lbz r5, 0x1211(r30)
+   21 | want: lbz r5, 0x1211(r30)                          got: bl getPlayerSetPos__9daPyMng_cFUcUc
+   22 | want: bl getPlayerSetPos__9daPyMng_cFUcUc          got: lfs f2, 0x20(r1)
+   23 | want: bl getDispCenterX__8dGameComFv               got: lfs f1, 0x24(r1)
+   24 | want: lfs f0, 0x5c(r1)                             got: lfs f0, 0x28(r1)
+   25 | want: fcmpo cr0, f0, f1                            got: stfs f2, 0x5c(r1)
+   26 | want: cror eq, lt, eq                              got: stfs f1, 0x60(r1)
+   27 | want: bne .L |4082000C|                            got: stfs f0, 0x64(r1)
+   28 | want: li r29, 0x0                                  got: bl getDispCenterX__8dGameComFv
+   29 | want: b .L |48000008|                              got: lfs f0, 0x5c(r1)
+   30 | want: li r29, 0x1                                  got: fcmpo cr0, f0, f1
+   31 | want: li r28, 0x0                                  got: cror eq, lt, eq
+   32 | want: mr r3, r28                                   got: mfcr r0
+   33 | want: mr r5, r31                                   got: li r27, 0x0
+   34 | want: mr r6, r29                                   got: extrwi r0, r0, 1, 2
+   35 | want: addi r4, r1, 0x5c                            got: cntlzw r0, r0
+   36 | want: bl create__9daPyMng_cFiP7mVec3_ciUc          got: extrwi r26, r0, 8, 19
+   37 | want: addi r28, r28, 0x1                           got: mr r3, r27
+   38 | want: cmpwi r28, 0x4                               got: mr r5, r31
+   39 | want: blt .L |4180FFE4|                            got: mr r6, r26
+   40 | want: b .L |480004C0|                              got: addi r4, r1, 0x5c
+   41 | want: lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0) got: bl create__9daPyMng_cFiP7mVec3_ciUc
+   42 | want: bl init__13daPyDemoMng_cFv                   got: addi r27, r27, 0x1
+   43 | want: bl decideCtrlPlrNo__9daPyMng_cFv             got: cmpwi r27, 0x4
+   44 | want: lbz r0, m_isStaffCredit__10dScStage_c@sda21(r0) got: blt .L |4180FFE4|
+   45 | want: cmpwi r0, 0x0                                got: b .L |48000490|
+   46 | want: beq .L |41820090|                            got: lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+   47 | want: lbz r4, 0x120e(r30)                          got: bl init__13daPyDemoMng_cFv
+   48 | want: addi r3, r1, 0x50                            got: bl decideCtrlPlrNo__9daPyMng_cFv
+   49 | want: lbz r5, 0x1211(r30)                          got: lbz r0, m_isStaffCredit__10dScStage_c@sda21(r0)
+   50 | want: bl getPlayerSetPos__9daPyMng_cFUcUc          got: cmpwi r0, 0x0
+   51 | want: lfs f0, SYM1@sda21(r0)                       got: beq .L |4182009C|
+   52 | want: addi r30, r29, 0x160                         got: lbz r4, 0x120e(r30)
+   53 | want: stfs f0, 0x50(r1)                            got: addi r3, r1, 0x14
+   54 | want: addi r29, r29, 0x170                         got: lbz r5, 0x1211(r30)
+   55 | want: lfs f31, "SYM2"@sda21(r0)                    got: bl getPlayerSetPos__9daPyMng_cFUcUc
+   56 | want: li r28, 0x0                                  got: lfs f2, 0x18(r1)
+   57 | want: lfs f3, 0x0(r30)                             got: addi r27, r29, 0x0
+   58 | want: mr r3, r28                                   got: lfs f1, 0x1c(r1)
+   59 | want: lfs f0, 0x50(r1)                             got: addi r28, r29, 0x10
+   60 | want: mr r5, r31                                   got: lfs f0, "SYM1"@sda21(r0)
+   61 | want: lfs f2, 0x54(r1)                             got: li r26, 0x0
+   62 | want: fcmpo cr0, f3, f31                           got: stfs f2, 0x60(r1)
+   63 | want: fadds f0, f0, f3                             got: lfs f31, "SYM2"@sda21(r0)
+   64 | want: lfs f1, 0x0(r29)                             got: stfs f1, 0x64(r1)
+   65 | want: lfs f3, 0x58(r1)                             got: stfs f0, 0x5c(r1)
+   66 | want: addi r4, r1, 0x44                            got: lfs f3, 0x0(r27)
+   67 | want: fadds f1, f2, f1                             got: fcmpo cr0, f3, f31
+   68 | want: stfs f0, 0x44(r1)                            got: cror eq, gt, eq
+   69 | want: stfs f1, 0x48(r1)                            got: mfcr r0
+   70 | want: stfs f3, 0x4c(r1)                            got: lfs f0, 0x5c(r1)
+   71 | want: mfcr r0                                      got: lfs f2, 0x60(r1)
+   72 | want: srwi r0, r0, 31                              got: mr r3, r26
+   73 | want: cntlzw r0, r0                                got: fadds f3, f0, f3
+   74 | want: extrwi r6, r0, 8, 19                         got: lfs f1, 0x0(r28)
+   75 | want: bl create__9daPyMng_cFiP7mVec3_ciUc          got: lfs f0, 0x64(r1)
+   76 | want: addi r28, r28, 0x1                           got: mr r5, r31
+   77 | want: addi r29, r29, 0x4                           got: fadds f1, f2, f1
+   78 | want: cmpwi r28, 0x4                               got: stfs f3, 0x50(r1)
+   79 | want: addi r30, r30, 0x4                           got: stfs f1, 0x54(r1)
+   80 | want: blt .L |4180FFA4|                            got: addi r4, r1, 0x50
+   81 | want: b .L |4800041C|                              got: extrwi r6, r0, 1, 2
+   82 | want: lbz r4, 0x120e(r30)                          got: stfs f0, 0x58(r1)
+   83 | want: addi r3, r1, 0x38                            got: bl create__9daPyMng_cFiP7mVec3_ciUc
+   84 | want: lbz r5, 0x1211(r30)                          got: addi r26, r26, 0x1
+   85 | want: bl getPlayerSetPos__9daPyMng_cFUcUc          got: addi r28, r28, 0x4
+   86 | want: lbz r3, 0x120e(r30)                          got: cmpwi r26, 0x4
+   87 | want: bl getFileP__5dCd_cFi                        got: addi r27, r27, 0x4
+   88 | want: lbz r0, m_isCourseIn__10dScStage_c@sda21(r0) got: blt .L |4180FFA8|
+   89 | want: lwz r3, 0xc(r3)                              got: b .L |480003E0|
+   90 | want: cmpwi r0, 0x0                                got: lbz r4, 0x120e(r30)
+   91 | want: lbz r30, 0x11(r3)                            got: addi r3, r1, 0x8
+   92 | want: beq .L |4182004C|                            got: lbz r5, 0x1211(r30)
+   93 | want: lwz r5, m_instance__7dInfo_c@sda21(r0)       got: bl getPlayerSetPos__9daPyMng_cFUcUc
+   94 | want: lwz r0, 0xaf4(r5)                            got: lfs f2, 0x8(r1)
+   95 | want: cmpwi r0, 0x0                                got: lfs f1, 0xc(r1)
+   96 | want: blt .L |4180003C|                            got: lfs f0, 0x10(r1)
+   97 | want: lwz r4, 0x10(r5)                             got: stfs f2, 0x5c(r1)
+   98 | want: lwz r3, 0x14(r5)                             got: lwz r3, m_instance__5dCd_c@sda21(r0)
+   99 | want: lwz r0, 0x18(r5)                             got: stfs f1, 0x60(r1)
+  100 | want: stw r4, 0x8(r1)                              got: stfs f0, 0x64(r1)
+  101 | want: stw r3, 0xc(r1)                              got: lbz r0, 0x120e(r30)
+  102 | want: lfs f2, 0x8(r1)                              got: mulli r0, r0, 0x3b0
+  103 | want: stw r0, 0x10(r1)                             got: add r3, r3, r0
+  104 | want: lfs f1, 0xc(r1)                              got: lwz r0, 0x2c(r3)
+  105 | want: lfs f0, 0x10(r1)                             got: cmpwi r0, 0x0
+  106 | want: stfs f2, 0x38(r1)                            got: beq .L |41820008|
+  107 | want: stfs f1, 0x3c(r1)                            got: b .L |48000008|
+  108 | want: stfs f0, 0x40(r1)                            got: li r3, 0x0
+  109 | want: lwz r0, 0x1c(r5)                             got: lwz r3, 0x10(r3)
+  110 | want: clrlwi r30, r0, 31                           got: lbz r0, m_isCourseIn__10dScStage_c@sda21(r0)
+  111 | want: lwz r0, m_gameMode__10dScStage_c@sda21(r0)   got: lhz r3, 0x10(r3)
+  112 | want: addi r4, r29, 0x180                          got: cmpwi r0, 0x0
+  113 | want: lwz r6, 0x180(r29)                           got: clrlwi r30, r3, 24
+  114 | want: lwz r5, 0x4(r4)                              got: beq .L |41820034|
+  115 | want: cmpwi r0, 0x2                                got: lwz r3, m_instance__7dInfo_c@sda21(r0)
+  116 | want: lwz r3, 0x8(r4)                              got: lwz r0, 0xaf4(r3)
+  117 | want: lwz r0, 0xc(r4)                              got: cmpwi r0, 0x0
+  118 | want: stw r6, 0x28(r1)                             got: blt .L |41800024|
+  119 | want: stw r5, 0x2c(r1)                             got: lfs f0, 0x10(r3)
+  120 | want: stw r3, 0x30(r1)                             got: stfs f0, 0x5c(r1)
+  121 | want: stw r0, 0x34(r1)                             got: lfs f0, 0x14(r3)
+  122 | want: bne .L |40820028|                            got: stfs f0, 0x60(r1)
+  123 | want: li r5, 0x0                                   got: lfs f0, 0x18(r3)
+  124 | want: li r4, 0x1                                   got: stfs f0, 0x64(r1)
+  125 | want: li r3, 0x2                                   got: lwz r0, 0x1c(r3)
+  126 | want: li r0, 0x3                                   got: clrlwi r30, r0, 31
+  127 | want: stw r5, 0x28(r1)                             got: lwz r0, m_gameMode__10dScStage_c@sda21(r0)
+  128 | want: stw r4, 0x2c(r1)                             got: addi r4, r29, 0x20
+  129 | want: stw r3, 0x30(r1)                             got: lwz r6, 0x20(r29)
+  130 | want: stw r0, 0x34(r1)                             got: lwz r5, 0x4(r4)
+  131 | want: b .L |4800022C|                              got: cmpwi r0, 0x2
+  132 | want: lfs f31, "SYM3"@sda21(r0)                    got: lwz r3, 0x8(r4)
+  133 | want: addi r29, r1, 0x18                           got: lwz r0, 0xc(r4)
+  134 | want: li r28, 0x0                                  got: stw r6, 0x40(r1)
+  135 | want: bl rnd__8dGameComFv                          got: stw r5, 0x44(r1)
+  136 | want: fadds f0, f31, f1                            got: stw r3, 0x48(r1)
+  137 | want: addi r28, r28, 0x1                           got: stw r0, 0x4c(r1)
+  138 | want: cmpwi r28, 0x4                               got: bne .L |40820028|
+  139 | want: stfs f0, 0x0(r29)                            got: li r5, 0x0
+  140 | want: addi r29, r29, 0x4                           got: li r4, 0x1
+  141 | want: blt .L |4180FFE8|                            got: li r3, 0x2
+  142 | want: addi r3, r1, 0x18                            got: li r0, 0x3
+  143 | want: addi r7, r1, 0x28                            got: stw r5, 0x40(r1)
+  144 | want: mr r10, r3                                   got: stw r4, 0x44(r1)
+  145 | want: li r4, 0x0                                   got: stw r3, 0x48(r1)
+  146 | want: li r5, 0x0                                   got: stw r0, 0x4c(r1)
+  147 | want: lis r9, 0x8000                               got: b .L |480001F4|
+  148 | want: lwz r0, 0x28(r1)                             got: lfs f31, "SYM3"@sda21(r0)
+  149 | want: lfs f1, 0x0(r3)                              got: addi r27, r1, 0x30
+  150 | want: cmpwi r0, -0x1                               got: li r26, 0x0
+  151 | want: bne .L |4082000C|                            got: bl rnd__8dGameComFv
+  152 | want: li r4, 0x0                                   got: fadds f0, f31, f1
+  153 | want: b .L |4800009C|                              got: addi r26, r26, 0x1
+  154 | want: slwi r0, r0, 2                               got: cmpwi r26, 0x4
+  155 | want: lfsx f0, r10, r0                             got: stfs f0, 0x0(r27)
+  156 | want: fcmpo cr0, f1, f0                            got: addi r27, r27, 0x4
+  157 | want: bge .L |4080000C|                            got: blt .L |4180FFE8|
+  158 | want: li r4, 0x0                                   got: addi r4, r1, 0x30
+  159 | want: b .L |48000084|                              got: addi r10, r1, 0x40
+  160 | want: lwz r0, 0x2c(r1)                             got: li r5, 0x0
+  161 | want: cmpwi r0, -0x1                               got: li r9, 0x0
+  162 | want: bne .L |4082000C|                            got: li r6, 0x0
+  163 | want: li r4, 0x1                                   got: lis r3, 0x8000
+  164 | want: b .L |48000070|                              got: addi r8, r1, 0x30
+  165 | want: slwi r0, r0, 2                               got: lfs f1, 0x0(r4)
+  166 | want: lfsx f0, r10, r0                             got: li r7, 0x0
+  167 | want: fcmpo cr0, f1, f0                            got: mtctr r5
+  168 | want: bge .L |4080000C|                            got: cmpwi r5, 0x0
+  169 | want: li r4, 0x1                                   got: ble .L |4081001C|
+  170 | want: b .L |48000058|                              got: lfs f0, 0x0(r8)
+  171 | want: lwz r0, 0x30(r1)                             got: fcmpo cr0, f1, f0
+  172 | want: cmpwi r0, -0x1                               got: blt .L |41800010|
+  173 | want: bne .L |4082000C|                            got: addi r8, r8, 0x4
+  174 | want: li r4, 0x2                                   got: addi r7, r7, 0x1
+  175 | want: b .L |48000044|                              got: bdnz .L |4200FFEC|
+  176 | want: slwi r0, r0, 2                               got: cmpw cr1, r5, r7
+  177 | want: lfsx f0, r10, r0                             got: mr r8, r5
+  178 | want: fcmpo cr0, f1, f0                            got: ble cr1, .L |40850148|
+  179 | want: bge .L |4080000C|                            got: subf r26, r7, r5
+  180 | want: li r4, 0x2                                   got: addi r11, r7, 0x8
+  181 | want: b .L |4800002C|                              got: cmpwi r26, 0x8
+  182 | want: lwz r0, 0x34(r1)                             got: ble .L |40810108|
+  183 | want: cmpwi r0, -0x1                               got: li r12, 0x0
+  184 | want: bne .L |4082000C|                            got: li r29, 0x0
+  185 | want: li r4, 0x3                                   got: li r28, 0x0
+  186 | want: b .L |48000018|                              got: li r27, 0x0
+  187 | want: slwi r0, r0, 2                               got: blt cr1, .L |41840014|
+  188 | want: lfsx f0, r10, r0                             got: addi r0, r3, 0x1
+  189 | want: fcmpo cr0, f1, f0                            got: cmpw r7, r0
+  190 | want: bge .L |40800008|                            got: blt .L |41800008|
+  191 | want: li r4, 0x3                                   got: li r27, 0x1
+  192 | want: cmpwi cr1, r4, 0x3                           got: cmpwi r27, 0x0
+  193 | want: li r6, 0x3                                   got: beq .L |41820014|
+  194 | want: bge cr1, .L |40840118|                       got: addi r0, r3, 0x1
+  195 | want: subfic r28, r4, 0x3                          got: cmpw r5, r0
+  196 | want: addi r8, r4, 0x8                             got: blt .L |41800008|
+  197 | want: cmpwi r28, 0x8                               got: li r28, 0x1
+  198 | want: ble .L |408100D8|                            got: cmpwi r28, 0x0
+  199 | want: li r11, 0x0                                  got: beq .L |41820014|
+  200 | want: li r12, 0x0                                  got: addis r0, r7, 0x8000
+  201 | want: li r29, 0x0                                  got: cmplwi r0, 0x0
+  202 | want: bgt cr1, .L |41850014|                       got: beq .L |41820008|
+  203 | want: addi r0, r9, 0x1                             got: li r29, 0x1
+  204 | want: cmpw r4, r0                                  got: cmpwi r29, 0x0
+  205 | want: blt .L |41800008|                            got: beq .L |41820038|
+  206 | want: li r29, 0x1                                  got: neg r0, r7
+  207 | want: cmpwi r29, 0x0                               got: clrrwi r28, r5, 31
+  208 | want: beq .L |41820014|                            got: clrrwi r0, r0, 31
+  209 | want: addis r0, r4, 0x8000                         got: li r27, 0x1
+  210 | want: cmplwi r0, 0x0                               got: cmpw r28, r0
+  211 | want: beq .L |41820008|                            got: bne .L |40820014|
+  212 | want: li r12, 0x1                                  got: clrrwi r0, r26, 31
+  213 | want: cmpwi r12, 0x0                               got: cmpw r28, r0
+  214 | want: beq .L |4182002C|                            got: beq .L |41820008|
+  215 | want: neg r0, r4                                   got: li r27, 0x0
+  216 | want: li r12, 0x1                                  got: cmpwi r27, 0x0
+  217 | want: clrrwi. r0, r0, 31                           got: beq .L |41820008|
+  218 | want: bne .L |40820010|                            got: li r12, 0x1
+  219 | want: clrrwi. r0, r28, 31                          got: cmpwi r12, 0x0
+  220 | want: beq .L |41820008|                            got: beq .L |41820070|
+  221 | want: li r12, 0x0                                  got: addi r0, r5, 0x7
+  222 | want: cmpwi r12, 0x0                               got: addi r12, r1, 0x40
+  223 | want: beq .L |41820008|                            got: subf r0, r11, r0
+  224 | want: li r11, 0x1                                  got: srwi r0, r0, 3
+  225 | want: cmpwi r11, 0x0                               got: add r12, r12, r9
+  226 | want: beq .L |41820068|                            got: mtctr r0
+  227 | want: subfic r0, r8, 0xa                           got: cmpw r5, r11
+  228 | want: addi r11, r1, 0x34                           got: ble .L |40810050|
+  229 | want: srwi r0, r0, 3                               got: lwz r0, -0x4(r12)
+  230 | want: mtctr r0                                     got: subi r8, r8, 0x8
+  231 | want: cmpwi r8, 0x3                                got: stw r0, 0x0(r12)
+  232 | want: bge .L |40800050|                            got: lwz r0, -0x8(r12)
+  233 | want: lwz r0, -0x4(r11)                            got: stw r0, -0x4(r12)
+  234 | want: subi r6, r6, 0x8                             got: lwz r0, -0xc(r12)
+  235 | want: stw r0, 0x0(r11)                             got: stw r0, -0x8(r12)
+  236 | want: lwz r0, -0x8(r11)                            got: lwz r0, -0x10(r12)
+  237 | want: stw r0, -0x4(r11)                            got: stw r0, -0xc(r12)
+  238 | want: lwz r0, -0xc(r11)                            got: lwz r0, -0x14(r12)
+  239 | want: stw r0, -0x8(r11)                            got: stw r0, -0x10(r12)
+  240 | want: lwz r0, -0x10(r11)                           got: lwz r0, -0x18(r12)
+  241 | want: stw r0, -0xc(r11)                            got: stw r0, -0x14(r12)
+  242 | want: lwz r0, -0x14(r11)                           got: lwz r0, -0x1c(r12)
+  243 | want: stw r0, -0x10(r11)                           got: stw r0, -0x18(r12)
+  244 | want: lwz r0, -0x18(r11)                           got: lwz r0, -0x20(r12)
+  245 | want: stw r0, -0x14(r11)                           got: stw r0, -0x1c(r12)
+  246 | want: lwz r0, -0x1c(r11)                           got: subi r12, r12, 0x20
+  247 | want: stw r0, -0x18(r11)                           got: bdnz .L |4200FFB8|
+  248 | want: lwz r0, -0x20(r11)                           got: slwi r11, r8, 2
+  249 | want: stw r0, -0x1c(r11)                           got: addi r12, r1, 0x40
+  250 | want: subi r11, r11, 0x20                          got: subf r0, r7, r8
+  251 | want: bdnz .L |4200FFB8|                           got: add r12, r12, r11
+  252 | want: slwi r8, r6, 2                               got: mtctr r0
+  253 | want: addi r11, r1, 0x28                           got: cmpw r8, r7
+  254 | want: subf r0, r4, r6                              got: ble .L |40810018|
+  255 | want: add r11, r11, r8                             got: lwz r0, -0x4(r12)
+  256 | want: mtctr r0                                     got: subi r8, r8, 0x1
+  257 | want: cmpw r6, r4                                  got: stw r0, 0x0(r12)
+  258 | want: ble .L |40810018|                            got: subi r12, r12, 0x4
+  259 | want: lwz r0, -0x4(r11)                            got: bdnz .L |4200FFF0|
+  260 | want: subi r6, r6, 0x1                             got: cmpwi r7, 0x4
+  261 | want: stw r0, 0x0(r11)                             got: bge .L |4080000C|
+  262 | want: subi r11, r11, 0x4                           got: slwi r0, r7, 2
+  263 | want: bdnz .L |4200FFF0|                           got: stwx r6, r10, r0
+  264 | want: slwi r0, r4, 2                               got: cmpwi r5, 0x4
+  265 | want: addi r3, r3, 0x4                             got: bge .L |4080000C|
+  266 | want: stwx r5, r7, r0                              got: addi r5, r5, 0x1
+  267 | want: addi r5, r5, 0x1                             got: addi r9, r9, 0x4
+  268 | want: cmpwi r5, 0x4                                got: addi r6, r6, 0x1
+  269 | want: blt .L |4180FE1C|                            got: addi r4, r4, 0x4
+  270 | want: lis r29, mPlayerEntry__9daPyMng_c@ha         got: cmpwi r6, 0x4
+  271 | want: li r28, 0x0                                  got: blt .L |4180FE54|
+  272 | want: addi r29, r29, mPlayerEntry__9daPyMng_c@l    got: lis r27, mPlayerEntry__9daPyMng_c@ha
+  273 | want: li r27, 0x0                                  got: li r26, 0x0
+  274 | want: lwz r0, 0x0(r29)                             got: addi r27, r27, mPlayerEntry__9daPyMng_c@l
+  275 | want: cmpwi r0, 0x0                                got: li r28, 0x0
+  276 | want: beq .L |41820018|                            got: lwz r0, 0x0(r27)
+  277 | want: mr r3, r27                                   got: cmpwi r0, 0x0
+  278 | want: bl isCreateBalloon__9daPyMng_cFi             got: beq .L |41820018|
+  279 | want: cmpwi r3, 0x0                                got: mr r3, r28
+  280 | want: bne .L |40820008|                            got: bl isCreateBalloon__9daPyMng_cFi
+  281 | want: addi r28, r28, 0x1                           got: cmpwi r3, 0x0
+  282 | want: addi r27, r27, 0x1                           got: bne .L |40820008|
+  283 | want: addi r29, r29, 0x4                           got: addi r26, r26, 0x1
+  284 | want: cmpwi r27, 0x4                               got: addi r28, r28, 0x1
+  285 | want: blt .L |4180FFD4|                            got: addi r27, r27, 0x4
+  286 | want: clrlwi. r0, r30, 24                          got: cmpwi r28, 0x4
+  287 | want: bne .L |4082003C|                            got: blt .L |4180FFD4|
+  288 | want: subi r3, r28, 0x1                            got: subi r0, r26, 0x1
+  289 | want: lis r0, 0x4330                               got: lis r3, 0x4330
+  290 | want: xoris r3, r3, 0x8000                         got: xoris r0, r0, 0x8000
+  291 | want: stw r3, 0x6c(r1)                             got: stw r0, 0x6c(r1)
+  292 | want: lfd f3, "SYM4"@sda21(r0)                     got: lfd f2, "SYM4"@sda21(r0)
+  293 | want: stw r0, 0x68(r1)                             got: clrlwi. r0, r30, 24
+  294 | want: lfs f1, "SYM5"@sda21(r0)                     got: stw r3, 0x68(r1)
+  295 | want: lfd f2, 0x68(r1)                             got: lfs f0, "SYM5"@sda21(r0)
+  296 | want: lfs f0, 0x38(r1)                             got: lfd f1, 0x68(r1)
+  297 | want: fsubs f2, f2, f3                             got: fsubs f1, f1, f2
+  298 | want: fmuls f1, f1, f2                             got: fmuls f1, f0, f1
+  299 | want: fadds f0, f0, f1                             got: beq .L |41820014|
+  300 | want: stfs f0, 0x38(r1)                            got: lfs f0, 0x5c(r1)
+  301 | want: b .L |48000038|                              got: fsubs f0, f0, f1
+  302 | want: subi r3, r28, 0x1                            got: stfs f0, 0x5c(r1)
+  303 | want: lis r0, 0x4330                               got: b .L |48000010|
+  304 | want: xoris r3, r3, 0x8000                         got: lfs f0, 0x5c(r1)
+  305 | want: stw r3, 0x6c(r1)                             got: fadds f0, f0, f1
+  306 | want: lfd f3, "SYM4"@sda21(r0)                     got: stfs f0, 0x5c(r1)
+  307 | want: stw r0, 0x68(r1)                             got: lfs f31, "SYM6"@sda21(r0)
+  308 | want: lfs f1, "SYM5"@sda21(r0)                     got: addi r27, r1, 0x40
+  309 | want: lfd f2, 0x68(r1)                             got: li r26, 0x0
+  310 | want: lfs f0, 0x38(r1)                             got: lwz r28, 0x0(r27)
+  311 | want: fsubs f2, f2, f3                             got: cmpwi r28, -0x1
+  312 | want: fmuls f1, f1, f2                             got: beq .L |41820054|
+  313 | want: fsubs f0, f0, f1                             got: mr r3, r28
+  314 | want: stfs f0, 0x38(r1)                            got: mr r5, r31
+  315 | want: lfs f31, "SYM6"@sda21(r0)                    got: addi r4, r1, 0x5c
+  316 | want: addi r29, r1, 0x28                           got: clrlwi r6, r30, 24
+  317 | want: li r27, 0x0                                  got: bl create__9daPyMng_cFiP7mVec3_ciUc
+  318 | want: lwz r3, 0x0(r29)                             got: cmpwi r3, 0x0
+  319 | want: cmpwi r3, -0x1                               got: beq .L |41820038|
+  320 | want: beq .L |41820050|                            got: mr r3, r28
+  321 | want: mr r5, r31                                   got: bl isCreateBalloon__9daPyMng_cFi
+  322 | want: addi r4, r1, 0x38                            got: cmpwi r3, 0x0
+  323 | want: clrlwi r6, r30, 24                           got: bne .L |40820028|
+  324 | want: bl create__9daPyMng_cFiP7mVec3_ciUc          got: clrlwi. r0, r30, 24
+  325 | want: cmpwi r3, 0x0                                got: bne .L |40820014|
+  326 | want: beq .L |41820038|                            got: lfs f0, 0x5c(r1)
+  327 | want: lwz r3, 0x0(r29)                             got: fadds f0, f0, f31
+  328 | want: bl isCreateBalloon__9daPyMng_cFi             got: stfs f0, 0x5c(r1)
+  329 | want: cmpwi r3, 0x0                                got: b .L |48000010|
+  330 | want: bne .L |40820028|                            got: lfs f0, 0x5c(r1)
+  331 | want: clrlwi. r0, r30, 24                          got: fsubs f0, f0, f31
+  332 | want: bne .L |40820014|                            got: stfs f0, 0x5c(r1)
+  333 | want: lfs f0, 0x38(r1)                             got: addi r26, r26, 0x1
+  334 | want: fsubs f0, f0, f31                            got: addi r27, r27, 0x4
+  335 | want: stfs f0, 0x38(r1)                            got: cmpwi r26, 0x4
+  336 | want: b .L |48000010|                              got: blt .L |4180FF98|
+  337 | want: lfs f0, 0x38(r1)                             got: addi r11, r1, 0x90
+  338 | want: fadds f0, f0, f31                            got: psq_l f31, 0x98(r1), 0, qr0
+  339 | want: stfs f0, 0x38(r1)                            got: lfd f31, 0x90(r1)
+  340 | want: addi r27, r27, 0x1                           got: bl _restgpr_26
+  341 | want: addi r29, r29, 0x4                           got: lwz r0, 0xa4(r1)
+  342 | want: cmpwi r27, 0x4                               got: mtlr r0
+  343 | want: blt .L |4180FF9C|                            got: addi r1, r1, 0xa0
+  344 | want: addi r11, r1, 0x90                           got: blr
+  345 | want: psq_l f31, 0x98(r1), 0, qr0                  got: <none>
+  346 | want: lfd f31, 0x90(r1)                            got: <none>
+  347 | want: bl _restgpr_27                               got: <none>
+  348 | want: lwz r0, 0xa4(r1)                             got: <none>
+  349 | want: mtlr r0                                      got: <none>
+  350 | want: addi r1, r1, 0xa0                            got: <none>
+  351 | want: blr                                          got: <none>
+======================================================================
+fn_8005F4D0 -> DIFF  size: target 39, draft 39
+   19 | want: li r3, SYM0@sda21                            got: li r3, scBaseID@sda21
+======================================================================
+fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei -> DIFF  size: target 20, draft 20
+    0 | want: lis r9, m_playerID__9daPyMng_c@ha            got: lis r9, SYM0@ha
+    2 | want: addi r9, r9, m_playerID__9daPyMng_c@l        got: addi r9, r9, SYM0@l
+    3 | want: clrlwi r0, r4, 24                            got: clrlwi r5, r4, 24
+    6 | want: lwzx r7, r4, r10                             got: lwzx r0, r4, r10
+    7 | want: slw r0, r8, r0                               got: slw r4, r8, r5
+    8 | want: clrlwi r4, r0, 24                            got: lbz r5, mActPlayerInfo__9daPyMng_c@sda21(r0)
+    9 | want: lbz r5, mActPlayerInfo__9daPyMng_c@sda21(r0) got: clrlwi r4, r4, 24
+   11 | want: slwi r0, r7, 2                               got: slwi r0, r0, 2

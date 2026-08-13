@@ -1,7 +1,7 @@
 .include "macros.inc"
-.file "draft.cpp"
+.file "deliverable.cpp"
 
-# 0x00000000..0x00000710 | size: 0x710
+# 0x00000000..0x00000714 | size: 0x714
 .text
 .balign 16
 
@@ -495,29 +495,30 @@
 /* 000006B8 000006F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000006BC 000006FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x6C0 | size: 0x50
+# .text:0x6C0 | size: 0x54
 # daPyMng_c::fn_8005f570(PLAYER_POWERUP_e, int)
 .fn fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei, global
-/* 000006C0 00000700  3D 20 00 00 */	lis r9, ...bss.0@ha
-/* 000006C4 00000704  54 8A 10 3A */	slwi r10, r4, 2
-/* 000006C8 00000708  39 29 00 00 */	addi r9, r9, ...bss.0@l
-/* 000006CC 0000070C  54 85 06 3E */	clrlwi r5, r4, 24
-/* 000006D0 00000710  38 89 00 50 */	addi r4, r9, 0x50
-/* 000006D4 00000714  39 00 00 01 */	li r8, 0x1
-/* 000006D8 00000718  7C 04 50 2E */	lwzx r0, r4, r10
-/* 000006DC 0000071C  7D 04 28 30 */	slw r4, r8, r5
-/* 000006E0 00000720  88 A0 00 00 */	lbz r5, mActPlayerInfo__9daPyMng_c@sda21(r0)
-/* 000006E4 00000724  54 84 06 3E */	clrlwi r4, r4, 24
-/* 000006E8 00000728  38 C9 00 40 */	addi r6, r9, 0x40
-/* 000006EC 0000072C  54 00 10 3A */	slwi r0, r0, 2
-/* 000006F0 00000730  7C A7 23 78 */	or r7, r5, r4
-/* 000006F4 00000734  38 89 00 70 */	addi r4, r9, 0x70
-/* 000006F8 00000738  38 A0 00 08 */	li r5, 0x8
-/* 000006FC 0000073C  98 E0 00 00 */	stb r7, mActPlayerInfo__9daPyMng_c@sda21(r0)
-/* 00000700 00000740  7D 06 51 2E */	stwx r8, r6, r10
-/* 00000704 00000744  7C A4 01 2E */	stwx r5, r4, r0
-/* 00000708 00000748  90 60 00 00 */	stw r3, mKinopioMode__9daPyMng_c@sda21(r0)
-/* 0000070C 0000074C  4E 80 00 20 */	blr
+/* 000006C0 00000700  3C C0 00 00 */	lis r6, mPlayerType__9daPyMng_c@ha
+/* 000006C4 00000704  54 89 10 3A */	slwi r9, r4, 2
+/* 000006C8 00000708  38 C6 00 00 */	addi r6, r6, mPlayerType__9daPyMng_c@l
+/* 000006CC 0000070C  3C E0 00 00 */	lis r7, mPlayerEntry__9daPyMng_c@ha
+/* 000006D0 00000710  7C 06 48 2E */	lwzx r0, r6, r9
+/* 000006D4 00000714  54 84 06 3E */	clrlwi r4, r4, 24
+/* 000006D8 00000718  39 00 00 01 */	li r8, 0x1
+/* 000006DC 0000071C  3C A0 00 00 */	lis r5, mCreateItem__9daPyMng_c@ha
+/* 000006E0 00000720  7D 04 20 30 */	slw r4, r8, r4
+/* 000006E4 00000724  38 E7 00 00 */	addi r7, r7, mPlayerEntry__9daPyMng_c@l
+/* 000006E8 00000728  88 C0 00 00 */	lbz r6, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 000006EC 0000072C  54 84 06 3E */	clrlwi r4, r4, 24
+/* 000006F0 00000730  54 00 10 3A */	slwi r0, r0, 2
+/* 000006F4 00000734  38 A5 00 00 */	addi r5, r5, mCreateItem__9daPyMng_c@l
+/* 000006F8 00000738  7C C6 23 78 */	or r6, r6, r4
+/* 000006FC 0000073C  38 80 00 08 */	li r4, 0x8
+/* 00000700 00000740  98 C0 00 00 */	stb r6, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 00000704 00000744  7D 07 49 2E */	stwx r8, r7, r9
+/* 00000708 00000748  7C 85 01 2E */	stwx r4, r5, r0
+/* 0000070C 0000074C  90 60 00 00 */	stw r3, mKinopioMode__9daPyMng_c@sda21(r0)
+/* 00000710 00000750  4E 80 00 20 */	blr
 .endfn fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei
 
 # 0x00000000..0x00000030 | size: 0x30
@@ -550,60 +551,6 @@
 	.4byte 0xFFFFFFFF
 	.4byte 0xFFFFFFFF
 .endobj "@22498"
-
-# 0x00000000..0x00000080 | size: 0x80
-.section .bss, "wa", @nobits
-.balign 8
-# .bss:0x0 | size: 0x0
-.sym ...bss.0, local
-
-# .bss:0x0 | size: 0x10
-# daPyMng_c::m_playerID
-.obj m_playerID__9daPyMng_c, global
-	.skip 0x10
-.endobj m_playerID__9daPyMng_c
-
-# .bss:0x10 | size: 0x10
-# daPyMng_c::m_yoshiID
-.obj m_yoshiID__9daPyMng_c, global
-	.skip 0x10
-.endobj m_yoshiID__9daPyMng_c
-
-# .bss:0x20 | size: 0x10
-# daPyMng_c::mCourseInList
-.obj mCourseInList__9daPyMng_c, global
-	.skip 0x10
-.endobj mCourseInList__9daPyMng_c
-
-# .bss:0x30 | size: 0x10
-# daPyMng_c::m_yoshiFruit
-.obj m_yoshiFruit__9daPyMng_c, global
-	.skip 0x10
-.endobj m_yoshiFruit__9daPyMng_c
-
-# .bss:0x40 | size: 0x10
-# daPyMng_c::mPlayerEntry
-.obj mPlayerEntry__9daPyMng_c, global
-	.skip 0x10
-.endobj mPlayerEntry__9daPyMng_c
-
-# .bss:0x50 | size: 0x10
-# daPyMng_c::mPlayerType
-.obj mPlayerType__9daPyMng_c, global
-	.skip 0x10
-.endobj mPlayerType__9daPyMng_c
-
-# .bss:0x60 | size: 0x10
-# daPyMng_c::mPlayerMode
-.obj mPlayerMode__9daPyMng_c, global
-	.skip 0x10
-.endobj mPlayerMode__9daPyMng_c
-
-# .bss:0x70 | size: 0x10
-# daPyMng_c::mCreateItem
-.obj mCreateItem__9daPyMng_c, global
-	.skip 0x10
-.endobj mCreateItem__9daPyMng_c
 
 # 0x00000000..0x00000028 | size: 0x28
 .section .sdata2, "a"

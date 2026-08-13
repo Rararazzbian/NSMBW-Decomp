@@ -47,7 +47,11 @@ public:
     /// `addRest__9daPyMng_cFiib`, so it takes three parameters. Nothing in the
     /// tree called it, so correcting the mangling broke nothing. @unofficial
     static bool addRest(int, int, bool);
-    static bool decRest(int);
+    /// @note Was declared `bool`. The target returns a raw `rest - 1` and
+    /// falls through with no set value on one path -- neither fits a bool.
+    /// Proven by compiling both ways: as `int` the body is byte-exact at
+    /// 36/36 instructions. @unofficial
+    static int decRest(int);
     static u32 getEntryNum();
     static bool isEntryNum1() { return getEntryNum() == 1; }
     static void startYoshiBGM();
@@ -96,7 +100,9 @@ public:
     static void update();
     static bool isPlayerPauseEnable(s8 plrNo);
     static void decideCtrlPlrNo();
-    static void setYoshi(daPlBase_c *);
+    /// @note Was declared `void`. Every exit path loads a clean 0 or 1 into
+    /// r3, the same shape as fn_8005f4d0. @unofficial
+    static bool setYoshi(daPlBase_c *);
     static void releaseYoshi(daPlBase_c *);
     static int getActScrollInfo();
     static int getScrollNum();

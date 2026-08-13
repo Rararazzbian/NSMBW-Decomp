@@ -52,6 +52,6 @@ for target_name, draft_name in FNS:
             if a != b:
                 print("  %3d | want: %-44s got: %s" % (i, a, b))
                 n += 1
-            if n > 40:
+            if n > 400:
                 print("  ... truncated")
                 break

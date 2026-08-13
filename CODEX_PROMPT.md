@@ -123,6 +123,60 @@ would make it otherwise.
 
 ---
 
+## Task B: two undeclared fields that are currently reached by raw casts
+
+Start this once Task A is reported. It is smaller than Task A but it removes
+something ugly from code that is about to land.
+
+A batch authoring `daPyMng_c::initYoshiPriority` / `setYoshiPriority` /
+`isEffectStop` hit two fields that no header declares, and reached them the way
+this project conventionally does when a field is unknown:
+
+```cpp
+static inline u8 &yoshiPriorityRef(daPlBase_c *p) {
+    return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(p) + 0x1036);
+}
+static inline u8 &infoField_0xafc_ref(dInfo_c *p) {
+    return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(p) + 0xafc);
+}
+```
+
+That compiles and it is honest, but it is a cast where a field should be.
+
+1. **`daPlBase_c + 0x1036`** — a per-actor **Yoshi priority rank byte**. Read and
+   written only by `initYoshiPriority` and `setYoshiPriority`, which assign each
+   ridden Yoshi a distinct rank 0..3 and renumber the others when one is
+   removed. It currently falls inside a padding array in
+   `include/game/bases/d_a_player_base.hpp`.
+2. **`dInfo_c + 0xafc`** — a byte tested by `isEffectStop`; if non-zero, effects
+   are never considered stopped. Inside `pad11[0x712]` in
+   `include/game/bases/d_info.hpp`.
+
+**Deliver:** for each, a proposed header where the surrounding pad is split into
+`pad_before[N]` / the named field / `pad_after[M]`, with the arithmetic shown so
+it can be checked, plus a `STATIC_ASSERT` on the class's `sizeof` **and** on the
+field's offset. This codebase has an `offsetof`-style check available; if not,
+`STATIC_ASSERT(sizeof(...) == ...)` plus a comment stating the offset is enough.
+
+**This is the highest-risk change in this round and it needs the most care.**
+Both classes are large, both are included by many already-matching TUs, and
+splitting a pad is only safe if the arithmetic is exact. Get one byte wrong and
+every field after it shifts. So:
+
+- **`sizeof` must not change.** State that you verified it, with the number.
+- Name the field only as well as the evidence supports — `m_yoshiPriority` is
+  justified by what the two functions do with it; a name implying more than that
+  is not.
+- Say explicitly whether the change is offset-perturbing. Splitting a pad into
+  `pad + field + pad` of the same total is not; getting the total wrong is
+  catastrophic and invisible to every per-function diff.
+- `d_info.hpp` was edited earlier in this project to split a pad into two named
+  `int`s, so there is precedent in the file for exactly this operation — look at
+  how that was done and match it.
+
+If you conclude either field cannot be placed safely, say so; the casts are a
+working fallback and keeping them costs nothing.
+
 ## Standing rules (unchanged)
 
 - **Do NOT run `ninja`, `configure.py`, `progress.py`, or

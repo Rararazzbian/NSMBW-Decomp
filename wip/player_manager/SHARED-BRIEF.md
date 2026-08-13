@@ -205,6 +205,37 @@ standing blind spot it prints on every run: **it cannot see a wrong constant.**
 
 ## Two findings from batch B5, WITH THEIR SCOPE
 
+**0. CONFIRMED BY PROBE — write the natural array access, never pointer
+arithmetic.**
+
+The base-anchor effect below is real and it is now measured, not theorised.
+Compiling twelve `int[4]` statics **with their definitions present** plus a
+function containing several separate loops makes MWCC emit:
+
+```
+lis  r31, ...bss.0@ha
+addi r31, r31, ...bss.0@l
+addi r4,  r31, 0xa0        <- m_quakeTimer
+addi r5,  r31, 0xb0        <- m_quakeEffectFlag
+addi r4,  r31, 0x40        <- mPlayerEntry
+addi r5,  r31, 0x50        <- mPlayerType
+```
+
+Those are **exactly** the target's offsets. The anchor is the start of the TU's
+`.bss`, which in the assembled file is `m_playerID`.
+
+Two conditions are required, and a smaller probe with only two arrays and one
+loop does **not** reproduce it — so an isolated batch draft cannot:
+
+1. the static **definitions** must be present in the TU, and
+2. there must be enough arrays and uses for MWCC to prefer one anchor.
+
+**Therefore: write `mRest[i]`, `m_quakeTimer[i]`, `mPlayerType[i]` normally.**
+Do **not** write `(char *) m_playerID + 0x80` or any equivalent pointer
+arithmetic to force the shape — it produces the right instructions in isolation
+and the wrong source, and the lead will have to undo it. One batch did this and
+flagged it honestly as possibly-not-the-original; it is not the original.
+
 **1. A register-allocation-only difference may be unfixable in isolation on this
 unit, and that is not your failure.**
 
