@@ -1150,7 +1150,7 @@ int daPyMng_c::deleteCullingYoshi() {
         daYoshi_c *p = static_cast<daYoshi_c *>(fManager_c::searchBaseByID((fBaseID_e)m_yoshiID[i]));
         if (!p) continue;
         if (isDeleteRequested(p)) continue;
-        if (p->getPlrNo() != -1) continue;
+        if (getVfunc6c(p)((dActor_c *)p) != -1) continue;
         if (!p->isStatus(daPlBase_c::STATUS_DISPLAY_OUT_DEAD)) continue;
 
         mVec2_c ppos;
