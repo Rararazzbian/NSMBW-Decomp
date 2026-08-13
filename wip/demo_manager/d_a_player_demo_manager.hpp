@@ -130,12 +130,8 @@ public:
     int getPlrNo() const { return mPlayerNo; }
     void setPlrNo(int playerNo) { mPlayerNo = playerNo; }
 
-public:
+private:
     // ------------------------------------------------------------------
-    // Members are public because six already-matching TUs read them directly
-    // (d_a_player.cpp, d_a_player_base.cpp and the four d_wipe_* files).
-    // Access specifiers do not affect codegen, so this costs nothing.
-    //
     // Members, in offset order. Every offset in this list was read off a
     // store/load instruction, either in this TU's own disassembly or (where
     // noted) in an already-matched caller. None of it is a guess about

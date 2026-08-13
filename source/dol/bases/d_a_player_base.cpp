@@ -2613,7 +2613,7 @@ void daPlBase_c::changeNextScene(int param1) {
     onStatus(STATUS_64);
     daPyMng_c::mPauseDisable = true;
     daPyDemoMng_c::mspInstance->setCourseOutList(mPlayerNo);
-    if (mPlayerNo == daPyDemoMng_c::mspInstance->m_70) {
+    if (mPlayerNo == daPyDemoMng_c::mspInstance->mCourseOutList[0]) {
         dNext_c::m_instance->mStartSceneChange = true;
         daPyDemoMng_c::mspInstance->mPlayerNo = mPlayerNo;
     }
@@ -3836,8 +3836,8 @@ void daPlBase_c::initializeState_DemoGoal() { initDemoGoalBase(); }
 void daPlBase_c::finalizeState_DemoGoal() { finalizeDemoGoalBase(); }
 
 float daPlBase_c::getDemoGoalLandPos() {
-    float pos = mWarpPos.z + daPyDemoMng_c::mspInstance->m_1c * 16.0f;
-    if (daPyDemoMng_c::mspInstance->m_1c > 1) {
+    float pos = mWarpPos.z + daPyDemoMng_c::mspInstance->mGoalEntryCount * 16.0f;
+    if (daPyDemoMng_c::mspInstance->mGoalEntryCount > 1) {
         pos -= mGoalTouchOrder * 32.0f;
     }
     return pos;
@@ -3854,7 +3854,7 @@ void daPlBase_c::setDemoGoal_MultiJump() {
     mAngle.y = 0x4000;
     mDemoState = GOAL_DEMO_POLE_JUMP;
     mpMdlMng->setAnm(PLAYER_ANIM_GOAL_JUMP);
-    if (daPyDemoMng_c::mspInstance->m_1c > 1) {
+    if (daPyDemoMng_c::mspInstance->mGoalEntryCount > 1) {
         initGoalJump(pos, daPlBase_c::sc_JumpSpeed + 1.5f);
     } else {
         initGoalJump(pos, daPlBase_c::sc_JumpSpeed + 1.3f);
@@ -4053,7 +4053,7 @@ bool daPlBase_c::updateDemoKimePose(ClearType_e clearType) {
 void daPlBase_c::startKimePoseVoice(ClearType_e clearType) {
     int playerCount;
     if (clearType == CLEAR_TYPE_GOAL) {
-        playerCount = daPyDemoMng_c::mspInstance->m_1c;
+        playerCount = daPyDemoMng_c::mspInstance->mGoalEntryCount;
     } else {
         playerCount = daPyDemoMng_c::mspInstance->getControlDemoPlayerNum();
     }
