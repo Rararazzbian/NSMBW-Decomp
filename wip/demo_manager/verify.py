@@ -141,6 +141,15 @@ def main():
             print('   %s  (%d instructions)' % (n, len(drf_by_name[n])))
 
     print('\n%d exact, %d differing' % (exact, close))
+    print('\n!! THIS TOOL CANNOT SEE A WRONG CONSTANT. It compares canonicalised\n'
+          '   instruction text, so pool references are compared by PATTERN, not by\n'
+          '   value -- a lone 0.0f and a lone 8.0f are equal here, and a corrupted\n'
+          '   float inside a .rodata table changes NOTHING in this output. That was\n'
+          '   demonstrated live on setHanabiEffect: 64.0f -> 65.0f in a table left\n'
+          '   this report byte-for-byte identical. If your function owns data,\n'
+          '   read the bytes out of the compiled object and compare them against\n'
+          '   original/wiimj2d.dol separately. MATCH here is necessary, not\n'
+          '   sufficient.')
 
     if neg:
         # negative control: the comparator must notice a corrupted target body

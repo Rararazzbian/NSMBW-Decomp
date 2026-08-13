@@ -307,35 +307,23 @@ void daPyDemoMng_c::clearDemoNo(s8 playerNo)
     daPyDemoMng_c *dst = this;
     int count = 0;
 
-    int loaded0 = mDemoNoQueue[0];
-    if (loaded0 != -1 && value != loaded0) {
-        dst->mDemoNoQueue[0] = loaded0;
-        dst = (daPyDemoMng_c *)((char *)dst + 4);
-        count++;
-    }
-    int loaded1 = mDemoNoQueue[1];
-    if (loaded1 != -1 && value != loaded1) {
-        dst->mDemoNoQueue[0] = loaded1;
-        dst = (daPyDemoMng_c *)((char *)dst + 4);
-        count++;
-    }
-    int loaded2 = mDemoNoQueue[2];
-    if (loaded2 != -1 && value != loaded2) {
-        dst->mDemoNoQueue[0] = loaded2;
-        dst = (daPyDemoMng_c *)((char *)dst + 4);
-        count++;
-    }
-    int loaded3 = mDemoNoQueue[3];
-    if (loaded3 != -1 && value != loaded3) {
-        dst->mDemoNoQueue[0] = loaded3;
-        count++;
+    for (int i = 0; i < 4; i++) {
+        int loaded = mDemoNoQueue[i];
+        if (loaded != -1 && value != loaded) {
+            dst->mDemoNoQueue[0] = loaded;
+            dst = (daPyDemoMng_c *)((char *)dst + 4);
+            count++;
+        }
     }
 
     if (count >= 4) {
         return;
     }
 
-    for (int i = count; i < 8; i++) {
+    for (int i = count; i < 4; i++) {
         mDemoNoQueue[i] = -1;
+    }
+    for (int i = 0; i < 4; i++) {
+        mCourseOutList[i] = -1;
     }
 }

@@ -285,12 +285,11 @@ void daPyDemoMng_c::executeGoalCastle() {
 
     case 2:
         if (m_0c == 0) {
-            dInfo_c *info = dInfo_c::getInstance();
-            info->m_68 = 0;
+            dInfo_c::getInstance()->m_68 = 0;
             if (m_42) {
-                info->m_68 = 1;
+                dInfo_c::getInstance()->m_68 = 1;
             }
-            info->m_64 = m_41;
+            dInfo_c::getInstance()->m_64 = m_41;
             dScStage_c::m_goalType = (mGoalType != 0);
 
             if (dInfo_c::m_startGameInfo.mGameMode == dInfo_c::GAME_MODE_SUPER_GUIDE) {
@@ -298,33 +297,39 @@ void daPyDemoMng_c::executeGoalCastle() {
                 u8 level = dInfo_c::m_startGameInfo.mLevel1;
 
                 if (world <= 9 && level <= 0x29) {
-                    if (level == 3 && world == 2) {
+                    int l = level;
+                    int w = world;
+                    if (l == 3 && w == 2) {
                         dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
-                        bool ok = true;
                         if (mGoalType == 0) {
-                            ok = save->isCourseDataFlag(world, level, 0x90);
+                            if (!save->isCourseDataFlag(world, level, 0x90)) {
+                                goto otehon_fail1;
+                            }
                         }
-                        if (ok && mGoalType != 0) {
-                            ok = save->isCourseDataFlag(world, level, 0x120);
+                        if (mGoalType == 0 || save->isCourseDataFlag(world, level, 0x120)) {
+                            goto castle_success;
                         }
-                        if (!ok) {
-                            dScStage_c::m_OtehonClear_p[0xb9] = 0;
-                            dScStage_c::m_OtehonClear_p[0xb8] = 1;
-                            dScStage_c::m_OtehonClear_p[0xb5] = 1;
-                            m_08 = 3;
-                            break;
-                        }
+                    otehon_fail1: {
+                        u8 *otehon = dScStage_c::m_OtehonClear_p;
+                        otehon[0xb9] = 0;
+                        otehon[0xb8] = 1;
+                        otehon[0xb5] = 1;
+                        m_08 = 3;
+                        break;
+                    }
                     } else if (!dWmLib::IsCourseClear(world, level)) {
-                        dScStage_c::m_OtehonClear_p[0xb9] = 0;
-                        dScStage_c::m_OtehonClear_p[0xb8] = 1;
-                        dScStage_c::m_OtehonClear_p[0xb5] = 1;
+                        u8 *otehon = dScStage_c::m_OtehonClear_p;
+                        otehon[0xb9] = 0;
+                        otehon[0xb8] = 1;
+                        otehon[0xb5] = 1;
                         m_08 = 3;
                         break;
                     }
                 }
             }
 
-            dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_MARIO);
+        castle_success:
+            dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_CIRCLE_TARGET);
             mMode = MODE_0;
         }
         break;

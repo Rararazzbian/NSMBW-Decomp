@@ -21,7 +21,13 @@
 //   setGoalDemoKimeAll     BYTE-EXACT (verified)
 //   setGoalDemoRunCastle   BYTE-EXACT (verified)
 //   isAllPlayerGoalIn      BYTE-EXACT (verified)
-//   setHanabiEffect        very close, NOT byte-exact -- see report
+//   setHanabiEffect        87/87 instructions (matches target's count), NOT
+//                          yet reported MATCH -- the only remaining diff is
+//                          the pool-anchor symbol choice (sc_ForceList vs a
+//                          locally-anchored @0), a known whole-TU dead-code-
+//                          elimination artifact (see report item 1). All 12
+//                          @LOCAL@ tables verified byte-exact against
+//                          original/wiimj2d.dol.
 //   executeGoalCastle      NOT byte-exact, TODO: this file was edited but
 //                          NOT recompiled/rediffed after the last change to
 //                          the isCourseDataFlag "ok" logic below -- recompile
@@ -114,7 +120,15 @@ bool daPyDemoMng_c::isAllPlayerGoalIn() {
 }
 
 // ---------------------------------------------------------------------------
-// setHanabiEffect -- 0x8005C2B0, 348 B
+// setHanabiEffect -- 0x8005C2B0, 348 B, 87 instructions -- INSTRUCTION COUNT
+// NOW MATCHES TARGET (87/87). Not yet a reported MATCH: the sole remaining
+// diff is which symbol MWCC picks as the cheap 16-bit-offset pool anchor for
+// this function's r31 (target: dWmLib::sc_ForceList, a .data object from a
+// DIFFERENT batch's code that isn't referenced anywhere in this isolated
+// 6-function TU and is therefore dead-code-eliminated here; ours: the local
+// .rodata section base). This is a whole-TU-context artifact, not a bug --
+// see report item 1. All values below this point are otherwise byte-for-byte
+// instruction-identical to the target, just anchored at different offsets.
 //
 // Owns 11 @LOCAL@ function-scope statics (the brief's headline "nine" is the
 // scHanabiOffset_1..9 family; scHanabiOffsetDt and scHanabiEffectID are the
@@ -122,13 +136,20 @@ bool daPyDemoMng_c::isAllPlayerGoalIn() {
 //   scHanabiOffset_1..9   .rodata  1..9-element position/id tables
 //   scHanabiOffsetDt      .data    9 pointers, one per scHanabiOffset_N
 //   scHanabiEffectID      .data    4 pointers to the 4 firework colour names
+// All 9 position tables' raw bytes were read back out of the compiled
+// object and diffed byte-for-byte against original/wiimj2d.dol -- exact
+// match, and scHanabiOffsetDt's/scHanabiEffectID's pointer targets (via
+// relocation entries) were confirmed to reference those tables/strings in
+// the correct order.
 //
-// A tenth, UNNAMED 10-entry string-pointer table also lives in .data
+// A twelfth, UNNAMED 10-entry string-pointer table also lives in .data
 // (0x803099F0-0x80309A18, three distinct strings: "..._1up" x3, "..._k" x6,
 // "..._star" x1) with no @LOCAL@ symbol in wiimj2d_symbols.txt at all -- it
-// is written here as a switch so the compiler synthesises it anonymously,
-// matching the target's anonymous "lbl_803099ED" blob rather than minting a
-// twelfth named object that doesn't exist on the target side.
+// is written here as a named function-local static array (reproduces the
+// target's single-lwzx-indexed-load shape and, per independent verification
+// against the DOL, the exact same 10 pointer targets in the exact same
+// order), which necessarily mints an extra @LOCAL@...@names symbol the real
+// target does not have -- flagged, not resolved; see report.
 // ---------------------------------------------------------------------------
 void daPyDemoMng_c::setHanabiEffect() {
     struct HanabiPos_t {
@@ -213,31 +234,32 @@ void daPyDemoMng_c::setHanabiEffect() {
         "Wm_ob_fireworks_p",
     };
 
-    if (m_40 != 0 && m_44 < m_41) {
-        const HanabiPos_t &offset = scHanabiOffsetDt[m_41 - 1][m_44];
-        mVec3_c pos = mFireworkPos;
-        pos.x += offset.x;
-        pos.y += offset.y;
+    if (m_40 == 0 || m_44 >= m_41)
+        return;
 
-        if (m_44 == 0) {
-            if (m_40 != 0) {
-                if (m_41 < 10) {
-                    static const char *const names[10] = {
-                        "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up",
-                        "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
-                        "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
-                        "Wm_ob_fireworks_star",
-                    };
-                    const char *name = names[m_41];
-                    mEf::createEffect(name, 0, &pos, NULL, NULL);
-                    dAudio::g_pSndObjMap->startSound(0x251, pos, 0);
-                }
+    const HanabiPos_t &offset = scHanabiOffsetDt[m_41 - 1][m_44];
+    mVec3_c pos = mFireworkPos;
+    pos.x += offset.x;
+    pos.y += offset.y;
+
+    if (m_44 == 0) {
+        if (m_40 != 0) {
+            if (m_41 < 10) {
+                static const char *const names[10] = {
+                    "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up", "Wm_ob_fireworks_1up",
+                    "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
+                    "Wm_ob_fireworks_k", "Wm_ob_fireworks_k", "Wm_ob_fireworks_k",
+                    "Wm_ob_fireworks_star",
+                };
+                const char *name = names[m_41];
+                mEf::createEffect(name, 0, &pos, NULL, NULL);
+                dAudio::g_pSndObjMap->startSound(0x251, pos, 0);
             }
-        } else {
-            m_45 = (m_45 + dGameCom::rndInt(6) + 1) & 3;
-            mEf::createEffect(scHanabiEffectID[m_45], 0, &pos, NULL, NULL);
-            dAudio::g_pSndObjMap->startSound(0x250, pos, 0);
         }
+    } else {
+        m_45 = (m_45 + dGameCom::rndInt(6) + 1) & 3;
+        mEf::createEffect(scHanabiEffectID[m_45], 0, &pos, NULL, NULL);
+        dAudio::g_pSndObjMap->startSound(0x250, pos, 0);
     }
 }
 
