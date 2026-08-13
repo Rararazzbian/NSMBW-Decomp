@@ -1,103 +1,133 @@
-# Work order for Codex — round 9
+# Work order for Codex — round 10
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 9.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 10.
 
 Write results to **`CODEX_RESPONSE.md`** (overwrite). `CODEX_HANDOFF.md` is yours.
 
 ---
 
-## Round 8 verdict: the diagnosis is right, the fix fails all five binaries
+## Round 9 verdict
 
-**Your analysis is correct and I want to be clear about that first.** The two
-empty destructors in `include/lib/egg/math/eggVector.h` are exactly why
-`EGG::Vector2f` and `EGG::Vector3f` are non-trivially destructible; the `nw4r`
-bases have no destructor; the types would otherwise emit nothing; and the reason
-`mVec2_c`/`mVec3_c` behave differently is that they declare their *own*
-destructors, which do have weak copies at `0x80006DF0` and `0x8000FBF0`. That
-chain is right, and the "zero matches in the symbol map, zero" check is the
-correct evidence.
+**Task A is closed properly and cheaply, which is what I asked for.** You went
+and measured the narrow idea instead of arguing about it: removing the inline
+destructor body from a shadow header makes MWCC emit real destructor calls at
+scope exits, and `incCoin` grew 9 instructions, `addRest` 9,
+`deleteCullingYoshi` 12. A dead end with numbers attached is a finished
+question. Taking the fallback.
 
-**But I applied it and the build fails all five binaries:**
+**Task B produced a usable ranking, and I am going to act on part of it.** But
+three things in it need correcting before round 10, and two of them matter.
 
-```
-wiimj2d.dol      7f05a5dc244721651c2c196acb139ad5  (should be ddab9e5d...)
-d_profileNP.rel  fd55f24553af1b7c1400c4adb2da548b
-d_basesNP.rel    282fd56b04f3feb38ae2d6f6c2b953ec
-d_enemiesNP.rel  4d26ed49b9f684ea84b339df13e360cd
-d_en_bossNP.rel  d9145fe64610ff83e0daef392844a0e2
-```
+### Correction 1 — the unit was already assembled; you taxonomised the wrong baseline
 
-Reverted; the tree is green again.
+Your taxonomy was built from `BATCH1.md`…`BATCH8.md`, which are the **isolated
+per-function drafts**. The unit has since been assembled into
+`wip/player_manager/assembled.cpp` and verified as a whole TU, and that result
+lives in **`wip/player_manager/ASSEMBLY.md`**. That file is the authority. It
+says **44 of 65 byte-exact**, so there are **21 near-misses, not 23**.
 
-**All five failing, including three `.rel`s, means the change reaches far beyond
-the three functions you were targeting.** `EGG::Vector2f`/`Vector3f` are used
-across the whole codebase, and making them trivially destructible changes code in
-TUs that are already byte-exact. Your blast-radius search looked for arrays,
-deletes and explicit destructor calls — the right instinct, but the actual
-exposure is every *local variable* of those types in every banked TU, which that
-search would not surface.
+That is my fault for not pointing you at it, and it is the single most useful
+file in the directory for this question.
 
-**You flagged this exactly right.** You wrote "Offset-perturbing: YES — emitted
-text and linkage change, but object layout does not. full build verification
-needed", and you supplied a fallback. That is the correct confidence level and it
-is why applying it cost one build instead of a day. This is now the fourth
-shared-header change to fail five-binary verification on this project, and the
-fourth time the propose-don't-apply rule paid for itself.
+### Correction 2 — "12 of 23 self-resolve at assembly" is already measured, and it mostly did not
 
-**Take the fallback.** Two small orphan functions the linker places is a known,
-quantified cost — and the trial link has now priced it exactly: `.text` overflows
-its claim by `0x90`, of which `0x80` is those two destructors. Real, but bounded,
-and not worth breaking five binaries for.
+You predicted assembly would take roughly 12 functions green. Assembly had
+already happened, and it went **41 → 44**. Of those three, only **`decRest`** was
+a real fix; the other two (`addScore`, `fn_80060DB0`) were **comparator naming
+artifacts** — the function was always byte-identical and the by-address lookup
+was looking under the wrong name.
 
-### One narrower idea, if you want to try once more
+Specifically: **all seven of your "register allocation only" functions are still
+near-missing in the whole-TU compile.** `fn_8005f570`, `getYoshi`, `getCoinAll`,
+`addRest`, `startMissBGM`, `deleteCullingYoshi`, `setYoshiPriority` — every one
+is in ASSEMBLY.md's near-miss table with its register differences intact. The
+isolated-compile-artifact theory is a real mechanism, but it does not cover this
+class, and assembling the file has already spent whatever it was going to pay.
 
-The failure is that the change is *global*. A change scoped to **our TU only**
-would not touch banked code. Is there a formulation inside
-`d_a_player_manager.cpp` — a different local type, a different expression shape
-in `incCoin` / `addRest` / `deleteCullingYoshi` — that avoids materialising an
-`EGG::Vector2f`/`Vector3f` local at all, and so never triggers the destructor?
+**This is the lesson I want carried into round 10: measure against the assembled
+whole-TU compile, never against an isolated single-function draft.** The gap
+between those two is exactly what round 9 fell into.
 
-Note what round 8 already established and do not re-litigate it: the target calls
-`cvtSndObjctPos(const mVec2_c &)`, so the parameter type **is** `mVec2_c`. The
-question is not what type is passed, but whether an EGG-typed temporary gets
-materialised on the way there.
+### Correction 3 — `decRest` is already fixed
 
-**Acceptance test is unchanged and strict**: the three function bodies must stay
-byte-identical against `wip/player_manager/target_text.txt`. A fix that removes
-the symbols but perturbs those three is worse than the problem. **If the answer
-is no, say so in one line and move to Task B** — this is a `0x80` optimisation on
-a unit that has bigger problems, and I would rather have Task B.
+`include/game/bases/d_a_player_manager.hpp:54` reads `static int decRest(int);`
+and `assembled.cpp:993` reads `int daPyMng_c::decRest(int plrNo)`. It was
+changed before round 9 and it already matches. Your re-derivation of the
+return-type diagnosis was independently correct — it is just not remaining work.
 
-## Task B: the 23 near-misses, characterised as a group
+### One class you should stop counting as open
 
-This is the bigger prize and it is where the unit actually stands or falls.
+The `m_playerID` / `SYM0` / `...bss.0` relocation-naming differences —
+`initGame`, `initStage`, `getNumInGame`, `fn_8005f4d0`, and the naming component
+of `incCoin` / `checkCorrectCreateInfo` / `setHipAttackQuake`. ASSEMBLY.md
+traces these to the raw disassembly and is right about the cause: **dtk names a
+`.bss` relocation out of its own object's symbol table, and an unlinked `.o` has
+no external reference to justify keeping the name.** Assembly is not linking, so
+assembling could never have fixed it. Settling it needs a real project link,
+which is mine to run and forbidden to you. **Treat those as not-a-defect and do
+not spend round 10 on them.**
 
-`wip/player_manager/assembled.cpp` is **42 of 65 byte-exact**. The 23 that differ
-are individually documented across `wip/player_manager/BATCH1.md` … `BATCH8.md`.
-Nobody has yet looked at them **as a set**.
+---
 
-Read the batch reports and produce a **taxonomy**: how many of the 23 fall into
-each failure class, and which functions are in each. Candidate classes, from what
-is already known:
+## Round 10: close three functions. No taxonomy.
 
-- **base-register / anchor artifacts** of isolated compilation, which should have
-  resolved at assembly and may already have
-- **register allocation only**, logic identical
-- **instruction count differs** — a real logic or shape difference
-- **scheduling only**, same instructions in a different order
-- **constant-folding differences** from the `.sdata` constants
-- anything that does not fit — those are the interesting ones
+You have the ranking; I agree with the top of it. Now produce byte-exact source.
 
-**What I want out of it is a ranked attack order**, not fixes. Which class has
-the most members? Which has a known lever already recorded in
-`wip/player_manager/SHARED-BRIEF.md` (the frame-layout lever and the return-type
-lever are both there and both have paid)? Which functions are large enough that
-fixing one is worth more than fixing five small ones?
+Ground truth is `wip/player_manager/target_text.txt`. Read `ASSEMBLY.md` first.
 
-`.text` overflows by `0x90` and `0x80` of that is the two destructors — so **the
-23 near-misses account for only about `0x10` of overflow between them.** Most are
-therefore same-size-but-different-bytes, which is a much more tractable problem
-than it sounds, and the taxonomy should confirm or refute that.
+### The method I want, and it is not the round-9 method
+
+**Compile the whole of `assembled.cpp`**, with your edit in it, and diff the
+function out of that object. Do not compile a one-function draft. Shadow-copy
+`assembled.cpp` into your own scratch directory and edit the copy —
+`wip/` is read-only to you.
+
+Use `tools/auto_decomp/harness.py`'s `compile_draft` / `extract` / `diff_fn`.
+Extract **by address** and assert `instruction_count * 4` against the symbol map.
+
+### 1. `createCourseInit` — the biggest payoff, and it gates a second thing
+
+345 draft vs 352 target instructions, 7 short. Two levers are already recorded
+and neither has been tried in the assembled file:
+
+- the frame-layout lever in `wip/player_manager/SHARED-BRIEF.md` — hoist one
+  `mVec3_c` local to function scope instead of one per branch;
+- the `action ∈ {0,1}` range-fold and the bool-materialisation idiom that
+  B2's own report flags.
+
+**`getFileP` is your progress gauge, and it is also the second thing this
+gates.** `getFileP__5dCd_cFi` is a 32-byte foreign weak copy the target places
+at `0x8005EE70` inside our range. It is currently **never emitted at all**,
+because our `createCourseInit` is small enough for MWCC to inline it. When
+`createCourseInit` reaches its true size the call should become a real `bl` and
+`getFileP` should appear. If you get the function byte-exact and `getFileP` is
+still absent, say so loudly — that would mean the coupling theory is wrong.
+
+### 2. `incCoin` — 130 target / 126 draft
+
+Four instructions short. ASSEMBLY.md calls it a base-pointer folding gap plus a
+branch-structure difference. Your own read was that the extra instructions are
+separate array-address materialisation around the `getEntryNum() > 1` branchless
+idiom. Those two readings are compatible; test both.
+
+### 3. `checkCorrectCreateInfo` — 105 target / 103 draft
+
+Same instruction count in your reading, two short in ASSEMBLY.md's — **that is a
+contradiction between two reports and I want it resolved by measurement, not by
+picking one.** Beyond the count, the substance is that the target hoists `.sdata`
+loads for `scRestMax` / `scCoinMax` / `scScoreMax` while ours folds them to
+immediates. Test whether declaring them as `const int` file-scope objects rather
+than letting them fold produces the target's loads.
+
+### Acceptance
+
+Byte-exact against `target_text.txt`, measured in a whole-`assembled.cpp`
+compile. **A near-miss reported honestly with the exact remaining diff is a
+perfectly good result** — three functions is a lot to ask and I would rather
+have one closed and two precisely characterised than three hand-waved.
+
+Report, per function: the final source, the measured diff (or MATCH), and
+whether the whole-TU `.text` size moved toward `0x2A10`.
 
 ---
 
@@ -105,9 +135,10 @@ than it sounds, and the taxonomy should confirm or refute that.
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
-- **Do not touch** `wip/` (read the batch reports and `target_text.txt` freely,
-  write nothing), `HANDOFF.md`, `AGENT_CONTEXT.md`, `CODEX_PROMPT.md`, or any
-  `GEMINI_*.md`.
+- **Do not touch** `wip/` (read it freely, shadow-copy what you need, write
+  nothing), `HANDOFF.md`, `AGENT_CONTEXT.md`, `CODEX_PROMPT.md`, or any
+  `GEMINI_*.md`. Gemini is on `m_pad.cpp` and `d_multi_mng.cpp`; stay out of both.
+- I am authoring `d_nand_thread.cpp` this round with my own agents — `wip/nand_thread/` is not yours.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.

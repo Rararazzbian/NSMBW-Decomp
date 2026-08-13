@@ -1,352 +1,409 @@
-# Gemini Response — Round 6: Resolution of 4-Byte Offset Gap & Pin Self-Audit
+# Gemini Response — Round 7: Complete Pre-Flight & Reconstruction of `m_pad.cpp`
 
 ## Executive Summary
 
-1. **Task A (Primary — 4-Byte Resolution)**: We settled the discrepancy between `sizeof(EGG::Thread) == 0x4C` and `mMutex` at offset `0x50` directly from the retail binary disassembly and MWCC compiler behavior.
-   - **Hypothesis 2 (Alignment)** is ruled out: MWCC aligns `mMutex` to 4 bytes (`__alignof__(mMutex) == 4`, `__alignof__(OSMutex) == 4`, `__alignof__(OSCond) == 4`), so placing `mMutex` directly after a `0x4C` base class would place it at `0x4C`, not `0x50`. The `.bss` 8-byte rule (§6) applies only to whole-object placement in `.bss`, not struct member alignment.
-   - **Hypothesis 3 (`sizeof(Thread) == 0x50`)** is ruled out: Retail `d_system.cpp` allocates `0x4C` (`li r3, 0x4c` at `0x800E4E20`), and `EGG::Thread` functions in `auto_03_802BA4F0_text.o` span exactly `0x00..0x48` (size `0x4C`).
-   - **Conclusion**: `mMutex` is undeniably at offset **`0x50`** (proven by `stw r4, 0x50(r27)` storing the vtable, `addi r3, r27, 0x54` passed to `OSInitMutex`, and `addi r3, r27, 0x6c` passed to `OSInitCond`). The constructor does not initialize the 4 bytes at `0x4C` (`0x4C..0x4F`), nor does any other function in the TU access it. Per `AGENT_CONTEXT.md` §4 and §6, we label this region as `u8 mPad4C[4];` (`@unofficial`), ensuring exact byte placement for `mMutex` (`0x50`), `mCommand` (`0x74`), `mStatus` (`0x78`), `mFileExists` (`0x7C`), and total struct size `sizeof(dNandThread_c) == 0x80`.
-2. **Task B (Secondary — 21-Pin & 4-Removal Audit)**: We ran the automated banked-slice filter across all 144 matching slices in `slices/wiimj2d.json`.
-   - **21 proposed pin additions**: **100% clean (21 unbanked, 0 collisions)**. None of the 21 addresses fall within any banked slice.
-   - **4 proposed pin removals**: **100% verified**. `cmdExistCheck`, `cmdSpaceCheck`, and `create` are within `d_nand_thread.cpp` `.text` (`0x800CED00..0x800CFCE0`), and `m_instance` is within `d_nand_thread.cpp` `.sbss` (`0x8042A298..0x8042A2A0`). All 4 are currently present in `syms.txt` and must be removed upon landing to prevent duplicate symbol linker errors.
+1. **Independent Function Count Confirmation**: We independently disassembled and audited all symbols across `0x8016F330`–`0x80170AC0`. There are exactly **56 functions** (5,680 bytes of code + 352 bytes of 16-byte alignment padding = 6,032 bytes total, `0x1790` span). Every function starts on a 16-byte boundary.
+2. **`mPad` Class vs. Namespace Settlement**: `mPad` is **100% definitively a namespace**, not a class. None of its 12 functions take a `this` pointer; they operate on 8 namespace-scope `.sbss` variables and 4 namespace-scope `.bss` arrays. There is no `mPad_c` class, no constructor/destructor, and no `mPad` vtable.
+3. **`__sinit` and `.ctors` Slot**: `__sinit_\m_pad_cpp` (`0x8016F7B0`, size `0x58`) constructs `g_PadAdditionalData[4]` (`0x60` bytes at `.bss:0x80377FA8`, `0x18` bytes per element) via `__construct_array` and registers `__arraydtor$13953` via `__register_global_object` at `.bss:0x80377F98` (`@13954`, size `0xC`). Its function pointer occupies the 4-byte `.ctors` slot at `0x802EDEFC`–`0x802EDF00`.
+4. **Data Inventory & Unreferenced Object Finding**: All data sections are accounted for. The only unreferenced object is `__vt__Q24mTex8edit4b_c` (`0x10` at `.data:0x80329F60`), which is emitted into `.data` because `m_pad.cpp` defines `mTex::edit4b_c`'s out-of-line virtual destructor and `set()` method, but does not construct `edit4b_c` locally.
+5. **Scaffold Hazard Proof**: We authored and compiled a full 56-function scaffold with `compilers/Wii/1.1/mwcceppc.exe` via `tools/auto_decomp/harness.py`. All section bounds match target slices byte-for-byte: `.text` (`0x1790`), `.ctors` (`0x4`), `.data` (`0x10`), `.bss` (`0x140`), `.sbss` (`0x20`), `.sdata2` (`0x20`).
+6. **Banked-Slice Audit**: 17 candidate pins were checked against all 144 banked slices in `slices/wiimj2d.json`: **17 checked, 17 clean, 0 collisions**. 5 symbols defined by `m_pad.cpp` are currently in `syms.txt` and must be removed upon landing.
+7. **Register Allocation Assessment**: Unlike low-level Revolution SDK drivers, `m_pad.cpp` matches standard CodeWarrior code generation smoothly. Test probes on multiple functions (`mPad::create`, `initWPADInfo`, `setWPADInfo`, `mTex::base_c::getTileNo`, `mTex::base_c::getIdInTile`) produced **100% byte-exact matches on the first try**. `m_pad.cpp` is a **strong green light** for authoring.
 
 ---
 
-# 1. Task A: Resolution of the 4-Byte Region (`0x4C`..`0x50`)
+# 1. Full Function Table (56 Functions)
 
-### 1.1 Direct Binary Evidence from Retail Disassembly
+The `.text` section of `m_pad.cpp` spans `0x8016F330` to `0x80170AC0` (total 6,032 bytes / `0x1790` bytes). The 56 functions break down into 4 clear groups:
+- **`mPad` core functions & file-scope callbacks**: Functions 1–13
+- **`mPad::PadAdditionalData_t` ct/dt & array dtor**: Functions 14–16
+- **`mPrint::MyPrintBase<char>` & `mPrint::MyPrintBase<wchar_t>` template methods**: Functions 17–48 (16 methods each)
+- **`mTex::base_c` & `mTex::edit4b_c` texture manipulation methods**: Functions 49–56
 
-Disassembly of `auto_03_800CED00_text.o` and `auto_03_800CFBA0_text.o` establishes the following ground truths:
-
-1. **Total Class Size (`0x80`)**:
-   In `dNandThread_c::create(EGG::Heap*)` (`0x800CFBA0`):
-   ```assembly
-   /* 800CFBBC */  li r3, 0x80
-   /* 800CFBC0 */  bl __nw__FUl
-   ```
-   Exactly `0x80` (128 bytes) is passed to `operator new`.
-
-2. **`mMutex` Base Offset (`0x50`)**:
-   In `dNandThread_c::dNandThread_c` (`0x800CED00`), with `r27 = this`:
-   ```assembly
-   /* 800CED34 */  bl __ct__Q23EGG6ThreadFUliiPQ23EGG4Heap
-   /* 800CED44 */  stw r3, 0x0(r27)         ; dNandThread_c vptr at 0x00
-   /* 800CED4C */  stw r4, 0x50(r27)        ; EGG::Mutex vptr at 0x50
-   /* 800CED50 */  addi r3, r27, 0x54       ; &mMutex.mOSMutex (0x50 + 0x04 = 0x54)
-   /* 800CED54 */  bl OSInitMutex
-   /* 800CED64 */  stw r4, 0x50(r27)        ; mMutex vptr at 0x50
-   /* 800CED5C */  addi r3, r27, 0x6c       ; &mMutex.mOSCond (0x50 + 0x1C = 0x6C)
-   /* 800CED68 */  bl OSInitCond
-   /* 800CED70 */  stw r0, 0x74(r27)        ; mCommand = 0 at 0x74
-   ```
-   - `0x50`: `mMutex` vtable pointer (`__vt__6mMutex`)
-   - `0x54`: `OSMutex mOSMutex` (size `0x18`, spanning `0x54..0x6B`)
-   - `0x6C`: `OSCond mOSCond` (size `0x08`, spanning `0x6C..0x73`)
-   - Total size of `mMutex`: `0x24` bytes (`0x50..0x74`).
-
-3. **Subsequent Member Offsets**:
-   - `0x74`: `int mCommand` (size `0x4`, spanning `0x74..0x77`)
-   - `0x78`: `int mStatus` (size `0x4`, spanning `0x78..0x7B`)
-   - `0x7C`: `bool mFileExists` (size `0x1`, written via `stb` at `0x800CEF4C` and `0x800CF038`)
-   - `0x7D..0x7F`: 3 bytes trailing alignment padding to reach `0x80`.
-
-4. **The `0x4C` Region**:
-   - The constructor performs `stw r3, 0x0(r27)` (vptr), then immediately `stw r4, 0x50(r27)` (mutex vptr). It **never writes** to `0x4C(r27)`.
-   - Across all 48 functions in `d_nand_thread.cpp`, **no instruction ever reads or writes offset `0x4C`**.
-
----
-
-### 1.2 Evaluation of the Three Hypotheses
-
-| Hypothesis | Test / Measurement | Verdict | Reason |
-|---|---|---|---|
-| **1. Explicit field / unexplained gap at `0x4C`** | Compiled MWCC probe with `u8 mPad4C[4]` before `mMutex` | **CONFIRMED** | Correctly aligns `mMutex` to `0x50`, `mCommand` to `0x74`, `mStatus` to `0x78`, and matches constructor assembly 1:1. |
-| **2. Natural alignment padding** | Compiled MWCC probe with no padding: `class Test : public EGG::Thread { mMutex mMutex; };` | **DISPROVEN** | `__alignof__(mMutex) == 4`, `__alignof__(EGG::Thread) == 4`. MWCC places `mMutex` at `0x4C`, not `0x50`. Internal alignment does NOT push `mMutex` to `0x50`. |
-| **3. `sizeof(EGG::Thread) == 0x50`** | Checked `d_system.cpp` allocation and `EGG::Thread` disassembly | **DISPROVEN** | Retail `d_system.cpp` allocates `0x4C` (`li r3, 0x4c` at `0x800E4E20`). `auto_03_802BA4F0_text.o` fields end at offset `0x48`, exactly `0x4C` bytes total. |
-
----
-
-### 1.3 Exact Accounted Memory Map for `dNandThread_c`
-
-```
-+-----------------------------------------------------------------------------------+
-| Offset Range | Size | Field Name       | Type           | Description / Evidence  |
-+==============+======+==================+================+=========================+
-| 0x00 .. 0x4B | 0x4C | (base class)     | EGG::Thread    | Retail Thread base class|
-| 0x4C .. 0x4F | 0x04 | mPad4C[4]        | u8[4]          | Gap / unref (@unofficial)|
-| 0x50 .. 0x53 | 0x04 | mMutex.__vptr    | void**         | __vt__6mMutex           |
-| 0x54 .. 0x6B | 0x18 | mMutex.mOSMutex  | OSMutex        | Initialized by OSInitMutex
-| 0x6C .. 0x73 | 0x08 | mMutex.mOSCond   | OSCond         | Initialized by OSInitCond
-| 0x74 .. 0x77 | 0x04 | mCommand         | int            | Command ID              |
-| 0x78 .. 0x7B | 0x04 | mStatus          | int            | Error / status code     |
-| 0x7C         | 0x01 | mFileExists      | bool           | Save existence flag     |
-| 0x7D .. 0x7F | 0x03 | mPad7D[3]        | u8[3]          | Struct tail padding     |
-+-----------------------------------------------------------------------------------+
-| Total Size:  | 0x80 (128 bytes)                                                   |
-+-----------------------------------------------------------------------------------+
-```
-
-- **Offset-perturbing**: NO. This layout aligns every member to its disassembled byte offset and preserves `sizeof(dNandThread_c) == 0x80`.
-
----
-
-# 2. Task B: Banked-Slice Filter Self-Audit
-
-### 2.1 Audit Methodology
-We constructed intervals `[section_start, section_end)` for all 144 matching slices in `slices/wiimj2d.json` using each section's base address in `meta.sections`. We tested all 21 proposed pin candidates against all banked ranges across `.text`, `.rodata`, `.data`, `.bss`, `.sdata`, `.sbss`, `.sdata2`, and `.sbss2`.
-
----
-
-### 2.2 Results: 21 Candidate Pin Additions
-
-| # | Candidate Symbol | Address | Banked-Slice Collision? | Audit Verdict |
-|---|---|---|---|---|
-| 1 | `NANDCheck` | `0x801DB280` | None (in unbanked NAND SDK) | **CLEAN** |
-| 2 | `NANDClose` | `0x801D9990` | None (in unbanked NAND SDK) | **CLEAN** |
-| 3 | `NANDCreate` | `0x801D8620` | None (in unbanked NAND SDK) | **CLEAN** |
-| 4 | `NANDDelete` | `0x801D8920` | None (in unbanked NAND SDK) | **CLEAN** |
-| 5 | `NANDGetHomeDir` | `0x801DAC30` | None (in unbanked NAND SDK) | **CLEAN** |
-| 6 | `NANDGetLength` | `0x801D9180` | None (in unbanked NAND SDK) | **CLEAN** |
-| 7 | `NANDGetType` | `0x801DAFB0` | None (in unbanked NAND SDK) | **CLEAN** |
-| 8 | `NANDInitBanner` | `0x801DB0E0` | None (in unbanked NAND SDK) | **CLEAN** |
-| 9 | `NANDMove` | `0x801D9110` | None (in unbanked NAND SDK) | **CLEAN** |
-| 10 | `NANDOpen` | `0x801D96F0` | None (in unbanked NAND SDK) | **CLEAN** |
-| 11 | `NANDRead` | `0x801D8B30` | None (in unbanked NAND SDK) | **CLEAN** |
-| 12 | `NANDSimpleSafeCancel` | `0x801DA0A0` | None (in unbanked NAND SDK) | **CLEAN** |
-| 13 | `NANDSimpleSafeClose` | `0x801D9E50` | None (in unbanked NAND SDK) | **CLEAN** |
-| 14 | `NANDSimpleSafeOpen` | `0x801D9A90` | None (in unbanked NAND SDK) | **CLEAN** |
-| 15 | `NANDWrite` | `0x801D8C20` | None (in unbanked NAND SDK) | **CLEAN** |
-| 16 | `OSInitCond` | `0x801B3280` | None (in unbanked OS SDK) | **CLEAN** |
-| 17 | `OSSignalCond` | `0x801B3370` | None (in unbanked OS SDK) | **CLEAN** |
-| 18 | `OSWaitCond` | `0x801B3290` | None (in unbanked OS SDK) | **CLEAN** |
-| 19 | `__ct__Q23EGG6ThreadFUliiPQ23EGG4Heap` | `0x802BA4F0` | None (in unbanked EGG Core) | **CLEAN** |
-| 20 | `__dt__Q23EGG6ThreadFv` | `0x802BA640` | None (in unbanked EGG Core) | **CLEAN** |
-| 21 | `calcCRC32__4sCrcFPCvUl` | `0x8015F270` | None (in unbanked sLib) | **CLEAN** |
-
-**Summary**: **21 checked, 21 clean, 0 collisions.**
-
----
-
-### 2.3 Results: 4 Pin Removals upon Landing
-
-Each of these symbols is currently pinned in `syms.txt` and will be defined directly by `d_nand_thread.cpp` upon landing:
-
-| # | Symbol | Address | Section in `d_nand_thread.cpp` | Defined by TU? | Present in `syms.txt`? | Action upon Landing |
+| # | Address | Size | Mangled Name | Clean Signature | Kind | Description |
 |---|---|---|---|---|---|---|
-| 1 | `cmdExistCheck__13dNandThread_cFv` | `0x800CEF10` | `.text` (`0x800CED00`..`0x800CFCE0`) | **YES** | **YES** | **REMOVE** |
-| 2 | `cmdSpaceCheck__13dNandThread_cFv` | `0x800CF060` | `.text` (`0x800CED00`..`0x800CFCE0`) | **YES** | **YES** | **REMOVE** |
-| 3 | `create__13dNandThread_cFPQ23EGG4Heap` | `0x800CFBA0` | `.text` (`0x800CED00`..`0x800CFCE0`) | **YES** | **YES** | **REMOVE** |
-| 4 | `m_instance__13dNandThread_c` | `0x8042A298` | `.sbss` (`0x8042A298`..`0x8042A2A0`) | **YES** | **YES** | **REMOVE** |
-
-**Summary**: **4 checked, 4 verified.** Removing them upon landing prevents duplicate symbol linker errors.
+| 1 | `0x8016F330` | `0x30` | `create__4mPadFv` | `void mPad::create()` | Free fn | Stores `CoreControllerMgr::sInstance` into `g_padMg` and initializes pads. |
+| 2 | `0x8016F360` | `0x1E4` | `beginPad__4mPadFv` | `void mPad::beginPad()` | Free fn | Polls controller status, computes motion/pos deltas, and updates `g_core`. |
+| 3 | `0x8016F550` | `0x14` | `endPad__4mPadFv` | `void mPad::endPad()` | Free fn | Calls `g_padMg->endFrame()` via controller manager vtable. |
+| 4 | `0x8016F570` | `0x24` | `setCurrentChannel__4mPadFQ24mPad4CH_e` | `void mPad::setCurrentChannel(mPad::CH_e)` | Free fn | Sets active controller channel ID and updates `g_currentCore`. |
+| 5 | `0x8016F5A0` | `0x30` | `getBatteryLevel_ch__4mPadFQ24mPad4CH_e` | `s8 mPad::getBatteryLevel_ch(mPad::CH_e)` | Free fn | Returns battery level (0–4) or -1 if WPAD info unavailable. |
+| 6 | `0x8016F5D0` | `0x68` | `setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo` | `void mPad::setWPADInfo(mPad::CH_e, const WPADInfo&)` | Free fn | Copies `WPADInfo` struct into `s_WPADInfo[ch]` and sets available flag. |
+| 7 | `0x8016F640` | `0x44` | `clearWPADInfo__4mPadFQ24mPad4CH_e` | `void mPad::clearWPADInfo(mPad::CH_e)` | Free fn | Zeroes `s_WPADInfo[ch]` and clears available flag. |
+| 8 | `0x8016F690` | `0x3C` | `initWPADInfo__4mPadFv` | `void mPad::initWPADInfo()` | Free fn | Iterates channels 0..3 and calls `clearWPADInfo` on each. |
+| 9 | `0x8016F6D0` | `0x3C` | `getWPADInfoCb` | `extern "C" void getWPADInfoCb(s32, s32)` | Static C callback | Asynchronous WPAD callback updating temporary info into `s_WPADInfo`. |
+| 10 | `0x8016F710` | `0x64` | `getWPADInfoAsync__4mPadFQ24mPad4CH_e` | `void mPad::getWPADInfoAsync(mPad::CH_e)` | Free fn | Initiates asynchronous `WPADGetInfoAsync` request for given channel. |
+| 11 | `0x8016F780` | `0x14` | `setGetWPADInfoInterval__4mPadFUl` | `void mPad::setGetWPADInfoInterval(u32)` | Free fn | Sets polling interval for WPAD info updates; resets if 0. |
+| 12 | `0x8016F7A0` | `0x08` | `getGetWPADInfoInterval__4mPadFv` | `u32 mPad::getGetWPADInfoInterval()` | Free fn | Returns current WPAD info polling interval in frames. |
+| 13 | `0x8016F7B0` | `0x58` | `__sinit_\m_pad_cpp` | `static void __sinit_\m_pad_cpp()` | Compiler static | Module static initializer calling `__construct_array` for `g_PadAdditionalData`. |
+| 14 | `0x8016F810` | `0x04` | `__ct__Q24mPad19PadAdditionalData_tFv` | `mPad::PadAdditionalData_t::PadAdditionalData_t()` | Struct member | Empty struct constructor (`blr`). |
+| 15 | `0x8016F820` | `0x40` | `__dt__Q24mPad19PadAdditionalData_tFv` | `mPad::PadAdditionalData_t::~PadAdditionalData_t()` | Struct member | Non-virtual struct destructor with deallocation check. |
+| 16 | `0x8016F860` | `0x1C` | `__arraydtor$13953` | `static void __arraydtor$13953()` | Compiler static | Calls `__destroy_arr` on `g_PadAdditionalData[4]`. |
+| 17 | `0x8016F880` | `0x48` | `__ct__Q26mPrint14MyPrintBase<c>Fv` | `mPrint::MyPrintBase<char>::MyPrintBase()` | Class member | Initializes font pointer, visible flag, and internal text list. |
+| 18 | `0x8016F8D0` | `0x40` | `__dt__Q26mPrint14MyPrintBase<c>Fv` | `mPrint::MyPrintBase<char>::~MyPrintBase()` | Class member | Destructor destroying print base instance. |
+| 19 | `0x8016F910` | `0x5C` | `Initialize__Q26mPrint14MyPrintBase<c>FPvUlRCQ34nw4r2ut4Font` | `void mPrint::MyPrintBase<char>::Initialize(void*, u32, const nw4r::ut::Font&)` | Class member | Configures memory buffer heap, assigns font, and initializes list. |
+| 20 | `0x8016F970` | `0x08` | `SetFont__Q26mPrint14MyPrintBase<c>FRCQ34nw4r2ut4Font` | `void mPrint::MyPrintBase<char>::SetFont(const nw4r::ut::Font&)` | Class member | Sets font reference for text writer. |
+| 21 | `0x8016F980` | `0x08` | `GetFont__Q26mPrint14MyPrintBase<c>CFv` | `const nw4r::ut::Font* mPrint::MyPrintBase<char>::GetFont() const` | Class member | Returns current font pointer. |
+| 22 | `0x8016F990` | `0x08` | `SetVisible__Q26mPrint14MyPrintBase<c>Fb` | `void mPrint::MyPrintBase<char>::SetVisible(bool)` | Class member | Sets display visibility boolean flag. |
+| 23 | `0x8016F9A0` | `0x08` | `IsVisible__Q26mPrint14MyPrintBase<c>CFv` | `bool mPrint::MyPrintBase<char>::IsVisible() const` | Class member | Returns display visibility boolean flag. |
+| 24 | `0x8016F9B0` | `0x10C` | `VRegisterf__Q26mPrint14MyPrintBase<c>FiiUlUlfbiPCcP16__va_list_struct` | `void mPrint::MyPrintBase<char>::VRegisterf(int, int, u32, u32, float, bool, int, const char*, va_list)` | Class member | Formats vararg string via `vsnprintf` and registers for rendering. |
+| 25 | `0x8016FAC0` | `0x8C` | `Reset__Q26mPrint14MyPrintBase<c>Fv` | `void mPrint::MyPrintBase<char>::Reset()` | Class member | Clears and unregisters all registered texts from print list. |
+| 26 | `0x8016FB50` | `0x25C` | `Flush__Q26mPrint14MyPrintBase<c>Fv` | `void mPrint::MyPrintBase<char>::Flush()` | Class member | Renders all registered string entries using `nw4r::ut::TextWriterBase<char>`. |
+| 27 | `0x8016FDB0` | `0xC0` | `Flush__Q26mPrint14MyPrintBase<c>Fiiii` | `void mPrint::MyPrintBase<char>::Flush(int, int, int, int)` | Class member | Sets up orthographic projection viewport matrix and calls `Flush()`. |
+| 28 | `0x8016FE70` | `0xE4` | `Register__Q26mPrint14MyPrintBase<c>FiiUlUlfbiPCci` | `void mPrint::MyPrintBase<char>::Register(int, int, u32, u32, float, bool, int, const char*, int)` | Class member | Allocates `MyText` block in heap and appends to display list. |
+| 29 | `0x8016FF60` | `0x0C` | `GetFirstText__Q26mPrint14MyPrintBase<c>Fv` | `MyText* mPrint::MyPrintBase<char>::GetFirstText()` | Class member | Returns head of text linked list via `nw4r::ut::List_GetFirst`. |
+| 30 | `0x8016FF70` | `0x08` | `GetNextText__Q26mPrint14MyPrintBase<c>FPQ36mPrint14MyPrintBase<c>6MyText` | `MyText* mPrint::MyPrintBase<char>::GetNextText(MyText*)` | Class member | Returns next text node in list via `nw4r::ut::List_GetNext`. |
+| 31 | `0x8016FF80` | `0x48` | `Unregister__Q26mPrint14MyPrintBase<c>FPQ36mPrint14MyPrintBase<c>6MyText` | `void mPrint::MyPrintBase<char>::Unregister(MyText*)` | Class member | Removes node from list and frees memory back to ExpHeap. |
+| 32 | `0x8016FFD0` | `0x3C` | `SetBuffer__Q26mPrint14MyPrintBase<c>FPvUl` | `void mPrint::MyPrintBase<char>::SetBuffer(void*, u32)` | Class member | Creates `MEMCreateExpHeapEx` over supplied memory buffer. |
+| 33 | `0x80170010` | `0x48` | `__ct__Q26mPrint14MyPrintBase<w>Fv` | `mPrint::MyPrintBase<wchar_t>::MyPrintBase()` | Class member | Wide character print base constructor. |
+| 34 | `0x80170060` | `0x40` | `__dt__Q26mPrint14MyPrintBase<w>Fv` | `mPrint::MyPrintBase<wchar_t>::~MyPrintBase()` | Class member | Wide character print base destructor. |
+| 35 | `0x801700A0` | `0x5C` | `Initialize__Q26mPrint14MyPrintBase<w>FPvUlRCQ34nw4r2ut4Font` | `void mPrint::MyPrintBase<wchar_t>::Initialize(void*, u32, const nw4r::ut::Font&)` | Class member | Wide character print base initialization. |
+| 36 | `0x80170100` | `0x08` | `SetFont__Q26mPrint14MyPrintBase<w>FRCQ34nw4r2ut4Font` | `void mPrint::MyPrintBase<wchar_t>::SetFont(const nw4r::ut::Font&)` | Class member | Sets font reference for wide character text writer. |
+| 37 | `0x80170110` | `0x08` | `GetFont__Q26mPrint14MyPrintBase<w>CFv` | `const nw4r::ut::Font* mPrint::MyPrintBase<wchar_t>::GetFont() const` | Class member | Returns font reference for wide character text writer. |
+| 38 | `0x80170120` | `0x08` | `SetVisible__Q26mPrint14MyPrintBase<w>Fb` | `void mPrint::MyPrintBase<wchar_t>::SetVisible(bool)` | Class member | Sets display visibility for wide character writer. |
+| 39 | `0x80170130` | `0x08` | `IsVisible__Q26mPrint14MyPrintBase<w>CFv` | `bool mPrint::MyPrintBase<wchar_t>::IsVisible() const` | Class member | Returns display visibility for wide character writer. |
+| 40 | `0x80170140` | `0x110` | `VRegisterf__Q26mPrint14MyPrintBase<w>FiiUlUlfbiPCwP16__va_list_struct` | `void mPrint::MyPrintBase<wchar_t>::VRegisterf(int, int, u32, u32, float, bool, int, const wchar_t*, va_list)` | Class member | Formats wide string via `vswprintf` and registers for rendering. |
+| 41 | `0x80170250` | `0x8C` | `Reset__Q26mPrint14MyPrintBase<w>Fv` | `void mPrint::MyPrintBase<wchar_t>::Reset()` | Class member | Clears and unregisters all wide character entries. |
+| 42 | `0x801702E0` | `0x264` | `Flush__Q26mPrint14MyPrintBase<w>Fv` | `void mPrint::MyPrintBase<wchar_t>::Flush()` | Class member | Renders wide string entries via `nw4r::ut::TextWriterBase<wchar_t>`. |
+| 43 | `0x80170550` | `0xC0` | `Flush__Q26mPrint14MyPrintBase<w>Fiiii` | `void mPrint::MyPrintBase<wchar_t>::Flush(int, int, int, int)` | Class member | Sets up orthographic projection and flushes wide text. |
+| 44 | `0x80170610` | `0xE4` | `Register__Q26mPrint14MyPrintBase<w>FiiUlUlfbiPCwi` | `void mPrint::MyPrintBase<wchar_t>::Register(int, int, u32, u32, float, bool, int, const wchar_t*, int)` | Class member | Allocates and registers wide character text node. |
+| 45 | `0x80170700` | `0x0C` | `GetFirstText__Q26mPrint14MyPrintBase<w>Fv` | `MyText* mPrint::MyPrintBase<wchar_t>::GetFirstText()` | Class member | Returns head of wide text list. |
+| 46 | `0x80170710` | `0x08` | `GetNextText__Q26mPrint14MyPrintBase<w>FPQ36mPrint14MyPrintBase<w>6MyText` | `MyText* mPrint::MyPrintBase<wchar_t>::GetNextText(MyText*)` | Class member | Returns next wide text node. |
+| 47 | `0x80170720` | `0x48` | `Unregister__Q26mPrint14MyPrintBase<w>FPQ36mPrint14MyPrintBase<w>6MyText` | `void mPrint::MyPrintBase<wchar_t>::Unregister(MyText*)` | Class member | Unregisters and frees wide text node. |
+| 48 | `0x80170770` | `0x3C` | `SetBuffer__Q26mPrint14MyPrintBase<w>FPvUl` | `void mPrint::MyPrintBase<wchar_t>::SetBuffer(void*, u32)` | Class member | Configures memory heap buffer for wide character text. |
+| 49 | `0x801707B0` | `0x64` | `init__Q24mTex6base_cFiiii` | `void mTex::base_c::init(int, int, int, int)` | Class member | Computes texture grid dimensions, tile sizes, and tile counts. |
+| 50 | `0x80170820` | `0x20` | `getTileNo__Q24mTex6base_cCFii` | `int mTex::base_c::getTileNo(int, int) const` | Class member | Computes tile index for (x, y) coordinates. |
+| 51 | `0x80170840` | `0x2C` | `getIdInTile__Q24mTex6base_cCFii` | `int mTex::base_c::getIdInTile(int, int) const` | Class member | Computes pixel offset within its containing tile. |
+| 52 | `0x80170870` | `0xA8` | `xyToDotId__Q24mTex6base_cCFii` | `int mTex::base_c::xyToDotId(int, int) const` | Class member | Performs bounds checking and converts (x, y) to linear dot offset. |
+| 53 | `0x80170920` | `0x44` | `init__Q24mTex8edit4b_cFiiPUc` | `void mTex::edit4b_c::init(int, int, u8*)` | Class member | Calls `base_c::init` with 8x8 tile size and stores buffer pointer. |
+| 54 | `0x80170970` | `0xCC` | `set__Q24mTex8edit4b_cFiiUcb` | `virtual bool mTex::edit4b_c::set(int, int, u8, bool)` | Virtual method | Writes 4-bit nibble pixel with optional DC cache flush sync. |
+| 55 | `0x80170A40` | `0x3C` | `endEdit__Q24mTex8edit4b_cFv` | `void mTex::edit4b_c::endEdit()` | Class member | Flushes full texture buffer cache range via `DCStoreRangeNoSync`. |
+| 56 | `0x80170A80` | `0x40` | `__dt__Q24mTex8edit4b_cFv` | `virtual mTex::edit4b_c::~edit4b_c()` | Virtual dtor | Scalar deleting destructor for `mTex::edit4b_c`. |
 
 ---
 
-### 2.4 Complete Classification of all 48 Branch Targets in `.text`
+# 2. Class & Struct Reconstruction
 
-```
-Total distinct branch targets: 48
-├── Internal to d_nand_thread.cpp (10 functions):
-│   ├── __ct__13dNandThread_cFiPQ23EGG4Heap
-│   ├── checkCRC__13dNandThread_cFv
-│   ├── createBanner__13dNandThread_cFv
-│   ├── deleteFile__13dNandThread_cFv
-│   ├── existCheck__13dNandThread_cFv
-│   ├── load__13dNandThread_cFv
-│   ├── save__13dNandThread_cFv
-│   ├── setNandError__13dNandThread_cFl
-│   ├── spaceCheck__13dNandThread_cFv
-│   └── writeBanner__13dNandThread_cFP12NANDFileInfo
-├── Banked in other matching TUs (6 functions - DO NOT PIN):
-│   ├── OSInitMutex (0x801B2F60 in lib/revolution/os/OSMutex.c)
-│   ├── OSLockMutex (0x801B2FA0 in lib/revolution/os/OSMutex.c)
-│   ├── OSTryLockMutex (0x801B31C0 in lib/revolution/os/OSMutex.c)
-│   ├── OSUnlockMutex (0x801B3080 in lib/revolution/os/OSMutex.c)
-│   ├── getRes__6dRes_cCFPCcPCc (0x800DF270 in dol/bases/d_res.cpp)
-│   └── setCurrentHeap__5mHeapFPQ23EGG4Heap (0x8016E630 in dol/mLib/m_heap.cpp)
-├── Already Pinned in syms.txt (11 functions - NO CHANGE):
-│   ├── OSGetCurrentThread (0x801B4C70)
-│   ├── OSGetThreadPriority (0x801B60B0)
-│   ├── OSResumeThread (0x801B59A0)
-│   ├── __dl__FPv (0x802B93C0)
-│   ├── __nw__FUl (0x802B9350)
-│   ├── _restgpr_27 (0x802DD0B0)
-│   ├── _savegpr_27 (0x802DD064)
-│   ├── getMsg__10dMessage_cFUlUl (0x800CDD30)
-│   ├── getSaveGame__10dSaveMng_cFSc (0x800E0470)
-│   ├── getTempGame__10dSaveMng_cFSc (0x800E04A0)
-│   └── memcpy (0x80004364)
-└── New Pins to ADD to syms.txt (21 functions - AUDITED & CLEAN):
-    └── (Listed in §2.2 above)
-```
+### 2.1 `mPad` is a Namespace, not a Class
+- **Mangled Signatures**: Functions 1–12 do not take an implicit `this` pointer in `r3`. Function 4 (`setCurrentChannel`) receives `CH_e` in `r3`, function 5 (`getBatteryLevel_ch`) receives `CH_e` in `r3`, function 6 (`setWPADInfo`) receives `CH_e` in `r3` and `const WPADInfo&` in `r4`.
+- **Global Variables**: All state is stored in 8 discrete `.sbss` scalar variables and 4 discrete `.bss` arrays.
+- **Naming Conventions**: In the NSMBW codebase, C++ classes have a `_c` suffix (e.g., `mMtx_c`, `mVec3_c`, `mFader_c`, `mHeap`), whereas subsystems/namespaces do not (e.g., `mPad`, `mPrint`, `mTex`, `mDvd`, `mEf`).
+
+### 2.2 `mPad::PadAdditionalData_t` Struct
+- **Size**: `0x18` (24 bytes).
+- **Layout**: 6 32-bit floats (`mData[6]`, corresponding to X/Y position, X/Y velocity/delta, and X/Y acceleration).
+- **Constructor**: Trivial inline constructor `PadAdditionalData_t() {}` at `0x8016F810` (`blr`).
+- **Destructor**: Non-virtual destructor `~PadAdditionalData_t() {}` at `0x8016F820`.
+
+### 2.3 `mTex::base_c` and `mTex::edit4b_c`
+- **`mTex::base_c`** (Size `0x20`):
+  ```cpp
+  class base_c {
+  public:
+      int mWidth;       // 0x00
+      int mHeight;      // 0x04
+      int mTileWidth;   // 0x08
+      int mTileHeight;  // 0x0C
+      int mTileSize;    // 0x10
+      int mTileCountX;  // 0x14
+      int mTileCountY;  // 0x18
+      int mTotalTiles;  // 0x1C
+
+      void init(int w, int h, int tw, int th);
+      int getTileNo(int x, int y) const;
+      int getIdInTile(int x, int y) const;
+      int xyToDotId(int x, int y) const;
+  };
+  ```
+- **`mTex::edit4b_c`** (Size `0x28`):
+  Inherits `mTex::base_c`, adds `u8 *mpData` at offset `0x24`, a virtual destructor `virtual ~edit4b_c()`, and a virtual method `virtual bool set(int x, int y, u8 val, bool sync)`.
+  - **Vtable**: `__vt__Q24mTex8edit4b_c` (`0x10` bytes at `.data:0x80329F60`), having `(0x10 - 8) / 4 = 2` virtual slots:
+    - Slot 0 (`0x80329F68`): `__dt__Q24mTex8edit4b_cFv`
+    - Slot 1 (`0x80329F6C`): `set__Q24mTex8edit4b_cFiiUcb`
+
+### 2.4 `mPrint::MyPrintBase<T>`
+- Template class instantiated for `char` and `wchar_t`:
+  ```cpp
+  template <typename T>
+  class MyPrintBase {
+  public:
+      struct MyText {
+          nw4r::ut::Link mLink;
+      };
+
+      const nw4r::ut::Font *mFont; // 0x00
+      nw4r::ut::List mList;        // 0x04..0x13 (size 0x10)
+      u8 mVisible;                 // 0x14
+      // 3 bytes alignment padding to 0x18
+  };
+  ```
 
 ---
 
-# 3. Final Production Header: `include/game/bases/d_nand_thread.hpp`
+# 3. `__sinit` and the `.ctors` Slot
 
+### 3.1 Disassembly of `__sinit_\m_pad_cpp` (`0x8016F7B0`)
+```assembly
+/* 8016F7B0 */  stwu     r1, -0x10(r1)
+/* 8016F7B4 */  mflr     r0
+/* 8016F7B8 */  lis      r3, g_PadAdditionalData__4mPad@ha
+/* 8016F7BC */  lis      r4, __ct__Q24mPad19PadAdditionalData_tFv@ha
+/* 8016F7C0 */  lis      r5, __dt__Q24mPad19PadAdditionalData_tFv@ha
+/* 8016F7C4 */  stw      r0, 0x14(r1)
+/* 8016F7C8 */  li       r6, 0x18                                ; sizeof(PadAdditionalData_t) = 24
+/* 8016F7CC */  addi     r3, r3, g_PadAdditionalData__4mPad@l
+/* 8016F7D0 */  addi     r4, r4, __ct__Q24mPad19PadAdditionalData_tFv@l
+/* 8016F7D4 */  addi     r5, r5, __dt__Q24mPad19PadAdditionalData_tFv@l
+/* 8016F7D8 */  li       r7, 4                                   ; count = 4 elements
+/* 8016F7DC */  bl       __construct_array                       ; (0x802dcc90)
+/* 8016F7E0 */  lis      r4, __arraydtor$13953@ha
+/* 8016F7E4 */  lis      r5, @13954@ha
+/* 8016F7E8 */  addi     r4, r4, __arraydtor$13953@l
+/* 8016F7EC */  li       r3, 0                                   ; NULL object ptr
+/* 8016F7F0 */  addi     r5, r5, @13954@l
+/* 8016F7F4 */  bl       __register_global_object                ; (0x802dca70)
+/* 8016F7F8 */  lwz      r0, 0x14(r1)
+/* 8016F7FC */  mtlr     r0
+/* 8016F800 */  addi     r1, r1, 0x10
+/* 8016F804 */  blr      
+```
+
+### 3.2 Construction Order & Mechanism
+1. **`.ctors` Table**: The slot at `0x802EDEFC`–`0x802EDF00` (offset `0x21C`–`0x220` relative to `.ctors` base) points directly to `__sinit_\m_pad_cpp`.
+2. **Construction**: `__construct_array` constructs all 4 elements of `g_PadAdditionalData` (`0x18 * 4 = 0x60` bytes).
+3. **Destruction Registration**: `__register_global_object` registers `__arraydtor$13953` into the global destructor chain node `@13954` (`0x0C` bytes in `.bss:0x80377F98`).
+4. **No Other Static Objects**: `g_PadAdditionalData[4]` is the sole object in `m_pad.cpp` requiring dynamic construction.
+
+---
+
+# 4. Complete Data Inventory & Reference Audit
+
+| Section | Address | Size | Symbol Name | Type / Layout | Ref Count in `m_pad.cpp` | Status |
+|---|---|---|---|---|---|---|
+| `.ctors` | `0x802EDEFC` | `0x04` | `__ctors` entry | `void (*)()` | — | Points to `__sinit_\m_pad_cpp` |
+| `.data` | `0x80329F60` | `0x10` | `__vt__Q24mTex8edit4b_c` | `void* [4]` | 0 | **UNREFERENCED** (Emitted because `edit4b_c` virtual methods are defined in this TU, but class is not instantiated here) |
+| `.bss` | `0x80377F88` | `0x10` | `g_core__4mPad` | `EGG::CoreController* [4]` | 6 | REFERENCED |
+| `.bss` | `0x80377F98` | `0x0C` | `@13954` | `DestructorChainNode` | 1 (in `__sinit`) | REFERENCED |
+| `.bss` | `0x80377FA8` | `0x60` | `g_PadAdditionalData__4mPad` | `PadAdditionalData_t [4]` | 4 | REFERENCED |
+| `.bss` | `0x80378008` | `0x60` | `s_WPADInfo__4mPad` | `WPADInfo [4]` | 6 | REFERENCED |
+| `.bss` | `0x80378068` | `0x60` | `s_WPADInfoTmp__4mPad` | `WPADInfo [4]` | 4 | REFERENCED |
+| `.sbss` | `0x8042A740` | `0x04` | `g_padMg__4mPad` | `EGG::CoreControllerMgr*` | 4 | REFERENCED |
+| `.sbss` | `0x8042A744` | `0x04` | `g_currentCoreID__4mPad` | `mPad::CH_e` (`int`) | 3 | REFERENCED |
+| `.sbss` | `0x8042A748` | `0x04` | `g_currentCore__4mPad` | `EGG::CoreController*` | 2 | REFERENCED |
+| `.sbss` | `0x8042A74C` | `0x04` | `g_IsConnected__4mPad` | `u8 [4]` | 1 | REFERENCED |
+| `.sbss` | `0x8042A750` | `0x04` | `g_PadFrame__4mPad` | `u32` (frame counter) | 2 | REFERENCED |
+| `.sbss` | `0x8042A754` | `0x04` | `s_WPADInfoAvailable__4mPad` | `u8 [4]` | 3 | REFERENCED |
+| `.sbss` | `0x8042A758` | `0x04` | `s_GetWPADInfoInterval__4mPad` | `u32` | 5 | REFERENCED |
+| `.sbss` | `0x8042A75C` | `0x04` | `s_GetWPADInfoCount__4mPad` | `u32` | 4 | REFERENCED |
+| `.sdata2` | `0x8042E010` | `0x04` | `@14502` | `float` (`0.0f`) | 1 | REFERENCED |
+| `.sdata2` | `0x8042E018` | `0x04` | `@6616` | `float` | 2 | REFERENCED |
+| `.sdata2` | `0x8042E01C` | `0x04` | `@6617` | `float` | 2 | REFERENCED |
+| `.sdata2` | `0x8042E020` | `0x08` | `@6621` | `double` | 4 | REFERENCED |
+| `.sdata2` | `0x8042E028` | `0x04` | `@6626` | `float` | 2 | REFERENCED |
+| `.sdata2` | `0x8042E02C` | `0x04` | `@6627` | `float` | 2 | REFERENCED |
+
+> [!IMPORTANT]
+> **Data Finding**: `__vt__Q24mTex8edit4b_c` at `.data:0x80329F60` (16 bytes) is **not referenced by any function inside `m_pad.cpp`**. MWCC automatically emits it because `mTex::edit4b_c`'s destructor and `set()` method are defined in `m_pad.cpp`. Providing the class definition with those out-of-line method definitions produces the vtable in `.data` unconditionally.
+
+---
+
+# 5. Scaffold Compilation & Hazard Proofs
+
+We constructed and compiled a complete 56-function scaffold (`scratch/gemini_round7/m_pad_full_scaffold.cpp`) using `tools/auto_decomp/harness.py`.
+
+### 5.1 Compilation Verification
+- **Command**: `compilers/Wii/1.1/mwcceppc.exe` with standard repo flags (`-O4,p -inline noauto -ipa file -enum int -RTTI off ...`).
+- **Result**: `(True, '')` — compiled cleanly with 0 errors.
+
+### 5.2 Section Size & Emission Verification
+```
+Section   | Expected Size | Scaffold Size | Status
+----------+---------------+---------------+---------
+.text     | 0x1790 (6032) | 0x1790 (6032) | MATCH
+.ctors    | 0x04   (4)    | 0x04   (4)    | MATCH
+.data     | 0x10   (16)   | 0x10   (16)   | MATCH
+.bss      | 0x140  (320)  | 0x140  (320)  | MATCH
+.sbss     | 0x20   (32)   | 0x20   (32)   | MATCH
+.sdata2   | 0x20   (32)   | 0x20   (32)   | MATCH
+```
+All section sizes, variable placements, and function symbol orders matched the original binary layout 1:1.
+
+---
+
+# 6. Link-Blocker List & Banked-Slice Self-Audit
+
+### 6.1 Results: 17 Proposed Pin Additions to `syms.txt`
+
+All 17 candidate pins were checked against all 144 banked slices in `slices/wiimj2d.json`:
+
+| # | Candidate Symbol | Address | Banked Collision? | Status |
+|---|---|---|---|---|
+| 1 | `Print__Q34nw4r2ut17TextWriterBase<c>FPCci` | `0x8022F010` | None (in unbanked nw4r ut) | **CLEAN** |
+| 2 | `__ct__Q34nw4r2ut17TextWriterBase<c>Fv` | `0x8022DF20` | None (in unbanked nw4r ut) | **CLEAN** |
+| 3 | `__dt__Q34nw4r2ut17TextWriterBase<c>Fv` | `0x8022DF80` | None (in unbanked nw4r ut) | **CLEAN** |
+| 4 | `EnableLinearFilter__Q34nw4r2ut10CharWriterFbb` | `0x8022D700` | None (in unbanked nw4r ut) | **CLEAN** |
+| 5 | `MEMAllocFromExpHeapEx` | `0x801D45A0` | None (in unbanked MEM SDK) | **CLEAN** |
+| 6 | `MEMCreateExpHeapEx` | `0x801D44C0` | None (in unbanked MEM SDK) | **CLEAN** |
+| 7 | `MEMFreeToExpHeap` | `0x801D4850` | None (in unbanked MEM SDK) | **CLEAN** |
+| 8 | `MEMGetAllocatableSizeForExpHeapEx` | `0x801D49A0` | None (in unbanked MEM SDK) | **CLEAN** |
+| 9 | `MEMSetGroupIDForExpHeap` | `0x801D4AE0` | None (in unbanked MEM SDK) | **CLEAN** |
+| 10 | `UpdateVertexColor__Q34nw4r2ut10CharWriterFv` | `0x8022DAE0` | None (in unbanked nw4r ut) | **CLEAN** |
+| 11 | `WPADGetInfoAsync` | `0x801E1400` | None (in unbanked WPAD SDK) | **CLEAN** |
+| 12 | `getNthController__Q23EGG17CoreControllerMgrFi` | `0x802BD660` | None (in unbanked EGG Core) | **CLEAN** |
+| 13 | `init__Q23EGG10CoreStatusFv` | `0x802BC9D0` | None (in unbanked EGG Core) | **CLEAN** |
+| 14 | `sInstance__Q23EGG17CoreControllerMgr` | `0x8042B150` | None (in unbanked EGG Core) | **CLEAN** |
+| 15 | `sceneReset__Q23EGG14CoreControllerFv` | `0x802BCAF0` | None (in unbanked EGG Core) | **CLEAN** |
+| 16 | `vsnprintf` | `0x802E18CC` | None (in unbanked MSL C) | **CLEAN** |
+| 17 | `vswprintf` | `0x802E4680` | None (in unbanked MSL C) | **CLEAN** |
+
+**Summary**: **17 checked, 17 clean, 0 collisions.**
+
+### 6.2 Results: 5 Proposed Pin Removals from `syms.txt` upon Landing
+
+Each of these symbols is currently pinned in `syms.txt` and will be defined directly by `m_pad.cpp`:
+
+| # | Symbol | Address | Section in `m_pad.cpp` | Defined by TU? | Present in `syms.txt`? | Action upon Landing |
+|---|---|---|---|---|---|---|
+| 1 | `create__4mPadFv` | `0x8016F330` | `.text` (`0x8016F330`..`0x80170AC0`) | **YES** | **YES** | **REMOVE** |
+| 2 | `beginPad__4mPadFv` | `0x8016F360` | `.text` (`0x8016F330`..`0x80170AC0`) | **YES** | **YES** | **REMOVE** |
+| 3 | `endPad__4mPadFv` | `0x8016F550` | `.text` (`0x8016F330`..`0x80170AC0`) | **YES** | **YES** | **REMOVE** |
+| 4 | `g_core__4mPad` | `0x80377F88` | `.bss` (`0x80377F88`..`0x803780C8`) | **YES** | **YES** | **REMOVE** |
+| 5 | `g_currentCore__4mPad` | `0x8042A748` | `.sbss` (`0x8042A740`..`0x8042A760`) | **YES** | **YES** | **REMOVE** |
+
+**Summary**: **5 checked, 5 verified.**
+
+---
+
+# 7. Register Allocation & Authoring Viability Assessment
+
+### 7.1 Diagnostic Findings
+We tested decompiling representative non-trivial functions in `m_pad.cpp`:
+1. `mTex::base_c::getTileNo(int, int) const`: Compiled and matched **100% byte-exact on first attempt**. Register allocations (`r0, r3, r4, r5, r6`) matched the retail disassembly identically.
+2. `mTex::base_c::getIdInTile(int, int) const`: Compiled and matched **100% byte-exact on first attempt**. Modulo division instructions (`divwu, mullw, subf`) generated identical register assignments (`r0, r3, r4, r5, r6, r7`).
+3. `mPad::create()`: Matched **100% byte-exact**.
+4. `mPad::initWPADInfo()`: Matched **100% byte-exact**.
+5. `mPad::setWPADInfo()`: Matched **100% byte-exact**.
+6. `mPad::setGetWPADInfoInterval()`: Matched **100% byte-exact**.
+
+### 7.2 Conclusion
+`m_pad.cpp` does **not** suffer from the tight scalar register allocation walls observed in Revolution SDK code. The code patterns are clean, idiomatic C++ with predictable compiler behavior.
+
+**Recommendation**: `m_pad.cpp` is **ready and cleared for authoring**.
+
+---
+
+# 8. Integration Artifacts for Claude
+
+### 8.1 Proposed Slice Block for `slices/wiimj2d.json`
+
+```json
+        {
+            "source": "dol/mLib/m_pad.cpp",
+            "memoryRanges": {
+                ".text": "0x168bb0-0x16a340",
+                ".ctors": "0x21c-0x220",
+                ".data": "0x2b8c0-0x2b8d0",
+                ".bss": "0x26608-0x26748",
+                ".sbss": "0x8a0-0x8c0",
+                ".sdata2": "0x2cb0-0x2cd0"
+            }
+        }
+```
+
+### 8.2 Lines to ADD to `syms.txt` (17 lines)
+
+```text
+EnableLinearFilter__Q34nw4r2ut10CharWriterFbb = 0x8022D700
+MEMAllocFromExpHeapEx = 0x801D45A0
+MEMCreateExpHeapEx = 0x801D44C0
+MEMFreeToExpHeap = 0x801D4850
+MEMGetAllocatableSizeForExpHeapEx = 0x801D49A0
+MEMSetGroupIDForExpHeap = 0x801D4AE0
+Print__Q34nw4r2ut17TextWriterBase<c>FPCci = 0x8022F010
+UpdateVertexColor__Q34nw4r2ut10CharWriterFv = 0x8022DAE0
+WPADGetInfoAsync = 0x801E1400
+__ct__Q34nw4r2ut17TextWriterBase<c>Fv = 0x8022DF20
+__dt__Q34nw4r2ut17TextWriterBase<c>Fv = 0x8022DF80
+getNthController__Q23EGG17CoreControllerMgrFi = 0x802BD660
+init__Q23EGG10CoreStatusFv = 0x802BC9D0
+sInstance__Q23EGG17CoreControllerMgr = 0x8042B150
+sceneReset__Q23EGG14CoreControllerFv = 0x802BCAF0
+vsnprintf = 0x802E18CC
+vswprintf = 0x802E4680
+```
+
+### 8.3 Lines to REMOVE from `syms.txt` upon Landing (5 lines)
+
+```text
+beginPad__4mPadFv = 0x8016F360
+create__4mPadFv = 0x8016F330
+endPad__4mPadFv = 0x8016F550
+g_core__4mPad = 0x80377F88
+g_currentCore__4mPad = 0x8042A748
+```
+
+### 8.4 Proposed Shared Header Changes (`scratch/` diffs for Claude)
+
+#### Proposed updates for `include/game/mLib/m_pad.hpp`:
 ```cpp
 #pragma once
 
 #include <types.h>
-#include <revolution/OS.h>
-#include <revolution/NAND.h>
-#include <lib/egg/core/eggHeap.h>
-#include <lib/egg/core/eggThread.h>
+#include <revolution/WPAD.h>
+#include <lib/egg/core/eggController.h>
 
-namespace EGG {
-
-/**
- * @brief Thread mutex synchronization primitive.
- * @unofficial
- */
-class Mutex {
-public:
-    Mutex() {}
-    virtual ~Mutex() {}
-};
-
-} // namespace EGG
-
-/**
- * @brief Game-level OS mutex wrapper encapsulating OSMutex and OSCond.
- * @unofficial
- */
-class mMutex : public EGG::Mutex {
-public:
-    mMutex() {}
-    virtual ~mMutex() {}
-
-    OSMutex mOSMutex;       ///< 0x04..0x1B: Embedded OS mutex (size 0x18)
-    OSCond mOSCond;         ///< 0x1C..0x23: Embedded OS condition variable (size 0x08)
-};
-
-/**
- * @brief Dedicated background thread for asynchronous NAND flash filesystem operations.
- */
-class dNandThread_c : public EGG::Thread {
-public:
-    enum Status_e {
-        STATUS_IDLE = 0,
-        STATUS_BUSY = 1,
-        STATUS_ERROR = 2
+namespace mPad {
+    enum CH_e {
+        MPAD_CH_0 = 0,
+        MPAD_CH_1 = 1,
+        MPAD_CH_2 = 2,
+        MPAD_CH_3 = 3
     };
 
-    enum Command_e {
-        CMD_NONE = 0,
-        CMD_EXIST_CHECK = 1,
-        CMD_SPACE_CHECK = 2,
-        CMD_LOAD = 3,
-        CMD_SAVE = 4,
-        CMD_DELETE_FILE = 5
+    struct PadAdditionalData_t {
+        float mPos[2];      ///< 0x00..0x07: X/Y position
+        float mVel[2];      ///< 0x08..0x0F: X/Y delta/velocity
+        float mAcc[2];      ///< 0x10..0x17: X/Y acceleration
+
+        PadAdditionalData_t() {}
+        ~PadAdditionalData_t() {}
     };
 
-    dNandThread_c(int msgCount, EGG::Heap *heap);
-    virtual ~dNandThread_c();
+    void create();
+    void beginPad();
+    void endPad();
+    void setCurrentChannel(CH_e ch);
+    s8 getBatteryLevel_ch(CH_e ch);
+    void setWPADInfo(CH_e ch, const WPADInfo &info);
+    void clearWPADInfo(CH_e ch);
+    void initWPADInfo();
+    void getWPADInfoAsync(CH_e ch);
+    void setGetWPADInfoInterval(u32 interval);
+    u32 getGetWPADInfoInterval();
 
-    virtual void *run();
+    // .sbss
+    extern EGG::CoreControllerMgr *g_padMg;
+    extern u32 g_currentCoreID;
+    extern EGG::CoreController *g_currentCore;
+    extern u8 g_IsConnected[4];
+    extern u32 g_PadFrame;
+    extern u8 s_WPADInfoAvailable[4];
+    extern u32 s_GetWPADInfoInterval;
+    extern u32 s_GetWPADInfoCount;
 
-    void cmdExistCheck();
-    bool existCheck();
+    // .bss
+    extern EGG::CoreController *g_core[4];
+    extern PadAdditionalData_t g_PadAdditionalData[4];
+    extern WPADInfo s_WPADInfo[4];
+    extern WPADInfo s_WPADInfoTmp[4];
+}
 
-    void cmdSpaceCheck();
-    bool spaceCheck();
-
-    bool cmdSave(const void *saveData);
-    bool save();
-
-    bool createBanner();
-    bool writeBanner(NANDFileInfo *fileInfo);
-
-    void cmdLoad();
-    bool load();
-
-    bool checkCRC();
-
-    void cmdDeleteFile();
-    bool deleteFile();
-
-    void setNandError(s32 err);
-    void *getSaveData();
-
-    static void create(EGG::Heap *heap);
-
-    // Layout
-    u8 mPad4C[4];           ///< 0x4C..0x4F: 4 bytes unreferenced region / gap (@unofficial)
-    mMutex mMutex;          ///< 0x50..0x73: Synchronization mutex & condition variable (size 0x24)
-    int mCommand;           ///< 0x74..0x77: Active NAND command ID
-    int mStatus;            ///< 0x78..0x7B: Execution status / error code
-    bool mFileExists;       ///< 0x7C: Flag indicating save file presence
-    u8 mPad7D[3];           ///< 0x7D..0x7F: Struct tail alignment padding (@unofficial)
-
-    static dNandThread_c *m_instance;
-};
-
-STATIC_ASSERT(sizeof(EGG::Mutex) == 0x4);
-STATIC_ASSERT(sizeof(mMutex) == 0x24);
-STATIC_ASSERT(sizeof(EGG::Thread) == 0x4C);
-STATIC_ASSERT(sizeof(dNandThread_c) == 0x80);
-STATIC_ASSERT(offsetof(dNandThread_c, mPad4C) == 0x4C);
-STATIC_ASSERT(offsetof(dNandThread_c, mMutex) == 0x50);
-STATIC_ASSERT(offsetof(dNandThread_c, mCommand) == 0x74);
-STATIC_ASSERT(offsetof(dNandThread_c, mStatus) == 0x78);
-STATIC_ASSERT(offsetof(dNandThread_c, mFileExists) == 0x7C);
+STATIC_ASSERT(sizeof(mPad::PadAdditionalData_t) == 0x18);
+STATIC_ASSERT(sizeof(mPad::g_core) == 0x10);
+STATIC_ASSERT(sizeof(mPad::g_PadAdditionalData) == 0x60);
+STATIC_ASSERT(sizeof(mPad::s_WPADInfo) == 0x60);
+STATIC_ASSERT(sizeof(mPad::s_WPADInfoTmp) == 0x60);
 ```
 
-- **Compiled**: YES. All 9 `STATIC_ASSERT` assertions compiled and passed with `mwcceppc.exe`.
+- **Compiled**: YES. Verified in full scaffold.
 - **Confidence**: High.
-- **Offset-perturbing**: NO. Every member matches disassembled retail offsets exactly.
-
----
-
-# 4. Integration Artifacts for Claude
-
-### 4.1 Lines to ADD to `syms.txt` (21 lines)
-
-```text
-NANDCheck = 0x801DB280
-NANDClose = 0x801D9990
-NANDCreate = 0x801D8620
-NANDDelete = 0x801D8920
-NANDGetHomeDir = 0x801DAC30
-NANDGetLength = 0x801D9180
-NANDGetType = 0x801DAFB0
-NANDInitBanner = 0x801DB0E0
-NANDMove = 0x801D9110
-NANDOpen = 0x801D96F0
-NANDRead = 0x801D8B30
-NANDSimpleSafeCancel = 0x801DA0A0
-NANDSimpleSafeClose = 0x801D9E50
-NANDSimpleSafeOpen = 0x801D9A90
-NANDWrite = 0x801D8C20
-OSInitCond = 0x801B3280
-OSSignalCond = 0x801B3370
-OSWaitCond = 0x801B3290
-__ct__Q23EGG6ThreadFUliiPQ23EGG4Heap = 0x802BA4F0
-__dt__Q23EGG6ThreadFv = 0x802BA640
-calcCRC32__4sCrcFPCvUl = 0x8015F270
-```
-
-### 4.2 Lines to REMOVE from `syms.txt` upon Landing (4 lines)
-
-```text
-cmdExistCheck__13dNandThread_cFv = 0x800CEF10
-cmdSpaceCheck__13dNandThread_cFv = 0x800CF060
-create__13dNandThread_cFPQ23EGG4Heap = 0x800CFBA0
-m_instance__13dNandThread_c = 0x8042A298
-```
-
-### 4.3 Proposed Slice Block for `slices/wiimj2d.json`
-
-```json
-        {
-            "source": "dol/bases/d_nand_thread.cpp",
-            "memoryRanges": {
-                ".text": "0xc8580-0xc9560",
-                ".rodata": "0x3490-0x34b8",
-                ".data": "0x196a8-0x196d8",
-                ".bss": "0x8640-0x1f680",
-                ".sdata": "0x5f8-0x608",
-                ".sbss": "0x3f8-0x400"
-            }
-        }
-```
+- **Offset-perturbing**: NO.

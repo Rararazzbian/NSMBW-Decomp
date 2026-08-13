@@ -1,34 +1,73 @@
-# Codex Handoff
+﻿# CODEX_HANDOFF.md -- Codex private notebook
 
-Separate from HANDOFF.md (Claude's). Do not edit that file.
+## Round 9: 2026-08-13
 
-## Session start state
-- Branch: claude/game-decompilation-setup-bw30s7
-- Overall: 10.657%
-- Five binaries verified clean before work.
-- 34 commits were already unpushed.
+### Task
+Claude''s CODEX_PROMPT.md for round 9 has two tasks:
+- **Task A**: try a TU-only fix for the two EGG vector dtors (narrow idea)
+- **Task B**: taxonomy of the 23 near-misses across all 8 batch reports,
+  producing a ranked attack order
 
-## Work done this session
+### Model decisions
+All three sub-agents used gpt-5.6-luna (cheapest available; deepseek-v4-pro
+was not available in this environment). Claude''s instructions say to use
+the cheapest model.
 
-### 1. cCounter_c::clear ? landed
-- source/dol/cLib/c_counter.cpp, 16 bytes at 0x8015FF80
-- Verified: all five binaries pass.
+### Orchestrator approach
+Spawned three sub-agents in parallel:
+- **Poincare** (gpt-5.6-luna): Task A — investigate TU-only fix for EGG vector dtors
+- **Plato** (gpt-5.6-luna): Task B half — classify near-misses in BATCH1-4
+- **Heisenberg** (gpt-5.6-luna): Task B half — classify near-misses in BATCH5-8
 
-### 2. mColor::lerp ? NOT landed, root cause identified (round 2)
-- Round 1 said "ABI mismatch" ? WRONG. Claude refuted: sret works fine.
-- Real blocker: 2 instructions `li r8, -0x1; stw r8, 0(r3)` from nw4r::ut::Color() WHITE init.
-- Solution found: mColor should inherit from GXColor (POD) directly, not nw4r::ut::Color.
-  With empty mColor() + declared ~mColor(), lerp compiles to 0x114 with correct sret and no WHITE.
-- But changing mColor's base class is a shared-header change. m_fader_base.hpp and d_wipe_*.cpp
-  depend on mColor() semantics. Claude must decide + re-verify all five binaries.
-- Slice entry confirmed: .text 0x164430-0x164550, .sdata2 0x2c60-0x2c70, no other sections.
+Orchestrator synthesized both halves of Task B taxonomy, combined counts,
+produced ranked attack order.
 
-## Next candidate
-- MsgRes_c ctor + 3 siblings, 0x800CE7F0, 220 B, offset 0xC8070
-  Gap: d_mj2d_data.cpp / d_multi_manager.cpp. Header d_message.hpp exists.
+### Task A result: NO
+The only fix that works is the shared-header change (remove inline dtor bodies
+from eggVector.h). Any TU-only approach either can''t avoid materialising an
+mVec2_c reference (cvtSndObjctPos requires it) or breaks the three function
+bodies. Poincare tested shadow-header variants with out-of-line destructors —
+they ADD destructor calls at scope exits (incCoin +9, addRest +9,
+deleteCullingYoshi +12) because MWCC can no longer prove the dtor is empty.
 
-## Rules
-- Never run ninja/configure.py/progress.py/land.py
-- Never edit slices/wiimj2d.json or syms.txt
-- Do not touch wip/, HANDOFF.md, CODEX_PROMPT.md
-- Write to CODEX_RESPONSE.md (overwrite), not HANDOFF.md
+The existing code actually relies on MWCC seeing the inline body to elide
+destructor calls. Removing the body prevents elision, making things worse.
+
+### Task B: Combined taxonomy (10 + 13 = 23 near-misses)
+
+**Source data:**
+- Plato: BATCH1-4 → 10 functions classified
+- Heisenberg: BATCH5-8 → 13 functions classified
+- Orchestrator combined and verified counts
+
+**Combined counts:**
+
+| Class | Count |
+|---|---:|
+| base-register / anchor artifacts | 3 |
+| register allocation only | 7 |
+| instruction count differs | 7 |
+| scheduling only | 1 |
+| constant-folding differences | 1 |
+| OTHER | 4 |
+
+**Key finding: 12 of 23 should self-resolve at assembly** (3 anchor + 7 regalloc
++ 1 relocation-naming + 1 scheduling). That''s over half the near-misses.
+
+**Quick confirmed fix: decRest return type.** Declared bool, target had int.
+Changing to int produced exact match. Four instructions saved. Another CFront
+return-type casualty.
+
+**Biggest payoff targets:**
+1. createCourseInit (345 vs 352) — 7 instrs missing, known lever (hoist mVec3_c
+   to function scope), getFileP inline budget gauge
+2. incCoin (134 vs 130) — 4 extra instrs from separate array materialisation
+3. checkCorrectCreateInfo (105 vs 105) — same count, constant-folding diffs,
+   may resolve at assembly
+
+### Files written this round
+- scratch/codex_round9/taskA_narrow_fix.md (Poincare)
+- scratch/codex_round9/taskB_batches1to4.md (Plato)
+- scratch/codex_round9/taskB_batches5to8.md (Heisenberg)
+- CODEX_RESPONSE.md (overwritten)
+- CODEX_HANDOFF.md (this file, overwritten)

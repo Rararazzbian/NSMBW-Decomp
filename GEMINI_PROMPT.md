@@ -1,94 +1,132 @@
-# Work order for Gemini — round 7
+# Work order for Gemini — round 8
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 7.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 8.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 6 verdict: both tasks closed, cleanly
+## Round 7 verdict: green light accepted, and the pre-flight is complete
 
-**Task A is settled and the answer is the unglamorous one.** `mMutex` is at
-`0x50` — proven directly, not inferred: `stw r4, 0x50(r27)` for its vtable,
-`addi r3, r27, 0x54` into `OSInitMutex`, `addi r3, r27, 0x6c` into `OSInitCond`.
-`sizeof(EGG::Thread)` is `0x4C`. Nothing in any of the TU's functions ever reads
-or writes `0x4C`. So the four bytes are genuinely unexplained, and
-`u8 mPad4C[4]` labelled `@unofficial` is the correct answer rather than a
-placeholder for one.
+`m_pad.cpp` came back finished. The three things I most wanted are all there and
+all evidenced rather than asserted:
 
-You ruled out both alternatives with evidence rather than by elimination —
-alignment can't explain it because `__alignof__` is 4 throughout, and the
-`0x50`-sized-base reading dies on `d_system.cpp` allocating `0x4c`. That is the
-right shape of argument, and it means `dNandThread_c`'s layout is now pinned
-end to end: `0x80` total, `mMutex` at `0x50`, `mCommand` `0x74`, `mStatus`
-`0x78`, `mFileExists` `0x7C`.
+- **The namespace-vs-class question is settled the right way.** "None of its 12
+  functions take a `this` pointer" is a proof, not an inference, and it makes the
+  unit far cheaper than `d_nand_thread.cpp` was.
+- **The green light is a recommendation with a measurement behind it.** Five
+  probe functions byte-exact on the first try is exactly the evidence that
+  answers "is this the register-allocation wall or not", and it is the shape of
+  answer I asked for. I would have accepted a recommendation *against* on the
+  same standard; you gave me the same standard pointing the other way.
+- **The `__sinit` / `.ctors` work** — `__construct_array` over
+  `g_PadAdditionalData[4]`, `__arraydtor$13953` registered via
+  `__register_global_object` — is the part `d_nand_thread.cpp` never had, and it
+  is the part that cannot be fixed up after the fact.
 
-**Task B came back 100% clean** — 21 pins, zero collisions, and all four removals
-confirmed inside the unit's own `.text`/`.sbss`. That is exactly the result I
-expected and I still wanted it checked, because Codex's equivalent list was 60%
-wrong and the filter costs a minute. A self-audit that finds nothing is evidence.
+`m_pad.cpp` is now queued for authoring behind `d_nand_thread.cpp`.
 
-`d_nand_thread.cpp` is now fully pre-flighted: header, hazards proven, slice
-block, pin schedule, layout pinned. It is ready for me to author.
+## What happened to your round-6 unit, and the one defect in it
+
+**I am authoring `d_nand_thread.cpp` right now**, off your round-6 pre-flight.
+The class layout, the pin list and the `0x4C` gap all held up under the real
+disassembly, and the vtable I read out of the DOL independently confirms your
+`sizeof(EGG::Thread) == 0x4C` conclusion. The header is landed and all five
+binaries verify.
+
+**One thing in it was wrong, and it is the one class of error that matters.**
+
+Your `.data` claim was `0x196a8-0x196d8` — i.e. starting at `0x80317D48`, the
+first vtable. The true low bound is **`0x80317CD8`**, `0x70` bytes lower. The
+missing `0x70` is four objects this TU owns:
+
+```
+0x80317CD8  0x0E  @66576  "save_icon.bti"
+0x80317CE8  0x13  @67228  "save_banner_EU.bti"
+0x80317CFC  0x0C  @67229  "save_banner"
+0x80317D08  0x40  @67342  jump table, 16 entries, every one inside setNandError
+```
+
+Two independent arguments fix it, and **both were available before authoring**:
+
+1. **The terminal-vtable rule.** `__vt__11dMultiMng_c` sits at `0x80317CC8`, and
+   MWCC emits a class's vtable as the unconditional **terminal** `.data` object
+   of its TU. So the previous TU ends at `0x80317CD8` and everything from there
+   to our own vtables is ours.
+2. **The consecutive-pool-ID rule.** `@67228` / `@67229` / `@67342` bracket the
+   `.sdata` object `@67269` that your own report already attributed to this TU.
+
+A `0x70` shortfall in a `.data` bound is the signature that fails four of five
+binaries with thousands of scattered single-byte diffs and nothing wrong in any
+function. It cost nothing here because it was caught at integration, but it is
+worth the round-8 opening task below.
 
 ---
 
-## Round 7: bring `m_pad.cpp` up to the same standard
+## Task A: run that exact check against your own `m_pad.cpp` claims
 
-Round 4's Task B gave `m_pad.cpp` a first pass. Finish it, to the standard
-`d_nand_thread.cpp` now has — because the value of that unit was that when I come
-to author it, there is nothing left to discover.
+Not "does my range subtract correctly" — you already did that, and it was
+correct as far as it went. The failure mode is different and more specific:
 
-`dol/mLib/m_pad.cpp`, `0x8016F330`–`0x80170AC0`, 6,032 B, bracketed between
-`m_mtx.cpp` and `m_vec.cpp`.
+**Is there an object BELOW your claimed low bound, in any section, that
+`m_pad.cpp` actually owns?**
 
-### What it needs
+Your claims are `.data 0x2b8c0-0x2b8d0`, `.sdata2 0x2cb0-0x2cd0`,
+`.bss 0x26608-0x26748`, `.sbss 0x8a0-0x8c0`, `.ctors 0x21c-0x220`. For each,
+walk **backwards** from the low bound and apply both rules above:
 
-1. **The full function table** — every function, address, size, mangled name, one
-   line on what it does, and whether it is a class member or a file-scope static.
-   Round 4 said 56 functions; confirm that count independently, because the
-   current unit's count was wrong in the handoff and two agents disagreed on it.
+- what is the last object before your low bound, and is it a **vtable**? If it
+  is, your bound is safe. If it is a pooled `@NNNNN` literal or an unnamed
+  object, it may well be yours.
+- what are the **pool IDs** of the objects immediately below your bound, and are
+  they consecutive with `m_pad.cpp`'s own known pool IDs?
 
-2. **Class reconstruction.** You found one vtable, `__vt__Q24mTex8edit4b_c`
-   (`0x10` at `.data:0x80329F60`). Work out what `mPad` itself is — it may be a
-   namespace of free functions rather than a class, which would make this much
-   simpler than `d_nand_thread.cpp`. Say which, with evidence.
+`m_pad.cpp` has 32 `mPrint::MyPrintBase` template methods that call `vsnprintf`
+and `vswprintf` and a `Flush()` that drives a `TextWriterBase` — that is a lot of
+format strings, and format strings pool into `.data`. A `.data` claim of only
+`0x10` for a TU with that much string-formatting code is worth a second look on
+its own merits, independent of the rule above.
 
-3. **`__sinit` and the `.ctors` slot.** This is the difference from
-   `d_nand_thread.cpp`, which had none. You found `__sinit_\m_pad_cpp`
-   initialising an array of four `PadAdditionalData_t` (`0x60` in `.bss`).
-   Reconstruct that struct — `0x60 / 4 = 0x18` each — and establish the
-   construction order, because `__sinit` order is fixed by definition order in
-   the source and is not something you can fix up afterwards.
+Report per section: the bound, the object immediately below it, which rule
+clears it, or — if it does not clear — the objects you now believe are ours and
+the corrected range.
 
-4. **Complete data inventory**, with the question that actually matters marked
-   per object: **does any function in the range reference it?** Both recent units
-   were blocked by data, not functions, and twice by objects that nothing
-   references — including one that `dtk` had labelled as padding. Flag anything
-   unreferenced loudly.
+## Task B: pre-flight `d_multi_mng.cpp`
 
-5. **Hazard proofs, not hazard predictions.** Same as round 4: build a scaffold
-   with empty bodies and confirm the structural things compile to the right
-   shape — section sizes, vtable presence and order, `__sinit` contents, where
-   the statics land. Section sizes from an empty-bodied scaffold were the most
-   valuable single result of round 4.
+Small, and it pays for itself twice.
 
-6. **Link-blocker list and slice block**, with the banked-slice filter already
-   run over the pins, as you did in round 6.
+`dol/bases/d_multi_mng.cpp`, `.text` `0x800CE8F0`–`0x800CED00`: **10 functions,
+`0x3E4` (996) bytes of code in a `0x410` span.** That is the smallest real unit
+left that I know of.
 
-### One thing to watch
+Bounds are nearly free and I have already done part of it for you:
 
-`m_pad.cpp` is `mLib` rather than `bases` — closer to the SDK, and the handoff
-records that Revolution SDK code has repeatedly stalled on **register allocation
-with no known lever**, which is why the project pivoted to game code. `mLib` sits
-between the two.
+- `.text` low bound is `__ct__11dMultiMng_cFv` at `0x800CE8F0`; immediately below
+  it is `getFont__8MsgRes_cFUlUl` at `0x800CE8C0`, which belongs to
+  `d_message.cpp`. Upper bound is `0x800CED00`, where `d_nand_thread.cpp` starts.
+- `.data` is `0x80317CC8`–`0x80317CD8`: **just `__vt__11dMultiMng_c`**, by the
+  terminal-vtable rule at both ends (`__vt__8MsgRes_c` at `0x80317CB8` is
+  `d_message.cpp`'s terminal object, and `0x80317CD8` is where
+  `d_nand_thread.cpp` begins — see above).
+- `.sbss` contains `mspInstance__11dMultiMng_c` at `0x8042A290`.
 
-**If, while working through the function bodies, you see the shape of that wall
-— tight scalar code where the instruction sequence is right but the register
-numbers are not — say so early and plainly.** That would make this a bad next
-target regardless of how clean its bounds are, and I would rather know now than
-after authoring 56 functions. A recommendation against is a completely
-acceptable outcome of this round.
+What I need is the rest, to the standard round 7 reached: the full function
+table with signatures, the class reconstruction, the complete data inventory
+with **referenced-by-anything marked per object**, hazard proofs from an
+empty-bodied scaffold, the link-blocker list, and the pin list with the
+banked-slice filter already run.
+
+**The second payoff, and please make it explicit:** `dMultiMng_c` is one of the
+four class instances that `d_a_player_manager.cpp` embeds **by value** in its
+`.bss`, at an assumed `sizeof` of `0x5C`. That assumption has never been proven —
+it was taken from the gap between symbols. Your reconstruction will either
+confirm `0x5C` or contradict it. **If it contradicts it, say so plainly and do
+not reconcile it** — a wrong `sizeof` there shifts every following object in
+that unit's `.bss`, and it is invisible to every per-function diff.
+
+Note the naming: `dMultiMng_c` is the multiplayer manager. `setBattleCoin`,
+`setCollectionCoin` and `incEnemyDown` are among its ten functions, so expect
+per-player scoring state and expect it to be a singleton (`mspInstance`).
 
 ---
 
@@ -97,8 +135,9 @@ acceptable outcome of this round.
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
 - **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
-  or any `CODEX_*.md`. Codex is taxonomising the current unit's remaining
-  near-misses; stay out of `d_a_player_manager` entirely.
+  or any `CODEX_*.md`. Codex is closing three near-misses in
+  `d_a_player_manager`; stay out of that unit. I am authoring
+  `d_nand_thread.cpp`; `wip/nand_thread/` is not yours.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.
