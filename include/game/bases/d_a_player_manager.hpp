@@ -15,10 +15,16 @@ public:
     static int getYoshiNum(); ///< @unofficial
     /// @return Whether a Yoshi was deleted. @unofficial
     static int deleteCullingYoshi();
-    /// @brief Spawns a player-linked actor at @p pos. @unofficial
+    /// @brief Spawns a player-linked actor at @p pos, in the first free player
+    /// slot. @unofficial
+    /// @return Whether a slot was found and the actor created.
     /// @note Unnamed in the symbol map (0x8005F4D0); the name here is
     /// invented and pinned by a syms.txt entry.
-    static void fn_8005f4d0(mVec3_c *pos, int mode, int flag);
+    /// @note The return type was `void` until the body was disassembled. Every
+    /// exit path explicitly loads r3 with 0 or 1, so it cannot be. CFront
+    /// mangling omits return types, so the syms.txt pin and the mangled name
+    /// could never have caught this -- only the body could.
+    static bool fn_8005f4d0(mVec3_c *pos, int mode, int flag);
     static void incCoin(int);
     static void addScore(int, int);
     static void setHipAttackQuake(int, u8);
