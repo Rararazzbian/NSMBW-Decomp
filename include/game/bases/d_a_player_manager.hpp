@@ -76,4 +76,10 @@ public:
     static s16 m_star_count[4];
     static int mAllBalloon;
     static int mTimeUpPlayerNum;
+
+    /// @brief [.bss:0x80355130, 0x10] The published course-entry order, filled
+    /// from `daPyDemoMng_c`'s course-out list. Declaration only -- the
+    /// definition lives in the still-undecompiled `d_a_player_manager.cpp`.
+    /// @unofficial
+    static int mCourseInList[4];
 };
