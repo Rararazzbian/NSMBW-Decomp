@@ -66,7 +66,7 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 - **Position: 10.946%** (711,512 / 6,500,368); `wiimj2d.dol` **21.583%**. Five
   binaries verify, tree clean.
-- **56 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
+- **58 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
@@ -584,7 +584,7 @@ ones.
 ## Where the work now stands
 
 **10.946%** (711,512 / 6,500,368 bytes); `wiimj2d.dol` at **21.583%**. Five
-binaries verifying, working tree clean, **56 commits unpushed**.
+binaries verifying, working tree clean, **58 commits unpushed**.
 
 The 2026-08-12/13 session landed six TUs (~74,000 bytes), took the project
 past 10%, landed five tool fixes across three tools and added the rules below.
