@@ -38,24 +38,26 @@ public:
     virtual ~dNandThread_c();
     virtual void *run();
 
-    void cmdExistCheck();
+    bool cmdExistCheck();
     bool existCheck();
 
-    void cmdSpaceCheck();
+    bool cmdSpaceCheck();
     bool spaceCheck();
 
     bool save();
     bool createBanner();
     bool writeBanner(NANDFileInfo *fileInfo);
 
-    void cmdLoad();
+    bool cmdLoad();
     bool load();
     bool checkCRC();
 
-    void cmdDeleteFile();
+    bool cmdDeleteFile();
     bool deleteFile();
 
-    void setNandError(s32 err);
+    /// @note `long`, not `s32`. s32 is `signed int` here and would mangle as
+    /// `Fi`; the symbol is `setNandError__13dNandThread_cFl`.
+    void setNandError(long err);
     void *getSaveData();
 
     static void create(EGG::Heap *heap);
