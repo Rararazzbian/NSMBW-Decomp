@@ -1,159 +1,114 @@
-# Work order for Gemini — round 2
+# Work order for Gemini — round 3
 
-**Read `AGENT_CONTEXT.md` first.** It is new since your round 1 and it now holds
-all the standing material — the rules, the tooling, the evidence hierarchy, the
-MWCC behaviours that have cost people rounds. Round 1's prompt carried a lot of
-that inline; this file no longer repeats it.
+**`AGENT_CONTEXT.md` is the standing briefing** — rules, tooling, evidence
+hierarchy, MWCC gotchas. This file is only round 3.
 
-Write results to **`GEMINI_RESPONSE.md`** (overwrite). `GEMINI_HANDOFF.md` is
-yours if you want a notebook that persists.
+Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 1 verdict: all five landed, all five binaries verify
+## Round 2 verdict: both tasks landed, and Task A was the best work so far
 
-That was a strong first round. Every target came with a mangled symbol, real
-disassembly, and an explicit offset-perturbation verdict — which is exactly the
-format that lets me apply something quickly and safely.
+**The `startSystemSe` deadlock is broken and in the tree, all five binaries
+byte-identical.** I had tried this, failed, backed it out, and written it up as a
+dead end that would need "its own piece of work". It did — and you did it.
 
-Specifically worth calling out:
+What made it work was that you **audited the binary instead of reasoning about
+the code**. All seven call sites target `FUiUl`; none targets `FUlUl`. So the
+default resolution was right — but it was right *by accident*, and nobody had
+checked, which is exactly the kind of unexamined assumption that turns into a
+four-binary failure later.
 
-- **`PauseManager_c` recovered from nothing.** The class existed nowhere in the
-  tree and you got it from `setPauseEnable__14PauseManager_cFb` via the CFront
-  length prefix, plus 20 sibling methods and five `.sbss` statics. That technique
-  is now written into `AGENT_CONTEXT.md` §5 for everyone.
-- **You caught that `getGameDisplay()` must not have an inline body**, because
-  several TUs reach it with a `bl`. That is precisely the distinction that makes
-  the difference between a header that works and one that emits stray weak copies
-  into already-matching units.
-- **`dStageTimer_c`** — using `createInstance`'s `__nw__FUl(0x10)` to pin the
-  total size, not just the field offset, is the right instinct. A field offset
-  alone would have left the tail ambiguous.
+And you found the fix was **not in the header at all**. An `int` converts to
+`unsigned int` and to `unsigned long` at identical overload-resolution rank, so
+with both overloads visible nothing can resolve. Fixing the *arguments* — three
+`(u32)` casts, and `const int SoundEffects[]` → `const u32` — resolves everything
+and emits the same bytes. **I explicitly asked you to check for that root cause
+before proposing casts, and you did, and it was there.** Landed exactly as
+proposed, plus the `syms.txt` pin at `0x801954B0`.
 
-**One change I made when applying:** your `PauseManager_c` invented five named
-instance fields (`mState`, `mUnk08`…) to fill `0x04`–`0x18`. Only `mFlags` at
-`0x18` is actually evidenced — by `setPauseEnable` doing `lbz`/`ori 0x2`/`stb` on
-`0x18(r3)`. The rest is now an honest `u8 pad4[0x14]`. Nothing embeds the class
-by value, so the unknown region costs us nothing, whereas five invented names
-would have looked like knowledge to the next reader. **Your method list survived
-intact**, because every entry there is a real symbol.
+One detail worth noting for your model of the build: it passed *before* I added
+the pin, because a declared-but-uncalled function needs no definition. The pin
+only starts mattering when `d_a_player_manager.cpp` lands and actually calls it.
 
-The rule, now in `AGENT_CONTEXT.md` §4: a pad you label as a pad is a good
-answer; an invented member name is not.
+Task B's shortlist is good and I am acting on it below.
 
 ---
 
-## Task A (primary): break the `startSystemSe` overload deadlock
+## Round 3: turn `d_nand_thread.cpp` into a ready-to-author unit
 
-This is a real, bounded blocker that I hit and deliberately backed out of, and it
-is the kind of forensic work your round 1 was good at.
+You ranked it first: `0x800CED00`–`0x800CFCE0`, 24 functions, 4,064 B, **169 B
+per function**, **zero `__sinit`s**, hard-bracketed on both sides in
+`dtk_splits_wiimj2d.txt` by `d_multi_manager.cpp` and `d_next.cpp`. That is the
+cleanest candidate anyone has produced for this project, and the bytes-per-
+function figure is less than half the worst candidate on the list.
 
-### What happened
+`d_a_player_manager.cpp` is close to landing. **I want to start this one the
+moment it does, without a reconnaissance round.** Produce the pre-flight.
 
-A batch needed `SndAudioMgr::startSystemSe` and reported its first parameter as
-the wrong type. That report was wrong, but it surfaced something true: **the
-symbol map has TWO overloads.**
+### What I need, in this order
 
-```
-startSystemSe__11SndAudioMgrFUiUl = .text:0x801954C0   // (unsigned int,  unsigned long)
-startSystemSe__11SndAudioMgrFUlUl = .text:0x801954B0   // (unsigned long, unsigned long)
-```
+**1. The class, from its vtable.** `__vt__13dNandThread_c` is at `0x80317D48`.
+With slot offsets computed, **the vtable IS the class declaration**: it gives the
+base class, which base virtuals are overridden, and the new virtuals *in
+declaration order*. Remember `(vtable size - 8) / 4` = the slot count, and that
+for `fBase_c`-derived classes the vtable pointer sits at object offset **0x60**,
+not 0 — check which applies here before computing anything.
 
-`include/game/snd/snd_audio_mgr.hpp` declares only the `FUiUl` one. I added the
-second and **the build failed**: MWCC error 10199, *ambiguous access to
-overloaded function*, at all seven existing call sites. They pass enum and int
-constants that convert equally well to `unsigned int` and `unsigned long`, so
-with both overloads visible no call resolves.
+There is a second vtable in range: `__vt__6mMutex` at `0x80317D60`. Establish
+whether `mMutex` is a separate class this TU also defines, or a member. If
+`dNandThread_c` embeds an `mMutex` by value, its `sizeof` is load-bearing — that
+exact hazard is what made the current unit hard.
 
-I reverted it and wrote the whole finding into the header so nobody repeats it.
+**2. The function table.** All 24, in address order, with mangled name, address,
+size, and one line on what each does. Flag any that are unnamed in the map
+(`fn_XXXXXXXX`) and say whether each is a class member or a file-scope static —
+**CFront mangling does not mark static members**, so the test is whether `r3`
+holds a real argument rather than a `this`.
 
-### Why this is worth solving
+**3. Section bounds and a complete data inventory.** All eight sections, each
+labelled with how it was derived and how strong that is. Use
+`dtk_splits_wiimj2d.txt` for hard brackets.
 
-Right now our reconstruction can only ever call **one** of two functions that both
-exist in the retail binary. Every future TU that needs the `FUlUl` form hits the
-same wall. And the seven existing call sites are currently resolving to `FUiUl`
-**by default rather than by evidence** — nobody has checked whether that is even
-correct for each one.
+Then the part that actually decides whether a unit lands: **every data object in
+those ranges, with an explicit note on whether any function in the range
+references it.** On the last two units, *every* defect that blocked the link was
+in data placement, and none was visible to a per-function diff. Two specific
+traps to check for by name:
 
-### What to produce
+- **An object nothing references is still ours to emit.** A 0x40 float table that
+  the entire binary never reads still failed a link when it was left out.
+- **An object dtk labels as padding may be real.** `setHipAttackQuake` reads and
+  writes three ints that dtk calls `gap_..._bss`. Because they sat inside a
+  larger gap, *no bounds check could have caught it* — only a function touching
+  them did.
 
-For each of the seven call sites, determine **which overload the original
-actually calls**, from the disassembly:
+**4. SDK dependencies.** You flagged NAND SDK calls as the risk. Enumerate every
+external function the range calls, and for each say whether it is (a) already
+defined by a banked TU, (b) declared in a header but undecompiled — needing a
+`syms.txt` pin at its original address, or (c) not declared anywhere, needing a
+header addition. Category (b) is what fails a link with an undefined symbol, and
+it is the single most common blocker on this project.
 
-```
-source/dol/bases/d_a_player_base.cpp:3967
-source/dol/bases/d_pausewindow.cpp:357
-source/d_profileNP/bases/d_controller_information.cpp:87
-source/d_profileNP/bases/d_yes_no_window.cpp:428, 529, 551, 595
-```
+### What would make this round a failure
 
-All of those TUs are **already banked and byte-exact**, so the answer is in the
-binary: find each call site's address and read whether the `bl` targets
-`0x801954C0` or `0x801954B0`. That is a fact, not an inference — see
-`AGENT_CONTEXT.md` §5.
+Telling me it looks clean. I already believe that — you established it in round
+2. What I need is the **specific list of things that will go wrong**, because the
+last two units were both "clean" right up until the link.
 
-Then propose the minimal change that lets **both** overloads be declared without
-ambiguity. Options to weigh, and I want your judgement on which is right:
-
-1. Cast at each call site to the argument type that selects the correct overload.
-   Honest, but it edits seven already-matching TUs — every one would need
-   re-verification, and a cast that changes the resolved overload changes the
-   emitted `bl`.
-2. Change the *declared* parameter type of the existing overload so the natural
-   argument type resolves unambiguously. Cheaper, but it changes a mangled name,
-   which is never cosmetic — check the new name against the map.
-3. Something else. If the constants passed have a type we have reconstructed
-   wrongly (an enum that should be `u32`, say), fixing *that* might make every
-   call site unambiguous with no cast at all. **Check this before the other two**
-   — it would be the real answer rather than a workaround.
-
-**Do not apply anything.** Propose it, and say for each of the seven call sites
-whether your change would alter the emitted code. If your conclusion is "this
-cannot be fixed without touching banked TUs, and here is the cost", that is a
-perfectly good deliverable — I backed out of this once already and would rather
-have an accurate map of the cost than a change that fails four binaries.
-
-## Task B (secondary): scout the next unit
-
-Only start this once Task A is reported.
-
-`d_a_player_manager.cpp` is nearly done and I need the next target. The standing
-notes rank candidates by header coverage, and **that ranking is not to be trusted
-blindly** — the top two entries are both gated by functions that have defeated
-every attempt so far, and several attractive-looking candidates are traps.
-
-Known traps, so you do not re-derive them:
-
-- **`0x80041C00`–`0x80044940`** (11,584 B, 86 fns) looks like one clean haul
-  between two banked neighbours. It is **at least six TUs**, and only two
-  `__sinit`s exist, so four internal boundaries are invisible and every one must
-  be derived.
-- **`d_a_en_obj_coinblock.cpp`** — fully bracketed, cheap-looking. But
-  `__vt__18daEnObjCoinBlock_c` **does not exist anywhere in the symbol map**, and
-  the range has no constructor, destructor, `create` or `execute` — its lifecycle
-  lives in a `.rel`. Cheap bytes, expensive class.
-- **`d_a_farBG.cpp`** — 55 functions across 18.6 KB is 339 B per function, the
-  worst ratio of any candidate, and it is float/matrix-heavy, which is the shape
-  to avoid.
-
-**What I want:** a ranked shortlist of 3 candidates, each with its section bounds
-**derived using `bin/dtk/dtk_splits_wiimj2d.txt`** (see `AGENT_CONTEXT.md` §5 —
-this file gives hard bracketing and turns the weakest kind of bound into the
-strongest). For each: function count, total bytes, bytes-per-function, whether
-the class has a vtable in the map, how many `__sinit`s fall in the range, and
-what could go wrong.
-
-A candidate you **reject** with a reason is as useful as one you recommend —
-the traps above cost real time before anyone wrote them down.
+If some part cannot be settled from the binary, say which part and what would
+settle it. `AGENT_CONTEXT.md` §4 has the two occasions where an honest "I could
+not tell" was worth more than an answer.
 
 ---
 
-## Reminders that apply every round
+## Reminders
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
-- **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
-  or any `CODEX_*.md`.
+- **Do not touch** `wip/` (agents are working `d_a_player_manager.cpp` there),
+  `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`, or any `CODEX_*.md`.
+  Codex is on link-blocker analysis and `EGG::Effect`; do not enter either.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
-- Plain ASCII or clean UTF-8 in `GEMINI_RESPONSE.md`, LF, no BOM.
+- Plain ASCII or clean UTF-8, LF, no BOM.
