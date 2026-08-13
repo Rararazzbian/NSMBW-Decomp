@@ -152,11 +152,56 @@ static inline u8 &infoField_0xafc(dInfo_c *p) {
     return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(p) + 0xafc);
 }
 
-// l_start_pos_ofs -- NOT ours. .rodata:0x802EF488, outside our claimed
-// .rodata bound (0x802EF608-18). Belongs to daPyDemoMng_c /
-// dAcPy_HIO_Speed_c per STATICS.md. Declared extern only so this TU compiles
-// and links against whichever TU defines it (B1).
-extern const mVec3_c l_start_pos_ofs[];
+// lbl_802EF478 -- RESOLVED by the lead. .rodata:0x802EF478, 0x10, int[4]
+// {0, 1, 3, 2}. Nothing in the binary reads its four words, and the agent
+// that found it correctly refused to invent a use -- but it also stopped one
+// step short. A plain file-scope `const` array IS folded away by -O4, because
+// at namespace scope a const array has INTERNAL linkage in C++ and is stripped
+// as unused. `extern` gives it external linkage, and then it survives.
+//
+// This is the exact lever that fixed d_a_en_hatena_balloon's l_speed_ratiodt,
+// a 0x40 float table the whole binary never references and whose absence left
+// .rodata 0x20 short and failed four of five binaries. AGENT_CONTEXT Sec.6
+// states both halves; only the folding half was applied here.
+//
+// Its POSITION is load-bearing: exactly 0x10 before l_start_pos_ofs, so
+// createCourseInit's +0x160/+0x180 offsets land correctly.
+extern const int lbl_802EF478[4] = {0, 1, 3, 2};
+
+// l_start_pos_ofs -- CORRECTION, see wip/player_manager/RODATA.md: STATICS.md
+// and BOUNDS.md were both wrong to call this "not ours" / outside our
+// .rodata bound. getPlayerSetPos__9daPyMng_cFUcUc -- unambiguously daPyMng_c,
+// inside our own .text range -- loads it directly by name at 0x8005EDD8/DC
+// (lis/addi @ha/@l, no other TU's code ever references the symbol). Left
+// `extern` it would be an UNDEFINED SYMBOL at link time: no landed TU in
+// source/ defines it. 28 entries, mVec3_c[28], indexed by nextGoto->mType
+// (`mulli r5, r0, 0xc`, stride 0xc = sizeof(mVec3_c)). Values read byte-exact
+// out of target_rodata.txt (.rodata:0x802EF488, size 0x150).
+const Vec l_start_pos_ofs[28] = {
+    {0.0f, -16.0f, 8.0f}, {0.0f, -16.0f, 8.0f}, {16.0f, -16.0f, 0.0f}, {16.0f, -32.0f, 0.0f},
+    {16.0f, -16.0f, 0.0f}, {16.0f, -32.0f, 0.0f}, {0.0f, -32.0f, 0.0f}, {0.0f, 0.0f, 8.0f},
+    {0.0f, 0.0f, 8.0f}, {0.0f, 0.0f, 8.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
+    {0.0f, 0.0f, 8.0f}, {0.0f, 0.0f, 0.0f}, {8.0f, -16.0f, 0.0f}, {8.0f, -16.0f, 0.0f},
+    {8.0f, -16.0f, 0.0f}, {8.0f, -16.0f, 0.0f}, {8.0f, -16.0f, 0.0f}, {8.0f, -16.0f, 0.0f},
+    {0.0f, 0.0f, 8.0f}, {0.0f, 0.0f, 8.0f}, {8.0f, -32.0f, 8.0f}, {0.0f, -16.0f, 8.0f},
+    {0.0f, 0.0f, 8.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -16.0f, 8.0f},
+};
+
+// lbl_802EF478 -- UNRESOLVED, see wip/player_manager/RODATA.md. .rodata
+// 0x802EF478, size 0x10, values {0, 1, 3, 2} (int[4]). Proven ours by a
+// compile-time argument (createCourseInit computes `addi r30, r29, 0x160`
+// off it to reach scOfsX, and a same-TU-only relative .rodata offset can only
+// be compile-time-constant if both objects come from THIS compilation), and
+// its position is load-bearing: it is exactly 0x10 bytes before
+// l_start_pos_ofs, so createCourseInit's `+0x160`/`+0x180` offsets land on
+// scOfsX/the order[] init pool only if this object exists at that exact
+// spot. But exhaustive search of all 67 of our functions' `@ha` references
+// (see RODATA.md) found NO direct read of its own 4 words anywhere -- B2
+// already flagged the same "never read by anything in this batch" finding.
+// A plain unused `static const` would be folded away by -O4 (AGENT_CONTEXT
+// Sec.6), so writing one here would NOT reproduce it. Left absent rather
+// than guessing a fake use; the gap is flagged so the section is not
+// silently short by 0x10 once someone finds the real trigger.
 
 // daPyDemoMng_c's own unnamed helper (0x8005D280 in that TU, no symbol) --
 // a real, already-landed global function in d_a_player_demo_manager.cpp,
@@ -947,7 +992,7 @@ void daPyMng_c::incRestAll(bool b) {
 
 int daPyMng_c::decRest(int plrNo) {
     daPyMng_c::changeItemKinopioPlrNo(plrNo);
-    SndAudioMgr::sInstance->startSystemSe(SE_SYS_ONE_DOWN, dAudio::getRemotePlayer(plrNo));
+    SndAudioMgr::sInstance->startSystemSe((u32)SE_SYS_ONE_DOWN, dAudio::getRemotePlayer(plrNo));
 
     int rest = mRest[mPlayerType[plrNo]];
     if (rest <= 0) {
@@ -1170,7 +1215,7 @@ void daPyMng_c::setHipAttackQuake(int type, u8 plrNo) {
             lbl_80429FD0 = 1;
         }
         if ((u32)(count - 1) <= 2) {
-            SndAudioMgr::sInstance->startSystemSe(seTable[count - 1], 1);
+            SndAudioMgr::sInstance->startSystemSe((unsigned long)seTable[count - 1], 1);
         }
         fn_80060DB0();
         return;

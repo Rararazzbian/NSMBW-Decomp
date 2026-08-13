@@ -314,32 +314,32 @@
 /* 00000404 00000444  7C A4 2B 78 */	mr r4, r5
 /* 00000408 00000448  48 00 00 01 */	bl getNextGotoP__9dCdFile_cFUc
 /* 0000040C 0000044C  A0 03 00 02 */	lhz r0, 0x2(r3)
-/* 00000410 00000450  3C 80 43 30 */	lis r4, 0x4330
+/* 00000410 00000450  3C A0 43 30 */	lis r5, 0x4330
 /* 00000414 00000454  90 01 00 0C */	stw r0, 0xc(r1)
-/* 00000418 00000458  3C A0 00 00 */	lis r5, l_start_pos_ofs@ha
+/* 00000418 00000458  3C 80 00 00 */	lis r4, l_start_pos_ofs@ha
 /* 0000041C 0000045C  A0 03 00 00 */	lhz r0, 0x0(r3)
-/* 00000420 00000460  38 A5 00 00 */	addi r5, r5, l_start_pos_ofs@l
-/* 00000424 00000464  90 81 00 08 */	stw r4, 0x8(r1)
+/* 00000420 00000460  38 84 00 00 */	addi r4, r4, l_start_pos_ofs@l
+/* 00000424 00000464  90 A1 00 08 */	stw r5, 0x8(r1)
 /* 00000428 00000468  C8 60 00 00 */	lfd f3, "@24464"@sda21(r0)
 /* 0000042C 0000046C  C8 01 00 08 */	lfd f0, 0x8(r1)
 /* 00000430 00000470  90 01 00 14 */	stw r0, 0x14(r1)
 /* 00000434 00000474  EC 40 18 28 */	fsubs f2, f0, f3
 /* 00000438 00000478  C0 00 00 00 */	lfs f0, "@24461"@sda21(r0)
-/* 0000043C 0000047C  90 81 00 10 */	stw r4, 0x10(r1)
+/* 0000043C 0000047C  90 A1 00 10 */	stw r5, 0x10(r1)
 /* 00000440 00000480  C8 21 00 10 */	lfd f1, 0x10(r1)
 /* 00000444 00000484  FC 40 10 50 */	fneg f2, f2
 /* 00000448 00000488  D0 1F 00 08 */	stfs f0, 0x8(r31)
-/* 0000044C 0000048C  EC 61 18 28 */	fsubs f3, f1, f3
+/* 0000044C 0000048C  EC 21 18 28 */	fsubs f1, f1, f3
 /* 00000450 00000490  D0 5F 00 04 */	stfs f2, 0x4(r31)
-/* 00000454 00000494  D0 7F 00 00 */	stfs f3, 0x0(r31)
+/* 00000454 00000494  D0 3F 00 00 */	stfs f1, 0x0(r31)
 /* 00000458 00000498  88 03 00 0B */	lbz r0, 0xb(r3)
 /* 0000045C 0000049C  1C 00 00 0C */	mulli r0, r0, 0xc
-/* 00000460 000004A0  7C 85 02 14 */	add r4, r5, r0
-/* 00000464 000004A4  7C 25 04 2E */	lfsx f1, r5, r0
-/* 00000468 000004A8  C0 04 00 04 */	lfs f0, 0x4(r4)
-/* 0000046C 000004AC  EC 23 08 2A */	fadds f1, f3, f1
-/* 00000470 000004B0  EC 02 00 2A */	fadds f0, f2, f0
-/* 00000474 000004B4  D0 3F 00 00 */	stfs f1, 0x0(r31)
+/* 00000460 000004A0  7C 04 04 2E */	lfsx f0, r4, r0
+/* 00000464 000004A4  7C 84 02 14 */	add r4, r4, r0
+/* 00000468 000004A8  EC 21 00 2A */	fadds f1, f1, f0
+/* 0000046C 000004AC  D0 3F 00 00 */	stfs f1, 0x0(r31)
+/* 00000470 000004B0  C0 04 00 04 */	lfs f0, 0x4(r4)
+/* 00000474 000004B4  EC 02 00 2A */	fadds f0, f2, f0
 /* 00000478 000004B8  D0 1F 00 04 */	stfs f0, 0x4(r31)
 /* 0000047C 000004BC  A0 03 00 10 */	lhz r0, 0x10(r3)
 /* 00000480 000004C0  54 00 06 73 */	rlwinm. r0, r0, 0, 25, 25
@@ -503,9 +503,9 @@
 /* 00000688 000006C8  88 BE 12 11 */	lbz r5, 0x1211(r30)
 /* 0000068C 000006CC  48 00 00 01 */	bl getPlayerSetPos__9daPyMng_cFUcUc
 /* 00000690 000006D0  C0 41 00 18 */	lfs f2, 0x18(r1)
-/* 00000694 000006D4  3B 7D 01 60 */	addi r27, r29, 0x160
+/* 00000694 000006D4  3B 7D 00 00 */	addi r27, r29, 0x0
 /* 00000698 000006D8  C0 21 00 1C */	lfs f1, 0x1c(r1)
-/* 0000069C 000006DC  3B 9D 01 70 */	addi r28, r29, 0x170
+/* 0000069C 000006DC  3B 9D 00 10 */	addi r28, r29, 0x10
 /* 000006A0 000006E0  C0 00 00 00 */	lfs f0, "@24616"@sda21(r0)
 /* 000006A4 000006E4  3B 40 00 00 */	li r26, 0x0
 /* 000006A8 000006E8  D0 41 00 60 */	stfs f2, 0x60(r1)
@@ -579,8 +579,8 @@
 /* 000007A8 000007E8  54 1E 07 FE */	clrlwi r30, r0, 31
 .L_000007AC:
 /* 000007AC 000007EC  80 00 00 00 */	lwz r0, m_gameMode__10dScStage_c@sda21(r0)
-/* 000007B0 000007F0  38 9D 01 80 */	addi r4, r29, 0x180
-/* 000007B4 000007F4  80 DD 01 80 */	lwz r6, 0x180(r29)
+/* 000007B0 000007F0  38 9D 00 20 */	addi r4, r29, 0x20
+/* 000007B4 000007F4  80 DD 00 20 */	lwz r6, 0x20(r29)
 /* 000007B8 000007F8  80 A4 00 04 */	lwz r5, 0x4(r4)
 /* 000007BC 000007FC  2C 00 00 02 */	cmpwi r0, 0x2
 /* 000007C0 00000800  80 64 00 08 */	lwz r3, 0x8(r4)
@@ -3311,118 +3311,22 @@
 .balign 4
 	.4byte "__sinit_\assembled_cpp"
 
-# 0x00000000..0x000001A0 | size: 0x1A0
+# 0x00000000..0x00000040 | size: 0x40
 .rodata
 .balign 8
-# .rodata:0x0 | size: 0x0
-.sym ...rodata.0, local
 
 # .rodata:0x0 | size: 0x10
-.obj lbl_802EF478, global
-	.4byte 0x00000000
-	.4byte 0x00000001
-	.4byte 0x00000003
-	.4byte 0x00000002
-.endobj lbl_802EF478
-
-# .rodata:0x10 | size: 0x150
-.obj l_start_pos_ofs, local
-	.4byte 0x00000000
-	.4byte 0xC1800000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0xC1800000
-	.4byte 0x41000000
-	.4byte 0x41800000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41800000
-	.4byte 0xC2000000
-	.4byte 0x00000000
-	.4byte 0x41800000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41800000
-	.4byte 0xC2000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0xC2000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0xC1800000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x41000000
-	.4byte 0xC2000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0xC1800000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x41000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte 0xC1800000
-	.4byte 0x41000000
-.endobj l_start_pos_ofs
-
-# .rodata:0x160 | size: 0x10
 # daPyMng_c::createCourseInit()::scOfsX
 .obj "@LOCAL@createCourseInit__9daPyMng_cFv@scOfsX", local
+# .rodata:0x0 | size: 0x0
+.sym ...rodata.0, local
 	.4byte 0xC3380000
 	.4byte 0x43480000
 	.4byte 0xC3500000
 	.4byte 0x43600000
 .endobj "@LOCAL@createCourseInit__9daPyMng_cFv@scOfsX"
 
-# .rodata:0x170 | size: 0x10
+# .rodata:0x10 | size: 0x10
 .obj "@LOCAL@createCourseInit__9daPyMng_cFv@scOfsY@0", local
 	.4byte 0xC2400000
 	.4byte 0xC2400000
@@ -3430,7 +3334,7 @@
 	.4byte 0x00000000
 .endobj "@LOCAL@createCourseInit__9daPyMng_cFv@scOfsY@0"
 
-# .rodata:0x180 | size: 0x10
+# .rodata:0x20 | size: 0x10
 .obj "@22706", local
 	.4byte 0xFFFFFFFF
 	.4byte 0xFFFFFFFF
@@ -3438,7 +3342,7 @@
 	.4byte 0xFFFFFFFF
 .endobj "@22706"
 
-# .rodata:0x190 | size: 0x10
+# .rodata:0x30 | size: 0x10
 # daPyMng_c::getCourseInPlayerModelType(unsigned char)::scModelTypeDt
 .obj "@LOCAL@getCourseInPlayerModelType__9daPyMng_cFUc@scModelTypeDt", local
 	.4byte 0x00000000
