@@ -11,6 +11,14 @@ public:
     static dAcPy_c *getPlayer(int);
     static dAcPy_c *getCtrlPlayer(int);
     static daYoshi_c *getYoshi(int);
+    static daYoshi_c *getYoshiDirectP(int); ///< @unofficial
+    static int getYoshiNum(); ///< @unofficial
+    /// @return Whether a Yoshi was deleted. @unofficial
+    static int deleteCullingYoshi();
+    /// @brief Spawns a player-linked actor at @p pos. @unofficial
+    /// @note Unnamed in the symbol map (0x8005F4D0); the name here is
+    /// invented and pinned by a syms.txt entry.
+    static void fn_8005f4d0(mVec3_c *pos, int mode, int flag);
     static void incCoin(int);
     static void addScore(int, int);
     static void setHipAttackQuake(int, u8);

@@ -695,7 +695,10 @@ public:
     virtual bool isLiftUp() { return false; }
 
     virtual bool isLiftUpExceptMame() { return false; }
-    virtual int isStar() const;
+    /// @note Defined inline so that d_a_en_blockmain.cpp emits the weak copy
+    /// the original links from that TU at 0x80022170. Verified not to disturb
+    /// the three already-matching TUs that also call it. @unofficial
+    virtual int isStar() const { return mStarTimer; }
     virtual void setStar(StarSet_e, int);
     virtual void endStar() {}
     virtual void setVirusStar(daPlBase_c *) {}
