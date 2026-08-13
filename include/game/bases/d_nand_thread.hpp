@@ -24,7 +24,14 @@ public:
 /// vtable at +0x00, passes +0x04 to OSInitMutex and +0x1C to OSInitCond.
 class mMutex : public EGG::Mutex {
 public:
-    mMutex() {}
+    /// @note The OSInit* calls belong HERE, not in dNandThread_c's constructor.
+    /// The target stores EGG::Mutex's vtable, calls OSInitMutex, stores mMutex's
+    /// own vtable, then calls OSInitCond. Hoisting them into the caller puts the
+    /// two vtable stores back to back and MWCC eliminates the first as dead.
+    mMutex() {
+        OSInitMutex(&mOSMutex);
+        OSInitCond(&mOSCond);
+    }
     virtual ~mMutex() {}
 
     OSMutex mOSMutex; ///< [0x04] size 0x18
@@ -52,7 +59,9 @@ public:
     s32 writeBanner(NANDFileInfo *fileInfo);
 
     bool cmdLoad();
-    bool load();
+    /// @note `s32` for the same reason as save(): run() tests its result
+    /// against a value, not for truth.
+    s32 load();
     bool checkCRC();
 
     bool cmdDeleteFile();

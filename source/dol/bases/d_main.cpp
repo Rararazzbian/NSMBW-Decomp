@@ -34,7 +34,7 @@ void main(int argc, char *argv[]) {
     dMain::g_InitialTime = OSGetTime();
     dSystem::fixArena();
     OSThread *thread = OSGetCurrentThread();
-    int priority = OSGetThreadPriority();
+    int priority = OSGetThreadPriority(thread);
     OSCreateThread(&dMain::mainThread, dMain::main01, nullptr, stack + STACK_SIZE, STACK_SIZE, priority, 0);
     OSResumeThread(&dMain::mainThread);
     OSSetThreadPriority(thread, 0x1f);

@@ -169,8 +169,7 @@ void dSys_c::create() {
 
     cCounter_c::clear();
 
-    OSGetCurrentThread();
-    dDvd::create(OSGetThreadPriority() - 1, mHeap::g_commandHeap, mHeap::g_archiveHeap);
+    dDvd::create(OSGetThreadPriority(OSGetCurrentThread()) - 1, mHeap::g_commandHeap, mHeap::g_archiveHeap);
 
     dSaveMng_c::create(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
     dNandThread_c::create(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);

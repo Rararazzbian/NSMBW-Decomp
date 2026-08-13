@@ -8,7 +8,9 @@ class Heap;
 
 class Thread {
 public:
-    Thread(u32 stackSize, int msgCount, int priority, Heap *heap);
+    /// @note `unsigned long`, not `u32`. u32 is `unsigned int` here and would
+/// mangle Ui; the symbol is __ct__Q23EGG6ThreadFUliiPQ23EGG4Heap.
+    Thread(unsigned long stackSize, int msgCount, int priority, Heap *heap);
     Thread(OSThread *, int);
 
     /// @note run(), onEnter() and onExit() MUST keep their inline bodies. The
