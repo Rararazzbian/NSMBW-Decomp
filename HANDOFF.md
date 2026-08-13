@@ -64,9 +64,9 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 10.657%** (692,744 / 6,500,368); `wiimj2d.dol` **20.969%**. Five
+- **Position: 10.946%** (711,512 / 6,500,368); `wiimj2d.dol` **21.583%**. Five
   binaries verify, tree clean.
-- **40 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
+- **44 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
@@ -84,18 +84,13 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
   `d_enemiesNP.rel`. **Ten of its functions are file-statics with no symbol-map
   name** (2,800 B, 22% of the unit, including its two largest); the names in our
   source are invented and marked `@unofficial`.
-- **`d_a_en_hatena_balloon.cpp` IS ASSEMBLED AND 80/81 BYTE-EXACT — resume here.**
-  18,216 B of bodies, emitted symbol order matching the target's address order,
-  everything committed under `wip/hatena_balloon/`. It is **not landed**: a
-  matching slice cannot contain a non-matching function, so the slice entry has
-  not been added. **The single gap is `fly_ydisp_check`, 2 words of 55** — two
-  adjacent independent `lfs` scheduled in the opposite order, same registers,
-  same instruction count. Its agent swept ~85 variants across ten axes without
-  moving it; read `wip/hatena_balloon/README.md` before spending anything on it,
-  and consider landing the unit `nonMatching` as a checkpoint if it resists.
-  **Do not re-derive anything else about this unit** — the class is proven and
-  committed, the map is done, all eight batch drafts and their verifiers are in
-  `wip/hatena_balloon/`.
+- **`d_a_en_hatena_balloon.cpp` is DONE and linked — 81/81, 18,216 B of bodies
+  in an 18,768 B span.** The whole `wip/hatena_balloon/` scaffolding has been
+  retired; it is recoverable from history if a verifier is ever wanted again.
+  Two findings from landing it are written up below and are worth more than the
+  file: **trial-link a unit before its last function closes** (see "Trial-link
+  early"), and the two-word gap needed **two coupled source changes**, either of
+  which alone scores far worse than the defect it repairs.
 - **The "43% sibling precedent by bytes" figure for hatena_balloon was WRONG**,
   and the way it was wrong generalises: it was true at the *name* level and false
   at the *body* level. `model_set` and `setCcLine` both score **e=0.077** against
@@ -436,6 +431,53 @@ own:
 The full checklist those three sit inside is under "Verify your verification
 tool".
 
+#### Trial-link early — do NOT wait for the last function to close
+
+**This is the most valuable process finding from the hatena_balloon landing, and
+it generalises to every unit.** That unit sat at "80 of 81 byte-exact" and was
+treated as one function away from done. It was not. Putting it in the build
+while it still had a known-bad function — slice entry added, then
+`nonMatching` cleared — found **two independent landing blockers in one build**,
+neither of which any per-function diff can see:
+
+- **An undefined symbol at link.** `dActorMng_c::envAllWaterCheck()` was called
+  by our TU, but its defining TU is still undecompiled, so nothing in the link
+  provides it. It needed a `syms.txt` entry at the original's address. Its two
+  siblings already had one; this function had simply never been *called* by
+  banked code before.
+- **`.rodata` 0x20 short**, which shifted every following section and failed
+  four of the five binaries with thousands of scattered single-byte diffs — the
+  "wrong small-data bound, never wrong code" signature. Two compounding causes,
+  and **each is a general trap**:
+  - **`l_speed_ratiodt` (0x40) is emitted by the original but referenced by
+    nothing** — not by this TU, not by anything. No authoring batch claimed it
+    because no function calls it. This is the "some objects belong to no batch"
+    rule with a sharper edge: an object can be invisible to the *entire* call
+    graph and still have to be written. **`extern` is load-bearing on it** — at
+    namespace scope a `const` array has internal linkage in C++, so as a plain
+    file-scope `const` it is stripped as unused and the shortfall persists.
+  - **The recorded range was itself wrong.** `0x6e40-0x6ef8` predated knowing
+    about that object; the next TU's first object starts at `0x802F4EF8`, so the
+    true range was `0x6e40-0x6f18`. A bound derived before the contents are
+    known is a hypothesis, not a fact.
+
+The payoff is that the trial link converts "80/81 functions match" into a much
+stronger statement: **the whole 18,768-byte unit linked and the DOL differed
+from the original in exactly 6 bytes**, with the other four binaries
+byte-identical. That is a far better place to hunt a last defect from, and the
+structural work is then *proven* rather than assumed.
+
+**So: as soon as a unit is mostly assembled, put it in the build.** Land it
+`nonMatching` if it still has a gap — the tree keeps verifying 5/5 and the
+structural work is banked and reviewable. Do not save integration for the end.
+
+**And note the `syms.txt` interaction runs BOTH ways**, which is easy to get
+backwards: while a slice is `nonMatching` its bytes are spliced in, so other
+binaries still resolve its profile symbol from `syms.txt` and the line must
+**stay** — dropping it early failed `d_profileNP.rel` on its own. The moment the
+flag clears and the object really links, that same line becomes a duplicate
+definition and must **go**, in the same commit.
+
 #### Keep the name→address mapping from the merge
 
 A mistake the lead made and paid for. Units contain file-static functions with
@@ -541,12 +583,14 @@ ones.
 
 ## Where the work now stands
 
-**10.657%** (692,744 / 6,500,368 bytes); `wiimj2d.dol` at **20.969%**. Five
-binaries verifying, working tree clean, **40 commits unpushed**.
+**10.946%** (711,512 / 6,500,368 bytes); `wiimj2d.dol` at **21.583%**. Five
+binaries verifying, working tree clean, **44 commits unpushed**.
 
-The 2026-08-12/13 session landed five TUs (~55,000 bytes), took the project
+The 2026-08-12/13 session landed six TUs (~74,000 bytes), took the project
 past 10%, landed five tool fixes across three tools and added the rules below.
-The most recent is `d_a_en_blockmain.cpp` (97/97, 12,604 B code / 13,232 B
+The most recent is `d_a_en_hatena_balloon.cpp` (81/81, 18,216 B code / 18,768 B
+span), the largest single unit landed so far; before it
+`d_a_en_blockmain.cpp` (97/97, 12,604 B code / 13,232 B
 span); before it `d_a_en_bros_base.cpp` (99/99, 12,112 B), and before that
 `d_a_en_jimen_pakkun_base.cpp` (67/67), which landed on its **first build** with
 no linker archaeology at all — the clearest sign the accumulated rules are now
@@ -678,131 +722,45 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
-### Recommended: `d_a_en_hatena_balloon.cpp` — `daEnHatenaBalloon_c`
+### Recommended: `d_a_player_demo_manager.cpp` — `daPyDemoMng_c`
 
-The ? / propeller balloon that carries a player. Single class, single TU, and
-the only candidate in the DOL where **every one of its seven section bounds is
-already determined** and the actor playbook applies verbatim.
+`.text 0x8005B3A0 - 0x8005D7E0`, 9,280 B span / ~8,976 B code / ~51 functions.
+**Its front stage was in flight when this handoff was written** — a class-proof
+agent, a sibling-map agent and a bounds agent, with deliverables landing in
+`wip/demo_manager/` (`d_a_player_demo_manager.hpp`, `DEMO-MANAGER-SIBMAP.md`,
+`BOUNDS.md`). **Read those three files before assigning anything**; if they are
+absent or incomplete, that stage did not finish and should be re-run.
 
-#### Extent — the bounds agent can be cut from the pipeline
+Why it is the pick:
 
-| Section | Range (slice offsets) | Size | How it is fixed |
-|---|---|---|---|
-| `.text` | `0x109b30-0x10e480` (`0x801102B0`–`0x80114C00`) | **18,768 B span / 18,216 B code / 81 fns** | `d_a_en_eatcoin.cpp` ends at `0x109b30`; `d_a_enemy_ice.cpp` begins at `0x10e480`. Both banked and matching. Corroborated by dtk's own split point `auto_03_801102B0_text.o` (`# 0x801102B0..0x80114580`). |
-| `.ctors` | `0x1d0-0x1d4` | 4 B | eatcoin has `0x1cc-0x1d0`, enemy_ice has `0x1d4-0x1d8`. **Exactly one free slot** — the `.ctors` index, this file's documented source of the one-byte whole-binary failure, is eliminated by inspection. |
-| `.data` | `0x24f80-0x254c0` | 0x540 | Pure subtraction between the same two neighbours. Starts with `g_profile_EN_HATENA_BALLOON` at `0x80323620`, contains `__vt__19daEnHatenaBalloon_c` at `0x803236B0`. |
-| `.bss` | `0x23a78-0x23c20` | 0x1A8 | Pure subtraction. Contents verified: six `@7xxxx` 0xC dtor records + six `StateID_*__19daEnHatenaBalloon_c` at 0x30 each on a 0x40 stride, then `sm_bg_check_size_{mame,normal,super}` (0xC each) — the playbook's `.bss` formula exactly. |
-| `.sdata2` | `0x22f0-0x23b0` | 0xC0 | Pure subtraction; 48 anonymous floats, `@808xx`–`@815xx`. |
-| `.sdata` | `0x1bf0-0x1c40` | 0x50 | Upper end pinned by `d_a_enemy_ice.cpp`'s `0x1c40`; lower end pinned by name — the block opens with five `sm_hio_*__19daEnHatenaBalloon_c` floats (`gravity`, `base_fly_timer_x`, `fly_yspeed`, `mask_size`, `mask_y_diff`). |
-| `.rodata` | `0x6e40-0x6ef8` | 0xB8 | Pinned by name at both ends: `s_someCheckData__19daEnHatenaBalloon_c` (0x50) at `0x6e40`, then `l_hatenaballoon_cullinfo`, `l_cc_data`, `l_create_diff`, `l_speed_ratiodt`; the next object belongs to `daFarBG_c`, the next undone TU. |
-| `.sbss` | — | none | Verified: the whole `0x738-0x758` window holds only `daFarBG_c`, `daMask_c` and `dAcPy_c` symbols. **Omit the claim** — an adjacent-neighbour section is a legitimate answer. |
+1. **Fully bracketed by banked slices** — `d_a_player_base.cpp` below and
+   `d_a_player_hio_ADJ.cpp` above — so most bounds are pure subtraction.
+2. **`__vt__13daPyDemoMng_c` is 0xC — three slots.** The vtable proof is nearly
+   free. Singleton via `mspInstance__13daPyDemoMng_c` (`.sbss:0x80429F74`).
+3. **It unblocks `d_a_player_manager.cpp`**, which embeds a `daPyDemoMng_c` by
+   value in its `.bss` and needs its exact `sizeof` (0x98 by an earlier survey —
+   treat as unverified until the class agent confirms it).
+4. One `__sinit` at `0x8005D750`, so it is plausibly a single TU — but **confirm
+   that**, since several "single TU" gaps here turned out to be four to six.
 
-Five of seven bounds are literal subtraction between two banked, verifying
-neighbours; the other two are pinned by symbols carrying the class name. The
-table above *is* the deliverable a bounds agent would have produced.
+Known hazards, and one real wrinkle:
 
-#### The class — the vtable proof is nearly free
+- **`d_a_player_hio_ADJ.cpp` claims NO `.data` range**, so the `.data` gap above
+  `0xb268` is *not* bounded by the next slice in `.text` order and needs real
+  attribution rather than subtraction. `__vt__13daPyDemoMng_c` at `0x80309A18`
+  is inside that gap and is certainly ours; the rest must be read, not assumed.
+  This is the one range most likely to cost a day, and it is worth doing
+  carefully up front.
+- Only **~7% name-level precedent** by an earlier survey. Treat that as a
+  hypothesis: on the last unit the equivalent figure was "43%" and was true at
+  the name level and **false at the body level**. Either way, expect this unit's
+  leverage to be intra-file rather than from siblings.
+- `setHanabiEffect` carries `@LOCAL@...` function-scope static tables, which
+  have their own numbering rules.
+- Its `.data` opens with `sc_ForceList__6dWmLib` and its `.sbss` holds
+  `c_StartPointKinokoHouseID__6dWmLib` — the **`d_wm_lib.hpp` signature already
+  documented for `d_a_boss_demo.cpp`** below, so that hazard is pre-characterised.
 
-- **`class daEnHatenaBalloon_c : public dEn_c`**, `sizeof == 0x8A0`.
-- `__vt__19daEnHatenaBalloon_c` at `.data:0x803236B0`, **size 0x280**.
-- `__vt__5dEn_c` is **also 0x280** → the class **introduces no new virtual
-  functions at all**; it only overrides existing `dEn_c` slots. "Prove the class
-  before anyone writes against it" collapses to "compile against `d_enemy.hpp`
-  and confirm 160 identical slot positions".
-- `sizeof` is read directly out of `daEnHatenaBalloon_c_classInit` —
-  `li r3, 0x8a0; bl __nw__7fBase_cFUl` at `0x801102C4`. **Take it from there,
-  not from `__dt__`**: this file's most expensive near-miss was reading a
-  destructor operand as `sizeof` when it was the last destructible member's
-  offset.
-- Vtable pointer stored at object offset **0x60**, as playbook trap 7 predicts.
-- Members are half-readable from `classInit` before anyone disassembles a
-  method: `dHeapAllocator_c` at 0x524, an int at 0x540, two `m3d::mdl_c` at
-  0x544 / 0x584, two `m3d::fanm_c` at 0x5C4 / 0x5FC, `m3d::banm_c` at 0x634,
-  `mAllocator_c` at 0x640, `m3d::anmTexPat_c` at 0x66C. `dEn_c`'s own extent
-  therefore ends at 0x524.
-
-#### Shape
-
-`classInit` · `create` (776 B) · `execute` (492 B) · `preDraw` · `draw` (548 B) ·
-`doDelete` · the full `hitCallback_*` family (14 functions) ·
-`Normal_Vs{Pl,Yoshi,En}HitCheck` · `block_hit_init` · `isQuakeDamage` · six
-states as plain `STATE_DEFINE` triples (`DispFlyWait`, `DispFlyMove`, `Fly`,
-`Escape`, `HipAttack`, `SearchSpace`) · `__dt__` (248 B) · `__sinit` (1,272 B) ·
-five `sFStateID_c<19daEnHatenaBalloon_c>` instantiations (368 B).
-
-States are `sFStateID_c`, **not** `sFStateVirtualID_c` — so there are **no
-`baseID_*<10sStateID_c>` blocks**, the `.text` low-bound rule does not bite, and
-`__sinit` plus the template quintet (1,640 B, 9% of the unit) is pure
-`STATE_DEFINE` boilerplate that nobody writes.
-
-**Unnamed functions: one.** `fn_80112040`, 136 B — 0.7% of the unit, against
-blockmain's 22% across ten functions. That removes the single biggest source of
-invented names and of the `harness.py` placeholder-collapse hazard.
-
-#### Sibling precedent — 43% of the unit by bytes
-
-**33 of 81 functions (7,916 B) share a name with a function already banked and
-byte-exact in this repo**, most with several precedents:
-
-| Function | B | Precedents in banked code |
-|---|---|---|
-| `Normal_VsEnHitCheck` | 528 | kuribo_base, lkuribo_base, shell, d_enemy |
-| `hitCallback_Shell` | 456 | dpakkun_base, jimen_pakkun_base, shell, d_enemy_death |
-| `hitCallback_YoshiHipAttk` | 288 | dpakkun_base, jimen_pakkun_base, lkuribo_base, shell |
-| `Normal_VsYoshiHitCheck` | 224 | 8 TUs |
-| `Normal_VsPlHitCheck` | 212 | 8 TUs |
-| `hitCallback_Fire` | 212 | 6 TUs |
-| `hitCallback_HipAttk` | 212 | 6 TUs |
-| `setCcLine` | 312 | kuribo_base |
-| `model_set` | 1,044 | **eatcoin — the immediately preceding banked TU** |
-| `player_set` | 140 | **blockmain — landed this session** |
-| `sFStateID_c<T>` quintet | 368 | 39 TUs |
-| `hitCallback_{Ice,Star,Spin,Slip,Cannon,Large,WireNet,YoshiBullet}` | ~170 | 1–6 TUs each |
-
-That is a *name-level* count; `tools/sibmap.py` compares instruction words and
-will find more. **Add `daEnHatenaBalloon_c` to sibmap's `FAMILY` before running
-it**, along with `dol_bases_d_a_en_blockmain`, which is already missing.
-
-#### Why it beats the alternatives
-
-1. **`find_targets.py` scores it 0%** and will never surface it — verified
-   (`python tools/find_targets.py 15000 20000 0.0` → `0x801102B0 18216 B 81 fns
-   hdr-cov 0%`). The tool counts *free-function declarations in headers*; every
-   function here is a class method, so it measures nothing — while the thing
-   that matters, the base class `dEn_c`, is fully declared in
-   `include/game/bases/d_enemy.hpp` and verified by the banked `d_enemy.cpp`.
-   This is the "header coverage is a *consequence*" caveat in its purest form.
-2. **All seven bounds free**, including the `.ctors` index — no other candidate
-   achieves that.
-3. **Highest sibling precedent measured** — 43% by bytes; next best
-   comparable-size candidate is 20%.
-4. **Fewer functions than the last two units** (81 vs 97 and 99) despite the
-   larger byte count. Authoring cost tracks functions, not bytes.
-5. **No prerequisite on any undone TU.** Nothing it embeds by value is unfinished.
-6. Landing it closes a contiguous banked run from `0x80109220` to `0x80115BD0`,
-   which makes `d_a_farBG.cpp` the next fully-bracketed TU.
-
-#### Named hazards — read these before briefing
-
-- **Size.** 18,768 B is 42% larger than blockmain. Plan **7 authoring agents**,
-  not 6.
-- **`model_set` (1,044 B)** is the largest hand-written function and builds two
-  `m3d::mdl_c`, two `fanm_c`, a `banm_c` and an `anmTexPat_c`. Expect the "all
-  words identical, only the `0xNN(r1)` slots wrong" signature — that is an
-  overload-selection problem, not a register problem, and `d_a_en_eatcoin.cpp`'s
-  own `model_set` is the starting point.
-- **`remocon_speed_set` (776 B)**, **`executeState_SearchSpace` (736 B)** and
-  **`pointBgCheck` (652 B)** have no name precedent and are float-heavy.
-- **`s_someCheckData__19daEnHatenaBalloon_c`** is a 0x50 `.rodata` float table
-  (20 floats). Contents are free from the DOL, but anything reaching a symbol
-  through an aggregate initialiser must have its **`.rela.rodata`** checked, not
-  just `.text`.
-- **`g_profile_EN_HATENA_BALLOON=0x80323620` is currently in `syms.txt`**
-  (line 1028). Playbook trap 11: **delete that line in the same commit** the TU
-  lands, or the link fails on a duplicate.
-- **It is not a base class.** It unblocks no family — its one real weakness
-  against the "prefer base classes" rule below, and the reason the runners-up
-  are worth keeping on the list.
 
 ### Runners-up
 
@@ -828,18 +786,8 @@ slot), `.bss` (`0x3790-0x4640`), `.sbss` (`0xe0-0x110`) and `.sdata`
    attribution, because the un-banked `d_a_player_demo_manager.cpp` sits between
    it and the previous banked claim in those two sections.
 
-**`d_a_player_demo_manager.cpp` (`daPyDemoMng_c`)** — `0x8005B3A0`–`0x8005D7E0`,
-9,280 B span / 8,976 B code / 51 fns. Bracketed by `d_a_player_base.cpp` and
-`d_a_player_hio_ADJ.cpp`, both banked. `__vt__13daPyDemoMng_c` is **0xC** —
-three slots — so the vtable proof is nearly free; singleton via
-`mspInstance__13daPyDemoMng_c`. `.ctors` slot `0x80-0x84`, one free slot. Its
-`.data` opens with `sc_ForceList__6dWmLib` and its `.sbss` holds
-`c_StartPointKinokoHouseID__6dWmLib` — **the exact `d_wm_lib.hpp` signature
-already documented for `d_a_boss_demo.cpp` below**, so that hazard is
-pre-characterised. Doing it first also hands `daPyDemoMng_c`'s verified 0x98
-layout to `d_a_player_manager.cpp`, which needs it. Against it: only 7%
-name-level precedent, and `setHanabiEffect`'s `@LOCAL@…` tables mean
-function-scope statics with the numbering rules.
+**`d_a_player_demo_manager.cpp`** has been **promoted to the recommendation
+above** — see that section. Note its `.ctors` slot is `0x80-0x84`, one free slot.
 
 ### Attractive-looking candidates with traps
 
@@ -957,7 +905,7 @@ sizes; they are not the same number and neither is a typo for the other.
 | `d_a_en_jimen_pakkun_base` | 8,848 | — | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
 | `d_a_en_bros_base` | 12,112 | 12,112 | 99 | **DONE 99/99**, landed and linked. Derives from `dEn_c` |
 | `d_a_en_blockmain` | 13,232 | 12,604 | 97 | **DONE 97/97**, landed and linked. Ten file-static functions (2,800 B, 22%) have no symbol-map name; the names in our source are invented |
-| `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **ASSEMBLED, 80/81 byte-exact, NOT landed** — one 2-word gap in `fly_ydisp_check`; everything in `wip/hatena_balloon/` |
+| `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **DONE 81/81**, landed and linked. Derives from `dEn_c` |
 | `d_a_player_manager` | 10,768 | 10,300 | 68 | Runner-up; all-static class, no vtable |
 | `d_a_player_demo_manager` | 9,280 | 8,976 | 51 | Runner-up; 3-slot vtable |
 | `d_a_bullet` | 7,316 | — | 73 | |
@@ -1719,11 +1667,13 @@ invented and marked `@unofficial`. Two consequences, both paid for:
 
 ## Current state
 
-- **Progress: 10.657%** (692,744 / 6,500,368 code bytes)
+- **Progress: 10.946%** (711,512 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- **40 commits unpushed.** Ask before pushing.
+- **44 commits unpushed.** Ask before pushing.
 - Development happens on **native Windows**; see "Local setup" below.
-- Last TU banked: `d_a_en_blockmain.cpp` (97 fns, 12,604 bytes of code in a
+- Last TU banked: `d_a_en_hatena_balloon.cpp` (81 fns, 18,216 bytes of code in an
+  18,768-byte span) -- the largest single unit landed so far.
+- Previously: `d_a_en_blockmain.cpp` (97 fns, 12,604 bytes of code in a
   13,232-byte span), whole and byte-exact. Before that:
   `d_a_en_bros_base.cpp` (99), `d_a_en_jimen_pakkun_base.cpp` (67),
   `d_a_en_dfpakkun.cpp` (33), `d_a_en_dpakkun_base.cpp` (64),
@@ -1750,7 +1700,7 @@ Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 20.969% |
+| `wiimj2d.dol` | 21.583% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -2404,6 +2354,48 @@ the session ends — copy that habit.
 
 Added by the hatena_balloon run. Several sharpen or contradict entries above —
 where they do, this section is the later measurement.
+
+#### Two coupled changes: why single-axis sweeping can be structurally blind
+
+The unit's last gap — two adjacent independent `lfs` emitted in the wrong order
+in `fly_ydisp_check`, 2 words of 55 — **needed two source changes at once, and
+each one alone scores far WORSE than the defect it repairs**:
+
+1. read the two members into named locals (`bgpY`, then `bgDispY`) and subtract
+   those, instead of reading them inline in the expression; **and**
+2. declare the unrelated local `lim` **after** those two.
+
+Change (1) alone fixes the load order but rotates the FP allocation — `lim`
+lands in f2 rather than f3 and roughly 30 lines cascade wrong through the rest
+of the body. So a sweep along *either* axis alone sees only regressions and
+correctly concludes "dead end". Roughly **120 variants across three independent
+sweeps** (expression spelling, statement/local ordering, and a 3x3 grid of the
+two accessor spellings) all failed for exactly this reason. Two agents each
+independently concluded the cause must lie in *the other's* axis — which, in
+hindsight, was the tell.
+
+**The lesson is about search shape, not about this function.** When a defect is
+down to a pure scheduling or register rotation and every single-axis sweep comes
+back worse, stop sweeping wider on one axis and start sweeping **pairs**. And
+treat "two independent sweeps each blame the other's axis" as positive evidence
+of a coupled cause rather than as two dead ends.
+
+**What actually found it was mining an already-matching sibling for the idiom.**
+The exact lever — those two named locals, in that order — was already present
+and *commented* in the same file, in `executeState_DispFlyMove`, which needs it
+for the identical pair of loads. Minutes, against three exhausted sweeps. This
+is the "map the siblings first" rule applying at the level of a single statement,
+and it is the cheapest move available when a function is down to a rotation.
+
+#### Inline accessors are NOT transparent substitutes at -O4
+
+Measured on `dBgParameter_c`: replacing `ms_Instance_p->mPos.y` with the
+class's own `pos().y` or `yStart()` — which return the same member and look
+purely cosmetic — took a 2-word miss to a **32-line** one. Inlining `yStart()`
+forces a reload of `ms_Instance_p` later in the body and grows the function by an
+instruction. So an accessor and a direct member read are **different source
+programs** here, not stylistic alternatives. Sweep them as their own axis, and
+do not assume the "prettier" spelling is what the original used.
 
 #### A literal can be unwriteable as itself
 
@@ -3120,7 +3112,7 @@ Still worth avoiding on the same reasoning: `dBc_c` (fp 36%), `dBg_c` (39%),
 `daMask_c` (27%), `dWmSpline_c` (45%), `daYoshi_c` (55 external classes).
 
 **Where the remaining work actually is.** The DOL holds **2,950,464 B** of the
-6,500,368-B total (45.4%) and is 20.969% done, so **~2.33 MB of undone work is
+6,500,368-B total (45.4%) and is 21.583% done, so **~2.31 MB of undone work is
 DOL game code — roughly 40% of everything remaining, and it is workable today**.
 The other ~60% is in the four `.rel` modules, which have 0.3–2.3% symbol
 coverage and are not workable until a symbol map exists. (An earlier version of
