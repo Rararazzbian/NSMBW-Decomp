@@ -1,24 +1,33 @@
 #pragma once
 
 #include <game/mLib/m_vec.hpp>
+#include <game/bases/d_effect.hpp>
 
 /// @brief One player-linked effect slot.
 /// @details sizeof 0x13C, fixed by dPyEffectMng_c's array stride.
 /// `__vt__11dPyEffect_c` is 0xC -- one virtual slot -- so the destructor is the
 /// only virtual function and `update()` is NOT virtual, despite existing as
-/// `update__11dPyEffect_cFv`. The members below `0x118` are not yet
-/// reconstructed; the pad holds their space. @unofficial
+/// `update__11dPyEffect_cFv`.
+///
+/// The constructor at 0x800D2AE0 stores dPyEffect_c's vtable at `this+0`, then
+/// constructs an EGG::Effect at `this+4` and overwrites that embedded object's
+/// vptr with `__vt__Q23dEf14followEffect_c` -- so the whole unexplained
+/// 0x004..0x118 region is ONE embedded dEf::followEffect_c, whose sizeof is
+/// 0x114 (verified by probe). That lands the trailing fields exactly.
+/// @unofficial
 class dPyEffect_c {
 public:
     virtual ~dPyEffect_c();
 
     void update();
 
-    /// @brief [0x004..0x13C] Not yet reconstructed. Known from
-    /// `fn_800D2BB0`: position floats at 0x118/0x11C/0x120, scale floats at
-    /// 0x124/0x128/0x12C, a layer byte at 0x130, an effect id at 0x134 and an
-    /// active flag at 0x138.
-    u8 pad4[0x138];
+    dEf::followEffect_c mEffect; ///< [0x004] 0x114 bytes.
+    mVec3_c mPosition;           ///< [0x118]
+    mVec3_c mScale;              ///< [0x124]
+    u8 mLayer;                   ///< [0x130]
+    u8 pad131[3];                ///< [0x131]
+    int mEffectId;               ///< [0x134]
+    int mActive;                 ///< [0x138]
 };
 
 STATIC_ASSERT(sizeof(dPyEffect_c) == 0x13C);

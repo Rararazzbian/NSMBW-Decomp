@@ -5,6 +5,8 @@
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
 
+class dGameDisplay_c;
+
 class dScStage_c : public dScene_c {
 public:
     enum Exit_e {
@@ -56,6 +58,13 @@ public:
     /// `0x8005EC90`, flushed inside `d_a_player_manager.cpp`, and it is the
     /// only copy of the symbol in the binary. @unofficial
     static NOINLINE bool getCourseIn() { return m_isCourseIn; }
+
+    /// @brief Gets the stage HUD display.
+    /// @note Out-of-line static accessor over `m_instance->+0x11D4`, defined in
+    /// the undecompiled d_s_stage.cpp at 0x80101A70 and reached with a `bl`
+    /// from several TUs -- so it must NOT be given an inline body here.
+    /// @unofficial
+    static dGameDisplay_c *getGameDisplay();
 
     static float getLoopPosX(float x);
     /// @brief [.sbss:0x8042A4D0] Pointer into the "otehon" (demo playback)

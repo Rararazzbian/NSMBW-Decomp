@@ -20,7 +20,13 @@ public:
     enum FLAGS_e {
         FLAG_0 = BIT_FLAG(0),
         FLAG_1 = BIT_FLAG(1),
-        FLAG_2 = BIT_FLAG(2)
+        FLAG_2 = BIT_FLAG(2),
+        /// @brief 0x08: unconditional small quake hop (STATUS_QUAKE_SMALL). @unofficial
+        FLAG_3 = BIT_FLAG(3),
+        /// @brief 0x10: small quake hop, but only when m_quakeTimer is 0. @unofficial
+        FLAG_4 = BIT_FLAG(4),
+        /// @brief 0x20: big quake stun (STATUS_QUAKE_BIG). @unofficial
+        FLAG_5 = BIT_FLAG(5)
     };
 
     void shockMotor(s8, TYPE_SHOCK_e, int, bool);

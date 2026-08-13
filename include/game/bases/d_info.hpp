@@ -103,7 +103,15 @@ public:
     nw4r::lyt::DrawInfo *mScissorDrawInfo; ///< 0x3e0 That pane's draw info. @unofficial
     int mCourseSelectPageNum;
     int mCourseSelectIndexInPage;
-    u8 pad11[0x712];
+    u8 pad11[0x710];
+    /// @brief [+0xAFC] When non-zero, effects are never considered stopped --
+    /// `daPyMng_c::isEffectStop` returns false immediately if this is set.
+    /// The name states only the observed behaviour. pad11 was `[0x712]`; the
+    /// split is `0x710 + 1 + 1`, so sizeof(dInfo_c) stays 0xB5C and every
+    /// following member keeps its offset. Verified by compiled probe.
+    /// @unofficial
+    u8 mEffectStopOverride;
+    u8 pad11b[0x1];
     bool mFukidashiActionPerformed[4][0x16];
     u32 pad12;
 
