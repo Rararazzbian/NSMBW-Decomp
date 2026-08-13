@@ -766,9 +766,30 @@ roughly 100 functions per unit with nearly everything matching first compile.
 `onEnter` / `run`), all landing in the right places. Scaffolding is in
 `wip/nand_thread/`; `SHARED-BRIEF.md` there is the authoritative fact sheet.
 
-**Six near-misses remain**: `__ct__`, `__dt__`, `spaceCheck`, `save`,
-`writeBanner`, `load`. Three of them turn on one unresolved idiom — see the
-bool-materialisation lever below.
+**Five near-misses remain**: `__dt__`, `spaceCheck`, `save`, `writeBanner`,
+`load`. Each is characterised in `wip/nand_thread/CLOSE_A.md` / `CLOSE_B.md` /
+`CLOSE_C.md`, with every variant already tried listed so nobody repeats them:
+
+- **`__dt__`** — one word short. The target keeps a second, provably-redundant
+  `this == 0` check before calling `~EGG::Thread()`. Five shapes ruled out,
+  including one that hits the right instruction count with the wrong content.
+- **`spaceCheck`** — 34/37. A register-allocator plateau: **24 source shapes
+  across two agents**, every one preserving the instruction count, all landing
+  on the same `r3`-vs-`r4` choice. Structurally diffed against the byte-exact
+  `existCheck`, which explained why no third saved register is needed but not
+  the divergence. Treat as a wall, not a to-do.
+- **`writeBanner`** — 64/66. The `iconSpeed` store touches **two** adjacent
+  2-bit sub-fields (frame 0 set, frame 1 cleared), not the one first assumed;
+  reproducing both narrowed it. A real C bitfield emits a single `rlwimi` and is
+  provably wrong; `volatile` and `static` locals defeat the fold but overshoot
+  or allocate outside zero-slack section bounds. Its register-pressure gap and
+  its bitfield-fold gap are one root cause, not two.
+- **`save` / `load`** — now 2 and 1 instructions LONG rather than 9 and 12
+  short, under the refined lever below. That overshoot is itself the clue.
+
+A real defect was found in both drafts along the way and is worth carrying: the
+guard around `NANDSimpleSafeCancel` is `mError == 6`, not `!= 6`, proven from
+which side of the `beq` actually reaches the call, at all five occurrences.
 
 **The header is landed and all five binaries verify with it.** It went from an
 18-line `u8 mPad[0x74]` stub to the real class. The three vtables read out of
@@ -812,8 +833,29 @@ functions.
 
 **`cntlzw`+`srwi` is the same family** — that is MWCC materialising `(x == 0)`
 as a *value* rather than as a branch. Two batches independently failed on it and
-neither connected it to the lever above. If a target function materialises a
-condition instead of branching on it, try storing it into a `bool` first.
+neither connected it to the lever above.
+
+**And the connection alone is not enough — this is the refined rule.**
+`bool ok = (mError == 0); if (ok)` does **not** produce `cntlzw`+`srwi.`, which
+is exactly why both batches tried it and got a plain `cmpwi`. Proven by A/B
+compile: the tested value must ALSO be **opaque to the optimiser**. Bool-storage
+alone does nothing; opacity alone does nothing; together they reproduce the
+idiom byte-for-byte.
+
+`OSTryLockMutex` supplied its own opacity — it is an external call returning a
+non-`bool`. A plain member read does not, and marking it `volatile` supplies it
+artificially. **So state the rule as: MWCC only pays for the canonicalisation
+when an opaque non-`bool` value is stored into a real `bool`.**
+
+`volatile` is NOT applied in the header and should not be, for two reasons.
+It buys the materialisation but forces a fresh load on every textual read, so
+the chained `mError == 0` then `mError == 6` tests lose the target's shared
+register load — `save` and `load` go from 9 and 12 instructions SHORT to 2 and 1
+instructions LONG. And `mError` is read by the banked, byte-exact
+`d_s_boot.cpp` in four places, so it is a shared-header change that was never
+tested outside this TU. The overshoot is the useful signal: the original almost
+certainly got its opacity from something structural rather than from a
+qualifier, and finding what is the open question.
 
 #### Two process findings from running it
 
