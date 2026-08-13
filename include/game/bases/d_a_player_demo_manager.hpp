@@ -107,7 +107,11 @@ public:
     int getControlDemoPlayerNum() const;
     void setBossDownPlayerNo(int playerNo);
     void onLandStopReq();
-    void startControlDemoLandPlayer();
+    /// @brief Returns whether any player was put into the land-stop demo.
+    /// @note `bool`, not `void` -- proven from the bytes by the authoring batch
+    /// and confirmed byte-neutral for the six TUs that include this header.
+    /// @unofficial
+    bool startControlDemoLandPlayer();
     bool isLandAll();
     void executeStartToride();
     void executeEndToride();
