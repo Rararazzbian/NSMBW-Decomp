@@ -9,8 +9,10 @@ Working notes for continuing the decompilation work on branch
 
 **Strategy in one line:** stop pushing on Revolution SDK code (it stalls on
 register allocation with no known lever) and drain game code in `wiimj2d.dol`,
-where actor TUs hit **no such wall at all** — the last one matched 58/58 with
-every function correct on its first compile.
+where actor TUs hit **no such wall at all** — the two most recent landed 99/99
+(`d_a_en_bros_base.cpp`) and 97/97 (`d_a_en_blockmain.cpp`), 24,716 bytes
+between them, both byte-exact with nearly every function right on its first
+compile.
 
 ## What parallelises, and what does not
 
@@ -47,9 +49,11 @@ bin\dtk-windows-x86_64.exe elf disasm <scratch>\draft.o <scratch>\draft.txt
 ```
 
 Then diff with `tools/auto_decomp/harness.py`'s `extract` / `diff_fn` — import
-them, do not write your own, and **run a negative control first** (compare a
-function against a different one and confirm it reports differences). That
-comparator has been wrong twice; see "Verify your verification tool" below, twice.
+them, do not write your own. **A negative control is necessary and no longer
+sufficient**: of the six confirmed tooling defects, three were invisible to one.
+Before trusting any comparison, work the checklist in "Verify your verification
+tool" below — in particular, extract by **address** and assert the extracted
+instruction count × 4 against the symbol map.
 
 `harness.compile_draft(src, obj)` already encodes the flags above, so calling it
 directly is less error-prone than reproducing the command line.
@@ -60,31 +64,43 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 10.453%** (679,496 / 6,500,368); `wiimj2d.dol` **20.535%**. Five
+- **Position: 10.657%** (692,728 / 6,500,368); `wiimj2d.dol` **20.968%**. Five
   binaries verify, tree clean.
-- **27 commits are unpushed.** Nothing has been pushed for the whole of the
+- **34 commits are unpushed.** Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
   last of those landed on its **first build** with no `keepWeak`, no `syms.txt`
   entry and no deadstrip diagnosis — the accumulated rules now front-load that
   work instead of paying for it in failed builds.
-- **`d_a_en_bros_base.cpp` is DONE and linked — 99/99, 12,112 B**, the largest
-  clean base in the DOL. Every function byte-exact and the emitted symbol order
-  matching the target's address order. 58 of the 99 were bit-identical to code
-  already in the repo; the front stage found that before anyone wrote a line.
-- **Next target: `d_a_en_blockmain.cpp`** (12,392 B, 90 fns). It is the TU
-  immediately *below* bros in `.text`, so bros's now-banked lower bound is
-  blockmain's upper bound in every section — half its bounds work is
-  subtraction. `d_a_player_hio_ADJ.cpp` still has one function left but it is a
-  characterised dead end on its current axis; see its entry below before
-  spending on it.
+- **`d_a_en_bros_base.cpp` is DONE and linked — 99/99, 12,112 B.** Every
+  function byte-exact and the emitted symbol order matching the target's address
+  order. 58 of the 99 were bit-identical to code already in the repo; the front
+  stage found that before anyone wrote a line.
+- **`d_a_en_blockmain.cpp` is DONE and linked — 97/97, 12,604 B of code in a
+  13,232 B span** (`.text 0x1a130-0x1d4e0`; the 628 B difference is 16-byte
+  function alignment, and progress counts the span). It is the largest clean
+  base in the DOL by code bytes — its derived block actors live in
+  `d_enemiesNP.rel`. **Ten of its functions are file-statics with no symbol-map
+  name** (2,800 B, 22% of the unit, including its two largest); the names in our
+  source are invented and marked `@unofficial`.
+- **Next target: `d_a_en_hatena_balloon.cpp`** — all seven section bounds are
+  already derived, one unnamed function, 43% sibling precedent by bytes. The
+  full evidence is under "Next target" below; read it before assigning anything.
+  `d_a_player_hio_ADJ.cpp` still has one function left but it is a characterised
+  dead end on its current axis; see its entry below before spending on it.
+- **New headers this session:** `d_a_en_bros_base.hpp`, `d_a_en_blockmain.hpp`,
+  `d_block_mng.hpp`. `d_a_en_blockmain.hpp` is now the best model in the repo
+  for a large `dEn_c` actor — read it alongside the playbook's style references.
 - **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
-  establish. The levers list and the two whole-binary failure signatures below
-  are the most valuable part of this file.
-- **Read "The method that works" immediately below before assigning anything.**
-  It took `d_a_en_lkuribo_base.cpp` — 58 functions, 9,456 bytes — from nothing to
-  byte-perfect with every function matching on its first compile.
+  establish. The levers list and the three whole-binary failure signatures below
+  (section size, `.ctors` index, `.sbss` size) are the most valuable part of
+  this file.
+- **Read "The method that works" and "Running the parallel pipeline" below
+  before assigning anything.** The first says what the stages are — it took
+  `d_a_en_lkuribo_base.cpp` from nothing to byte-perfect with every function
+  matching on its first compile — and the second says how to run them, from two
+  ~100-function units in one session.
 
 ## The method that works: map the siblings BEFORE authoring
 
@@ -122,20 +138,32 @@ range and scores every function against a corpus built from all matching slices
 weak copies the linker discarded. Two views per pair: raw instruction words, and
 a shape view with immediates masked so "same code, different member offsets"
 still scores high. On `d_a_en_dfpakkun.cpp` it found seven animation setters
-that are one body, 34% of the file. Its target range is still hardcoded; move it
-to argv. `tools/datarefs.py` is its counterpart for data bounds — see below.
+that are one body, 34% of the file. Its target range comes from argv
+(`083deab`). `tools/datarefs.py` is its counterpart for data bounds — see below.
+
+**Its `FAMILY` list rots, silently, and that is the part to remember.** A
+FAMILY entry matching no corpus file contributes no hits and raises nothing, so
+a stale list just makes the map thinner — one run silently lost 199 functions.
+This session needed **six new members** added (`f9f8821`) plus a `CMP_`-prefix
+tolerance and a dead-entry warning (`8f323f0`). **Add every newly banked enemy
+TU to `FAMILY` the day it lands** — the newest entries are the most valuable
+(`d_a_en_bros_base` alone contributed 99 precedent functions), and the dead-entry
+warning goes to **stderr**, so capture it. Full account under "Verify your
+verification tool".
 
 Repeated on `d_a_en_dfpakkun.cpp` (72 functions, six agents): **33/33 authored
 functions matched on first compile**, including a 944-byte state machine and a
-572-byte `createMdl`, neither with any precedent. The method is now confirmed
-twice at scale.
+572-byte `createMdl`, neither with any precedent. `d_a_en_bros_base.cpp` (99)
+and `d_a_en_blockmain.cpp` (97) then landed on the same pipeline back to back.
+The method is confirmed on four units at scale.
 
 ### The order that worked
 
 1. **Two agents in parallel, blocking:** one reconstructs the class from the
    vtable and *proves* it byte-exact; one derives the section bounds. These are
    independent, and the bounds work is pure symbol-map arithmetic that needs no
-   code.
+   code. (**Skip the bounds agent when both neighbours are banked** — the lead
+   can subtract in a few minutes. See "Bounds may not need an agent at all".)
 2. **The mapping agent**, in parallel with those.
 3. **Six authoring agents**, each given the verified class, the map's entry for
    its functions, and the shared data inventory.
@@ -144,59 +172,6 @@ twice at scale.
 Relaying findings between agents mid-flight paid repeatedly — a corrected vtable
 table, a comparator bug, a caller-set correction and an argument-ordering lever
 all reached agents while they were still working.
-
-### Trust the map's SCORES; verify its PROSE
-
-On bros the map's similarity scores were reliable throughout, but four of its
-written claims were wrong, and each was caught only because the authoring agent
-checked instead of trusting:
-
-- a named precedent for `calcMdl` that was not the closest body (lkuribo's was
-  bit-for-bit right where the map named another file);
-- **a "twin pair" that was two unrelated bodies** — `executeState_JumpEd` was
-  described as `executeState_Jump` minus a block; they share only a 14-word
-  head, and the high score was an unaligned differ lining up dissimilar tails;
-- a claim that the class has no texture-pattern animation when it plainly does;
-- a member described as a speed field that is actually `mCenterOffs.y`.
-
-Meanwhile the *other* two twin claims were real and each saved authoring a
-400-byte function outright. So the shortcut is worth taking — but **brief agents
-to treat "X is Y with a small change" as a hypothesis to test against the two
-target bodies before relying on it**, and to report back which way it went so
-the map can be corrected. A false twin costs more than no twin, because the
-agent spends its effort deriving instead of authoring.
-
-The same caution applies to your own relays. A finding true in one batch's
-functions ("this TU writes float comparisons constant-first") was relayed as a
-file-wide rule and two agents correctly pushed back: it holds for `fcmpu`
-against a literal, not for member-vs-member `fcmpo`, and the file does call
-`checkFrame()` elsewhere. Relay findings with their scope attached.
-
-### Bounds are nearly free when both neighbours are banked
-
-If the TUs on either side are already banked and verifying, **your TU is exactly
-the gap between them in every section** — subtract, do not derive. All seven
-ranges for lkuribo fell straight out, including the `.ctors` index, which is
-otherwise the source of the one-byte whole-binary failure documented below.
-
-### An actor TU's `.text` begins on its own `baseID_*<10sStateID_c>` block
-
-The weak `baseID_<StateName><10sStateID_c>` instantiations belong to the object
-that **uses** them and are emitted at that object's **start**, not appended to
-the previous one. So a TU's `.text` low bound is the first `baseID_*` naming one
-of *its* states, not its first real function.
-
-Checked across **nine banked slices with zero counterexceptions** — bigpile,
-dpakkun_base, jimen_pakkun_base, kuribo_base, lkuribo_base, shell,
-super_bigpile, fireball_base and carry all begin exactly there. For bros this
-was worth 0x60 bytes at the low end, and getting it wrong breaks all five
-binaries.
-
-The cheapest way to settle it for a new TU: find the banked slice immediately
-*above* yours and read its `.text` low bound — if that address holds a
-`baseID_*`, the rule is confirmed for your neighbourhood and that address is
-also your upper bound. Doing this for bros converted four of seven section
-bounds into subtraction before any derivation started.
 
 ### Prove the class before anyone writes against it
 
@@ -224,7 +199,251 @@ confirm your layout agrees with already-matching code.** Local self-consistency
 is not proof. It also means the real test of a layout is the full link, not the
 per-function diff — this one only surfaced when the TU was actually linked.
 
-### Infrastructure state (as of the 2026-08-12 session)
+## Running the parallel pipeline
+
+Two units landed this session on the same pipeline: `d_a_en_bros_base.cpp`
+(99 functions, 12,112 B) and `d_a_en_blockmain.cpp` (97 functions, 12,604 B,
+ten of them file-static with no name in the symbol map). Both byte-exact, both
+linked, and **nearly every authored function matched on its first compile**.
+The method above is not changed by this; what follows is what running it twice
+back to back taught about the *orchestration* — where an agent slot is wasted,
+where a brief has to be sharper, and the three checks that catch what
+per-function diffs cannot.
+
+Read this as the operational companion to "The method that works": that section
+says *what* the stages are, this one says how to run them.
+
+### The front stage
+
+#### Bounds may not need an agent at all
+
+If the TUs on either side are already banked and verifying, **your TU is exactly
+the gap between them in every section** — subtract, do not derive. On blockmain
+**every** section range fell out of pure subtraction, and three were
+cross-checked independently — `.ctors` against a direct read of the DOL,
+`.rodata` against the address of a known function-local static, `.sdata2`
+against the address of a known static. No bounds agent was assigned, and that
+freed an entire slot for authoring.
+
+So the front stage is now: **check the neighbours first, and only staff a bounds
+agent if one side is unbanked.** With both sides banked, the lead does the
+arithmetic in a few minutes while the class-proof and mapping agents run. Note
+that the `.ctors` index falls out the same way, and it is otherwise the source
+of the one-byte whole-binary failure documented below.
+
+Two things to expect while doing it:
+
+- **A section where the two neighbours are ADJACENT means your TU claims
+  NOTHING there.** That is a legitimate, safe answer, not a derivation failure.
+  Write the empty range down explicitly so nobody re-opens it.
+- The `baseID_*` rule below turns the `.text` low bound into subtraction too,
+  which is usually the one range people expect to have to derive.
+
+#### An actor TU's `.text` begins on its own `baseID_*` block — ten slices, no counterexamples
+
+The weak `baseID_<StateName><10sStateID_c>` instantiations belong to the object
+that **uses** them and are emitted at that object's **start**, not appended to
+the previous one. So a TU's `.text` low bound is the first `baseID_*` naming one
+of *its* states, not its first real function. Getting it wrong breaks all five
+binaries; on bros it was worth 0x60 bytes at the low end.
+
+Cheapest confirmation, unchanged and still worth the two minutes: read the
+`.text` low bound of the banked slice immediately **above** yours. If that
+address holds a `baseID_*`, the rule holds in your neighbourhood *and* that
+address is your upper bound.
+
+(It does not bite on a TU whose states are plain `sFStateID_c` rather than
+`sFStateVirtualID_c` — those emit no `baseID_*` blocks at all.)
+
+#### Hold the sibling map to a higher standard than last session
+
+The split verdict from bros repeats exactly: **the map's similarity SCORES have
+been reliable across three units; its PROSE has not.** On one unit four written
+claims were wrong — a named precedent that was not the closest body, a "twin
+pair" that was two unrelated bodies sharing only a 14-word head (an unaligned
+differ lining up dissimilar tails), a claim that a class had no texture-pattern
+animation when it did, and a member described as a speed field that was a centre
+offset.
+
+But the shortcut is still worth taking: two *other* twin claims in the same map
+were real and each saved authoring a ~400-byte function outright. The asymmetry
+is the point — a false twin costs more than no twin, because the agent spends
+its effort deriving instead of authoring.
+
+**The fix is to brief the map agent with those four failures as its spec.** Done
+that way, the next map built a target-vs-target differ comparing **raw words AND
+disassembly text** — raw words alone cannot see relocated callees, which is
+precisely how the false twin scored high — then **confirmed four twin pairs,
+rejected eight candidate pairs, and listed the rejects** so nobody would chase
+them.
+
+That is the standard: a twin claim ships **verified or not at all**, and the
+rejected candidates are part of the deliverable.
+
+### Briefing the batches
+
+Everything in "Briefing authoring agents" below still applies. Add these five,
+all of which cost something this session:
+
+#### Start the batch that owns the shared helpers FIRST
+
+On blockmain one batch owned four of the five shared helpers and four other
+batches were waiting on its signatures. Either launch it first, or — at minimum
+— **tell it explicitly that four batches are blocked on its signatures and that
+it must report them early**, not in its final reply.
+
+Corollary worth relaying when it happens: **if a helper's final signature turns
+out to match what the proven header already declared, the callers need no
+rework.** Confirm it and say so; silence leaves four agents assuming they owe
+themselves a revision pass.
+
+#### Assign every function from the map's per-function TABLE, not its prose
+
+Two batches were briefed with the same function, because the brief followed a
+prose summary while the map's own table assigned it elsewhere. Both authored it
+and the two versions were **textually identical** — cheap, and two independent
+derivations agreeing is real evidence. But the conflict should have been caught
+at briefing time. **Trust the per-function table over any prose summary**, in
+the map and in your own brief.
+
+#### Assign DATA-object ownership explicitly
+
+This one is not cheap. Two batches independently defined the **same data object
+under different names**, and only one copy can land. Function ownership is
+always spelled out; data ownership usually is not. Put every shared float table,
+string and static in the brief with a named owner, and tell the others to
+reference it, not define it.
+
+#### Say who authors NOTHING
+
+Some functions are **emitted but authored by nobody** — weak template
+instantiations, inline flushes pulled in by a caller. They land in the right
+place only if the call sites and the includes are right. Tell agents plainly:
+**do not hand-write these, and report it if one comes out in the wrong place.**
+An agent that "helpfully" writes one produces a duplicate or a misordered flush
+block, and per-function diffs will not show it.
+
+#### Shared headers are frozen once authoring starts
+
+State it as a rule: **agents must not edit the shared class header.** If an
+agent believes a change is needed, it should **shadow-copy the header into its
+own scratch, verify the change there, and report it.** Several agents did
+exactly this and were right to.
+
+### Mid-flight
+
+#### Relay findings WITH THEIR SCOPE
+
+The failure mode this session was not late relays, it was over-broad ones. A
+finding that was true within one batch's functions ("this TU writes float
+comparisons constant-first") was relayed as a file-wide rule; **two agents
+correctly pushed back with counter-evidence** — it holds for `fcmpu` against a
+literal, not for member-vs-member `fcmpo`. An over-broad relay costs more than a
+late one, because it invites correct work to be undone. Attach the scope — "in
+these functions", "against a literal, not member-vs-member" — to every relay.
+
+#### Brief agents to REPORT contradictions, not reconcile them
+
+This is the instruction that earned the most this session. Two agents disagreed
+about a `sizeof`. Because both were briefed to report contradictions rather than
+quietly pick one, the disagreement surfaced — and taken the wrong way it would
+have made a base class **0x12C bytes too small**, an error **invisible to every
+per-function diff** and detectable only at the link.
+
+Put it in the shared brief in the same breath as "do not modify the class
+declaration": *if what you find contradicts the brief, the map, or another
+agent's finding, stop and report the contradiction. Do not reconcile it
+yourself.*
+
+#### A tooling defect is worth interrupting everyone for
+
+Unchanged and reconfirmed: when a defect turns up in a shared tool, relay it to
+every running agent **immediately**. Several had already hit it independently
+and were working around it in private.
+
+#### Changing a shared header mid-flight
+
+Sometimes the header does have to change. Two rules:
+
+- **A change that alters mangling is not cosmetic.** Parameter-type changes
+  change the mangled name — verify the new name against
+  `bin/dtk/wiimj2d_symbols.txt` **before** applying it.
+- **After editing, re-probe `sizeof` and the key offsets, and tell the running
+  agents it is layout-neutral.** They are authoring against the old copy; they
+  need to know whether to redo anything.
+
+### Landing a change to a header that already-matching TUs use
+
+Give this its own step, because the same class of change has broken all five
+binaries earlier in the project.
+
+Giving an inline body to a method that three already-matching, already-landed
+units call is a **whole-project** change, not a local one. The procedure that
+worked: **apply the change, rebuild, confirm all five binaries still verify —
+BEFORE landing it with the new unit.** Done that way this session, and the
+change proved safe. Landing it together with the new unit makes a five-binary
+failure ambiguous between the header and the unit, which is the expensive kind
+of failure to diagnose.
+
+### Assembly
+
+#### Assemble by ADDRESS, not by batch
+
+The old rule — interleave the batches' functions, do not concatenate them — is
+right but too weak, because it reads as though only functions interleave.
+**Data-object ordering interleaves across batches too.** Source order controls
+emission order for the literal pools as well as the code. On blockmain two
+batches' `.rodata` tables sat **between** two of another batch's function-local
+statics. There is no batch-level ordering to
+preserve; there is only the target's address order. Build the canonical order
+from the symbol map before the reports start arriving, and place every function
+*and every data object* into it individually.
+
+#### Some objects belong to no batch and must still be written
+
+One unit's first `.sdata2` object was a static that **no agent authored**. It
+had to be defined at the top of the file or the whole pool would shift. When you
+lay out the address order, any object in your range that no report claims is
+yours to write — treat an unclaimed object as a finding, not as noise.
+
+#### Verify three ways
+
+Per-function byte equality is one view of three, and it is the weakest on its
+own:
+
+1. **Byte equality per function.**
+2. **Per-function SIZE against the symbol map.** Catches a missing or extra
+   function faster than reading instructions.
+3. **Emitted symbol ORDER against target address order.** This is the one the
+   other two cannot see. Control it by deliberately moving one definition and
+   confirming the check fires.
+
+The full checklist those three sit inside is under "Verify your verification
+tool".
+
+#### Keep the name→address mapping from the merge
+
+A mistake the lead made and paid for. Units contain file-static functions with
+**no symbol-map name**, which agents name themselves — blockmain had ten. When
+verifying, those invented names must be mapped back to their addresses.
+Discarding them as "unmatched extras" **desynchronises a positional comparison
+and produces dozens of spurious differences**.
+
+So: as you merge the reports into address order, **keep the authoritative
+name→address mapping as an artefact** and feed it to the verifier. Do not
+reconstruct it from names afterwards.
+
+### What this predicts for the next unit
+
+With both neighbours banked, the front stage is one class-proof agent and one
+mapping agent, no bounds agent, and the lead doing bounds arithmetic in
+parallel. Five or six authoring batches, the shared-helper batch first, data
+ownership assigned in the briefs, and the map's twin claims already verified or
+rejected before anybody is briefed. Integration is address-order assembly plus
+the three verifications. On that shape, two ~100-function units landed in a
+session with almost everything matching first compile.
+
+## Infrastructure state (as of the 2026-08-12/13 session)
 
 - `tools/progress_page/make_progress_page.py` renders a local treemap from the
   **working tree**, including uncommitted work, and pulls upstream's public
@@ -243,16 +462,18 @@ per-function diff — this one only surfaced when the TU was actually linked.
   fork. Harmless — decomp.dev only reads the report artifact.
 - **`objdiff.json` over-reports.** It marks a unit complete whenever a source
   file exists, including `nonMatching` slices, so it currently calls
-  `d_a_en_dpakkun_base.cpp` complete at 60/64. `progress.py` is the authority;
-  the local progress page corrects for this, decomp.dev will not.
+  `d_a_player_hio_ADJ.cpp` complete at 15/16 — the only `nonMatching` slice left
+  in `slices/wiimj2d.json`. `progress.py` is the authority; the local progress
+  page corrects for this, decomp.dev will not.
 
 - **The scratchpad is not tracked, and things have been lost in it.**
-  `scratchpad/tu_extent.py`, `scratchpad/GXTev.c.best` and `diffall.py` are all
-  referenced below and none of them still exist. Anything worth keeping —
+  `scratchpad/GXTev.c.best` and `diffall.py` are both referenced below and
+  neither still exists. (`tu_extent.py` and `tu_split.py` were rescued — both
+  now live under `tools/` and are git-tracked.) Anything worth keeping —
   a generator, a best-known-formulation, a comparator — belongs under `tools/`
   and committed, or pasted into this file.
 
-### `tools/auto_decomp/` — the unattended harness, and what it is good for
+## `tools/auto_decomp/` — the unattended harness, and what it is good for
 
 Built to let a cheap model grind functions without supervision. Three parts,
 deliberately separated so a weak model cannot damage the project:
@@ -281,7 +502,9 @@ method at the top of this file.
 What the harness *is* still good for: its `extract` / `diff_fn` are the shared
 comparator every authoring agent should import rather than rewriting, and
 `land.py`'s all-or-nothing gate is a sound way to land a TU without leaving a
-half-applied change behind. The `--auto` loop has never been run end to end.
+half-applied change behind. The `--auto` loop had never been run end to end as
+of the lkuribo session and has not been exercised since; treat that claim as
+unverified rather than as a finding.
 
 **Two caveats on `prepare.py`, both found the hard way.** Its fuzzy `__sinit`
 matcher once picked the *derived* actor's `__sinit` instead of the base's and
@@ -291,39 +514,63 @@ functions from neighbouring TUs, so "N functions in target.txt" is not "N
 functions in your TU". Cross-check the function list against
 `bin/dtk/wiimj2d_symbols.txt` for your address range before trusting a count.
 
-**`bin/dtkspl` is stale** — it predates `d_a_en_dfpakkun.cpp` and
-`d_a_en_lkuribo_base.cpp` landing, so neither has a split object there. For
-those, ground truth is the `auto_*` objects or our own compiled output.
+**`bin/dtkspl` is stale for banked ranges** — it predates every TU landed since
+`d_a_en_dpakkun_base.cpp` (six of them: dfpakkun, lkuribo_base,
+jimen_pakkun_base, player_hio_ADJ, bros_base, blockmain), so none of those has a
+split object there. For those, ground truth is the `auto_*` objects or our own
+compiled output. **It remains authoritative for any range that is not yet
+banked**, which is the only way it is used for target selection — e.g.
+`auto_03_801102B0_text.o` exists and its header reads
+`# 0x801102B0..0x80114580`. Read it as valid for undone ranges, stale for done
+ones.
 
 ## Where the work now stands
 
-**10.453%** (679,496 / 6,500,368 bytes); `wiimj2d.dol` at **20.535%**. Five
-binaries verifying, working tree clean, **27 commits unpushed**.
+**10.657%** (692,728 / 6,500,368 bytes); `wiimj2d.dol` at **20.968%**. Five
+binaries verifying, working tree clean, **34 commits unpushed**.
 
-The 2026-08-12/13 session landed four TUs (~42,000 bytes), took the project
-past 10%, fixed two tool bugs and added several rules below. The most recent,
-`d_a_en_bros_base.cpp` (99/99, 12,112 B), is the largest clean base in the DOL;
-before it, `d_a_en_jimen_pakkun_base.cpp` (67/67) landed on its **first build**
-with no
-linker archaeology at all, which is the clearest sign the accumulated rules are
-now doing real work up front.
+The 2026-08-12/13 session landed five TUs (~55,000 bytes), took the project
+past 10%, landed five tool fixes across three tools and added the rules below.
+The most recent is `d_a_en_blockmain.cpp` (97/97, 12,604 B code / 13,232 B
+span); before it `d_a_en_bros_base.cpp` (99/99, 12,112 B), and before that
+`d_a_en_jimen_pakkun_base.cpp` (67/67), which landed on its **first build** with
+no linker archaeology at all — the clearest sign the accumulated rules are now
+doing real work up front.
 
-Tooling changed this session, all committed:
-- `tools/auto_decomp/harness.py` — **branch destinations are no longer erased**
-  (`7fe054f`). This was silently comparing every loop and conditional in the
-  project blind.
-- `tools/sibmap.py` — target range moved to argv; two real bugs fixed.
-- `tools/datarefs.py` — clobber-tracking bug fixed; it was corrupting every
-  address chained off a `lis`/`addi` pair.
+Tooling changed this session, all committed, in commit order:
+- `tools/datarefs.py` — **update-form load base-register writeback** (`f82d77e`).
+  `lwzu`/`stwu` write the effective address back into rA; not modelling that left
+  a stale base and resolved seven following `lwz`es ~0x1900 too high, into the
+  next unit's `.rodata`.
+- `tools/sibmap.py` — **six enemy TUs added to `FAMILY`** (`f9f8821`).
+- `tools/sibmap.py` — **`CMP_` prefix tolerance and a dead-entry warning**
+  (`8f323f0`), plus the `REL_` tag correction.
+- `tools/auto_decomp/harness.py` — **placeholder names no longer collapse**
+  (`47d15ca`). Every `fn_800XXXXX` was normalising to the bare string `fn`, so
+  a diff against any unnamed function compared the wrong body.
+- `tools/auto_decomp/harness.py` — **operand-level placeholder collapse**, plus
+  the `sibmap` `REL_` tag correction (`3681c28`).
 
-The most recent session added `d_a_en_lkuribo_base.cpp` (58 functions, 9,456
+Earlier, and still current: `harness.py` **no longer erases branch destinations**
+(`7fe054f`) — that defect was silently comparing every loop and conditional in
+the project blind — and `datarefs.py`'s clobber-tracking bug is fixed; it was
+corrupting every address chained off a `lis`/`addi` pair. All of these are
+written up under "Verify your verification tool".
+
+An earlier session added `d_a_en_lkuribo_base.cpp` (58 functions, 9,456
 bytes, every function matching on its first compile) using the sibling-mapping
 method documented at the top of this file. The session before took the project
-from 9.133% to 9.681% across two batches of parallel agents. What landed, all
-banked *whole*:
+from 9.133% to 9.681% across two batches of parallel agents. What has landed,
+all banked *whole*:
 
 | TU | Functions | Notes |
 |---|---|---|
+| `d_a_en_blockmain.cpp` | 97 | Largest clean base by code bytes; ten unnamed file-statics |
+| `d_a_en_bros_base.cpp` | 99 | 58 of 99 bit-identical to code already in the repo |
+| `d_a_en_jimen_pakkun_base.cpp` | 67 | Landed on its first build |
+| `d_a_en_dpakkun_base.cpp` | 64 | Flipped in one commit with dfpakkun |
+| `d_a_en_dfpakkun.cpp` | 33 of 72 | The rest are weak `daEnDpakkunBase_c` copies |
+| `d_a_en_lkuribo_base.cpp` | 58 | Every function matched on its first compile |
 | `d_a_fireball_base.cpp` | 51 | Validated the guessed header of its own derived TU |
 | `d_a_en_net_nokonoko_base.cpp` | 37 | Verified by raw instruction-word compare |
 | `d_a_enemy_ice.cpp` | 37 | Derives from `dActorState_c`, **not** `dEn_c` |
@@ -335,10 +582,10 @@ banked *whole*:
 | `d_a_en_door.cpp` | 50 | Closed on a coupled pair after ~300 failed builds |
 | `d_a_rot_block.cpp` | 5 | **Was not on any target list** |
 
-Plus the pakkun pair, landed together: `d_a_en_dpakkun_base.cpp` (**64/64**) and
-`d_a_en_dfpakkun.cpp` (**33/33**), 19,808 bytes, which crossed 10%. They had to
-be flipped in one commit — see "The pakkun pair — DONE, and the two rules it
-cost".
+The pakkun pair (19,808 bytes, the jump past 10%) had to be flipped out of
+`nonMatching` in a single commit — see "The pakkun pair — DONE, and the two
+rules it cost" for why, because it will recur on any base/derived pair in
+flight together.
 
 **Three TUs were discovered mid-batch** that our enumeration cannot see, and the
 `.text` end boundary was wrong on **five** separate assignments, always the same
@@ -395,21 +642,228 @@ address the file was thought to end, and was found only because an agent noticed
 a 0x50 block in `.data` that nothing in the file referenced. Verify the end of a
 TU by checking what follows it, not by trusting a prior note.
 
-## Next targets
+## Next target — and what is known about the rest
+
+This is the only "next target" section for game code. The SDK list further down
+is deprioritised (see the register-allocation wall) and
+"### The `find_targets.py` tool and its limits" is about the tool, not about
+what to do next.
 
 `tools/find_targets.py` still ranks by header coverage. **Do not follow it
 blindly**: its two top-ranked runs (`0x801C8570`, 2,464 B, 100% coverage;
 `0x801C91E0`, 2,904 B, 95%) are both **gated by the two known register-wall
-functions**. `GXSetTevColor` sits at the head of `GXTev.c`'s queue and
-`GXGetViewportv` immediately before `GXTransform.c`'s banked start, so extending
-backwards must cross it. One contiguous range per section means neither can be
-skipped. High header coverage says the *types* exist, not that the run is
-reachable.
+functions** — re-verified this session, still exactly those two. `GXSetTevColor`
+sits at the head of `GXTev.c`'s queue and `GXGetViewportv` immediately before
+`GXTransform.c`'s banked start, so extending backwards must cross it. One
+contiguous range per section means neither can be skipped. High header coverage
+says the *types* exist, not that the run is reachable.
 
-**The best next move is the remaining ~28 actor TUs**, using the playbook below.
-`d_a_en_super_bigpile.cpp` was run specifically to price that pattern and matched
-46/46 on the first integration; `d_a_en_lkuribo_base.cpp` then did 58/58 with
-every function matching on its first compile, so the pattern is now well priced.
+**The best next move is the remaining ~24 actor TUs**, using the playbook below.
+`d_a_en_bros_base.cpp` (99/99) and `d_a_en_blockmain.cpp` (97/97) landed back to
+back on the same pipeline in one session, so the pattern is now priced at
+roughly 100 functions per unit with nearly everything matching first compile.
+
+### Recommended: `d_a_en_hatena_balloon.cpp` — `daEnHatenaBalloon_c`
+
+The ? / propeller balloon that carries a player. Single class, single TU, and
+the only candidate in the DOL where **every one of its seven section bounds is
+already determined** and the actor playbook applies verbatim.
+
+#### Extent — the bounds agent can be cut from the pipeline
+
+| Section | Range (slice offsets) | Size | How it is fixed |
+|---|---|---|---|
+| `.text` | `0x109b30-0x10e480` (`0x801102B0`–`0x80114C00`) | **18,768 B span / 18,216 B code / 81 fns** | `d_a_en_eatcoin.cpp` ends at `0x109b30`; `d_a_enemy_ice.cpp` begins at `0x10e480`. Both banked and matching. Corroborated by dtk's own split point `auto_03_801102B0_text.o` (`# 0x801102B0..0x80114580`). |
+| `.ctors` | `0x1d0-0x1d4` | 4 B | eatcoin has `0x1cc-0x1d0`, enemy_ice has `0x1d4-0x1d8`. **Exactly one free slot** — the `.ctors` index, this file's documented source of the one-byte whole-binary failure, is eliminated by inspection. |
+| `.data` | `0x24f80-0x254c0` | 0x540 | Pure subtraction between the same two neighbours. Starts with `g_profile_EN_HATENA_BALLOON` at `0x80323620`, contains `__vt__19daEnHatenaBalloon_c` at `0x803236B0`. |
+| `.bss` | `0x23a78-0x23c20` | 0x1A8 | Pure subtraction. Contents verified: six `@7xxxx` 0xC dtor records + six `StateID_*__19daEnHatenaBalloon_c` at 0x30 each on a 0x40 stride, then `sm_bg_check_size_{mame,normal,super}` (0xC each) — the playbook's `.bss` formula exactly. |
+| `.sdata2` | `0x22f0-0x23b0` | 0xC0 | Pure subtraction; 48 anonymous floats, `@808xx`–`@815xx`. |
+| `.sdata` | `0x1bf0-0x1c40` | 0x50 | Upper end pinned by `d_a_enemy_ice.cpp`'s `0x1c40`; lower end pinned by name — the block opens with five `sm_hio_*__19daEnHatenaBalloon_c` floats (`gravity`, `base_fly_timer_x`, `fly_yspeed`, `mask_size`, `mask_y_diff`). |
+| `.rodata` | `0x6e40-0x6ef8` | 0xB8 | Pinned by name at both ends: `s_someCheckData__19daEnHatenaBalloon_c` (0x50) at `0x6e40`, then `l_hatenaballoon_cullinfo`, `l_cc_data`, `l_create_diff`, `l_speed_ratiodt`; the next object belongs to `daFarBG_c`, the next undone TU. |
+| `.sbss` | — | none | Verified: the whole `0x738-0x758` window holds only `daFarBG_c`, `daMask_c` and `dAcPy_c` symbols. **Omit the claim** — an adjacent-neighbour section is a legitimate answer. |
+
+Five of seven bounds are literal subtraction between two banked, verifying
+neighbours; the other two are pinned by symbols carrying the class name. The
+table above *is* the deliverable a bounds agent would have produced.
+
+#### The class — the vtable proof is nearly free
+
+- **`class daEnHatenaBalloon_c : public dEn_c`**, `sizeof == 0x8A0`.
+- `__vt__19daEnHatenaBalloon_c` at `.data:0x803236B0`, **size 0x280**.
+- `__vt__5dEn_c` is **also 0x280** → the class **introduces no new virtual
+  functions at all**; it only overrides existing `dEn_c` slots. "Prove the class
+  before anyone writes against it" collapses to "compile against `d_enemy.hpp`
+  and confirm 160 identical slot positions".
+- `sizeof` is read directly out of `daEnHatenaBalloon_c_classInit` —
+  `li r3, 0x8a0; bl __nw__7fBase_cFUl` at `0x801102C4`. **Take it from there,
+  not from `__dt__`**: this file's most expensive near-miss was reading a
+  destructor operand as `sizeof` when it was the last destructible member's
+  offset.
+- Vtable pointer stored at object offset **0x60**, as playbook trap 7 predicts.
+- Members are half-readable from `classInit` before anyone disassembles a
+  method: `dHeapAllocator_c` at 0x524, an int at 0x540, two `m3d::mdl_c` at
+  0x544 / 0x584, two `m3d::fanm_c` at 0x5C4 / 0x5FC, `m3d::banm_c` at 0x634,
+  `mAllocator_c` at 0x640, `m3d::anmTexPat_c` at 0x66C. `dEn_c`'s own extent
+  therefore ends at 0x524.
+
+#### Shape
+
+`classInit` · `create` (776 B) · `execute` (492 B) · `preDraw` · `draw` (548 B) ·
+`doDelete` · the full `hitCallback_*` family (14 functions) ·
+`Normal_Vs{Pl,Yoshi,En}HitCheck` · `block_hit_init` · `isQuakeDamage` · six
+states as plain `STATE_DEFINE` triples (`DispFlyWait`, `DispFlyMove`, `Fly`,
+`Escape`, `HipAttack`, `SearchSpace`) · `__dt__` (248 B) · `__sinit` (1,272 B) ·
+five `sFStateID_c<19daEnHatenaBalloon_c>` instantiations (368 B).
+
+States are `sFStateID_c`, **not** `sFStateVirtualID_c` — so there are **no
+`baseID_*<10sStateID_c>` blocks**, the `.text` low-bound rule does not bite, and
+`__sinit` plus the template quintet (1,640 B, 9% of the unit) is pure
+`STATE_DEFINE` boilerplate that nobody writes.
+
+**Unnamed functions: one.** `fn_80112040`, 136 B — 0.7% of the unit, against
+blockmain's 22% across ten functions. That removes the single biggest source of
+invented names and of the `harness.py` placeholder-collapse hazard.
+
+#### Sibling precedent — 43% of the unit by bytes
+
+**33 of 81 functions (7,916 B) share a name with a function already banked and
+byte-exact in this repo**, most with several precedents:
+
+| Function | B | Precedents in banked code |
+|---|---|---|
+| `Normal_VsEnHitCheck` | 528 | kuribo_base, lkuribo_base, shell, d_enemy |
+| `hitCallback_Shell` | 456 | dpakkun_base, jimen_pakkun_base, shell, d_enemy_death |
+| `hitCallback_YoshiHipAttk` | 288 | dpakkun_base, jimen_pakkun_base, lkuribo_base, shell |
+| `Normal_VsYoshiHitCheck` | 224 | 8 TUs |
+| `Normal_VsPlHitCheck` | 212 | 8 TUs |
+| `hitCallback_Fire` | 212 | 6 TUs |
+| `hitCallback_HipAttk` | 212 | 6 TUs |
+| `setCcLine` | 312 | kuribo_base |
+| `model_set` | 1,044 | **eatcoin — the immediately preceding banked TU** |
+| `player_set` | 140 | **blockmain — landed this session** |
+| `sFStateID_c<T>` quintet | 368 | 39 TUs |
+| `hitCallback_{Ice,Star,Spin,Slip,Cannon,Large,WireNet,YoshiBullet}` | ~170 | 1–6 TUs each |
+
+That is a *name-level* count; `tools/sibmap.py` compares instruction words and
+will find more. **Add `daEnHatenaBalloon_c` to sibmap's `FAMILY` before running
+it**, along with `dol_bases_d_a_en_blockmain`, which is already missing.
+
+#### Why it beats the alternatives
+
+1. **`find_targets.py` scores it 0%** and will never surface it — verified
+   (`python tools/find_targets.py 15000 20000 0.0` → `0x801102B0 18216 B 81 fns
+   hdr-cov 0%`). The tool counts *free-function declarations in headers*; every
+   function here is a class method, so it measures nothing — while the thing
+   that matters, the base class `dEn_c`, is fully declared in
+   `include/game/bases/d_enemy.hpp` and verified by the banked `d_enemy.cpp`.
+   This is the "header coverage is a *consequence*" caveat in its purest form.
+2. **All seven bounds free**, including the `.ctors` index — no other candidate
+   achieves that.
+3. **Highest sibling precedent measured** — 43% by bytes; next best
+   comparable-size candidate is 20%.
+4. **Fewer functions than the last two units** (81 vs 97 and 99) despite the
+   larger byte count. Authoring cost tracks functions, not bytes.
+5. **No prerequisite on any undone TU.** Nothing it embeds by value is unfinished.
+6. Landing it closes a contiguous banked run from `0x80109220` to `0x80115BD0`,
+   which makes `d_a_farBG.cpp` the next fully-bracketed TU.
+
+#### Named hazards — read these before briefing
+
+- **Size.** 18,768 B is 42% larger than blockmain. Plan **7 authoring agents**,
+  not 6.
+- **`model_set` (1,044 B)** is the largest hand-written function and builds two
+  `m3d::mdl_c`, two `fanm_c`, a `banm_c` and an `anmTexPat_c`. Expect the "all
+  words identical, only the `0xNN(r1)` slots wrong" signature — that is an
+  overload-selection problem, not a register problem, and `d_a_en_eatcoin.cpp`'s
+  own `model_set` is the starting point.
+- **`remocon_speed_set` (776 B)**, **`executeState_SearchSpace` (736 B)** and
+  **`pointBgCheck` (652 B)** have no name precedent and are float-heavy.
+- **`s_someCheckData__19daEnHatenaBalloon_c`** is a 0x50 `.rodata` float table
+  (20 floats). Contents are free from the DOL, but anything reaching a symbol
+  through an aggregate initialiser must have its **`.rela.rodata`** checked, not
+  just `.text`.
+- **`g_profile_EN_HATENA_BALLOON=0x80323620` is currently in `syms.txt`**
+  (line 1028). Playbook trap 11: **delete that line in the same commit** the TU
+  lands, or the link fails on a duplicate.
+- **It is not a base class.** It unblocks no family — its one real weakness
+  against the "prefer base classes" rule below, and the reason the runners-up
+  are worth keeping on the list.
+
+### Runners-up
+
+**`d_a_player_manager.cpp` (`daPyMng_c`)** — `0x8005E9A0`–`0x800613B0`,
+10,768 B span / 10,300 B code / 68 fns.
+`include/game/bases/d_a_player_manager.hpp` **already exists with 79 lines of
+real signatures** (not a `u8 mPad[]` stub) because the banked `d_a_player.cpp`
+and `d_a_player_base.cpp` call into it constantly. The class is **all-static
+with no vtable**, so there is no layout to reconstruct: every static member is a
+named symbol with a size in the map. `.text`, `.ctors` (`0x88-0x8c`, one free
+slot), `.bss` (`0x3790-0x4640`), `.sbss` (`0xe0-0x110`) and `.sdata`
+(`0x280-0x290`) are exact by subtraction. Three hazards keep it second:
+1. Its `.bss` embeds **four static class instances by value**, each with a 0xC
+   dtor record: `mDemoManager` (0x98, type `daPyDemoMng_c` — **undone**),
+   `mMultiManager` (0x5C), `mAttention` (0x58), `mEffectMng` (0xC5C). Their
+   `sizeof`s must be exact or the whole `.bss` shifts.
+2. Two **foreign weak inline copies sit mid-range** —
+   `getCourseIn__10dScStage_cFv` (8 B, `0x8005EC90`) and `getFileP__5dCd_cFi`
+   (32 B, `0x8005EE70`) — from classes whose TUs are *already banked*. That is
+   the pakkun weak-copy / `keepWeak` / `syms.txt` collision with live
+   neighbours, and it will only surface at the full link.
+3. `.data` (~`0xb388-0xb3b8`) and `.sdata2` (~`0xa18-0xa20`) need pool
+   attribution, because the un-banked `d_a_player_demo_manager.cpp` sits between
+   it and the previous banked claim in those two sections.
+
+**`d_a_player_demo_manager.cpp` (`daPyDemoMng_c`)** — `0x8005B3A0`–`0x8005D7E0`,
+9,280 B span / 8,976 B code / 51 fns. Bracketed by `d_a_player_base.cpp` and
+`d_a_player_hio_ADJ.cpp`, both banked. `__vt__13daPyDemoMng_c` is **0xC** —
+three slots — so the vtable proof is nearly free; singleton via
+`mspInstance__13daPyDemoMng_c`. `.ctors` slot `0x80-0x84`, one free slot. Its
+`.data` opens with `sc_ForceList__6dWmLib` and its `.sbss` holds
+`c_StartPointKinokoHouseID__6dWmLib` — **the exact `d_wm_lib.hpp` signature
+already documented for `d_a_boss_demo.cpp` below**, so that hazard is
+pre-characterised. Doing it first also hands `daPyDemoMng_c`'s verified 0x98
+layout to `d_a_player_manager.cpp`, which needs it. Against it: only 7%
+name-level precedent, and `setHanabiEffect`'s `@LOCAL@…` tables mean
+function-scope statics with the numbering rules.
+
+### Attractive-looking candidates with traps
+
+- **`0x80041C00`–`0x80044940` (11,584 B, 86 fns)** — the `d_a_lift_down_on_base`
+  / `d_a_move_pipe` gap. Perfect size, both neighbours banked, looks like one
+  free-bounds haul. It is **at least six TUs**: `daLiftDownOnBase_c` (20 fns),
+  `daIceAshibaBase_c` (15), `daLiftRemoconMain_c` (11), `daFlyDokan_c` (10),
+  `daMovePipe_c` (6), `daKawanagareObj_c` (5), `daLiftMain_c` (2),
+  `dRideRoll_c` (1). Only two `__sinit`s exist, so four internal boundaries are
+  invisible and every one must be derived. Outer bounds free, inner bounds not.
+- **`d_a_en_obj_coinblock.cpp` (`0x80036930`–`0x80037EA0`, 5,488 B, 39 fns)** —
+  fully bracketed, all bounds free, seven clean states, looks cheap. **The trap:
+  `__vt__18daEnObjCoinBlock_c` does not exist anywhere in the symbol map**, and
+  the range contains **no constructor, no destructor, no `create`, no
+  `execute`** — its lifecycle lives in a `.rel`. Playbook step 2 is simply
+  unavailable; the layout must come from `lwz`/`stw` displacements. Cheap bytes,
+  expensive class.
+- **`d_a_en_coin_main.cpp` (`0x800272F0`–`0x800281C0`, 3,792 B, 23 fns)** — all
+  bounds free, and it **is** a base class (`__vt__14daEnCoinMain_c` is 0x2EC,
+  same size as `daEnBlockMain_c`'s), so it gates the coin family in
+  `d_enemiesNP.rel`. But it has T-2's shape problem in milder form, and despite
+  the matching vtable size **its function names barely overlap blockmain's** —
+  siblings, not twins, so the "blockmain just landed" intuition does not pay.
+  Good filler, not a headline target.
+- **`d_a_farBG.cpp` (`0x80115BD0`–`0x8011A5B0`, 18,912 B, 55 fns)** — fully
+  bracketed, single `__sinit`, `__vt__9daFarBG_c` 0xD4 (no new virtuals over
+  `dActor_c`). But 55 functions across 18.6 KB is **339 B per function**, the
+  largest average of any candidate, with only 12% name precedent, and
+  background-scroll code is exactly the float/matrix-heavy shape to avoid. It
+  becomes the natural pick *after* hatena_balloon, which is its lower neighbour.
+- **`0x800451F0`–`0x800460D0` (3,808 B, 33 fns)** — highest precedent rate
+  measured (**68% of bytes share a name with banked code**) and it contains
+  **three base classes** (`daObjMoveOnBase_c`, `daObjPipeBase_c`,
+  `daObjSpinChildBase_c`), so it unblocks three families for 3.8 KB. The trap:
+  **no `__sinit` anywhere in the range**, so all three TU boundaries are
+  invisible — the `d_a_sink_dokan.cpp` condition below. Worth doing, but budget
+  the boundary derivation as its own stage.
+- **`d_a_boss_demo.cpp`** — still blocked on `d_en_boss.cpp`; nothing has
+  changed. Its pre-derived ranges below remain valid.
 
 ### The pakkun pair — DONE, and the two rules it cost
 
@@ -469,33 +923,40 @@ body touched — see commit `5dc4095`.
 
 ### The remaining actor TUs, with what is known about each
 
-Cross-check with `tools/tu_split.py`. (`scratchpad/tu_extent.py`, which
-originally generated this table, was **lost** — the scratchpad is not tracked.
-`tools/tu_split.py` and `tools/find_targets.py` survive; re-derive from those, or
-from the `__sinit_<file>_cpp` symbols in `bin/dtk/wiimj2d_symbols.txt`.)
-Sizes are `.text` bytes. Annotations are hard-won — read them before assigning.
+Cross-check with `tools/tu_split.py` and `tools/tu_extent.py` (both tracked
+under `tools/`), or with the `__sinit_<file>_cpp` symbols in
+`bin/dtk/wiimj2d_symbols.txt`. Annotations are hard-won — read them before
+assigning.
 
-| TU | Bytes | Fns | Notes |
-|---|---|---|---|
-| `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, landed and linked |
-| `d_a_en_jimen_pakkun_base` | 8,848 | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
-| `d_a_en_bros_base` | 12,112 | 99 | **DONE 99/99**, landed and linked. Derives from `dEn_c` |
-| `d_a_en_blockmain` | 12,392 | 90 | **NEXT UP.** Sits directly below bros in `.text`, so bros's banked lower bound is its upper bound in every section |
-| `d_a_player_manager` | 10,764 | 68 | |
-| `d_a_player_demo_manager` | 9,276 | 51 | |
-| `d_a_bullet` | 7,316 | 73 | |
-| `d_a_lift_down_on_base` | 6,280 | 58 | **3–4 TUs** — see `tu_split.py` |
-| `d_a_move_pipe` | 5,380 | 29 | **2–3 TUs** |
-| `d_a_en_obj_coinblock` | 5,096 | 34 | |
-| `d_a_en_coin_main` | 4,312 | 27 | |
-| `d_a_wm_player_static` | 3,268 | 24 | |
-| `d_a_boss_demo` | 2,772 | 49 | **BLOCKED** — see below |
-| `d_a_wm_Map_static` | 2,308 | 17 | **17/18 done**, blocked on a 0x9C8 table — see below |
-| `d_a_player_hio_ADJ` | 2,032 | 15 | **15/16**, banked `nonMatching`. One function left, well-characterised — see below |
-| `d_a_en_hatena_balloon` | 18,376 | 76 | |
-| `d_a_farBG` | 18,808 | 53 | |
-| `d_a_ice` | 31,880 | 147 | |
-| `d_a_yoshi` | 39,944 | 239 | Largest; also contains `daPlyIce_c` |
+**These sizes are a hypothesis, and the errors run in both directions.** The
+size and count columns come from `tu_extent.py`'s heuristic ranges; on the last
+row that closed they were wrong by **7 functions and 840 bytes** — and that
+under-count survived into the plan. Re-derive from the symbol map before
+assigning. Where both figures are known, `Span` is what progress counts (it
+includes 16-byte inter-function alignment) and `Code` is the sum of function
+sizes; they are not the same number and neither is a typo for the other.
+
+| TU | Span B | Code B | Fns | Notes |
+|---|---|---|---|---|
+| `d_a_en_dfpakkun` | 10,624 | — | 72 | **DONE 33/33** authored (rest are weak base copies), landed and linked |
+| `d_a_en_jimen_pakkun_base` | 8,848 | — | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
+| `d_a_en_bros_base` | 12,112 | 12,112 | 99 | **DONE 99/99**, landed and linked. Derives from `dEn_c` |
+| `d_a_en_blockmain` | 13,232 | 12,604 | 97 | **DONE 97/97**, landed and linked. Ten file-static functions (2,800 B, 22%) have no symbol-map name; the names in our source are invented |
+| `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **RECOMMENDED NEXT** — all seven bounds derived; see above |
+| `d_a_player_manager` | 10,768 | 10,300 | 68 | Runner-up; all-static class, no vtable |
+| `d_a_player_demo_manager` | 9,280 | 8,976 | 51 | Runner-up; 3-slot vtable |
+| `d_a_bullet` | 7,316 | — | 73 | |
+| `d_a_lift_down_on_base` | 6,280 | — | 58 | **At least six TUs** across the wider gap — see `tu_split.py` and the traps list above |
+| `d_a_move_pipe` | 5,380 | — | 29 | Part of the same multi-TU gap |
+| `d_a_en_obj_coinblock` | 5,488 | 5,204 | 39 | No `__vt__` in the symbol map — see the traps list |
+| `d_a_en_coin_main` | 3,792 | 3,652 | 23 | Base class, gates the coin family |
+| `d_a_wm_player_static` | 3,268 | — | 24 | |
+| `d_a_boss_demo` | 2,772 | — | 49 | **BLOCKED** — see below |
+| `d_a_wm_Map_static` | 2,308 | — | 17 | **17/18 done**, blocked on a 0x9C8 table — see below |
+| `d_a_player_hio_ADJ` | 2,032 | — | 15 | **15/16**, banked `nonMatching`. One function left, well-characterised — see below |
+| `d_a_farBG` | 18,912 | 18,636 | 55 | 339 B per function, the worst average measured |
+| `d_a_ice` | 32,176 | — | 151 | |
+| `d_a_yoshi` | 64,592 | — | 347 | The gap to `d_pausewindow.cpp` holds **three `__sinit`s** — `d_a_yoshi`, `d_fukidashiManager`, `d_gamedisplay` — so at least four TUs, not two. Also contains `daPlyIce_c` |
 
 ### `d_a_en_lkuribo_base.cpp` — DONE, 58/58, banked whole
 
@@ -559,13 +1020,21 @@ those `syms.txt` lines **and move those four from `deadstrip` to `keepWeak`**, o
 Ranking by size alone is wrong. A *base* actor TU is worth more than its byte
 count because derived TUs cannot be attempted honestly until it exists, and any
 placeholder header written from a derived class's usage carries guesses that
-will mislead later work. The pakkun family is the clearest case:
-`d_a_en_dpakkun_base.cpp` (~8.2 KB) gates `d_a_en_dfpakkun.cpp` (~9.7 KB), and
-its placeholder header still has an unidentified 68-byte member region.
+will mislead later work. The pakkun family was the clearest case —
+`d_a_en_dpakkun_base.cpp` gated `d_a_en_dfpakkun.cpp`, and until the base
+landed, the derived TU's placeholder header carried an unidentified 68-byte
+member region. Both are now done; the live instances are `d_a_en_coin_main.cpp`
+(gates the coin family in `d_enemiesNP.rel`) and the three base classes in the
+`0x800451F0` run.
 
 Second preference is a TU whose *shape* is already solved elsewhere — e.g.
 `d_a_rot_objs_base.cpp`, whose `searchParent_*` functions were reported as
 sharing an existing implementation verbatim.
+
+Note the trade-off is real and does not always favour the base: the recommended
+next target is not a base class at all, because all seven of its bounds are free
+and 43% of it has banked precedent. Weigh unblocking against cost, do not apply
+the rule mechanically.
 
 ### All five binaries failing at once means a section changed size
 
@@ -661,7 +1130,7 @@ it is silently absorbed into a neighbouring TU's reported range. This is not
 hypothetical: `d_a_sink_dokan.cpp` (`daSinkDokan_c`, ~0x920 bytes) was found
 sitting undetected between `d_a_rot_objs_base` and `d_a_spin_child_base`.
 
-`scratchpad/tu_split.py` detects the condition. It demangles the class name out
+`tools/tu_split.py` detects the condition. It demangles the class name out
 of every function in a reported range and counts them; a *second* class with a
 double-digit count means the range is two or more TUs. Current output:
 
@@ -720,7 +1189,9 @@ Look up first, in this order — ~10 minutes for 80% of the file:
 3. Disassemble the matching `auto_*_rodata.o` / `_sdata2.o` / `auto_sinit_*.o` —
    free float values and the `__sinit`.
 4. Read `source/dol/bases/d_a_en_shell.cpp` and `d_a_en_super_bigpile.cpp` for
-   house style.
+   house style, and `include/game/bases/d_a_en_blockmain.hpp` for a large
+   `dEn_c` actor's header — it is the best model in the repo. (New this session,
+   with `d_a_en_bros_base.hpp` and `d_block_mng.hpp`.)
 
 **Boilerplate — copy it:**
 - The four `baseID_Xxx<10sStateID_c>` stubs and the **entire `__sinit`** are
@@ -782,6 +1253,11 @@ scratchpad**.
 
 ## Briefing authoring agents
 
+This is the standing list. "Running the parallel pipeline" above adds five more
+briefing rules that each cost something on bros/blockmain — shared-helper batch
+first, assign from the map's table, assign data ownership, say who authors
+nothing, freeze the shared header. Read both.
+
 **Write the shared material to files and point every agent at them, rather than
 pasting it into each brief.** On `d_a_en_lkuribo_base.cpp` that was two files —
 a `prelude.cpp` holding the verified class declaration and file-scope data, which
@@ -825,8 +1301,10 @@ Each per-agent brief still needs:
     21 minutes.)
 
 Tell them where the shared comparator is (`harness.py`'s `extract` / `diff_fn`)
-so they do not each write one — but tell them to run a **negative control**
-before trusting it, because it has been wrong twice now.
+so they do not each write one — and point them at the checklist in "Verify your
+verification tool". A negative control is not enough on its own: three of the
+six confirmed defects were invisible to one. The two checks to insist on are
+**extract by address** and **instruction count × 4 == the symbol-map size**.
 
 ### Splitting a TU between agents
 
@@ -836,13 +1314,11 @@ a group that owns all three of a near-identical trio solves it once. On lkuribo
 one group's twelve functions collapsed into effectively three distinct bodies.
 
 Watch for groups that are the dependency of others — the one owning the shared
-helpers should be told so, and told to report a signature change immediately
-rather than at the end.
+helpers should be told so, launched first, and told to report a signature change
+immediately rather than at the end.
 
-**Interleave, do not concatenate, when assembling.** Source order controls
-emission order for the literal pools, and one-line stubs belonging to one group
-routinely sit in the middle of another group's run. Write the canonical order out
-from the symbol map before the reports start arriving.
+Assembly is by target address order, not by group; see "Assemble by ADDRESS, not
+by batch" above, which is where the emission-order rules now live.
 
 ## Monitoring agents — what actually works
 
@@ -869,43 +1345,309 @@ baseline build, derive the slice entry from the neighbouring banked slices, and
 write out the canonical source order. All of that is independent of the code and
 it is most of the integration work.
 
-## Monitoring agents — what actually works
+## Verify your verification tool — six defects so far, and the checklist that catches them
 
-Most obvious signals are useless. Verified this session:
+**Every tool in this project that reports a match has, at some point, reported a
+match that was false.** Six confirmed defects now, across three tools. Not one of
+them was a *miss* — a miss is loud and cheap. Each produced a **confident wrong
+answer**: a clean `MATCHING`, a plausible address list, a family view that simply
+did not mention the 199 functions it had lost. Wrong answers of that shape do not
+cost you an hour, they cost you the decisions you make afterwards.
 
-- Agent transcript files under `tasks/` are **always 0 bytes**, including for
-  agents that completed successfully. Not a liveness signal.
-- The short-random-name `.output` files in `tasks/` are the **lead's own** shell
-  invocations, not agent activity.
-- Process listings only catch the instant a command runs; `Read`/`Grep` spawn
-  nothing at all.
+Read the pattern before the particulars:
 
-The only real signal is **writes to the repo or scratchpad**. And note that a
-healthy agent on a task like this ran **35 minutes with 97 tool calls** and was
-silent for the first several minutes while reading reference material. Do not
-set an impatient kill threshold — a working agent was nearly killed at 12
-minutes on exactly that mistake. Agents on the hardest functions here ran 30–45
-minutes and 60–115 tool calls, and all of them succeeded.
+| # | tool | what it reported | what was true |
+|---|---|---|---|
+| 1 | `fndiff.py` (since deleted) | `IDENTICAL` | it never found the function |
+| 2 | `harness.canonicalise` | spurious diff on every `.sdata2` ref, and `0.0f` == `8.0f` | pool naming leaked in; literal values erased |
+| 3 | `harness.extract` | equal | branch destinations erased — control flow invisible |
+| 4 | `harness.norm_name` | a clean diff of function A | it was diffing function B |
+| 5 | `sibmap.FAMILY` | a family view with N hits | 199 functions silently excluded |
+| 6 | `datarefs.py` | seven cross-unit data references | phantom addresses ~0x1900 too high |
 
-## Verify your verification tool — the comparator has lied twice
+Three of those six are **invisible to a negative control**, which is why "I ran a
+negative control" is no longer a sufficient answer. A negative control proves the
+comparator can say *no*. It cannot detect a comparison that is internally
+consistent but aimed at the wrong object: defect 4 diffed the wrong function
+against the wrong function and every sanity check it had passed. Defect 5's dead
+FAMILY entry contributed no hits and raised nothing, because contributing nothing
+is indistinguishable from being unlucky. Defect 6's phantom addresses were
+contiguous, plausible, and in a real section.
 
-Both incidents are recorded because the pattern matters more than either bug: a
-diff tool that is wrong does not merely waste time, it manufactures false
-confidence. **Run a deliberate negative control before trusting any comparator**,
-including the current one. The second incident is under "Verify your verification
-tool — again" further down; this is the first.
+What actually caught defect 4 was an agent asserting that **the extracted body's
+instruction count × 4 equals the size in the symbol map**. That is a *positive*
+check — it ties the comparison to an independent fact about the target rather
+than asking the comparator to grade itself. That is the model to copy.
 
-`fndiff.py` silently reported **`IDENTICAL` when it could not find the function
-at all**. Template-mangled names (anything with `PrintContext<w>`) appear
-*quoted* in the dtk dump, the name comparison never matched, and empty-vs-empty
-compared equal. Nine in-flight functions were affected.
+So this section is a checklist, not a warning list. **Each item below is a
+different, independent view of the same function; each has a way to make it
+non-vacuous; and only the last one is authoritative.**
 
-It is fixed two ways: it strips quotes from both sides, **and it hard-exits with
-an error if either extraction is empty**. A tool that cannot find the function
-must say so, not congratulate you. One agent then confirmed the fix with a
-deliberate negative control before trusting its own results — do that.
+### How to verify a function is really matching
 
-**Treat the verification tooling with the same scepticism as the code.**
+Run these in order. Steps 1–3 are cheap and catch most real errors; 4–7 exist
+because a per-function diff is structurally blind to them; 8 is the only proof.
+
+**1. Extract by ADDRESS, not by name.**
+Names are not unique in a dtk dump. dtk appends `_<8 hex>` to disambiguate real
+duplicate symbols, and invents `fn_<ADDR>` / `lbl_<ADDR>` / `func_<ADDR>` for
+functions that have no symbol at all. `harness.extract` returns the **first**
+name match and now warns when a name is ambiguous, but the warning goes to
+**stderr** — if you capture stdout only, you will not see it. Take the address
+out of `bin\dtk\wiimj2d_symbols.txt` and confirm the `.fn` you extracted starts
+there. Not optional on any TU with unnamed functions: `d_a_en_blockmain.cpp` has
+ten, and every diff taken against one of them before the fix was comparing the
+wrong body.
+
+**2. Assert the extracted size against the symbol map.**
+The single highest-value check in this file, and it costs nothing:
+
+```python
+import sys; sys.path.insert(0, 'tools/auto_decomp')
+import harness as h
+path = 'tools/auto_decomp/work/<unit>/target.txt'
+for name, size in h.list_functions(path, with_size=True):
+    body = h.extract(path, name)
+    got = len(body) * 4 if body else 0
+    assert got == size, (name, size, got)
+```
+
+`list_functions(..., with_size=True)` reads the size out of dtk's own
+`# .text:0x0 | 0x800331E0 | size: 0xC` comment, so the assertion cross-checks
+the extractor against the disassembler. Verified clean over all 64 functions of
+the lkuribo target. Do it on **both** sides — target and your own object — and
+also against the symbol map (`name = .text:0xADDR; // type:function size:0xNN`).
+Make it non-vacuous by extracting a name you know is ambiguous and confirming
+the assertion fires.
+
+**3. Diff the canonicalised text (`harness.diff_fn`).**
+This is the iteration-speed view and nothing more. It proves the instruction
+stream, the register allocation, the immediates and — since `7fe054f` — the
+branch displacements. It does **not** prove which symbol you called, which
+literal you loaded, or where the function landed. Read its `NOTE:` output: when
+it prints the pooled-literals caveat, steps 5 and 6 are mandatory, not optional.
+
+**4. Compare the raw instruction words — and the callee NAMES, separately.**
+dtk zeroes relocated fields, so every `bl` in every function renders as
+`48000001`. **Two functions calling completely different callees compare equal
+at the word level.** This has hidden a wrong callee twice: an inherited-but-
+hidden method (`posMove` where the original calls `dBaseActor_c::posMove`), and
+a `u32`-vs-`unsigned long` mangling difference that named a symbol which does
+not exist. Whoever compares by words MUST also compare the disassembly text or
+the relocation symbol names:
+
+```
+& "C:\devkitPro\devkitPPC\bin\powerpc-eabi-readelf.exe" -rW bin\compiled\wiimj2d\dol\bases\<file>.o
+```
+
+Better still, resolve every `.text` relocation to **(section, offset)** and
+compare those, not names — pool symbols are anonymous, and the target embeds the
+address in names like `@73081_803536E0`, so both sides are resolvable. Done that
+way for all 67 functions of the jimen TU.
+
+**5. Check the DATA relocations, not only the `.text` ones.**
+A symbol reached through a compound-literal or aggregate initialiser never
+appears in `.text` at all. The `&StateID_DieOther` vs `&dEn_c::StateID_DieOther`
+experiment on `d_a_en_jimen_pakkun_base.cpp` passed `diff_fn`, raw bytes **and**
+`.text` relocation names while being knowingly wrong; only `.rela.rodata` caught
+it. If your function emits or reads a `.rodata`/`.data` template, read that
+template's relocations and confirm each target symbol by name.
+
+**6. Compare pool literals and table CONTENTS as BYTES, against the original.**
+Canonicalisation reduces a pool reference to a positional marker, so **the
+literal's value is never compared**. Confirmed experimentally: change `16.0f` to
+`15.0f` in a matching function and `diff_fn` still reports MATCH. The same holds
+for `.rodata` tables — the indexing code matches while the table is wrong. Read
+the bytes on both sides and compare them yourself:
+
+```python
+import sys; sys.path.insert(0, 'tools')
+from datarefs import load_dol, read
+d, secs = load_dol('original/wiimj2d.dol')
+print(read(d, secs, 0x8042B7E8, 16).hex())     # target slot
+```
+
+and against your own object:
+
+```
+& "C:\devkitPro\devkitPPC\bin\powerpc-eabi-readelf.exe" -x .sdata2 bin\compiled\wiimj2d\dol\bases\<file>.o
+& "C:\devkitPro\devkitPPC\bin\powerpc-eabi-readelf.exe" -x .rodata bin\compiled\wiimj2d\dol\bases\<file>.o
+```
+
+**Make this check non-vacuous before you trust it**: deliberately corrupt one
+value — one float, one table entry — and confirm the comparison fails. A byte
+comparison against the wrong address range passes trivially and forever.
+
+**7. Verify the emitted symbol ORDER.**
+Not a bug, a structural limit: `diff_fn` looks a function up by name and compares
+its contents, so **moving a definition changes where it lands, not what it
+contains**, and every per-function view — canonicalised text, raw bytes,
+relocation names, pool values — passes on a file whose functions are in the wrong
+order. This project fails on emission order regularly (the lkuribo 32 bytes, the
+pakkun flush block, `downSE`). Extract both function lists with
+`h.list_functions()` — the same parser, both in emission order — and compare the
+sequences. Control it by moving one definition and confirming the check fires;
+on `d_a_en_jimen_pakkun_base.cpp` that control caught a misplaced `downSE` at
+position 36, and no other view would have.
+
+**8. Only the full link plus MD5 is authoritative — and only on a build that
+actually linked.**
+
+```
+python configure.py; ninja; if ($?) { python progress.py --verify-bin }
+```
+
+`--verify-bin` MD5s `bin\wiimj2d.dol` and the four RELs against `original\`. It
+reads whatever is on disk. **After a link failure the previous build's outputs
+are still sitting there, and `--verify-bin` will happily verify them and print
+five cheerful OKs.** A verification tool that passes on stale output is a false
+green, and it is the most dangerous one in the list because it is the check
+everything else defers to. So:
+
+- Chain it off ninja's exit status (`ninja; if ($?) { ... }`) — never run it as a
+  separate command after eyeballing the build log.
+- Confirm freshness independently before believing a green:
+  `Get-Item bin\wiimj2d.dol, source\dol\bases\<file>.cpp | Select Name, LastWriteTime`
+  — the binary must be newer than every source you touched.
+- `ninja` on an up-to-date tree says `no work to do`. If it says anything else
+  right after a "successful" build, the build was not successful.
+
+Everything in steps 1–7 exists to make step 8 likely, and to localise the failure
+when step 8 says no. Nothing in 1–7 is evidence that a TU is done. Note that
+every TU banked as matching passed the full-link MD5 even during the periods when
+defects 2, 3 and 4 were live — **the link is the only check that a bad comparator
+has never been able to fool.**
+
+### The six defects, and where each one now stands
+
+**1. `fndiff.py` reported `IDENTICAL` when it could not find the function.**
+Template-mangled names (anything with `PrintContext<w>`) appear *quoted* in the
+dtk dump, the name comparison never matched, and empty-vs-empty compared equal.
+Nine in-flight functions affected. **Fixed:** quotes stripped on both sides, and
+it hard-exits if either extraction is empty. A tool that cannot find the function
+must say so, not congratulate you. **Historical only — `fndiff.py` no longer
+exists anywhere in the tree**; it is recorded for the pattern, not for use.
+
+**2. `harness.canonicalise` was wrong in both directions on pool symbols.**
+dtk names a pool object `@71831_8042B7EC` in the original where a fresh object has
+a bare `@21389`; collapsing both to one marker produced a spurious diff on every
+`.sdata2` reference, and erased *which* literal was referenced, so `0.0f` and
+`8.0f` compared equal. **Fixed:** each distinct pool symbol is numbered by first
+appearance **per side**, so "the same literal twice" stays distinguishable from
+"two different literals". **The caveat survives and is yours to close:** this
+proves the *pattern* of references, not the values — see checklist step 6.
+
+**3. The same comparator erased branch destinations.**
+`ADDR_SUFFIX_INLINE` reduced both `.L_8005DB2C` and `.L_00000B38` to a bare `.L`,
+so two functions whose branches went to different places compared equal. Every
+loop, conditional and switch in the project was being diffed with its control
+flow invisible. **Fixed in `7fe054f`** by keeping the raw instruction word for
+local branches: those are PC-relative and carry no relocation, so identical code
+always yields an identical word — exact, not heuristic.
+*The instructive part is the fix that did not work.* Numbering labels per side by
+first appearance — the trick that fixed the pool symbols — looks right and fails,
+because it numbers by **use** order: swap two branches and both sides renumber
+identically. Caught only because the negative control was written before the fix
+was trusted.
+
+**4. `harness.norm_name` collapsed every unnamed function to one name.**
+dtk invents `fn_<ADDR>` / `lbl_<ADDR>` for functions with no symbol. `norm_name`
+stripped a trailing `_<8 hex>` — correct for dtk's disambiguation of genuine
+duplicate symbol names, catastrophic for a placeholder where **the address IS the
+name**. Every `fn_800XXXXX` normalised to the bare string `fn`, so `extract()`
+returned whichever unnamed function appeared *first in the file*. On
+`d_a_en_blockmain.cpp` — ten unnamed functions across three batches — every diff
+against one of them was comparing the wrong body, and all ten returned the same
+50-instruction body. **Fixed in `47d15ca`:** placeholder names are left intact,
+and `extract()` pre-counts matches and warns on an ambiguous name. Verified on
+all ten; each now extracts at exactly its symbol-map size.
+**This is the defect that justifies checklist step 2.** No negative control could
+have caught it — the wrong-function comparison was self-consistent and passed
+every check the tool had.
+
+**5. `sibmap.py`'s FAMILY list rots silently.**
+A FAMILY entry that matches no corpus file contributes no hits and raises
+nothing. `bin/dtkspl` is regenerated rarely and lags the newest units, so a
+just-landed TU exists **only** as our own compiled `CMP_`-prefixed object; the
+plain `dol_bases_<file>` name then resolved to nothing and one run silently lost
+199 functions from the family view. **Fixed in `8f323f0`:** `in_family()` strips
+the `CMP_` prefix, and `check_family()` warns by name about dead entries (to
+**stderr** — capture it). Verified against the real 319-file corpus: 18 of 19
+live, the dead one named. `3681c28` then corrected the `REL_` tag spelling for
+entries whose object lives in a REL slice.
+Two standing traps here, both still yours:
+- **Do not validate FAMILY against `slices/wiimj2d.json` alone.** Some banked
+  matching units live in the REL slices (`slices/d_enemiesNP.json` and friends),
+  and the corpus builder does read REL objects. A checker that only reads
+  `wiimj2d.json` will wrongly reject a correct entry. Note also that
+  `build_cache()` collects our own compiled objects **only** from
+  `bin/compiled/wiimj2d`, so `bin/compiled/d_enemiesNP/...` is not a fallback.
+- **Add every newly banked enemy TU the day it lands.** The newest entries are
+  the most valuable, not the least — `d_a_en_bros_base` alone contributed 99
+  matching precedent functions. The list is already one TU behind:
+  `dol_bases_d_a_en_blockmain` is missing, and so is `d_a_fireball_player`.
+
+**6. `datarefs.py` did not model update-form load writeback.**
+`lwzu`/`stwu` write the effective address back into rA. One
+`lwzu r12, -0x1910(r5)` left a stale base, and the following seven `lwz N(r5)`
+resolved ~0x1900 too high — into the **next** unit's `.rodata`. The phantom
+addresses were plausible, contiguous, and looked exactly like a genuine
+cross-unit reference, which is evidence you would act on when deriving section
+bounds. **Fixed in `f82d77e`** and verified against the exact case: the eleven
+update-form opcodes are tracked and rA is updated (or dropped when unresolvable).
+Note the general shape — a data-flow tool that models *most* of the machine will
+hand you a wrong answer in the same format as a right one.
+
+### Residual blind spots — read before relying on the fixes
+
+Confirmed against the current source this session. None is fixed.
+
+- **The `fn_<ADDR>` collapse is only half fixed.** `norm_name` no longer strips
+  the address from a placeholder *function name*, but `canonicalise()` still
+  applies `ADDR_SUFFIX_INLINE` to instruction **operands**, and `POOL_SYM`
+  numbers `lbl_########` positionally. Directly reproduced:
+
+  ```
+  A: ['bl fn_800A1234', 'bl lbl_800B0000']  ->  ['bl fn', 'bl SYM0']
+  B: ['bl fn_800CDEF0', 'bl lbl_800C1111']  ->  ['bl fn', 'bl SYM0']
+  EQUAL? True
+  ```
+
+  So a call to one unnamed function still compares equal to a call to a
+  different one. This mostly bites when **both** sides come from dtk dumps —
+  target-against-corpus or split-against-split comparisons, i.e. exactly the
+  sibling-mapping workflow — because a freshly compiled object names all its
+  functions. Treat any `bl fn`/`bl SYM` line in a `diff_fn` report as
+  uncompared, and fall back to checklist step 4. (`3681c28` fixed the
+  operand-level case in `harness.py`; re-confirm the reproduction above before
+  assuming it is closed for your workflow.)
+
+- **Both new warnings print to stderr.** `extract()`'s ambiguity warning and
+  `check_family()`'s dead-entry warning are invisible to any agent or script
+  that captures stdout only. Redirect and read them, or the fixes are decorative.
+
+- **The sibmap disassembly cache does not exist in a fresh working tree**
+  (`tools/dis`, or `$env:SIBMAP_DIS`). `check_family` is called from
+  `load_corpus`, so on a missing cache it reports *every* entry dead — which is
+  the correct loud failure, but do not mistake it for list rot.
+
+### Adding a check, or a tool
+
+1. **State what the check cannot see, in the tool, next to the code.** Every fix
+   above is documented in-source for exactly this reason; that is why defects 2
+   and 3 did not recur.
+2. **Break it on purpose and confirm it fires** — before you trust one green from
+   it. A check you have never seen fail is not a check.
+3. **Prefer positive assertions against independent facts** (size from the symbol
+   map, bytes from `original/wiimj2d.dol`) over asking a comparator whether it
+   agrees with itself.
+4. **Relay a tooling bug the moment you find one.** The pool-normaliser bug
+   reached three agents before they wasted time on phantom diffs; two had already
+   hit it and worked around it independently, which is pure duplicated cost.
+5. **Anything worth keeping goes under `tools/` and gets committed.** The
+   scratchpad is untracked and comparators have been lost from it before.
+
+Six down. **Assume the seventh exists.**
 
 ## Relay findings between running agents
 
@@ -945,15 +1687,30 @@ Two functions believed unnamed were already named there, one of them called by a
 already-matching destructor. Grep `syms.txt` and `bin/dtk/wiimj2d_symbols.txt`
 first; mark genuinely inferred names `@unofficial`.
 
+**A TU can be mostly unnamed, and that changes how you verify it.**
+`d_a_en_blockmain.cpp` has ten file-static functions with no symbol-map name —
+2,800 B, 22% of the unit, including its two largest. Every one of those names is
+invented and marked `@unofficial`. Two consequences, both paid for:
+
+- **Diff those functions by ADDRESS.** Before `47d15ca`, `harness.py` collapsed
+  every `fn_800XXXXX` placeholder to the bare string `fn`, so all ten extracted
+  the *same* body and every diff against them was comparing the wrong function
+  while reporting cleanly. Assert instruction count × 4 against the symbol map.
+- **Keep the invented name→address mapping as an artefact** through integration.
+  Discarding those names as "unmatched extras" desynchronises any positional
+  comparison and manufactures dozens of spurious differences.
+
 ---
 
 ## Current state
 
-- **Progress: 10.453%** (679,496 / 6,500,368 code bytes)
+- **Progress: 10.657%** (692,728 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
+- **34 commits unpushed.** Ask before pushing.
 - Development happens on **native Windows**; see "Local setup" below.
-- Last TU banked: `d_a_en_bros_base.cpp` (99 fns, 12,112 bytes), whole and
-  byte-exact. Before that: `d_a_en_jimen_pakkun_base.cpp` (67),
+- Last TU banked: `d_a_en_blockmain.cpp` (97 fns, 12,604 bytes of code in a
+  13,232-byte span), whole and byte-exact. Before that:
+  `d_a_en_bros_base.cpp` (99), `d_a_en_jimen_pakkun_base.cpp` (67),
   `d_a_en_dfpakkun.cpp` (33), `d_a_en_dpakkun_base.cpp` (64),
   `d_a_en_lkuribo_base.cpp` (58), `d_a_en_kuribo_base.cpp` (66), `d_a_en_door.cpp` (50),
   `d_a_fireball_base.cpp` (51), `d_a_en_net_nokonoko_base.cpp` (37),
@@ -978,7 +1735,7 @@ Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 20.535% |
+| `wiimj2d.dol` | 20.968% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -1017,9 +1774,13 @@ For Linux setup instructions, see the main README and `tools/linux_env/`.
 
 ## The working loop
 
-1. Pick a target (see "Next targets" below).
+1. Pick a target — see "Next target — and what is known about the rest" above,
+   which is the only game-code target list. (The SDK list further down is
+   deprioritised.)
 2. Disassemble the region that contains it:
    `.\bin\dtk-windows-x86_64.exe elf disasm bin\dtkspl\obj\<auto_..._text.o> <out>`
+   — `bin/dtkspl` is authoritative for undone ranges, which is what you are
+   disassembling here; it is stale only for ranges already banked.
 3. Write the C, add a slice entry to `slices/wiimj2d.json`, add any call targets
    to `syms.txt`.
 4. `python configure.py; ninja`
@@ -1061,6 +1822,11 @@ For Linux setup instructions, see the main README and `tools/linux_env/`.
   to diagnosing from symptoms instead of doing this.
 
 ## Techniques established
+
+The newest set — the source-shape levers that closed bros and blockmain, stated
+symptom-first — is at the end of this section under "Code-generation levers from
+the bros/blockmain pair". It refines several of the entries below rather than
+replacing them, so read those first if a lever there points back at one.
 
 ### A one-word difference in a destructor is the last member's OFFSET, not `sizeof`
 
@@ -1461,78 +2227,6 @@ initialiser must be hoisted into a **named local first**. Written inline the cal
 is scheduled after the template copy and costs +7 instructions;
 `d_enemy_death.cpp` writes it the hoisted way.
 
-### Verify your verification tool — again
-
-`harness.py`'s pool-symbol normaliser was wrong in both directions and reported
-two already-byte-exact functions as failing. dtk names a pool object in the
-original `@71831_8042B7EC` (symbol plus address suffix) where a freshly compiled
-object has a bare `@21389`; collapsing both to one marker produced a spurious
-diff on **every** `.sdata2` reference. Worse, it erased *which* literal was
-referenced, so `0.0f` and `8.0f` compared equal and a wrong constant could pass.
-
-Fixed by numbering each distinct pool symbol by first appearance **per side**, so
-"the same literal twice" stays distinguishable from "two different literals".
-A caveat survives and is now printed with every match: this proves the *pattern*
-of references, not the values. Read the emitted constant and check it against the
-target's pool slot.
-
-### Verify your verification tool — a third time, and this was the worst
-
-The same comparator **erased branch destinations**. `extract` strips the byte
-column, then `ADDR_SUFFIX_INLINE` reduced both `.L_8005DB2C` and `.L_00000B38`
-to a bare `.L` — so two functions whose branches went to *different places*
-compared **equal**. Every loop, conditional and switch in the project was being
-diffed with its control flow invisible.
-
-Fixed in `7fe054f` by keeping the raw instruction word for local branches. Those
-are PC-relative and carry no relocation, so identical code always yields an
-identical word on both sides — exact, not heuristic.
-
-**The instructive part is the fix that did not work.** Numbering labels per side
-by first appearance — the same trick that fixed the pool symbols — *looks*
-right and fails, because it numbers by **use** order: swap two branches and both
-sides renumber identically, so the wrong-branch case still passes. It was caught
-only because the negative control was written before the fix was trusted.
-
-Nothing already banked was affected: re-running a landed TU gave an identical
-result, and every TU banked as matching passed the full-link MD5 check, which
-this defect could never fool. **That is the real lesson — the link is the only
-check that cannot be fooled by a bad comparator.** Per-function diffs are for
-iteration speed, not for proof.
-
-Three separate agents hit this independently and worked around it before the fix
-reached them. That is the second verification tool in this project to have
-silently lied; assume the third exists.
-
-### The fourth view: `diff_fn` is blind to source ORDER
-
-Not a bug — a structural limit, and worth stating because this project fails on
-emission order regularly (the lkuribo 32 bytes, the pakkun flush block, `downSE`).
-
-**`diff_fn` looks a function up by name and compares its contents. Moving a
-definition changes where it LANDS, not what it contains, so every per-function
-check passes on a file whose functions are in the wrong order.** All four of the
-usual views — canonicalised text, raw bytes, relocation names, pool values —
-share this blindness.
-
-So verify the **sequence** as its own check: extract your object's function
-order and compare it against the target's address order. Control it by
-deliberately moving one definition and confirming the check fires. On
-`d_a_en_jimen_pakkun_base.cpp` that control caught a misplaced `downSE` at
-position 36, and it is the only view that would have.
-
-### Resolve relocations to (section, offset), not just to names
-
-`canonicalise()` numbers pool symbols by first appearance **per side**, which
-means a function whose first pool reference points at a *different literal* on
-each side still compares equal. Comparing relocation *names* does not close this
-either, because the pool symbols are anonymous.
-
-The check that does close it: resolve every `.text` relocation to
-`(section, offset)` and compare those. The target embeds the address in names
-like `@73081_803536E0`, so both sides are resolvable. Done on the jimen TU for
-all 67 functions.
-
 ### Levers found while decompiling the rot/fireball/cursor batch
 
 Each of these was the single change that closed a function; all are zero- or
@@ -1658,6 +2352,237 @@ pops the callback stack inline at both sites rather than via a helper).
   field in place and reload it for the FIFO (`GXSetZCompLoc`). Read the target.
 - Library/SDK files want `-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int
   -RTTI off` (no `-inline noauto`), set per-slice via `compilerFlags`.
+
+### Code-generation levers from the bros/blockmain pair
+
+`d_a_en_bros_base.cpp` (99 functions) and `d_a_en_blockmain.cpp` (97 functions)
+both went byte-exact and linked this session. These are the source-shape levers
+that closed them, ordered by how often they will be the answer. Each is stated
+with the **symptom** first, because that is how you will be looking for it: you
+have a diff in front of you, not a hypothesis.
+
+Three of these were over-generalised on first report and had to be narrowed
+before they were true. The narrow statement is the one written down. Do not
+widen them again without a measurement.
+
+#### Declare the local at the TOP of the function body, assign it later
+
+**Symptom:** every instruction word is right and the callee-saved registers are
+rotated as a *group* — not one pair swapped, a whole cycle of three or four.
+
+**Fix:** move one local's *declaration* to the top of the function body while
+leaving its assignment where it is. Declaration site and assignment site are
+**independent axes**, and this is the axis nobody sweeps.
+
+The strongest single result of the session. On one 768-byte function this was
+the only thing that moved it after **~15 other variants** — declaration order,
+types, init placement, `static`, return type — had all sat stable at the wrong
+colouring. Hoisting one `int` declaration to the top rotated four registers into
+the target's arrangement: **84 differing lines to 0**. It closed a second
+function the same day, a pointer declared at the top and assigned inside an
+`else` branch, 6 diffs to 0.
+
+This refines "Declaration order controls register assignment" and "The GPR block
+rule" above rather than replacing them. Those describe how the leading
+declaration block is coloured; this says **which locals are in that block is
+decided by where they are declared, not where they get a value**. That is why a
+pure declaration-order sweep plateaus: it permutes the block without changing
+its membership.
+
+#### The same lever inside an inline helper — and the variable need not exist
+
+**Symptom:** a small residual gap (here, the session's last 4 instructions) in a
+function whose named locals you have already swept exhaustively, in registers
+that never move no matter how you reorder those locals.
+
+The contested register pair was not holding a source variable at all. It was an
+**anonymous compiler temp created by a sound-playing template**. Making it a
+named local inside the inline helper, and then top-declaring it there, moved the
+pair.
+
+Two things this proved, both reusable:
+
+- **The shape is per-instantiation.** The defect could be *relocated* from one
+  loop to the other at will, which is what established that the helper is
+  coloured afresh at each expansion. Two differently-shaped helpers were needed,
+  one per call site. If a helper is right at one call site and wrong at another,
+  that is expected — write two.
+- **The register the caller cannot reach is a temp.** Declaration order in the
+  caller permuted three other registers freely and never once touched the
+  contested pair. That asymmetry is the diagnostic: **if a sweep moves some
+  registers but provably never the ones you need, the ones you need are
+  allocated in a different pass, and the lever lives inside the inlined
+  callee.** Compare "all words identical, only the `0xNN(r1)` slots wrong",
+  which is the stack-slot form of the same two-pass behaviour.
+
+#### A value live across two calls belongs in an inline helper's BODY
+
+**Symptom:** the value is correctly kept in a non-volatile across both calls, but
+in the wrong non-volatile, and no amount of reordering the named locals reaches
+the target's register.
+
+**Fix:** compute it inside an inlined helper rather than in a named local at the
+call site. A named local colours into the **named-local band**; the same value
+computed inside an inlined helper colours **after the loop-invariant temps**,
+which is where the original puts it.
+
+One function went **33 differing instructions to 0** on this, after **~90
+variants** of declaration order, types and init placement had all stuck at 12.
+Ninety variants at a constant floor is the signal, not bad luck — see "Narrowing
+to 16 bits is a reassociation barrier" for the same lesson stated as a rule.
+
+**This interacts with "A named local pins a value across two calls" above, and
+the two are easy to read as contradicting.** They do not. The named local is
+what forces the value into a non-volatile at all; the *band* it lands in is
+decided by whether it is a named local or a helper-body temp. So: named local to
+make it live across the calls, helper body to choose which register that is. If
+your value is already surviving both calls and only the register is wrong, the
+first lever is done and the second is the one left.
+
+#### Binding a pointer to a named local at function scope flips r30/r31
+
+**Symptom:** `self` and the other object are in each other's registers, and
+nothing else differs.
+
+| Source form | Result |
+|---|---|
+| `X *p = (X *)self;` at the top of the function | `r31 = self` |
+| the same declared inside the guarded block | `r31 = other, r30 = self` |
+| cast written inline at the tail call | `r31 = other, r30 = self` |
+
+This was the **last diff in three separate functions**. Related, and worth
+trying in the same pass: **declaring a shared temp before the return variable
+flips which of them gets r4.**
+
+#### Argument and expression shape
+
+Each of these is zero-cost at the source level and changes register numbering or
+scheduling. They are cheap to try and should be exhausted before any
+register-colouring sweep.
+
+- **`mVec3_c pos(v.x, v.y, K)` and `mVec3_c pos(v); pos.z = K;` are not
+  interchangeable.** The 3-arg constructor allocates `x`→f1, `y`→f2. The
+  copy-then-assign form allocates **strictly right-to-left** (`z`→f0, `y`→f1,
+  `x`→f2) and dead-store-eliminates the `v.z` load. Worth 4 lines in each of
+  four functions; found after **14 probe variants**.
+- **Sharper form of the same thing: pass `mVec3_c` BY VALUE to a helper.**
+  By-value fixes the FPR numbering; `const mVec3_c &` plus a local copy gives
+  the reverse ordering and costs 4 lines. When the vector-argument FPRs are
+  reversed, change the parameter, not the caller.
+- **Force left-to-right evaluation by hoisting into a local.**
+  `f(a, a->field, a->call())` evaluates right-to-left and loads `field` *after*
+  the call. Writing `int x = a->field;` first puts it in a non-volatile before
+  the call — which is what creates the saved-register slot the original has.
+  Symptom: your version has one fewer non-volatile live across a call.
+- **Collapse an OR-accumulation into one expression, with the nesting written
+  explicitly.** `p = (a<<18) | ((b<<16) | (c|d|e));` took a function from **34
+  differing lines to 8**. Split across two statements, MWCC schedules the second
+  shift late and flips the operands of the final `or`.
+- **`v.y += K` is not `v.y = v.y + K`.** The compound form changes `fadds`
+  operand order *and* which register each `lfs` targets. Subtraction is
+  unaffected, being non-commutative — so one file can legitimately need `+=` on
+  one line and `= x - K` on the next. Do not normalise these for tidiness.
+  (Compare the `fmuls` rule above: there only the compound form gives
+  variable-first.)
+- **Two stores of the same member need an explicit temp**, or aliasing forces a
+  reload between them.
+
+#### Comparison and branch shape — read the mnemonic, then pick the source
+
+The target's compare sequence names the source form almost uniquely. Most of
+these are one word either way, so **the mnemonic is the only evidence** and
+guessing costs a whole rebuild.
+
+| Target emits | Write |
+|---|---|
+| `cror eq,lt,eq; beq` | `if (x <= 0.0f) return;` |
+| `ble` | `if (x > 0.0f) { … }` |
+| `subic.` | `if (count - 1 != 0)` |
+| `cmpwi` against 1 | `if (count != 1)` |
+| `cmpwi rN, 0` | `if (num != 0)` |
+| `beq END / bne +8 / b END` | `if (a == X \|\| a == Y) return;` — **not** two `beq END` |
+
+Three that need more than a table row:
+
+- **Float comparisons are written constant-first in this project's actor code**
+  — `0.0f != mSpeed.x` — **but only for `fcmpu` against a literal.**
+  Member-vs-member comparisons emit `fcmpo` and take the natural source order.
+  The wide version of this rule ("always constant-first") was reported once and
+  correctly pushed back on by two agents. Check which mnemonic the target uses
+  before applying it.
+- **Range optimisation of `a == X || a == Y` is type-dependent.** On a **u8**
+  MWCC folds it into `(u8)(a-1) <= 1`, and folds the equivalent `switch` the same
+  way; the explicit two-compare form (`cmplwi 1; beq; cmplwi 2; bne`) comes
+  **only** from the negated chain `if (!(a != A && a != B))`. On a **u32** there
+  is no folding at all — `a == X || a == Y` gives two explicit compares
+  directly. Ten formulations were probed to establish this. Read the target's
+  shape, then pick by the *type* of the operand.
+- **A `subi / clrlwi 24 / cmplwi / ble` sequence is not a switch.** It is an
+  explicit u8-truncated range test, `(u8)(v - LO) <= N`. A real `switch` over
+  the same cases emits `extsb` plus a signed `cmpwi` chain and is one word
+  longer.
+
+Two scope limits found the hard way:
+
+- **A dead branch in the target is a positive signal, not a mistake.**
+  `if (c) { x = k; } else { return; }` leaves an unreachable `b END` after
+  branch-to-branch simplification. When you see one, write the explicit
+  if/else — do not "fix" it into an early-return guard.
+- **Animation-frame checks are not a file-wide convention.** Some functions
+  compare `getFrame()` against a constant explicitly; others genuinely call
+  `fanm_c::checkFrame()`. Both occur in the same file. Match per function.
+
+#### Types and signatures that no instruction diff can see
+
+The dangerous class: **byte-identical code, wrong symbol.** Nothing that
+compares words, and no per-function diff, will fire on either of these. Only a
+comparison of *callee symbol names* catches them.
+
+- **`unsigned long` vs `u32` is load-bearing in declarations.** The former
+  mangles `Ul`, the latter `Ui`. The wrong choice names a symbol that does not
+  exist while emitting byte-identical instructions. **This bit twice in one
+  unit** — four member functions, and one external manager method.
+- **An inherited method the derived class also declares is hidden.**
+  `posMove()` had to be written `dBaseActor_c::posMove()` because `dEn_c`
+  declares its own. Same word count, wrong callee, invisible to raw-word
+  comparison.
+
+The rest cost words, so an ordinary diff will find them, but knowing the mapping
+saves the sweep:
+
+- **`u8` vs `bool` return on a table lookup is three words** — `bool` adds
+  `neg`/`or`/`srwi`.
+- **A member read as `lhz` must be declared unsigned.** `s16` emits `lha` and
+  costs a word.
+- **Use the inline accessor** (`getCenterX()`) rather than open-coding
+  `mPos.x + mCenterOffs.x`. The arithmetic is identical; the FPR numbering is
+  not. This is the same mechanism as the by-value `mVec3_c` rule above — an
+  inlined call is a colouring boundary — so when float registers are numbered
+  wrong, look for arithmetic you have open-coded that the original reached
+  through an accessor.
+- **Free functions with no in-TU caller must NOT be `static`.** Their callers
+  live in the RELs, so MWCC dead-strips the whole chain and emits an empty
+  object. If a slice compiles to nothing, check this before anything else.
+- **Hoist a non-zero constant out of a brace initialiser into a named local.**
+  85 words versus 68 here. This is the same defect as "A non-zero constant in a
+  brace initialiser can become a static template" above, recurring in a second
+  unit with different counts — treat that entry as confirmed, and reach for it
+  early whenever a brace initialiser comes out long.
+
+#### When to stop sweeping an axis
+
+The effort numbers above are the useful part of this section. A sweep that
+plateaus at a **constant non-zero** diff — ~90 variants stuck at 12, ~15
+variants stable at the wrong colouring, 14 probes on argument form, 10 on
+comparison shape — is telling you the axis is wrong, not that you have not
+enumerated hard enough. The plateau value is stable *because* every variant on
+that axis is equivalent to the compiler.
+
+When you hit one, change category rather than continue: declaration order →
+declaration *site*; call site → inlined callee body; named local → helper-body
+temp; source statement → operand type. That is the same conclusion "Narrowing to
+16 bits is a reassociation barrier" reached from a different direction, and it
+now has four more instances behind it.
 
 ## The register-allocation wall
 
@@ -1856,13 +2781,17 @@ Cracking the remaining rotation unlocks the largest fully-described run in the
 DOL (2,464 B, 15 functions, 100% header coverage — the whole `GXSetTevKColor` …
 `GXSetFogRangeAdj` stretch).
 
-## Next targets
+## SDK targets (deprioritised — see the register-allocation wall)
+
+**This is not the list to work from.** The game-code target is under "Next
+target — and what is known about the rest" near the top of this file; everything
+below is kept so the SDK analysis is not lost, not because it is next.
 
 `AXFreeVoice` landed. `AXAcquireVoice` is parked (see blockers), and because a
 slice must be one contiguous range, everything after it in `AXAlloc.c`
 (`AXSetVoicePriority`, and `__AXAuxInit` in `AXAux.c`) is gated behind it.
 
-### Game code in `wiimj2d.dol` — the better pool
+### Why game code in `wiimj2d.dol` is the better pool
 
 A survey of all ~90 undone game-code TUs corrected a long-standing assumption:
 **header completeness is mostly a *consequence* of a TU being finished, not a
@@ -1875,12 +2804,15 @@ reconstruction is mechanical (read member offsets off `lwz`/`stw` displacements)
 and it *terminates*, whereas the GPR wall above has no known source-level lever.
 
 Useful technique found: **`__sinit_<file>_cpp` symbols recover the original TU
-filenames** — 180 in the DOL, 129 of them in fully-undone TUs. Filenames are not
-guesswork.
+filenames** — 180 in the DOL, **126** of them now outside banked territory.
+Filenames are not guesswork.
 
 #### `d_wm_csvdata.cpp` — DONE, all 41 functions banked
 
-Landed in full: 8.475% → **8.624%** (+9,728 bytes), all five binaries verifying.
+Landed in full: 8.475% → **8.624%**, all five binaries verifying. (The banked
+slice spans **11,120 B**; the +9,728 figure recorded at the time was the sum of
+function sizes, not the span progress counts. Same span-vs-code distinction as
+blockmain's 13,232 / 12,604.)
 The 28 remaining functions were authored by six parallel agents and **every one
 matched**. This TU is closed; the notes below are kept for what they teach.
 
@@ -1996,41 +2928,36 @@ The `dCsvData_c` layout (0x16518) is fully reconstructed and verified in
 `include/game/bases/d_wm_csv_data.hpp`, so **the expensive shared prerequisite is
 already paid** — remaining functions read their offsets straight out of the header.
 
-**Next run: `ReadCsvData` → `ReadAction` (~7.4 KB, 12 functions).** Two things
-gate it:
+**How the whole-TU `.data` constraint was handled here**, because it recurs: the
+TU's data runs `0x8031C030`–`0x8031C144` and ends with `__vt__10dCsvData_c` at
+`0x8031C138`, so any partial set of literal-emitting functions puts the vtable at
+the wrong address. Functions can be **authored** in parallel (each diffs
+independently against the target disassembly) but must be **banked in a single
+integration pass**. One agent per function, then one integration commit.
 
-1. **Unblock `d_res_mng.hpp` first.** `ReadCsvData` calls the 3-argument
-   `dRes_c::getResSilently` through `dResMng_c::mRes`, which is private with no
-   3-arg wrapper. Adding two inline overloads is one line each and has no codegen
-   effect elsewhere (unused inlines), but nothing can proceed without it.
-2. **The `.data` pool must close in one pass.** The TU's data runs
-   `0x8031C030`–`0x8031C144` and ends with `__vt__10dCsvData_c` at `0x8031C138`.
-   Any partial set of literal-emitting functions puts the vtable at the wrong
-   address. So everything from `ReadCsvData` to `ReadAction` lands together, or
-   not at all.
-
-If fanning out agents here: functions can be **authored** in parallel (each diffs
-independently against the target disassembly), but they must be **banked in a
-single integration pass** because of that `.data` constraint. One agent per
-function, then one integration commit.
-
-Best game-code candidates (`fp%` = float instruction density; keep it low, since
-float/virtual-heavy code is where allocation actually goes wrong):
+**How the first three game-code TUs were chosen** — kept for the selection
+method, not as candidates. All three are DONE and banked (11,120 B, 8,384 B and
+4,576 B respectively). `fp%` is float instruction density; keeping it low was the
+selection rule, since float/virtual-heavy code is where allocation goes wrong:
 
 | Start | Bytes | Fn | TU | fp% | Notes |
 |---|---|---|---|---|---|
-| `0x800F3550` | 10,740 | 41 | `d_wm_csvdata.cpp` | **0%** | zero indirect calls, 6 ext classes all declared; cleanest object in the DOL |
-| `0x800E5510` | 7,380 | 36 | `d_tag_processor.cpp` | 19% | `.cpp` + header already exist, 0x30 done; extend backwards |
-| `0x8003C9F0` | 4,576 | 46 | `d_a_en_super_bigpile.cpp` | 9% | smallest complete enemy actor; prices the actor-TU pattern for ~40 near-identical siblings |
+| `0x800F3550` | 10,740 | 41 | `d_wm_csvdata.cpp` — **DONE** | **0%** | zero indirect calls, 6 ext classes all declared; cleanest object in the DOL |
+| `0x800E5510` | 7,380 | 36 | `d_tag_processor.cpp` — **DONE** | 19% | turned out to be 39 fns / 8,384 B |
+| `0x8003C9F0` | 4,576 | 46 | `d_a_en_super_bigpile.cpp` — **DONE** | 9% | smallest complete enemy actor; priced the actor-TU pattern |
 
-Avoid until the method is proven: `dBc_c` (fp 36%), `dBg_c` (39%), `daMask_c`
-(27%), `dWmSpline_c` (45%), `daYoshi_c` (55 external classes).
+Still worth avoiding on the same reasoning: `dBc_c` (fp 36%), `dBg_c` (39%),
+`daMask_c` (27%), `dWmSpline_c` (45%), `daYoshi_c` (55 external classes).
 
-Caveat worth keeping in view: ~99% of all remaining work is in the four `.rel`
-modules, which have 0.3–2.3% symbol coverage and are not workable until a symbol
-map exists. DOL game code is a 2.47 MB pool drained a few kB at a time.
+**Where the remaining work actually is.** The DOL holds **2,950,464 B** of the
+6,500,368-B total (45.4%) and is 20.968% done, so **~2.33 MB of undone work is
+DOL game code — roughly 40% of everything remaining, and it is workable today**.
+The other ~60% is in the four `.rel` modules, which have 0.3–2.3% symbol
+coverage and are not workable until a symbol map exists. (An earlier version of
+this note claimed ~99% of remaining work was in the RELs. That was wrong, and it
+argued against the pool this project's strategy depends on.)
 
-### SDK targets, ranked by expected cost:
+### The SDK list, ranked by expected cost
 
 1. **`GXLight.c` forward** — 1,560 B across 11 functions from `0x801C65B0`,
    contiguous with the current slice, all header-described. Gated on
@@ -2109,11 +3036,18 @@ void GXInitLightSpot(GXLightObj *light, f32 angle, GXSpotFn fn) {
 5. **`OSAlloc.c`** (368 B) — needs the `Heap` struct reconstructed; it is
    file-local, not in `OSAlloc.h`.
 
-### Finding new targets
+### The `find_targets.py` tool and its limits
 
-Rank candidates by whether the project's headers already describe everything the
-function touches. That predictor has been near-perfect: units with complete
-headers match first try, units needing new struct reconstruction do not.
+This is about the tool, not about what to do next — for that, see "Next target"
+near the top.
+
+For SDK code, rank candidates by whether the project's headers already describe
+everything the function touches. That predictor has been near-perfect there:
+units with complete headers match first try, units needing new struct
+reconstruction do not. **It does not transfer to game code** — every function in
+an actor TU is a class method, so the tool scores a perfectly workable actor at
+0% (verified on `d_a_en_hatena_balloon.cpp`). Header coverage is a *consequence*
+of a TU being finished, not a resource available beforehand.
 
 `tools/find_targets.py` automates this — it cross-references declarations in the
 project's include dirs against contiguous undecompiled runs in
