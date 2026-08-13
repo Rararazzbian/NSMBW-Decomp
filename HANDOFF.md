@@ -60,19 +60,25 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 ## Read this first if you are picking the project up
 
-- **Position: 10.267%** (667,384 / 6,500,368); `wiimj2d.dol` **20.139%**. Five
+- **Position: 10.453%** (679,496 / 6,500,368); `wiimj2d.dol` **20.535%**. Five
   binaries verify, tree clean.
-- **23 commits are unpushed.** Nothing has been pushed for the whole of the
+- **27 commits are unpushed.** Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
   last of those landed on its **first build** with no `keepWeak`, no `syms.txt`
   entry and no deadstrip diagnosis — the accumulated rules now front-load that
   work instead of paying for it in failed builds.
-- **Next target: `d_a_en_bros_base.cpp`** (12,072 B, 97 fns, largest clean
-  base). Bases unblock families, and the six-agent pipeline is well priced now.
-  `d_a_player_hio_ADJ.cpp` has one function left but it is a characterised dead
-  end on its current axis — see its entry below before spending on it.
+- **`d_a_en_bros_base.cpp` is DONE and linked — 99/99, 12,112 B**, the largest
+  clean base in the DOL. Every function byte-exact and the emitted symbol order
+  matching the target's address order. 58 of the 99 were bit-identical to code
+  already in the repo; the front stage found that before anyone wrote a line.
+- **Next target: `d_a_en_blockmain.cpp`** (12,392 B, 90 fns). It is the TU
+  immediately *below* bros in `.text`, so bros's now-banked lower bound is
+  blockmain's upper bound in every section — half its bounds work is
+  subtraction. `d_a_player_hio_ADJ.cpp` still has one function left but it is a
+  characterised dead end on its current axis; see its entry below before
+  spending on it.
 - **Do not re-derive the technique rules.** They cost ~4,000 agent tool calls to
   establish. The levers list and the two whole-binary failure signatures below
   are the most valuable part of this file.
@@ -139,12 +145,58 @@ Relaying findings between agents mid-flight paid repeatedly — a corrected vtab
 table, a comparator bug, a caller-set correction and an argument-ordering lever
 all reached agents while they were still working.
 
+### Trust the map's SCORES; verify its PROSE
+
+On bros the map's similarity scores were reliable throughout, but four of its
+written claims were wrong, and each was caught only because the authoring agent
+checked instead of trusting:
+
+- a named precedent for `calcMdl` that was not the closest body (lkuribo's was
+  bit-for-bit right where the map named another file);
+- **a "twin pair" that was two unrelated bodies** — `executeState_JumpEd` was
+  described as `executeState_Jump` minus a block; they share only a 14-word
+  head, and the high score was an unaligned differ lining up dissimilar tails;
+- a claim that the class has no texture-pattern animation when it plainly does;
+- a member described as a speed field that is actually `mCenterOffs.y`.
+
+Meanwhile the *other* two twin claims were real and each saved authoring a
+400-byte function outright. So the shortcut is worth taking — but **brief agents
+to treat "X is Y with a small change" as a hypothesis to test against the two
+target bodies before relying on it**, and to report back which way it went so
+the map can be corrected. A false twin costs more than no twin, because the
+agent spends its effort deriving instead of authoring.
+
+The same caution applies to your own relays. A finding true in one batch's
+functions ("this TU writes float comparisons constant-first") was relayed as a
+file-wide rule and two agents correctly pushed back: it holds for `fcmpu`
+against a literal, not for member-vs-member `fcmpo`, and the file does call
+`checkFrame()` elsewhere. Relay findings with their scope attached.
+
 ### Bounds are nearly free when both neighbours are banked
 
 If the TUs on either side are already banked and verifying, **your TU is exactly
 the gap between them in every section** — subtract, do not derive. All seven
 ranges for lkuribo fell straight out, including the `.ctors` index, which is
 otherwise the source of the one-byte whole-binary failure documented below.
+
+### An actor TU's `.text` begins on its own `baseID_*<10sStateID_c>` block
+
+The weak `baseID_<StateName><10sStateID_c>` instantiations belong to the object
+that **uses** them and are emitted at that object's **start**, not appended to
+the previous one. So a TU's `.text` low bound is the first `baseID_*` naming one
+of *its* states, not its first real function.
+
+Checked across **nine banked slices with zero counterexceptions** — bigpile,
+dpakkun_base, jimen_pakkun_base, kuribo_base, lkuribo_base, shell,
+super_bigpile, fireball_base and carry all begin exactly there. For bros this
+was worth 0x60 bytes at the low end, and getting it wrong breaks all five
+binaries.
+
+The cheapest way to settle it for a new TU: find the banked slice immediately
+*above* yours and read its `.text` low bound — if that address holds a
+`baseID_*`, the rule is confirmed for your neighbourhood and that address is
+also your upper bound. Doing this for bros converted four of seven section
+bounds into subtraction before any derivation started.
 
 ### Prove the class before anyone writes against it
 
@@ -245,12 +297,14 @@ those, ground truth is the `auto_*` objects or our own compiled output.
 
 ## Where the work now stands
 
-**10.267%** (667,384 / 6,500,368 bytes); `wiimj2d.dol` at **20.139%**. Five
-binaries verifying, working tree clean, **23 commits unpushed**.
+**10.453%** (679,496 / 6,500,368 bytes); `wiimj2d.dol` at **20.535%**. Five
+binaries verifying, working tree clean, **27 commits unpushed**.
 
-The 2026-08-12/13 session landed three TUs (~30,000 bytes), took the project
-past 10%, fixed one tool bug and added several rules below. The last TU
-(`d_a_en_jimen_pakkun_base.cpp`, 67/67) landed on its **first build** with no
+The 2026-08-12/13 session landed four TUs (~42,000 bytes), took the project
+past 10%, fixed two tool bugs and added several rules below. The most recent,
+`d_a_en_bros_base.cpp` (99/99, 12,112 B), is the largest clean base in the DOL;
+before it, `d_a_en_jimen_pakkun_base.cpp` (67/67) landed on its **first build**
+with no
 linker archaeology at all, which is the clearest sign the accumulated rules are
 now doing real work up front.
 
@@ -425,8 +479,8 @@ Sizes are `.text` bytes. Annotations are hard-won — read them before assigning
 |---|---|---|---|
 | `d_a_en_dfpakkun` | 10,624 | 72 | **DONE 33/33**, landed and linked |
 | `d_a_en_jimen_pakkun_base` | 8,848 | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
-| `d_a_en_bros_base` | 12,072 | 97 | **NEXT UP.** Largest clean base; a base unblocks its family |
-| `d_a_en_blockmain` | 12,392 | 90 | |
+| `d_a_en_bros_base` | 12,112 | 99 | **DONE 99/99**, landed and linked. Derives from `dEn_c` |
+| `d_a_en_blockmain` | 12,392 | 90 | **NEXT UP.** Sits directly below bros in `.text`, so bros's banked lower bound is its upper bound in every section |
 | `d_a_player_manager` | 10,764 | 68 | |
 | `d_a_player_demo_manager` | 9,276 | 51 | |
 | `d_a_bullet` | 7,316 | 73 | |
@@ -895,11 +949,13 @@ first; mark genuinely inferred names `@unofficial`.
 
 ## Current state
 
-- **Progress: 10.267%** (667,384 / 6,500,368 code bytes)
+- **Progress: 10.453%** (679,496 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
 - Development happens on **native Windows**; see "Local setup" below.
-- Last TU banked: `d_a_en_lkuribo_base.cpp` (58 fns, 9,456 bytes), whole and
-  byte-exact. Before that: `d_a_en_kuribo_base.cpp` (66), `d_a_en_door.cpp` (50),
+- Last TU banked: `d_a_en_bros_base.cpp` (99 fns, 12,112 bytes), whole and
+  byte-exact. Before that: `d_a_en_jimen_pakkun_base.cpp` (67),
+  `d_a_en_dfpakkun.cpp` (33), `d_a_en_dpakkun_base.cpp` (64),
+  `d_a_en_lkuribo_base.cpp` (58), `d_a_en_kuribo_base.cpp` (66), `d_a_en_door.cpp` (50),
   `d_a_fireball_base.cpp` (51), `d_a_en_net_nokonoko_base.cpp` (37),
   `d_a_enemy_ice.cpp` (37), `d_a_rot_objs_base.cpp` (31),
   `d_a_spin_child_base.cpp` (23), `d_a_sink_dokan.cpp` (14), `d_a_cursor.cpp` (9),
@@ -922,7 +978,7 @@ Per-binary:
 
 | Binary | Progress |
 |---|---|
-| `wiimj2d.dol` | 20.139% |
+| `wiimj2d.dol` | 20.535% |
 | `d_profileNP.rel` | 100% |
 | `d_enemiesNP.rel` | 2.056% |
 | `d_basesNP.rel` | 1.015% |
@@ -1005,6 +1061,80 @@ For Linux setup instructions, see the main README and `tools/linux_env/`.
   to diagnosing from symptoms instead of doing this.
 
 ## Techniques established
+
+### A one-word difference in a destructor is the last member's OFFSET, not `sizeof`
+
+The most expensive near-miss of the bros unit, and the one most likely to recur.
+
+`__dt__14daEnBrosBase_cFv` differs from `daEnLkuriboBase_c`'s destructor in
+**exactly one word out of fifty**: `addic. r31, r3, 0x724` where lkuribo has
+`0x5f0`. That reads irresistibly like an object size, and one agent reported it
+as `sizeof == 0x724`. It is not. `0x5F0` is lkuribo's **`mEffect` member
+offset** — lkuribo's actual `sizeof` is `0x770`. The word is the offset of the
+last destructible member in both. Bros's real `sizeof` is `0x850`.
+
+Why this matters more than an ordinary slip: **no per-function diff can catch
+it.** The destructor is byte-identical either way. It surfaces only when a
+derived actor is laid out, and this is a *base* class — every actor built on it
+would inherit the error. Had it gone in, the file would have matched 99/99 and
+still been wrong.
+
+**Rules.** When two agents disagree, resolve it against the repo, do not pick
+the more confident report. Confirm `sizeof` by *compiling* — a `char x[sizeof
+(T)];` probe disassembles to a `.skip` you can read directly — and cross-check
+against a banked sibling's member table rather than reasoning from one operand.
+And brief agents to **report contradictions rather than reconcile them**; that
+instruction is what surfaced this at all.
+
+### An inline destructor can misorder the whole trailing flush block
+
+Bros first assembled with all 99 functions byte-exact and the trailing cascade
+in the wrong order: `mEf::effect_c`'s destructor was hoisted to the front of the
+block, ahead of `~daEnBrosBase_c`. The unit was 99/99 on content and still would
+not have matched.
+
+The cause was **`virtual ~daEnBrosBase_c() {}` defined inline in the header.**
+Declaring it in the header and defining it out of line **last in the `.cpp`** —
+exactly the form `d_a_en_lkuribo_base.cpp` already uses — fixes it, and the
+whole cascade (`levelEffect_c` → `effect_c` → `nodeCallback_c` → `callback_c` →
+`anmChr_c` → `timingC` → `timingB`) then falls out in target order for free.
+
+Two things worth knowing before you spend time on this:
+
+- **`#include` order is NOT the lever here.** The misordering only appears once
+  `d_a_player.hpp` is in the include set, which makes it look like an include
+  problem. Sweeping that header through all nine positions changed nothing;
+  removing it is impossible (the unit needs `dAcPy_c`). The definition *site*
+  of the destructor is the lever, not the include order.
+- **A partial build lies about this.** Two agents independently reported the
+  tail order correct from their own subsets, and both were right about their
+  subsets. Flush order is a property of the *whole* TU and can only be checked
+  after assembly.
+
+The general form: if content matches but the trailing block is misordered, look
+at which functions are defined inline in the header versus out of line in the
+`.cpp`, and compare against a banked sibling with the same member shape.
+
+### Weak destructors of embedded effect members need `keepWeak`
+
+Bros's first full build failed all five binaries with `.text` exactly **0xE0
+short**. The cause: the weak copies of `mEf::levelEffect_c::~levelEffect_c` and
+`mEf::effect_c::~effect_c` were resolved from another object, leaving a
+224-byte hole — 0x80025F60 to 0x80026040 inclusive of alignment, exactly 0xE0.
+Adding both to `keepWeak` fixed it.
+
+The diagnosis path is worth copying, because the obvious first move is wrong.
+The DOL section table gives you the size delta but the first differing `.text`
+byte is meaningless — it sits near the start of the file, because a missing
+0xE0 shifts every later branch displacement. **Parse the linked
+`bin/wiimj2d.elf` symbol table and compare each function's address against
+`bin/dtk/wiimj2d_symbols.txt`**; the functions reported `ABSENT` inside your
+range are the hole, and the ones that shift by exactly the deficit bracket it.
+That took one step where byte-diffing took several and pointed nowhere.
+
+Note also what *didn't* help: six other weak symbols added to `keepWeak` on
+suspicion changed the output not at all, and were removed. Add `keepWeak`
+entries against evidence, not on principle — it is a global list.
 
 ### Data-section slicing
 
