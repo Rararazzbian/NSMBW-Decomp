@@ -147,7 +147,10 @@ public:
     int m_0c;            ///< 0x0c. Zeroed by init(); set to 10 in executeGoalDemo_Jump (countdown-style use).
     u32 mFlags;          ///< 0x10. CONFIRMED: dol/bases/d_a_player_base.cpp tests bit 2 (`& 4`) in setDemoGoal and bit 3 in executeDemoGoal_Pole.
     u32 mGoalType;       ///< 0x14. CONFIRMED: daPlBase_c::setDemoGoal stores its `u8 goalType` parameter here.
-    u32 m_18;             ///< 0x18. Zeroed by init(); read/written in executeGoalDemo_Jump/JumpCheck. Real field, not padding.
+    /// @brief 0x18. Zeroed by init(); read/written in executeGoalDemo_Jump and
+    /// JumpCheck. SIGNED: the target compares it against 0 signed, which would
+    /// be a tautology (and be optimised away) if it were unsigned. @unofficial
+    int m_18;
     int mGoalEntryCount; ///< 0x1c. isGoalAllEntryPlayer() compares `daPyMng_c::getEntryNum()` against this; getPoleBelowPlayer() uses it as a loop bound over mGoalDemoList. (Called m_1c in the pre-existing include/ header.)
     int mGoalDemoList[4]; ///< 0x20. setGoalDemoList(playerNo) linear-scans this for a free (-1) slot and stores playerNo there, returning the index -- matches the method name exactly.
     mVec3_c mGoalCenterPos; ///< 0x30. Three floats, zeroed by init(); read/written by calcGoalCenterPos() -- matches the method name exactly.

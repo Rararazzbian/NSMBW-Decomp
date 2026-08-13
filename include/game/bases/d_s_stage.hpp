@@ -24,6 +24,10 @@ public:
 
     static void play();
 
+    /// @brief Ends replay recording at the goal. @unofficial
+    /// Signature pinned by `ReplayEnd__10dScStage_cFv`.
+    static void ReplayEnd();
+
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
 
