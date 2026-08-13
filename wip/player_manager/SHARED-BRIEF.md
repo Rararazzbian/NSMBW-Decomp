@@ -12,11 +12,65 @@ specific to you.
 | `.text` | `0x58220-0x5AC30` | `0x8005E9A0`–`0x800613B0` | **Exact** — the auto object covers `0x8005E9A0..0x80061310` and `__sinit` occupies `0x80061310`+`0x9C` |
 | `.ctors` | `0x88-0x8c` | — | Exact by subtraction, one free slot |
 | `.bss` | `0x3790-0x4640` | `0x80355110`–`0x80355FC0` | Exact by subtraction |
-| `.sbss` | `0xe0-0x110` | — | Exact by subtraction |
-| `.sdata` | `0x280-0x290` | `0x80427C00`– | Exact by subtraction |
-| `.rodata` | contains `0x802EF608` | — | **Derive it** |
-| `.data` | `~0xb388-0xb3b8` | `0x80309A28`– | **Open question — not ours to answer, see below** |
-| `.sdata2` | `~0xa18-0xa20` | `0x8042BD78`– | **Open question — not ours to answer, see below** |
+| `.sbss` | **`0xe0-0x138`** | `0x80429F80`–`0x80429FD8` | **CORRECTED — see below** |
+| `.sdata` | `0x280-0x290` | `0x80427C00`–`0x80427C10` | Exact, self-attributing |
+| `.rodata` | `0x1628-0x1638` | `0x802EF608`–`0x802EF618` | Exact — **one object only** |
+| `.data` | `0xb388-0xb3b8` | `0x80309A28`–`0x80309A58` | **RESOLVED — ours. See below** |
+| `.sdata2` | `0x9e8-0xa20` | `0x8042BD48`–`0x8042BD80` | **RESOLVED — ours, and larger than first thought** |
+
+### Corrections and resolutions from the recon round — read these
+
+**`.sbss` was recorded wrong, by `0x28` bytes.** The handoff said `0xe0-0x110`
+(`0x30`). The true claim is **`0xe0-0x138` (`0x58`)**, `0x80429F80`–`0x80429FD8`.
+Two agents found this independently and the lead confirmed it directly against
+the symbol map. The section base is `0x80429EA0`. The high side is hard-bracketed:
+`d_actor.cpp`'s `.sbss` starts at exactly `0x80429FD8`. Nine members were missing
+from the old bound — `mPauseEnableInfo`, `mPauseDisable`, `mStopTimerInfo`,
+`mStopTimerInfoOld`, `mQuakeTrigger`, `mBgmState`, `mBonusNoCap`,
+`mKinopioCarryCount`, and one unnamed byte — **and every one of them is
+referenced by name from our own `.text`.** This is the exact "wrong small-data
+bound, never wrong code" signature that fails four of five binaries with
+thousands of scattered single-byte diffs. It is fixed now; do not re-derive it
+from the handoff.
+
+**`lbl_80429FD0` is ours, is unnamed, and nobody has claimed it.** One byte, the
+last object in our `.sbss`, read at `0x80060D04` (`lbz`) and written at
+`0x80060D30` (`stb`) — both inside `setHipAttackQuake`. It carries no class
+mangling, so it is a **file-scope static in the `.cpp`**, not a class member.
+Whoever owns `setHipAttackQuake` names and defines it. If nobody defines it the
+section comes up short.
+
+**`.data` and `.sdata2` ownership is RESOLVED, and the answer is "ours".** This
+was Codex's question; our own recon answered it first, with reference evidence
+rather than elimination. `fn_80060DB0` — unambiguously ours — directly loads both
+`.data` strings and the `.sdata2` float, and the three pool IDs are
+**consecutive**: `@81204` (`.data 0x80309A28`), `@81205` (`.sdata2 0x8042BD7C`),
+`@81206` (`.data 0x80309A3C`). Consecutive pool IDs spanning two sections is the
+strongest attribution evidence this project has. The strings are
+`"Wm_mr_vshipattack"` and `"Wm_mr_vshipattack_ind"`; the float is `3800.0f`.
+`.sdata2` is also **larger than the handoff thought** — `0x8042BD48`–`0x8042BD80`,
+six further objects referenced by `getPlayerSetPos`, `createCourseInit`,
+`deleteCullingYoshi` and `fn_8005F4D0`.
+
+**There are no sibling twins, and that is a real finding rather than a gap.**
+Every `daPyMng_c` static member has a name unique to this class, and the
+comparator only canonicalises *pool* references, not named globals — so no
+external function can ever canonicalise equal to one of ours. Seven candidate
+pairs were tested and rejected; they are listed in `MAP.md` so nobody chases
+them. **Author from the disassembly.** `MAP.md`'s per-function table carries the
+statement order, the callees and the members touched for all 67 functions, which
+is the substitute.
+
+**`.ctors` is a three-slot gap, not one free slot.** `0x802EDD60`/`64`/`68`, and
+**ours is the last of the three** (`0x802EDD68`), directly adjacent to
+`d_a_right_base.cpp`. The other two most plausibly belong to
+`d_a_player_hio_ADJ.cpp` and `d_a_player_demo_manager.cpp`.
+
+**New tool worth knowing: `bin/dtk/dtk_splits_wiimj2d.txt`.** An official
+per-source-file section range list for already-split TUs. Where one of our bounds
+is adjacent to an entry in it, that is address data about the *original*
+binary — the strongest bracketing evidence available, and better than any
+derivation by elimination. It is what settled `.sbss`, `.rodata` and `.bss`.
 
 Section bases: `.text` `0x80006780`, `.rodata` `0x802edfe0`, `.data` `0x802fe6a0`,
 `.bss` `0x80351980`, `.sdata` `0x80427980`, `.sdata2` `0x8042b360`,

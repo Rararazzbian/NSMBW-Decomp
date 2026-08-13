@@ -734,7 +734,24 @@ into it constantly, and this session added `mCourseInList` to it.
 The class is **all-static with no vtable**, so there is no layout to reconstruct
 — every static member is a named symbol with a size in the map. `.text`,
 `.ctors` (`0x88-0x8c`, one free slot), `.bss` (`0x3790-0x4640`), `.sbss`
-(`0xe0-0x110`) and `.sdata` (`0x280-0x290`) are exact by subtraction.
+(**`0xe0-0x138`**, corrected — the `0xe0-0x110` recorded here earlier was
+`0x28` bytes short) and `.sdata` (`0x280-0x290`) are exact by subtraction.
+
+**The `.sbss` error is worth reading even if you never touch this unit.** It was
+derived "by subtraction" and stated as exact, and it omitted nine members —
+`mPauseEnableInfo`, `mPauseDisable`, `mStopTimerInfo`, `mStopTimerInfoOld`,
+`mQuakeTrigger`, `mBgmState`, `mBonusNoCap`, `mKinopioCarryCount` and one unnamed
+byte — **every one of which our own `.text` references by name.** Two agents
+caught it independently. Had it survived to the link it would have shifted every
+following small-data object and failed four of five binaries with thousands of
+scattered single-byte diffs, with nothing wrong in any function.
+
+What actually settled it is a file this handoff never mentioned:
+**`bin/dtk/dtk_splits_wiimj2d.txt`**, an official per-source-file section range
+list for already-split TUs. `d_actor.cpp`'s `.sbss` starts at exactly
+`0x80429FD8`, which brackets our end hard. **Check that file before deriving any
+bound by subtraction or elimination** — it converts the weakest kind of claim
+into the strongest one, and it has been sitting in `bin/dtk/` the whole time.
 
 Three hazards, all pre-characterised:
 
@@ -791,7 +808,7 @@ real signatures** (not a `u8 mPad[]` stub) because the banked `d_a_player.cpp`
 and `d_a_player_base.cpp` call into it constantly. The class is **all-static
 with no vtable**, so there is no layout to reconstruct: every static member is a
 named symbol with a size in the map. `.text`, `.ctors` (`0x88-0x8c`, one free
-slot), `.bss` (`0x3790-0x4640`), `.sbss` (`0xe0-0x110`) and `.sdata`
+slot), `.bss` (`0x3790-0x4640`), `.sbss` (`0xe0-0x138`, corrected) and `.sdata`
 (`0x280-0x290`) are exact by subtraction. Three hazards keep it second:
 1. Its `.bss` embeds **four static class instances by value**, each with a 0xC
    dtor record: `mDemoManager` (0x98, type `daPyDemoMng_c` — **undone**),
