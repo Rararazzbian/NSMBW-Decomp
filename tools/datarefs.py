@@ -24,6 +24,15 @@ DFORM = {
     52: 'stfs', 53: 'stfsu', 54: 'stfd', 55: 'stfdu',
 }
 
+# Update-form loads/stores. These write the effective address back into rA, so
+# a later instruction chained off rA computes from the updated base. Failing to
+# model this is not a harmless approximation: one `lwzu r12, -0x1910(r5)` left
+# r5's old base in place and made the following seven `lwz N(r5)` resolve to
+# addresses ~0x1900 too high, i.e. into the NEXT translation unit's data. That
+# reads as a real cross-unit reference and will send you deriving the wrong
+# section bounds.
+UPDATE = frozenset((33, 35, 37, 39, 41, 43, 45, 49, 51, 53, 55))
+
 
 def load_dol(path):
     d = open(path, 'rb').read()
@@ -92,6 +101,15 @@ def scan(d, secs, start, end, sda, sda2):
                 # integer load writes rd
                 if op in (32, 33, 34, 35, 40, 41, 42, 43, 46):
                     hi.pop(rd, None)
+
+            # An update-form load/store writes the effective address back into
+            # rA. Track it, or every later reference chained off rA resolves
+            # against a stale base -- see the note on UPDATE above.
+            if op in UPDATE:
+                if resolved is not None:
+                    hi[ra] = resolved
+                else:
+                    hi.pop(ra, None)
         else:
             # crude clobber tracking for other rD-writing forms
             if op in (7, 8, 12, 13, 28, 29):     # mulli, subfic, addic(.), andi./andis.
