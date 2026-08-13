@@ -10,7 +10,10 @@
 
 class daPyMng_c {
 public:
-    static void changeItemKinopioPlrNo(int &);
+    /// @note Was declared `void`. The target sets r3 to 1 or 0 on both
+    /// converging return paths before `blr`. Proven by compiling both ways
+    /// against the target: only the `bool` form is byte-exact. @unofficial
+    static bool changeItemKinopioPlrNo(int &);
     static int getPlayerIndex(PLAYER_TYPE_e); ///< @unofficial
     static dAcPy_c *getPlayer(int);
     static dAcPy_c *getCtrlPlayer(int);
@@ -97,8 +100,12 @@ public:
     static void releaseYoshi(daPlBase_c *);
     static int getActScrollInfo();
     static int getScrollNum();
-    static bool addNum();
-    static bool decNum();
+    /// @note Both were declared `bool`. The target never sets r3 on any path.
+    /// Proven by compiling both ways: as `bool`, MWCC reserves r3 for the
+    /// return and allocates the `mNum` temp into r4, which mismatches; as
+    /// `void` it lands in r3 and is byte-exact. @unofficial
+    static void addNum();
+    static void decNum();
     static dAcPy_c *getItemKinopio();
     static int getCourseInListPlrNo(int);
     static int getCoinAll();
