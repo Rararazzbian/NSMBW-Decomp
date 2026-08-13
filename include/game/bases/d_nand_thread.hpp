@@ -13,7 +13,14 @@ namespace EGG {
 /// single virtual slot holding this class's destructor.
 class Mutex {
 public:
-    Mutex() {}
+    /// @note OSInitMutex must be called from THIS constructor, not from the
+    /// derived one. The target calls it between the base vtable store and the
+    /// derived vtable store, and only a call from here lands there; anywhere
+    /// else the two stores end up adjacent and MWCC drops the first as dead.
+    /// @unofficial An alternative layout gives EGG::Mutex the OSMutex member
+    /// outright (sizeof 0x1C) instead of taking a pointer to the derived
+    /// class's. Both produce the same object layout; only this one is measured.
+    Mutex(OSMutex *mutex) { OSInitMutex(mutex); }
     virtual ~Mutex() {}
 };
 
@@ -24,14 +31,8 @@ public:
 /// vtable at +0x00, passes +0x04 to OSInitMutex and +0x1C to OSInitCond.
 class mMutex : public EGG::Mutex {
 public:
-    /// @note The OSInit* calls belong HERE, not in dNandThread_c's constructor.
-    /// The target stores EGG::Mutex's vtable, calls OSInitMutex, stores mMutex's
-    /// own vtable, then calls OSInitCond. Hoisting them into the caller puts the
-    /// two vtable stores back to back and MWCC eliminates the first as dead.
-    mMutex() {
-        OSInitMutex(&mOSMutex);
-        OSInitCond(&mOSCond);
-    }
+    /// @note Only OSInitCond belongs here; OSInitMutex is the base's, see above.
+    mMutex() : EGG::Mutex(&mOSMutex) { OSInitCond(&mOSCond); }
     virtual ~mMutex() {}
 
     OSMutex mOSMutex; ///< [0x04] size 0x18
