@@ -65,7 +65,10 @@ public:
     bool checkCRC();
 
     bool cmdDeleteFile();
-    bool deleteFile();
+    /// @note `void`, not `bool`: declaring it bool costs four instructions the
+    /// target does not have. Nothing in run() witnesses this either way, so the
+    /// codegen is the only evidence there is.
+    void deleteFile();
 
     /// @note `long`, not `s32`. s32 is `signed int` here and would mangle as
     /// `Fi`; the symbol is `setNandError__13dNandThread_cFl`.
