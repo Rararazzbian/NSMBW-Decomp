@@ -51,6 +51,17 @@ public:
     static NOINLINE Exit_e getExitMode() { return m_exitMode; }
 
     static float getLoopPosX(float x);
+    /// @brief [.sbss:0x8042A4D0] Pointer into the "otehon" (demo playback)
+    /// clear-flag block; indexed with byte loads/stores at +0xb5..+0xb9.
+    /// The pointee type is not yet known -- `u8 *` is a placeholder that makes
+    /// those byte offsets indexable. @unofficial
+    static u8 *m_OtehonClear_p;
+
+    /// @brief [.sbss:0x8042A4DC] `int`, NOT `bool`: the target emits the full
+    /// neg/or/srwi canonicalisation tail when writing it, which MWCC would skip
+    /// for a bool destination. @unofficial
+    static int m_goalType;
+
     static u32 m_exeFrame;
     static int m_loopType;
     static PLAYER_TYPE_e mCollectionCoin[STAR_COIN_COUNT];

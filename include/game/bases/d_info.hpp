@@ -73,7 +73,11 @@ public:
     int m_54;
     u8 pad3[0x8];
     int m_60;
-    u8 pad4[0x8];
+    /// @brief [0x64] and [0x68]. Were hidden inside `pad4[0x8]`; both are plain
+    /// `stw`s of small int/bool-like values from daPyDemoMng_c::executeGoalCastle.
+    /// The pad is now fully accounted for, with nothing left over. @unofficial
+    int m_64;
+    int m_68;
     bool m_6c;
     u8 pad5[0x2c];
     int m_9c;
