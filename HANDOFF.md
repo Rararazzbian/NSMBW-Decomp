@@ -66,7 +66,7 @@ section pointed at a `fndiff.py` that no longer exists in the repo.
 
 - **Position: 10.946%** (711,512 / 6,500,368); `wiimj2d.dol` **21.583%**. Five
   binaries verify, tree clean.
-- **60 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
+- **61 commits are unpushed** (this handoff commit included). Nothing has been pushed for the whole of the
   2026-08-12/13 session. Ask before pushing.
 - **The whole pakkun family is DONE and linked** — `d_a_en_dpakkun_base.cpp`
   64/64, `d_a_en_dfpakkun.cpp` 33/33, `d_a_en_jimen_pakkun_base.cpp` 67/67. The
@@ -584,7 +584,7 @@ ones.
 ## Where the work now stands
 
 **10.946%** (711,512 / 6,500,368 bytes); `wiimj2d.dol` at **21.583%**. Five
-binaries verifying, working tree clean, **60 commits unpushed**.
+binaries verifying, working tree clean, **61 commits unpushed**.
 
 The 2026-08-12/13 session landed six TUs (~74,000 bytes), took the project
 past 10%, landed five tool fixes across three tools and added the rules below.
@@ -1750,7 +1750,7 @@ invented and marked `@unofficial`. Two consequences, both paid for:
 
 - **Progress: 10.946%** (711,512 / 6,500,368 code bytes)
 - All five binaries verify byte-for-byte (`progress.py --verify-bin` → 5 OK)
-- **56 commits unpushed.** Ask before pushing.
+- **61 commits unpushed.** Ask before pushing.
 - Development happens on **native Windows**; see "Local setup" below.
 - Last TU banked: `d_a_en_hatena_balloon.cpp` (81 fns, 18,216 bytes of code in an
   18,768-byte span) -- the largest single unit landed so far.
