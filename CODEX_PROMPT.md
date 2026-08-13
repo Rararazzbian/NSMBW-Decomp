@@ -1,100 +1,103 @@
-# Work order for Codex — round 8
+# Work order for Codex — round 9
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 8.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 9.
 
 Write results to **`CODEX_RESPONSE.md`** (overwrite). `CODEX_HANDOFF.md` is yours.
 
 ---
 
-## Round 7 verdict: you corrected your own error, and I had propagated it
+## Round 8 verdict: the diagnosis is right, the fix fails all five binaries
 
-Task A came back "no discrepancy — the prompt premise was stale", and you were
-right. `eggEffect.hpp` declares 37 virtuals, the vtable has 37 slots, they match
-one-to-one, and you checked git history to rule out an uncommitted working-tree
-edit before concluding it.
+**Your analysis is correct and I want to be clear about that first.** The two
+empty destructors in `include/lib/egg/math/eggVector.h` are exactly why
+`EGG::Vector2f` and `EGG::Vector3f` are non-trivially destructible; the `nw4r`
+bases have no destructor; the types would otherwise emit nothing; and the reason
+`mVec2_c`/`mVec3_c` behave differently is that they declare their *own*
+destructors, which do have weak copies at `0x80006DF0` and `0x8000FBF0`. That
+chain is right, and the "zero matches in the symbol map, zero" check is the
+correct evidence.
 
-**The 35-vs-37 claim was yours in round 6, and I built round 7's headline task on
-it without verifying the count myself.** That is my error more than yours — you
-flagged it as "need to audit" rather than as fact, and I promoted it to a
-certainty. Both of us should have counted before spending a round on it. Noted,
-and the lesson is mine to carry: **verify a count before building work on it,
-including a count from someone whose last four findings were right.**
-
-Task B is a clean negative: nothing in the constructors, the derived
-constructors, or the lifecycle virtuals touches `0x08..0x23`, so labelled padding
-stays. The `dPyEffect_c` observation is a genuinely subtle catch — that the base
-byte store at subobject `0x04` lands at original object offset `0x08` because of
-the embedded layout, and is therefore *not* evidence of a field at `0x08`. That
-is exactly the kind of thing that gets mistaken for a discovery.
-
----
-
-## Round 8: two symbols our TU emits that the retail binary does not have
-
-This is the **last structural unknown** blocking `d_a_player_manager.cpp`, and it
-is a proper puzzle rather than bookkeeping.
-
-Our assembled unit emits two functions:
+**But I applied it and the build fails all five binaries:**
 
 ```
-__dt__Q23EGG8Vector2fFv   (16 instructions)
-__dt__Q23EGG8Vector3fFv   (16 instructions)
+wiimj2d.dol      7f05a5dc244721651c2c196acb139ad5  (should be ddab9e5d...)
+d_profileNP.rel  fd55f24553af1b7c1400c4adb2da548b
+d_basesNP.rel    282fd56b04f3feb38ae2d6f6c2b953ec
+d_enemiesNP.rel  4d26ed49b9f684ea84b339df13e360cd
+d_en_bossNP.rel  d9145fe64610ff83e0daef392844a0e2
 ```
 
-**Neither appears anywhere in `bin/dtk/wiimj2d_symbols.txt`.** Not in our range,
-not in another TU, not as a weak symbol — nowhere. So the retail build never
-emitted them at all, and ours doing so is a real difference.
+Reverted; the tree is green again.
 
-### What is already established, so you do not redo it
+**All five failing, including three `.rel`s, means the change reaches far beyond
+the three functions you were targeting.** `EGG::Vector2f`/`Vector3f` are used
+across the whole codebase, and making them trivially destructible changes code in
+TUs that are already byte-exact. Your blast-radius search looked for arrays,
+deletes and explicit destructor calls — the right instinct, but the actual
+exposure is every *local variable* of those types in every banked TU, which that
+search would not surface.
 
-- They come from real **local variables** of those types inside `incCoin`,
-  `addRest` and `deleteCullingYoshi` — not from embedded-by-value members.
-- **The "declare the destructor without an inline body" fix does not work here.**
-  It was tested. Because these are locals, the compiler needs the *visible* body
-  to prove the destructor call can be elided; remove the body and it emits real
-  destructor calls that the target does not have. That trades an unreferenced
-  symbol for wrong bytes in three functions. Confirmed, twice, from both
-  directions. **Do not re-propose it.**
-- The target's own code does zero-cost stack float math in those functions, with
-  no constructor or destructor call at all.
-- Contrast: `__dt__7mVec2_cFv` **does** exist at `0x80006DF0` marked
-  `scope:weak`, so a flushed copy of *that* one is deduplicated by the linker and
-  costs nothing. The `EGG::Vector2f`/`Vector3f` ones have no such copy.
+**You flagged this exactly right.** You wrote "Offset-perturbing: YES — emitted
+text and linkage change, but object layout does not. full build verification
+needed", and you supplied a fallback. That is the correct confidence level and it
+is why applying it cost one build instead of a day. This is now the fourth
+shared-header change to fail five-binary verification on this project, and the
+fourth time the propose-don't-apply rule paid for itself.
 
-### The question
+**Take the fallback.** Two small orphan functions the linker places is a known,
+quantified cost — and the trial link has now priced it exactly: `.text` overflows
+its claim by `0x90`, of which `0x80` is those two destructors. Real, but bounded,
+and not worth breaking five binaries for.
 
-**Why does the original never emit them, when equivalent source does?**
+### One narrower idea, if you want to try once more
 
-Some possibilities worth weighing — and the list is not exhaustive, so do not
-feel confined to it:
+The failure is that the change is *global*. A change scoped to **our TU only**
+would not touch banked code. Is there a formulation inside
+`d_a_player_manager.cpp` — a different local type, a different expression shape
+in `incCoin` / `addRest` / `deleteCullingYoshi` — that avoids materialising an
+`EGG::Vector2f`/`Vector3f` local at all, and so never triggers the destructor?
 
-- The original's `EGG::Vector2f`/`Vector3f` may have **no user-declared
-  destructor at all**, making them trivially destructible, so nothing is ever
-  emitted. Check what `include/lib/egg/math/eggVector.hpp` (or wherever they
-  live) currently declares, and what the retail binary implies. A trivially
-  destructible type is the simplest explanation and the easiest to test.
-- The locals may not be of those types at all in the original — `mVec2_c` /
-  `mVec3_c` are the game-side types and *do* have weak copies. If our source
-  uses the EGG type where the original used the game type, that alone explains
-  it.
-- Some construct may make the destructor unnecessary — a union, a POD
-  aggregate, or plain scalars where we wrote a vector.
+Note what round 8 already established and do not re-litigate it: the target calls
+`cvtSndObjctPos(const mVec2_c &)`, so the parameter type **is** `mVec2_c`. The
+question is not what type is passed, but whether an EGG-typed temporary gets
+materialised on the way there.
 
-**A trivially destructible type emits nothing**, so if that is the answer the fix
-is a header change, and it is small. Test it in `scratch/` rather than reasoning
-about it: compile the three functions with each candidate type and see which
-produces no `__dt__` while keeping their bodies byte-identical against the target
-disassembly in `wip/player_manager/target_text.txt` (**read-only for you**).
+**Acceptance test is unchanged and strict**: the three function bodies must stay
+byte-identical against `wip/player_manager/target_text.txt`. A fix that removes
+the symbols but perturbs those three is worse than the problem. **If the answer
+is no, say so in one line and move to Task B** — this is a `0x80` optimisation on
+a unit that has bigger problems, and I would rather have Task B.
 
-That last clause is the acceptance test and it is not optional: a fix that
-removes the symbols but changes `incCoin`, `addRest` or `deleteCullingYoshi` is
-worse than the problem, because those three are among the unit's near-misses
-already.
+## Task B: the 23 near-misses, characterised as a group
 
-If the honest answer is "this cannot be removed without breaking the bodies",
-say so. Two small functions the linker may place harmlessly is a known,
-quantified cost, and the trial link will price it exactly. **That is a
-legitimate result** — see `AGENT_CONTEXT.md` §4.
+This is the bigger prize and it is where the unit actually stands or falls.
+
+`wip/player_manager/assembled.cpp` is **42 of 65 byte-exact**. The 23 that differ
+are individually documented across `wip/player_manager/BATCH1.md` … `BATCH8.md`.
+Nobody has yet looked at them **as a set**.
+
+Read the batch reports and produce a **taxonomy**: how many of the 23 fall into
+each failure class, and which functions are in each. Candidate classes, from what
+is already known:
+
+- **base-register / anchor artifacts** of isolated compilation, which should have
+  resolved at assembly and may already have
+- **register allocation only**, logic identical
+- **instruction count differs** — a real logic or shape difference
+- **scheduling only**, same instructions in a different order
+- **constant-folding differences** from the `.sdata` constants
+- anything that does not fit — those are the interesting ones
+
+**What I want out of it is a ranked attack order**, not fixes. Which class has
+the most members? Which has a known lever already recorded in
+`wip/player_manager/SHARED-BRIEF.md` (the frame-layout lever and the return-type
+lever are both there and both have paid)? Which functions are large enough that
+fixing one is worth more than fixing five small ones?
+
+`.text` overflows by `0x90` and `0x80` of that is the two destructors — so **the
+23 near-misses account for only about `0x10` of overflow between them.** Most are
+therefore same-size-but-different-bytes, which is a much more tractable problem
+than it sounds, and the taxonomy should confirm or refute that.
 
 ---
 
@@ -102,9 +105,9 @@ legitimate result** — see `AGENT_CONTEXT.md` §4.
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
-- **Do not touch** `wip/` (read `target_text.txt` freely, write nothing),
-  `HANDOFF.md`, `AGENT_CONTEXT.md`, `CODEX_PROMPT.md`, or any `GEMINI_*.md`.
-  Gemini is preparing `d_nand_thread.cpp` and `eggThread.h`; stay out of both.
+- **Do not touch** `wip/` (read the batch reports and `target_text.txt` freely,
+  write nothing), `HANDOFF.md`, `AGENT_CONTEXT.md`, `CODEX_PROMPT.md`, or any
+  `GEMINI_*.md`.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.

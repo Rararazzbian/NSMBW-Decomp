@@ -3367,51 +3367,84 @@ place, do not tidy:
   stopped changing. That is the register-allocation wall, and further guesses do
   not converge. Park it and move on; a function left in the filler costs nothing.
 
-## STATE: `d_a_player_manager.cpp` assembled, pre-trial-link
+## STATE: `d_a_player_manager.cpp` — assembled, trial-linked, parked in `wip/`
 
-`wip/player_manager/assembled.cpp` holds all 65 authored functions plus the
-static storage, in target address order. **42 of 65 byte-exact**, zero
-regressions from the batches' own numbers, verified with
-`tools/unit_verify.py --lo 0x8005E9A0 --hi 0x800613B0 --unit
-dol_bases_d_a_player_manager` (its target lives at
-`tools/auto_decomp/work/dol_bases_d_a_player_manager/target.txt`).
+**It links.** 42 of 65 functions byte-exact. The unit is NOT in the build; it
+lives in `wip/player_manager/assembled.cpp` with a full resume procedure in
+`wip/player_manager/TRIAL_LINK.md`. The tree is green, 5/5.
 
-### The next problem, and it is not the 23 near-misses
+### Trial-link result — the numbers that matter
 
-The unit **emits functions the target does not have.** These add bytes to
-`.text` and would shift the whole unit, and no per-function diff can see them:
+| Section | Compiled | Claim | Verdict |
+|---|---|---|---|
+| `.text` | `0x2AA0` | `0x2A10` | **+0x90 over** |
+| `.rodata` | `0x1A0` | `0x1A0` | exact |
+| `.sdata2` | `0x38` | `0x38` | exact |
+| `.ctors` | `0x4` | `0x4` | exact |
+| `.data`/`.bss`/`.sdata`/`.sbss` | — | — | 4–7 under = linker alignment, fine |
 
-| Emitted | Size | Status |
-|---|---|---|
-| `__dt__7mVec2_cFv`, `__dt__Q23EGG8Vector2fFv`, `__dt__Q23EGG8Vector3fFv` | 16 insns each | **Unexplained — start here** |
-| `getPlrNo__8dActor_cFv` | 2 | Weak copy; the real one is at `0x8001D200` in banked `d_actor.cpp` |
-| `isItemKinopio__7dAcPy_cFv` | 5 | Weak inline flush |
-| `executeLastAll__10daPlBase_cFv`, `executeLastPlayer__10daPlBase_cFv` | 1 each | Weak inline flushes |
-| `fn_8005f4d0__9daPyMng_cFP7mVec3_cii`, `fn_80060DB0__Fv` | 39, 78 | **Fine** — ours, just unnamed in the map |
+**`0x80` of the `0x90` overflow is two functions**: `__dt__Q23EGG8Vector2fFv` and
+`__dt__Q23EGG8Vector3fFv`, 16 instructions each, which appear **nowhere** in the
+retail symbol map. So the 23 remaining near-misses account for only ~`0x10`
+between them — most are same-size-but-different-bytes, which is tractable.
 
-Four more were already fixed: embedding `dPyEffect_c` by value made MWCC
-synthesise a constructor, which dragged in weak copies of `followEffect_c`'s,
-`mEf::effect_c`'s and `mVec3_c`'s ctors/dtors. **Declaring `dPyEffect_c();` and
-`dPyEffectMng_c();` without bodies fixed it** — the real ones are at `0x800D2AE0`
-and `0x800D2D10`. `__sinit` went from 52 instructions to 40 against a target of
-39. The same trick is the first thing to try on the three `__dt__` leftovers.
+**Do not try removing the two empty destructors from `eggVector.h`.** The
+diagnosis is right — they are what makes those types non-trivially destructible —
+but it was applied and **failed all five binaries**, including three `.rel`s.
+Those types have locals in banked TUs everywhere. Reverted. The fallback (accept
+two orphan functions) is the current position.
 
-**This is the general trap: giving a class a real member instead of a pad can
-make the compiler synthesise functions the original never emitted.** A more
-accurate header is not automatically a better one.
+### What the trial link found that nothing else could
 
-### A `.rodata` contradiction, unresolved
+Six undefined symbols, now pinned in `syms.txt`:
+`m_instance__14PauseManager_c`, `m_isCourseIn__10dScStage_c`,
+`__vt__12dAttention_c`, `__dt__12dAttention_cFv`, `__ct__14dPyEffectMng_cFv`,
+`__dt__14dPyEffectMng_cFv`. Every one is a consequence of a *correct* earlier
+decision — classes declared while their TUs stay undecompiled, and constructors
+deliberately left bodyless to stop MWCC synthesising weak copies.
 
-The bounds derivation says our `.rodata` claim is **one object**, `scModelTypeDt`
-at `0x802EF608`. But `createCourseInit`'s `scOfsX[4]`/`scOfsY[4]` compile into
-`.rodata` too, and the target has an unnamed `lbl_802EF5D8` (`0x20`) plus a
-pooled `@77211` (`0x10`) sitting immediately before `scModelTypeDt`. Two agents
-found this independently. If those three are ours the claim is `0x40` starting at
-`0x802EF5D8`, not `0x10` — and `@77211` between two of our objects is almost
-certainly ours too. **Settle this before the trial link**, because a short
-`.rodata` bound is the exact shape that fails four of five binaries.
+### Six wrong return types in one class
 
-### Then trial-link
+`fn_8005f4d0` (`void`→`bool`), `addNum()`/`decNum()` (`bool`→`void`),
+`changeItemKinopioPlrNo` (`void`→`bool`), `setYoshi` (`void`→`bool`),
+`decRest` (`bool`→`int`), `create` (`void`→`bool`). **CFront omits return types
+from mangling**, so no symbol comparison can catch one. All six were settled by
+compiling the function *both ways* and letting the diff decide. Declared `bool`,
+MWCC reserves `r3` and pushes a temp to `r4`; declared `void`, the temp lands in
+`r3`.
 
-Slice entry in, `nonMatching` cleared, and let the link speak. Do not wait for
-the 23 near-misses.
+## Levers and traps learned this session
+
+- **MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8**,
+  regardless of the type's alignment. A `char[0x18]` still gets 8-aligned. **So a
+  gap in `.bss` is not evidence about a class's members** — do not invent a
+  `double` to explain one.
+- **The base-anchor effect is real but needs two conditions**: the static
+  definitions present in the TU *and* enough arrays and uses. Then MWCC emits
+  `lis r31, ...bss.0` and reaches everything as offsets. **Write `mRest[i]`
+  normally; never pointer arithmetic off `m_playerID`** — that is a workaround for
+  isolated compilation and wrong in the assembled file.
+- **`extern` is load-bearing on an unreferenced `const` array.** At namespace
+  scope a `const` array has internal linkage and is stripped by `-O4`. This
+  fixed `lbl_802EF478` here and `l_speed_ratiodt` on the previous unit.
+- **`scope:weak` in the symbol map means the linker deduplicates it.** A TU
+  flushing a weak copy costs nothing. Check this before treating an extra emitted
+  function as a defect — four of six here were not defects.
+- **`(vtable size - 8) / 4` = the virtual count.** Cheapest possible check on a
+  reconstruction; it has caught extra virtuals twice.
+- **A more accurate header is not automatically a better one.** Giving
+  `dPyEffect_c` real members instead of a pad made MWCC synthesise a constructor
+  that dragged in four weak copies. Declaring `dPyEffect_c()` and
+  `dPyEffectMng_c()` *without bodies* fixed it.
+- **Declaring a virtual without a body breaks the link** if any TU emits the
+  vtable — a slot needs a real address. Tried on `executeLastPlayer`,
+  `executeLastAll`, `isItemKinopio`; reverted.
+- **`bin/dtk/dtk_splits_wiimj2d.txt`** — official per-file section ranges. Hard
+  bracketing. It caught a recorded `.sbss` bound that was `0x28` short. **Check
+  it before deriving any bound by subtraction or elimination.**
+- **Marking a slice `nonMatching` does NOT park a unit** — the source still
+  compiles and links and collides with the filler. Remove the source file.
+- **Do not rewrite `slices/wiimj2d.json` or `syms.txt` programmatically.**
+  Loading and re-dumping the JSON reformatted 1500 lines; a remove-and-restore
+  cycle churned 32 `syms.txt` lines out of position. Insert as text.
+

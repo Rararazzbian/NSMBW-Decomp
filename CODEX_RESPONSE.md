@@ -1,71 +1,55 @@
-# Codex Round 7 response
+# Round 8: two spurious emitted functions
 
-## Task A: EGG::Effect virtual count
+## the answer
 
-Result: no discrepancy. The prompt premise was stale.
+remove `~Vector2f() {}` and `~Vector3f() {}` from `include/lib/egg/math/eggVector.h`.
 
-- Evidence: `__vt__Q23EGG6Effect` is `.data:0x80350AF8` with size `0x9C`
-  (`bin/dtk/wiimj2d_symbols.txt`). `(0x9C - 8) / 4 = 37`.
-- The vtable object contains exactly 37 function-pointer slots after the two
-  leading zero words.
-- `include/lib/egg/util/eggEffect.hpp` declares 37 virtuals, including the
-  destructor, on lines 13-49.
-- Both lists match one-to-one in declaration order. No missing slots and no
-  pure-virtual stub.
-- The prior 35-vs-37 claim was a miscount. `git show 902a0b3b:include/lib/egg/util/eggEffect.hpp`
-  already has 37 virtuals, so this is not an uncommitted working-tree edit either.
+**why**: both declarations make EGG::Vector2f and EGG::Vector3f non-trivially destructible. the nw4r bases (VEC2/VEC3) have no destructor, so without the empty EGG declarations the types become trivially destructible and nothing is emitted.
 
-Impact: no insertion is needed, so no override in any derived class moves.
+**why the mVec ones stay dedupable**: mVec2_c and mVec3_c each declare their OWN `~mVec2_c() {}` / `~mVec3_c() {}` explicitly. those CAN dedupe because the retail binary has weak copies at 0x80006DF0 and 0x8000FBF0. the chain is: local mVec2_c triggers ~mVec2_c (dedupable, 0x40 bytes, matches retail) and ~EGG::Vector2f (no retail copy, orphaned). removing only the EGG-level destructors breaks the chain at the right point.
 
-Compiled: n/a, no edit proposed.
-Confidence: high.
-Offset-perturbing: NO, because nothing changes.
+## evidence
 
-## Task B: EGG::Effect 0x08..0x23
+- **eggVector.h**: `~Vector2f() {}` at line ~14, `~Vector3f() {}` at line ~39
+- **nw4r math_types.h**: VEC2/VEC3 have NO destructor. bases _VEC2/_VEC3 also none.
+- **wiimj2d_symbols.txt**: zero matches for `__dt__Q23EGG8Vector2fFv` or `__dt__Q23EGG8Vector3fFv`. zero.
+- **wiimj2d_symbols.txt**: `__dt__7mVec2_cFv` at 0x80006DF0 size 0x40 weak, `__dt__7mVec3_cFv` at 0x8000FBF0 size 0x40 weak.
+- **blast radius search**: no EGG::Vector2f or EGG::Vector3f arrays, deletes, or explicit dtor calls found anywhere in include/ or source/. only EGG::Sphere3f has a Vector3f value member, and that is a different TU.
+- **blame**: the three functions that trigger this (incCoin, addRest, deleteCullingYoshi) use mVec2_c locals, confirmed correct by subagent C (the target calls `cvtSndObjctPos(const mVec2_c&)` -- the parameter type IS mVec2_c in the symbol, not a POD alternative).
 
-Result: negative. Neither derived constructors nor the base lifecycle virtuals
-access the 28 bytes at `0x08..0x23`, so labelled padding remains the safest
-proposal.
+## scratch compile test
 
-Constructor angle:
-- `EGG::Effect::Effect()` writes `0x00` (vtable), `0x04` (byte zero), `0x24`
-  (u32 zero), `0x28` (u32 zero), and constructs embedded subobjects at `0x74`
-  (`nw4r::ef::HandleBase`) and `0x7C` (`ExEffectParam`).
-- `dEf::followEffect_c` ctor writes only its own vtable; no base-range stores.
-- `mEf::levelEffect_c` ctor writes only its own vtable and its own tail fields
-  `0x114..0x127`; no base-range stores.
-- `dPyEffect_c` is special: it invokes `EGG::Effect` at original offset `0x04`,
-  so the base byte store at subobject `0x04` lands at original object offset
-  `0x08`. That is an artifact of the embedded layout, not an independent
-  `EGG::Effect` field at `0x08`.
+copied eggVector.h into scratch, removed the two dtor lines, compiled the full draft with the shadow header via harness.compile_draft(extra_inc=...):
 
-Lifecycle angle:
-- `create`, `fade`, `followFade`, `kill`, `update`, and `reset`, plus the
-  `mEf::effect_c` helpers, have no load or store at `0x08..0x23`.
-- Confirmed accesses around it: `create` loads `0x24` (effect resource id);
-  `update` reads `0x28` flags and `0x2C..0x40` scale/translation; `reset`
-  clears `0x28` and sets scale to `1.0f` / translation to `0.0f`.
+- `__dt__Q23EGG8Vector2fFv`: **absent**
+- `__dt__Q23EGG8Vector3fFv`: **absent**
+- `__dt__7mVec2_cFv`: still emitted (good)
+- `__dt__7mVec3_cFv`: absent (the draft may not exercise mVec3_c in this TU)
 
-Proposal for `0x08..0x23`:
+the three near-miss functions showed register/instruction diffs in isolated compile. i believe this is an isolated-compile artifact -- the BATCHES/STATICS docs say standalone drafts of functions that depend on combined-TU static layout show false register differences. a full ninja rebuild should settle this.
 
-    u8 pad[0x1C]; // 0x08..0x23, unobserved; keep as labelled padding
+## proposal
 
-`sizeof` stays `0x114`.
+```
+--- a/include/lib/egg/math/eggVector.h
++++ b/include/lib/egg/math/eggVector.h
+@@ lines ~14 and ~39 @@
+-        ~Vector2f() {}
+...
+-        ~Vector3f() {}
+```
 
-Confidence: high that no examined function touches the region (negative result);
-low that a semantic field exists there. What would raise it is a broader
-cross-TU store scan or an upstream reference, both outside this round.
+remove exactly those two lines. nothing else changes. no constructors, no includes, no member layout.
 
-Offset-perturbing: NO, as long as the region stays one `0x1C` padding block.
+- **Compiled**: YES (scratch shadow-header test)
+- **Confidence**: high
+- **Offset-perturbing**: YES -- emitted text and linkage change, but object layout does not. full build verification needed.
+- **Fallback**: if the full-build still shows differences in incCoin/addRest/deleteCullingYoshi, the cost is two small orphan functions the linker places harmlessly. that is a known, quantified cost and a legitimate result per the acceptance criteria.
 
-## Files
+## subagents used
 
-- `scratch/codex_round7/task_a_vtable_audit.md`
-- `scratch/codex_round7/task_b_ctor_offsets.md`
-- `scratch/codex_round7/task_c_lifecycle_offsets.md`
+all three ran on gpt-5.6-luna (cheapest available). deepseek-v4-pro unavailable in this environment.
 
-## Notes for Claude
-
-- Task A is already settled in the working tree; nothing to apply.
-- Task B is a stronger negative than round 6: both requested angles found no
-  access, so keep `0x08..0x23` as padding unless another access source exists.
+- Newton: scratch compile + diff test -> `scratch/codex_round8/taskA_scratch_compile.md`
+- Schrodinger: evidence audit + blast radius search -> `scratch/codex_round8/taskB_evidence_audit.md`
+- Averroes: original-type alternative hypothesis -> `scratch/codex_round8/taskC_original_type.md`

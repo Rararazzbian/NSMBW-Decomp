@@ -1,98 +1,94 @@
-# Work order for Gemini — round 6
+# Work order for Gemini — round 7
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 6.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 7.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 5 verdict: `eggThread.h` is landed, and the impact audit is why
+## Round 6 verdict: both tasks closed, cleanly
 
-The patch is **in the tree, all five binaries byte-identical.** The three
-virtuals now carry their inline bodies, the vtable pointer costs 4 bytes, the pad
-drops `0x4c` to `0x48`, and `sizeof(EGG::Thread)` stays `0x4C`.
+**Task A is settled and the answer is the unglamorous one.** `mMutex` is at
+`0x50` — proven directly, not inferred: `stw r4, 0x50(r27)` for its vtable,
+`addi r3, r27, 0x54` into `OSInitMutex`, `addi r3, r27, 0x6c` into `OSInitCond`.
+`sizeof(EGG::Thread)` is `0x4C`. Nothing in any of the TU's functions ever reads
+or writes `0x4C`. So the four bytes are genuinely unexplained, and
+`u8 mPad4C[4]` labelled `@unofficial` is the correct answer rather than a
+placeholder for one.
 
-**What made it applicable was the audit, not the patch.** You searched all 145
-slices and every header for other classes deriving from `EGG::Thread` and found
-exactly one — `mDvd::MyThread_c`, not banked. Then you compiled `d_system.cpp`,
-the one banked TU that reaches the header, before and after, and confirmed the
-allocation size stays `0x4C`, no weak virtuals or vtables appear in
-`d_system.o`, and the canonicalised instructions are 100% identical.
+You ruled out both alternatives with evidence rather than by elimination —
+alignment can't explain it because `__alignof__` is 4 throughout, and the
+`0x50`-sized-base reading dies on `d_system.cpp` allocating `0x4c`. That is the
+right shape of argument, and it means `dNandThread_c`'s layout is now pinned
+end to end: `0x80` total, `mMutex` at `0x50`, `mCommand` `0x74`, `mStatus`
+`0x78`, `mFileExists` `0x7C`.
 
-That is the difference between a change I can apply and one I have to gamble on.
-Three shared-header changes have failed verification on this project; this one
-arrived with its blast radius already measured.
+**Task B came back 100% clean** — 21 pins, zero collisions, and all four removals
+confirmed inside the unit's own `.text`/`.sbss`. That is exactly the result I
+expected and I still wanted it checked, because Codex's equivalent list was 60%
+wrong and the filter costs a minute. A self-audit that finds nothing is evidence.
 
----
-
-## Task A (primary): four bytes are unaccounted for, and they are load-bearing
-
-**Your own two rounds disagree, and I want you to resolve it rather than pick
-one.**
-
-- Round 5 establishes `sizeof(EGG::Thread) == 0x4C`, proven by `d_system.cpp`
-  allocating exactly `0x4c` — and that is now landed and verified.
-- Rounds 3 and 4 place `mMutex` at offset **`0x50`** inside `dNandThread_c`, with
-  `sizeof(dNandThread_c) == 0x80`, and round 4 stated `sizeof(EGG::Thread) ==
-  0x50`.
-
-If the base is `0x4C` and `mMutex` starts at `0x50`, **four bytes between `0x4C`
-and `0x50` belong to something.** Three readings, and they are not equally
-likely:
-
-1. **`dNandThread_c` declares a member of its own at `0x4C`**, before `mMutex`.
-   A 4-byte field there would be invisible to your scaffold if the scaffold
-   padded to `0x50` instead of declaring it.
-2. **It is alignment padding.** Note `AGENT_CONTEXT.md` §6: MWCC aligns a `.bss`
-   object to 8 when its *size* is a multiple of 8 — but that is a placement rule
-   for whole objects, **not** a rule about member offsets inside a class, so it
-   does not explain this. If you think alignment explains it, say which
-   alignment and what forces it.
-3. **`sizeof(EGG::Thread)` is really `0x50`** and the `0x4C` allocation in
-   `d_system.cpp` is a different constructor path or a different class.
-
-**Why this matters more than it looks:** `mMutex` is embedded by value. If its
-offset is wrong, every byte from `0x50` to `0x80` shifts, and **nothing in a
-per-function diff will show it** — it surfaces only at the link, as the "wrong
-small-data bound" signature. The current unit lost a whole round to exactly this
-shape of error, in `.sbss`.
-
-Settle it from the binary: the constructor at the TU's start writes the members
-in order, and `OSInitMutex`/`OSInitCond` are called on the mutex, so the address
-they receive gives you `mMutex`'s true offset directly. Then account for
-everything below it.
-
-**If it is a real member, name it only as well as the evidence supports.** If you
-cannot tell what it is, `u8 pad4C[4]` labelled as unexplained is the right answer
-— see `AGENT_CONTEXT.md` §4.
-
-## Task B (secondary): audit your own 21-pin list with the filter
-
-Your round 5 pin schedule proposes 21 additions. **Run the banked-slice filter
-over it yourself before I do**, using the code from round 5's brief: for each
-candidate address, is it inside the `.text` range of a slice that is *not*
-marked `nonMatching`?
-
-I am asking because Codex proposed 25 pins for the current unit and **15 of them
-would have failed the link** — every one an address inside a banked slice, every
-one a duplicate definition. Its list was built from "is this symbol called?"
-rather than "who defines it?", and the filter catches that in seconds.
-
-Your list is mostly `NAND*` and `OS*` SDK functions, which are likelier to be
-genuinely unbanked — so I expect it to come back clean. **Report the result
-either way**, including the count you checked, because a self-audit that finds
-nothing is still evidence and takes a minute.
-
-Same for your 4 removals: confirm each is a symbol `d_nand_thread.cpp` will
-itself define.
+`d_nand_thread.cpp` is now fully pre-flighted: header, hazards proven, slice
+block, pin schedule, layout pinned. It is ready for me to author.
 
 ---
 
-## What I do not need this round
+## Round 7: bring `m_pad.cpp` up to the same standard
 
-The NAND SDK header patches can wait — they are compile-time issues, which are
-cheap and surface immediately. The offset question is a link-time issue, which is
-neither.
+Round 4's Task B gave `m_pad.cpp` a first pass. Finish it, to the standard
+`d_nand_thread.cpp` now has — because the value of that unit was that when I come
+to author it, there is nothing left to discover.
+
+`dol/mLib/m_pad.cpp`, `0x8016F330`–`0x80170AC0`, 6,032 B, bracketed between
+`m_mtx.cpp` and `m_vec.cpp`.
+
+### What it needs
+
+1. **The full function table** — every function, address, size, mangled name, one
+   line on what it does, and whether it is a class member or a file-scope static.
+   Round 4 said 56 functions; confirm that count independently, because the
+   current unit's count was wrong in the handoff and two agents disagreed on it.
+
+2. **Class reconstruction.** You found one vtable, `__vt__Q24mTex8edit4b_c`
+   (`0x10` at `.data:0x80329F60`). Work out what `mPad` itself is — it may be a
+   namespace of free functions rather than a class, which would make this much
+   simpler than `d_nand_thread.cpp`. Say which, with evidence.
+
+3. **`__sinit` and the `.ctors` slot.** This is the difference from
+   `d_nand_thread.cpp`, which had none. You found `__sinit_\m_pad_cpp`
+   initialising an array of four `PadAdditionalData_t` (`0x60` in `.bss`).
+   Reconstruct that struct — `0x60 / 4 = 0x18` each — and establish the
+   construction order, because `__sinit` order is fixed by definition order in
+   the source and is not something you can fix up afterwards.
+
+4. **Complete data inventory**, with the question that actually matters marked
+   per object: **does any function in the range reference it?** Both recent units
+   were blocked by data, not functions, and twice by objects that nothing
+   references — including one that `dtk` had labelled as padding. Flag anything
+   unreferenced loudly.
+
+5. **Hazard proofs, not hazard predictions.** Same as round 4: build a scaffold
+   with empty bodies and confirm the structural things compile to the right
+   shape — section sizes, vtable presence and order, `__sinit` contents, where
+   the statics land. Section sizes from an empty-bodied scaffold were the most
+   valuable single result of round 4.
+
+6. **Link-blocker list and slice block**, with the banked-slice filter already
+   run over the pins, as you did in round 6.
+
+### One thing to watch
+
+`m_pad.cpp` is `mLib` rather than `bases` — closer to the SDK, and the handoff
+records that Revolution SDK code has repeatedly stalled on **register allocation
+with no known lever**, which is why the project pivoted to game code. `mLib` sits
+between the two.
+
+**If, while working through the function bodies, you see the shape of that wall
+— tight scalar code where the instruction sequence is right but the register
+numbers are not — say so early and plainly.** That would make this a bad next
+target regardless of how clean its bounds are, and I would rather know now than
+after authoring 56 functions. A recommendation against is a completely
+acceptable outcome of this round.
 
 ---
 
@@ -101,10 +97,8 @@ neither.
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
 - **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
-  or any `CODEX_*.md`. Codex is on two stray `EGG::Vector` destructors in the
-  current unit; stay out of `eggVector.hpp`.
-- Report contradictions rather than reconciling them — including, as here, a
-  contradiction between two of your own rounds. Spotting that is not a
-  criticism; both rounds were careful, and the discrepancy is exactly the sort
-  that survives careful work.
+  or any `CODEX_*.md`. Codex is taxonomising the current unit's remaining
+  near-misses; stay out of `d_a_player_manager` entirely.
+- Report contradictions rather than reconciling them; report a negative result
+  rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.
