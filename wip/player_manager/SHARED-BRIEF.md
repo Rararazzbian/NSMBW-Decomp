@@ -203,6 +203,46 @@ this; **call it rather than reproducing the command line.** Then
 text **and** raw instruction words, plus a `--neg` negative control). It has a
 standing blind spot it prints on every run: **it cannot see a wrong constant.**
 
+## Two findings from batch B5, WITH THEIR SCOPE
+
+**1. A register-allocation-only difference may be unfixable in isolation on this
+unit, and that is not your failure.**
+
+B5's `getNumInGame` and `getCoinAll` are logic-verified — every load, compare,
+shift and add present, same order, same values — and differ from the target only
+in register allocation. The cause: **the target anchors several adjacent `.bss`
+arrays off `m_playerID`'s own relocation**, reaching `mPlayerEntry` as `0x40(r31)`
+and so on, *including arrays the function never reads*. A standalone draft cannot
+reproduce that, because MWCC only shares one base register across several objects
+once it can see all their definitions in a single TU — which does not happen
+until the lead assembles the file.
+
+**Scope, stated precisely:** this applies to functions that touch **two or more
+of the `.bss` arrays in the `0x80355110`–`0x803551D0` block**. It does not apply
+to functions touching one array, and it does not apply to `.sbss` scalars, which
+are `@sda21`-addressed and need no anchor.
+
+So: if a function is otherwise identical and differs only in which register holds
+what, **say so and stop** — do not restructure working logic to chase it. Report
+it as "logic-verified, register allocation only, suspected base-anchor artifact"
+and the lead will re-diff it after assembly. A forced match here would be a real
+regression.
+
+**2. Return types in the header are guesses, and three have now been wrong.**
+
+`fn_8005f4d0` (`void` → `bool`), `addNum()`/`decNum()` (`bool` → `void`), and
+`changeItemKinopioPlrNo` (`void` → `bool`). CFront omits return types from
+mangling, so no symbol comparison can ever catch one — the *only* signal is
+register allocation, and it is a real signal:
+
+> Declared `bool`, MWCC reserves `r3` for the eventual return and allocates a
+> temp into `r4`. Declared `void`, the same temp lands in `r3`.
+
+**The method that settled all three: compile the function BOTH ways and let the
+diff decide.** Do not argue it from the disassembly. If a function of yours is
+close but differs in low register numbers, try the other return type before you
+touch the logic. Report the finding; do not edit the shared header.
+
 ## House style
 
 `source/dol/bases/d_a_player.cpp` and `d_a_player_base.cpp` are the two banked

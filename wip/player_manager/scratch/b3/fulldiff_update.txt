@@ -1,0 +1,175 @@
+target len 174 draft len 173
+     0 | want: stwu r1, -0x30(r1)                             got: stwu r1, -0x30(r1)
+     1 | want: mflr r0                                        got: mflr r0
+     2 | want: stw r0, 0x34(r1)                               got: stw r0, 0x34(r1)
+     3 | want: addi r11, r1, 0x30                             got: addi r11, r1, 0x30
+     4 | want: bl _savegpr_27                                 got: bl _savegpr_27
+     5 | want: lis r31, m_playerID__9daPyMng_c@ha             got: lis r31, m_playerID__9daPyMng_c@ha
+     6 | want: addi r31, r31, m_playerID__9daPyMng_c@l        got: addi r31, r31, m_playerID__9daPyMng_c@l
+     7 | want: bl checkLastAlivePlayer__9daPyMng_cFv          got: bl checkLastAlivePlayer__9daPyMng_cFv
+     8 | want: bl getGameDisplay__10dScStage_cFv              got: bl getGameDisplay__10dScStage_cFv
+     9 | want: cmpwi r3, 0x0                                  got: cmpwi r3, 0x0
+    10 | want: mr r30, r3                                     got: mr r30, r3
+!!  11 | want: beq .L |41820054|                              got: beq .L |41820050|
+!!  12 | want: addi r7, r31, 0x80                             got: lwz r0, 0x80(r31)
+!!  13 | want: lwz r8, 0x80(r31)                              got: addi r4, r1, 0x8
+!!  14 | want: lwz r6, 0x4(r7)                                got: stw r0, 0x8(r1)
+!!  15 | want: addi r4, r1, 0x8                               got: lwz r0, 0x84(r31)
+!!  16 | want: lwz r5, 0x8(r7)                                got: stw r0, 0xc(r1)
+!!  17 | want: lwz r0, 0xc(r7)                                got: lwz r0, 0x88(r31)
+!!  18 | want: stw r8, 0x8(r1)                                got: stw r0, 0x10(r1)
+!!  19 | want: stw r6, 0xc(r1)                                got: lwz r0, 0x8c(r31)
+!!  20 | want: stw r5, 0x10(r1)                               got: stw r0, 0x14(r1)
+!!  21 | want: stw r0, 0x14(r1)                               got: bl setPlayNum__14dGameDisplay_cFPi
+!!  22 | want: bl setPlayNum__14dGameDisplay_cFPi             got: bl getCoinAll__9daPyMng_cFv
+!!  23 | want: bl getCoinAll__9daPyMng_cFv                    got: mr r4, r3
+!!  24 | want: mr r4, r3                                      got: mr r3, r30
+!!  25 | want: mr r3, r30                                     got: bl setCoinNum__14dGameDisplay_cFi
+!!  26 | want: bl setCoinNum__14dGameDisplay_cFi              got: lwz r4, mScore__9daPyMng_c@sda21(r0)
+!!  27 | want: lwz r4, mScore__9daPyMng_c@sda21(r0)           got: mr r3, r30
+!!  28 | want: mr r3, r30                                     got: bl setScore__14dGameDisplay_cFi
+!!  29 | want: bl setScore__14dGameDisplay_cFi                got: mr r3, r30
+!!  30 | want: mr r3, r30                                     got: bl setCollect__14dGameDisplay_cFv
+!!  31 | want: bl setCollect__14dGameDisplay_cFv              got: lwz r3, 0xa0(r31)
+!!  32 | want: addi r4, r31, 0xa0                             got: li r0, 0x0
+!!  33 | want: addi r5, r31, 0xb0                             got: cmpwi r3, 0x0
+!!  34 | want: lwz r3, 0x0(r4)                                got: beq .L |41820014|
+!!  35 | want: li r0, 0x0                                     got: subic. r3, r3, 0x1
+!!  36 | want: cmpwi r3, 0x0                                  got: stw r3, 0xa0(r31)
+!!  37 | want: beq .L |41820014|                              got: bne .L |40820008|
+!!  38 | want: subic. r3, r3, 0x1                             got: stw r0, 0xb0(r31)
+!!  39 | want: stw r3, 0x0(r4)                                got: lwz r3, 0xa4(r31)
+!!  40 | want: bne .L |40820008|                              got: addi r4, r31, 0xa4
+!!  41 | want: stw r0, 0x0(r5)                                got: addi r5, r31, 0xb4
+!!  42 | want: lwz r3, 0x4(r4)                                got: cmpwi r3, 0x0
+!!  43 | want: cmpwi r3, 0x0                                  got: beq .L |41820014|
+!!  44 | want: beq .L |41820014|                              got: subic. r3, r3, 0x1
+!!  45 | want: subic. r3, r3, 0x1                             got: stw r3, 0x0(r4)
+!!  46 | want: stw r3, 0x4(r4)                                got: bne .L |40820008|
+!!  47 | want: bne .L |40820008|                              got: stw r0, 0x0(r5)
+!!  48 | want: stw r0, 0x4(r5)                                got: lwz r3, 0x4(r4)
+!!  49 | want: lwz r3, 0x8(r4)                                got: cmpwi r3, 0x0
+!!  50 | want: cmpwi r3, 0x0                                  got: beq .L |41820014|
+!!  51 | want: beq .L |41820014|                              got: subic. r3, r3, 0x1
+!!  52 | want: subic. r3, r3, 0x1                             got: stw r3, 0x4(r4)
+!!  53 | want: stw r3, 0x8(r4)                                got: bne .L |40820008|
+!!  54 | want: bne .L |40820008|                              got: stw r0, 0x4(r5)
+!!  55 | want: stw r0, 0x8(r5)                                got: lwz r3, 0x8(r4)
+!!  56 | want: lwz r3, 0xc(r4)                                got: cmpwi r3, 0x0
+!!  57 | want: cmpwi r3, 0x0                                  got: beq .L |41820014|
+!!  58 | want: beq .L |41820014|                              got: subic. r3, r3, 0x1
+!!  59 | want: subic. r3, r3, 0x1                             got: stw r3, 0x8(r4)
+!!  60 | want: stw r3, 0xc(r4)                                got: bne .L |40820008|
+!!  61 | want: bne .L |40820008|                              got: stw r0, 0x8(r5)
+!!  62 | want: stw r0, 0xc(r5)                                got: lwz r3, m_instance__7dNext_c@sda21(r0)
+!!  63 | want: lwz r3, m_instance__7dNext_c@sda21(r0)         got: lbz r0, 0x18(r3)
+!!  64 | want: lbz r0, 0x18(r3)                               got: cmpwi r0, 0x0
+!!  65 | want: cmpwi r0, 0x0                                  got: beq .L |41820088|
+!!  66 | want: beq .L |41820088|                              got: li r29, 0x0
+    67 | want: li r28, 0x0                                    got: li r28, 0x0
+!!  68 | want: li r27, 0x0                                    got: li r30, 0x1
+!!  69 | want: li r30, 0x1                                    got: clrlwi r0, r28, 24
+!!  70 | want: clrlwi r0, r27, 24                             got: lbz r3, mActPlayerInfo__9daPyMng_c@sda21(r0)
+!!  71 | want: lbz r3, mActPlayerInfo__9daPyMng_c@sda21(r0)   got: slw r0, r30, r0
+!!  72 | want: slw r0, r30, r0                                got: and. r0, r3, r0
+!!  73 | want: and. r0, r3, r0                                got: beq .L |41820048|
+!!  74 | want: beq .L |41820048|                              got: mr r3, r28
+!!  75 | want: mr r3, r27                                     got: bl getCtrlPlayer__9daPyMng_cFi
+!!  76 | want: bl getCtrlPlayer__9daPyMng_cFi                 got: cmpwi r3, 0x0
+!!  77 | want: cmpwi r3, 0x0                                  got: mr r27, r3
+!!  78 | want: mr r29, r3                                     got: beq .L |41820034|
+!!  79 | want: beq .L |41820034|                              got: li r4, 0x64
+!!  80 | want: li r4, 0x64                                    got: bl isStatus__10daPlBase_cFi
+!!  81 | want: bl isStatus__10daPlBase_cFi                    got: cmpwi r3, 0x0
+!!  82 | want: cmpwi r3, 0x0                                  got: bne .L |40820024|
+!!  83 | want: bne .L |40820024|                              got: lwz r12, 0x60(r27)
+!!  84 | want: lwz r12, 0x60(r29)                             got: mr r3, r27
+!!  85 | want: mr r3, r29                                     got: lwz r12, 0x370(r12)
+!!  86 | want: lwz r12, 0x370(r12)                            got: mtctr r12
+!!  87 | want: mtctr r12                                      got: bctrl
+!!  88 | want: bctrl                                          got: cmpwi r3, 0x0
+!!  89 | want: cmpwi r3, 0x0                                  got: bne .L |40820008|
+!!  90 | want: bne .L |40820008|                              got: li r29, 0x1
+!!  91 | want: li r28, 0x1                                    got: addi r28, r28, 0x1
+!!  92 | want: addi r27, r27, 0x1                             got: cmpwi r28, 0x4
+!!  93 | want: cmpwi r27, 0x4                                 got: blt .L |4180FFA0|
+!!  94 | want: blt .L |4180FFA0|                              got: cmpwi r29, 0x0
+!!  95 | want: cmpwi r28, 0x0                                 got: bne .L |40820010|
+!!  96 | want: bne .L |40820010|                              got: lwz r3, m_instance__7dNext_c@sda21(r0)
+!!  97 | want: lwz r3, m_instance__7dNext_c@sda21(r0)         got: li r0, 0x0
+!!  98 | want: li r0, 0x0                                     got: sth r0, 0x1c(r3)
+!!  99 | want: sth r0, 0x1c(r3)                               got: lwz r3, m_instance__8dQuake_c@sda21(r0)
+!! 100 | want: lwz r3, m_instance__8dQuake_c@sda21(r0)        got: lwz r0, 0x30(r3)
+!! 101 | want: lwz r0, 0x30(r3)                               got: rlwinm. r0, r0, 0, 26, 28
+!! 102 | want: rlwinm. r0, r0, 0, 26, 28                      got: beq .L |41820088|
+!! 103 | want: beq .L |41820088|                              got: lwz r0, mQuakeTrigger__9daPyMng_c@sda21(r0)
+!! 104 | want: lwz r0, mQuakeTrigger__9daPyMng_c@sda21(r0)    got: cmpwi r0, 0x0
+!! 105 | want: cmpwi r0, 0x0                                  got: bne .L |40820070|
+!! 106 | want: bne .L |40820070|                              got: addi r27, r31, 0xb0
+!! 107 | want: addi r30, r31, 0xb0                            got: li r28, 0x0
+!! 108 | want: li r27, 0x0                                    got: mr r3, r28
+!! 109 | want: mr r3, r27                                     got: bl getCtrlPlayer__9daPyMng_cFi
+!! 110 | want: bl getCtrlPlayer__9daPyMng_cFi                 got: cmpwi r3, 0x0
+!! 111 | want: cmpwi r3, 0x0                                  got: beq .L |41820048|
+!! 112 | want: beq .L |41820048|                              got: lwz r4, m_instance__8dQuake_c@sda21(r0)
+!! 113 | want: lwz r4, m_instance__8dQuake_c@sda21(r0)        got: lwz r4, 0x30(r4)
+!! 114 | want: lwz r4, 0x30(r4)                               got: rlwinm. r0, r4, 0, 26, 26
+!! 115 | want: rlwinm. r0, r4, 0, 26, 26                      got: beq .L |41820010|
+!! 116 | want: beq .L |41820010|                              got: li r4, 0x8b
+!! 117 | want: li r4, 0x8b                                    got: bl onStatus__10daPlBase_cFi
+!! 118 | want: bl onStatus__10daPlBase_cFi                    got: b .L |4800002C|
+!! 119 | want: b .L |4800002C|                                got: rlwinm. r0, r4, 0, 28, 28
+!! 120 | want: rlwinm. r0, r4, 0, 28, 28                      got: beq .L |41820010|
+!! 121 | want: beq .L |41820010|                              got: li r4, 0x8c
+!! 122 | want: li r4, 0x8c                                    got: bl onStatus__10daPlBase_cFi
+!! 123 | want: bl onStatus__10daPlBase_cFi                    got: b .L |48000018|
+!! 124 | want: b .L |48000018|                                got: lwz r0, 0x0(r27)
+!! 125 | want: lwz r0, 0x0(r30)                               got: cmpwi r0, 0x0
+!! 126 | want: cmpwi r0, 0x0                                  got: bne .L |4082000C|
+!! 127 | want: bne .L |4082000C|                              got: li r4, 0x8c
+!! 128 | want: li r4, 0x8c                                    got: bl onStatus__10daPlBase_cFi
+!! 129 | want: bl onStatus__10daPlBase_cFi                    got: addi r28, r28, 0x1
+!! 130 | want: addi r27, r27, 0x1                             got: addi r27, r27, 0x4
+!! 131 | want: addi r30, r30, 0x4                             got: cmpwi r28, 0x4
+!! 132 | want: cmpwi r27, 0x4                                 got: blt .L |4180FFA0|
+!! 133 | want: blt .L |4180FFA0|                              got: li r0, 0x1
+!! 134 | want: li r0, 0x1                                     got: stw r0, mQuakeTrigger__9daPyMng_c@sda21(r0)
+!! 135 | want: stw r0, mQuakeTrigger__9daPyMng_c@sda21(r0)    got: b .L |4800000C|
+!! 136 | want: b .L |4800000C|                                got: li r0, 0x0
+!! 137 | want: li r0, 0x0                                     got: stw r0, mQuakeTrigger__9daPyMng_c@sda21(r0)
+!! 138 | want: stw r0, mQuakeTrigger__9daPyMng_c@sda21(r0)    got: lwz r0, mPauseDisable__9daPyMng_c@sda21(r0)
+!! 139 | want: lwz r0, mPauseDisable__9daPyMng_c@sda21(r0)    got: cmpwi r0, 0x0
+!! 140 | want: cmpwi r0, 0x0                                  got: bne .L |40820014|
+!! 141 | want: bne .L |40820014|                              got: lwz r3, m_instance__14PauseManager_c@sda21(r0)
+!! 142 | want: lwz r3, m_instance__14PauseManager_c@sda21(r0) got: li r4, 0x1
+!! 143 | want: li r4, 0x1                                     got: bl setPauseEnable__14PauseManager_cFb
+!! 144 | want: bl setPauseEnable__14PauseManager_cFb          got: b .L |48000010|
+!! 145 | want: b .L |48000010|                                got: lwz r3, m_instance__14PauseManager_c@sda21(r0)
+!! 146 | want: lwz r3, m_instance__14PauseManager_c@sda21(r0) got: li r4, 0x0
+!! 147 | want: li r4, 0x0                                     got: bl setPauseEnable__14PauseManager_cFb
+!! 148 | want: bl setPauseEnable__14PauseManager_cFb          got: lwz r3, mStopTimerInfo__9daPyMng_c@sda21(r0)
+!! 149 | want: lwz r3, mStopTimerInfo__9daPyMng_c@sda21(r0)   got: lwz r0, mStopTimerInfoOld__9daPyMng_c@sda21(r0)
+!! 150 | want: lwz r0, mStopTimerInfoOld__9daPyMng_c@sda21(r0) got: cmplw r3, r0
+!! 151 | want: cmpw r3, r0                                    got: beq .L |41820030|
+!! 152 | want: beq .L |41820030|                              got: cmpwi r3, 0x0
+!! 153 | want: cmpwi r3, 0x0                                  got: beq .L |41820014|
+!! 154 | want: beq .L |41820014|                              got: lwz r3, m_instance__13dStageTimer_c@sda21(r0)
+!! 155 | want: lwz r3, m_instance__13dStageTimer_c@sda21(r0)  got: li r0, 0x1
+!! 156 | want: li r0, 0x1                                     got: stb r0, 0xc(r3)
+!! 157 | want: stb r0, 0xc(r3)                                got: b .L |48000010|
+!! 158 | want: b .L |48000010|                                got: lwz r3, m_instance__13dStageTimer_c@sda21(r0)
+!! 159 | want: lwz r3, m_instance__13dStageTimer_c@sda21(r0)  got: li r0, 0x0
+!! 160 | want: li r0, 0x0                                     got: stb r0, 0xc(r3)
+!! 161 | want: stb r0, 0xc(r3)                                got: lwz r0, mStopTimerInfo__9daPyMng_c@sda21(r0)
+!! 162 | want: lwz r0, mStopTimerInfo__9daPyMng_c@sda21(r0)   got: stw r0, mStopTimerInfoOld__9daPyMng_c@sda21(r0)
+!! 163 | want: stw r0, mStopTimerInfoOld__9daPyMng_c@sda21(r0) got: lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+!! 164 | want: lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0) got: bl update__13daPyDemoMng_cFv
+!! 165 | want: bl update__13daPyDemoMng_cFv                   got: lwz r3, mspInstance__14dPyEffectMng_c@sda21(r0)
+!! 166 | want: lwz r3, mspInstance__14dPyEffectMng_c@sda21(r0) got: bl update__14dPyEffectMng_cFv
+!! 167 | want: bl update__14dPyEffectMng_cFv                  got: addi r11, r1, 0x30
+!! 168 | want: addi r11, r1, 0x30                             got: bl _restgpr_27
+!! 169 | want: bl _restgpr_27                                 got: lwz r0, 0x34(r1)
+!! 170 | want: lwz r0, 0x34(r1)                               got: mtlr r0
+!! 171 | want: mtlr r0                                        got: addi r1, r1, 0x30
+!! 172 | want: addi r1, r1, 0x30                              got: blr
+!! 173 | want: blr                                            got: <none>
