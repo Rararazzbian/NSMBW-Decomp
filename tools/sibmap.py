@@ -272,6 +272,7 @@ FAMILY = ('dol_bases_d_a_en_dpakkun', 'dol_bases_d_a_en_dpakkun_base',
           'dol_bases_d_a_en_bros_base', 'dol_bases_d_a_fireball_base',
           'dol_bases_d_a_en_eatcoin', 'dol_bases_d_a_en_blockmain',
           'dol_bases_d_a_fireball_player',
+          'dol_bases_d_a_en_hatena_balloon',
           # REL objects are tagged REL_<relpath>, not dol_bases_<file>.
           'REL_d_enemiesNP_bases_d_a_en_snake_block',
           'd_a_en_dpakkun')
