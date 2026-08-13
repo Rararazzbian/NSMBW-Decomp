@@ -274,6 +274,25 @@ diff decide.** Do not argue it from the disassembly. If a function of yours is
 close but differs in low register numbers, try the other return type before you
 touch the logic. Report the finding; do not edit the shared header.
 
+## Two levers from B2, both likely reusable
+
+**Declare one local at function scope rather than one per mutually-exclusive
+branch.** `createCourseInit` was spilling four FPRs with a `-0xe0` frame against
+the target's `-0xa0` and one FPR. Hoisting a single `mVec3_c pos;` to function
+scope, instead of declaring one inside each of the three branches, matched the
+prologue exactly and moved the function from 355 to 345 instructions **in one
+change**. If a function's frame size is wrong and its logic is not, look at where
+the locals are declared before touching anything else.
+
+**`getFileP` inlining is a size gauge, not a defect.** `createCourseInit` is the
+one place in the binary that *calls* `getFileP` rather than inlining it, and at
+345 of the target's 352 instructions the draft still inlines it. That is
+consistent — the caller has not yet reached the size at which MWCC's inline
+budget gives up. So the `bl` is a **signal that the function has reached its true
+shape**, and its absence means something is still missing or smaller. Do not
+reach for `NOINLINE`; it would break the ~20 banked call sites that legitimately
+inline it. Watch the call as a progress indicator instead.
+
 ## House style
 
 `source/dol/bases/d_a_player.cpp` and `d_a_player_base.cpp` are the two banked

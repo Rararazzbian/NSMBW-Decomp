@@ -95,7 +95,11 @@ public:
     static void courseIn();
     static void setDefaultParam();
     static int getPlayerCreateAction();
-    static void create(int plrNo, mVec3_c *pos, int type, u8 flag);
+    /// @note Was declared `void`; the body proves `bool`, the same evidence
+    /// pattern as fn_8005f4d0. Sixth wrong return type in this class --
+    /// CFront omits return types from mangling, so none of them were
+    /// visible to any symbol comparison. @unofficial
+    static bool create(int plrNo, mVec3_c *pos, int type, u8 flag);
     static void createCourseInit();
     static void update();
     static bool isPlayerPauseEnable(s8 plrNo);
