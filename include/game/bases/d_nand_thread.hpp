@@ -57,7 +57,7 @@ public:
     /// inferred from its shape: it is `cmdLoad` with a second argument, writing
     /// `mState = 4` where that writes 5, and `memcpy`ing 0x3FA0 bytes from the
     /// argument into `l_tmpSave` while holding the mutex.
-    bool cmdSave(void *saveData);
+    bool cmdSave(const void *saveData);
 
     /// @note `s32`, not `bool`: run() tests `save() == 2`, and createBanner()
     /// compares writeBanner()'s raw return against 0x72a0. Neither is a
