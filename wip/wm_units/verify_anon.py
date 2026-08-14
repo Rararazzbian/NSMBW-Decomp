@@ -42,7 +42,13 @@ import harness as H  # noqa: E402
 def norm(instructions):
     out = []
     for line in instructions:
-        line = re.sub(r'"?[A-Za-z_@$][^\s,]*"?@(ha|l|sda21|sda2)\b', r'SYM@\1', line)
+        # NOTE the leading '.' in the character class. MWCC names anonymous pool
+        # objects '...rodata.0', '...data.3' and so on -- they start with DOTS.
+        # An earlier version of this pattern did not accept them, so they never
+        # normalised and every __sinit reported 2 spurious differences. This
+        # tool then under-reported matches on exactly the functions it exists to
+        # check, and I corrected a peer's results with it twice before noticing.
+        line = re.sub(r'"?[.A-Za-z_@$][^\s,]*"?@(ha|l|sda21|sda2)\b', r'SYM@\1', line)
         line = re.sub(r'^(bl|b) \S+$', r'\1 SYM', line)
         line = re.sub(r'\.L_[0-9A-Fa-f]+', 'LBL', line)
         out.append(line)
