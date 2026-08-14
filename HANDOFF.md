@@ -916,6 +916,36 @@ therefore be the cause**, because any qualifier or width change would also move
 `existCheck` and break a function that already matches. Whatever produces the
 idiom is *local source structure inside `save`/`load`*.
 
+##### Deferred use materialises; immediate use folds — and it still is not enough
+
+Three agents have now worked this. The rule they extracted is new, general, and
+worth carrying to every unit:
+
+**MWCC materialises a `bool` into a register (`cntlzw`/`srwi.`) when its use is
+deferred across a block boundary from its definition. A `bool` that is branched
+on immediately folds to a plain `cmpwi`.** Proven on a plain, non-`volatile`,
+CSE-able field read, at full function scale as well as in isolated probes: in
+`bool ok = (e==0); bool busy = (e==6); if (!ok) { if (busy) ... }`, `busy`
+materialises and `ok` does not.
+
+**And the `volatile` family is closed, for a structural reason worth
+remembering.** The target shares ONE load between two materialisations. A
+`volatile` read is not CSE-able by definition, so it can buy the `cntlzw` or the
+shared load, never both — whether the qualifier sits on the declaration
+(CLOSE_A) or on the read as `*(volatile int *)&mError` (CLOSE_D). Two agents
+reached that wall from opposite directions. Do not send a third.
+
+**The evidence that defeats every hypothesis so far**, and the right place for
+the next person to start: `save`'s *first* check at `0x800CF238` materialises
+via `cntlzw` and **has no sibling at all** — nothing else is derived from that
+load, there is no second test, no deferred use, nothing for the deferred-use
+mechanism to apply to. Yet the target materialises. So the trigger is not
+opacity, not register pressure, not use-count, and not the chained pair. The
+open question is no longer "how is the load shared" but **"why does an isolated
+`mError == 0` guard materialise at all, from a plain field, when the identical
+guard in `existCheck` twenty lines away compiles to `cmpwi`?"** Nobody has a
+lead on that, and saying so is more useful than another variant sweep.
+
 **General rule, and it is worth applying beyond this unit: when two functions in
 one TU compile the same expression differently, every explanation that lives in
 the shared header is already dead.** Look for the difference locally. The

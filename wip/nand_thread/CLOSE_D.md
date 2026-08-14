@@ -418,6 +418,74 @@ header without a proposal, and a member function needs a declaration; the
 raw cast keeps this report's change entirely inside the two `.cpp` function
 bodies.
 
+## Addendum: the coordinator's "two live bools from one load" hypothesis, tested exhaustively
+
+The coordinator argued the volatile-based route is structurally exhausted
+(agreed -- a volatile read is by definition not CSE-able, so it can produce
+`cntlzw` or the shared load but never both) and proposed the untried
+alternative: capture `mError` into a **plain** `int` once, then compute
+**both** the `==0` and `==6` bools from that one capture *before* branching,
+so both are simultaneously live. Tested exhaustively; the mechanism is real
+but does not close the residual, for a specific, now-well-evidenced reason:
+it only ever explains the *second*, deferred-use test, never the first.
+
+### The result: a genuine new mechanism, but it materialises the wrong half
+
+All probes below use a **completely plain, non-volatile** field access --
+no cast, no header change, exactly as requested.
+
+| # | Shape | Result |
+|---|---|---|
+| DualA | `int e=mError; bool ok=(e==0); bool busy=(e==6); if(!ok){ if(busy){...} return1;} ...` (both declared eagerly, before the branch, nested-if control flow) | `ok` -> plain `cmpwi`+`beq`. `busy` -> **materialises**, `cntlzw`+`srwi` (no dot) + a separate `cmpwi` to consume it later. ONE load. |
+| DualC | same as DualA, declaration order swapped (`busy` before `ok`) | identical codegen to DualA -- declaration order doesn't matter, only use-site position does |
+| DualG | three bools (`ok`, `busy`, `corrupt`) from one capture, use-count test the coordinator asked for | `ok` (immediate branch) -> still plain `cmpwi`. `busy` and `corrupt` (both deferred, used inside the nested block) -> both materialise. Confirms the trigger is "does this bool's use cross a block boundary from its definition," not use-count. |
+| DualD | `if (!ok & busy) {...} if (!ok) return1; ...` (coordinator's bitwise-AND suggestion, forces both operands evaluated as values, not short-circuited) | **Both** `ok` and `busy` materialise via `cntlzw`+`srwi.`/`srwi`, from one load. The only shape found that gets `ok` itself to materialise from a plain read. |
+| save_dualtest.cpp | DualA's pattern applied to the **real, full-size `save()`** (register pressure / function scale ruled out as the missing ingredient) | Identical result to the isolated DualA probe: `ok2` plain `cmpwi`, `eq6` materialises. Confirms probe scale was never the issue. |
+| Split-single | `int rawVal = *(volatile int*)&mError; bool ok=(rawVal==0); if(!ok) return1;` -- does opacity survive being captured into a plain local for a SINGLE use (not even reused)? | **No.** Collapses straight to `cmpwi`, exactly like an un-cast read. Opacity requires the volatile read to be lexically inside the comparison expression itself; splitting it into "read, then compare" loses it even with only one consumer. This closes off any read-once-materialise-twice hybrid. |
+
+### Why this doesn't close the gap
+
+1. **DualD is the only shape that materialises both from one load, and it
+   doesn't match target.** It computes `busy` unconditionally (even on the
+   `ok`-true path, where target computes nothing extra), and needs an extra
+   `cmpwi` to consume `busy`'s value because its `srwi` (no dot, computed
+   speculatively before it's known to be needed) can't leave usable flags
+   across the earlier branch. That's strictly more instructions than
+   target's lazy, sequential form, in the common case.
+2. **Every lazy, nested-if shape (matching target's actual control flow
+   exactly) that keeps the read plain gives `ok` as `cmpwi`, full stop** --
+   DualA, DualC, DualG, and the real-function `save_dualtest.cpp` agree.
+   `ok`'s only consumer is the branch immediately following it; nothing
+   about eagerness, sibling count, or function scale changes that a
+   same-block define-then-branch on a provably-plain value folds.
+3. **Target's `ok`-equivalent test materialises even when there is no
+   sibling at all.** `save()`'s very first check (`0x800CF238`, `ok1`) is
+   not part of a chain -- there is no `==6` test anywhere near it, nothing
+   else derived from that load needs to survive anything -- and target still
+   emits `cntlzw`+`srwi.` for it. The same is true of `ok5`/`ok6` and their
+   `load()` equivalents. The "value must stay live across a block" story has
+   nothing to explain there, yet target materialises anyway. This is direct,
+   already-in-hand counter-evidence that a plain, CSE-able read cannot be
+   the whole story -- confirmed by every one of `EC`/`F`/`G` (this report,
+   earlier section) plus `existCheck`'s own already-matching source, all of
+   which keep an immediately-branched plain-field test at `cmpwi`.
+
+**Conclusion, stated plainly per the coordinator's request**: the two-live-
+bools mechanism is real and is a genuinely new, correct finding -- a plain,
+non-volatile read *can* materialise via `cntlzw` when its consumer is
+deferred across a block boundary, which is new information about MWCC that
+neither CLOSE_A nor this report's earlier sections had. But it is not
+sufficient, alone or combined with anything tried, to reproduce target's
+bytes: it never materialises the *first* test of a chain in target's
+sequential, lazy shape, and target materialises standalone tests that have
+no sibling for the mechanism to apply to at all. The residual is not solved
+and I'm not aware of a remaining untried shape; treating it as reconfirmed
+closed unless someone has a fundamentally different angle on the standalone
+case specifically (why does an isolated `mError==0` guard with literally
+nothing else touching the load materialise in target, using a plain field
+and no adjacent chain?) -- that question, not the chained-load-sharing one,
+is now the sharpest open lead if anyone wants to keep pursuing this.
+
 ## Answering the prompt's specific questions
 
 - **Is the header-volatile proposal wrong?** Yes, confirmed independently:
