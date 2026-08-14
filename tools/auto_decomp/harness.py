@@ -40,6 +40,34 @@ DTK = os.path.join(ROOT, 'bin', 'dtk-windows-x86_64.exe')
 CFLAGS = ['-c', '-proc', 'gekko', '-fp', 'hard', '-O4', '-inline', 'noauto',
           '-Cpp_exceptions', 'off', '-enum', 'int', '-RTTI', 'off', '-ipa', 'file',
           '-enc', 'SJIS', '-DREVOLUTION', '-I-']
+
+# The DOL and the RELs are NOT built with the same flags, and compiling a REL
+# unit with the DOL's set silently produces a different program.
+#
+#   wiimj2d   -O4    (small data ON)
+#   d_basesNP -O4,p -sdata 0 -sdata2 0 -char signed
+#
+# `-O4,p` is a different optimisation mode and `-sdata 0 -sdata2 0` disables
+# @sda21 addressing outright, so any REL function touching a float literal or a
+# small global diffs for reasons that have nothing to do with its source. This
+# went unnoticed for a long time and cost at least one peer round: a unit was
+# reported at 21 of 21 matches and measured at 8 of 9 and 5 of 11, against
+# drafts built with the wrong flags throughout.
+#
+# Always pass `module=` for REL work. The flags are read from the slice file so
+# they cannot drift from what the real build uses.
+_FLAG_CACHE = {}
+
+
+def flags_for(module='wiimj2d'):
+    """Compiler flags for a module, read from its slice file's meta block."""
+    if module not in _FLAG_CACHE:
+        path = os.path.join(ROOT, 'slices', module + '.json')
+        with open(path, encoding='utf-8') as fh:
+            meta = json.load(fh)['meta']
+        _FLAG_CACHE[module] = (['-c'] + meta['defaultCompilerFlags'].split()
+                               + ['-DREVOLUTION', '-I-'])
+    return list(_FLAG_CACHE[module])
 INCLUDES = ['include', 'include/lib', 'include/lib/MSL', 'include/lib/MSL/internal',
             'include/lib/revolution/BTE/include', 'include/lib/revolution/BTE/stack/include',
             'include/lib/revolution/BTE/stack/btm', 'include/lib/revolution/BTE/bta/include',
@@ -104,8 +132,11 @@ def canonicalise(lines):
 
 # ---------------------------------------------------------------- build & diff
 
-def compile_draft(src, obj, extra_inc=()):
-    args = [MWCC] + CFLAGS + [src, '-o', obj]
+def compile_draft(src, obj, extra_inc=(), module='wiimj2d'):
+    """Compile a draft. Pass module='d_basesNP' (etc.) for REL units -- their
+    flags differ from the DOL's and the wrong set compiles a different program.
+    See flags_for()."""
+    args = [MWCC] + flags_for(module) + [src, '-o', obj]
     for inc in list(extra_inc) + INCLUDES:
         args += ['-i', inc.replace('/', os.sep)]
     p = subprocess.run(args, cwd=ROOT, capture_output=True, text=True)

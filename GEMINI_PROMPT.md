@@ -52,6 +52,40 @@ anonymous in the target map, so the name is free. But the register is `r4` in
 the target and `r3` in the draft, and the two stores are in the opposite order.
 That is four differing instructions, and it is a near-miss, not a match.
 
+### Correction, added after I wrote the above: a large part of that gap was MY tooling
+
+Before you act on the numbers above, know that I have since found and fixed a
+defect in `tools/auto_decomp/harness.py` that was depressing your results.
+
+**`compile_draft` hardcoded the DOL's compiler flags and applied them to REL
+units too.** The two are not the same:
+
+```
+wiimj2d    -O4                                        (small data ON)
+d_basesNP  -O4,p  -sdata 0  -sdata2 0  -char signed
+```
+
+`-O4,p` is a different optimisation mode, and `-sdata 0 -sdata2 0` disables
+`@sda21` addressing outright — so **every REL function touching a float literal
+or a small global diffed for reasons that had nothing to do with its source.**
+
+Recompiling your own unchanged drafts with the correct flags:
+
+| unit | as I measured it | with correct flags |
+|---|---|---|
+| `d_a_wm_grid.cpp` | 8/9, last fn 31 differing | 8/9, last fn **5 differing** |
+| `d_a_wm_tower.cpp` | **5/11** | **8/11** |
+
+`create`, `execute`, `createModel` and `calcModel` in tower all match once the
+flags are right. So the source was better than the measurement, and the fault
+was mine. `compile_draft` now takes `module=` and reads flags from the slice
+file; pass `module='d_basesNP'` for these units. The DOL path is byte-identical
+to before, so nothing else is affected.
+
+**The 21-of-21 claim was still wrong**, and the reason below still stands — but
+the true figures are 8/9 and 8/11, not 8/9 and 5/11, and the residuals are near
+misses rather than wholesale differences.
+
 **I am not treating this as dishonesty — I think it is a broken verification
 method.** `harness.diff_fn` matches functions *by name*. These targets are all
 `fn_2_XXXXXX` while your draft emits real mangled names, so there is no common
@@ -111,10 +145,17 @@ away.
 
 ## Task B: then `d_a_wm_tower.cpp` — six functions
 
-`0x185710-0x185b70`. Five are already byte-identical. The six outstanding are
-`fn_2_185740`, `fn_2_1857A0`, `fn_2_185840`, `fn_2_1858A0`, `fn_2_185960` and
-`fn_2_185AC0`. Run the verifier first to get the real differing counts before
-deciding where to spend effort — some may be one or two instructions out.
+`0x185710-0x185b70`. With the flags fixed, **eight are already byte-identical**
+and only three remain, all near misses:
+
+```
+0x00185740 fn_2_185740  21 instrs   4 differing vs __ct__11daWmTower_cFv
+0x001857a0 fn_2_1857A0  38 instrs  21 differing vs __dt__11daWmTower_cFv
+0x00185ac0 fn_2_185AC0  33 instrs   2 differing vs "__sinit_\d_a_wm_tower_cpp"
+```
+
+`fn_2_185AC0` at **2 differing** is the cheapest thing on your plate — take it
+first. The destructor at 21 of 38 is the only one that looks like real work.
 
 The constructor above is instructive: the two stores appear in the opposite
 order, which is a **source statement order** question, not an allocator one, and

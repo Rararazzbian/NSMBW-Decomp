@@ -1,0 +1,26 @@
+#pragma once
+
+#include <game/bases/d_wm_connect.hpp>
+#include <game/bases/d_wm_csv_data.hpp>
+#include <game/bases/d_wm_demo_actor.hpp>
+#include <game/bases/d_heap_allocator.hpp>
+#include <game/bases/d_wm_map_model.hpp>
+
+class daWmMap_c : public dWmDemoActor_c {
+public:
+    int GetNodeCount(int); ///< @unofficial
+    void GetNodePos(long nodeIdx, mVec3_c &pos);
+    /// @unofficial @proposed-by-batchB looks up a node by name instead of index; evidenced by
+    /// fn_2_179F10 in d_a_wm_smallcloud.cpp calling GetNodePos__9daWmMap_cFPCcR7mVec3_c.
+    void GetNodePos(const char *nodeName, mVec3_c &pos);
+
+    dHeapAllocator_c mAllocator;
+    dWmMapModel_c mModels[4];
+    u8 mPad1[0x20c];
+    int currIdx;
+    u8 mPad2[0x4];
+    dCsvData_c mCsvData[4];
+    dWmConnect_c mWmConnect[4];
+
+    static daWmMap_c *m_instance;
+};
