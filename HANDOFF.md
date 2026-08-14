@@ -842,10 +842,40 @@ asymmetry: `.text` over-claim is normal (unreferenced weak symbols are not
 placed — see the weak-symbol rule above), but **`.data` over-claim is real**,
 because data objects are placed unconditionally.
 
-Do not repeat the landing until grid's `0x14` of surplus `.data` is identified.
-Likely candidates, in order: a duplicated copy of `dWmLib::sc_ForceList`, the
-`DUMMY_ORDERING` pool seed emitting more than intended, or padding from a
-declaration order that differs from the target's.
+#### The surplus is identified, and one half of it means the class is wrong
+
+Dumping the object's `.data` symbols against what the target holds:
+
+| offset | size | symbol | verdict |
+|---|---|---|---|
+| `0x00` | `0x05` | `@11192` | **surplus** — an anonymous 5-byte string |
+| `0x08` | `0x05` | `@11193` | **surplus** — another |
+| `0x10` | `0x24` | `sc_ForceList__6dWmLib` | correct, matches `lbl_2_data_44C90` |
+| `0x34` | `0x0c` | `g_profile_WM_GRID` | correct |
+| `0x40` | `0x64` | `__vt__10daWmGrid_c` | **`0x4` too big — target's is `0x60`** |
+
+Two independent defects, and the second is the serious one:
+
+1. **Two anonymous 5-byte string literals are emitted into `.data`** and the
+   target has none there. `0x10` of the surplus with padding.
+2. **The vtable is `0x64` where the target's is `0x60`.** By the standard rule,
+   `(size - 8) / 4` slots: the target has **22 virtuals and our class declares
+   23**. That is a class-reconstruction error, not a data-placement one.
+
+**So `d_a_wm_grid.cpp` was never actually complete, and "10 of 10 in `.text`"
+concealed it.** An extra virtual at the end of a vtable need not change any
+authored function's code — every real function still compiles identically —
+while the vtable object itself is four bytes long. This is the cleanest possible
+illustration of why a `.text`-only check cannot certify a unit.
+
+Fix the vtable first: find which of the 23 declared virtuals the original does
+not have, using `(0x60 - 8) / 4 = 22` as the count and the landed sibling
+`d_a_wm_cloud.cpp` for the expected order. Then find what emits the two strings —
+likely a resource or model name that belongs to another TU, or one that should be
+a `static const char *` rather than an array.
+
+The same check must be run on `d_a_wm_tower.cpp`, `d_a_wm_smallcloud.cpp` and
+`d_a_wm_kinoko_1up.cpp` before any of them is called ready. None has had it.
 
 **Use the round-13 kit, not the round-10 one. They contradict each other and I
 have settled it.** For `d_a_wm_grid.cpp`:
