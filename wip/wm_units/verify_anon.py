@@ -73,9 +73,13 @@ def main():
         return 1
     draft, lo, hi = sys.argv[1], int(sys.argv[2], 0), int(sys.argv[3], 0)
 
+    # Disassemble into a scratch dir, never next to the target objects -- those
+    # live in the build tree and must not accumulate artefacts.
+    cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_dis')
+    os.makedirs(cache, exist_ok=True)
     target = []
     for obj in sys.argv[4:]:
-        out = obj + '.dis.txt'
+        out = os.path.join(cache, os.path.basename(obj) + '.txt')
         if not os.path.exists(out):
             H.disasm(obj, out)
         target += functions(out, with_addr=True)
