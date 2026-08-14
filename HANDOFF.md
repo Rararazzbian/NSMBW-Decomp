@@ -935,6 +935,36 @@ shared load, never both — whether the qualifier sits on the declaration
 (CLOSE_A) or on the read as `*(volatile int *)&mError` (CLOSE_D). Two agents
 reached that wall from opposite directions. Do not send a third.
 
+##### `createBanner` retires the opacity theory outright
+
+There is a byte-exact worked example of materialisation-from-a-plain-read
+sitting in this TU, and everyone — three agents and me — walked past it. At
+`0x800CF4D0` in `createBanner`, which **matches**:
+
+```
+bl     setNandError__13dNandThread_cFl
+lwz    r3, 0x78(r30)
+neg    r0, r3
+or     r0, r0, r3
+srwi   r3, r0, 31        <- no recording dot; this is the RETURN VALUE
+<epilogue>
+```
+
+Plain `int mError`, no cast, no qualifier, no external call feeding it — and it
+materialises. The source is `return (mError != 0);`.
+
+**So opacity was never the mechanism.** The whole `volatile`-declaration and
+`volatile`-cast programme, two agents and roughly a session each, was explaining
+a property the target does not rely on. **The trigger is the boolean being
+produced as a value.** `createBanner` pays for the 0/1 because it returns it;
+`existCheck` never needs one, only a branch, and gets `cmpwi`.
+
+That reframes the residual precisely. `save` and `load` use the **recording**
+form (`srwi. r0, r0, 5` feeding a `bne`) — MWCC produced the value *and*
+branched on it — so something makes the 0/1 a live value there even though a
+branch is its only visible consumer. `checkCRC` returns a constant and does not
+materialise, which makes it the boundary case worth studying.
+
 **The evidence that defeats every hypothesis so far**, and the right place for
 the next person to start: `save`'s *first* check at `0x800CF238` materialises
 via `cntlzw` and **has no sibling at all** — nothing else is derived from that
