@@ -1,116 +1,150 @@
-# Work order for Codex — round 14
+# Work order — round 15
 
-**`AGENT_CONTEXT.md` is the standing briefing.** It gained several entries this
-session, including two techniques that closed real problems. This file is only
-round 14.
+**Read `AGENT_CONTEXT.md` first.** It is the standing briefing for this repo and
+it assumes nothing about you. This file is only round 15.
 
-Write results to **`CODEX_RESPONSE.md`** (overwrite). `CODEX_HANDOFF.md` is
-yours and I do not touch it.
+Write results to **`CODEX_RESPONSE.md`** (overwrite it).
+
+You are new to this project, so this order carries its own facts inline rather
+than pointing at other people's files. Everything below the horizontal rule I
+have verified myself today.
 
 ---
 
-## Round 13's blocker was real, and it was my fault, not yours
+## What the project is, in one paragraph
 
-You reported that the assigned survey did not contain `d_a_wm_grid.cpp` or
-`d_a_wm_tower.cpp` entries, gathered what evidence you could (`g_profile_WM_GRID`
-at `.data:0x44CB4`, `g_profile_WM_TOWER` at `.data:0x480B4`), and **stopped
-rather than inventing a span or a signature**. That was the correct call and it
-is exactly the behaviour I asked for. You also wrote the report, with the
-per-function table, which is the thing I said was the round's pass condition.
+A **matching decompilation** of New Super Mario Bros. Wii. We write C++ that,
+compiled with the original CodeWarrior compiler, produces **byte-identical**
+machine code to the retail game. Not equivalent — the same bytes. The authority
+is `python progress.py --verify-bin`, which MD5s five binaries; all five green
+or the change did not happen. **You must never run it**, or `ninja`,
+`configure.py`, or `land.py` — I am the only integrator, and two builds in this
+checkout clobber each other.
 
-**Here is what actually happened.** I told you to read the survey in
-`GEMINI_RESPONSE.md`. Gemini overwrites that file every round, it finished at
-12:53, and you ran at 14:18 — so by the time you looked, the round-10 survey had
-been replaced by round 11. The data was not missing; it had been destroyed by a
-protocol I set up. Two peers, one shared filename, overwrite each round,
-running concurrently.
+## Your task: author `d_a_wm_ghost.cpp`
 
-**Fixed: peer responses are now archived per round in `peer_archive/`.** The
-survey you needed is `peer_archive/GEMINI_round10.md`, Part 2. From now on,
-never take a cross-peer reference to a live `*_RESPONSE.md` file — read the
-archived copy.
+A world-map actor in `d_basesNP.rel`. **13 functions, 3,024 B of code in a
+3,088 B span.** Nobody has started it and nothing else in flight touches it.
 
-I have also verified the bounds myself rather than passing them on trust, so you
-do not have to take either of us on faith. Zero overlaps against all 13 landed
-`d_basesNP` slices, and your own `g_profile_WM_GRID` address is exactly the
-`.data` low bound — your evidence and the survey's agree.
-
-## Your two units, with the data inline this time
-
-### `d_a_wm_grid.cpp` — `daWmGrid_c`, 10 functions, 440 B code in a 512 B span
+Bounds, which I have run the overlap check on against all 13 landed
+`d_basesNP` slices — zero overlaps, and every section is exactly adjacent to
+`d_a_wm_dokan_route.cpp` below it:
 
 ```
-.text    0x164230-0x164430
-.ctors   0x3e4-0x3e8
-.rodata  0x88b8-0x88d0
-.data    0x44cb4-0x44d54
-.bss     0xfdd0-0xfde0
+.text    0x163620-0x164230     (3,088 B span, 3,024 B code, 13 functions)
+.ctors   0x3e0-0x3e4
+.rodata  0x8880-0x88b8
+.data    0x44a9c-0x44cb4
+.bss     0xfdc0-0xfdd0
 ```
 
-Bracketed between `daWmGhost_c` (`0x163620..0x164230`) and `daWmHanachan_c`
-(`0x164430..0x165c70`). A leaf class derived from `dWmObjActor_c`. Sibling
-correspondence 85.45% exact / 100% shape.
+Class: `daWmGhost_c`, profile `g_profile_WM_GHOST`, a leaf deriving from
+`dWmObjActor_c`. Sibling correspondence against already-landed code is about
+**40% exact / 55% shape** — lower than the units next to it, so expect real work
+rather than transcription.
 
-### `d_a_wm_tower.cpp` — `daWmTower_c`, 11 functions, 1,064 B code in a 1,120 B span
+Target objects live under `bin/dtkspl/d_basesNP/obj/`. Find the ones covering
+the range and disassemble them with `harness.disasm`.
 
-`g_profile_WM_TOWER` at `.data:0x480B4`. Take the remaining bounds from
-`peer_archive/GEMINI_round10.md` Unit 2, and **run the overlap-and-adjacency
-check on them yourself before using them** — that check has caught a wrong bound
-twice this week, including one that would have collided at landing.
+---
 
-## The thing neither of us flagged, and you should know before you start
+## Five things that have each cost this project a round. Read them.
 
-**Every function in both units is anonymous in the symbol map.** There is no
-`daWmGrid_c` or `daWmTower_c` function symbol anywhere in
-`bin/dtk/d_basesNP_symbols.txt` — only the two `g_profile_*` data objects. The
-text symbols are `fn_2_*` entries. I confirmed this directly; your round-13
-reading was correct.
+**1. The REL flags are not the DOL flags.** `tools/auto_decomp/harness.py`
+hardcoded the DOL's for a long time and silently compiled every REL unit as a
+different program:
 
-Two consequences, and they cut in opposite directions:
+```
+wiimj2d    -O4                                       (small data ON)
+d_basesNP  -O4,p  -sdata 0  -sdata2 0  -char signed
+```
 
-1. **Harder than the survey's "zero-risk starter" label suggests.** CFront
-   mangling is this project's primary signature evidence, and here there is
-   none. Parameter types, `const`-ness, everything normally readable off a
-   symbol must instead be inferred from codegen. Budget for that.
-2. **But the names are free, which is a real advantage.** A symbol absent from
-   the map is not something the linker can disagree with — only the bytes have
-   to match. `d_nand_thread.cpp` had exactly this case: `fn_800CF170` had no
-   name, I named it `cmdSave` from its shape, and it is byte-exact. So pick
-   sensible names from behaviour and sibling precedent and move on; do not stall
-   on naming, and do not treat an unnamed function as unattributable.
+`-O4,p` is a different optimisation mode and `-sdata 0 -sdata2 0` disables
+`@sda21` addressing outright. **Call `harness.compile_draft(src, obj,
+module='d_basesNP')`.** Never build a command line by hand — the flags include
+seven mandatory include paths and people have lost rounds to a missing one.
 
-The `fn_2_*` entries do give you function boundaries and sizes, so the span is
-recoverable even without names. Assert `instruction_count * 4` against them as
-usual.
+**2. Every function in this unit is anonymous.** All 13 are `fn_2_*` in
+`bin/dtk/d_basesNP_symbols.txt`; there is not one mangled name. Two consequences
+that cut opposite ways:
 
-## Method
+- There is **no signature evidence at all**. CFront mangling is normally how we
+  read parameter types, and here there is none. Everything comes from codegen.
+- But **the names are free**. A symbol absent from the map is not something the
+  linker can disagree with; only the bytes must match. Pick sensible names from
+  behaviour and move on. Do not stall on naming, and do not treat an unnamed
+  function as unattributable.
 
-The one that took `d_nand_thread.cpp` to 16 of 21 and `m_pad.cpp` to 12 of 14:
-extract by ADDRESS before writing any C++, one function at a time, compile and
-diff only through `tools/auto_decomp/harness.py`, clear the accessors and
-forwarders first so the residual is the real work. Name your draft file exactly
-what the landed file will be named.
+**3. `harness.diff_fn` matches functions BY NAME and will silently lie to you
+here.** Your draft emits real mangled names, the target has `fn_2_*`, so there
+is no common key: it finds nothing to compare and reports nothing wrong. A
+previous round reported "21 of 21 matches" that way. Use only:
 
-**And the highest-yield technique in the project, which paid twice today: read a
-function that already MATCHES before theorising about one that does not.** With
-85–88% sibling correspondence, most of what you need is already written down in
-a landed unit. `grep -rla <puzzling instruction> bin/compiled/wiimj2d`,
-cross-reference against the slices file to keep only banked units, then read
-their source. A matching function is stronger evidence than any A/B compile on a
-draft, because it is the original authors' idiom rather than one you
-reverse-engineered.
+```
+python wip/wm_units/verify_anon.py <draft_disasm.txt> 0x163620 0x164230 <target.o> [target.o ...]
+```
 
-Report per function: address, target instruction count, yours, MATCH or the
-exact residual. A table of matches and characterised residuals is the
-deliverable.
+It pairs functions by instruction content and normalises **only** relocation
+symbol names and local branch labels — legitimate, because the target's symbols
+are nameless and the linker resolves by address. It does not normalise
+registers, immediates or offsets. **Paste its table into your response verbatim
+and never claim a MATCH you have not seen it print.**
 
-## Reminders
+**4. Read a function that already MATCHES before theorising about one that does
+not.** This is the highest-yield technique here and it has repeatedly beaten
+invented source variants. `source/d_basesNP/bases/` contains landed, byte-exact
+siblings — `d_a_wm_cannon.cpp`, `d_a_wm_cloud.cpp`, `d_a_wm_dokan_route.cpp`,
+`d_a_wm_peach_castle.cpp` and more. These leaf actors are highly stereotyped:
+`classInit`, constructor, destructor, `create`, `execute`, `draw`, `doDelete` are
+near-boilerplate across the family. Read the closest sibling and follow its idiom.
+`grep -rla <puzzling instruction> bin/compiled/wiimj2d` finds more.
+
+**5. Know when to stop.** If a function reaches the correct instruction count and
+differs **only in register numbers**, stop and report the count. That specific
+wall has taken 100+ source variants across six functions on this project with
+zero successes, and declaration order has been measured not to influence
+register assignment at all. It is not a failure to report it; it is the correct
+answer.
+
+## Rules
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
-- Never edit a shared header, any `slices/*.json`, or `syms.txt` — propose.
-- Do not touch `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `peer_archive/`, or any
-  `GEMINI_*.md`. Gemini holds `d_a_wm_kinoko_base.cpp` and the `d_enemiesNP`
-  queue; my sub-agents hold `m_pad.cpp` and `d_nand_thread.cpp`.
-- Report a negative result rather than manufacturing a positive one. Round 13
-  did that correctly under bad information.
-- Plain ASCII or clean UTF-8, LF, no BOM.
+- **Never edit a shared header, `slices/*.json`, or `syms.txt`.** Shadow-copy the
+  header into your own include directory, prove your change there, and put the
+  diff in your response as a proposal. I apply it and verify five binaries
+  before it lands with anything else, so a failure is never ambiguous.
+- Work only in `scratch/round15/`. Do not touch `wip/`, `HANDOFF.md`,
+  `AGENT_CONTEXT.md`, `peer_archive/`, or `GEMINI_*.md` — other work is live in
+  those.
+- **Name your draft file `d_a_wm_ghost.cpp`.** Anonymous-namespace symbols mangle
+  with the source filename inside them, so a draft compiled under any other name
+  diffs forever on those lines for reasons unrelated to your source.
+- Extract by ADDRESS and assert `instruction_count * 4` against the symbol map
+  before writing any C++.
+- Mark anything unproven `@unofficial`. A `u8 pad[N]` for a region you cannot
+  explain is a good answer; an invented member name is not.
+- **Report a negative result rather than manufacturing a positive one.** On this
+  project the peers' most valuable single act has repeatedly been refusing to
+  comply with something I asserted that turned out to be wrong. Treat anything I
+  claim here that you can measure as a hypothesis.
+
+## Deliverable
+
+`CODEX_RESPONSE.md`, containing:
+
+1. **The verifier's table, verbatim** — every function with MATCH or its
+   differing-instruction count. This is the headline result.
+2. The proposed class and header in a fenced block, with offsets argued from
+   evidence.
+3. Your source in a fenced block.
+4. Every variant you tried and its result, so nobody repeats it.
+5. Anything you could not settle, said plainly, with what would settle it.
+
+A table of eight matches and five characterised residuals is a better round than
+thirteen claimed matches I cannot reproduce. I check every number independently,
+and I have twice this week found that a peer's work was **better** than my own
+measurement of it — once because I used the wrong compiler flags, once because
+my verifier could not see dot-prefixed pool symbols. So report what you measure,
+and if you think one of my facts above is wrong, say so.
+
+Plain ASCII or clean UTF-8, LF, no BOM.
