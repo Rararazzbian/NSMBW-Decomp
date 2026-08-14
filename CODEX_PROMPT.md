@@ -1,164 +1,131 @@
-# Work order for Codex — round 11
+# Work order for Codex — round 12
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 11.
+**`AGENT_CONTEXT.md` is the standing briefing.** It gained four entries since
+round 11; read them, two are about mistakes made in round 11. This file is only
+round 12.
 
-Write results to **`CODEX_RESPONSE.md`** (overwrite). `CODEX_HANDOFF.md` is yours.
+Write results to **`CODEX_RESPONSE.md`** (overwrite). `CODEX_HANDOFF.md` is
+yours and I do not touch it.
 
 ---
 
-## STOP WORK ON THE TWO EGG DESTRUCTORS. They were never a problem.
+## Round 11 produced no response file, and the artifacts cannot be read
 
-This is the most important thing in this file and it invalidates part of rounds
-8, 9 and 10. **The mistake was mine, not yours**, and you should know exactly
-what it was because it changes what "done" means for this unit.
+`CODEX_RESPONSE.md` is still round 10's, from yesterday. What arrived for round
+11 was `scratch/codex_round11/`, containing `assembled_static.cpp`,
+`assembled_nonstatic.cpp`, `assembled_decl_nonstatic.cpp`, two `.o`s, two
+disassemblies, and one shadow header. No report.
 
-`wip/player_manager/TRIAL_LINK.md` reports `.text` as `0x90` over its claim and
-attributes `0x80` of that to `__dt__Q23EGG8Vector2fFv` and
-`__dt__Q23EGG8Vector3fFv`. That table is headed **"compiled object vs claim"** —
-it measured the size of the `.o`, not the size of what survives the link. I then
-wrote it up as though it were a link-time overflow, and you reasonably built
-three rounds of work on top of it.
-
-Here is the refutation, from the build that verifies all five binaries **right
-now**. `bin/compiled/wiimj2d/dol/bases/d_multi_manager.o` — a landed,
-byte-exact, banked unit — emits thirteen functions:
+I measured the artifacts rather than assume. **All three `.cpp` files are
+byte-identical** (same MD5), so the variable was in the shadow header, which is
+the right way to run that experiment. But the two disassemblies differ in
+exactly 70 lines, and **every one of them is a filename difference**:
 
 ```
-__ct__11dMultiMng_cFv, global
-__dt__11dMultiMng_cFv, global
-initStage__11dMultiMng_cFv, global
-__dt__7mVec2_cFv, weak
-__dt__Q23EGG8Vector2fFv, weak          <-- the "problem" symbol
-setClapSE__11dMultiMng_cFv, global
-setRest__11dMultiMng_cFii, global
-addScore__11dMultiMng_cFii, global
-incCoin__11dMultiMng_cFi, global
-incEnemyDown__11dMultiMng_cFi, global
-__dt__Q23EGG8Vector3fFv, weak          <-- the other "problem" symbol
-setBattleCoin__11dMultiMng_cFii, global
-setCollectionCoin__11dMultiMng_cFv, global
+< lwz r0, "scCoinMax__30@unnamed@assembled_static_cpp@"@sda21(r0)
+> lwz r0, "scCoinMax__33@unnamed@assembled_nonstatic_cpp@"@sda21(r0)
 ```
 
-Its slice claims `.text 0xc8170-0xc8580`, exactly `0x410`, which is the ten real
-functions. The object is `0xC0` bigger than that. **It links, and the DOL is
-byte-identical to retail.**
+Codegen difference: **zero**. And only one shadow header survives, so I cannot
+tell which of two opposite conclusions is true — that the header change was
+never actually applied between the two compiles, or that it was applied and is
+codegen-neutral. The round is unusable, and that is a reporting failure rather
+than a research failure.
 
-So: **an unreferenced weak symbol emitted into an object does not have to fit
-inside that object's slice `.text` claim.** The linker does not place it. Every
-banked unit in this project that touches an `mVec2_c` or `mVec3_c` local has been
-carrying these two symbols the whole time, invisibly and harmlessly.
+**The decisive test, for next time.** A member function that is genuinely
+`static` has no `this` parameter, so its arguments start in `r3` instead of
+`r4`, and every call site in the TU changes with it. If you flip static-ness on
+a function this TU defines or calls and see *no* register movement, your
+variable did not vary — stop and fix the harness before drawing a conclusion.
+The one case where zero change is honest is a declaration-only edit to a
+function this TU never calls, and then the correct report is "this TU cannot
+answer the question", not silence.
 
-Three consequences, and please carry all three:
+**Also: your draft's filename is part of the object code.** Anonymous-namespace
+symbols mangle as `name__NN@unnamed@<filename>_cpp@` with `NN` the length of
+that string. Compiling as `assembled_static.cpp` guarantees those lines diff
+against the target forever, no matter how correct the source is. **Name the
+draft `d_a_player_manager.cpp` from the first compile.** This is now in
+`AGENT_CONTEXT.md`.
 
-1. **`d_a_player_manager.cpp` does not have a `0x90` `.text` overflow.** It has
-   an object that is `0x90` bigger than its claim, `0x80` of which will not be
-   placed. Whether the remaining `0x10` is real is now an open question that
-   only a link can answer, and the link is mine to run.
-2. **The eggVector.h change was never needed**, which retrospectively explains
-   why removing it broke five binaries: it was removing something the whole
-   project legitimately relies on.
-3. **The unit's acceptance condition is unchanged and is the only thing that
-   matters: all 65 functions byte-exact.** Section arithmetic is not the gate.
+## Stop working the three near-misses
 
-Your round-8 flag — "Offset-perturbing: YES, full build verification needed" —
-was the correct call at the correct confidence, and it is the reason this cost
-one build rather than a day. That judgement is what I want more of.
+`createCourseInit`, `incCoin` and `checkCorrectCreateInfo` are parked. Not
+because the work was bad — the `checkCorrectCreateInfo` constant measurement was
+a genuine result and it is recorded — but because four rounds on register-level
+near-misses have produced no byte-exact function, and a fifth is not the way to
+change that. Your `incCoin` result (right instruction count, wrong register
+allocation) is the same wall three other agents hit on a different unit this
+week. It is a real wall. Park it and take ground elsewhere.
 
-## Round 10 verdict: no matches, two results I am keeping
-
-**`checkCorrectCreateInfo` is the model answer.** I gave you a hypothesis and you
-came back with three measurements that refute it — `const int` folds to 99,
-plain `int` gives the target's hoisted `@sda21` loads at 103, `volatile`
-overshoots to 106 — and the conclusion that our draft was already right and my
-suggestion would have broken it. **My hypothesis was backwards and you proved it
-rather than accommodating it.** That is worth more to me than a match.
-
-**`getFileP` coupling is confirmed.** At 347 instructions it emits out-of-line
-as a real `bl`; at 345 it was still inlined. That is a genuine structural fact
-about this unit and it was worth the round on its own.
-
-`incCoin` reaching 130/130 is real progress even without byte-exactness.
+Two things from your round-10 report are worth keeping and I have kept them: the
+`getFileP` inlining threshold is confirmed directional, and the constants must
+stay plain non-`const`.
 
 ---
 
-## Round 11: find the ONE cause behind the register-allocation class
+## Task: author the untouched bulk of `d_a_player_manager.cpp`
 
-Stop treating the near-misses as independent problems. **Twenty-one near-misses
-in one TU, of which at least seven are "same instructions, different register
-numbers", is not what independent bugs look like.** In the four actor units that
-landed byte-exact before this one, register allocation matched on first compile
-almost everywhere. Something structural is different about `daPyMng_c`, and I
-think it is one thing, not seven.
+`0x8005E9A0`–`0x800613B0`, 10,768 B span, 10,300 B of code, **68 functions**.
+This is the highest-value unit left in the DOL — worth more progress than the
+next two queued units combined — and it is now fully unblocked:
 
-### The leading hypothesis, and why it is invisible to everything we have checked
+- `sizeof(daPyDemoMng_c) == 0x98` is proven three independent ways and landed.
+- **The `0x90` `.text` overflow was a phantom and is now formally settled.**
+  Gemini audited all 143 landed units this round: 64% of them compile to objects
+  larger than their slice claims, because unreferenced weak symbols are
+  deadstripped and duplicate weak definitions are deduplicated to their home TU.
+  For this unit specifically, `0x80` deadstrips, `0x64` deduplicates, and
+  `getCourseIn__10dScStage_cFv` (`0x8`) is the surviving definition and belongs
+  in the slice. **Net overflow: zero.** Do not spend a line on it again.
 
-`ASSEMBLY.md` describes `addRest` as "74/74 instructions, **uniform +1 register
-shift** in the clamp section". `getYoshi` and `startMissBGM` are both described
-as `r4` vs `r12`. A *uniform* register shift across a whole function is the
-classic signature of an **argument-position difference** — the compiler thinking
-a function has one more or one fewer incoming argument than the target did.
+`include/game/bases/d_a_player_manager.hpp` already exists with real signatures,
+because the banked `d_a_player.cpp` and `d_a_player_base.cpp` call into it.
 
-For a member function, the argument in position zero is `this`. And:
+**Your job is the functions nobody has attempted yet** — not the three parked
+ones. Work the method that took `d_nand_thread.cpp` from a stub header to 14 of
+19 functions byte-exact in a single session:
 
-**CFront does not encode static-ness in the mangled name.** A static member
-function and a non-static one with the same parameters mangle identically. So
-`bin/dtk/wiimj2d_symbols.txt` **cannot** tell you which of `daPyMng_c`'s
-functions were `static` in the original. This is the exact same blind spot as
-return types, which has already cost this project six wrong declarations in this
-very class.
+1. Start from the target disassembly, not from a guess about what the function
+   does. Extract by ADDRESS and assert `instruction_count * 4` against
+   `bin/dtk/wiimj2d_symbols.txt` before you write any C++.
+2. One function at a time. Do not move on from a function until it either
+   matches byte-for-byte or you can characterise the residual precisely.
+3. Compile and diff only through `tools/auto_decomp/harness.py`.
+4. Batch the small ones. Roughly a third of a unit this size is accessors and
+   forwarders that match on the first or second attempt; clear those first so
+   the residual is the real work.
 
-`d_a_player_manager.hpp` declares the class as all-static. If even one function
-was actually a non-static member — or the reverse — every argument in it shifts
-by one register and the body is otherwise identical. That would produce exactly
-the observed signature.
+Report per function: address, target instruction count, yours, MATCH or the
+exact residual diff. A table of thirty MATCHes and eight characterised residuals
+is a far better round than three deeply-analysed near-misses.
 
-**Test it. Do not assume it.** Take the two or three cleanest "register
-allocation only" cases — `addRest` and `getCoinAll` are the tightest — and
-compile each both ways in a whole-`assembled.cpp` shadow copy. If flipping
-static-ness closes one, you have found the cause and the remaining six are
-probably a sweep.
+### Two levers proven on `d_nand_thread.cpp` this week, both likely to apply
 
-### If that hypothesis dies, here are the other shapes of "one cause"
-
-Report the negative and move down this list. Do not chase all of them; pick by
-what the disassembly actually suggests.
-
-- **A wrong member type in the header.** An `int` where the target has `u8`/`s8`
-  changes load/store widths and can cascade into allocation. The class is
-  all-static, so every one of these is a named symbol with a **size** in the
-  symbol map — cross-check every static member's declared type against its
-  recorded size. That is a mechanical check and it is cheap.
-- **A wrong parameter type** that does not change the mangled name. `int` vs
-  `long` mangles differently (`Fi` vs `Fl`) so that one is checkable, but
-  `bool` vs `char`, or `const T&` vs `T&`, may not be.
-- **Argument count or order** on a helper that many of the 21 call.
-
-### Method, unchanged and non-negotiable
-
-Compile the **whole of `assembled.cpp`** with your edit in it and diff the
-function out of that object. Shadow-copy `assembled.cpp` into your own scratch
-directory; `wip/` is read-only to you. Use `tools/auto_decomp/harness.py`'s
-`compile_draft` / `extract` / `diff_fn`, extract **by address**, and assert
-`instruction_count * 4` against the symbol map.
-
-### What a good round 11 looks like
-
-Either "the cause is X, here is one function that closes because of it, and here
-are the others it should sweep", or "it is not X, here is the measurement that
-kills it, and here is what the disassembly points at instead". **A well-killed
-hypothesis is a complete result.** Do not come back with three more
-individually-characterised near-misses; I already have twenty-one of those.
-
----
+- **The bool-materialisation lever.** MWCC emits a three-instruction normalise
+  (`neg`/`or`/`srwi.`) or a `cntlzw`/`srwi.` pair when an **opaque non-`bool`**
+  value is stored into a real `bool` — an external call's return, for instance.
+  Writing `if (!OSTryLockMutex(x))` gives a plain `cmpwi`; writing
+  `bool locked = OSTryLockMutex(x); if (locked)` gives the target's sequence.
+  Bool-storage alone does nothing and opacity alone does nothing. This closed
+  four functions.
+- **Return types are invisible to the mangling and are worth suspecting.**
+  Nine signature corrections came out of that unit and only three were provable
+  from symbol names. `bool` versus `void` versus `s32` changes codegen; the
+  witnesses are the caller's use of the result and the function's own epilogue
+  shape (`li r3,1` / `li r3,0` converging on one epilogue is `return true` /
+  `return false`, not falling off the end).
 
 ## Reminders
 
-- Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
-- Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
-- **Do not touch** `wip/` (read it freely, shadow-copy what you need, write
-  nothing), `HANDOFF.md`, `AGENT_CONTEXT.md`, `CODEX_PROMPT.md`, or any
-  `GEMINI_*.md`. Gemini is on `d_a_en_coin_main.cpp` and on a project-wide
-  weak-symbol audit; stay out of both. `wip/nand_thread/` is my agents'.
+- Never run `ninja`, `configure.py`, `progress.py`, `land.py`. I am the only
+  integrator; two builds in one checkout clobber each other.
+- Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose,
+  with the shadow-test evidence.
+- Do not touch `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, or any `GEMINI_*.md`.
+  Gemini is surveying `d_basesNP` and holds `d_a_en_coin_main.cpp`; my own
+  sub-agents hold `d_nand_thread.cpp` and everything under
+  `wip/nand_thread/scratch/`.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.

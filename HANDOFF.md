@@ -510,6 +510,48 @@ Two expensive consequences, both of which actually happened:
   applied once and **failed all five binaries** — because it removes something
   the whole project legitimately relies on. Do not propose it again.
 
+##### Settled at corpus scale, with its boundary
+
+The above was one data point. It is now a measured rule, from a sweep of all
+**143 landed units** and the **1,592 weak symbol instances** they emit:
+
+| Fate of an emitted weak symbol | Instances | Share |
+|---|---|---|
+| Deadstripped — referenced nowhere in the binary | 161 | 10.1% |
+| Deduplicated — surviving copy linked from its home TU | 818 | 51.4% |
+| Placed — this TU holds the surviving definition | 613 | 38.5% |
+
+**91 of the 142 landed units with `.text` (64%) compile to objects strictly
+larger than their slice claims.** Carrying unplaced weak symbols is the normal
+condition of this repository, not a defect. The test that matters is
+
+```
+effective .text = compiled .text - sum(unplaced weak symbols) == slice claim
+```
+
+**The boundary — the half that stops the rule being over-applied.** A weak
+symbol that *is* the surviving definition does occupy its slice, at its retail
+address. Confirmed on three banked units: `__ct__9fLiMgBa_cFv` (`0x10`) inside
+`f_manager.cpp`'s slice, `__dt__Q23m3d11calcRatio_cFv` (`0x40`) inside
+`calc_ratio.cpp`'s, and `__dt__26__partial_array_destructorFv` (`0xBC`) inside
+`class_arrays.cpp`'s. So the rule is about *placement*, never about weakness on
+its own.
+
+**Why it happens, from the tooling.** `tools/gen_lcf.py`'s
+`make_elf_force_directives` adds every `STB_GLOBAL` symbol to the linker
+control file's `FORCEACTIVE` block, and **excludes `STB_WEAK` symbols unless the
+slice names them in `keepWeak`**. `mwldeppc` dead-strips per function from those
+roots. `keepWeak` is therefore the escape hatch for the case where retail kept
+an unreferenced weak symbol anyway — `m_2d.cpp` uses it for `__dt__7mVec3_cFv`.
+
+**Consequence for `d_a_player_manager.cpp`, which is what this was blocking:**
+of its apparent `0x90`, `0x80` deadstrips (`__dt__Q23EGG8Vector2fFv`,
+`__dt__Q23EGG8Vector3fFv`), `0x64` deduplicates to home TUs (`__dt__7mVec2_cFv`
+to `d_2d.o`, `isItemKinopio__7dAcPy_cFv` to `d_ac_py.o`, two `daPlBase_c`
+executors to `d_a_player_base.o`, `getPlrNo__8dActor_cFv` to `d_actor.o`), and
+`getCourseIn__10dScStage_cFv` (`0x8`) is the surviving definition and belongs in
+the slice at `0x8005EC90`. **Net overflow: zero. The unit is unblocked.**
+
 The boundary is presumably referenced-vs-unreferenced: a weak symbol that is the
 surviving definition for some other object must occupy space. That half is not
 yet proven and is queued as a peer task.

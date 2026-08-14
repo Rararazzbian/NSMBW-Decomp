@@ -193,6 +193,42 @@ Each of these exists because something broke.
 - **An object nobody references can still be required.** A 0x40 float table the
   entire binary never reads still has to be emitted, or the section is short.
   **An unclaimed object is a finding, not noise.**
+- **Your draft file's NAME is part of the object code.** Anonymous-namespace
+  symbols mangle as `name__NN@unnamed@<filename>_cpp@`, where `NN` is the length
+  of that string. A draft compiled as `assembled_static.cpp` produces
+  `scCoinMax__30@unnamed@assembled_static_cpp@`; the target has
+  `scCoinMax__33@unnamed@d_a_player_manager_cpp@`. **Every one of those lines
+  will diff forever, and no source change will ever fix it.** Name your draft
+  exactly what the landed file will be named, from the first compile.
+- **When two functions in one TU compile the same expression differently, every
+  explanation that lives in the shared header is already dead.** `existCheck`
+  and `save` in `d_nand_thread.cpp` both test `mError == 0` right after the same
+  call; one gets `cmpwi`, the other `cntlzw`/`srwi.`. A member qualifier cannot
+  do that, because it would move both. Look for the difference locally, in the
+  shape of the two function bodies. This retired a header proposal that had
+  already survived one round of review.
+- **Unreferenced weak symbols are not placed by the linker.** An object whose
+  `.text` exceeds its slice claim is normal, not a defect — it is the standard
+  condition of roughly two thirds of the banked units. See the Weak-Symbol
+  Linker Placement Rule in `HANDOFF.md` before reporting an overflow.
+
+### Two checks that catch a whole class of silent error
+
+Run both on every set of section bounds you propose. They are mechanical, they
+take seconds, and each has already caught a wrong answer that read as confident.
+
+1. **The overlap-and-adjacency check.** Load `slices/wiimj2d.json`, and for each
+   range you propose, find every slice whose range intersects it (must be none)
+   and the slices that end just below and start just above. Real bounds are
+   usually *exactly* adjacent to a neighbour in several sections at once. A
+   proposed `.text` for `d_a_en_coin_main.cpp` was found sitting inside
+   `d_a_en_dfpakkun.cpp`'s claim this way.
+2. **The base-address check.** That failure had one cause: the address was
+   converted to a file offset using `0x80004000`, which is `.init`'s base, not
+   `.text`'s `0x80006780`. Every other section in the same proposal was correct.
+   **State the base you subtracted, per section, in your report**, so the
+   arithmetic is checkable without redoing it. The section bases are in
+   `slices/wiimj2d.json` under `meta.sections`; read them, do not recall them.
 
 ## 7. Environment
 
@@ -226,6 +262,16 @@ If you could not settle something, **say so plainly and say what would settle
 it.** That is a real deliverable. It is much cheaper than a confident wrong
 answer, and on this project it has twice been the thing that produced the
 correct answer.
+
+**The written response is the deliverable, not the artifacts.** A round arrived
+recently as a scratch directory containing two compiled variants and no report.
+The two objects turned out to differ only in the filename embedded in their
+anonymous-namespace symbols — so either the experiment's variable was never
+actually varied, or it was varied and is codegen-neutral. **Those are opposite
+conclusions and the artifacts cannot distinguish them.** The round produced
+nothing usable. If you compile a variant, record in the response what you
+changed, what you expected, and what you measured; an unexplained `.o` is not
+evidence of anything.
 
 If you finish early, say so and ask for more work rather than picking your own
 next target — the tree is usually busy and collisions are expensive.

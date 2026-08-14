@@ -1,145 +1,133 @@
-# Work order for Gemini — round 9
+# Work order for Gemini — round 10
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 9.
+**`AGENT_CONTEXT.md` is the standing briefing.** It gained four entries and a
+new "two checks" section since round 9, one of which comes directly from your
+round-9 output. This file is only round 10.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## First: I sent you to pre-flight a unit that was already finished. My fault.
+## Task A was excellent and it is landed
 
-`d_multi_mng.cpp` is landed. It has been landed for some time. The source file is
-`source/dol/bases/d_multi_manager.cpp` — note the spelling, `manager` not `mng`,
-which is why my check for `d_multi_mng` came back empty — and it is registered in
-`slices/wiimj2d.json` at line 719 and verifying in all five binaries.
+The weak-symbol placement rule is settled, at a scale I did not expect: 143
+units audited, 1,592 weak symbol instances classified into deadstripped (10%),
+deduplicated to a home TU (51%), and surviving-definition-in-slice (38%). The
+part that makes it a rule rather than an observation is the boundary — you
+proved both halves, including three banked units where a weak symbol *is* the
+surviving definition and does occupy its slice, which is exactly what stops the
+rule being over-applied.
 
-You even noticed this and said so plainly in §6.1: *"already recorded with exact
-ranges"*. You reported it as an audit result rather than stopping, which was the
-right call given the instruction you were handed, but you should not have been
-handed it. I did not check before assigning. **The `sizeof(dMultiMng_c) == 0x5C`
-confirmation is still genuinely useful** — it was an unproven assumption in
-`d_a_player_manager.cpp`'s `.bss` and now it is not — and you derived it
-independently rather than reading it off the landed header, which is what makes
-it worth anything. The rest of Task B was wasted motion and that is on me.
+The `keepWeak` / `FORCEACTIVE` mechanism read from `tools/gen_lcf.py` is the
+other half nobody had written down: weak symbols are excluded from `FORCEACTIVE`
+by default, which is *why* the deadstripping happens, and `keepWeak` is the
+escape hatch when the retail binary kept an unreferenced weak symbol anyway.
 
-## Second: §5's hazard is refuted by the very file you were analysing
+Your `d_a_player_manager.cpp` accounting — `0x80` deadstripped, `0x64`
+deduplicated, `getCourseIn__10dScStage_cFv` at `0x8` genuinely in-slice, net
+overflow zero — is what I needed. **The unit is unblocked and reassigned to
+Codex for authoring this round.** Your text is going into `HANDOFF.md` close to
+as written.
 
-You reported that the inline destructors in `m_vec.hpp` / `eggVector.h` cause
-MWCC to emit `__dt__7mVec2_cFv`, `__dt__Q23EGG8Vector2fFv` and
-`__dt__Q23EGG8Vector3fFv` into `d_multi_manager.o`, expanding `.text` from
-`0x410` to `0x4D0`, and you proposed removing them.
+## Task B: the numbers are right, one line of arithmetic is wrong
 
-**The emission is real. The hazard is not.** Here is the current, verifying
-build's own object, `bin/compiled/wiimj2d/dol/bases/d_multi_manager.o`:
+The function table, the vtable decode (4 differing slots, zero new virtuals),
+`sizeof(daEnCoinMain_c) == 0x8C8`, and the 40.41% exact / 49.40% shape sibling
+score are all good work, and the sibling number settles the "blockmain just
+landed, this will be cheap" intuition with a measurement instead of an opinion.
 
-```
-__ct__11dMultiMng_cFv, global          initStage__11dMultiMng_cFv, global
-__dt__11dMultiMng_cFv, global          __dt__7mVec2_cFv, weak
-__dt__Q23EGG8Vector2fFv, weak          setClapSE__11dMultiMng_cFv, global
-setRest__11dMultiMng_cFii, global      addScore__11dMultiMng_cFii, global
-incCoin__11dMultiMng_cFi, global       incEnemyDown__11dMultiMng_cFi, global
-__dt__Q23EGG8Vector3fFv, weak          setBattleCoin__11dMultiMng_cFii, global
-setCollectionCoin__11dMultiMng_cFv, global
-```
+**But §2.9's `.text` range is wrong, and it would have collided at landing.**
+You proposed `"0x232f0-0x241c0"`. I ran the overlap check and it sits inside
+`dol/bases/d_a_en_dfpakkun.cpp`'s existing claim of `0x21a40-0x243c0`.
 
-All three weak destructors are present, the object is `0xC0` larger than the
-`0x410` its slice claims, **and the DOL is byte-identical to retail.**
+The cause is one subtraction. Your own §2.1 gives the span as
+`0x800272F0`–`0x800281C0`, and `0x800272F0 - 0x232F0 = 0x80004000` — that is
+**`.init`'s base address, not `.text`'s `0x80006780`.** Every other section in
+your proposal used the right base and is exactly adjacent to a neighbour, which
+is what made the single wrong one so easy to miss.
 
-That is a general rule nobody in this project had written down, and it matters
-far beyond this unit: **an unreferenced weak symbol emitted into an object does
-not have to fit inside that object's slice `.text` claim. The linker does not
-place it.**
+Corrected, and I have verified it: **`.text` is `0x20b70-0x21a40`**, size
+`0xED0`, zero overlaps, ending exactly where `d_a_en_dfpakkun.cpp` begins and
+beginning exactly where `d_a_en_carry.cpp` ends. Same size you computed —
+only the base was wrong.
 
-Do not feel bad about the proposal — Codex reached the same conclusion from a
-different unit, I applied it, and it broke all five binaries. Your version was
-better evidenced than its. The reason it is wrong is a fact about linking that
-neither of you could see from a compile.
-
-**Do not propose removing those destructors again**, and treat any future
-"my object's `.text` is bigger than the slice claim" observation as an open
-question rather than a defect, until Task A below settles it.
+Both checks that catch this are now standing instructions in `AGENT_CONTEXT.md`:
+run the overlap-and-adjacency sweep on every proposed range, and **state the
+base you subtracted, per section**, so the arithmetic is checkable without
+being redone.
 
 ---
 
-## Task A: settle the weak-symbol placement rule properly
+## Task A: landing kits for the two pre-flighted units
 
-This is now the highest-value forensic question in the project, it is exactly
-your kind of work, and it is blocking a real unit.
+Neither `m_pad.cpp` (your round 8) nor `d_a_en_coin_main.cpp` (your round 9) can
+be landed from a pre-flight alone — each still needs the integrator half. That
+half is mechanical, it needs no build, and producing it is the single thing that
+most shortens the path from your work to a verified binary. I did it for
+`d_nand_thread.cpp` this morning; the method is written up in `HANDOFF.md` under
+"The landing kit, pre-computed". Follow it exactly and produce, for **both**
+units:
 
-I have one data point: three unreferenced weak destructors in one object, not
-placed, binary still exact. I want the rule, with its boundary.
+1. **The slice block**, with every range passed through the overlap-and-adjacency
+   check and the base you subtracted stated per section.
+2. **The `syms.txt` removals** — every symbol currently pinned whose address
+   falls inside any of the unit's ranges. Once our object defines a symbol,
+   pinning it to an address is a contradiction.
+3. **The `syms.txt` additions** — derived from the target's own relocations, not
+   from reading the source. Parse the relocations out of the disassembly,
+   subtract the symbols the TU defines itself (`@NNNNN` pool objects, `@LOCAL@`
+   statics, and its `__vt__` tables are all ours), then test each survivor's
+   symbol-map address against every landed slice's `.text` range. What is left
+   needs a pin.
+4. **The must-not-pin list** — symbols the TU references that a landed slice
+   already defines. This is the half people skip and it is where the errors are.
+   A worked example from `d_nand_thread.cpp`: it calls seven `OS*` mutex and
+   condition-variable functions, four of which are defined by the landed
+   `lib/revolution/os/OSMutex.c` and must NOT be pinned, while the three
+   condition-variable ones sit at `0x801b3280`–`0x801b3370`, outside that
+   slice's `.text` claim, and must be. **"The file is landed" is not the same as
+   "the symbol is defined."**
 
-Work it out from the link, not from compiles:
+Your round-9 §2.8 already lists 4 pins for coin_main; re-derive them by the
+relocation method rather than reusing that number, and tell me if it changes.
 
-1. **How general is it?** Sweep the objects under
-   `bin/compiled/wiimj2d/` and find every case where an object emits symbols
-   whose total size exceeds its slice's `.text` claim. How many banked, verifying
-   units are carrying unplaced weak symbols? If the answer is "most of them",
-   that is the rule confirmed at scale.
-2. **What is the boundary?** A weak symbol that IS referenced by another linked
-   object must be placed. So the rule cannot be "weak symbols never count". Find
-   a banked unit where a weak symbol *is* the surviving definition and confirm it
-   occupies space inside its slice claim. The distinction I expect is
-   referenced-vs-unreferenced, but **prove it rather than assuming my phrasing.**
-3. **What does the project's own tooling do about it?** Read `tools/` — the lcf
-   generation, the slicer, and anything handling `keepWeak`. Is this deliberate
-   (a deadstrip directive somewhere) or is it the linker's default? If there is
-   a `keepWeak` mechanism, when does it force a weak symbol to be placed, and
-   would any of it apply here?
-4. **The payoff, and please state it explicitly.**
-   `wip/player_manager/TRIAL_LINK.md` measured `d_a_player_manager.cpp`'s
-   compiled object at `0x2AA0` against a `0x2A10` claim and called it a `0x90`
-   overflow. `0x80` of that is `__dt__Q23EGG8Vector2fFv` and
-   `__dt__Q23EGG8Vector3fFv`. **Given your rule, does that unit have a real
-   `.text` problem at all, and if so how big is it?** That is the question I
-   actually need answered.
+## Task B: survey `d_basesNP`, because that is where the work actually is
 
-Write the rule up in a form I can paste into `HANDOFF.md`, with the evidence
-that establishes each half of it and the boundary case that limits it.
+Nobody has mapped it. 89% of everything left in this project lives in
+`d_basesNP` and `d_enemiesNP`, both still around 1–2% complete, and the DOL
+units we keep landing move the headline number slowly by construction. I am
+authoring units one at a time out of a queue that is nearly empty; the
+constraint on this project is now **a supply of units known to be tractable**,
+and finding those is the thing you are best at.
 
-## Task B: pre-flight `d_a_en_coin_main.cpp`
+Produce a ranked queue of the **next 8 authorable TUs in `d_basesNP`**. For each:
 
-**I checked this time.** Not in `slices/wiimj2d.json`, no source file, not
-started.
+- Its boundaries in every section, both checks run.
+- Function count, code bytes, span bytes.
+- Whether it is a base class or a leaf, and what it gates if it is a base.
+- **Its tractability, argued rather than asserted.** The useful signals are:
+  precedent from a landed sibling scored by bytes rather than by name (use
+  `tools/sibmap.py`, and note its `FAMILY` list rots silently — check the
+  recently-landed units are in it and capture its stderr warning, as you did
+  last round); how many distinct external types it needs that are not yet
+  reconstructed; whether its data inventory contains anything unclaimed; and
+  whether any of its functions are large enough to be register-allocation
+  gambles rather than transcription.
+- Anything that would make it a bad first choice — an unreconstructed base
+  class, a `.bss` object of unknown size, a vtable that does not decode cleanly.
 
-`0x800272F0`–`0x800281C0`, 3,792 B span / 3,652 B code / 23 functions. It is a
-**base class** — `__vt__14daEnCoinMain_c` is `0x2EC`, the same size as
-`daEnBlockMain_c`'s — so it gates the whole coin family living in
-`d_enemiesNP.rel`. All its bounds are free.
-
-Same standard as your `m_pad.cpp` round, which was the best pre-flight this
-project has had: full function table with addresses, sizes, mangled names and
-signatures; class reconstruction with the vtable proved entry-by-entry against
-the original; complete data inventory with **referenced-by-anything marked per
-object**; hazard proofs from an empty-bodied scaffold rather than hazard
-predictions; the link-blocker list; and the pin list with the banked-slice
-filter already run.
-
-Two things the handoff records about this one, so you can confirm or refute them:
-
-- It is described as having a milder version of a "shape problem" — worth
-  characterising precisely rather than repeating.
-- **Despite the matching vtable size, its function names barely overlap
-  `daEnBlockMain_c`'s.** So the "blockmain just landed, this will be cheap"
-  intuition is recorded as *not* paying. Check that: run the sibling comparison
-  and tell me the real precedent rate by bytes, not by name. `tools/sibmap.py`
-  does the mechanical part, and note its `FAMILY` list rots silently — a stale
-  entry contributes nothing and just makes the map thinner, so check that the
-  recently-landed units are in it and capture its stderr warning.
-
-Apply the backward-bound audit from your round 8 to every section low bound.
-That method is now standard and it is the one that caught the `0x70` I missed.
-
----
+Rank by **progress-per-unit-of-risk**, not by size, and say plainly which one
+you would start with and why. If two are near-equivalent, prefer the one that
+unblocks the most other units, and say what it unblocks.
 
 ## Reminders
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
 - Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose.
 - **Do not touch** `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `GEMINI_PROMPT.md`,
-  or any `CODEX_*.md`. Codex is hunting a single structural cause behind
-  `d_a_player_manager`'s register-allocation near-misses; stay out of that unit.
-  `wip/nand_thread/` is my agents'.
+  or any `CODEX_*.md`. Codex is authoring `d_a_player_manager.cpp` this round —
+  stay out of that unit entirely. My own sub-agents hold `d_nand_thread.cpp` and
+  everything under `wip/nand_thread/scratch/`.
 - Report contradictions rather than reconciling them; report a negative result
   rather than manufacturing a positive one.
 - Plain ASCII or clean UTF-8, LF, no BOM.
