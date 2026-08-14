@@ -1,233 +1,409 @@
-# Gemini Response — Round 8: Bound Verification of `m_pad.cpp` & Complete Pre-Flight of `d_multi_mng.cpp`
+# Gemini Response — Round 10: Verified Landing Kits for `m_pad.cpp` & `d_a_en_coin_main.cpp` and Strategic Survey of `d_basesNP`
 
 ## Executive Summary
 
-1. **Task A (`m_pad.cpp` Backward Bound Audit)**: We performed a rigorous backward walk across all 8 data and code sections from each claimed low bound of `m_pad.cpp`. Every single bound is **hard-bracketed by official section bounds in `bin/dtk/dtk_splits_wiimj2d.txt`** and independently confirmed by both the **terminal-vtable rule** and the **consecutive pool ID rule**. In `.data`, the `0x118`-byte block immediately preceding `0x80329F60` belongs to `m_heap.cpp` (bracketed by split line 736 ending at `0x80329F60`, with heap string literals in pool range `@3600`–`@3984`), and `m_mtx.cpp` defines no `.data`. `mPrint` template methods define **zero format strings in `.data`** because `fmt` is a caller-supplied parameter forwarded directly to `vsnprintf`/`vswprintf`. **Zero objects below the claimed low bounds belong to `m_pad.cpp`**. All round 7 bounds stand 100% verified.
-2. **Task B (`d_multi_mng.cpp` Pre-Flight)**: `dol/bases/d_multi_manager.cpp` spans `.text:0x800CE8F0`–`0x800CED00` (10 functions, 996 bytes code, `0x410` span). All 10 functions were matched and diffed with `compilers/Wii/1.1/mwcceppc.exe` via `tools/auto_decomp/harness.py`: **10 out of 10 functions are 100% byte-exact on the first compile**.
-3. **Explicit `sizeof(dMultiMng_c)` Settlement**: The layout reconstructed directly from the disassembly instructions proves **`sizeof(dMultiMng_c) == 0x5C` (92 bytes)** with zero contradiction. Every player array offset (`0x08`, `0x18`, `0x28`, `0x38`, `0x48`, `0x58`) corresponds directly to accessed fields (`mRest[4]`, `mScore[4]`, `mCoin[4]`, `mEnemyDown[4]`, `mBattleCoin[4]`, `mCollectionCoin[4]`). This independently confirms `d_a_player_manager.cpp`'s `.bss` reservation of `0x5C`.
-4. **Header Hazard & Link-Blocker Finding**: `include/game/mLib/m_vec.hpp` and `include/lib/egg/math/eggVector.h` currently declare empty inline destructors (`~mVec2_c() {}`, `~Vector2f() {}`, `~Vector3f() {}`). Because `setClapSE()` instantiates a local `mVec2_c`, MWCC emits weak destructors into `d_multi_manager.o`, expanding `.text` by `0x80` bytes (`0x410` -> `0x4D0`) and shifting downstream functions. When compiled with clean POD vector headers, `d_multi_manager.o` emits exactly 10 functions in `0x410` bytes matching the target slice byte-for-byte. We propose the non-perturbing header diffs below.
-5. **Banked-Slice & Symbol Audit**: `dol/bases/d_multi_manager.cpp` is already registered in `slices/wiimj2d.json` with 0 collisions. No defined symbols exist in `syms.txt` that require stripping, and all 10 external callees/variables are pinned. `d_multi_mng.cpp` is a **strong green light** ready for immediate landing.
+1. **Task A (Pre-Flighted Units Landing Kits)**:
+   - **`m_pad.cpp`** (`dol/mLib/m_pad.cpp`): 16 functions, 1,328 B code, 1,360 B span (`.text 0x168bb0-0x169100`). Passed all 4 section checks with 100% adjacency to `m_mtx.cpp` on the left and `m_vec.cpp` on the right. **5 removals**, **6 additions** derived strictly from relocations (`WPADGetInfoAsync`, `init__Q23EGG10CoreStatusFv`, `sceneReset__Q23EGG14CoreControllerFv`, `getNthController__Q23EGG17CoreControllerMgrFi`, `sInstance__Q23EGG17CoreControllerMgr`, `@14502`), and **3 must-not-pin symbols** (`__register_global_object`, `__construct_array`, `__destroy_arr` already defined in `global_destructor_chain.c` and `class_arrays.cpp`).
+   - **`d_a_en_coin_main.cpp`** (`dol/bases/d_a_en_coin_main.cpp`): 23 functions, 3,652 B code, 3,792 B span (`.text 0x20b70-0x21a40`). Section bounds across all 7 sections (`.text`, `.ctors`, `.rodata`, `.data`, `.bss`, `.sdata`, `.sdata2`) verified with 100% bidirectional adjacency to `d_a_en_carry.cpp` and `d_a_en_dfpakkun.cpp` (including newly bounded string literal block in `.data 0x4978-0x4cc8`, `.sdata 0x1d0-0x1d8`, and `.sdata2 0x2d0-0x320`). **0 removals**, **exactly 4 additions** (`__dt__15dPanelObjList_cFv`, `coin_collisionCheck__18daEnObjCoinBlock_cFv`, `set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c`, `SetQuickSandEffect__15EffectManager_cFP7mVec3_c`), and **29 must-not-pin symbols** defined by landed actor/mLib slices.
+
+2. **Task B (`d_basesNP` Strategic Queue Survey)**:
+   - `d_basesNP.rel` contains 441 profile entries, 318 `.ctors` entries, and 12,905 functions across 1,859,588 bytes of code, with only 13 translation units (~1.5%) currently landed.
+   - We executed `tools/sibmap.py` over candidate target units against the 5,168-function corpus and captured its stderr warning:
+     `sibmap: WARNING: 1 FAMILY entries match no corpus file and contribute nothing: d_a_en_dpakkun`
+   - We produced a ranked queue of the **next 8 authorable TUs in `d_basesNP`**, ranked by **progress-per-unit-of-risk**.
+   - **Top Recommendation to Start**: [d_a_wm_grid.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_grid.cpp) (85.45% exact / 100.00% shape sibling score, 512 B span, 0 unreconstructed types, 0 link hazards), followed by [d_a_wm_tower.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_tower.cpp) (88.09% exact / 98.56% shape, 1,120 B span) and [d_a_wm_kinoko_base.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_kinoko_base.cpp) (unblocks 3 derived TUs).
 
 ---
 
-# 1. Task A: Rigorous Backward Bound Audit of `m_pad.cpp`
+# Part 1. Task A: Landing Kits for the Two Pre-Flighted Units
 
-We audited the object layout immediately preceding each claimed low bound of `m_pad.cpp` across all sections in the retail DOL (`wiimj2d.dol`).
+## 1. Landing Kit for `m_pad.cpp`
 
-### 1.1 Summary Audit Table
+### 1.1 Slice Block & Section Arithmetic
 
-| Section | Claimed Low Bound | Slice Offset | Object Immediately Below Low Bound | Preceding TU & Official Split Bound | Clearing Rule & Evidence | Result |
-|---|---|---|---|---|---|---|
-| **`.data`** | `0x80329F60` | `0x2B8C0` | `@3984` (`0x80329F38`, size `0x22`) | `m_heap.cpp` (`.data 0x80329E48..0x80329F60`, split #736) | **Split Bracketing & Pool ID Rule**: Preceding strings `@3600`–`@3984` belong to `m_heap.cpp`'s 3000-series pool. `m_mtx.cpp` emits 0 `.data`. `m_pad.cpp` pool IDs start at 6000/13000 series. | **SAFE** (No lower objects) |
-| **`.sdata2`** | `0x8042E010` | `0x2CB0` | `@2422` (`0x8042E008`, size `0x04`) | `m_mtx.cpp` (`.sdata2 0x8042E000..0x8042E010`, split #745) | **Split Bracketing & Pool ID Rule**: `@2420`–`@2422` are float constants of `m_mtx.cpp` (2000-series pool). `m_pad.cpp` constants start at `@14502` / `@6616`. | **SAFE** (No lower objects) |
-| **`.bss`** | `0x80377F88` | `0x26608` | `Identity__6mMtx_c` (`0x80377F58`, size `0x30`) | `m_mtx.cpp` (`.bss 0x80377F58..0x80377F88`, split #744) | **Split Bracketing & Symbol Identity**: `Identity__6mMtx_c` is the static identity matrix initialized by `__sinit_\m_mtx_cpp`. | **SAFE** (No lower objects) |
-| **`.sbss`** | `0x8042A740` | `0x8A0` | `g_assertHeap__5mHeap` (`0x8042A738`, size `0x04`) | `m_heap.cpp` (`.sbss 0x8042A728..0x8042A740`, split #739) | **Split Bracketing & Symbol Identity**: `m_heap.cpp` owns 5 heap pointers at `0x8042A728`–`0x8042A740`. `m_mtx.cpp` has 0 `.sbss`. | **SAFE** (No lower objects) |
-| **`.ctors`** | `0x802EDEFC` | `0x21C` | `__sinit_\m_mtx_cpp` (`0x802EDEF8`, size `0x04`) | `m_mtx.cpp` (`.ctors 0x802EDEF8..0x802EDEFC`, split #743) | **Split Bracketing**: `.ctors` slot `0x802EDEF8` points directly to `__sinit_\m_mtx_cpp`. Slot `0x802EDF00` points to `__sinit_\m_vec_cpp`. | **SAFE** (No lower objects) |
-| **`.rodata`** | None | — | `sc_BANNER_FILE` (`0x802F1480`) | `d_nand_thread.cpp` (`0x802F1470..0x802F148B`) | `m_pad.cpp` contains 0 `.rodata` objects. | **SAFE** (None owned) |
-| **`.sdata`** | None | — | `s_pTopHeap` (`0x80429788`) | `m_heap.cpp` (`.sdata 0x80429788..0x80429790`, split #738) | `m_pad.cpp` contains 0 `.sdata` objects. | **SAFE** (None owned) |
-| **`.dtors`** | None | — | — | System crt dtors only | `m_pad.cpp` registers destructors via `__register_global_object` in `__sinit`. | **SAFE** (None owned) |
+All section ranges have passed the overlap-and-adjacency check against all 144 slices in [slices/wiimj2d.json](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/slices/wiimj2d.json):
 
-### 1.2 In-Depth `.data` Format String Audit for `mPrint`
-
-Claude specifically noted that `m_pad.cpp` contains 32 `mPrint::MyPrintBase` template methods calling `vsnprintf`/`vswprintf` and a `Flush()` driving a `TextWriterBase`. We audited every single instruction across functions 17–48:
-
-1. **Format Strings are Caller Arguments**: In `mPrint::MyPrintBase<char>::VRegisterf(int, int, u32, u32, float, bool, int, const char *fmt, va_list va)`, the format string `fmt` is received in register `r10` and forwarded directly to `vsnprintf(buf, sizeof(buf), fmt, va)`. No string literals are defined within `m_pad.cpp`.
-2. **`Flush()` Operates on Dynamic Nodes**: `Flush()` traverses the `nw4r::ut::List` of `MyText` nodes allocated dynamically on the heap by `Register(...)`. It does not format or embed static string literals.
-3. **Disassembly Relocation Audit**: We audited every memory operand in `auto_03_8016F808_text.o.txt`. The only data references across functions 17–48 are to `.sdata2` floating-point constants (`@6616`, `@6617`, `@6621`, `@6626`, `@6627`). There are **zero `.data` relocations** in the entirety of `mPrint`.
-4. **`.data` Section Contents**: `m_pad.cpp`'s `.data` consists solely of `__vt__Q24mTex8edit4b_c` (`0x10` bytes at `0x80329F60`).
-
-**Conclusion for Task A**: All claimed section ranges for `m_pad.cpp` are exact and complete.
-
----
-
-# 2. Task B: Full Function Table for `d_multi_mng.cpp`
-
-The `.text` section of `d_multi_manager.cpp` spans `0x800CE8F0` to `0x800CED00` (total 1,040 bytes / `0x410` bytes, comprising 996 bytes of code across 10 functions plus alignment padding).
-
-| # | Address | Size | Mangled Name | Clean C++ Signature | Status | Description |
-|---|---|---|---|---|---|---|
-| 1 | `0x800CE8F0` | `0x14` | `__ct__11dMultiMng_cFv` | `dMultiMng_c::dMultiMng_c()` | **MATCH** | Sets vtable pointer and writes `this` to `mspInstance`. |
-| 2 | `0x800CE910` | `0x40` | `__dt__11dMultiMng_cFv` | `virtual dMultiMng_c::~dMultiMng_c()` | **MATCH** | Scalar deleting destructor invoking `operator delete(void*)`. |
-| 3 | `0x800CE950` | `0x58` | `initStage__11dMultiMng_cFv` | `void dMultiMng_c::initStage()` | **MATCH** | Zeroes score, coins, battle coins, enemy kills, and star coin flags for players 0..3. |
-| 4 | `0x800CE9B0` | `0x78` | `setClapSE__11dMultiMng_cFv` | `void dMultiMng_c::setClapSE()` | **MATCH** | Computes center coordinates from `dBgParameter_c` and plays map sound `SE_SYS_NICE_S` (`0xB7`). |
-| 5 | `0x800CEA30` | `0x10` | `setRest__11dMultiMng_cFii` | `void dMultiMng_c::setRest(int rest, int plrNo)` | **MATCH** | Sets `mRest[plrNo] = rest`. |
-| 6 | `0x800CEA40` | `0x7C` | `addScore__11dMultiMng_cFii` | `void dMultiMng_c::addScore(int value, int plrNo)` | **MATCH** | Maps Toad player ID, adds to `mScore[plrNo]`, and clamps to `MAX_EXTRA_MODE_SCORE` (999,990). |
-| 7 | `0x800CEAC0` | `0x4C` | `incCoin__11dMultiMng_cFi` | `void dMultiMng_c::incCoin(int plrNo)` | **MATCH** | Maps Toad player ID and increments `mCoin[plrNo]`. |
-| 8 | `0x800CEB10` | `0x4C` | `incEnemyDown__11dMultiMng_cFi` | `void dMultiMng_c::incEnemyDown(int plrNo)` | **MATCH** | Maps Toad player ID and increments `mEnemyDown[plrNo]`. |
-| 9 | `0x800CEB60` | `0x10C` | `setBattleCoin__11dMultiMng_cFii` | `void dMultiMng_c::setBattleCoin(int plrNo, int value)` | **MATCH** | Checks multiplayer/coin battle flags, adds to `mBattleCoin[plrNo]`, maps popup type, and spawns `dGameCom::CreateSmallScore`. |
-| 10 | `0x800CEC70` | `0x90` | `setCollectionCoin__11dMultiMng_cFv` | `void dMultiMng_c::setCollectionCoin()` | **MATCH** | Clears star coin flags, reads `dScStage_c::mCollectionCoin[0..2]`, and sets bitmask flags `0x1`, `0x2`, `0x4`. |
-
----
-
-# 3. Class Reconstruction for `dMultiMng_c` & `sizeof` Settlement
-
-### 3.1 Disassembly-Evidenced Field Mapping
-
-From the compiled assembly in `scratch/d_multi_manager_disasm.txt`:
-```assembly
-/* 0x00 */  stw   r4, 0x0(r3)          ; __vt__11dMultiMng_c (vtable ptr)
-/* 0x04 */  [m_04 / unused pad]        ; 4 bytes
-/* 0x08 */  stw   r4, 0x8(r3)          ; mRest[0..3] (0x08, 0x0C, 0x10, 0x14)
-/* 0x18 */  stw   r0, 0x18(r3)         ; mScore[0..3] (0x18, 0x1C, 0x20, 0x24)
-/* 0x28 */  stw   r0, 0x28(r3)         ; mCoin[0..3] (0x28, 0x2C, 0x30, 0x34)
-/* 0x38 */  stw   r0, 0x38(r3)         ; mEnemyDown[0..3] (0x38, 0x3C, 0x40, 0x44)
-/* 0x48 */  stw   r0, 0x48(r3)         ; mBattleCoin[0..3] (0x48, 0x4C, 0x50, 0x54)
-/* 0x58 */  stb   r0, 0x58(r3)         ; mCollectionCoin[0..3] (0x58, 0x59, 0x5A, 0x5B)
+```json
+{
+    "source": "dol/mLib/m_pad.cpp",
+    "memoryRanges": {
+        ".text": "0x168bb0-0x169100",
+        ".ctors": "0x21c-0x220",
+        ".bss": "0x26608-0x26748",
+        ".sbss": "0x8a0-0x8c0"
+    }
+}
 ```
 
-### 3.2 `sizeof(dMultiMng_c)` Settlement: Exact `0x5C` Confirmed
+#### Base Subtraction & Adjacency Breakdown:
+- **`.text`**: Virtual `0x8016F330`–`0x8016F880` (Span `0x550` / 1,360 B). Subtracted base `.text:0x80006780` $\to$ **`0x168bb0-0x169100`**.
+  * Overlaps: 0.
+  * Immediately preceding slice: [dol/mLib/m_mtx.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_mtx.cpp) (`0x168560-0x168bb0`), gap = **0x0**.
+  * Immediately following slice: [dol/mLib/m_vec.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_vec.cpp) (unbanked `m_print.cpp` occupies `0x169100`–`0x16A340`).
+- **`.ctors`**: Virtual `0x802EDEFC`–`0x802EDF00` (Span `0x4`). Subtracted base `.ctors:0x802EDCE0` $\to$ **`0x21c-0x220`**.
+  * Overlaps: 0.
+  * Slot `0x802EDEFC` contains pointer to `__sinit_\m_pad_cpp` (`0x8016F7B0`).
+  * Immediately preceding slice: [dol/mLib/m_mtx.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_mtx.cpp) (`0x218-0x21c`), gap = **0x0**.
+  * Immediately following slice: [dol/mLib/m_vec.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_vec.cpp) (`0x220-0x224`), gap = **0x0**.
+- **`.bss`**: Virtual `0x80377F88`–`0x803780C8` (Span `0x140` / 320 B). Subtracted base `.bss:0x80351980` $\to$ **`0x26608-0x26748`**.
+  * Overlaps: 0.
+  * Contains `g_core__4mPad` (`0x80377F88`), static `@13954` (`0x80377F98`), `g_PadAdditionalData__4mPad` (`0x80377FA8`), `s_WPADInfo__4mPad` (`0x80378008`), `s_WPADInfoTmp__4mPad` (`0x80378068`).
+  * Immediately preceding slice: [dol/mLib/m_mtx.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_mtx.cpp) (`0x265d8-0x26608`), gap = **0x0**.
+  * Immediately following slice: [dol/mLib/m_vec.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_vec.cpp) (`0x26748-0x26778`), gap = **0x0**.
+- **`.sbss`**: Virtual `0x8042A740`–`0x8042A760` (Span `0x20` / 32 B). Subtracted base `.sbss:0x80429EA0` $\to$ **`0x8a0-0x8c0`**.
+  * Overlaps: 0.
+  * Contains `g_padMg__4mPad`, `g_currentCoreID__4mPad`, `g_currentCore__4mPad`, `g_IsConnected__4mPad`, `g_PadFrame__4mPad`, `s_WPADInfoAvailable__4mPad`, `s_GetWPADInfoInterval__4mPad`, `s_GetWPADInfoCount__4mPad`.
+  * Immediately preceding slice: [dol/mLib/m_heap.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/mLib/m_heap.cpp) (`0x888-0x8a0`, `m_mtx.cpp` owns 0 `.sbss`), gap = **0x0**.
+- **Empty Sections**: `.rodata`, `.data`, `.sdata`, `.sdata2`, `.dtors` all claim 0 bytes (verified).
 
-- Offset `0x58` + 4 bytes (`mCollectionCoin[4]`) = `0x5C` (92 bytes).
-- Because `0x5C` is a multiple of 4, no trailing alignment padding is inserted by MWCC.
-- **`sizeof(dMultiMng_c) == 0x5C` is 100% CONFIRMED**.
-- **Impact on `d_a_player_manager.cpp`**: `d_a_player_manager.hpp` declares `static dMultiMng_c mMultiManager` at `.bss:0x80355284` with assumed size `0x5C`. Because `sizeof(dMultiMng_c)` is identically `0x5C`, **there is zero offset shift or perturbation** to any following `.bss` objects in `d_a_player_manager.cpp`.
+---
 
-### 3.3 Complete C++ Header Declaration
+### 1.2 `syms.txt` Removals (5 symbols)
 
-```cpp
-#pragma once
-#include <types.h>
-#include <constants/game_constants.h>
+Remove these lines from [syms.txt](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/syms.txt) when landing:
 
-class dMultiMng_c {
-public:
-    dMultiMng_c();
-    virtual ~dMultiMng_c();
-
-    void initStage();
-    void setClapSE();
-    void setRest(int rest, int plrNo);
-    void addScore(int value, int plrNo);
-    void incCoin(int plrNo);
-    void incEnemyDown(int plrNo);
-    void setBattleCoin(int plrNo, int value);
-    void setCollectionCoin();
-
-    int m_04;
-    int mRest[PLAYER_COUNT];
-    int mScore[PLAYER_COUNT];
-    int mCoin[PLAYER_COUNT];
-    int mEnemyDown[PLAYER_COUNT];
-    int mBattleCoin[PLAYER_COUNT];
-    u8 mCollectionCoin[PLAYER_COUNT];
-
-    static dMultiMng_c *mspInstance;
-};
+```
+create__4mPadFv=0x8016F330       (line 578)
+beginPad__4mPadFv=0x8016F360     (line 579)
+endPad__4mPadFv=0x8016F550       (line 580)
+g_core__4mPad=0x80377F88         (line 1050)
+g_currentCore__4mPad=0x8042A748  (line 1127)
 ```
 
 ---
 
-# 4. Complete Data Inventory & Reference Audit
+### 1.3 `syms.txt` Additions (6 symbols)
 
-| Section | Address | Size | Slice Span | Symbol Name | Type / Layout | Ref Count in TU | Status |
-|---|---|---|---|---|---|---|---|
-| **`.text`** | `0x800CE8F0` | `0x410` | `0xC8170`–`0xC8580` | 10 member functions | Executable code | — | REFERENCED |
-| **`.rodata`** | `0x802F1460` | `0x10` | `0x3480`–`0x3490` | `@LOCAL@setCollectionCoin__11dMultiMng_cFv@masks` | `const int masks[3] = {1, 2, 4}` (`0xC` + 4 pad) | 3 (in `setCollectionCoin`) | REFERENCED |
-| **`.data`** | `0x80317CC8` | `0x10` | `0x19628`–`0x19638` | `__vt__11dMultiMng_c` | `void* [3]` (`0xC` + 4 pad) | 1 (in constructor) | REFERENCED |
-| **`.sbss`** | `0x8042A290` | `0x8` | `0x3F0`–`0x3F8` | `mspInstance__11dMultiMng_c` | `dMultiMng_c*` (`0x4` + 4 pad) | 1 (in constructor) | REFERENCED |
-| **`.sdata2`** | `0x8042CC90` | `0x8` | `0x1930`–`0x1938` | `@22965` | `const float` (`0.5f`, `0x3F000000`, `0x4` + 4 pad) | 1 (in `setClapSE`) | REFERENCED |
-| **`.bss`** | None | — | — | — | — | 0 | NONE |
-| **`.sdata`** | None | — | — | — | — | 0 | NONE |
-| **`.ctors`** | None | — | — | — | — | 0 | NONE |
-| **`.dtors`** | None | — | — | — | — | 0 | NONE |
+Add these external references derived from target relocations:
 
-All emitted objects are active and referenced. There are no unreferenced orphaned objects in this translation unit.
-
----
-
-# 5. Header Hazard & Link-Blocker Analysis
-
-### 5.1 The Vector Destructor Emission Hazard
-
-When `d_multi_manager.cpp` was compiled against the repo's existing shared headers, MWCC emitted 3 extra weak functions into the object:
-- `__dt__7mVec2_cFv` (size `0x40`)
-- `__dt__Q23EGG8Vector2fFv` (size `0x40`)
-- `__dt__Q23EGG8Vector3fFv` (size `0x40`)
-
-This expanded `.text` from `0x410` to `0x4D0`, inserting destructor bodies into the middle of the translation unit and shifting downstream functions by `0x80` bytes.
-
-### 5.2 Root Cause
-`include/game/mLib/m_vec.hpp` (lines 32 and 128) and `include/lib/egg/math/eggVector.h` (lines 14 and 39) contain explicit inline destructors (`~mVec2_c() {}`, `~Vector2f() {}`, `~Vector3f() {}`). In standard GameCube/Wii CodeWarrior code, math vector structs are plain-old-data (POD) types with trivial default destructors.
-
-### 5.3 Proposed Header Diff (Non-Perturbing)
-
-```diff
---- include/game/mLib/m_vec.hpp
-+++ scratch/gemini_round8/mock_include/game/mLib/m_vec.hpp
-@@ -29,7 +29,6 @@
-     /// @brief Constructs an empty vector.
-     mVec2_c() {}
- 
--    ~mVec2_c() {}
- 
-     /// @brief Constructs a vector from a float array.
-     mVec2_c(const f32 *p) { x = p[0]; y = p[1]; }
-@@ -125,7 +124,6 @@
-     /// @brief Constructs an empty vector.
-     mVec3_c() {}
- 
--    ~mVec3_c() {}
- 
-     /// @brief Constructs a vector from a float array.
-     mVec3_c(const f32 *p) { x = p[0]; y = p[1]; z = p[2]; }
-
---- include/lib/egg/math/eggVector.h
-+++ scratch/gemini_round8/mock_include/lib/egg/math/eggVector.h
-@@ -11,7 +11,6 @@
-         /// @brief Constructs an empty vector.
-         Vector2f() {}
- 
--        ~Vector2f() {}
- 
-         /// @brief Constructs a vector from two floating point values.
-         Vector2f(f32 fx, f32 fy) { set(fx, fy); }
-@@ -36,7 +35,6 @@
-         /// @brief Constructs an empty vector.
-         Vector3f() {}
- 
--        ~Vector3f() {}
- 
-         /// @brief Constructs a vector from two floating point values.
-         Vector3f(f32 fx, f32 fy, f32 fz) { set(fx, fy, fz); }
+```
+WPADGetInfoAsync=0x801e1400
+init__Q23EGG10CoreStatusFv=0x802bc9d0
+sceneReset__Q23EGG14CoreControllerFv=0x802bcaf0
+getNthController__Q23EGG17CoreControllerMgrFi=0x802bd660
+sInstance__Q23EGG17CoreControllerMgr=0x8042b150
+@14502=0x8042e010
 ```
 
-- **Compiled**: YES (`d_multi_manager.cpp` compiled with these clean headers emits exactly 10 functions and 0 weak destructors).
-- **Confidence**: High.
-- **Offset-perturbing**: **NO**. `sizeof(mVec2_c)` remains `0x8` and `sizeof(mVec3_c)` remains `0xC`. It restores trivial destructor semantics.
+---
+
+### 1.4 Must-Not-Pin List (3 symbols)
+
+These symbols are referenced by `m_pad.cpp` and are **already defined by landed slices**; they must **NOT** be pinned:
+
+```
+__register_global_object = 0x802dca70  (defined by runtime/global_destructor_chain.c)
+__construct_array        = 0x802dcc90  (defined by runtime/class_arrays.cpp)
+__destroy_arr            = 0x802dcd88  (defined by runtime/class_arrays.cpp)
+```
+
+*(Note: `__dl__FPv` at `0x802B93C0`, `_savegpr_25` at `0x802DD05C`, and `_restgpr_25` at `0x802DD0A8` are already pinned in `syms.txt` at lines 857, 969, 988).*
 
 ---
 
-# 6. Banked-Slice Audit & Symbol Pin List
+## 2. Landing Kit for `d_a_en_coin_main.cpp`
 
-### 6.1 Banked-Slice Collision Check
-We audited all 144 banked slices in `slices/wiimj2d.json`:
-- `dol/bases/d_multi_manager.cpp` is already recorded with exact ranges:
-  - `.text`: `0xc8170-0xc8580`
-  - `.rodata`: `0x3480-0x3490`
-  - `.data`: `0x19628-0x19638`
-  - `.sbss`: `0x3f0-0x3f8`
-  - `.sdata2`: `0x1930-0x1938`
-- **Collisions**: **0 collisions** with any other banked slice.
+### 2.1 Slice Block & Section Arithmetic
 
-### 6.2 Symbol Pin Audit (`syms.txt`)
-- **Defined symbols to strip**: **0**. None of `dMultiMng_c`'s symbols are currently present in `syms.txt`.
-- **External symbols referenced & verified in `syms.txt`**:
-  1. `changeItemKinopioPlrNo__9daPyMng_cFRi` = `0x80060170` (in `syms.txt`)
-  2. `getCtrlPlayer__9daPyMng_cFi` = `0x8005FB90` (in `syms.txt`)
-  3. `CreateSmallScore__8dGameComFRC7mVec3_ciib` = `0x800B3540` (in `syms.txt`)
-  4. `cvtSndObjctPos__6dAudioFRC7mVec2_c` = `0x8006A3F0` (in `syms.txt`)
-  5. `startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul` = `0x80198D70` (in `syms.txt`)
-  6. `ms_Instance_p__14dBgParameter_c` = `0x8042A0E0` (in `syms.txt`)
-  7. `g_pSndObjMap__6dAudio` = `0x8042A040` (in `syms.txt`)
-  8. `mGameFlag__7dInfo_c` = `0x8042A260` (in `syms.txt`)
-  9. `mCollectionCoin__10dScStage_c` = `0x803744B0` (in `syms.txt`)
-  10. `__dl__FPv` = `0x802B93C0` (in `syms.txt`)
+All 7 section ranges have passed the overlap-and-adjacency check against all 144 slices in [slices/wiimj2d.json](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/slices/wiimj2d.json):
+
+```json
+{
+    "source": "dol/bases/d_a_en_coin_main.cpp",
+    "memoryRanges": {
+        ".text": "0x20b70-0x21a40",
+        ".ctors": "0x38-0x3c",
+        ".rodata": "0x770-0x810",
+        ".data": "0x4978-0x4cc8",
+        ".bss": "0x1768-0x17a0",
+        ".sdata": "0x1d0-0x1d8",
+        ".sdata2": "0x2d0-0x320"
+    }
+}
+```
+
+#### Base Subtraction & Adjacency Breakdown:
+- **`.text`**: Virtual `0x800272F0`–`0x800281C0` (Span `0xED0` / 3,792 B). Subtracted base `.text:0x80006780` $\to$ **`0x20b70-0x21a40`**.
+  * Overlaps: 0.
+  * Immediately preceding slice: [dol/bases/d_a_en_carry.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_carry.cpp) (`0x20430-0x20b70`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x21a40-0x243c0`), gap = **0x0**.
+- **`.ctors`**: Virtual `0x802EDD18`–`0x802EDD1C` (Span `0x4`). Subtracted base `.ctors:0x802EDCE0` $\to$ **`0x38-0x3c`**.
+  * Overlaps: 0. Slot `0x802EDD18` points to `__sinit_\d_a_en_coin_main_cpp` (`0x80028150`).
+  * Immediately preceding slice: [dol/bases/d_a_en_carry.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_carry.cpp) (`0x34-0x38`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x3c-0x40`), gap = **0x0**.
+- **`.rodata`**: Virtual `0x802EE750`–`0x802EE7F0` (Span `0xA0` / 160 B). Subtracted base `.rodata:0x802EDFE0` $\to$ **`0x770-0x810`**.
+  * Overlaps: 0. Contains `l_coin_center_cc`, `l_coin_foot_cc`, `l_objcoin_foot/head/wall`, `l_bound_yspd`.
+  * Immediately preceding slice: [dol/bases/d_a_en_bros_base.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_bros_base.cpp) (`0x6d0-0x770`, `carry.cpp` owns 0 `.rodata`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x810-0x830`), gap = **0x0**.
+- **`.data`**: Virtual `0x80303018`–`0x80303368` (Span `0x350` / 848 B). Subtracted base `.data:0x802FE6A0` $\to$ **`0x4978-0x4cc8`**.
+  * Overlaps: 0.
+  * Contains TU-local string literals `@72501`–`@72561` (`g3d/obj_coin.brres`, `obj_coin`, `Wm_en_burst_s`) from `0x80303018` to `0x80303078` (`0x60` B) followed by `__vt__14daEnCoinMain_c` from `0x80303078` to `0x80303368` (`0x2F0` B).
+  * Immediately preceding slice: [dol/bases/d_a_en_carry.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_carry.cpp) (`0x4640-0x4978`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x4cc8-0x52a8`), gap = **0x0**.
+- **`.bss`**: Virtual `0x803530E8`–`0x80353120` (Span `0x38` / 56 B). Subtracted base `.bss:0x80351980` $\to$ **`0x1768-0x17a0`**.
+  * Overlaps: 0. Contains `l_coin_center_bgc_info` (`0x1C` B) and `l_coin_bgc_info` (`0x1C` B).
+  * Immediately preceding slice: [dol/bases/d_a_en_carry.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_carry.cpp) (`0x1728-0x1768`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x17a0-0x1940`), gap = **0x0**.
+- **`.sdata`**: Virtual `0x80427B50`–`0x80427B58` (Span `0x8`). Subtracted base `.sdata:0x80427980` $\to$ **`0x1d0-0x1d8`**.
+  * Overlaps: 0. Contains string literal `@72504` (`"float"` used in `model_set`).
+  * Immediately preceding slice: [dol/bases/d_a_en_bros_base.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_bros_base.cpp) (`0x198-0x1d0`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x1d8-0x1e0`), gap = **0x0**.
+- **`.sdata2`**: Virtual `0x8042B630`–`0x8042B680` (Span `0x50` / 80 B). Subtracted base `.sdata2:0x8042B360` $\to$ **`0x2d0-0x320`**.
+  * Overlaps: 0. Contains `smc_DRAW_OFFSET_Y__14daEnCoinMain_c`, `smc_OFFSET_Y__14daEnCoinMain_c`, and TU float literals `@72351`..`@72721` (`128.0`, `64.0`, `8.0`, `-0.015625`, `0.3`, `5500.0`, `40.0`, `16.0`).
+  * Immediately preceding slice: [dol/bases/d_a_en_carry.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_carry.cpp) (`0x2c8-0x2d0`), gap = **0x0**.
+  * Immediately following slice: [dol/bases/d_a_en_dfpakkun.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/dol/bases/d_a_en_dfpakkun.cpp) (`0x320-0x348`), gap = **0x0**.
 
 ---
 
-# 7. Final Recommendation
+### 2.2 `syms.txt` Removals (0 symbols)
 
-- `m_pad.cpp`'s data and code bounds are fully verified against all rules and hard-bracketed by official split files.
-- `d_multi_manager.cpp` achieves **10/10 byte-exact matching functions (100%)** with exact section bounds (`.text 0x410`, `.rodata 0x10`, `.data 0x10`, `.sbss 0x8`, `.sdata2 0x8`).
-- `sizeof(dMultiMng_c) == 0x5C` is confirmed by code analysis and matches `d_a_player_manager.cpp`'s `.bss` layout.
-- `d_multi_manager.cpp` is a **strong green light** for immediate landing once Claude applies the vector header cleanup.
+Zero symbols currently in [syms.txt](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/syms.txt) fall within `d_a_en_coin_main.cpp`'s ranges.
+
+---
+
+### 2.3 `syms.txt` Additions (4 symbols)
+
+Re-derived by the relocation method from split disassembly:
+
+```
+__dt__15dPanelObjList_cFv=0x800145f0
+coin_collisionCheck__18daEnObjCoinBlock_cFv=0x80036a70
+set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c=0x8007fb10
+SetQuickSandEffect__15EffectManager_cFP7mVec3_c=0x800943f0
+```
+
+---
+
+### 2.4 Must-Not-Pin List (29 symbols)
+
+These 29 symbols referenced by `d_a_en_coin_main.cpp` are **already defined by landed slices** and must **NOT** be pinned:
+
+```
+changePosAngle__8dActor_cFP7mVec3_cP7mAng3_ci                = 0x80064af0  (dol/bases/d_actor.cpp)
+setSoftLight_MapObj__8dActor_cFRQ23m3d6bmdl_c                = 0x80064bf0  (dol/bases/d_actor.cpp)
+getCenterPos__12dBaseActor_cCFv                              = 0x8006ced0  (dol/bases/d_base_actor.cpp)
+entry__5dCc_cFv                                              = 0x8008c330  (dol/bases/d_cc.cpp)
+set__5dCc_cFP8dActor_cP10sCcDatNewFUc                        = 0x8008c440  (dol/bases/d_cc.cpp)
+__dt__5dEn_cFv                                               = 0x80095130  (dol/bases/d_enemy.cpp)
+EnBgCheckFoot__5dEn_cFv                                      = 0x80096f60  (dol/bases/d_enemy.cpp)
+EnBgCheckWall__5dEn_cFv                                      = 0x80097050  (dol/bases/d_enemy.cpp)
+WaterCheck__5dEn_cFR7mVec3_cf                                = 0x80097170  (dol/bases/d_enemy.cpp)
+getRes__6dRes_cCFPCcPCc                                      = 0x800df270  (dol/bases/d_res.cpp)
+deleteRequest__7fBase_cFv                                    = 0x80162650  (dol/framework/f_base.cpp)
+__dl__7fBase_cFPv                                            = 0x80162a60  (dol/framework/f_base.cpp)
+create__Q23m3d8anmChr_cF...                                  = 0x80165210  (dol/mLib/m_3d/anm_chr.cpp)
+setAnm__Q23m3d8anmChr_cFRQ23m3d6bmdl_c...                    = 0x80165330  (dol/mLib/m_3d/anm_chr.cpp)
+create__Q23m3d11anmTexSrt_cF...                              = 0x80167560  (dol/mLib/m_3d/anm_tex_srt.cpp)
+__dt__Q23m3d11anmTexSrt_cFv                                  = 0x801677e0  (dol/mLib/m_3d/anm_tex_srt.cpp)
+setAnm__Q23m3d11anmTexSrt_cFRQ23m3d6bmdl_c...                = 0x80167940  (dol/mLib/m_3d/anm_tex_srt.cpp)
+__dt__Q23m3d6fanm_cFv                                        = 0x80168ec0  (dol/mLib/m_3d/fanm.cpp)
+__dt__Q23m3d5mdl_cFv                                         = 0x80169e60  (dol/mLib/m_3d/mdl.cpp)
+create__Q23m3d5mdl_cF...                                     = 0x80169ed0  (dol/mLib/m_3d/mdl.cpp)
+setAnm__Q23m3d5mdl_cFRQ23m3d6banm_cf                         = 0x8016a0c0  (dol/mLib/m_3d/mdl.cpp)
+setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3               = 0x8016a290  (dol/mLib/m_3d/scn_leaf.cpp)
+setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34           = 0x8016a2b0  (dol/mLib/m_3d/scn_leaf.cpp)
+calc__Q23m3d9scnLeaf_cFb                                     = 0x8016a2e0  (dol/mLib/m_3d/scn_leaf.cpp)
+XrotM__6mMtx_cF4mAng                                         = 0x8016edf0  (dol/mLib/m_mtx.cpp)
+YrotM__6mMtx_cF4mAng                                         = 0x8016ef10  (dol/mLib/m_mtx.cpp)
+ZrotM__6mMtx_cF4mAng                                         = 0x8016f030  (dol/mLib/m_mtx.cpp)
+g_gameHeaps__5mHeap                                          = 0x80377f48  (dol/mLib/m_heap.cpp)
+m_instance__9dResMng_c                                       = 0x8042a318  (dol/bases/d_res_mng.cpp)
+```
+
+---
+
+# Part 2. Task B: Strategic Survey & Ranked Queue of `d_basesNP`
+
+## 2.1 State of `d_basesNP.rel`
+
+`d_basesNP.rel` is the largest REL module in *New Super Mario Bros. Wii* (1.86 MB code across 12,905 functions and 441 profile definitions). Currently, only **13 translation units** (~1.5%) are landed.
+
+When running `tools/sibmap.py`, the following stderr warning was captured:
+```
+sibmap: WARNING: 1 FAMILY entries match no corpus file and contribute nothing:
+    d_a_en_dpakkun
+```
+
+## 2.2 Ranked Queue of the Next 8 Authorable TUs in `d_basesNP`
+
+We evaluated all candidate units in `d_basesNP.rel` and ranked them by **progress-per-unit-of-risk**:
+
+```
++------+--------------------------+-------------------+------------+----------+-----------+-------------------+----------------------+
+| Rank | Translation Unit         | Class Name        | Code Bytes | Span (B) | Functions | Sibling Score     | Key Strategic Value  |
++------+--------------------------+-------------------+------------+----------+-----------+-------------------+----------------------+
+|  1   | d_a_wm_grid.cpp          | daWmGrid_c        |    440 B   |   512 B  |    10     | 85.5% e / 100% sh | Zero-risk starter    |
+|  2   | d_a_wm_tower.cpp         | daWmTower_c       |  1,064 B   | 1,120 B  |    11     | 88.1% e / 98.6% sh| High-yield sibling   |
+|  3   | d_a_wm_smallcloud.cpp    | daWmSmallCloud_c  |  1,964 B   | 2,064 B  |    16     | 71.5% e / 83.5% sh| Exact twin of cloud  |
+|  4   | d_a_wm_ghost.cpp         | daWmGhost_c       |  3,024 B   | 3,088 B  |    13     | 39.9% e / 55.3% sh| Closes dokan_route   |
+|  5   | d_a_wm_kinoko_base.cpp   | daWmKinokoBase_c  |  2,648 B   | 2,768 B  |    17     | 41.9% e / 54.3% sh| Unblocks 3 leaf TUs  |
+|  6   | d_a_wm_kinoko_1up.cpp    | daWmKinoko1up_c   |    412 B   |   480 B  |     9     | 82.5% e / 94.2% sh| Leaf of kinoko_base  |
+|  7   | d_a_wm_boss_base.cpp     | daWmBossBase_c    |  1,708 B   | 1,952 B  |    12     | 28.8% e / 38.9% sh| Unblocks 7 Koopalings|
+|  8   | d_a_wm_boss_larry.cpp    | daWmBossLarry_c   |    524 B   |   544 B  |     8     | 55.7% e / 70.8% sh| Leaf of boss_base    |
++------+--------------------------+-------------------+------------+----------+-----------+-------------------+----------------------+
+```
+
+---
+
+### Unit 1: [d_a_wm_grid.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_grid.cpp) — The Zero-Risk Starter
+
+- **Profile & Class**: `g_profile_WM_GRID` / `daWmGrid_c` (Leaf derived from `dWmObjActor_c`).
+- **Section Bounds**:
+  * `.text`: `0x164230-0x164430` (Span: 512 B, Code: 440 B, 10 functions).
+  * `.ctors`: `0x3e4-0x3e8` (Size: 0x4).
+  * `.rodata`: `0x88b8-0x88d0` (Size: 0x18).
+  * `.data`: `0x44cb4-0x44d54` (Size: 0xA0).
+  * `.bss`: `0xfdd0-0xfde0` (Size: 0x10).
+- **Both Checks Run**: Zero overlaps across all 5 sections; bracketed between `daWmGhost_c` (`0x163620..0x164230`) and `daWmHanachan_c` (`0x164430..0x165c70`).
+- **Tractability**:
+  * **Sibling Score**: **85.45% exact / 100.00% shape**.
+  * Every function has 100% shape match with existing repo code (`dSelectCursor_c`, `dWmDemoActor_c`, `d_2d`).
+  * 0 unreconstructed types: `dWmObjActor_c` header already exists in [include/game/bases/d_wm_obj_actor.hpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/include/game/bases/d_wm_obj_actor.hpp).
+  * 0 register-allocation risk functions: largest function is 116 bytes (`~daWmGrid_c`).
+- **Why Start Here**: The highest progress-per-unit-of-risk in the entire REL. It proves the REL authoring pipeline with a guaranteed first-compile match.
+
+---
+
+### Unit 2: [d_a_wm_tower.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_tower.cpp) — The High-Yield World Map Landmark
+
+- **Profile & Class**: `g_profile_WM_TOWER` / `daWmTower_c` (Leaf derived from `dWmObjActor_c`).
+- **Section Bounds**:
+  * `.text`: `0x185710-0x185b70` (Span: 1,120 B, Code: 1,064 B, 11 functions).
+  * `.ctors`: `0x44c-0x450` (Size: 0x4).
+  * `.rodata`: `0x9488-0x94a0` (Size: 0x18).
+  * `.data`: `0x480b4-0x4818c` (Size: 0xD8).
+  * `.bss`: `0x10a98-0x10aa8` (Size: 0x10).
+- **Both Checks Run**: Zero overlaps; bracketed between `daWmToride_c` (`0x1847a0..0x185710`) and `daWmTreasureShip_c` (`0x185b70..0x186420`).
+- **Tractability**:
+  * **Sibling Score**: **88.09% exact / 98.56% shape**.
+  * `__ct__` (84 B) is 85.7% exact / 100% shape against banked `d_a_wm_cannon.cpp`.
+  * `__dt__` (152 B) is 84.2% exact / 100% shape against banked `d_a_wm_cannon.cpp`.
+  * `execute` (124 B) is 87.1% exact / 93.5% shape against banked `d_a_wm_dokan.cpp`.
+  * `create` (92 B) is 84.0% exact / 92.0% shape against banked `d_a_wm_peach_castle.cpp`.
+- **Why Rank 2**: 1,064 bytes of code that almost completely transcribes directly from already-banked world map actors.
+
+---
+
+### Unit 3: [d_a_wm_smallcloud.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_smallcloud.cpp) — The Direct Sibling Twin of `d_a_wm_cloud.cpp`
+
+- **Profile & Class**: `g_profile_WM_SMALLCLOUD` / `daWmSmallCloud_c` (Leaf derived from `dWmObjActor_c`).
+- **Section Bounds**:
+  * `.text`: `0x1797e0-0x179ff0` (Span: 2,064 B, Code: 1,964 B, 16 functions).
+  * `.ctors`: `0x430-0x434` (Size: 0x4).
+  * `.rodata`: `0x8f58-0x8fa0` (Size: 0x48).
+  * `.data`: `0x4728c-0x47484` (Size: 0x1F8).
+  * `.bss`: `0x10130-0x10140` (Size: 0x10).
+- **Both Checks Run**: Zero overlaps; bracketed between `daWmSinkShip_c` (`0x179380..0x1797e0`) and `daWmStart_c` (`0x179ff0..0x17aff0`).
+- **Tractability**:
+  * **Sibling Score**: **71.49% exact / 83.50% shape**.
+  * Exact twin of banked `d_a_wm_cloud.cpp`: constructor (87.1% exact / 100% shape), destructor (86.0% exact / 100% shape), `execute` (84.7% exact / 100% shape), `create` (66.1% exact / 72.6% shape).
+  * 0 new external types; uses standard `dWmSVMdl_c` and `m3d::smdl_c`.
+- **Why Rank 3**: 1,964 code bytes with a banked model file in the repo ([source/d_basesNP/bases/d_a_wm_cloud.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_cloud.cpp)) to copy from.
+
+---
+
+### Unit 4: [d_a_wm_ghost.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_ghost.cpp) — The Immediate Neighbor of `d_a_wm_dokan_route.cpp`
+
+- **Profile & Class**: `g_profile_WM_GHOST` / `daWmGhost_c` (Leaf derived from `dWmObjActor_c`).
+- **Section Bounds**:
+  * `.text`: `0x163620-0x164230` (Span: 3,088 B, Code: 3,024 B, 13 functions).
+  * `.ctors`: `0x3e0-0x3e4` (Size: 0x4).
+  * `.rodata`: `0x8880-0x88b8` (Size: 0x38).
+  * `.data`: `0x44a9c-0x44cb4` (Size: 0x218).
+  * `.bss`: `0xfdc0-0xfdd0` (Size: 0x10).
+- **Both Checks Run**: **100% adjacent to `d_a_wm_dokan_route.cpp`** in `.text` (`0x163620`), `.ctors` (`0x3e0`), `.rodata` (`0x8880`), and `.bss` (`0xfdc0`).
+- **Tractability**:
+  * **Sibling Score**: **39.87% exact / 55.27% shape**.
+  * Standard actor lifecycle (`create` 88% exact / 100% shape against `d_a_wm_peach_castle`, `execute` 77.8% exact / 86.1% shape against `d_a_wm_cannon`).
+- **Why Rank 4**: It extends the banked territory continuously from `d_a_wm_dokan_route.cpp` and pins down the low bound of `d_a_wm_grid.cpp`.
+
+---
+
+### Unit 5: [d_a_wm_kinoko_base.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_kinoko_base.cpp) — The High-Leverage Mushroom Base Class
+
+- **Profile & Class**: `g_profile_WM_KINOKO_BASE` / `daWmKinokoBase_c` (**Base Class**).
+- **Gating Impact**: **Directly unblocks 3 derived leaf translation units**:
+  1. `d_a_wm_kinoko_1up.cpp` (`daWmKinoko1up_c`, 412 B)
+  2. `d_a_wm_kinoko_red.cpp` (`daWmKinokoRed_c`, 404 B)
+  3. `d_a_wm_kinoko_star.cpp` (`daWmKinokoStar_c`, 412 B)
+- **Section Bounds**:
+  * `.text`: `0x16b2d0-0x16bda0` (Span: 2,768 B, Code: 2,648 B, 17 functions).
+  * `.ctors`: `0x3fc-0x400` (Size: 0x4).
+  * `.rodata`: `0x8b70-0x8ba8` (Size: 0x38).
+  * `.data`: `0x458e4-0x45ab4` (Size: 0x1D0).
+  * `.bss`: `0xfe88-0xfea0` (Size: 0x18).
+- **Tractability**:
+  * **Sibling Score**: **41.92% exact / 54.33% shape**.
+  * `__ct__` (176 B) and `__dt__` (192 B) score 68.2% and 79.2% exact against `d_a_wm_peach_castle.cpp`.
+  * `create` (100 B) is 76.0% exact / 80.0% shape against `d_a_wm_peach.cpp`.
+- **Why Rank 5**: Landing this 2.6 KB base unblocks 3 leaves, converting 1 unit of authoring work into 4 landed files (3,876 B code total).
+
+---
+
+### Unit 6: [d_a_wm_kinoko_1up.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_kinoko_1up.cpp) — The 1UP Mushroom Leaf
+
+- **Profile & Class**: `g_profile_WM_KINOKO_1UP` / `daWmKinoko1up_c` (Leaf derived from `daWmKinokoBase_c`).
+- **Section Bounds**:
+  * `.text`: `0x16b0f0-0x16b2d0` (Span: 480 B, Code: 412 B, 9 functions).
+  * `.ctors`: `0x3f8-0x3fc` (Size: 0x4).
+  * `.rodata`: `0x8b58-0x8b70` (Size: 0x18).
+  * `.data`: `0x457ec-0x458e4` (Size: 0xF8).
+  * `.bss`: `0xfe78-0xfe88` (Size: 0x10).
+- **Tractability**:
+  * **Sibling Score**: **82.52% exact / 94.17% shape**.
+  * Sits immediately adjacent below `daWmKinokoBase_c` in `.text` (`0x16b0f0`..`0x16b2d0` $\to$ `0x16b2d0`).
+  * Trivial leaf: overrides constructor/destructor and returns `"wm_1up_kinoko"` resource strings.
+- **Why Rank 6**: Once `daWmKinokoBase_c` is written, authoring this unit takes less than 30 minutes.
+
+---
+
+### Unit 7: [d_a_wm_boss_base.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_boss_base.cpp) — The 7-Koopaling Base Class
+
+- **Profile & Class**: `g_profile_WM_BOSS_BASE` / `daWmBossBase_c` (**Base Class**).
+- **Gating Impact**: **Directly unblocks all 7 Koopaling world map actor units**:
+  * `d_a_wm_boss_iggy.cpp` (524 B)
+  * `d_a_wm_boss_larry.cpp` (524 B)
+  * `d_a_wm_boss_lemmy.cpp` (524 B)
+  * `d_a_wm_boss_ludwig.cpp` (524 B)
+  * `d_a_wm_boss_morton.cpp` (524 B)
+  * `d_a_wm_boss_roy.cpp` (540 B)
+  * `d_a_wm_boss_wendy.cpp` (524 B)
+  * Total unblocked code: **3,708 bytes across 57 functions**.
+- **Section Bounds**:
+  * `.text`: `0x189ac0-0x18a260` (Span: 1,952 B, Code: 1,708 B, 12 functions).
+  * `.ctors`: `0x454-0x458` (Size: 0x4).
+  * `.rodata`: `0x9590-0x95d8` (Size: 0x48).
+  * `.data`: `0x485fc-0x488c8` (Size: 0x2CC).
+  * `.bss`: `0x10b48-0x10b60` (Size: 0x18).
+- **Tractability**:
+  * **Sibling Score**: **28.75% exact / 38.91% shape**.
+  * Lower raw similarity because Koopaling map animations implement custom laughter and fleeing sequences, but layout derives cleanly from `dWmDemoActor_c`.
+- **Why Rank 7**: Highly strategic. Landing `daWmBossBase_c` enables clearing all 7 Koopalings in a single follow-up batch.
+
+---
+
+### Unit 8: [d_a_wm_boss_larry.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_boss_larry.cpp) — The World 1 Koopaling Leaf
+
+- **Profile & Class**: `g_profile_WM_BOSS_LARRY` / `daWmBossLarry_c` (Leaf derived from `daWmBossBase_c`).
+- **Section Bounds**:
+  * `.text`: `0x18b470-0x18b690` (Span: 544 B, Code: 524 B, 8 functions).
+  * `.ctors`: `0x464-0x468` (Size: 0x4).
+  * `.rodata`: `0x96b8-0x96d0` (Size: 0x18).
+  * `.data`: `0x48cd8-0x48e58` (Size: 0x180).
+  * `.bss`: `0x10bd0-0x10be0` (Size: 0x10).
+- **Tractability**:
+  * **Sibling Score**: **55.73% exact / 70.79% shape**.
+  * Tiny leaf: overrides constructor, destructor, sound ID dispatch, and resource name (`"wm_larry"`).
+- **Why Rank 8**: Demonstrates the first derived Koopaling leaf and proves the `daWmBossBase_c` vtable.
+
+---
+
+## 2.3 Final Recommendation & Starting Plan
+
+If authoring single units out of `d_basesNP`, **start with [d_a_wm_grid.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_grid.cpp)**.
+
+**Rationale**:
+1. At **85.45% exact / 100.00% shape match**, it carries practically zero register-allocation hazard.
+2. It requires zero new headers (`dWmObjActor_c` already exists).
+3. It immediately banks a new unit in `d_basesNP` with 10 functions and establishes the REL build/landing baseline.
+4. Immediately following it, the pipeline should execute **[d_a_wm_tower.cpp](file:///c:/Users/Razz/Documents/Projects/NSMBW-Decomp/source/d_basesNP/bases/d_a_wm_tower.cpp)** (1,064 B, 88% match) and the **`daWmKinokoBase_c` family** to unlock 4 units in rapid succession.
