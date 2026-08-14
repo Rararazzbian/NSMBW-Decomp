@@ -1,0 +1,472 @@
+.include "macros.inc"
+.file "sweep.cpp"
+
+# 0x00000000..0x00000310 | size: 0x310
+.text
+.balign 16
+
+# .text:0x0 | size: 0x30
+# daWmKinoko1up_c_classInit()
+.fn daWmKinoko1up_c_classInit__Fv, global
+/* 00000000 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  38 60 02 94 */	li r3, 0x294
+/* 0000000C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000010 00000050  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 00000014 00000054  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000018 00000058  41 82 00 08 */	beq .L_00000020
+/* 0000001C 0000005C  48 00 00 01 */	bl __ct__15daWmKinoko1up_cFv
+.L_00000020:
+/* 00000020 00000060  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000024 00000064  7C 08 03 A6 */	mtlr r0
+/* 00000028 00000068  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000002C 0000006C  4E 80 00 20 */	blr
+.endfn daWmKinoko1up_c_classInit__Fv
+
+# .text:0x30 | size: 0x44
+# daWmKinoko1up_c::daWmKinoko1up_c()
+.fn __ct__15daWmKinoko1up_cFv, global
+/* 00000030 00000070  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000034 00000074  7C 08 02 A6 */	mflr r0
+/* 00000038 00000078  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000003C 0000007C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000040 00000080  7C 7F 1B 78 */	mr r31, r3
+/* 00000044 00000084  48 00 00 01 */	bl __ct__16daWmKinokoBase_cFv
+/* 00000048 00000088  3C 60 00 00 */	lis r3, __vt__15daWmKinoko1up_c@ha
+/* 0000004C 0000008C  38 00 00 00 */	li r0, 0x0
+/* 00000050 00000090  38 63 00 00 */	addi r3, r3, __vt__15daWmKinoko1up_c@l
+/* 00000054 00000094  90 7F 00 60 */	stw r3, 0x60(r31)
+/* 00000058 00000098  7F E3 FB 78 */	mr r3, r31
+/* 0000005C 0000009C  90 1F 02 90 */	stw r0, 0x290(r31)
+/* 00000060 000000A0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000064 000000A4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000068 000000A8  7C 08 03 A6 */	mtlr r0
+/* 0000006C 000000AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000070 000000B0  4E 80 00 20 */	blr
+.endfn __ct__15daWmKinoko1up_cFv
+/* 00000074 000000B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000078 000000B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000007C 000000BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x80 | size: 0x58
+# daWmKinoko1up_c::~daWmKinoko1up_c()
+.fn __dt__15daWmKinoko1up_cFv, global
+/* 00000080 000000C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000084 000000C4  7C 08 02 A6 */	mflr r0
+/* 00000088 000000C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000008C 000000CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000090 000000D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000094 000000D4  7C 9F 23 78 */	mr r31, r4
+/* 00000098 000000D8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000009C 000000DC  7C 7E 1B 78 */	mr r30, r3
+/* 000000A0 000000E0  41 82 00 1C */	beq .L_000000BC
+/* 000000A4 000000E4  38 80 00 00 */	li r4, 0x0
+/* 000000A8 000000E8  48 00 00 01 */	bl __dt__16daWmKinokoBase_cFv
+/* 000000AC 000000EC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000000B0 000000F0  40 81 00 0C */	ble .L_000000BC
+/* 000000B4 000000F4  7F C3 F3 78 */	mr r3, r30
+/* 000000B8 000000F8  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_000000BC:
+/* 000000BC 000000FC  7F C3 F3 78 */	mr r3, r30
+/* 000000C0 00000100  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000000C4 00000104  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000000C8 00000108  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000000CC 0000010C  7C 08 03 A6 */	mtlr r0
+/* 000000D0 00000110  38 21 00 10 */	addi r1, r1, 0x10
+/* 000000D4 00000114  4E 80 00 20 */	blr
+.endfn __dt__15daWmKinoko1up_cFv
+/* 000000D8 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000DC 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE0 | size: 0x4
+# daWmKinoko1up_c::vf7C()
+.fn vf7C__15daWmKinoko1up_cFv, global
+/* 000000E0 00000120  4E 80 00 20 */	blr
+.endfn vf7C__15daWmKinoko1up_cFv
+/* 000000E4 00000124  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000E8 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000EC 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xF0 | size: 0x4
+# daWmKinoko1up_c::vf80()
+.fn vf80__15daWmKinoko1up_cFv, global
+/* 000000F0 00000130  4E 80 00 20 */	blr
+.endfn vf80__15daWmKinoko1up_cFv
+/* 000000F4 00000134  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000F8 00000138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000FC 0000013C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x100 | size: 0x1C
+# daWmKinoko1up_c::vf84()
+.fn vf84__15daWmKinoko1up_cFv, global
+/* 00000100 00000140  3C A0 00 00 */	lis r5, "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_modelResName"@ha
+/* 00000104 00000144  3C 80 00 00 */	lis r4, "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_animResNames@0"@ha
+/* 00000108 00000148  80 05 00 00 */	lwz r0, "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_modelResName"@l(r5)
+/* 0000010C 0000014C  38 84 00 00 */	addi r4, r4, "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_animResNames@0"@l
+/* 00000110 00000150  90 03 02 8C */	stw r0, 0x28c(r3)
+/* 00000114 00000154  90 83 02 88 */	stw r4, 0x288(r3)
+/* 00000118 00000158  4E 80 00 20 */	blr
+.endfn vf84__15daWmKinoko1up_cFv
+/* 0000011C 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x120 | size: 0xC
+# daWmKinoko1up_c::getModelName()
+.fn getModelName__15daWmKinoko1up_cFv, global
+/* 00000120 00000160  3C 60 00 00 */	lis r3, "@12586"@ha
+/* 00000124 00000164  38 63 00 00 */	addi r3, r3, "@12586"@l
+/* 00000128 00000168  4E 80 00 20 */	blr
+.endfn getModelName__15daWmKinoko1up_cFv
+/* 0000012C 0000016C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x130 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 00000130 00000170  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 00000134 00000174  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000138 00000178  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000013C 0000017C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x140 | size: 0xC
+# dWmDemoActor_c::clearCutEnd()
+.fn clearCutEnd__14dWmDemoActor_cFv, weak
+/* 00000140 00000180  38 00 00 00 */	li r0, 0x0
+/* 00000144 00000184  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000148 00000188  4E 80 00 20 */	blr
+.endfn clearCutEnd__14dWmDemoActor_cFv
+/* 0000014C 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x150 | size: 0xC
+# dWmDemoActor_c::setCutEnd()
+.fn setCutEnd__14dWmDemoActor_cFv, weak
+/* 00000150 00000190  38 00 00 01 */	li r0, 0x1
+/* 00000154 00000194  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000158 00000198  4E 80 00 20 */	blr
+.endfn setCutEnd__14dWmDemoActor_cFv
+/* 0000015C 0000019C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x160 | size: 0x8
+# dWmDemoActor_c::checkCutEnd()
+.fn checkCutEnd__14dWmDemoActor_cFv, weak
+/* 00000160 000001A0  88 63 01 39 */	lbz r3, 0x139(r3)
+/* 00000164 000001A4  4E 80 00 20 */	blr
+.endfn checkCutEnd__14dWmDemoActor_cFv
+/* 00000168 000001A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000016C 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x170 | size: 0x8
+# dWmObjActor_c::vf78()
+.fn vf78__13dWmObjActor_cFv, weak
+/* 00000170 000001B0  38 60 00 00 */	li r3, 0x0
+/* 00000174 000001B4  4E 80 00 20 */	blr
+.endfn vf78__13dWmObjActor_cFv
+/* 00000178 000001B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000017C 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x180 | size: 0x4
+# dWmObjActor_c::vf74()
+.fn vf74__13dWmObjActor_cFv, weak
+/* 00000180 000001C0  4E 80 00 20 */	blr
+.endfn vf74__13dWmObjActor_cFv
+/* 00000184 000001C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000188 000001C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000018C 000001CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x190 | size: 0x8
+# dWmObjActor_c::GetActorType()
+.fn GetActorType__13dWmObjActor_cFv, weak
+/* 00000190 000001D0  38 60 00 02 */	li r3, 0x2
+/* 00000194 000001D4  4E 80 00 20 */	blr
+.endfn GetActorType__13dWmObjActor_cFv
+/* 00000198 000001D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000019C 000001DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1A0 | size: 0x40
+# mVec3_c::~mVec3_c()
+.fn __dt__7mVec3_cFv, weak
+/* 000001A0 000001E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001A4 000001E4  7C 08 02 A6 */	mflr r0
+/* 000001A8 000001E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001AC 000001EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001B0 000001F0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001B4 000001F4  7C 7F 1B 78 */	mr r31, r3
+/* 000001B8 000001F8  41 82 00 10 */	beq .L_000001C8
+/* 000001BC 000001FC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000001C0 00000200  40 81 00 08 */	ble .L_000001C8
+/* 000001C4 00000204  48 00 00 01 */	bl __dl__FPv
+.L_000001C8:
+/* 000001C8 00000208  7F E3 FB 78 */	mr r3, r31
+/* 000001CC 0000020C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000001D0 00000210  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000001D4 00000214  7C 08 03 A6 */	mtlr r0
+/* 000001D8 00000218  38 21 00 10 */	addi r1, r1, 0x10
+/* 000001DC 0000021C  4E 80 00 20 */	blr
+.endfn __dt__7mVec3_cFv
+
+# .text:0x1E0 | size: 0x40
+# EGG::Vector3f::~Vector3f()
+.fn __dt__Q23EGG8Vector3fFv, weak
+/* 000001E0 00000220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001E4 00000224  7C 08 02 A6 */	mflr r0
+/* 000001E8 00000228  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001EC 0000022C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001F0 00000230  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001F4 00000234  7C 7F 1B 78 */	mr r31, r3
+/* 000001F8 00000238  41 82 00 10 */	beq .L_00000208
+/* 000001FC 0000023C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000200 00000240  40 81 00 08 */	ble .L_00000208
+/* 00000204 00000244  48 00 00 01 */	bl __dl__FPv
+.L_00000208:
+/* 00000208 00000248  7F E3 FB 78 */	mr r3, r31
+/* 0000020C 0000024C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000210 00000250  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000214 00000254  7C 08 03 A6 */	mtlr r0
+/* 00000218 00000258  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000021C 0000025C  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG8Vector3fFv
+
+# .text:0x220 | size: 0x84
+.fn "__sinit_\sweep_cpp", local
+/* 00000220 00000260  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000224 00000264  7C 08 02 A6 */	mflr r0
+/* 00000228 00000268  3C A0 00 00 */	lis r5, ...rodata.0@ha
+/* 0000022C 0000026C  3C C0 00 00 */	lis r6, sc_ForceList__6dWmLib@ha
+/* 00000230 00000270  38 A5 00 00 */	addi r5, r5, ...rodata.0@l
+/* 00000234 00000274  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000238 00000278  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 0000023C 0000027C  C0 45 00 10 */	lfs f2, 0x10(r5)
+/* 00000240 00000280  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib@l
+/* 00000244 00000284  C0 25 00 14 */	lfs f1, 0x14(r5)
+/* 00000248 00000288  C0 05 00 18 */	lfs f0, 0x18(r5)
+/* 0000024C 0000028C  3C 80 00 00 */	lis r4, __arraydtor$12483@ha
+/* 00000250 00000290  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 00000254 00000294  3C A0 00 00 */	lis r5, "@12484"@ha
+/* 00000258 00000298  90 06 00 0C */	stw r0, 0xc(r6)
+/* 0000025C 0000029C  38 84 00 00 */	addi r4, r4, __arraydtor$12483@l
+/* 00000260 000002A0  38 A5 00 00 */	addi r5, r5, "@12484"@l
+/* 00000264 000002A4  38 60 00 00 */	li r3, 0x0
+/* 00000268 000002A8  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 0000026C 000002AC  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 00000270 000002B0  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 00000274 000002B4  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 00000278 000002B8  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 0000027C 000002BC  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 00000280 000002C0  48 00 00 01 */	bl __register_global_object
+/* 00000284 000002C4  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 00000288 000002C8  3C 60 00 00 */	lis r3, c_StartPointKinokoHouseID__6dWmLib@ha
+/* 0000028C 000002CC  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 00000290 000002D0  90 03 00 00 */	stw r0, c_StartPointKinokoHouseID__6dWmLib@l(r3)
+/* 00000294 000002D4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000298 000002D8  7C 08 03 A6 */	mtlr r0
+/* 0000029C 000002DC  38 21 00 20 */	addi r1, r1, 0x20
+/* 000002A0 000002E0  4E 80 00 20 */	blr
+.endfn "__sinit_\sweep_cpp"
+/* 000002A4 000002E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002A8 000002E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002AC 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2B0 | size: 0x1C
+.fn __arraydtor$12483, local
+/* 000002B0 000002F0  3C 60 00 00 */	lis r3, sc_ForceList__6dWmLib@ha
+/* 000002B4 000002F4  3C 80 00 00 */	lis r4, __dt__Q26dWmLib19ForceInCourseList_tFv@ha
+/* 000002B8 000002F8  38 63 00 00 */	addi r3, r3, sc_ForceList__6dWmLib@l
+/* 000002BC 000002FC  38 A0 00 24 */	li r5, 0x24
+/* 000002C0 00000300  38 84 00 00 */	addi r4, r4, __dt__Q26dWmLib19ForceInCourseList_tFv@l
+/* 000002C4 00000304  38 C0 00 01 */	li r6, 0x1
+/* 000002C8 00000308  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$12483
+/* 000002CC 0000030C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2D0 | size: 0x40
+# dWmLib::ForceInCourseList_t::~ForceInCourseList_t()
+.fn __dt__Q26dWmLib19ForceInCourseList_tFv, weak
+/* 000002D0 00000310  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000002D4 00000314  7C 08 02 A6 */	mflr r0
+/* 000002D8 00000318  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000002DC 0000031C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000002E0 00000320  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000002E4 00000324  7C 7F 1B 78 */	mr r31, r3
+/* 000002E8 00000328  41 82 00 10 */	beq .L_000002F8
+/* 000002EC 0000032C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000002F0 00000330  40 81 00 08 */	ble .L_000002F8
+/* 000002F4 00000334  48 00 00 01 */	bl __dl__FPv
+.L_000002F8:
+/* 000002F8 00000338  7F E3 FB 78 */	mr r3, r31
+/* 000002FC 0000033C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000300 00000340  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000304 00000344  7C 08 03 A6 */	mtlr r0
+/* 00000308 00000348  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000030C 0000034C  4E 80 00 20 */	blr
+.endfn __dt__Q26dWmLib19ForceInCourseList_tFv
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\sweep_cpp"
+
+# 0x00000000..0x0000001C | size: 0x1C
+.rodata
+.balign 8
+
+# .rodata:0x0 | size: 0x4
+# daWmKinoko1up_c::vf84()::smc_modelResName
+.obj "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_modelResName", local
+# .rodata:0x0 | size: 0x0
+.sym ...rodata.0, local
+	.4byte "@12522"
+.endobj "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_modelResName"
+	.4byte 0x00000000
+
+# .rodata:0x8 | size: 0x8
+.obj "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_animResNames@0", local
+	.4byte "@12523"
+	.4byte "@12524"
+.endobj "@LOCAL@vf84__15daWmKinoko1up_cFv@smc_animResNames@0"
+
+# .rodata:0x10 | size: 0x4
+.obj "@12614", local
+	.4byte 0x45070000
+.endobj "@12614"
+
+# .rodata:0x14 | size: 0x4
+.obj "@12615", local
+	.4byte 0xC1F00000
+.endobj "@12615"
+
+# .rodata:0x18 | size: 0x4
+.obj "@12616", local
+	.4byte 0xC3EF0000
+.endobj "@12616"
+
+# 0x00000000..0x00000118 | size: 0x118
+.data
+.balign 8
+
+# .data:0x0 | size: 0x5
+.obj "@12481", local
+	.4byte 0x46374330
+	.byte 0x00
+.endobj "@12481"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x8 | size: 0x5
+.obj "@12482", local
+	.4byte 0x57374330
+	.byte 0x00
+.endobj "@12482"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x10 | size: 0x24
+# dWmLib::sc_ForceList
+.obj sc_ForceList__6dWmLib, local
+	.4byte 0x00000006
+	.4byte "@12481"
+	.4byte 0x00000006
+	.4byte 0x00000000
+	.4byte 0x00000004
+	.4byte "@12482"
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj sc_ForceList__6dWmLib
+
+# .data:0x34 | size: 0xC
+.obj g_profile_WM_KINOKO_1UP, global
+	.4byte daWmKinoko1up_c_classInit__Fv
+	.4byte 0x027C027E
+	.4byte 0x00000000
+.endobj g_profile_WM_KINOKO_1UP
+
+# .data:0x40 | size: 0xE
+.obj "@12522", local
+	.4byte 0x776D5F31
+	.4byte 0x75705F6B
+	.4byte 0x696E6F6B
+	.2byte 0x6F00
+.endobj "@12522"
+	.2byte 0x0000
+
+# .data:0x50 | size: 0x15
+.obj "@12523", local
+	.4byte 0x776D5F31
+	.4byte 0x75705F6B
+	.4byte 0x696E6F6B
+	.4byte 0x6F5F6170
+	.4byte 0x70656172
+	.byte 0x00
+.endobj "@12523"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x68 | size: 0x13
+.obj "@12524", local
+	.4byte 0x776D5F31
+	.4byte 0x75705F6B
+	.4byte 0x696E6F6B
+	.4byte 0x6F5F7761
+	.byte 0x69, 0x74, 0x00
+.endobj "@12524"
+	.byte 0x00
+
+# .data:0x7C | size: 0xE
+.obj "@12586", local
+	.4byte 0x776D5F31
+	.4byte 0x75705F6B
+	.4byte 0x696E6F6B
+	.2byte 0x6F00
+.endobj "@12586"
+	.4byte 0x00000000
+	.2byte 0x0000
+
+# .data:0x90 | size: 0x88
+# daWmKinoko1up_c::__vtable
+.obj __vt__15daWmKinoko1up_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__16daWmKinokoBase_cFv
+	.4byte preCreate__10dWmActor_cFv
+	.4byte postCreate__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__16daWmKinokoBase_cFv
+	.4byte preDelete__10dWmActor_cFv
+	.4byte postDelete__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__16daWmKinokoBase_cFv
+	.4byte preExecute__10dWmActor_cFv
+	.4byte postExecute__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__16daWmKinokoBase_cFv
+	.4byte preDraw__10dWmActor_cFv
+	.4byte postDraw__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__15daWmKinoko1up_cFv
+	.4byte getKindString__7dBase_cCFv
+	.4byte draw2D__12dBaseActor_cFv
+	.4byte draw2D_lyt2__12dBaseActor_cFv
+	.4byte GetActorType__13dWmObjActor_cFv
+	.4byte finalUpdate__12dBaseActor_cFv
+	.4byte processCutsceneCommand__16daWmKinokoBase_cFib
+	.4byte checkCutEnd__14dWmDemoActor_cFv
+	.4byte setCutEnd__14dWmDemoActor_cFv
+	.4byte clearCutEnd__14dWmDemoActor_cFv
+	.4byte vf74__13dWmObjActor_cFv
+	.4byte vf78__13dWmObjActor_cFv
+	.4byte vf7C__15daWmKinoko1up_cFv
+	.4byte vf80__15daWmKinoko1up_cFv
+	.4byte vf84__15daWmKinoko1up_cFv
+	.4byte getModelName__15daWmKinoko1up_cFv
+.endobj __vt__15daWmKinoko1up_c
+
+# 0x00000000..0x00000010 | size: 0x10
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0xC
+.obj "@12484", local
+	.skip 0xC
+.endobj "@12484"
+
+# .bss:0xC | size: 0x4
+# dWmLib::c_StartPointKinokoHouseID
+.obj c_StartPointKinokoHouseID__6dWmLib, local
+	.skip 0x4
+.endobj c_StartPointKinokoHouseID__6dWmLib
