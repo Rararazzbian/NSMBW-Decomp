@@ -800,11 +800,52 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
-### READY TO LAND: `d_a_wm_grid.cpp` and `d_a_wm_tower.cpp`
+### NOT READY TO LAND — and this corrects what I wrote an hour ago
 
-Both are **complete** — 10/10 and 11/11 byte-identical, verified with
-`wip/wm_units/verify_anon.py` against the real split objects. They are the first
-landable units in some time and should be the next thing anyone does.
+`d_a_wm_grid.cpp` and `d_a_wm_tower.cpp` are **10/10 and 11/11 byte-identical in
+`.text`**. I called them ready to land on that basis. **I tried it, and it fails
+two binaries.**
+
+```
+d_profileNP.rel  Failed
+d_basesNP.rel    Failed
+```
+
+Reverted immediately; the tree is green at 5/5 again. The cause, measured from
+the compiled object against the slice claim:
+
+```
+section     claim   object
+.text       0x1f4   0x2d0   over 0xdc   (weak symbols, expected, not placed)
+.data       0x090   0x0a4   over 0x14   <-- THIS
+.rodata     0x010   0x010   ok
+.ctors      0x004   0x004   ok
+.bss        0x010   0x010   ok
+```
+
+`.data` emits `0x14` more than the slice claims. Extra `.data` shifts every
+object after it, including `g_profile_WM_GRID` — and `d_profileNP/d_profile.cpp`
+holds a pointer table referencing that symbol, so a moved profile changes
+`d_profileNP.rel` as well. That is why a `d_basesNP` unit broke the profile REL,
+which otherwise looks unrelated and is 100% complete.
+
+#### The method gap this exposes, which matters more than the unit
+
+**`wip/wm_units/verify_anon.py` only checks `.text`.** Every "N of N" figure
+quoted this week — grid, tower, smallcloud, kinoko_1up — is a statement about
+code only. A unit can be byte-perfect in `.text` and still be unlandable because
+its data sections are the wrong size or order, and nothing we run would say so.
+
+**Before calling any unit ready, compare every section of the compiled object
+against its slice claim**, the way `.text` is already compared. Note the
+asymmetry: `.text` over-claim is normal (unreferenced weak symbols are not
+placed — see the weak-symbol rule above), but **`.data` over-claim is real**,
+because data objects are placed unconditionally.
+
+Do not repeat the landing until grid's `0x14` of surplus `.data` is identified.
+Likely candidates, in order: a duplicated copy of `dWmLib::sc_ForceList`, the
+`DUMMY_ORDERING` pool seed emitting more than intended, or padding from a
+declaration order that differs from the target's.
 
 **Use the round-13 kit, not the round-10 one. They contradict each other and I
 have settled it.** For `d_a_wm_grid.cpp`:
