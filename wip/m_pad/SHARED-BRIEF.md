@@ -9,6 +9,12 @@ Target disassembly: `scratch/gemini_round8/auto_03_8016F330_text.o.txt`
 (functions 1–12) and `scratch/gemini_round8/auto_03_8016F808_text.o.txt`
 (the compiler-generated tail). Read both.
 
+**Those two files stop and start exactly either side of `__sinit_\m_pad_cpp`,
+so it appears in neither.** It lives in its own split object,
+`bin/dtkspl/obj/auto_sinit__m_pad_cpp_text.o` — the `auto_sinit_*` convention in
+`tools/auto_decomp/prepare.py`. Recovered and saved as
+`wip/m_pad/scratch/batch3/sinit_target.txt`.
+
 ## Bounds — verified, use as given
 
 | section | virtual | offset | size |
@@ -88,13 +94,14 @@ name. `PadAdditionalData_t` is a struct inside it (`Q24mPad19PadAdditionalData_t
 | `0x80378008` | `0x60` | `s_WPADInfo__4mPad` | `WPADInfo[4]`, SDK `WPADInfo` is `0x18` |
 | `0x80378068` | `0x60` | `s_WPADInfoTmp__4mPad` | `WPADInfo[4]`, ends exactly on the high bound |
 
-**The `0x10` hole at `0x80377F98` is a finding, not noise.** No symbol claims it,
-and the section bounds are hard. An object nobody references still has to be
-emitted or the section comes up short. The most likely shape is a second
-four-element pointer or `u32` array declared next to `g_core`. Whoever gets there
-first should identify it from the disassembly and say so; if nothing references
-it, say that too, because then it is a declaration whose only job is to occupy
-space and it still has to exist.
+**RESOLVED — the `0x10` hole at `0x80377F98` is not a missing declaration.** It
+is the bookkeeping node MWCC synthesises for `__register_global_object` when a
+static array of objects with destructors must be torn down (`0xC` bytes,
+confirmed with `dtk elf info` on a compiled object) plus `0x4` of alignment
+padding ahead of `g_PadAdditionalData`. **Do not invent a declaration to fill
+it** — it appears on its own once the constructor and destructor are declared
+correctly. My original guess here, that it was a second four-element array, was
+wrong.
 
 Remember: **`.bss` object alignment follows SIZE, not type alignment.** A `0x60`
 object gets 8-aligned placement regardless of its members.

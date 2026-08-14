@@ -28,8 +28,6 @@ public:
     virtual void endFrame();
 
     void startPatternRumble(const char *, int, bool);
-
-    /// @brief Gets the number of DPD light sources currently detected.
     int getDpdNumMarks() const;
 
     void sceneReset();
@@ -37,32 +35,25 @@ public:
     int mNum;
 };
 
-// @unofficial CoreControllerMgr is not decompiled beyond this batch's needs.
-// The 0x10-byte gap below is a placeholder for whatever base/member data
-// precedes CoreControllerMgr's own vtable pointer in the real object -- only
-// its SIZE (0x10) and non-polymorphic-ness are load-bearing for reproducing
-// beginPad()'s virtual call (which loads a vtable pointer from object offset
-// 0x10, then calls slot 0 of that vtable). The real shape belongs to
-// whoever decompiles EGG::CoreControllerMgr's own TU.
-class CoreControllerMgrBase_unofficial {
-    u32 mUnofficialPad0;
-    u32 mUnofficialPad1;
-    u32 mUnofficialPad2;
-    u32 mUnofficialPad3;
+// TEST HYPOTHESIS (proven byte-exact by batch1 against endPad, and reused
+// here for beginPad's identical this+0x10 / slot pattern): CoreControllerMgr's
+// own vtable sits at offset 0x10 because a non-polymorphic base of that size
+// precedes it. The true shape of those 0x10 bytes is NOT known -- only the
+// size and non-polymorphic-ness are load-bearing. @unofficial
+class CoreControllerMgrTestBase {
+    u8 mPad0x10[0x10];
 };
 
-class CoreControllerMgr : private CoreControllerMgrBase_unofficial {
+class CoreControllerMgr : public CoreControllerMgrTestBase {
 public:
     static void createInstance();
+    static CoreControllerMgr *sInstance;
+    static u32 sWPADWorkSize;
 
     CoreController *getNthController(int idx);
 
-    // @unofficial names/order/count guessed; only slot 0 being called from
-    // beginPad() is evidenced.
-    virtual void calc();
-    virtual void unk1();
-
-    static u32 sWPADWorkSize;
+    virtual void beginFrame(); // slot 0, offset+0x8 -- called by beginPad
+    virtual void endFrame();   // slot 1, offset+0xc -- called by endPad
 };
 
 } // namespace EGG

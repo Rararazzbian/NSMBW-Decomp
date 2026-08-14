@@ -193,6 +193,27 @@ Each of these exists because something broke.
 - **An object nobody references can still be required.** A 0x40 float table the
   entire binary never reads still has to be emitted, or the section is short.
   **An unclaimed object is a finding, not noise.**
+- **An empty constructor or destructor defined INLINE in the class gets `weak`
+  linkage; defined out of line in the `.cpp` it gets `global`.** Both compile,
+  both look right, and only one matches. `mPad::PadAdditionalData_t`'s
+  constructor and destructor are `global` in retail, so their empty bodies
+  belong in the `.cpp`, not in the header. If a compiler-generated function
+  comes out `weak` when the map says `global`, this is the first thing to check.
+- **`__sinit_\<file>_cpp` lives in its own split object**, named
+  `auto_sinit_<file>_cpp_text.o` under `bin/dtkspl/obj/` — see
+  `tools/auto_decomp/prepare.py`. It is therefore **absent from the `auto_03_*`
+  disassembly either side of it**, and a brief that hands you those two files has
+  silently omitted it. Disassemble it directly rather than concluding the
+  function does not exist.
+- **A `0x10`-ish unclaimed `.bss` hole next to a static array of objects with
+  destructors is probably not yours to declare.** It is the bookkeeping node
+  MWCC synthesises for `__register_global_object` (`0xC` bytes) plus alignment
+  padding. Confirm with `dtk elf info` on your own compiled object before
+  inventing a declaration to fill it.
+- **A destructor of `0x40` is not evidence of owned resources.** That is roughly
+  the size of the standard two-argument destructor ABI wrapper (`this` plus the
+  deleting flag) with no member destructor calls and no vtable store at all.
+  Read it instruction by instruction before inferring members from its size.
 - **Your draft file's NAME is part of the object code.** Anonymous-namespace
   symbols mangle as `name__NN@unnamed@<filename>_cpp@`, where `NN` is the length
   of that string. A draft compiled as `assembled_static.cpp` produces

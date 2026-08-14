@@ -31,17 +31,18 @@ namespace mPad {
     void create();
     void beginPad();
     void endPad();
-    void setCurrentChannel(CH_e ch);
-    s32 getBatteryLevel_ch(CH_e ch);
+
+    // Not this batch's to declare -- setCurrentChannel/getBatteryLevel_ch/the
+    // interval accessors belong to other batches. Left out of this proposal;
+    // the lead reconciles all of BATCH3's additions against theirs. Note for
+    // whoever lands setCurrentChannel: the coordinator's cross-batch codegen
+    // check shows it returns CH_e, not void (old g_currentCoreID is loaded
+    // into r3 before being overwritten) -- not evidence of ours, passing it on.
+
     void setWPADInfo(CH_e ch, const WPADInfo &info);
     void clearWPADInfo(CH_e ch);
     void initWPADInfo();
     s32 getWPADInfoAsync(CH_e ch);
-    void setGetWPADInfoInterval(u32 interval);
-    u32 getGetWPADInfoInterval();
 
-    extern EGG::CoreController *g_currentCore;
-    extern u32 g_currentCoreID;
-    extern EGG::CoreController *g_core[4];
     extern PadAdditionalData_t g_PadAdditionalData[4];
 };

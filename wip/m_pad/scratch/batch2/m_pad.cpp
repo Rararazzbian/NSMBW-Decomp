@@ -4,20 +4,20 @@ namespace mPad {
 
 // --- data (declared for compile purposes only; another batch owns the real
 // definitions and __sinit/ctor/dtor bookkeeping) ---
-EGG::CoreControllerMgr *g_padMg;
-int g_currentCoreID;
 EGG::CoreController *g_currentCore;
-bool g_IsConnected[4];
-u32 g_PadFrame;
-u32 s_GetWPADInfoInterval;
-u32 s_GetWPADInfoCount;
-
+CH_e g_currentCoreID;
 EGG::CoreController *g_core[4];
+
+EGG::CoreControllerMgr *g_padMg;
+u32 g_PadFrame;
+bool g_IsConnected[4];
+ulong s_GetWPADInfoInterval;
+u32 s_GetWPADInfoCount;
 PadAdditionalData_t g_PadAdditionalData[4];
 
 void beginPad() {
     g_PadFrame++;
-    g_padMg->calc();
+    g_padMg->beginFrame();
 
     for (int i = 0; i < 4; i++) {
         EGG::CoreController *core = g_padMg->getNthController(i);
@@ -33,10 +33,11 @@ void beginPad() {
             pad.mPosY = newY;
             float ddX = dX - pad.mVelX;
             float ddY = dY - pad.mVelY;
-            pad.mVelX = dX;
-            pad.mVelY = dY;
+            float unused[6] = { ddX, ddY, dX, dY, newX, newY };
             pad.mAccX = ddX;
             pad.mAccY = ddY;
+            pad.mVelX = dX;
+            pad.mVelY = dY;
 
             if (!g_IsConnected[i])
                 g_IsConnected[i] = true;
