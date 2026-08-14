@@ -27,15 +27,17 @@ that **2,377 of 2,384 `d_en_bossNP` functions (99.7%) are anonymous `fn_4_*`**.
 That single number is worth more than the ranking it appears in, because it says
 what authoring in that REL actually costs.
 
-## The `d_a_wm_grid` / `d_a_wm_tower` round claimed 21 of 21 matches. It is 8 of 9 and 5 of 11.
+## The `d_a_wm_grid` / `d_a_wm_tower` round claimed 21 of 21 matches. It is 8 of 9 and 8 of 11.
 
 I verified rather than accepted, and the gap is large enough that I need to be
 direct about it.
 
-`d_a_wm_grid.cpp` is genuinely **8 of 9** byte-identical, which for a first pass
-on a unit with **zero named function symbols** is a strong result — the class
-reconstruction must be substantially right for eight functions to come out
-instruction-for-instruction. `d_a_wm_tower.cpp` is **5 of 11**.
+`d_a_wm_grid.cpp` is genuinely **8 of 9** byte-identical, and `d_a_wm_tower.cpp`
+**8 of 11** — see the correction below, the first figure I measured for tower was
+depressed by a bug of mine. For a first pass on units with **zero named function
+symbols**, where no signature can be read off a mangled name, that is strong
+work: the class reconstruction must be substantially right for sixteen functions
+to come out instruction-for-instruction.
 
 Here is one of the six tower functions reported as MATCH. Target `fn_2_185740`
 against the draft's `__ct__11daWmTower_cFv`, both 21 instructions:
@@ -118,12 +120,13 @@ MATCH you have not seen this tool produce.
 Eight of nine are done. The single outstanding function is:
 
 ```
-0x00164380  fn_2_164380  33 instrs  -- 31 differing vs "__sinit_\d_a_wm_grid_cpp"
+0x00164380  fn_2_164380  33 instrs  -- 5 differing vs "__sinit_\d_a_wm_grid_cpp"
 ```
 
-31 of 33 differing means the draft's `__sinit` is not this function at all,
-rather than a near-miss. Worth checking directly: is `fn_2_164380` the static
-initialiser, or something else the unit emits that the draft has not modelled?
+**5 of 33 differing, with the flags fixed** — it is a near miss, not a different
+function, so the draft's `__sinit` is the right shape and something small is
+off. (Before the flag fix this read 31 of 33, which is why an earlier draft of
+this file told you it was probably not the same function at all. Ignore that.)
 It sits in its own split object, `auto_fn_2_164380_text.o`, which on this project
 is how `__sinit` is packaged — see the `auto_sinit_*` convention in
 `tools/auto_decomp/prepare.py`, and note `m_pad.cpp` had exactly this situation.
