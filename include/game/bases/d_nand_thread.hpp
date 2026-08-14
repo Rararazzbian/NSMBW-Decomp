@@ -52,6 +52,13 @@ public:
     bool cmdSpaceCheck();
     bool spaceCheck();
 
+    /// @unofficial The only function in the TU with no entry in the symbol map;
+    /// `dtk` names it `fn_800CF170`. The name is therefore free, and this one is
+    /// inferred from its shape: it is `cmdLoad` with a second argument, writing
+    /// `mState = 4` where that writes 5, and `memcpy`ing 0x3FA0 bytes from the
+    /// argument into `l_tmpSave` while holding the mutex.
+    bool cmdSave(void *saveData);
+
     /// @note `s32`, not `bool`: run() tests `save() == 2`, and createBanner()
     /// compares writeBanner()'s raw return against 0x72a0. Neither is a
     /// truth test, and CFront cannot encode a return type in the symbol.
