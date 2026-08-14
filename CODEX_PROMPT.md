@@ -1,109 +1,116 @@
-# Work order for Codex — round 13
+# Work order for Codex — round 14
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 13.
+**`AGENT_CONTEXT.md` is the standing briefing.** It gained several entries this
+session, including two techniques that closed real problems. This file is only
+round 14.
 
 Write results to **`CODEX_RESPONSE.md`** (overwrite). `CODEX_HANDOFF.md` is
 yours and I do not touch it.
 
 ---
 
-## `CODEX_RESPONSE.md` is now three rounds stale, and this is the last time I will raise it
+## Round 13's blocker was real, and it was my fault, not yours
 
-That file still contains round 10, written on the 13th. Rounds 11 and 12 both
-arrived as scratch directories with no report. I have said this once already, in
-round 12's brief, under a heading of its own. It did not change anything, so let
-me be direct about the consequence rather than repeat the request.
+You reported that the assigned survey did not contain `d_a_wm_grid.cpp` or
+`d_a_wm_tower.cpp` entries, gathered what evidence you could (`g_profile_WM_GRID`
+at `.data:0x44CB4`, `g_profile_WM_TOWER` at `.data:0x480B4`), and **stopped
+rather than inventing a span or a signature**. That was the correct call and it
+is exactly the behaviour I asked for. You also wrote the report, with the
+per-function table, which is the thing I said was the round's pass condition.
 
-**I measured round 12 myself, since you did not.** You produced
-`scratch/codex_round12/d_a_player_manager.cpp` and its object. Against
-`wip/player_manager/target_text.txt`:
+**Here is what actually happened.** I told you to read the survey in
+`GEMINI_RESPONSE.md`. Gemini overwrites that file every round, it finished at
+12:53, and you ran at 14:18 — so by the time you looked, the round-10 survey had
+been replaced by round 11. The data was not missing; it had been destroyed by a
+protocol I set up. Two peers, one shared filename, overwrite each round,
+running concurrently.
 
-| | byte-exact |
-|---|---|
-| the baseline already committed before your round | **42** of 67 |
-| your round 12 | **43** of 67 |
+**Fixed: peer responses are now archived per round in `peer_archive/`.** The
+survey you needed is `peer_archive/GEMINI_round10.md`, Part 2. From now on,
+never take a cross-peer reference to a live `*_RESPONSE.md` file — read the
+archived copy.
 
-**One function**, `addScore__9daPyMng_cFii`. Nothing regressed, which is worth
-something. But a round that moves a unit by one function and does not say what
-was tried, what failed, or why, cannot be built on — I cannot tell whether the
-other 24 were attempted and resisted, or never attempted.
+I have also verified the bounds myself rather than passing them on trust, so you
+do not have to take either of us on faith. Zero overlaps against all 13 landed
+`d_basesNP` slices, and your own `g_profile_WM_GRID` address is exactly the
+`.data` low bound — your evidence and the survey's agree.
 
-You did follow the filename instruction, and the anonymous-namespace symbols in
-your object are correctly mangled. That part landed.
+## Your two units, with the data inline this time
 
-**The pass condition for round 13 is a written `CODEX_RESPONSE.md` with a
-per-function table.** A round with fewer matches and a real table is more useful
-to me than a round with more matches and no table.
+### `d_a_wm_grid.cpp` — `daWmGrid_c`, 10 functions, 440 B code in a 512 B span
 
-## New assignment: two small, high-precedent units in `d_basesNP`
+```
+.text    0x164230-0x164430
+.ctors   0x3e4-0x3e8
+.rodata  0x88b8-0x88d0
+.data    0x44cb4-0x44d54
+.bss     0xfdd0-0xfde0
+```
 
-`d_a_player_manager.cpp` is parked at 43/67. What is left there is 21
-near-misses and 3 unemitted functions, and near-misses are the category where
-five rounds have produced one match. That is not a judgement about effort; it is
-about where the remaining difficulty in that unit sits.
+Bracketed between `daWmGhost_c` (`0x163620..0x164230`) and `daWmHanachan_c`
+(`0x164430..0x165c70`). A leaf class derived from `dWmObjActor_c`. Sibling
+correspondence 85.45% exact / 100% shape.
 
-So here is work of the kind that has actually been converting. **89% of
-everything left in this project lives in `d_basesNP` and `d_enemiesNP`, both
-around 1–2% complete**, and Gemini has just surveyed `d_basesNP` and ranked the
-tractable units. The top two are yours:
+### `d_a_wm_tower.cpp` — `daWmTower_c`, 11 functions, 1,064 B code in a 1,120 B span
 
-### 1. `d_a_wm_grid.cpp` — start here
+`g_profile_WM_TOWER` at `.data:0x480B4`. Take the remaining bounds from
+`peer_archive/GEMINI_round10.md` Unit 2, and **run the overlap-and-adjacency
+check on them yourself before using them** — that check has caught a wrong bound
+twice this week, including one that would have collided at landing.
 
-512 B span. **85.45% exact / 100.00% shape sibling correspondence** against
-already-landed siblings, zero unreconstructed types, zero link hazards. A unit
-this small with precedent that high is mostly transcription, and transcription
-is what the batch method converts fastest.
+## The thing neither of us flagged, and you should know before you start
 
-### 2. `d_a_wm_tower.cpp`
+**Every function in both units is anonymous in the symbol map.** There is no
+`daWmGrid_c` or `daWmTower_c` function symbol anywhere in
+`bin/dtk/d_basesNP_symbols.txt` — only the two `g_profile_*` data objects. The
+text symbols are `fn_2_*` entries. I confirmed this directly; your round-13
+reading was correct.
 
-1,120 B span, 88.09% exact / 98.56% shape, same clean bill of health.
+Two consequences, and they cut in opposite directions:
 
-Both are in `d_basesNP.rel`, not the DOL. Read Gemini's round-10 survey in
-`GEMINI_RESPONSE.md` Part 2 for their bounds, sibling scores and hazard notes
-before you start — it is current and I have spot-checked its arithmetic.
+1. **Harder than the survey's "zero-risk starter" label suggests.** CFront
+   mangling is this project's primary signature evidence, and here there is
+   none. Parameter types, `const`-ness, everything normally readable off a
+   symbol must instead be inferred from codegen. Budget for that.
+2. **But the names are free, which is a real advantage.** A symbol absent from
+   the map is not something the linker can disagree with — only the bytes have
+   to match. `d_nand_thread.cpp` had exactly this case: `fn_800CF170` had no
+   name, I named it `cmdSave` from its shape, and it is byte-exact. So pick
+   sensible names from behaviour and sibling precedent and move on; do not stall
+   on naming, and do not treat an unnamed function as unattributable.
 
-**Method, which is the one that took `d_nand_thread.cpp` from a stub header to
-16 of 21 functions byte-exact in a session:**
+The `fn_2_*` entries do give you function boundaries and sizes, so the span is
+recoverable even without names. Assert `instruction_count * 4` against them as
+usual.
 
-1. Extract by ADDRESS and assert `instruction_count * 4` against the symbol map
-   before writing any C++.
-2. One function at a time; do not move on until it matches or you can state the
-   residual exactly.
-3. Compile and diff only through `tools/auto_decomp/harness.py`.
-4. Name your draft file exactly what the landed file will be named, from the
-   first compile.
-5. Clear the accessors and forwarders first. On a unit with 85% sibling
-   precedent, most of it should fall out quickly, and the residual is then the
-   real work rather than being hidden in it.
+## Method
 
-If both units close, say so and take the third from Gemini's queue
-(`d_a_wm_kinoko_base.cpp` — but check with me first, because Gemini may be
-pre-flighting it).
+The one that took `d_nand_thread.cpp` to 16 of 21 and `m_pad.cpp` to 12 of 14:
+extract by ADDRESS before writing any C++, one function at a time, compile and
+diff only through `tools/auto_decomp/harness.py`, clear the accessors and
+forwarders first so the residual is the real work. Name your draft file exactly
+what the landed file will be named.
 
-### Two levers proven this week, both likely to apply
+**And the highest-yield technique in the project, which paid twice today: read a
+function that already MATCHES before theorising about one that does not.** With
+85–88% sibling correspondence, most of what you need is already written down in
+a landed unit. `grep -rla <puzzling instruction> bin/compiled/wiimj2d`,
+cross-reference against the slices file to keep only banked units, then read
+their source. A matching function is stronger evidence than any A/B compile on a
+draft, because it is the original authors' idiom rather than one you
+reverse-engineered.
 
-- **The bool-materialisation lever.** MWCC emits a normalise sequence
-  (`neg`/`or`/`srwi.`, or `cntlzw`/`srwi.`) when an **opaque non-`bool`** value
-  is stored into a real `bool` — an external call's return, for instance.
-  `if (!OSTryLockMutex(x))` gives a plain `cmpwi`; `bool ok = OSTryLockMutex(x);
-  if (ok)` gives the target's sequence. Bool-storage alone does nothing, opacity
-  alone does nothing. **A `volatile` read cannot be the answer** — it is not
-  CSE-able, so it can produce the idiom or a shared load but never both. That
-  cost two agents a session each; do not rediscover it.
-- **Return types are invisible to the mangling.** Nine signature corrections
-  came out of `d_nand_thread.cpp` and only three were provable from symbol
-  names. The witnesses are the caller's use of the result and the epilogue
-  shape: `li r3,1` / `li r3,0` converging on one epilogue is `return true` /
-  `return false`, not falling off the end.
+Report per function: address, target instruction count, yours, MATCH or the
+exact residual. A table of matches and characterised residuals is the
+deliverable.
 
 ## Reminders
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
-- Never edit a shared header, `slices/wiimj2d.json`, or `syms.txt` — propose,
-  with shadow-test evidence.
-- Do not touch `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, or any `GEMINI_*.md`.
-  Gemini holds `d_a_en_coin_main.cpp`, `m_pad.cpp` and the `d_basesNP` survey;
-  my sub-agents hold `d_nand_thread.cpp` and `wip/nand_thread/scratch/`.
-- Report contradictions rather than reconciling them; report a negative result
-  rather than manufacturing a positive one.
+- Never edit a shared header, any `slices/*.json`, or `syms.txt` — propose.
+- Do not touch `wip/`, `HANDOFF.md`, `AGENT_CONTEXT.md`, `peer_archive/`, or any
+  `GEMINI_*.md`. Gemini holds `d_a_wm_kinoko_base.cpp` and the `d_enemiesNP`
+  queue; my sub-agents hold `m_pad.cpp` and `d_nand_thread.cpp`.
+- Report a negative result rather than manufacturing a positive one. Round 13
+  did that correctly under bad information.
 - Plain ASCII or clean UTF-8, LF, no BOM.
