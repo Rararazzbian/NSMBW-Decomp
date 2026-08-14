@@ -193,6 +193,19 @@ Each of these exists because something broke.
 - **An object nobody references can still be required.** A 0x40 float table the
   entire binary never reads still has to be emitted, or the section is short.
   **An unclaimed object is a finding, not noise.**
+- **`-inline noauto` blocks inlining an out-of-line member function even when
+  its definition is visible in the same TU, and `-ipa file` does not override
+  it.** So a local instance of a class with a user-declared constructor and
+  destructor always emits real `bl __ct__` / `bl __dt__` calls. Measured: a
+  6-float local cost 152 instructions declared-only and 149 with the bodies
+  present, against a 121-instruction target. **A function whose target has no
+  such calls therefore has no local of that class**, however well the sizes line
+  up — which kills the otherwise attractive theory that dead stores survive
+  because a destructor keeps the storage alive.
+- **`r1+0x8` is the outgoing parameter save area, not where locals sit.** Stores
+  there that are never read back are more likely argument space for a by-value
+  struct, or a struct-return slot written through a hidden pointer, than a local
+  variable. Check that before modelling them as one.
 - **An empty constructor or destructor defined INLINE in the class gets `weak`
   linkage; defined out of line in the `.cpp` it gets `global`.** Both compile,
   both look right, and only one matches. `mPad::PadAdditionalData_t`'s

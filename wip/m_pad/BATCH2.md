@@ -1,5 +1,41 @@
 # `m_pad.cpp` -- batch 2: `beginPad`
 
+## Round 2 (coordinator follow-up) -- both proposed fixes tested, both fail, negative results below
+
+The coordinator asked me to test two specific hypotheses after landing round 1.
+Both were tested to hard numbers. Neither closes the gap. Full detail in the
+two new subsections below ("Round 2: the destructor hypothesis" and
+"Round 2: register-order variants") in their normal places in this doc; the
+short version:
+
+1. **A real local `PadAdditionalData_t` (the coordinator's exact suggested
+   source) does NOT reproduce the target.** It compiles to **149 instructions**
+   with the real (out-of-line, empty-bodied) ctor/dtor from Batch 3 present in
+   the same file, or **152** with only the declarations visible (my original
+   isolated setup) -- both far above the target's 121, because `-inline noauto`
+   does not inline an out-of-line, non-`inline`-marked constructor/destructor
+   even when its definition is textually present in the same translation
+   unit. This produces two real `bl`s (`__ct__...`/`__dt__...`) that do not
+   exist anywhere in the target's disassembly. **This is conclusive, not
+   inconclusive** -- the mechanism as literally proposed cannot produce the
+   target's instruction count, let alone its byte pattern. My `float[6]`
+   placeholder from round 1 remains the closest working approximation (121
+   instructions, wrong placement) despite not sharing the coordinator's
+   destructor-based explanation for *why* the stores survive.
+2. **Three more declaration-order permutations tried for the register map**
+   (`pad, isConnected&, core`; `isConnected&, pad, core`; direct
+   `g_IsConnected[i]` access with no named reference) -- none reproduce the
+   target's `i=25, IsConn=26, pad=27, g_core=28, core=29` consecutive-ascending
+   assignment. The best of all 6 orderings tried across both rounds remains
+   `pad, core` (my round-1 draft), which gets `g_core` correct (`r28`) and
+   permutes the other four. Every variant's exact register map is in the new
+   "Round 2" subsection below, so nobody repeats these six.
+
+The draft, shadow headers, and residual diff are otherwise unchanged from
+round 1 -- current state is still 121/121 instruction count, 60/121 lines
+differing (same two independent causes as before). Reporting this as I found
+it rather than re-framing round 1 as closer to done than it is.
+
 ## Target vs mine
 
 `beginPad__4mPadFv` at `0x8016F360`, size `0x1E4` = **121 instructions**. Asserted
@@ -112,6 +148,48 @@ use-count (`pad` is read/written far more than `g_core`, yet in every variant
 either both or neither land where the count-based theory predicts). Flagging
 as unresolved rather than asserting a rule I can't back up.
 
+#### Round 2: the coordinator's exact target map, and three more orderings
+
+The coordinator supplied the target's real prologue and the resulting map:
+`r25=i, r26=&g_IsConnected, r27=&g_PadAdditionalData, r28=&g_core, r29=core,
+r30=1, r31=0` -- a perfectly consecutive ascending assignment in that order.
+Two things worth separating out before the new variants: `r30`/`r31` already
+matched in every one of my round-1 drafts (both are `li` immediates hoisted
+before the loop on both sides, confirmed again this round), and `r26` was
+already an `li ...@sda21` immediate (not `lis`/`addi`) in every draft too --
+so the two mechanical checks the coordinator suggested were both already
+satisfied; the residual really is just *which* of r25-r29 each identity gets,
+not a wrong addressing mode or a wrong hoisting decision. Three more
+orderings, on top of the four from round 1:
+
+8. **`bool &isConnected = g_IsConnected[i];` declared FIRST (before `pad`,
+   before `core`)**, matching the map's `IsConnected` position (r26) coming
+   right after `i` (r25): result `i=26, pad=28, g_core=27, IsConn=29,
+   core=25`. Worse on every axis -- `g_core` regresses off r28 (my best-so-far
+   value) and `IsConn` ends up highest, the opposite of the target.
+9. **`pad` first, then `bool &isConnected = g_IsConnected[i];`, then `core`**
+   (i.e. keeping round 1's best `pad`-first ordering but inserting the new
+   reference between `pad` and `core` rather than before everything):
+   `i=26, g_core=29, pad=27(!), IsConn=28, core=25`. `pad` actually lands on
+   the *target's* register (`r27`) for the first time in any variant, but
+   `g_core` regresses off r28 to fix it -- the two never land correctly
+   together in the same draft.
+10. **Direct `g_PadAdditionalData[i].m*` / `g_core[i]` access with no named
+    references at all**, core declared first (round 1's variant 4, re-run
+    after the interval-check fix to make sure the fix didn't change it): same
+    result as before the fix, `g_core=29` (wrong) -- confirms a named `pad`
+    reference declared before `core` is doing real work, not incidental to
+    the interval-check bug.
+
+Ten orderings tried in total across both rounds (7 in round 1 counting the
+`unexplainedTemp`-removal control, 3 here). `g_core=r28` is the only one of
+the five identities that has ever landed on the target's register, and only
+in the `pad, core` ordering (round 1's #2, still the shipped draft). No
+ordering has gotten more than that one right at the same time as the others.
+I do not have a rule that predicts the target's map from source structure,
+and I'd rather say that plainly than present a permutation search as
+progress it isn't.
+
 ### The write-only local (Group C) -- every variant tried
 The target writes the same 6 floats (`ddX, ddY, dX, dY, newX, newY`, in that
 program order) to `r1+0x8` through `r1+0x1f`, in addition to the six `pad.m*`
@@ -160,6 +238,57 @@ instructions (121 -> 115, confirmed) -- but its *purpose* is unknown.
    instructions**, same class of bloat (`lwz`/`stw` word copies for the
    struct assignment). Confirms the bloat source is struct-by-value ABI
    traffic, not the scalar-field-store choice.
+
+#### Round 2: the coordinator's destructor hypothesis -- tested, conclusively fails
+
+The coordinator's theory: `PadAdditionalData_t` has a user-declared
+destructor (confirmed by Batch3: real, out-of-line, empty `{ }` body, `0x40`
+bytes compiled), so a genuine local instance can't have its storage elided
+even though every store into it is dead -- and suggested exactly this source,
+with the field-write order reordered to match the target's address pattern:
+```cpp
+PadAdditionalData_t t;
+t.mAccX = ddX;  t.mAccY = ddY;
+t.mVelX = dX;   t.mVelY = dY;
+t.mPosX = newX; t.mPosY = newY;
+pad = t;
+```
+Tested exactly as given, in two configurations:
+8. **With only `PadAdditionalData_t`'s ctor/dtor *declared* in the shadow
+   header (my batch's normal setup -- another batch owns the bodies)**:
+   compiles to **152 instructions**. Two real calls appear that do not exist
+   anywhere in the target: `bl __ct__Q24mPad19PadAdditionalData_tFv` right
+   before the field stores, and `bl __dt__Q24mPad19PadAdditionalData_tFv`
+   right after `pad = t`'s stores, with an extra `li r4,-0x1` feeding it (the
+   `__dt` calling convention apparently takes a flag arg). The `pad = t`
+   assignment itself did NOT become the hoped-for "free" re-store of
+   already-live registers -- it also round-trips, and six extra callee-saved
+   FPRs (`f25`-`f30`) get spilled/restored in the prologue/epilogue that
+   don't exist in the target at all, because the values now have to survive
+   across the two calls.
+9. **With the real ctor/dtor *bodies* from Batch3 also defined in the same
+   file** (`PadAdditionalData_t::PadAdditionalData_t() { }` /
+   `::~PadAdditionalData_t() { }`, copied verbatim from `BATCH3.md`, to test
+   whether `-ipa file` lets MWCC inline them away since their definitions are
+   now visible in the same translation unit): compiles to **149
+   instructions** -- still two real `bl`s to the ctor/dtor, unchanged from
+   #8 apart from 3 fewer instructions elsewhere. **`-inline noauto` blocks
+   inlining a non-`inline`-marked, out-of-line member function regardless of
+   whether its body is visible in the same file** -- `-ipa file` does not
+   override that. (I removed these two definitions again afterward; they are
+   not mine to define, and Batch3 already owns them in the real merge.)
+
+Both configurations are far above the target's 121 and contain two `bl`
+instructions with no counterpart anywhere in the target's disassembly. This
+is not "didn't quite match" -- it is a different, larger set of instructions
+in a fundamentally different shape (real calls where the target has none), so
+I'm treating it as a closed negative rather than a partial lead: **a literal
+local instance of `PadAdditionalData_t`, constructed and assigned as
+suggested, cannot produce the target's 121-instruction body under this
+project's compiler flags.** Whatever mechanism keeps the 6 dead stores alive
+in the real source, it is not "a local of this exact class, this exact way."
+My round-1 `float[6]` remains the closest working substitute -- right count,
+wrong placement -- without sharing the destructor-based explanation for why.
 
 **Open question, stated plainly**: I can reproduce the *quantity* and
 *values* of the extra stores (variant 4, 121 instructions total) but not
@@ -475,14 +604,21 @@ public:
 
 ## Status
 
-**Not byte-exact.** 61/121 instructions match exactly (including every branch
-target, every call, and the full control-flow shape); the remaining 60 are a
-register-numbering permutation plus one write-only local's stack placement,
-both isolated and explained above rather than left as an unexplained blob.
-Reporting the negative result rather than manufacturing a match: I could not
-close either gap with the variants I tried, and I've listed all of them so
-nobody repeats the same eight experiments.
+**Not byte-exact, after two rounds.** 61/121 instructions match exactly
+(including every branch target, every call, and the full control-flow
+shape); the remaining 60 are a register-numbering permutation plus one
+write-only local's stack placement, both isolated and explained above rather
+than left as an unexplained blob. Round 2 tested both of the coordinator's
+specific hypotheses to hard numbers -- the destructor-backed local
+(149-152 instructions, two spurious `bl`s, conclusively wrong) and three more
+declaration orderings for the register map (none improve on round 1's best,
+`g_core` correct and the other four permuted) -- and neither closes the gap.
+Ten total register-order variants and nine total local-placement variants
+have been tried and recorded across both rounds so nobody repeats them.
+Reporting the negative result rather than manufacturing a match.
 
 Work is in `wip/m_pad/scratch/batch2/` (`include/` = shadow headers,
 `m_pad.cpp` = draft, `fulldiff.py`/`check.py` = the compile+diff drivers,
-importing `harness.py` directly).
+importing `harness.py` directly). The shipped draft is unchanged from round 1
+-- `pad, core` declaration order, `float unexplainedTemp[6]` placeholder for
+the write-only local -- since none of round 2's variants improved on it.
