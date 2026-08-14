@@ -137,6 +137,31 @@ declared at all**, and `setCurrentChannel` returns it.
 time and verifies all five binaries after each. Shadow-copy into your own scratch
 include directory to test.
 
+## Status — PARKED at 12 of 14, landing kit complete
+
+All 16 functions compile as one TU (`wip/m_pad/scratch/merge_lead/m_pad.cpp`).
+Twelve are byte-exact. Both residuals have the **correct instruction count** and
+differ only in register assignment:
+
+- **`beginPad`** — 121/121, 50 lines differing, all pure register-number
+  substitution on otherwise identical instructions. Frame size, prologue,
+  epilogue and every branch target match. A permutation among r25–r29; the
+  target's map is `r25=i, r26=&g_IsConnected, r27=&g_PadAdditionalData,
+  r28=&g_core, r29=core, r30=1, r31=0`, and `g_core`→`r28` is the only identity
+  a draft has ever matched.
+- **`clearWPADInfo`** — 17/17, 10 lines differing. The target puts the combined
+  address in `r4` (reusing the base register) and the `s_WPADInfoAvailable`
+  offset in `r5`; every draft does the reverse. **21 shapes tried** across the
+  batch and the lead: pointer-to-element, pointer-to-array, element reference,
+  `int` index, separate `avail` pointer, memset, chained assignment, helper
+  function, raw casts, switch, early return, and the harness's own
+  `sweep_variants` levers. All produce the identical swap or diverge further.
+  The landed `LytBase_c::AnimeEndSetup` shows the target's convention — the sum
+  goes into the base register — but nothing at the C++ level reaches it here.
+
+**Do not open either without a new technique.** More source permutations are
+not it; that has been established at some length.
+
 ## Rules
 
 - **Never run `ninja`, `configure.py`, `progress.py`, `land.py`.**
