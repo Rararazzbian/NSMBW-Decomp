@@ -35,13 +35,16 @@ void create() {
 }
 
 void beginPad() {
+    bool *conns = g_IsConnected;
+    EGG::CoreController **cores = g_core;
+    PadAdditionalData_t *pads = g_PadAdditionalData;
     g_PadFrame++;
     g_padMg->beginFrame();
 
-    for (u32 i = 0; i < 4; i++) {
-        PadAdditionalData_t &pad = g_PadAdditionalData[i];
+    for (int i = 0; i < 4; i++) {
+        PadAdditionalData_t &pad = pads[i];
         EGG::CoreController *core = g_padMg->getNthController(i);
-        g_core[i] = core;
+        cores[i] = core;
 
         if (*((u8 *)core + 0xb1c) & 1) {
             float newX = *(float *)((u8 *)core + 0x6c);
@@ -55,8 +58,8 @@ void beginPad() {
             PadDelta_t delta = { ddX, ddY, dX, dY, newX, newY };
             pad.setAccVel(delta);
 
-            if (!g_IsConnected[i])
-                g_IsConnected[i] = true;
+            if (!conns[i])
+                conns[i] = true;
 
             if (s_GetWPADInfoInterval != 0) {
                 if (s_GetWPADInfoInterval == 1 || s_GetWPADInfoCount == (u32)i ||
@@ -66,7 +69,7 @@ void beginPad() {
                 }
             }
         } else {
-            if (g_IsConnected[i]) {
+            if (conns[i]) {
                 ((EGG::CoreStatus *)((u8 *)core + 0x18))->init();
                 core->sceneReset();
                 pad.mPosX = 0.0f;
@@ -76,7 +79,7 @@ void beginPad() {
                 pad.mVelX = 0.0f;
                 pad.mVelY = 0.0f;
                 clearWPADInfo((CH_e)i);
-                g_IsConnected[i] = false;
+                conns[i] = false;
             }
         }
     }
@@ -86,7 +89,7 @@ void beginPad() {
             s_GetWPADInfoCount = 0;
     }
 
-    g_currentCore = g_core[g_currentCoreID];
+    g_currentCore = cores[g_currentCoreID];
 }
 
 void endPad() {

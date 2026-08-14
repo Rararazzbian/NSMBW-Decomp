@@ -229,6 +229,22 @@ Each of these exists because something broke.
   such calls therefore has no local of that class**, however well the sizes line
   up — which kills the otherwise attractive theory that dead stores survive
   because a destructor keeps the storage alive.
+- **`add rD, rBase, rIndex` keeps the result in the BASE's register.** In
+  straight-line, call-free, branch-free code MWCC always folds base+index into
+  the register holding the *address*, never the one holding the *scaled
+  magnitude* -- the index's one-shot value dies at the fold while the base's
+  pointer role continues. Derived from a sweep of all 145 landed byte-exact
+  objects: 3 clean confirmations and 4 boundary cases where a third register
+  wins instead (an intervening `bl` forcing a nonvolatile, the fold becoming an
+  immediate call argument forcing `r3`, or a conditional branch between the
+  access and the fold).
+
+  **The sweep also produced a striking negative: no landed TU anywhere contains
+  the store-first form of the idiom** -- indexed store, then fold, then
+  displacement stores -- which is exactly `m_pad::clearWPADInfo`'s shape. 60+
+  `st**x` sites across 16 files, all load-first. So when a residual has no
+  precedent in the entire matched corpus, that is itself evidence the shape is
+  wrong, and worth checking before assuming the allocator is at fault.
 - **Declaration order does NOT drive MWCC's saved-register assignment.** Tested
   exhaustively: all six orderings of three hoisted base pointers in `beginPad`
   produced **byte-identical** output. So when a residual is "the right

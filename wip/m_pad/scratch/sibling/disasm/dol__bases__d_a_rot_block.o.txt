@@ -1,0 +1,372 @@
+.include "macros.inc"
+.file "d_a_rot_block.cpp"
+
+# 0x00000000..0x000002F8 | size: 0x2F8
+.text
+.balign 16
+
+# .text:0x0 | size: 0xC0
+# daRotBlock_c::rot_block_init(float, float)
+.fn rot_block_init__12daRotBlock_cFff, global
+/* 00000000 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  C0 60 00 00 */	lfs f3, "@13101"@sda21(r0)
+/* 0000000C 0000004C  FC 01 10 40 */	fcmpo cr0, f1, f2
+/* 00000010 00000050  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000014 00000054  C0 00 00 00 */	lfs f0, "@13102"@sda21(r0)
+/* 00000018 00000058  EC A3 00 72 */	fmuls f5, f3, f1
+/* 0000001C 0000005C  C0 83 00 AC */	lfs f4, 0xac(r3)
+/* 00000020 00000060  EC 60 00 B2 */	fmuls f3, f0, f2
+/* 00000024 00000064  C0 03 00 B0 */	lfs f0, 0xb0(r3)
+/* 00000028 00000068  EC 84 28 2A */	fadds f4, f4, f5
+/* 0000002C 0000006C  EC 00 18 2A */	fadds f0, f0, f3
+/* 00000030 00000070  D0 83 00 AC */	stfs f4, 0xac(r3)
+/* 00000034 00000074  D0 03 00 B0 */	stfs f0, 0xb0(r3)
+/* 00000038 00000078  40 81 00 0C */	ble .L_00000044
+/* 0000003C 0000007C  FC E0 08 90 */	fmr f7, f1
+/* 00000040 00000080  48 00 00 08 */	b .L_00000048
+.L_00000044:
+/* 00000044 00000084  FC E0 10 90 */	fmr f7, f2
+.L_00000048:
+/* 00000048 00000088  FC 60 08 50 */	fneg f3, f1
+/* 0000004C 0000008C  C0 80 00 00 */	lfs f4, "@13101"@sda21(r0)
+/* 00000050 00000090  FC 00 10 50 */	fneg f0, f2
+/* 00000054 00000094  C0 C0 00 00 */	lfs f6, "@13103"@sda21(r0)
+/* 00000058 00000098  EC 44 00 B2 */	fmuls f2, f4, f2
+/* 0000005C 0000009C  C0 A0 00 00 */	lfs f5, "@13104"@sda21(r0)
+/* 00000060 000000A0  EC C7 01 B2 */	fmuls f6, f7, f6
+/* 00000064 000000A4  38 A3 04 D0 */	addi r5, r3, 0x4d0
+/* 00000068 000000A8  EC 64 00 F2 */	fmuls f3, f4, f3
+/* 0000006C 000000AC  D0 A3 03 20 */	stfs f5, 0x320(r3)
+/* 00000070 000000B0  EC 24 00 72 */	fmuls f1, f4, f1
+/* 00000074 000000B4  7C A6 2B 78 */	mr r6, r5
+/* 00000078 000000B8  EC 04 00 32 */	fmuls f0, f4, f0
+/* 0000007C 000000BC  D0 A3 03 24 */	stfs f5, 0x324(r3)
+/* 00000080 000000C0  38 83 03 EC */	addi r4, r3, 0x3ec
+/* 00000084 000000C4  D0 C3 03 18 */	stfs f6, 0x318(r3)
+/* 00000088 000000C8  D0 C3 03 1C */	stfs f6, 0x31c(r3)
+/* 0000008C 000000CC  D0 61 00 10 */	stfs f3, 0x10(r1)
+/* 00000090 000000D0  D0 41 00 14 */	stfs f2, 0x14(r1)
+/* 00000094 000000D4  D0 63 04 D0 */	stfs f3, 0x4d0(r3)
+/* 00000098 000000D8  D0 43 04 D4 */	stfs f2, 0x4d4(r3)
+/* 0000009C 000000DC  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 000000A0 000000E0  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 000000A4 000000E4  D0 23 04 D8 */	stfs f1, 0x4d8(r3)
+/* 000000A8 000000E8  D0 03 04 DC */	stfs f0, 0x4dc(r3)
+/* 000000AC 000000EC  48 00 00 01 */	bl setBgData__15daRotObjsBase_cFP9dBg_ctr_cP9dBg_ctr_cPQ215daRotObjsBase_c13obj_bg_data_t
+/* 000000B0 000000F0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000000B4 000000F4  7C 08 03 A6 */	mtlr r0
+/* 000000B8 000000F8  38 21 00 20 */	addi r1, r1, 0x20
+/* 000000BC 000000FC  4E 80 00 20 */	blr
+.endfn rot_block_init__12daRotBlock_cFff
+
+# .text:0xC0 | size: 0x40
+# EGG::Vector2f::~Vector2f()
+.fn __dt__Q23EGG8Vector2fFv, weak
+/* 000000C0 00000100  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000000C4 00000104  7C 08 02 A6 */	mflr r0
+/* 000000C8 00000108  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000000CC 0000010C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000000D0 00000110  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000000D4 00000114  7C 7F 1B 78 */	mr r31, r3
+/* 000000D8 00000118  41 82 00 10 */	beq .L_000000E8
+/* 000000DC 0000011C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000000E0 00000120  40 81 00 08 */	ble .L_000000E8
+/* 000000E4 00000124  48 00 00 01 */	bl __dl__FPv
+.L_000000E8:
+/* 000000E8 00000128  7F E3 FB 78 */	mr r3, r31
+/* 000000EC 0000012C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000000F0 00000130  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000000F4 00000134  7C 08 03 A6 */	mtlr r0
+/* 000000F8 00000138  38 21 00 10 */	addi r1, r1, 0x10
+/* 000000FC 0000013C  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG8Vector2fFv
+
+# .text:0x100 | size: 0x40
+# mVec2_c::~mVec2_c()
+.fn __dt__7mVec2_cFv, weak
+/* 00000100 00000140  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000104 00000144  7C 08 02 A6 */	mflr r0
+/* 00000108 00000148  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000010C 0000014C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000110 00000150  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000114 00000154  7C 7F 1B 78 */	mr r31, r3
+/* 00000118 00000158  41 82 00 10 */	beq .L_00000128
+/* 0000011C 0000015C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000120 00000160  40 81 00 08 */	ble .L_00000128
+/* 00000124 00000164  48 00 00 01 */	bl __dl__FPv
+.L_00000128:
+/* 00000128 00000168  7F E3 FB 78 */	mr r3, r31
+/* 0000012C 0000016C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000130 00000170  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000134 00000174  7C 08 03 A6 */	mtlr r0
+/* 00000138 00000178  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000013C 0000017C  4E 80 00 20 */	blr
+.endfn __dt__7mVec2_cFv
+
+# .text:0x140 | size: 0x8
+# daRotBlock_c::scroll_out_check()
+.fn scroll_out_check__12daRotBlock_cFv, global
+/* 00000140 00000180  38 60 00 00 */	li r3, 0x0
+/* 00000144 00000184  4E 80 00 20 */	blr
+.endfn scroll_out_check__12daRotBlock_cFv
+/* 00000148 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000014C 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x150 | size: 0x94
+# daRotBlock_c::~daRotBlock_c()
+.fn __dt__12daRotBlock_cFv, global
+/* 00000150 00000190  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000154 00000194  7C 08 02 A6 */	mflr r0
+/* 00000158 00000198  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000015C 0000019C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000160 000001A0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000164 000001A4  7C 9F 23 78 */	mr r31, r4
+/* 00000168 000001A8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000016C 000001AC  7C 7E 1B 78 */	mr r30, r3
+/* 00000170 000001B0  41 82 00 58 */	beq .L_000001C8
+/* 00000174 000001B4  3C 80 00 00 */	lis r4, __dt__Q215daRotObjsBase_c13obj_bg_data_tFv@ha
+/* 00000178 000001B8  38 A0 00 10 */	li r5, 0x10
+/* 0000017C 000001BC  38 84 00 00 */	addi r4, r4, __dt__Q215daRotObjsBase_c13obj_bg_data_tFv@l
+/* 00000180 000001C0  38 C0 00 01 */	li r6, 0x1
+/* 00000184 000001C4  38 63 04 D0 */	addi r3, r3, 0x4d0
+/* 00000188 000001C8  48 00 00 01 */	bl __destroy_arr
+/* 0000018C 000001CC  3C 80 00 00 */	lis r4, __dt__9dBg_ctr_cFv@ha
+/* 00000190 000001D0  38 7E 03 EC */	addi r3, r30, 0x3ec
+/* 00000194 000001D4  38 84 00 00 */	addi r4, r4, __dt__9dBg_ctr_cFv@l
+/* 00000198 000001D8  38 A0 00 E4 */	li r5, 0xe4
+/* 0000019C 000001DC  38 C0 00 01 */	li r6, 0x1
+/* 000001A0 000001E0  48 00 00 01 */	bl __destroy_arr
+/* 000001A4 000001E4  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 000001A8 000001E8  41 82 00 10 */	beq .L_000001B8
+/* 000001AC 000001EC  7F C3 F3 78 */	mr r3, r30
+/* 000001B0 000001F0  38 80 00 00 */	li r4, 0x0
+/* 000001B4 000001F4  48 00 00 01 */	bl __dt__13dActorState_cFv
+.L_000001B8:
+/* 000001B8 000001F8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000001BC 000001FC  40 81 00 0C */	ble .L_000001C8
+/* 000001C0 00000200  7F C3 F3 78 */	mr r3, r30
+/* 000001C4 00000204  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_000001C8:
+/* 000001C8 00000208  7F C3 F3 78 */	mr r3, r30
+/* 000001CC 0000020C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000001D0 00000210  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000001D4 00000214  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000001D8 00000218  7C 08 03 A6 */	mtlr r0
+/* 000001DC 0000021C  38 21 00 10 */	addi r1, r1, 0x10
+/* 000001E0 00000220  4E 80 00 20 */	blr
+.endfn __dt__12daRotBlock_cFv
+/* 000001E4 00000224  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001E8 00000228  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001EC 0000022C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1F0 | size: 0x40
+# daRotObjsBase_c::obj_bg_data_t::~obj_bg_data_t()
+.fn __dt__Q215daRotObjsBase_c13obj_bg_data_tFv, weak
+/* 000001F0 00000230  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001F4 00000234  7C 08 02 A6 */	mflr r0
+/* 000001F8 00000238  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001FC 0000023C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000200 00000240  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000204 00000244  7C 7F 1B 78 */	mr r31, r3
+/* 00000208 00000248  41 82 00 10 */	beq .L_00000218
+/* 0000020C 0000024C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000210 00000250  40 81 00 08 */	ble .L_00000218
+/* 00000214 00000254  48 00 00 01 */	bl __dl__FPv
+.L_00000218:
+/* 00000218 00000258  7F E3 FB 78 */	mr r3, r31
+/* 0000021C 0000025C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000220 00000260  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000224 00000264  7C 08 03 A6 */	mtlr r0
+/* 00000228 00000268  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000022C 0000026C  4E 80 00 20 */	blr
+.endfn __dt__Q215daRotObjsBase_c13obj_bg_data_tFv
+
+# .text:0x230 | size: 0x58
+# daRotObjsBase_c::~daRotObjsBase_c()
+.fn __dt__15daRotObjsBase_cFv, weak
+/* 00000230 00000270  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000234 00000274  7C 08 02 A6 */	mflr r0
+/* 00000238 00000278  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000023C 0000027C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000240 00000280  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000244 00000284  7C 9F 23 78 */	mr r31, r4
+/* 00000248 00000288  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000024C 0000028C  7C 7E 1B 78 */	mr r30, r3
+/* 00000250 00000290  41 82 00 1C */	beq .L_0000026C
+/* 00000254 00000294  38 80 00 00 */	li r4, 0x0
+/* 00000258 00000298  48 00 00 01 */	bl __dt__13dActorState_cFv
+/* 0000025C 0000029C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000260 000002A0  40 81 00 0C */	ble .L_0000026C
+/* 00000264 000002A4  7F C3 F3 78 */	mr r3, r30
+/* 00000268 000002A8  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_0000026C:
+/* 0000026C 000002AC  7F C3 F3 78 */	mr r3, r30
+/* 00000270 000002B0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000274 000002B4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000278 000002B8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000027C 000002BC  7C 08 03 A6 */	mtlr r0
+/* 00000280 000002C0  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000284 000002C4  4E 80 00 20 */	blr
+.endfn __dt__15daRotObjsBase_cFv
+/* 00000288 000002C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000028C 000002CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x290 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 00000290 000002D0  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 00000294 000002D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000298 000002D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000029C 000002DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2A0 | size: 0x8
+# dBaseActor_c::GetActorType()
+.fn GetActorType__12dBaseActor_cFv, weak
+/* 000002A0 000002E0  38 60 00 08 */	li r3, 0x8
+/* 000002A4 000002E4  4E 80 00 20 */	blr
+.endfn GetActorType__12dBaseActor_cFv
+/* 000002A8 000002E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002AC 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2B0 | size: 0x4
+# dActor_c::funsuiMoveX()
+.fn funsuiMoveX__8dActor_cFv, weak
+/* 000002B0 000002F0  4E 80 00 20 */	blr
+.endfn funsuiMoveX__8dActor_cFv
+/* 000002B4 000002F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002B8 000002F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002BC 000002FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2C0 | size: 0x4
+# dActor_c::setCarryFall(dActor_c*, int)
+.fn setCarryFall__8dActor_cFP8dActor_ci, weak
+/* 000002C0 00000300  4E 80 00 20 */	blr
+.endfn setCarryFall__8dActor_cFP8dActor_ci
+/* 000002C4 00000304  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002C8 00000308  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002CC 0000030C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2D0 | size: 0x8
+# dActor_c::isSpinLiftUpEnable()
+.fn isSpinLiftUpEnable__8dActor_cFv, weak
+/* 000002D0 00000310  38 60 00 01 */	li r3, 0x1
+/* 000002D4 00000314  4E 80 00 20 */	blr
+.endfn isSpinLiftUpEnable__8dActor_cFv
+/* 000002D8 00000318  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002DC 0000031C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2E0 | size: 0x8
+# dActor_c::getPlrNo()
+.fn getPlrNo__8dActor_cFv, weak
+/* 000002E0 00000320  38 63 03 8D */	addi r3, r3, 0x38d
+/* 000002E4 00000324  4E 80 00 20 */	blr
+.endfn getPlrNo__8dActor_cFv
+/* 000002E8 00000328  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002EC 0000032C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2F0 | size: 0x8
+# dActor_c::vf68(dBg_ctr_c*)
+.fn vf68__8dActor_cFP9dBg_ctr_c, weak
+/* 000002F0 00000330  38 60 00 01 */	li r3, 0x1
+/* 000002F4 00000334  4E 80 00 20 */	blr
+.endfn vf68__8dActor_cFP9dBg_ctr_c
+
+# 0x00000000..0x00000104 | size: 0x104
+.data
+.balign 8
+
+# .data:0x0 | size: 0x104
+# daRotBlock_c::__vtable
+.obj __vt__12daRotBlock_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__15daRotObjsBase_cFv
+	.4byte preCreate__8dActor_cFv
+	.4byte postCreate__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__15daRotObjsBase_cFv
+	.4byte preDelete__8dActor_cFv
+	.4byte postDelete__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__15daRotObjsBase_cFv
+	.4byte preExecute__8dActor_cFv
+	.4byte postExecute__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__7fBase_cFv
+	.4byte preDraw__15daRotObjsBase_cFv
+	.4byte postDraw__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__12daRotBlock_cFv
+	.4byte getKindString__8dActor_cCFv
+	.4byte draw2D__12dBaseActor_cFv
+	.4byte draw2D_lyt2__12dBaseActor_cFv
+	.4byte GetActorType__12dBaseActor_cFv
+	.4byte finalUpdate__12dBaseActor_cFv
+	.4byte ActorDrawCullCheck__8dActor_cFv
+	.4byte block_hit_init__8dActor_cFv
+	.4byte vf68__8dActor_cFP9dBg_ctr_c
+	.4byte getPlrNo__8dActor_cFv
+	.4byte getLookatPos__8dActor_cCFv
+	.4byte isSpinLiftUpEnable__8dActor_cFv
+	.4byte setSpinLiftUpActor__8dActor_cFP8dActor_c
+	.4byte setCarryFall__8dActor_cFP8dActor_ci
+	.4byte setEatTongue__8dActor_cFP8dActor_c
+	.4byte setEatTongueOff__8dActor_cFP8dActor_c
+	.4byte setEatMouth__8dActor_cFP8dActor_c
+	.4byte setEatSpitOut__8dActor_cFP8dActor_c
+	.4byte setEatGlupDown__8dActor_cFP8dActor_c
+	.4byte eatMove__8dActor_cFP8dActor_c
+	.4byte removeCc__8dActor_cFv
+	.4byte reviveCc__8dActor_cFv
+	.4byte setAfterEatScale__8dActor_cFv
+	.4byte calcSpitOutPos__8dActor_cFP8dActor_c
+	.4byte calcEatScaleRate__8dActor_cFP8dActor_c
+	.4byte calcEatInScale__8dActor_cFP8dActor_c
+	.4byte allEnemyDeathEffSet__8dActor_cFv
+	.4byte vfb4__8dActor_cFv
+	.4byte funsuiMoveX__8dActor_cFv
+	.4byte cancelFunsuiActUpper__8dActor_cFv
+	.4byte cancelFunsuiActSide__8dActor_cFi
+	.4byte cancelFunsuiActVanish__8dActor_cFv
+	.4byte waterSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte yoganSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte poisonSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte initializeState_Gegneric__13dActorState_cFv
+	.4byte executeState_Gegneric__13dActorState_cFv
+	.4byte finalizeState_Gegneric__13dActorState_cFv
+	.4byte 0x00000000
+	.4byte scroll_out_check__12daRotBlock_cFv
+	.4byte post_execute_state__15daRotObjsBase_cFv
+	.4byte initializeState_Search__15daRotObjsBase_cFv
+	.4byte executeState_Search__15daRotObjsBase_cFv
+	.4byte finalizeState_Search__15daRotObjsBase_cFv
+	.4byte initializeState_Move__15daRotObjsBase_cFv
+	.4byte executeState_Move__15daRotObjsBase_cFv
+	.4byte finalizeState_Move__15daRotObjsBase_cFv
+.endobj __vt__12daRotBlock_c
+
+# 0x00000000..0x00000010 | size: 0x10
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | size: 0x4
+.obj "@13101", local
+	.4byte 0x3F000000
+.endobj "@13101"
+
+# .sdata2:0x4 | size: 0x4
+.obj "@13102", local
+	.4byte 0xBF000000
+.endobj "@13102"
+
+# .sdata2:0x8 | size: 0x4
+.obj "@13103", local
+	.4byte 0x3FC00000
+.endobj "@13103"
+
+# .sdata2:0xC | size: 0x4
+.obj "@13104", local
+	.4byte 0x00000000
+.endobj "@13104"

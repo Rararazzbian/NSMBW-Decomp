@@ -1,0 +1,349 @@
+total hits: 20
+======================================================================
+dol__bases__d_a_en_dpakkun_base.o.txt checkQuakeDeath__17daEnDpakkunBase_cFv insn# 31
+  xform:  lfsx f0, r3, r0   (rA=r3, rB=r0)
+  add:    add r3, r3, r0  -> rD=r3
+  def(rA=r3): addi r3, r3, "@LOCAL@checkQuakeDeath__17daEnDpakkunBase_cFv@cs_check_ofs"@l
+  def(rB=r0): slwi r0, r0, 3
+  context:
+     addi r3, r3, "@LOCAL@checkQuakeDeath__17daEnDpakkunBase_cFv@cs_check_ofs"@l
+     slwi r0, r0, 3
+     lfs f1, 0x8(r1)
+     lfsx f0, r3, r0
+     add r3, r3, r0
+     lfs f4, 0xc(r1)
+     fadds f5, f1, f0
+     lfs f2, 0x4(r3)
+     fsubs f1, f1, f0
+     lfs f6, 0x38(r4)
+======================================================================
+dol__bases__d_a_en_dpakkun_base.o.txt setDeathInfo_Quake__17daEnDpakkunBase_cFi insn# 12
+  xform:  lfsx f0, r5, r0   (rA=r5, rB=r0)
+  add:    add r5, r5, r0  -> rD=r5
+  def(rA=r5): addi r5, r5, l_hole_offset@l
+  def(rB=r0): slwi r0, r0, 3
+  context:
+     lwz r0, 0x6a8(r3)
+     lfs f2, 0x6c8(r3)
+     slwi r0, r0, 3
+     lfsx f0, r5, r0
+     add r5, r5, r0
+     lfs f1, 0x4(r5)
+     fadds f2, f2, f0
+     lfs f0, "@23036"@sda21(r0)
+     stfs f2, 0x8(r1)
+     lfs f2, 0x6cc(r3)
+======================================================================
+dol__bases__d_a_player_hio_ADJ.o.txt resetParam__14dPyModel_HIO_cFi insn# 14
+  xform:  lfsx f30, r6, r8   (rA=r6, rB=r8)
+  add:    add r4, r6, r8  -> rD=r4
+  def(rA=r6): addi r6, r7, 0x2b8
+  def(rB=r8): slwi r8, r4, 4
+  context:
+     add r9, r0, r8
+     addi r6, r7, 0x2b8
+     addi r0, r7, 0x2e8
+     lfsx f30, r6, r8
+     lfsux f7, r5, r0
+     add r4, r6, r8
+     lfs f31, 0x4(r4)
+     lfs f13, 0x8(r4)
+     lfs f12, 0xc(r4)
+     lfs f11, 0x0(r9)
+     lfs f10, 0x4(r9)
+======================================================================
+dol__bases__d_lytbase.o.txt ReverseAnimeStartSetup__9LytBase_cFib insn# 19
+  xform:  lwzx r3, r30, r0   (rA=r30, rB=r0)
+  add:    add r31, r0, r30  -> rD=r31
+  def(rA=r30): mulli r30, r31, 0x28
+  def(rB=r0): lwz r0, 0x184(r29)
+  context:
+     lwzx r3, r3, r30
+     stb r0, 0x14(r3)
+     lwz r0, 0x184(r29)
+     lwzx r3, r30, r0
+     add r31, r0, r30
+     lfs f1, 0x4(r3)
+     fsubs f1, f1, f0
+     bl setFrame__Q23m2d11FrameCtrl_cFf
+     mr r3, r31
+     bl updateFrame__Q23m2d14AnmGroupBase_cFv
+======================================================================
+dol__bases__d_lytbase.o.txt ReverseAnimeStartSetup__9LytBase_cFib insn# 30
+  xform:  lwzx r3, r30, r0   (rA=r30, rB=r0)
+  add:    add r31, r0, r30  -> rD=r31
+  def(rA=r30): mulli r30, r31, 0x28
+  def(rB=r0): lwz r0, 0x184(r29)
+  context:
+     mulli r30, r31, 0x28
+     lwz r0, 0x184(r29)
+     lfs f1, "@14988"@sda21(r0)
+     lwzx r3, r30, r0
+     add r31, r0, r30
+     bl setFrame__Q23m2d11FrameCtrl_cFf
+     mr r3, r31
+     bl updateFrame__Q23m2d14AnmGroupBase_cFv
+     lwz r3, 0x184(r29)
+     li r0, 0x3
+======================================================================
+dol__bases__d_lytbase.o.txt AnimePlay__9LytBase_cFv insn# 25
+  xform:  lwzx r3, r30, r0   (rA=r30, rB=r0)
+  add:    add r31, r0, r30  -> rD=r31
+  def(rA=r30): None
+  def(rB=r0): lwz r0, 0x184(r28)
+  context:
+     bl AnimeEndSetup__9LytBase_cFi
+     b .L_00000D38
+     lwz r0, 0x184(r28)
+     lwzx r3, r30, r0
+     add r31, r0, r30
+     bl play__Q23m2d11FrameCtrl_cFv
+     mr r3, r31
+     bl updateFrame__Q23m2d14AnmGroupBase_cFv
+     addi r30, r30, 0x28
+     addi r29, r29, 0x1
+======================================================================
+dol__bases__d_rail.o.txt calcTargetPos__7dRail_cFv insn# 13
+  xform:  lhax r5, r6, r4   (rA=r6, rB=r4)
+  add:    add r4, r6, r4  -> rD=r4
+  def(rA=r6): cmpwi r6, 0x0
+  def(rB=r4): slwi r4, r4, 4
+  context:
+     stw r0, 0x8(r1)
+     slwi r4, r4, 4
+     lfd f1, "@5030"@sda21(r0)
+     lhax r5, r6, r4
+     add r4, r6, r4
+     stw r0, 0x10(r1)
+     xoris r0, r5, 0x8000
+     lwz r5, 0x10(r3)
+     stw r0, 0xc(r1)
+     lfd f0, 0x8(r1)
+======================================================================
+dol__bases__d_wm_csvdata.o.txt ReadPointType__10dCsvData_cFPcRi insn# 11
+  xform:  lbzx r5, r25, r4   (rA=r25, rB=r4)
+  add:    add r3, r4, r25  -> rD=r3
+  def(rA=r25): mr r25, r4
+  def(rB=r4): lwz r4, 0x0(r26)
+  context:
+     mr r26, r5
+     bl GetPointName__10dCsvData_cCFi
+     lwz r4, 0x0(r26)
+     lbzx r5, r25, r4
+     extsb r0, r5
+     cmpwi r0, 0x22
+     bne .L_00000A78
+     add r3, r4, r25
+     lbz r0, 0x1(r3)
+     cmpwi r0, 0x22
+     bne .L_00000A78
+     addi r0, r4, 0x3
+     stw r0, 0x0(r26)
+======================================================================
+dol__bases__d_wm_csvdata.o.txt ReadFlagData__10dCsvData_cFPcRib insn# 17
+  xform:  lbzx r31, r4, r10   (rA=r4, rB=r10)
+  add:    add r11, r4, r10  -> rD=r11
+  def(rA=r4): None
+  def(rB=r10): lwz r10, 0x0(r5)
+  context:
+     add r12, r3, r7
+     li r8, 0x0
+     lwz r10, 0x0(r5)
+     lbzx r31, r4, r10
+     add r11, r4, r10
+     extsb r10, r31
+     cmpwi r10, 0x2c
+     beq .L_000019B4
+     cmpwi r10, 0x22
+     beq .L_000019B4
+======================================================================
+dol__bases__d_wm_csvdata.o.txt ReadFlagData__10dCsvData_cFPcRib insn# 81
+  xform:  lbzx r31, r4, r11   (rA=r4, rB=r11)
+  add:    add r12, r4, r11  -> rD=r12
+  def(rA=r4): None
+  def(rB=r11): lwz r11, 0x0(r5)
+  context:
+     stw r10, 0x0(r5)
+     b .L_00001980
+     lwz r11, 0x0(r5)
+     lbzx r31, r4, r11
+     add r12, r4, r11
+     extsb r10, r31
+     cmpwi r10, 0x22
+     bne .L_00001AA4
+     addi r0, r11, 0x1
+     stw r0, 0x0(r5)
+======================================================================
+dol__bases__d_wm_csvdata.o.txt ReadRouteFlag__10dCsvData_cFPcRi insn# 9
+  xform:  lbzx r7, r4, r6   (rA=r4, rB=r6)
+  add:    add r3, r6, r4  -> rD=r3
+  def(rA=r4): None
+  def(rB=r6): lwz r6, 0x0(r5)
+  context:
+     mr r26, r3
+     mr r27, r4
+     mr r28, r5
+     lbzx r7, r4, r6
+     extsb r0, r7
+     cmpwi r0, 0xd
+     bne .L_00001D14
+     add r3, r6, r4
+     lbz r0, 0x1(r3)
+     cmpwi r0, 0xa
+     beq .L_00001E8C
+     extsb r0, r7
+     li r29, 0x0
+======================================================================
+dol__bases__d_wm_csvdata.o.txt ReadRouteFlag__10dCsvData_cFPcRi insn# 31
+  xform:  lbzx r5, r27, r0   (rA=r27, rB=r0)
+  add:    add r3, r27, r0  -> rD=r3
+  def(rA=r27): None
+  def(rB=r0): lwz r0, 0x0(r28)
+  context:
+     li r6, 0x0
+     nop
+     lwz r0, 0x0(r28)
+     lbzx r5, r27, r0
+     add r3, r27, r0
+     extsb r0, r5
+     cmpwi r0, 0x2c
+     beq .L_00001D7C
+     cmpwi r0, 0x22
+     beq .L_00001D7C
+======================================================================
+dol__bases__d_wm_csvdata.o.txt ReadRouteFlag__10dCsvData_cFPcRi insn# 89
+  xform:  lbzx r5, r27, r3   (rA=r27, rB=r3)
+  add:    add r4, r27, r3  -> rD=r4
+  def(rA=r27): None
+  def(rB=r3): lwz r3, 0x0(r28)
+  context:
+     ori r0, r0, 0x4
+     stb r0, 0x502c(r3)
+     lwz r3, 0x0(r28)
+     lbzx r5, r27, r3
+     add r4, r27, r3
+     extsb r0, r5
+     cmpwi r0, 0x22
+     bne .L_00001E54
+     addi r0, r3, 0x1
+     stw r0, 0x0(r28)
+======================================================================
+dol__bases__d_wm_csvdata.o.txt isLineEnd__10dCsvData_cFPci insn# 0
+  xform:  lbzx r0, r4, r5   (rA=r4, rB=r5)
+  add:    add r4, r5, r4  -> rD=r4
+  def(rA=r4): None
+  def(rB=r5): None
+  context:
+     lbzx r0, r4, r5
+     li r3, 0x0
+     extsb r0, r0
+     cmpwi r0, 0xd
+     bnelr
+     add r4, r5, r4
+     lbz r0, 0x1(r4)
+     cmpwi r0, 0xa
+     bnelr
+     li r3, 0x1
+     blr
+======================================================================
+dol__mLib__m_3d__anm_mat_clr.o.txt remove__Q23m3d11anmMatClr_cFv insn# 38
+  xform:  lwzx r12, r30, r0   (rA=r30, rB=r0)
+  add:    add r3, r0, r30  -> rD=r3
+  def(rA=r30): li r30, 0x0
+  def(rB=r0): lwz r0, 0x28(r28)
+  context:
+     li r30, 0x0
+     b .L_00000794
+     lwz r0, 0x28(r28)
+     lwzx r12, r30, r0
+     add r3, r0, r30
+     lwz r12, 0x10(r12)
+     mtctr r12
+     bctrl
+     addi r30, r30, 0x38
+     addi r29, r29, 0x1
+======================================================================
+dol__mLib__m_3d__anm_mat_clr.o.txt play__Q23m3d11anmMatClr_cFl insn# 13
+  xform:  lwzx r12, r31, r0   (rA=r31, rB=r0)
+  add:    add r3, r0, r31  -> rD=r3
+  def(rA=r31): mulli r31, r4, 0x38
+  def(rB=r0): lwz r0, 0x28(r30)
+  context:
+     cmpwi r3, 0x0
+     beq .L_00000AC8
+     lwz r0, 0x28(r30)
+     lwzx r12, r31, r0
+     add r3, r0, r31
+     lwz r12, 0x14(r12)
+     mtctr r12
+     bctrl
+     lwz r0, 0x14(r1)
+     lwz r31, 0xc(r1)
+======================================================================
+dol__mLib__m_3d__anm_tex_pat.o.txt remove__Q23m3d11anmTexPat_cFv insn# 38
+  xform:  lwzx r12, r30, r0   (rA=r30, rB=r0)
+  add:    add r3, r0, r30  -> rD=r3
+  def(rA=r30): li r30, 0x0
+  def(rB=r0): lwz r0, 0x28(r28)
+  context:
+     li r30, 0x0
+     b .L_00000794
+     lwz r0, 0x28(r28)
+     lwzx r12, r30, r0
+     add r3, r0, r30
+     lwz r12, 0x10(r12)
+     mtctr r12
+     bctrl
+     addi r30, r30, 0x38
+     addi r29, r29, 0x1
+======================================================================
+dol__mLib__m_3d__anm_tex_pat.o.txt play__Q23m3d11anmTexPat_cFl insn# 13
+  xform:  lwzx r12, r31, r0   (rA=r31, rB=r0)
+  add:    add r3, r0, r31  -> rD=r3
+  def(rA=r31): mulli r31, r4, 0x38
+  def(rB=r0): lwz r0, 0x28(r30)
+  context:
+     cmpwi r3, 0x0
+     beq .L_00000AC8
+     lwz r0, 0x28(r30)
+     lwzx r12, r31, r0
+     add r3, r0, r31
+     lwz r12, 0x14(r12)
+     mtctr r12
+     bctrl
+     lwz r0, 0x14(r1)
+     lwz r31, 0xc(r1)
+======================================================================
+dol__mLib__m_3d__anm_tex_srt.o.txt remove__Q23m3d11anmTexSrt_cFv insn# 38
+  xform:  lwzx r12, r30, r0   (rA=r30, rB=r0)
+  add:    add r3, r0, r30  -> rD=r3
+  def(rA=r30): li r30, 0x0
+  def(rB=r0): lwz r0, 0x28(r28)
+  context:
+     li r30, 0x0
+     b .L_000007E4
+     lwz r0, 0x28(r28)
+     lwzx r12, r30, r0
+     add r3, r0, r30
+     lwz r12, 0x10(r12)
+     mtctr r12
+     bctrl
+     addi r30, r30, 0x38
+     addi r29, r29, 0x1
+======================================================================
+dol__mLib__m_3d__anm_tex_srt.o.txt play__Q23m3d11anmTexSrt_cFl insn# 13
+  xform:  lwzx r12, r31, r0   (rA=r31, rB=r0)
+  add:    add r3, r0, r31  -> rD=r3
+  def(rA=r31): mulli r31, r4, 0x38
+  def(rB=r0): lwz r0, 0x28(r30)
+  context:
+     cmpwi r3, 0x0
+     beq .L_00000B18
+     lwz r0, 0x28(r30)
+     lwzx r12, r31, r0
+     add r3, r0, r31
+     lwz r12, 0x14(r12)
+     mtctr r12
+     bctrl
+     lwz r0, 0x14(r1)
+     lwz r31, 0xc(r1)
