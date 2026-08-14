@@ -20,11 +20,11 @@ void beginPad() {
     g_padMg->beginFrame();
 
     for (int i = 0; i < 4; i++) {
+        PadAdditionalData_t &pad = g_PadAdditionalData[i];
         EGG::CoreController *core = g_padMg->getNthController(i);
         g_core[i] = core;
 
         if (*((u8 *)core + 0xb1c) & 1) {
-            PadAdditionalData_t &pad = g_PadAdditionalData[i];
             float newX = *(float *)((u8 *)core + 0x6c);
             float newY = *(float *)((u8 *)core + 0x70);
             float dX = newX - pad.mPosX;
@@ -45,7 +45,6 @@ void beginPad() {
             if (g_IsConnected[i]) {
                 ((EGG::CoreStatus *)((u8 *)core + 0x18))->init();
                 core->sceneReset();
-                PadAdditionalData_t &pad = g_PadAdditionalData[i];
                 pad.mPosX = 0.0f;
                 pad.mPosY = 0.0f;
                 pad.mAccX = 0.0f;

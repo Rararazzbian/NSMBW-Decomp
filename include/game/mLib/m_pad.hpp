@@ -51,7 +51,10 @@ namespace mPad {
     void setWPADInfo(CH_e ch, const WPADInfo &info);
     void clearWPADInfo(CH_e ch);
     void initWPADInfo();
-    void getWPADInfoAsync(CH_e ch);
+    /// @note Returns `WPADGetInfoAsync`'s result, not void. An earlier proposal
+    /// declared this `void` from a batch that did not author it; the batch that
+    /// did showed the result is both tested against -1 and returned.
+    s32 getWPADInfoAsync(CH_e ch);
 
     /// @note `unsigned long`, not `u32`. u32 is `unsigned int` here and would
     /// mangle `Ui`; the symbol is `setGetWPADInfoInterval__4mPadFUl`.
