@@ -800,7 +800,58 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
-### In flight: `d_nand_thread.cpp` — 13 of 19 authored functions byte-exact
+### PARKED: `d_nand_thread.cpp` — 16 of 21 authored functions byte-exact, in one verified TU
+
+**Status: parked as characterised, not abandoned.** The landing kit is complete
+and recorded below, the header is landed and verifying, and the five remaining
+functions have each been worked by three or four independent agents. What is
+left is register-allocation and codegen-shape work of the category that has
+converted **zero times** on this project; fresh authoring converts reliably. The
+progress arithmetic says the same thing: this whole unit is worth `+0.063`
+points, less than a third of what one `d_a_player_manager` is worth.
+
+**The number is now measured rather than claimed.** Every previous count came
+from separate agents each verifying its own subset in its own copy of the
+source. Compiling all of them as one TU for the first time immediately exposed a
+signature clash four agents had never hit (`cmdSave(const void *)` versus
+`cmdSave(void *)`). **Merge before you trust a count.** The merged file is
+`wip/nand_thread/scratch/merge_lead/d_nand_thread.cpp`.
+
+Of the 21, `cmdSave` can only be verified by hand: the target calls it
+`fn_800CF170` because it has no symbol-map entry, so no name-based diff reaches
+it. Extract both by address and compare instruction lists — it matches.
+
+Section evidence at the same time: `.rodata` `0x28`, `.data` `0xA0` and `.bss`
+`0x17040` all come out **exactly** on claim, which is strong independent
+confirmation that the data reconstruction is right. Do not compare the object's
+`.text` size against the claim — see the weak-symbol rule above; that comparison
+is meaningless and it has already cost this project three rounds once.
+
+#### One open structural question, worth settling before landing
+
+The target's TU tail holds `onExit` (`0x800CFCB0`), `onEnter` (`0x800CFCC0`) and
+`run` (`0x800CFCD0`) — the `EGG::Thread` weak flushes. **Our object emits the
+first two and not the third**, and an agent established across ~20
+configurations a rule with no exceptions:
+
+> MWCC weakly flushes exactly the subset of a base class's inline virtuals that
+> the derived class does **not** override, regardless of vtable slot position,
+> and never flushes an overridden slot.
+
+`dNandThread_c` overrides `run` — proven from the retail vtable at `0x80317D48`,
+whose slots are `[0, 0, ~dNandThread_c, dNandThread_c::run, EGG::Thread::onEnter,
+EGG::Thread::onExit]`. So the rule predicts our behaviour, not the target's.
+
+**The likely resolution is that those bytes are not ours.** `run__Q23EGG6ThreadFv`
+is referenced by nothing in the TU and by no other object in the repo, and the
+symbol map shows at least two other thread classes exist
+(`run__Q24mDvd10MyThread_cFv`, `run__Q23EGG17ConfigurationDataFv`). If a
+different `EGG::Thread`-deriving TU overrides none of the three, it flushes all
+three and obeys the rule exactly. That would mean `d_nand_thread.cpp` ends at
+`getSaveData` (`0x800CFCAC`) and its `.text` claim should be
+**`0xc8580-0xc9530`**, not `0xc9560`, leaving `0x30` to the neighbouring TU. Test
+that at landing time; if it holds, the eight-byte shortfall disappears and the
+weak copies we do emit are deduplicated away harmlessly.
 
 `0x800CED00`–`0x800CFCE0`, **24 emitted functions, 0xF48 (3,912) B of code in a
 0xFE0 span.** Five of the 24 are compiler-emitted weak flushes nobody authors
@@ -958,6 +1009,30 @@ materialises. The source is `return (mError != 0);`.
 a property the target does not rely on. **The trigger is the boolean being
 produced as a value.** `createBanner` pays for the 0/1 because it returns it;
 `existCheck` never needs one, only a branch, and gets `cmpwi`.
+
+**Confirmed by direct A/B, and this is the rule to carry forward:** an explicit
+second consumer forces the recording form from a plain, non-`volatile` field —
+`bool ok = (mError == 0); if (!ok) return 1; ...; return ok;` emits exactly the
+target's `cntlzw`/`srwi.`, as do variants storing `ok` to a member or passing it
+to a call. No cast anywhere. Three further results bound it:
+
+- **Contagion is refuted.** A materialising bool later in a function does not
+  retroactively change an earlier plain guard in the same function. Nor does a
+  tail call returning a bool.
+- **Giving the guard itself a derived second use works but overpays.**
+  `return !ok1;` in place of `return 1;` does flip the branch to the recording
+  form, but MWCC recomputes the materialisation for the return value instead of
+  reusing the register — 2 instructions the target does not spend.
+- **`checkCRC` is not a boundary case.** Its guards are direct
+  `if (a != b) return false;` comparisons with no named bool at all, which makes
+  it the clean opposite extreme from `createBanner` on the same axis rather than
+  an anomaly.
+
+So `save`/`load` are parked with the mechanism understood and no lever applied:
+their guards have no natural second consumer in any shape tried, and every way
+of manufacturing one costs bytes the target does not spend. **Getting the right
+idiom at the wrong price is not progress**, and an agent declining to ship one
+was the correct call.
 
 That reframes the residual precisely. `save` and `load` use the **recording**
 form (`srwi. r0, r0, 5` feeding a `bne`) — MWCC produced the value *and*

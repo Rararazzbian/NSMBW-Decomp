@@ -290,3 +290,195 @@ test; the real headers were never modified.
 
 No shared header, `slices/wiimj2d.json`, or `syms.txt` was edited. `ninja`,
 `configure.py`, `progress.py` and `land.py` were never invoked.
+
+---
+
+# New target -- `run__Q23EGG6ThreadFv` missing weak flush (landing blocker)
+
+Reported by the lead while merging: `wip/nand_thread/scratch/merge_lead/`
+(read-only, not edited) is 8 bytes short at the TU's tail. It emits the weak
+flushes of `EGG::Thread::onEnter()` and `EGG::Thread::onExit()` but not
+`EGG::Thread::run()`, even though the target has all three:
+
+```
+0x800CFCB0  onExit__Q23EGG6ThreadFv    4 bytes   blr
+0x800CFCC0  onEnter__Q23EGG6ThreadFv   4 bytes   blr
+0x800CFCD0  run__Q23EGG6ThreadFv       8 bytes   li r3,0 ; blr
+```
+
+**Not closed.** This is a clean, precisely characterised negative result: an
+exceptionless rule was found in every configuration tested (roughly 20,
+spanning every angle the lead suggested plus several more), and that rule
+never produces the target's shape. Reporting the rule, the evidence, and a
+genuine contradiction worth flagging rather than continuing to guess.
+
+## Reproducing the gap in isolation
+
+The minimal fixture (`wip/nand_thread/scratch/closer_e/probes/rt1.cpp`):
+
+```cpp
+class Base {
+public:
+    Base(int x);
+    virtual ~Base();
+    virtual void *run() { return 0; }
+    virtual void onEnter() {}
+    virtual void onExit() {}
+};
+
+class Derived : public Base {
+public:
+    Derived(int x);
+    virtual ~Derived();
+    virtual void *run();
+};
+
+Derived::Derived(int x) : Base(x) {}
+Derived::~Derived() {}
+void *Derived::run() { return (void *)1; }
+```
+
+compiles to exactly the same shape as the real TU: `onEnter__4BaseFv` and
+`onExit__4BaseFv` are weakly flushed, `run__4BaseFv` is not. This was also
+independently confirmed against the **real, unmodified**
+`d_nand_thread.hpp` with three different real-shaped bodies -- a bare
+`ctor+dtor+run()`, the same plus `create()`, and `create()` defined *before*
+`run()` -- all three real-header compiles omit `run__Q23EGG6ThreadFv`
+(`wip/nand_thread/scratch/closer_e/probes/real_minimal.cpp`,
+`real_minimal2.cpp`, `real_minimal3.cpp`). So the isolated fixture is a
+faithful model, not an artifact of over-simplification.
+
+## Every variant tried, and the one rule they all obey
+
+`wip/nand_thread/scratch/closer_e/probes/rt_battery.py` and `rt3.py`,
+`wip/nand_thread/scratch/closer_e/probes/megafile.cpp` (already built for
+the destructor investigation, reused here), plus the `real_minimal*.cpp`
+probes above:
+
+| Variant | What changed | `run__4BaseFv` (or `Q23EGG6Thread`) flushed? |
+|---|---|---|
+| baseline | -- | No |
+| `nonfoldable_body` | Base's `run()` body does a static increment + returns its address, not constant-foldable | No |
+| `override_inline_in_class` | Derived's override defined inline in the class body instead of out-of-line | No |
+| `override_implicit_virtual` | Override not marked `virtual` explicitly | No |
+| `base_ctor_inline` | Base's constructor given an inline (not external) body | No |
+| `base_inline_nonvirtual_used` | Base gets an extra inline non-virtual method, called from Derived's ctor | No |
+| `override_calls_base_explicitly` | Derived's override explicitly calls `Base::run()` | No -- the explicit qualified call gets inlined away to nothing (it's a non-virtual, statically-resolved, trivially-foldable call), leaving no residual reference either |
+| `returns_null` | Base's `run()` returns `NULL` instead of `0` | No |
+| `rt2` (two base ctor overloads) | Base has a second, unused constructor overload, mirroring `EGG::Thread`'s real `Thread(OSThread*,int)` | No |
+| `real_minimal` / `_2` / `_3` | Real, unmodified `d_nand_thread.hpp`; bare `ctor+dtor+run()`; same + `create()`; `create()` defined before `run()` | No, in all three |
+| whole-TU `megafile.cpp` (~20 of 24 real functions, real header) | TU size / `-ipa file` context, already built for the destructor investigation | No |
+| **no override** (`no_override_sanity`) | Derived does not override `run()` at all | **Yes** -- and `onEnter`/`onExit` too, as expected |
+| `override_last_slot` | Override the *last* declared virtual (`onExit`) instead of `run`; leave `run`/`onEnter` inherited | `run` and `onEnter` both flush (both inherited); `onExit` does not (overridden) |
+| `override_middle_slot` | Override only `onEnter` | `run` and `onExit` both flush; `onEnter` does not |
+| `override_two_of_three` | Override `run` and `onEnter`, leave only `onExit` inherited | Only `onExit` flushes |
+| `override_all_three` | Override everything | Nothing flushes |
+
+Also checked and ruled out as the switch:
+
+- **`-ipa file` itself.** Compiled the same fixture with `mwcceppc.exe`
+  invoked directly, `-ipa file` removed from the command line entirely (all
+  other flags identical). Still no flush. `-ipa` is not the lever.
+- **Taking `Base::run`'s address indirectly.** An explicit qualified call
+  (`override_calls_base_explicitly`, above) is the closest thing to an
+  ODR-use that isn't a direct call, and it still gets folded away before it
+  can force emission.
+- **Data-pool reference.** Grepped the whole target TU for
+  `run__Q23EGG6ThreadFv`/`800CFCD0`: it appears exactly once, as its own
+  definition. Nothing in `.data`, `.rodata`, or any jump table references
+  it (the one jump table this TU owns, `@67342`, is entirely internal to
+  `setNandError`, per `SHARED-BRIEF.md`). So it is not being kept alive by
+  a data reference we're missing either.
+
+Every one of the last four rows (`override_last_slot` through
+`override_all_three`) makes the underlying rule unambiguous, and it held
+without a single exception across ~20 configurations:
+
+> **MWCC weakly flushes exactly the subset of a base class's inline
+> virtuals that the derived class does *not* override, regardless of which
+> vtable slot they occupy (first, middle, or last) -- and never flushes a
+> slot the derived class overrides.**
+
+`dNandThread_c::run()` is a proven override (the vtable slot holds
+`0x800CFAC0`, not a flushed base copy -- see the lead's finding #1). Under
+the rule above, as tested in every configuration this session could
+construct, an overridden slot's base implementation is never a flush
+candidate. The target's own vtable and instruction stream are proof that
+somehow it was flushed anyway.
+
+## What this leaves: two possibilities, not one
+
+I could not find a source-level lever within `dNandThread_c`/`EGG::Thread`'s
+own relationship that reproduces the target's behaviour -- the rule above
+was exceptionless under every structural, ordering, and body-shape change
+tried. Two explanations remain open, and I want to flag both rather than
+pick one:
+
+1. **The real retail `d_nand_thread.cpp` has a source shape not yet tried
+   here** that defeats the override-suppression rule. Given how mechanical
+   and exceptionless the rule was under every test, I don't have a good
+   guess at what that shape would be -- this would need either a genuinely
+   new idea or ground-truth comparison against another already-matched
+   `EGG::Thread`-deriving class compiled the same way (none exist in this
+   project; the lead's finding #3 -- `d_nand_thread.hpp` is the only header
+   in the project deriving from `EGG::Thread` -- means there is no second
+   example to learn the trigger from).
+2. **`run__Q23EGG6ThreadFv`'s bytes at `0x800CFCD0` may not be
+   `d_nand_thread.cpp`'s own output at all.** Weak symbols are deduplicated
+   by the linker across the *whole link*, and the surviving copy is
+   whichever object file's copy the linker kept -- not necessarily the one
+   "closest" to where it's used. If some other, not-yet-identified
+   translation unit in the original game *also* derives from `EGG::Thread`
+   and does *not* override `run()`, that TU's own weakly-flushed copy of
+   `EGG::Thread::run()` is a completely ordinary, rule-following output
+   (matching the exceptionless rule found above), and it is *that* TU's
+   copy that could have won the link and landed at this address, adjacent
+   to `d_nand_thread.cpp`'s own (genuinely locally-produced) `onEnter`/
+   `onExit` copies. This would mean the "hard-bracketed" `.text` bound from
+   `SHARED-BRIEF.md`/`dtk_splits_wiimj2d.txt` is correct about the *address
+   range*, but the assumption that every byte in that range was compiled
+   *from `d_nand_thread.cpp`'s own source* is not -- weak-symbol
+   deduplication doesn't respect source-file boundaries the way normal
+   linking does.
+
+I cannot distinguish between these two from inside this TU alone. Per the
+project's rule to report contradictions rather than resolve them: this is
+one. If option 2 is correct, no amount of editing `d_nand_thread.cpp` will
+ever reproduce this function, and the fix belongs elsewhere (or the address
+bound needs re-examination). If option 1 is correct, it needs a source idea
+this session did not find.
+
+## What would settle it
+
+- If another `EGG::Thread`-deriving class is ever identified anywhere in
+  the original game (even undecompiled), checking whether it overrides
+  `run()` would directly test possibility 2.
+- Compiling `d_nand_thread.cpp` truly standalone (not just "isolated
+  function extraction" but an actual separate link) and checking whether
+  `run__Q23EGG6ThreadFv` is *required* to satisfy the link (i.e. whether
+  anything unresolved needs it) would show whether this TU can even
+  produce a self-consistent binary without it -- if it can, that's
+  evidence for possibility 2.
+- A byte-for-byte comparison of `dtk_splits_wiimj2d.txt`'s basis (whether
+  it comes from embedded DWARF line info, which would make the `.text`
+  bound authoritative down to the byte, or from coarser heuristics) would
+  settle how much weight the address-range argument in possibility 2 can
+  bear.
+
+## Files
+
+- `wip/nand_thread/scratch/closer_e/probes/rt1.cpp`, `rt2.cpp`,
+  `rt_battery.py`, `rt3.py` -- the minimal `Base`/`Derived` fixture and
+  every knob tried.
+- `wip/nand_thread/scratch/closer_e/probes/real_minimal.cpp`,
+  `real_minimal2.cpp`, `real_minimal3.cpp` -- the same test against the
+  real, unmodified header, at increasing completeness and different
+  definition order.
+- `wip/nand_thread/scratch/closer_e/probes/megafile.cpp` -- reused from the
+  destructor investigation; also confirms no TU-size effect here.
+- `wip/nand_thread/scratch/closer_e/probes/rt1_noipa.o/.txt` -- the `-ipa
+  file`-removed control compile.
+
+No shared header was edited; `eggThread.h`'s current shape (all three
+virtuals with inline bodies) was not changed, only compiled against in
+various derived-class shapes local to the probe files.

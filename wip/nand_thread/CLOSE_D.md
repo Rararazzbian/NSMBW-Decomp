@@ -486,6 +486,133 @@ nothing else touching the load materialise in target, using a plain field
 and no adjacent chain?) -- that question, not the chained-load-sharing one,
 is now the sharpest open lead if anyone wants to keep pursuing this.
 
+## Addendum 2: the `createBanner` "value production" lead, tested exhaustively
+
+The coordinator found that `createBanner()` -- byte-exact, real header, plain
+non-`volatile` `int mError` -- materialises its final `return mError != 0;`
+via `neg`/`or`/`srwi` (no recording dot: it is a return value, not a branch
+condition) with **no opacity mechanism anywhere**. Confirmed directly by
+recompiling `wip/nand_thread/scratch/merge_lead/d_nand_thread.cpp` unmodified
+through the harness: `createBanner`, `existCheck`, and `checkCRC` all still
+MATCH. This retires "the read must be opaque" as the master explanation --
+agreed, and it reframes the question correctly: the trigger is the bool being
+needed as a **value**, not how it's read. That part of the new lead is now
+proven, not just argued.
+
+### Confirmed: an explicit second consumer forces the RECORDING form, from a plain field, no cast
+
+```cpp
+// SecondA -- ok returned again after its own branch
+bool ok = (t->mError == 0);
+if (!ok) { return 1; }
+t->mFileExists = true;
+return ok;
+```
+compiles to:
+```
+lwz r0, 0x78(r3)
+cntlzw r0, r0
+srwi. r4, r0, 5      <- RECORDING form (the dot), matching target's idiom
+bne .L_...
+```
+Same result for `SecondB` (`ok` stored to a member after the branch) and
+`SecondC` (`ok` passed to a call after the branch) -- full text and output in
+`wip/nand_thread/scratch/closer_d/probe.py`. This is a real, new, validated
+mechanism, independent of `volatile`, and it is the correct generalisation of
+what `createBanner` demonstrates: `createBanner`'s bool is a value because it
+*is* the return; these are values because they are read again after the
+branch that first tested them.
+
+### Tested and refuted: "contagion" from a sibling materialising bool
+
+Built a function with `ok1` (plain guard, single consumer, exactly `save`'s
+real `ok1` shape) followed later by `ok2` which genuinely materialises
+(`return ok2;` after its own guard), both in one function, both preceded by
+real `setNandError()` calls so the reads can't be trivially CSE'd away:
+
+```cpp
+int probeContagion2(dNandThread_c *t) {
+    t->setNandError(1);
+    bool ok1 = (t->mError == 0);
+    if (!ok1) { return 1; }
+    t->setNandError(2);
+    bool ok2 = (t->mError == 0);
+    if (!ok2) { return ok2; }
+    t->mFileExists = true;
+    return 0;
+}
+```
+Result: `ok2`'s branch materialises (`cntlzw`+`srwi.`), `ok1`'s stays plain
+`cmpwi`. A materialising bool elsewhere in the same function, including one
+that itself feeds the function's eventual return, does **not** pull an
+unrelated standalone guard into the recording form. This directly refutes
+the "whole function adopts one lowering style because it returns a mix of
+bools and constants" version of the hypothesis -- also tested with the tail
+call literally present (`probeChainReturn2`: two plain standalone guards
+ending in `return t->createBanner();`) with the same result, both guards
+stayed `cmpwi`.
+
+### Tested: does giving `ok1` itself a derived second consumer work?
+
+```cpp
+bool ok1 = (t->mError == 0);
+if (!ok1) {
+    return !ok1;      // value derived from ok1 itself, not an unrelated literal
+}
+```
+This **does** flip the branch to the recording form -- but it costs 2 extra
+instructions target doesn't have: MWCC does not reuse the already-computed
+0/1 in `r0` for the return, it re-runs `cntlzw`+`srwi` a second time to
+compute `!ok1` from `ok1`'s own materialised value. Target's actual failure
+arm is a bare `li r3, 0x1` -- no recomputation, no second `cntlzw` anywhere
+in that arm. So this shape gets the mechanism (`cntlzw` appears at the
+branch) but not the bytes (extra instructions target doesn't have). It's a
+genuine data point -- second-consumer-of-itself works as a trigger -- but not
+usable as-is.
+
+### `checkCRC`, re-checked as requested
+
+`checkCRC()`'s real, matching source (quoted from `merge_lead`) never once
+stores a comparison into a named `bool` -- every guard is
+`if (a != b) { return false; }`, a direct compare feeding a literal return,
+exactly the `EC2`/`G` shape from the main report's A/B (row `G`: direct
+compare, asymmetric guard, plain field -> `cmpwi`, confirmed) repeated a
+dozen times at larger scale. It is not a boundary case that needs new theory
+-- it is a big, clean confirmation of the existing rule ("no named bool
+intermediate -> never materialises, no matter how many literal-returning
+guards the function has"). It does not distinguish anything new from
+`createBanner`; it only shows the *other* extreme of the same axis
+(`createBanner`: named bool, used as a value, twice -> materialises;
+`checkCRC`: no named bool anywhere -> never materialises). `save`'s `ok1` is
+the genuinely awkward middle case: a named bool, but (as far as any shape
+tried can tell) with only one consumer, and target still materialises it.
+
+### Where this leaves `save`/`load`'s standalone tests (not just the chain)
+
+The second-consumer mechanism is real, and it correctly explains
+`createBanner`'s tail and (very plausibly) explains the deferred-use half of
+each chained pair (`eq6`/`busy` in Addendum 1 -- consumed in a different
+block than its definition, which is a form of "not a same-block, single,
+immediate consumer" the same family of reasoning covers). **It does not
+explain `save`'s `ok1`, `ok5`, or `load`'s `ok6`, or in general the first
+test of every occurrence** -- every attempt to give one of these a natural
+second consumer either left it at plain `cmpwi` (contagion, tail-call
+unification) or triggered materialisation at the cost of extra instructions
+target does not have (`return !ok1`). No shape found reproduces target's
+exact bytes for these specific tests: `cntlzw`+`srwi.` at the branch, and
+nothing else different about the arm.
+
+Per the coordinator's framing: **two live consumers do not, on their own,
+reproduce `save`/`load`'s standalone materialisations byte-for-byte.** They
+reproduce the *mechanism* (recording-form `cntlzw` from a plain read) but
+not the *specific instance* -- `save`'s `ok1` shows no natural second use in
+any shape tried, and manufacturing one costs bytes target doesn't spend.
+Reporting this plainly, as requested, rather than landing a lever that gets
+the idiom to appear at the wrong price. Current best draft (the volatile-cast
+lever from the main report, 97/95 `save`, 162/161 `load`, no header change,
+all 12 required functions still matching) is unchanged and remains this
+report's result.
+
 ## Answering the prompt's specific questions
 
 - **Is the header-volatile proposal wrong?** Yes, confirmed independently:
