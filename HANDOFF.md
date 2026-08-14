@@ -800,6 +800,57 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
+### READY TO LAND: `d_a_wm_grid.cpp` and `d_a_wm_tower.cpp`
+
+Both are **complete** — 10/10 and 11/11 byte-identical, verified with
+`wip/wm_units/verify_anon.py` against the real split objects. They are the first
+landable units in some time and should be the next thing anyone does.
+
+**Use the round-13 kit, not the round-10 one. They contradict each other and I
+have settled it.** For `d_a_wm_grid.cpp`:
+
+```json
+{
+  "source": "d_basesNP/bases/d_a_wm_grid.cpp",
+  "memoryRanges": {
+    ".text": "0x164210-0x164404",
+    ".ctors": "0x3e4-0x3e8",
+    ".rodata": "0x88b8-0x88c8",
+    ".data": "0x44c90-0x44d20",
+    ".bss": "0xfdd0-0xfde0"
+  }
+}
+```
+
+The evidence, and it generalises to every `wm` unit:
+
+- At `0x164210-0x164404` the verifier finds **10 functions and matches all 10**.
+  At round 10's `0x164230-0x164430` it finds 9. The wider range is the unit.
+- `.data` starts at `lbl_2_data_44C90`, a `0x24` float object, which is
+  **`dWmLib::sc_ForceList` — a header static in `d_wm_lib.hpp`**. Round 10
+  started at `g_profile_WM_GRID` (`0x44CB4`) and so cut it off. The vtable
+  follows at `0x44CC0`.
+
+**`sc_ForceList` is the single most under-modelled thing in this REL.** It has
+now explained, in four separate units: two whole functions in
+`d_a_wm_kinoko_1up.cpp` that needed no hand-written source at all (its
+static-init and destroy thunks), the `.data` aggregate that blocked
+`d_a_wm_smallcloud.cpp`'s `createModel`, the `.rodata` pool ordering that
+blocked `d_a_wm_grid.cpp`'s `__sinit`, and now a `.data` low bound. **If a `wm`
+unit has an unexplained object, function or pool offset, check `sc_ForceList`
+before anything else.**
+
+**Two bound errors found in the surveys this week, so re-derive rather than
+trust.** `d_a_wm_kinoko_1up.cpp`'s `.ctors` is `0x3fc-0x400` and *both* surveys
+said `0x3f8-0x3fc` — caught from the REL's own relocation table and the split
+object's emitted `.section` comment. And `daWmKinokoBase_c` is `sizeof 0x284`,
+not the `0x2B0` recorded as "proven": the derived leaf's `classInit` allocates
+`0x294`, which cannot exceed its own base.
+
+**REL landing differs from DOL landing** and no REL unit has been landed yet:
+RELs resolve through `alias_db.txt` and the DOL ELF symbol table rather than
+`syms.txt`'s fixed addresses. Expect that to need working out on the first one.
+
 ### PARKED: `d_nand_thread.cpp` — 16 of 21 authored functions byte-exact, in one verified TU
 
 **Status: parked as characterised, not abandoned.** The landing kit is complete
