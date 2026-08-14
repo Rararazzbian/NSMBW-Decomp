@@ -90,11 +90,28 @@ def read_elf(path):
             continue
         names = raw[s['link']]['off']
         for off in range(s['off'], s['off'] + s['size'], s['entsize'] or 16):
-            n, value, size, _info, _other, shndx = struct.unpack_from('>IIIBBH', blob, off)
+            n, value, size, info, _other, shndx = struct.unpack_from('>IIIBBH', blob, off)
             nm = _cstr(blob, names + n)
             if nm and shndx < len(raw):
-                symbols.append((raw[shndx]['sname'], value, size, nm))
+                symbols.append((raw[shndx]['sname'], value, size, nm, (info >> 4) == 2))
     return sections, symbols
+
+
+def strong_extent(symbols, section, align=4):
+    """End offset of the last NON-WEAK symbol in a section.
+
+    Weak symbols are placed only if no other TU already provides them, so a
+    weak surplus is not a defect. `d_a_wm_tower.cpp` emits a weak
+    `__vt__13dWmObjActor_c` (0x78) that landed `d_a_wm_cloud.cpp` also emits --
+    exactly one of them gets placed, and the object is 0x78 "over" either way.
+    Strong symbols (GLOBAL and LOCAL) are always placed, so their extent is the
+    floor on what this unit must own.
+    """
+    end = 0
+    for sec, value, size, _name, weak in symbols:
+        if sec == section and not weak:
+            end = max(end, value + size)
+    return (end + align - 1) & ~(align - 1)
 
 
 def dump_symbols(symbols, section):
@@ -102,9 +119,9 @@ def dump_symbols(symbols, section):
     if not rows:
         print('      (no sized symbols in %s)' % section)
         return
-    print('      %-8s %-8s %s' % ('offset', 'size', 'symbol'))
-    for _sec, value, size, name in rows:
-        print('      %#08x %#8x %s' % (value, size, name))
+    print('      %-8s %-8s %-6s %s' % ('offset', 'size', 'bind', 'symbol'))
+    for _sec, value, size, name, weak in rows:
+        print('      %#08x %#8x %-6s %s' % (value, size, 'WEAK' if weak else 'strong', name))
 
 
 def main():
@@ -144,14 +161,22 @@ def main():
         lo, hi = (int(x, 16) for x in rng.split('-'))
         want = hi - lo
         got = sections.get(name, {}).get('size', 0)
+        # The strong-symbol extent is only meaningful for the STRICT sections.
+        # In `.text` weak functions are freely interleaved *between* strong
+        # ones, so max(value+size) over strong symbols sweeps up all the weak
+        # gaps below the last one and wildly overstates what must be placed --
+        # it failed the landed, 5/5-verified d_a_wm_grid.cpp when applied there.
+        strong = strong_extent(symbols, name) if name in STRICT else 0
         if got == want:
             verdict = 'ok'
+        elif want < strong:
+            verdict = 'UNDER %#x of strong symbols -- REAL DEFECT' % (strong - want)
+            bad += 1
         elif got < want:
             verdict = 'UNDER %#x  -- something is missing' % (want - got)
             bad += 1
         elif name in STRICT:
-            verdict = 'OVER %#x  -- REAL DEFECT' % (got - want)
-            bad += 1
+            verdict = 'over %#x, all weak (%#x strong) -- ok' % (got - want, strong)
         else:
             verdict = 'over %#x  (weak symbols, expected)' % (got - want)
         print('%-10s %8s %8s  %s' % (name, hex(want), hex(got), verdict))
@@ -159,7 +184,7 @@ def main():
     for name, rng in claim.items():
         lo, hi = (int(x, 16) for x in rng.split('-'))
         got = sections.get(name, {}).get('size', 0)
-        if got != hi - lo and name in STRICT:
+        if got != hi - lo and name in STRICT and (hi - lo) < strong_extent(symbols, name):
             print('\n  %s symbols:' % name)
             dump_symbols(symbols, name)
 

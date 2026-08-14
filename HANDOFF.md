@@ -903,31 +903,79 @@ Validated against landed `d_a_wm_cloud.cpp`: all five sections `SECTIONS CLEAN`.
 **It still does not check function order or vtable slot assignment.** Both bit
 this unit. Until it does, read the vtable relocations by hand before landing.
 
-### Still NOT ready to land: `d_a_wm_tower.cpp`
+### `d_a_wm_tower.cpp` is also LANDED
 
-Same treatment applied, same class of defect, not yet fixed:
+5/5 green. Progress **11.114%**; `d_basesNP.rel` 1.103%. Two REL units now.
 
-```
-.data   claim 0xd8 (corrected to 0x48080-0x48158)   object 0xd0   UNDER 0x8
-```
-
-Its vtable is `0x70` where the target's is `0x78` -- **two virtuals too few**,
-the mirror image of grid. Target `.data` layout, which is the specification:
+Tower needed the identical bounds correction and then failed on **one byte**:
 
 ```
-0x48090  0x24  sc_ForceList          0x480c0  0x10  string
-0x480b4  0x0c  g_profile_WM_TOWER    0x480d0  0x09  string
-0x480e0  0x78  vtable  <-- 30 slots, we declare 28
+.rodata 0x9320   orig 42 c8 00 00 = 100.0f
+                 ours 42 f0 00 00 = 120.0f
 ```
 
-Tower derives from `dWmDemoActor_c`, so use landed `d_a_wm_cloud.cpp`'s vtable
-(it has `checkCutEnd`/`setCutEnd`/`clearCutEnd`/`vf74`/`vf78` after
-`processCutsceneCommand`) as the reference. Also re-derive its `.text` bounds:
-the claim `0x1856f0-0x185b44` almost certainly has the same both-ends error grid
-had. And check whether tower's four trivial returns are in the right slots.
+`setClipSphere()` was written `mClipSphere.set(mPos, 120.0f)`; the original is
+`100.0f`. **`create` matched byte-for-byte with the wrong number in it**, because
+the constant lives in the `.rodata` pool and the instruction only carries a
+relocation to it. `verify_anon.py` normalises relocation symbol names, so a
+wrong float is completely invisible to it.
 
-`d_a_wm_smallcloud.cpp` and `d_a_wm_kinoko_1up.cpp` have still had no section
-check at all.
+Add that to the list of things `.text` cannot see: section sizes, vtable shape,
+which of two identical-bodied functions occupies a slot, and **the value of any
+pooled constant**. After a unit is 11/11 with clean sections, the remaining
+failure modes all live in `.rodata` and the relocation tables.
+
+### Corrections to what I wrote about tower an hour ago
+
+Both figures I put in this file were wrong, and both came from measuring a
+stale object:
+
+- I said tower's vtable was `0x70` against a target `0x78`, "two virtuals too
+  few". It is `0x78` and always was. The `0x70` came from `tower_relflags.o`,
+  built from an older draft.
+- I said the target has 30 slots and we declare 28. `(0x78 - 8) / 4` is **28**,
+  not 30.
+
+The real `.data` surplus was a weak `__vt__13dWmObjActor_c` (0x78) -- see below.
+
+### Weak symbols in `.data`, not just `.text`
+
+`check_sections.py` originally called any `.data` over-claim a real defect. That
+is wrong. Tower emits a **weak** `__vt__13dWmObjActor_c`; so does landed
+`d_a_wm_cloud.cpp`. Exactly one copy gets placed, so the object is 0x78 "over"
+either way and it is not a defect.
+
+The tool now compares the claim against the extent of the **strong** (GLOBAL and
+LOCAL) symbols, which are always placed, and treats a purely-weak surplus as ok.
+
+One trap found while doing it: **that rule must not be applied to `.text`.**
+Weak functions are interleaved *between* strong ones there, so
+`max(value + size)` over strong symbols sweeps up every weak gap below the last
+one. Applied to `.text` it failed the landed, 5/5-verified `d_a_wm_grid.cpp`.
+It is restricted to the STRICT sections, and both landed units are regression
+cases: `d_a_wm_grid.o` and `d_a_wm_cloud.o` must both report `SECTIONS CLEAN`.
+
+### The `wm` bounds error is systematic — assume it on every unit in this family
+
+Grid and tower had the *same* two bounds errors, and the pattern is mechanical:
+
+- `.data` opens **0x10 before** the first named symbol, on the two anonymous
+  strings from `dWmLib::sc_ForceList`.
+- `.text` starts **after** the previous unit's array destructor and ends
+  **after** its own, which sits past `__sinit`.
+
+```
+              claimed                    actual
+grid    .text 0x164210-0x164404    0x164230-0x164430
+        .data 0x44c90-0x44d20      0x44c80-0x44d20
+tower   .text 0x1856f0-0x185b44    0x185710-0x185b70
+        .data 0x48090-0x48158      0x48080-0x48158
+```
+
+Codex's round-14 `.text` figures were right for both and I went with Gemini's.
+Assume `d_a_wm_smallcloud.cpp` and `d_a_wm_kinoko_1up.cpp` have it too, and
+re-derive their bounds from the split objects before touching their source.
+Neither has had a section check.
 
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
