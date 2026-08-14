@@ -33,7 +33,13 @@ void beginPad() {
             pad.mPosY = newY;
             float ddX = dX - pad.mVelX;
             float ddY = dY - pad.mVelY;
-            float unused[6] = { ddX, ddY, dX, dY, newX, newY };
+            // @unofficial UNEXPLAINED. The target writes these same 6 values to
+            // r1+0x8..0x1F (never read back anywhere in the function) in
+            // addition to the pad.m* stores below. This array reproduces the
+            // instruction COUNT (dead-store retention -- MWCC does not DCE
+            // this) but not the exact stack OFFSETS or frame size; see
+            // BATCH2.md "Open question" for every variant tried.
+            float unexplainedTemp[6] = { ddX, ddY, dX, dY, newX, newY };
             pad.mAccX = ddX;
             pad.mAccY = ddY;
             pad.mVelX = dX;
@@ -41,6 +47,14 @@ void beginPad() {
 
             if (!g_IsConnected[i])
                 g_IsConnected[i] = true;
+
+            if (s_GetWPADInfoInterval != 0) {
+                if (s_GetWPADInfoInterval == 1 || s_GetWPADInfoCount == (u32)i ||
+                    (s_GetWPADInfoInterval <= 3 &&
+                     (s_GetWPADInfoCount & 1) == ((u32)i & 1))) {
+                    getWPADInfoAsync((CH_e)i);
+                }
+            }
         } else {
             if (g_IsConnected[i]) {
                 ((EGG::CoreStatus *)((u8 *)core + 0x18))->init();
@@ -53,14 +67,6 @@ void beginPad() {
                 pad.mVelY = 0.0f;
                 clearWPADInfo((CH_e)i);
                 g_IsConnected[i] = false;
-            }
-        }
-
-        if (s_GetWPADInfoInterval != 0) {
-            if (s_GetWPADInfoInterval == 1 || s_GetWPADInfoCount == (u32)i ||
-                (s_GetWPADInfoInterval <= 3 &&
-                 (s_GetWPADInfoCount & 1) == ((u32)i & 1))) {
-                getWPADInfoAsync((CH_e)i);
             }
         }
     }

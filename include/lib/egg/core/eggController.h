@@ -26,7 +26,21 @@ public:
     /// @brief Gets the number of DPD light sources currently detected.
     int getDpdNumMarks() const;
 
+    /// @note Non-virtual: `mPad::beginPad` reaches it with a direct `bl`, not
+    /// through the vtable.
+    void sceneReset();
+
     int mNum;
+};
+
+/// @brief Per-controller status block embedded in CoreController at +0x18.
+/// @unofficial Only `init()` is evidenced, from `mPad::beginPad`'s call on the
+/// disconnect path. The offset is from that call site; the class's size and
+/// remaining members are unknown, so it is deliberately left incomplete rather
+/// than padded to a guessed size.
+class CoreStatus {
+public:
+    void init();
 };
 
 /// @brief The unidentified base that precedes CoreControllerMgr's own vtable.
@@ -49,6 +63,8 @@ public:
     /// `+0x8` and `endPad` through `+0xc`, so `beginFrame` precedes `endFrame`.
     virtual void beginFrame();
     virtual void endFrame();
+
+    CoreController *getNthController(int idx);
 
     static CoreControllerMgr *sInstance;
     static u32 sWPADWorkSize;

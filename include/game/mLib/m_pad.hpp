@@ -15,19 +15,20 @@ namespace mPad {
     /// @unofficial The offsets 0x0 through 0x14 are read directly out of
     /// beginPad's disassembly and the 0x18 size is fixed three ways: the
     /// 0x60-byte g_PadAdditionalData array of four, the existence of
-    /// __arraydtor$13953, and the destructor's own size. **The member names are
-    /// a reading of the semantics, not evidence** — they look like a
-    /// current/previous/delta triple over a two-axis value.
+    /// __arraydtor$13953, and the destructor's own size. The names come from
+    /// the data flow in beginPad — each pair is derived from the one before it,
+    /// which is a position/velocity/acceleration chain rather than the
+    /// current/previous/delta triple first guessed.
     struct PadAdditionalData_t {
         PadAdditionalData_t();
         ~PadAdditionalData_t();
 
-        f32 mCurX;   ///< [0x00]
-        f32 mCurY;   ///< [0x04]
-        f32 mPrevX;  ///< [0x08]
-        f32 mPrevY;  ///< [0x0C]
-        f32 mDeltaX; ///< [0x10]
-        f32 mDeltaY; ///< [0x14]
+        f32 mPosX; ///< [0x00]
+        f32 mPosY; ///< [0x04]
+        f32 mVelX; ///< [0x08]
+        f32 mVelY; ///< [0x0C]
+        f32 mAccX; ///< [0x10]
+        f32 mAccY; ///< [0x14]
     };
 
     void create();
