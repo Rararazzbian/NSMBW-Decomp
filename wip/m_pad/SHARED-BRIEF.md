@@ -119,9 +119,12 @@ call site what linkage and signature reproduce that name; do not assume.
 ## The header
 
 `include/game/mLib/m_pad.hpp` is a 19-line stub declaring only `create`,
-`beginPad`, `endPad`, the `CH_e` enum, and two globals — one of which
-(`g_currentCore`) has the wrong name against the symbol map
-(`g_currentCore__4mPad` exists, and `g_currentCoreID__4mPad` alongside it).
+`beginPad`, `endPad`, the `CH_e` enum, and two globals.
+
+**Correction to an earlier version of this brief:** it said `g_currentCore` had
+the wrong name. It does not — inside `namespace mPad` it mangles to
+`g_currentCore__4mPad` correctly. The real gap is that **`g_currentCoreID` is not
+declared at all**, and `setCurrentChannel` returns it.
 
 **Propose header changes; do not edit the header.** The lead lands them one at a
 time and verifies all five binaries after each. Shadow-copy into your own scratch

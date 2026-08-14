@@ -1,0 +1,47 @@
+COMPILE: OK
+DISASM: OK
+--- setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo [MATCH] ---
+MATCHING (26 instructions)
+--- clearWPADInfo__4mPadFQ24mPad4CH_e [DIFFER] ---
+size: target 17, draft 17
+    4 | want: stwx r0, r4, r5                              got: add r5, r4, r5
+    5 | want: add r4, r4, r5                               got: stw r0, 0x0(r5)
+    6 | want: li r5, s_WPADInfoAvailable__4mPad@sda21      got: li r4, s_WPADInfoAvailable__4mPad@sda21
+    7 | want: stw r0, 0x4(r4)                              got: stw r0, 0x4(r5)
+    8 | want: stw r0, 0x8(r4)                              got: stw r0, 0x8(r5)
+    9 | want: stw r0, 0xc(r4)                              got: stw r0, 0xc(r5)
+   10 | want: stw r0, 0x10(r4)                             got: stw r0, 0x10(r5)
+   11 | want: stb r0, 0x14(r4)                             got: stb r0, 0x14(r5)
+   12 | want: stb r0, 0x15(r4)                             got: stb r0, 0x15(r5)
+   13 | want: stb r0, 0x16(r4)                             got: stb r0, 0x16(r5)
+   14 | want: stbx r0, r5, r3                              got: stbx r0, r4, r3
+   15 | want: stb r0, 0x17(r4)                             got: stb r0, 0x17(r5)
+--- initWPADInfo__4mPadFv [MATCH] ---
+MATCHING (15 instructions)
+--- getWPADInfoCb [DIFFER] ---
+size: target 15, draft 14
+    4 | want: beq .L |41820010|                            got: bne .L |40820018|
+    5 | want: cmpwi r4, -0x1                               got: mulli r0, r3, 0x18
+    6 | want: beq .L |4182001C|                            got: lis r4, s_WPADInfoTmp__4mPad@ha
+    7 | want: blr                                          got: addi r4, r4, s_WPADInfoTmp__4mPad@l
+    8 | want: mulli r0, r3, 0x18                           got: add r4, r4, r0
+    9 | want: lis r4, s_WPADInfoTmp__4mPad@ha              got: b setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo
+   10 | want: addi r4, r4, s_WPADInfoTmp__4mPad@l          got: cmpwi r4, -0x1
+   11 | want: add r4, r4, r0                               got: bnelr
+   12 | want: b setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo got: b clearWPADInfo__4mPadFQ24mPad4CH_e
+   13 | want: b clearWPADInfo__4mPadFQ24mPad4CH_e          got: blr
+   14 | want: blr                                          got: <none>
+--- getWPADInfoAsync__4mPadFQ24mPad4CH_e [MATCH] ---
+MATCHING (25 instructions)
+--- __sinit_\m_pad_cpp [DIFFER] ---
+size: target 22, draft 22
+   12 | want: lis r4, __arraydtor$13953@ha                 got: lis r4, __arraydtor$1899@ha
+   14 | want: addi r4, r4, __arraydtor$13953@l             got: addi r4, r4, __arraydtor$1899@l
+--- __ct__Q24mPad19PadAdditionalData_tFv [MATCH] ---
+MATCHING (1 instructions)
+--- __dt__Q24mPad19PadAdditionalData_tFv [MATCH] ---
+MATCHING (16 instructions)
+--- __arraydtor$13953 [DIFFER] ---
+DRAFT MISSING: __arraydtor$13953 not emitted
+
+SOME MISMATCHES
