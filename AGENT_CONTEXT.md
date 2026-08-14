@@ -229,6 +229,15 @@ Each of these exists because something broke.
   such calls therefore has no local of that class**, however well the sizes line
   up — which kills the otherwise attractive theory that dead stores survive
   because a destructor keeps the storage alive.
+- **Declaration order does NOT drive MWCC's saved-register assignment.** Tested
+  exhaustively: all six orderings of three hoisted base pointers in `beginPad`
+  produced **byte-identical** output. So when a residual is "the right
+  instructions in the wrong registers", reordering declarations cannot fix it,
+  and roughly ten variants across two agents were spent on that assumption
+  before it was measured. The allocation is driven by something not exposed at
+  the C++ level -- live-range ordering or an internal numbering. **Treat a
+  pure register-permutation residual as not source-addressable** and spend the
+  effort on unit selection instead.
 - **`r1+0x8` is the outgoing parameter save area, not where locals sit.** Stores
   there that are never read back are more likely argument space for a by-value
   struct, or a struct-return slot written through a hidden pointer, than a local
