@@ -18,9 +18,29 @@ namespace mPad {
     // NOT a plain "delta" -- see BATCH2.md for the derivation. Renamed here
     // to match the derived semantics (position / velocity / acceleration);
     // offsets 0x0/0x4/0x8/0xc/0x10/0x14 are solid either way.
+    //
+    // PadDelta_t / setAccVel: modelled on the identical idiom in
+    // dCourseSelectGuide_c::PlayerIconSet (source/dol/bases/d_CourseSelectGuide.cpp,
+    // mVec3_c translate at r1+0x8..0x10). A plain (no-dtor) POD carrier, filled
+    // once and handed to an in-class-defined setter (auto-inlinable even under
+    // -inline noauto since it's defined in the class body), reproduces the
+    // target's otherwise-unreadable r1+0x8..0x1F storage AND its exact 0x50
+    // frame size -- both wrong (0xd0 frame, scattered offsets) with a bare
+    // float[6]/anonymous-struct local. See BATCH2.md for the measurement.
+    struct PadDelta_t {
+        f32 accX, accY, velX, velY, posX, posY;
+    };
+
     struct PadAdditionalData_t {
         PadAdditionalData_t();
         ~PadAdditionalData_t();
+
+        void setAccVel(const PadDelta_t &d) {
+            mAccX = d.accX;
+            mAccY = d.accY;
+            mVelX = d.velX;
+            mVelY = d.velY;
+        }
 
         f32 mPosX; // 0x0
         f32 mPosY; // 0x4

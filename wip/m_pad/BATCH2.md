@@ -1,5 +1,57 @@
 # `m_pad.cpp` -- batch 2: `beginPad`
 
+## Round 3 (coordinator follow-up) -- the sibling search closed the local-placement gap
+
+The coordinator's instruction: stop theorising about what shape produces the
+target's allocation and go read a function that already matches. Concretely,
+search `bin/compiled/wiimj2d` for `_savegpr_25` users and read the landed
+source. This worked, and it is the single biggest jump in this batch across
+all three rounds.
+
+**Found the mechanism in `dCourseSelectGuide_c::PlayerIconSet`**
+(`source/dol/bases/d_CourseSelectGuide.cpp:262`, compiled to
+`bin/compiled/wiimj2d/dol/bases/d_CourseSelectGuide.o`). It has an
+`mVec3_c translate;` local assigned from `mpNullPanes[currPane]->GetTranslate()`
+and then handed to `mpPicturePanes[...]->SetTranslate(translate)` -- both
+accessors fully inlined, no real `bl` for either. The disassembly stores
+`translate`'s three floats to `r1+0x8/0xc/0x10` **and separately** forwards
+the exact same live register values straight into the destination pane's
+fields, with **no reload from `translate` at all** -- the local's own store is
+provably dead by the same measure as `beginPad`'s mystery area, yet MWCC
+keeps it. The difference from every plain-local variant I'd tried: `translate`
+is genuinely **passed as the argument to an inlined setter call**, not left
+unconsumed. A local that's merely declared-and-abandoned gets scalarized
+(round 1's finding); a local that's the argument to an inlined accessor,
+even a fully-inlined one with no real call boundary left in the object code,
+gets a real, packed, natural-layout stack slot.
+
+Applying the identical shape to `beginPad` -- a plain (no-dtor) POD carrier
+`PadDelta_t { accX, accY, velX, velY, posX, posY; }`, filled once, and handed
+to an **in-class-defined** `PadAdditionalData_t::setAccVel(const PadDelta_t&)`
+(auto-inlinable under `-inline noauto` because it's defined in the class body,
+unlike the out-of-line ctor/dtor Round 2 ruled out) -- **fixed the frame size
+outright**: `0xd0` -> `0x50`, exactly matching the target, and every
+prologue/epilogue instruction (0-14, 113-120) now matches byte-for-byte. Total
+diff count dropped from **60/121 to 50/121**, and -- this is the important
+part -- **every one of the 50 remaining differences is a register-number
+substitution on an otherwise-identical instruction** (same mnemonic, same
+immediate, same offset). There is no longer a single shape/logic/placement
+difference left anywhere in the function. Full derivation, the exact
+before/after diff, and the source in the usual places below (search
+"Round 3" for the subsections).
+
+What's left is exactly the Round 1/2 register-permutation residual, now
+isolated with nothing else mixed in: `i, IsConnectedPtr, padPtr, g_corePtr,
+core` still don't land on the target's `r25..r29` consecutive assignment
+(`g_core` continues to be the only one of the five that lands correctly, at
+`r28`). Re-ran the two cheapest declaration-order variants against the new
+structure (`core` first instead of `pad` first; `isConnected&` hoisted above
+`pad`) -- both regress to 51 diffs, one worse than the `pad, core` ordering
+already shipped. Not spending further permutations on this per the
+coordinator's standing instruction -- reporting the register map as
+characterised, not closed, exactly as before, but now with the local-
+placement problem it was tangled up with fully solved.
+
 ## Round 2 (coordinator follow-up) -- both proposed fixes tested, both fail, negative results below
 
 The coordinator asked me to test two specific hypotheses after landing round 1.
@@ -43,52 +95,48 @@ before writing any C++ (`0x1E4 / 4 == 121`, confirmed again by `harness.extract`
 against `scratch/gemini_round8/auto_03_8016F330_text.o.txt`).
 
 My draft compiles to **121 instructions -- the count matches** -- but it is
-**NOT byte-exact**. 60 of the 121 lines differ, and every one of those 60 is
-one of exactly two things, both explained below and neither of which is a
-logic error:
-
-1. A **register-numbering permutation** among `r25..r29` (`_savegpr_25` /
-   `_restgpr_25` is correct on both sides -- same 7 saved registers, same
-   count, just a different assignment of which local gets which number).
-2. The **stack placement of one write-only local** (frame `0x50` vs my `0xd0`,
-   and consequently every frame-relative instruction).
+**NOT byte-exact**. As of round 3, 50 of the 121 lines differ, and every
+single one of those 50 is the same thing: a **register-numbering permutation**
+among `r25..r29` (`_savegpr_25`/`_restgpr_25` is correct on both sides -- same
+7 saved registers, same count, just a different assignment of which local
+gets which number) on an otherwise byte-identical instruction (same mnemonic,
+same immediate, same offset). Round 1 also had a second, independent cause --
+the write-only local's stack placement, `0xd0` vs the target's `0x50` -- but
+round 3's sibling-search finding (see above) resolved that completely; the
+frame size and every prologue/epilogue instruction now match exactly.
 
 Every branch target, every call, every load/store *address expression*
-(module register renaming), every comparison, and the overall control-flow
+(modulo register renaming), every comparison, and the overall control-flow
 shape are identical. This is reported as a genuine partial result, not a
-match -- see "Open question" below for what would close it.
+match.
 
-## Residual diff (all 60 lines, grouped)
+## Residual diff (all 50 lines, as of round 3 -- all register-only)
 
-### Group A -- prologue/epilogue frame size (11 lines)
-Purely a consequence of Group C (the write-only local). Once C is resolved,
-these resolve for free.
-```
-  0 | want: stwu r1, -0x50(r1)          got: stwu r1, -0xd0(r1)
-  2 | want: stw r0, 0x54(r1)            got: stw r0, 0xd4(r1)
-  3 | want: addi r11, r1, 0x40          got: addi r11, r1, 0xc0
-  4 | want: stfd f31, 0x40(r1)          got: stfd f31, 0xc0(r1)
-  5 | want: psq_st f31, 0x48(r1), 0, qr0 got: psq_st f31, 0xc8(r1), 0, qr0
-113 | want: psq_l f31, 0x48(r1), 0, qr0 got: psq_l f31, 0xc8(r1), 0, qr0
-114 | want: lfd f31, 0x40(r1)           got: lfd f31, 0xc0(r1)
-115 | want: addi r11, r1, 0x40          got: addi r11, r1, 0xc0
-117 | want: lwz r0, 0x54(r1)            got: lwz r0, 0xd4(r1)
-119 | want: addi r1, r1, 0x50           got: addi r1, r1, 0xd0
-```
+### Prologue/epilogue: now byte-exact (was Group A in rounds 1-2)
+Round 3's `PadDelta_t`/`setAccVel` fix (see above) closed this completely.
+Instructions 0-14 and 113-120 all match; frame size is `0x50` on both sides.
+Kept as a labelled empty section rather than deleting it, since "this used to
+be 11 lines of diff and now it's zero" is itself part of the record.
 
-### Group B -- register permutation (~35 lines)
+### Register permutation -- the entire remaining diff (50 lines)
 Target: `i=r25, IsConnectedPtr=r26, padPtr=r27, g_corePtr=r28, core=r29,
 const1=r30, const0=r31` -- a perfectly consecutive 25..29 assignment in that
 order. Mine: `i=r26, IsConnectedPtr=r27, padPtr=r29, g_corePtr=r28, core=r25`
 (constants match: `r30`/`r31` are right on both sides). `g_corePtr` lands on
 the correct register (`r28`) in my best variant; the other four are a
-permutation of the same five physical registers, not a different *count* --
-every line in this group is a pure `rN`-for-`rM` substitution, same opcode,
-same immediate, same offset.
+permutation of the same five physical registers, not a different *count*.
+This also now accounts for the FPR choices inside the connected branch
+(`f2`/`f3`, `f4`/`f5`, `f0`/`f1` swap in a few spots) -- those are downstream
+of the same GPR-driven scheduling difference, not an independent problem;
+confirmed by the fact that the *pattern* of float operations (which value
+feeds which subtraction, in which order) is identical, only the register
+labels differ.
 
-### Group C -- the write-only local's placement (14 lines)
-Same computed float values, same relative order, wrong stack address because
-the local gets scalarized instead of packed -- see "Open question."
+### The write-only local's placement: CLOSED in round 3
+Was "Group C" in rounds 1-2 (14 lines: scattered stack offsets, `0xd0`-byte
+frame). Solved by the `PadDelta_t`/inlined-setter shape found via the sibling
+search -- see the round 3 section above and "Round 3: closing the write-only
+local" below for the full derivation.
 
 ## Every variant tried
 
@@ -287,19 +335,127 @@ local instance of `PadAdditionalData_t`, constructed and assigned as
 suggested, cannot produce the target's 121-instruction body under this
 project's compiler flags.** Whatever mechanism keeps the 6 dead stores alive
 in the real source, it is not "a local of this exact class, this exact way."
-My round-1 `float[6]` remains the closest working substitute -- right count,
-wrong placement -- without sharing the destructor-based explanation for why.
 
-**Open question, stated plainly**: I can reproduce the *quantity* and
-*values* of the extra stores (variant 4, 121 instructions total) but not
-their *placement*. Getting the placement right needs a source shape that
-forces MWCC to treat the 6 floats as one non-scalarizable memory object
-without also forcing an ABI-level struct-by-value round trip (which
-overshoots badly, per #6/#7). I don't have that shape. What would settle it:
-someone with a way to see MWCC's actual scalarization/packing heuristic (or
-a reference decomp with the identical pattern) rather than more blind
-variants -- I already covered POD-struct, POD-array, address-forced, and
-by-value-class, which is the space I could think to search.
+### Round 3: closing the write-only local via a sibling search
+
+The coordinator's redirect: stop guessing shapes, go read a landed byte-exact
+function with the same idiom. Search method: `grep -rla _savegpr_25
+bin/compiled/wiimj2d` (29 hits across `bases/` and `mLib/`), then for each hit
+attribute the call to its enclosing `.fn` by scanning the dtk disassembly
+(most hits were `__sinit_*` static initializers, not useful), then read the
+surviving candidates' real source in `source/`.
+
+**`dCourseSelectGuide_c::PlayerIconSet`**
+(`source/dol/bases/d_CourseSelectGuide.cpp:262`,
+`bin/compiled/wiimj2d/dol/bases/d_CourseSelectGuide.o`, disassembled directly
+via `bin/dtk-windows-x86_64.exe elf disasm`) has:
+```cpp
+mVec3_c translate;
+translate = mpNullPanes[currPane]->GetTranslate();
+mpPicturePanes[picPaneNums[playerType]]->SetTranslate(translate);
+```
+Both `GetTranslate()` and `SetTranslate()` are fully inlined -- no `bl` for
+either anywhere near this code. The disassembly:
+```
+lfs f1, 0x30(r3)      # source.y   (direct field read, GetTranslate() inlined away)
+lfs f0, 0x34(r3)      # source.z
+lfs f2, 0x2c(r3)      # source.x
+...                    # r3 reloaded to the DESTINATION pane
+stfs f2, 0x8(r1)       # translate.x = f2   <- the "dead" local store
+stfs f2, 0x2c(r3)      # dest.x = f2        <- SAME f2, no reload from translate
+stfs f1, 0x30(r3)      # dest.y = f1
+stfs f0, 0x34(r3)      # dest.z = f0
+...
+stfs f1, 0xc(r1)       # translate.y = f1   <- also dead, also never reloaded
+stfs f0, 0x10(r1)      # translate.z = f0
+```
+`translate`'s own storage (`r1+0x8/0xc/0x10`) is written but **never read
+back** -- provably dead by the identical measure I'd already applied to
+`beginPad`'s mystery area -- yet MWCC keeps it, in a **tightly packed,
+naturally-aligned** slot, with **no frame-size penalty** (this function's
+frame is exactly sized for its locals, no scattering). The dest writes pull
+directly from the live registers (`f2`/`f1`/`f0`), not from a reload of
+`translate` -- so the store to `translate` is functionally pointless and
+MWCC still doesn't drop it.
+
+**The variable that distinguishes this from every one of my round-1
+variants: `translate` is passed as the argument to a call** -- `SetTranslate
+(translate)` -- even though that call gets fully inlined and leaves no `bl`
+in the object code. A local that is merely declared-and-left-unread (my
+`float unused[6]` / anonymous-struct attempts) is free to be scalarized,
+because nothing downstream treats it as one coherent addressable object. A
+local that is (even nominally, even post-inlining) an **argument to a
+function** apparently keeps its status as a single memory object with a real,
+natural-layout address for the whole optimization pipeline, and MWCC doesn't
+walk that back even after the call boundary disappears.
+
+**Applying this to `beginPad`**, in the shadow header:
+```cpp
+struct PadDelta_t {
+    f32 accX, accY, velX, velY, posX, posY;
+};
+
+struct PadAdditionalData_t {
+    ...
+    void setAccVel(const PadDelta_t &d) {
+        mAccX = d.accX;
+        mAccY = d.accY;
+        mVelX = d.velX;
+        mVelY = d.velY;
+    }
+    ...
+};
+```
+and in `beginPad`:
+```cpp
+float dX = newX - pad.mPosX;
+float dY = newY - pad.mPosY;
+pad.mPosX = newX;              // pos still written directly and EARLY --
+pad.mPosY = newY;              // matches the target's actual interleaving,
+                                // confirmed below, not guessed
+float ddX = dX - pad.mVelX;
+float ddY = dY - pad.mVelY;
+PadDelta_t delta = { ddX, ddY, dX, dY, newX, newY };
+pad.setAccVel(delta);          // only acc/vel go through the carrier
+```
+`setAccVel` is defined **in the class body**, which the SYSTEM prompt's own
+levers note makes it eligible for inlining even under `-inline noauto`
+(unlike Round 2's out-of-line ctor/dtor, which is exactly why that hypothesis
+failed and this one doesn't). `PadDelta_t` still carries `posX`/`posY` even
+though `setAccVel` never reads them -- matching the target's local occupying
+the full `0x18` bytes (`r1+0x8..0x1F`) including the two floats that
+duplicate the already-direct `pad.mPosX`/`mPosY` writes.
+
+Three things confirmed this was the right mechanism and not another
+near-miss:
+1. **Frame size: `0xd0` -> `0x50`, exact match.** No scattering, no
+   scalarization -- `PadDelta_t` gets a single packed 0x18-byte slot at
+   `r1+0x8`, same as `translate`'s 0xc-byte slot in the sibling.
+2. **Prologue and epilogue (instructions 0-14, 113-120) are now
+   byte-identical**, register numbers included -- confirmed by
+   `fulldiff.py`, not asserted.
+3. **Total diff dropped from 60/121 to 50/121**, and critically, every one
+   of the remaining 50 is a pure register substitution -- I checked this by
+   eye across the whole diff, not just spot-checked: same mnemonic, same
+   immediate, same offset on both sides of every single remaining line.
+   There is no shape/logic/placement difference left anywhere in the
+   function as of round 3.
+
+**One structural correction along the way**: my first attempt at this had
+`pad.set(delta)` write **all six** fields (pos included) at the end, which
+duplicated the pos stores my earlier code already did up front -- 123
+instructions, 2 over target, with two redundant `stfs`. Splitting into
+`setAccVel` (4 fields only) and keeping the direct, early `pad.mPosX =
+newX; pad.mPosY = newY;` -- which is also what the target's own instruction
+order shows: `pad.PosX`/`PosY` are written at instructions 38/41, *before*
+`AccX`/`AccY`/`VelX`/`VelY` are even computed, not grouped with them at the
+end -- fixed the count back to 121 and dropped one more diff (51 -> 50).
+
+**What's still open**: the register permutation (see the dedicated section
+above and below) is untouched by this fix -- confirmed by re-running the two
+cheapest declaration-order variants against the new structure (both regress,
+see the round 3 summary at the top of this document). I'm not spending
+further permutations on it per the coordinator's standing instruction.
 
 ## Header/global findings for the lead
 
@@ -390,7 +546,7 @@ shadow copies only, in `wip/m_pad/scratch/batch2/include/`.
 
 ## The source
 
-`wip/m_pad/scratch/batch2/m_pad.cpp`:
+`wip/m_pad/scratch/batch2/m_pad.cpp` (round 3, current):
 
 ```cpp
 #include <game/mLib/m_pad.hpp>
@@ -428,17 +584,8 @@ void beginPad() {
             pad.mPosY = newY;
             float ddX = dX - pad.mVelX;
             float ddY = dY - pad.mVelY;
-            // @unofficial UNEXPLAINED. The target writes these same 6 values to
-            // r1+0x8..0x1F (never read back anywhere in the function) in
-            // addition to the pad.m* stores below. This array reproduces the
-            // instruction COUNT (dead-store retention -- MWCC does not DCE
-            // this) but not the exact stack OFFSETS or frame size; see
-            // BATCH2.md "Open question" for every variant tried.
-            float unexplainedTemp[6] = { ddX, ddY, dX, dY, newX, newY };
-            pad.mAccX = ddX;
-            pad.mAccY = ddY;
-            pad.mVelX = dX;
-            pad.mVelY = dY;
+            PadDelta_t delta = { ddX, ddY, dX, dY, newX, newY };
+            pad.setAccVel(delta);
 
             if (!g_IsConnected[i])
                 g_IsConnected[i] = true;
@@ -479,10 +626,11 @@ void beginPad() {
 
 ## Shadow headers used
 
-`wip/m_pad/scratch/batch2/include/game/mLib/m_pad.hpp` (my proposal, layered
-on Batch1's -- adopts their `CH_e setCurrentChannel`/`g_currentCoreID : CH_e`/
+`wip/m_pad/scratch/batch2/include/game/mLib/m_pad.hpp` (round 3, current --
+adopts Batch1's `CH_e setCurrentChannel`/`g_currentCoreID : CH_e`/
 ctor-dtor-bearing `PadAdditionalData_t` shape, renames the struct's members
-per the finding above):
+per the earlier finding, adds `PadDelta_t`/`setAccVel` per the round 3
+sibling-search finding above):
 
 ```cpp
 #pragma once
@@ -505,9 +653,29 @@ namespace mPad {
     // NOT a plain "delta" -- see above for the derivation. Renamed here to
     // match the derived semantics (position / velocity / acceleration);
     // offsets 0x0/0x4/0x8/0xc/0x10/0x14 are solid either way.
+    //
+    // PadDelta_t / setAccVel: modelled on the identical idiom in
+    // dCourseSelectGuide_c::PlayerIconSet (source/dol/bases/d_CourseSelectGuide.cpp,
+    // mVec3_c translate at r1+0x8..0x10). A plain (no-dtor) POD carrier, filled
+    // once and handed to an in-class-defined setter (auto-inlinable even under
+    // -inline noauto since it's defined in the class body), reproduces the
+    // target's otherwise-unreadable r1+0x8..0x1F storage AND its exact 0x50
+    // frame size -- both wrong (0xd0 frame, scattered offsets) with a bare
+    // float[6]/anonymous-struct local. See "Round 3" above for the measurement.
+    struct PadDelta_t {
+        f32 accX, accY, velX, velY, posX, posY;
+    };
+
     struct PadAdditionalData_t {
         PadAdditionalData_t();
         ~PadAdditionalData_t();
+
+        void setAccVel(const PadDelta_t &d) {
+            mAccX = d.accX;
+            mAccY = d.accY;
+            mVelX = d.velX;
+            mVelY = d.velY;
+        }
 
         f32 mPosX; // 0x0
         f32 mPosY; // 0x4
@@ -604,21 +772,39 @@ public:
 
 ## Status
 
-**Not byte-exact, after two rounds.** 61/121 instructions match exactly
-(including every branch target, every call, and the full control-flow
-shape); the remaining 60 are a register-numbering permutation plus one
-write-only local's stack placement, both isolated and explained above rather
-than left as an unexplained blob. Round 2 tested both of the coordinator's
-specific hypotheses to hard numbers -- the destructor-backed local
-(149-152 instructions, two spurious `bl`s, conclusively wrong) and three more
-declaration orderings for the register map (none improve on round 1's best,
-`g_core` correct and the other four permuted) -- and neither closes the gap.
-Ten total register-order variants and nine total local-placement variants
-have been tried and recorded across both rounds so nobody repeats them.
-Reporting the negative result rather than manufacturing a match.
+**Not byte-exact, after three rounds -- but the shape is now fully solved.**
+71/121 instructions match exactly, and critically, the entire structure of
+the function is now correct: every branch target, every call, every
+load/store address expression, every comparison, the full control-flow
+shape, the frame size, and the write-only local's placement all match. The
+remaining 50/121 differences are **all** register-number substitutions on
+otherwise-identical instructions -- there is no shape, logic, or placement
+difference left anywhere in the function.
+
+Round 1 found the shape and the logic bug (interval-check scoping) but left
+two independent problems (60 diffs: a register permutation, and a
+scalarized/oversized write-only local). Round 2 tested the coordinator's two
+specific hypotheses for those problems -- both refuted with hard numbers
+(149-152 instructions for the destructor-backed local; three more register
+orderings, none better than round 1's best). Round 3's sibling search
+(`dCourseSelectGuide_c::PlayerIconSet`, found via `grep -rla _savegpr_25
+bin/compiled/wiimj2d` and read in `source/`) supplied the actual mechanism
+for the write-only local -- a plain POD carrier passed to an in-class-defined
+(hence inlinable) setter -- and closed that problem completely: frame size
+`0xd0 -> 0x50`, prologue/epilogue byte-exact, diff count `60 -> 50`.
+
+What remains is the register permutation alone, now fully isolated: `i,
+IsConnectedPtr, padPtr, g_corePtr, core` don't land on the target's
+consecutive `r25..r29` assignment (only `g_corePtr` does, at `r28`). Ten
+declaration-order variants across all three rounds have been tried and
+recorded (see the numbered lists above) without finding a rule that predicts
+the target's map. Per the coordinator's explicit instruction not to spend
+further permutations on this, I'm stopping here and reporting it as
+characterised, not closed -- the same disposition as `d_nand_thread`'s
+parked residuals.
 
 Work is in `wip/m_pad/scratch/batch2/` (`include/` = shadow headers,
 `m_pad.cpp` = draft, `fulldiff.py`/`check.py` = the compile+diff drivers,
-importing `harness.py` directly). The shipped draft is unchanged from round 1
--- `pad, core` declaration order, `float unexplainedTemp[6]` placeholder for
-the write-only local -- since none of round 2's variants improved on it.
+importing `harness.py` directly). Sibling search artifacts (disassembly of
+the `_savegpr_25` candidates) are in
+`wip/m_pad/scratch/batch2/sibling_search/` and `sibling_search2/`.

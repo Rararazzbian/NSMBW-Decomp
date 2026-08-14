@@ -19,9 +19,31 @@ namespace mPad {
     /// the data flow in beginPad — each pair is derived from the one before it,
     /// which is a position/velocity/acceleration chain rather than the
     /// current/previous/delta triple first guessed.
+    /// @brief A plain carrier for one frame's worth of derived pointer motion.
+    /// @unofficial Modelled on the identical idiom in the landed, byte-exact
+    /// `dCourseSelectGuide_c::PlayerIconSet`, where an `mVec3_c` local is filled
+    /// and handed to an accessor that inlines away completely, leaving stores at
+    /// `r1+0x8` that are never read back. Reproducing that here is what gives
+    /// `beginPad` its exact `0x50` frame; a bare `float[6]` local gives `0xd0`.
+    /// It must have no destructor, or a real `bl __dt__` appears.
+    struct PadDelta_t {
+        f32 accX, accY, velX, velY, posX, posY;
+    };
+
     struct PadAdditionalData_t {
         PadAdditionalData_t();
         ~PadAdditionalData_t();
+
+        /// @note Defined in-class deliberately. `-inline noauto` still inlines a
+        /// member defined in the class body; it declines to inline one defined
+        /// out of line, even with the definition visible and `-ipa file` on.
+        /// That distinction is the whole reason this shape works.
+        void setAccVel(const PadDelta_t &d) {
+            mAccX = d.accX;
+            mAccY = d.accY;
+            mVelX = d.velX;
+            mVelY = d.velY;
+        }
 
         f32 mPosX; ///< [0x00]
         f32 mPosY; ///< [0x04]

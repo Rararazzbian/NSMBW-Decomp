@@ -33,11 +33,8 @@ void beginPad() {
             pad.mPosY = newY;
             float ddX = dX - pad.mVelX;
             float ddY = dY - pad.mVelY;
-            float unexplainedTemp[6] = { ddX, ddY, dX, dY, newX, newY };
-            pad.mAccX = ddX;
-            pad.mAccY = ddY;
-            pad.mVelX = dX;
-            pad.mVelY = dY;
+            PadDelta_t delta = { ddX, ddY, dX, dY, newX, newY };
+            pad.setAccVel(delta);
 
             if (!g_IsConnected[i])
                 g_IsConnected[i] = true;

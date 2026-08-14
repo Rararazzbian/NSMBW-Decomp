@@ -167,6 +167,20 @@ Each of these exists because something broke.
 - **An inline body in a header can emit a weak copy** into every TU that uses it.
   When proposing a class, declare destructors **without** inline bodies unless
   you have evidence the original inlined them.
+- **Read a function that already MATCHES before theorising about one that does
+  not.** This is the highest-yield technique in the project and it has now paid
+  twice in one day. Two sessions went into arguing about a codegen idiom while a
+  byte-exact function twenty lines away in the same file demonstrated it in
+  plain source. Later, a mystery stack area that survived nine invented variants
+  was explained in one round by finding the same pattern in the landed
+  `dCourseSelectGuide_c::PlayerIconSet`.
+
+  The mechanical version: `grep -rla <the instruction or symbol that puzzles
+  you> bin/compiled/wiimj2d`, cross-reference the hits against
+  `slices/wiimj2d.json` to keep only banked units, then read their source in
+  `source/`. **A matching function is stronger evidence than any A/B compile on
+  a draft**, because it is the original authors' own idiom rather than a shape
+  you reverse-engineered.
 
 ## 6. Things that are true about MWCC and cost someone a round
 
@@ -193,6 +207,19 @@ Each of these exists because something broke.
 - **An object nobody references can still be required.** A 0x40 float table the
   entire binary never reads still has to be emitted, or the section is short.
   **An unclaimed object is a finding, not noise.**
+- **`-inline noauto` still inlines a member defined IN the class body. It
+  declines to inline one defined out of line, even with the definition visible
+  and `-ipa file` on.** That distinction is load-bearing and it is the whole
+  reason one shape works where an almost identical one does not. A carrier
+  struct handed to an **in-class** setter inlines away to nothing and leaves
+  behind exactly the target's dead stores; the same setter moved out of line
+  emits a real `bl`.
+- **A local filled and then passed to a call that inlines away leaves stores
+  nobody reads — and those stores are correct, not a bug.** This is how a target
+  ends up writing six floats to `r1+0x8` and never reading them. Found by
+  reading the landed, byte-exact `dCourseSelectGuide_c::PlayerIconSet`, where an
+  `mVec3_c` local does exactly this. Reproducing it also fixed a frame size that
+  was wrong by `0x80`.
 - **`-inline noauto` blocks inlining an out-of-line member function even when
   its definition is visible in the same TU, and `-ipa file` does not override
   it.** So a local instance of a class with a user-declared constructor and
