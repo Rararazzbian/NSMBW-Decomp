@@ -847,15 +847,41 @@ non-`bool`. A plain member read does not, and marking it `volatile` supplies it
 artificially. **So state the rule as: MWCC only pays for the canonicalisation
 when an opaque non-`bool` value is stored into a real `bool`.**
 
-`volatile` is NOT applied in the header and should not be, for two reasons.
-It buys the materialisation but forces a fresh load on every textual read, so
-the chained `mError == 0` then `mError == 6` tests lose the target's shared
-register load — `save` and `load` go from 9 and 12 instructions SHORT to 2 and 1
-instructions LONG. And `mError` is read by the banked, byte-exact
-`d_s_boot.cpp` in four places, so it is a shared-header change that was never
-tested outside this TU. The overshoot is the useful signal: the original almost
-certainly got its opacity from something structural rather than from a
-qualifier, and finding what is the open question.
+`volatile` is NOT applied in the header and **is now refuted outright**, not
+merely declined. It buys the materialisation but forces a fresh load on every
+textual read, so the chained `mError == 0` then `mError == 6` tests lose the
+target's shared register load — `save` and `load` go from 9 and 12 instructions
+SHORT to 2 and 1 instructions LONG. And `mError` is read by the banked,
+byte-exact `d_s_boot.cpp` in four places, so it is a shared-header change that
+was never tested outside this TU.
+
+**The decisive argument, though, is inside this TU and settles it for good.**
+`existCheck` is byte-exact with plain `int mError`, and it performs the
+identical test after the identical call:
+
+```
+bl setNandError__13dNandThread_cFl      bl setNandError__13dNandThread_cFl
+lwz    r0, 0x78(r29)                    lwz    r0, 0x78(r31)
+cmpwi  r0, 0x0                          cntlzw r0, r0
+bne    .L_800CF03C                      srwi.  r0, r0, 5
+                                        bne    .L_800CF250
+  existCheck (0x800CEFC0) — MATCHES       save (0x800CF238) — near-miss
+```
+
+Same member, same type, same preceding call, same TU, same compile — one gets
+`cmpwi`, the other gets `cntlzw`. **No property of the member declaration can
+therefore be the cause**, because any qualifier or width change would also move
+`existCheck` and break a function that already matches. Whatever produces the
+idiom is *local source structure inside `save`/`load`*.
+
+**General rule, and it is worth applying beyond this unit: when two functions in
+one TU compile the same expression differently, every explanation that lives in
+the shared header is already dead.** Look for the difference locally. The
+sharpest untested candidate here is the shape of the arm — `existCheck` guards a
+block and falls through, while `save`/`load` take an early `return <constant>`.
+Note also that the occurrence at `0x800CF238` materialises into `r0`, is used
+exactly once, and still uses `cntlzw`, which rules out register pressure and
+"the value is needed twice" as triggers.
 
 #### Two process findings from running it
 
@@ -871,6 +897,87 @@ qualifier, and finding what is the open question.
   They are not: one writes three fields, three write two, one adds a `memcpy`.
   The agent wrote the correction into the relay file the other batches read,
   which is what stopped it propagating into three more functions.
+
+#### The landing kit, pre-computed — apply it the moment the five close
+
+All of this is derived mechanically from the target's own relocations and from
+`slices/wiimj2d.json`, not estimated. It is the integrator's half of the job and
+it is done, so closing the last five functions is the only remaining work.
+
+**Slice block.** Insert between `dol/bases/d_multi_manager.cpp` and
+`dol/bases/d_next.cpp` (currently array indices 52 and 53):
+
+```json
+{
+    "source": "dol/bases/d_nand_thread.cpp",
+    "memoryRanges": {
+        ".text": "0xc8580-0xc9560",
+        ".rodata": "0x3490-0x34b8",
+        ".data": "0x19638-0x196d8",
+        ".bss": "0x8640-0x1f680",
+        ".sdata": "0x5f8-0x608",
+        ".sbss": "0x3f8-0x400"
+    }
+}
+```
+
+**These bounds are confirmed five independent ways, and the confirmation method
+generalises — use it on every future unit.** Checked against every other slice
+for overlap (zero) and for adjacency: `.text` starts exactly where
+`d_multi_manager` ends and ends exactly where `d_next` begins; `.rodata` and
+`.data` both begin exactly where `d_multi_manager`'s end; `.sbss` sits exactly
+in the one-word hole between `d_multi_manager`'s `0x3f0-0x3f8` and `d_next`'s
+`0x400-0x408`. And `d_multi_manager`'s `.sdata2` (`0x1930-0x1938`) is already
+adjacent to `d_next`'s (`0x1938-0x1950`), which independently confirms this TU
+has **no** `.sdata2` — a negative that is otherwise easy to get wrong.
+
+**`syms.txt`: remove 4, add 22.** Remove these — once our object defines them,
+pinning them to an address is a contradiction:
+
+```
+cmdExistCheck__13dNandThread_cFv=0x800CEF10      (line 392)
+cmdSpaceCheck__13dNandThread_cFv=0x800CF060      (line 393)
+create__13dNandThread_cFPQ23EGG4Heap=0x800CFBA0  (line 394)
+m_instance__13dNandThread_c=0x8042A298           (line 1092)
+```
+
+Add these — every external the TU references that no landed slice defines:
+
+```
+NANDCheck=0x801db280            NANDClose=0x801d9990
+NANDCreate=0x801d8620           NANDDelete=0x801d8920
+NANDGetHomeDir=0x801dac30       NANDGetLength=0x801d9180
+NANDGetType=0x801dafb0          NANDInitBanner=0x801db0e0
+NANDMove=0x801d9110             NANDOpen=0x801d96f0
+NANDRead=0x801d8b30             NANDSimpleSafeCancel=0x801da0a0
+NANDSimpleSafeClose=0x801d9e50  NANDSimpleSafeOpen=0x801d9a90
+NANDWrite=0x801d8c20            OSInitCond=0x801b3280
+OSSignalCond=0x801b3370         OSWaitCond=0x801b3290
+__ct__Q23EGG6ThreadFUliiPQ23EGG4Heap=0x802ba4f0
+__dt__Q23EGG6ThreadFv=0x802ba640
+calcCRC32__4sCrcFPCvUl=0x8015f270
+m_instance__9dResMng_c=0x8042a318
+```
+
+**Do not pin these four** even though the TU calls them —
+`OSInitMutex`, `OSLockMutex`, `OSUnlockMutex` and `OSTryLockMutex` are already
+defined by the landed `lib/revolution/os/OSMutex.c`, as are
+`getRes__6dRes_cCFPCcPCc` (`dol/bases/d_res.cpp`) and
+`setCurrentHeap__5mHeapFPQ23EGG4Heap` (`dol/mLib/m_heap.cpp`). Pinning a symbol
+a landed slice already defines is the error this check exists to catch.
+
+Note that `OSMutex.c`'s slice covers only the four mutex functions; the three
+condition-variable functions live at `0x801b3280`–`0x801b3370`, outside it, and
+so still need pins. Same source file in the SDK, different slice — worth
+remembering, because "the file is landed" is not the same as "the symbol is
+defined".
+
+**Method, for reuse:** parse the relocations out of the target disassembly,
+subtract the symbols the TU defines itself (including `@NNNNN` pool objects,
+`@LOCAL@` statics, and the `__vt__` tables, all of which are ours), then test
+each survivor's symbol-map address against every landed slice's `.text` range.
+What is left needs a pin. Guessing this list by reading the source is how
+symbols get pinned twice or missed.
 
 ### Recommended: `d_a_player_manager.cpp` — `daPyMng_c`
 
