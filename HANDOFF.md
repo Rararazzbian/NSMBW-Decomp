@@ -800,937 +800,134 @@ says the *types* exist, not that the run is reachable.
 back on the same pipeline in one session, so the pattern is now priced at
 roughly 100 functions per unit with nearly everything matching first compile.
 
-### NOT READY TO LAND — and this corrects what I wrote an hour ago
-
-`d_a_wm_grid.cpp` and `d_a_wm_tower.cpp` are **10/10 and 11/11 byte-identical in
-`.text`**. I called them ready to land on that basis. **I tried it, and it fails
-two binaries.**
-
-```
-d_profileNP.rel  Failed
-d_basesNP.rel    Failed
-```
-
-Reverted immediately; the tree is green at 5/5 again. The cause, measured from
-the compiled object against the slice claim:
-
-```
-section     claim   object
-.text       0x1f4   0x2d0   over 0xdc   (weak symbols, expected, not placed)
-.data       0x090   0x0a4   over 0x14   <-- THIS
-.rodata     0x010   0x010   ok
-.ctors      0x004   0x004   ok
-.bss        0x010   0x010   ok
-```
-
-`.data` emits `0x14` more than the slice claims. Extra `.data` shifts every
-object after it, including `g_profile_WM_GRID` — and `d_profileNP/d_profile.cpp`
-holds a pointer table referencing that symbol, so a moved profile changes
-`d_profileNP.rel` as well. That is why a `d_basesNP` unit broke the profile REL,
-which otherwise looks unrelated and is 100% complete.
-
-#### The method gap this exposes, which matters more than the unit
-
-**`wip/wm_units/verify_anon.py` only checks `.text`.** Every "N of N" figure
-quoted this week — grid, tower, smallcloud, kinoko_1up — is a statement about
-code only. A unit can be byte-perfect in `.text` and still be unlandable because
-its data sections are the wrong size or order, and nothing we run would say so.
-
-**Before calling any unit ready, compare every section of the compiled object
-against its slice claim**, the way `.text` is already compared. Note the
-asymmetry: `.text` over-claim is normal (unreferenced weak symbols are not
-placed — see the weak-symbol rule above), but **`.data` over-claim is real**,
-because data objects are placed unconditionally.
-
-#### The surplus is identified, and one half of it means the class is wrong
-
-Dumping the object's `.data` symbols against what the target holds:
-
-| offset | size | symbol | verdict |
-|---|---|---|---|
-| `0x00` | `0x05` | `@11192` | **surplus** — an anonymous 5-byte string |
-| `0x08` | `0x05` | `@11193` | **surplus** — another |
-| `0x10` | `0x24` | `sc_ForceList__6dWmLib` | correct, matches `lbl_2_data_44C90` |
-| `0x34` | `0x0c` | `g_profile_WM_GRID` | correct |
-| `0x40` | `0x64` | `__vt__10daWmGrid_c` | **`0x4` too big — target's is `0x60`** |
-
-Two independent defects, and the second is the serious one:
-
-1. **Two anonymous 5-byte string literals are emitted into `.data`** and the
-   target has none there. `0x10` of the surplus with padding.
-2. **The vtable is `0x64` where the target's is `0x60`.** By the standard rule,
-   `(size - 8) / 4` slots: the target has **22 virtuals and our class declares
-   23**. That is a class-reconstruction error, not a data-placement one.
-
-**So `d_a_wm_grid.cpp` was never actually complete, and "10 of 10 in `.text`"
-concealed it.** An extra virtual at the end of a vtable need not change any
-authored function's code — every real function still compiles identically —
-while the vtable object itself is four bytes long. This is the cleanest possible
-illustration of why a `.text`-only check cannot certify a unit.
-
-Fix the vtable first: find which of the 23 declared virtuals the original does
-not have, using `(0x60 - 8) / 4 = 22` as the count and the landed sibling
-`d_a_wm_cloud.cpp` for the expected order. Then find what emits the two strings —
-likely a resource or model name that belongs to another TU, or one that should be
-a `static const char *` rather than an array.
-
-The same check must be run on `d_a_wm_tower.cpp`, `d_a_wm_smallcloud.cpp` and
-`d_a_wm_kinoko_1up.cpp` before any of them is called ready. None has had it.
-
-**Use the round-13 kit, not the round-10 one. They contradict each other and I
-have settled it.** For `d_a_wm_grid.cpp`:
-
-```json
-{
-  "source": "d_basesNP/bases/d_a_wm_grid.cpp",
-  "memoryRanges": {
-    ".text": "0x164210-0x164404",
-    ".ctors": "0x3e4-0x3e8",
-    ".rodata": "0x88b8-0x88c8",
-    ".data": "0x44c90-0x44d20",
-    ".bss": "0xfdd0-0xfde0"
-  }
-}
-```
-
-The evidence, and it generalises to every `wm` unit:
-
-- At `0x164210-0x164404` the verifier finds **10 functions and matches all 10**.
-  At round 10's `0x164230-0x164430` it finds 9. The wider range is the unit.
-- `.data` starts at `lbl_2_data_44C90`, a `0x24` float object, which is
-  **`dWmLib::sc_ForceList` — a header static in `d_wm_lib.hpp`**. Round 10
-  started at `g_profile_WM_GRID` (`0x44CB4`) and so cut it off. The vtable
-  follows at `0x44CC0`.
-
-**`sc_ForceList` is the single most under-modelled thing in this REL.** It has
-now explained, in four separate units: two whole functions in
-`d_a_wm_kinoko_1up.cpp` that needed no hand-written source at all (its
-static-init and destroy thunks), the `.data` aggregate that blocked
-`d_a_wm_smallcloud.cpp`'s `createModel`, the `.rodata` pool ordering that
-blocked `d_a_wm_grid.cpp`'s `__sinit`, and now a `.data` low bound. **If a `wm`
-unit has an unexplained object, function or pool offset, check `sc_ForceList`
-before anything else.**
-
-**Two bound errors found in the surveys this week, so re-derive rather than
-trust.** `d_a_wm_kinoko_1up.cpp`'s `.ctors` is `0x3fc-0x400` and *both* surveys
-said `0x3f8-0x3fc` — caught from the REL's own relocation table and the split
-object's emitted `.section` comment. And `daWmKinokoBase_c` is `sizeof 0x284`,
-not the `0x2B0` recorded as "proven": the derived leaf's `classInit` allocates
-`0x294`, which cannot exceed its own base.
-
-**REL landing differs from DOL landing** and no REL unit has been landed yet:
-RELs resolve through `alias_db.txt` and the DOL ELF symbol table rather than
-`syms.txt`'s fixed addresses. Expect that to need working out on the first one.
-
-### PARKED: `d_nand_thread.cpp` — 16 of 21 authored functions byte-exact, in one verified TU
-
-**Status: parked as characterised, not abandoned.** The landing kit is complete
-and recorded below, the header is landed and verifying, and the five remaining
-functions have each been worked by three or four independent agents. What is
-left is register-allocation and codegen-shape work of the category that has
-converted **zero times** on this project; fresh authoring converts reliably. The
-progress arithmetic says the same thing: this whole unit is worth `+0.063`
-points, less than a third of what one `d_a_player_manager` is worth.
-
-**The number is now measured rather than claimed.** Every previous count came
-from separate agents each verifying its own subset in its own copy of the
-source. Compiling all of them as one TU for the first time immediately exposed a
-signature clash four agents had never hit (`cmdSave(const void *)` versus
-`cmdSave(void *)`). **Merge before you trust a count.** The merged file is
-`wip/nand_thread/scratch/merge_lead/d_nand_thread.cpp`.
-
-Of the 21, `cmdSave` can only be verified by hand: the target calls it
-`fn_800CF170` because it has no symbol-map entry, so no name-based diff reaches
-it. Extract both by address and compare instruction lists — it matches.
-
-Section evidence at the same time: `.rodata` `0x28`, `.data` `0xA0` and `.bss`
-`0x17040` all come out **exactly** on claim, which is strong independent
-confirmation that the data reconstruction is right. Do not compare the object's
-`.text` size against the claim — see the weak-symbol rule above; that comparison
-is meaningless and it has already cost this project three rounds once.
-
-#### One open structural question, worth settling before landing
-
-The target's TU tail holds `onExit` (`0x800CFCB0`), `onEnter` (`0x800CFCC0`) and
-`run` (`0x800CFCD0`) — the `EGG::Thread` weak flushes. **Our object emits the
-first two and not the third**, and an agent established across ~20
-configurations a rule with no exceptions:
-
-> MWCC weakly flushes exactly the subset of a base class's inline virtuals that
-> the derived class does **not** override, regardless of vtable slot position,
-> and never flushes an overridden slot.
-
-`dNandThread_c` overrides `run` — proven from the retail vtable at `0x80317D48`,
-whose slots are `[0, 0, ~dNandThread_c, dNandThread_c::run, EGG::Thread::onEnter,
-EGG::Thread::onExit]`. So the rule predicts our behaviour, not the target's.
-
-**The likely resolution is that those bytes are not ours.** `run__Q23EGG6ThreadFv`
-is referenced by nothing in the TU and by no other object in the repo, and the
-symbol map shows at least two other thread classes exist
-(`run__Q24mDvd10MyThread_cFv`, `run__Q23EGG17ConfigurationDataFv`). If a
-different `EGG::Thread`-deriving TU overrides none of the three, it flushes all
-three and obeys the rule exactly. That would mean `d_nand_thread.cpp` ends at
-`getSaveData` (`0x800CFCAC`) and its `.text` claim should be
-**`0xc8580-0xc9530`**, not `0xc9560`, leaving `0x30` to the neighbouring TU. Test
-that at landing time; if it holds, the eight-byte shortfall disappears and the
-weak copies we do emit are deduplicated away harmlessly.
-
-`0x800CED00`–`0x800CFCE0`, **24 emitted functions, 0xF48 (3,912) B of code in a
-0xFE0 span.** Five of the 24 are compiler-emitted weak flushes nobody authors
-(`__dt__Q23EGG5MutexFv`, `__dt__6mMutexFv`, and `EGG::Thread`'s `onExit` /
-`onEnter` / `run`), all landing in the right places. Scaffolding is in
-`wip/nand_thread/`; `SHARED-BRIEF.md` there is the authoritative fact sheet.
-
-**Five near-misses remain**: `__dt__`, `spaceCheck`, `save`, `writeBanner`,
-`load`. Each is characterised in `wip/nand_thread/CLOSE_A.md` / `CLOSE_B.md` /
-`CLOSE_C.md`, with every variant already tried listed so nobody repeats them:
-
-- **`__dt__`** — one word short. The target keeps a second, provably-redundant
-  `this == 0` check before calling `~EGG::Thread()`. Five shapes ruled out,
-  including one that hits the right instruction count with the wrong content.
-- **`spaceCheck`** — 34/37. A register-allocator plateau: **24 source shapes
-  across two agents**, every one preserving the instruction count, all landing
-  on the same `r3`-vs-`r4` choice. Structurally diffed against the byte-exact
-  `existCheck`, which explained why no third saved register is needed but not
-  the divergence. Treat as a wall, not a to-do.
-- **`writeBanner`** — 64/66. The `iconSpeed` store touches **two** adjacent
-  2-bit sub-fields (frame 0 set, frame 1 cleared), not the one first assumed;
-  reproducing both narrowed it. A real C bitfield emits a single `rlwimi` and is
-  provably wrong; `volatile` and `static` locals defeat the fold but overshoot
-  or allocate outside zero-slack section bounds. Its register-pressure gap and
-  its bitfield-fold gap are one root cause, not two.
-- **`save` / `load`** — now 2 and 1 instructions LONG rather than 9 and 12
-  short, under the refined lever below. That overshoot is itself the clue.
-
-A real defect was found in both drafts along the way and is worth carrying: the
-guard around `NANDSimpleSafeCancel` is `mError == 6`, not `!= 6`, proven from
-which side of the `beq` actually reaches the call, at all five occurrences.
-
-**The header is landed and all five binaries verify with it.** It went from an
-18-line `u8 mPad[0x74]` stub to the real class. The three vtables read out of
-the DOL pin `EGG::Thread`'s virtual order as `~Thread`, `run`, `onEnter`,
-`onExit`, and confirm that `dNandThread_c` introduces no new virtuals.
-
-#### Nine signature corrections, and only two were visible to the symbol map
-
-This unit is the strongest evidence yet for how blind symbol comparison is.
-
-**Provable by name — check these mechanically, every time:**
-
-- `setNandError` takes `long`, not `s32`. The symbol is
-  `setNandError__13dNandThread_cFl`; `s32` is `signed int` here and mangles `Fi`.
-- `EGG::Thread`'s constructor takes `unsigned long`, not `u32` — symbol
-  `__ct__Q23EGG6ThreadFUliiPQ23EGG4Heap`, `Ul`. Same trap, same cause.
-- `sCrc::calcCRC32` takes `unsigned long` — `calcCRC32__4sCrcFPCvUl`.
-
-**Invisible to the symbol map — CFront omits return types entirely:** the four
-`cmd*` functions are `bool` not `void`; `save`, `load` and `writeBanner` are
-`s32` not `bool`; `deleteFile` is `void` not `bool`. Each was settled by
-codegen alone. Two witnesses exist and both are worth using: **`run()`'s own
-consumption of a result** (it tests `save() == 2`, which is not a truth test),
-and **the function's own epilogue shape** (`li r3,1` / `li r3,0` converging at
-one epilogue is `return true`/`return false`, not falling off the end).
-
-#### The bool-materialisation lever — proven, and probably general
-
-Writing `if (!OSTryLockMutex(...))` emits a plain `cmpwi`+`beq`. Writing
-
-```cpp
-bool locked = OSTryLockMutex(&mMutex.mOSMutex);
-if (locked) { ... }
-```
-
-emits the target's three-instruction normalise sequence (`neg`/`or`/`srwi.`),
-because assigning an arbitrary int-typed value into a real `bool` forces MWCC to
-canonicalise it to 0/1 — and the flag-setting shift is then reused as the branch
-condition, with no separate compare. Confirmed by A/B compile; it closed four
-functions.
-
-**`cntlzw`+`srwi` is the same family** — that is MWCC materialising `(x == 0)`
-as a *value* rather than as a branch. Two batches independently failed on it and
-neither connected it to the lever above.
-
-**And the connection alone is not enough — this is the refined rule.**
-`bool ok = (mError == 0); if (ok)` does **not** produce `cntlzw`+`srwi.`, which
-is exactly why both batches tried it and got a plain `cmpwi`. Proven by A/B
-compile: the tested value must ALSO be **opaque to the optimiser**. Bool-storage
-alone does nothing; opacity alone does nothing; together they reproduce the
-idiom byte-for-byte.
-
-`OSTryLockMutex` supplied its own opacity — it is an external call returning a
-non-`bool`. A plain member read does not, and marking it `volatile` supplies it
-artificially. **So state the rule as: MWCC only pays for the canonicalisation
-when an opaque non-`bool` value is stored into a real `bool`.**
-
-`volatile` is NOT applied in the header and **is now refuted outright**, not
-merely declined. It buys the materialisation but forces a fresh load on every
-textual read, so the chained `mError == 0` then `mError == 6` tests lose the
-target's shared register load — `save` and `load` go from 9 and 12 instructions
-SHORT to 2 and 1 instructions LONG. And `mError` is read by the banked,
-byte-exact `d_s_boot.cpp` in four places, so it is a shared-header change that
-was never tested outside this TU.
-
-**The decisive argument, though, is inside this TU and settles it for good.**
-`existCheck` is byte-exact with plain `int mError`, and it performs the
-identical test after the identical call:
-
-```
-bl setNandError__13dNandThread_cFl      bl setNandError__13dNandThread_cFl
-lwz    r0, 0x78(r29)                    lwz    r0, 0x78(r31)
-cmpwi  r0, 0x0                          cntlzw r0, r0
-bne    .L_800CF03C                      srwi.  r0, r0, 5
-                                        bne    .L_800CF250
-  existCheck (0x800CEFC0) — MATCHES       save (0x800CF238) — near-miss
-```
-
-Same member, same type, same preceding call, same TU, same compile — one gets
-`cmpwi`, the other gets `cntlzw`. **No property of the member declaration can
-therefore be the cause**, because any qualifier or width change would also move
-`existCheck` and break a function that already matches. Whatever produces the
-idiom is *local source structure inside `save`/`load`*.
-
-##### Deferred use materialises; immediate use folds — and it still is not enough
-
-Three agents have now worked this. The rule they extracted is new, general, and
-worth carrying to every unit:
-
-**MWCC materialises a `bool` into a register (`cntlzw`/`srwi.`) when its use is
-deferred across a block boundary from its definition. A `bool` that is branched
-on immediately folds to a plain `cmpwi`.** Proven on a plain, non-`volatile`,
-CSE-able field read, at full function scale as well as in isolated probes: in
-`bool ok = (e==0); bool busy = (e==6); if (!ok) { if (busy) ... }`, `busy`
-materialises and `ok` does not.
-
-**And the `volatile` family is closed, for a structural reason worth
-remembering.** The target shares ONE load between two materialisations. A
-`volatile` read is not CSE-able by definition, so it can buy the `cntlzw` or the
-shared load, never both — whether the qualifier sits on the declaration
-(CLOSE_A) or on the read as `*(volatile int *)&mError` (CLOSE_D). Two agents
-reached that wall from opposite directions. Do not send a third.
-
-##### `createBanner` retires the opacity theory outright
-
-There is a byte-exact worked example of materialisation-from-a-plain-read
-sitting in this TU, and everyone — three agents and me — walked past it. At
-`0x800CF4D0` in `createBanner`, which **matches**:
-
-```
-bl     setNandError__13dNandThread_cFl
-lwz    r3, 0x78(r30)
-neg    r0, r3
-or     r0, r0, r3
-srwi   r3, r0, 31        <- no recording dot; this is the RETURN VALUE
-<epilogue>
-```
-
-Plain `int mError`, no cast, no qualifier, no external call feeding it — and it
-materialises. The source is `return (mError != 0);`.
-
-**So opacity was never the mechanism.** The whole `volatile`-declaration and
-`volatile`-cast programme, two agents and roughly a session each, was explaining
-a property the target does not rely on. **The trigger is the boolean being
-produced as a value.** `createBanner` pays for the 0/1 because it returns it;
-`existCheck` never needs one, only a branch, and gets `cmpwi`.
-
-**Confirmed by direct A/B, and this is the rule to carry forward:** an explicit
-second consumer forces the recording form from a plain, non-`volatile` field —
-`bool ok = (mError == 0); if (!ok) return 1; ...; return ok;` emits exactly the
-target's `cntlzw`/`srwi.`, as do variants storing `ok` to a member or passing it
-to a call. No cast anywhere. Three further results bound it:
-
-- **Contagion is refuted.** A materialising bool later in a function does not
-  retroactively change an earlier plain guard in the same function. Nor does a
-  tail call returning a bool.
-- **Giving the guard itself a derived second use works but overpays.**
-  `return !ok1;` in place of `return 1;` does flip the branch to the recording
-  form, but MWCC recomputes the materialisation for the return value instead of
-  reusing the register — 2 instructions the target does not spend.
-- **`checkCRC` is not a boundary case.** Its guards are direct
-  `if (a != b) return false;` comparisons with no named bool at all, which makes
-  it the clean opposite extreme from `createBanner` on the same axis rather than
-  an anomaly.
-
-So `save`/`load` are parked with the mechanism understood and no lever applied:
-their guards have no natural second consumer in any shape tried, and every way
-of manufacturing one costs bytes the target does not spend. **Getting the right
-idiom at the wrong price is not progress**, and an agent declining to ship one
-was the correct call.
-
-That reframes the residual precisely. `save` and `load` use the **recording**
-form (`srwi. r0, r0, 5` feeding a `bne`) — MWCC produced the value *and*
-branched on it — so something makes the 0/1 a live value there even though a
-branch is its only visible consumer. `checkCRC` returns a constant and does not
-materialise, which makes it the boundary case worth studying.
-
-**The evidence that defeats every hypothesis so far**, and the right place for
-the next person to start: `save`'s *first* check at `0x800CF238` materialises
-via `cntlzw` and **has no sibling at all** — nothing else is derived from that
-load, there is no second test, no deferred use, nothing for the deferred-use
-mechanism to apply to. Yet the target materialises. So the trigger is not
-opacity, not register pressure, not use-count, and not the chained pair. The
-open question is no longer "how is the load shared" but **"why does an isolated
-`mError == 0` guard materialise at all, from a plain field, when the identical
-guard in `existCheck` twenty lines away compiles to `cmpwi`?"** Nobody has a
-lead on that, and saying so is more useful than another variant sweep.
-
-**General rule, and it is worth applying beyond this unit: when two functions in
-one TU compile the same expression differently, every explanation that lives in
-the shared header is already dead.** Look for the difference locally. The
-sharpest untested candidate here is the shape of the arm — `existCheck` guards a
-block and falls through, while `save`/`load` take an early `return <constant>`.
-Note also that the occurrence at `0x800CF238` materialises into `r0`, is used
-exactly once, and still uses `cntlzw`, which rules out register pressure and
-"the value is needed twice" as triggers.
-
-#### Two process findings from running it
-
-- **A wrong data bound was caught before authoring, not after.** The pre-flight
-  put `.data` at `0x80317D48`; the true low bound is `0x80317CD8`, `0x70` lower,
-  and the missing objects were three banner strings and a 16-entry jump table
-  belonging to `setNandError`. Both the terminal-vtable rule and the
-  consecutive-pool-ID rule catch it. **Walk backwards from every claimed low
-  bound and ask what the object below it belongs to** — subtracting correctly
-  from a wrong starting point still gives a wrong answer.
-- **The shared brief's own hypothesis was wrong and an agent said so.** It
-  predicted the five `cmd*` functions were one body with one constant changed.
-  They are not: one writes three fields, three write two, one adds a `memcpy`.
-  The agent wrote the correction into the relay file the other batches read,
-  which is what stopped it propagating into three more functions.
-
-#### The landing kit, pre-computed — apply it the moment the five close
-
-All of this is derived mechanically from the target's own relocations and from
-`slices/wiimj2d.json`, not estimated. It is the integrator's half of the job and
-it is done, so closing the last five functions is the only remaining work.
-
-**Slice block.** Insert between `dol/bases/d_multi_manager.cpp` and
-`dol/bases/d_next.cpp` (currently array indices 52 and 53):
-
-```json
-{
-    "source": "dol/bases/d_nand_thread.cpp",
-    "memoryRanges": {
-        ".text": "0xc8580-0xc9560",
-        ".rodata": "0x3490-0x34b8",
-        ".data": "0x19638-0x196d8",
-        ".bss": "0x8640-0x1f680",
-        ".sdata": "0x5f8-0x608",
-        ".sbss": "0x3f8-0x400"
-    }
-}
-```
-
-**These bounds are confirmed five independent ways, and the confirmation method
-generalises — use it on every future unit.** Checked against every other slice
-for overlap (zero) and for adjacency: `.text` starts exactly where
-`d_multi_manager` ends and ends exactly where `d_next` begins; `.rodata` and
-`.data` both begin exactly where `d_multi_manager`'s end; `.sbss` sits exactly
-in the one-word hole between `d_multi_manager`'s `0x3f0-0x3f8` and `d_next`'s
-`0x400-0x408`. And `d_multi_manager`'s `.sdata2` (`0x1930-0x1938`) is already
-adjacent to `d_next`'s (`0x1938-0x1950`), which independently confirms this TU
-has **no** `.sdata2` — a negative that is otherwise easy to get wrong.
-
-**`syms.txt`: remove 4, add 22.** Remove these — once our object defines them,
-pinning them to an address is a contradiction:
-
-```
-cmdExistCheck__13dNandThread_cFv=0x800CEF10      (line 392)
-cmdSpaceCheck__13dNandThread_cFv=0x800CF060      (line 393)
-create__13dNandThread_cFPQ23EGG4Heap=0x800CFBA0  (line 394)
-m_instance__13dNandThread_c=0x8042A298           (line 1092)
-```
-
-Add these — every external the TU references that no landed slice defines:
-
-```
-NANDCheck=0x801db280            NANDClose=0x801d9990
-NANDCreate=0x801d8620           NANDDelete=0x801d8920
-NANDGetHomeDir=0x801dac30       NANDGetLength=0x801d9180
-NANDGetType=0x801dafb0          NANDInitBanner=0x801db0e0
-NANDMove=0x801d9110             NANDOpen=0x801d96f0
-NANDRead=0x801d8b30             NANDSimpleSafeCancel=0x801da0a0
-NANDSimpleSafeClose=0x801d9e50  NANDSimpleSafeOpen=0x801d9a90
-NANDWrite=0x801d8c20            OSInitCond=0x801b3280
-OSSignalCond=0x801b3370         OSWaitCond=0x801b3290
-__ct__Q23EGG6ThreadFUliiPQ23EGG4Heap=0x802ba4f0
-__dt__Q23EGG6ThreadFv=0x802ba640
-calcCRC32__4sCrcFPCvUl=0x8015f270
-m_instance__9dResMng_c=0x8042a318
-```
-
-**Do not pin these four** even though the TU calls them —
-`OSInitMutex`, `OSLockMutex`, `OSUnlockMutex` and `OSTryLockMutex` are already
-defined by the landed `lib/revolution/os/OSMutex.c`, as are
-`getRes__6dRes_cCFPCcPCc` (`dol/bases/d_res.cpp`) and
-`setCurrentHeap__5mHeapFPQ23EGG4Heap` (`dol/mLib/m_heap.cpp`). Pinning a symbol
-a landed slice already defines is the error this check exists to catch.
-
-Note that `OSMutex.c`'s slice covers only the four mutex functions; the three
-condition-variable functions live at `0x801b3280`–`0x801b3370`, outside it, and
-so still need pins. Same source file in the SDK, different slice — worth
-remembering, because "the file is landed" is not the same as "the symbol is
-defined".
-
-**Method, for reuse:** parse the relocations out of the target disassembly,
-subtract the symbols the TU defines itself (including `@NNNNN` pool objects,
-`@LOCAL@` statics, and the `__vt__` tables, all of which are ours), then test
-each survivor's symbol-map address against every landed slice's `.text` range.
-What is left needs a pin. Guessing this list by reading the source is how
-symbols get pinned twice or missed.
-
-### Recommended: `d_a_player_manager.cpp` — `daPyMng_c`
-
-`0x8005E9A0`–`0x800613B0`, 10,768 B span / 10,300 B code / 68 fns.
-**It is now unblocked**: it embeds `daPyDemoMng_c` by value in its `.bss` and
-needed that class's exact `sizeof`, which is 0x98, proven three independent ways
-and landed. `include/game/bases/d_a_player_manager.hpp` already exists with real
-signatures because the banked `d_a_player.cpp` and `d_a_player_base.cpp` call
-into it constantly, and this session added `mCourseInList` to it.
-
-The class is **all-static with no vtable**, so there is no layout to reconstruct
-— every static member is a named symbol with a size in the map. `.text`,
-`.ctors` (`0x88-0x8c`, one free slot), `.bss` (`0x3790-0x4640`), `.sbss`
-(**`0xe0-0x138`**, corrected — the `0xe0-0x110` recorded here earlier was
-`0x28` bytes short) and `.sdata` (`0x280-0x290`) are exact by subtraction.
-
-**The `.sbss` error is worth reading even if you never touch this unit.** It was
-derived "by subtraction" and stated as exact, and it omitted nine members —
-`mPauseEnableInfo`, `mPauseDisable`, `mStopTimerInfo`, `mStopTimerInfoOld`,
-`mQuakeTrigger`, `mBgmState`, `mBonusNoCap`, `mKinopioCarryCount` and one unnamed
-byte — **every one of which our own `.text` references by name.** Two agents
-caught it independently. Had it survived to the link it would have shifted every
-following small-data object and failed four of five binaries with thousands of
-scattered single-byte diffs, with nothing wrong in any function.
-
-What actually settled it is a file this handoff never mentioned:
-**`bin/dtk/dtk_splits_wiimj2d.txt`**, an official per-source-file section range
-list for already-split TUs. `d_actor.cpp`'s `.sbss` starts at exactly
-`0x80429FD8`, which brackets our end hard. **Check that file before deriving any
-bound by subtraction or elimination** — it converts the weakest kind of claim
-into the strongest one, and it has been sitting in `bin/dtk/` the whole time.
-
-Three hazards, all pre-characterised:
-
-1. Its `.bss` embeds **four static class instances by value**, each with a 0xC
-   dtor record: `mDemoManager` (0x98, `daPyDemoMng_c` — **now done**),
-   `mMultiManager` (0x5C), `mAttention` (0x58), `mEffectMng` (0xC5C). The other
-   three `sizeof`s must be exact or the whole `.bss` shifts.
-2. Two **foreign weak inline copies sit mid-range** —
-   `getCourseIn__10dScStage_cFv` (8 B, `0x8005EC90`) and `getFileP__5dCd_cFi`
-   (32 B, `0x8005EE70`) — from classes whose TUs are already banked. That is the
-   weak-copy / `keepWeak` / `syms.txt` collision, and it surfaces only at the
-   full link. **Trial-link early** (see that section) rather than discovering it
-   at the end.
-3. `.data` (~`0xb388-0xb3b8`) and `.sdata2` (~`0xa18-0xa20`) need pool
-   attribution. **Note `.data 0xb388-0xb3b8` is exactly the 0x30 that
-   `d_a_player_demo_manager` was wrongly assumed to own** — the two strings
-   `"Wm_mr_vshipattack"` / `"Wm_mr_vshipattack_ind"` at `0x80309A28`. They
-   belong to whichever TU follows demo_manager in link order; check
-   `d_a_player_hio_ADJ` first, since its slice claims no `.data` only because it
-   is `nonMatching` and nobody ever derived one.
-
-#### What `d_a_player_demo_manager` established, and what it cost
-
-Landed 51/51. The functions were the easy part — **every one of the three
-defects that actually blocked the link was in DATA placement**, and none was
-visible to a per-function diff:
-
-- **`T *const arr[]` is a const-qualified type and lands in `.rodata`.** The
-  original put the value tables in `.rodata` and the POINTER tables in `.data`.
-  Dropping the outer `const` moved them. Check the symbol map's section per
-  object rather than assuming a table is a table.
-- **MWCC emits a class's vtable as the TERMINAL `.data` object, unconditionally.**
-  Verified twice. So anything after the vtable in the target belongs to the NEXT
-  TU — which is a free upper bound on any `.data` claim, and it disproved a
-  bounds derivation that had been made by elimination.
-- **A header static with a non-trivial constructor is emitted into EVERY TU that
-  odr-uses it**, pooled strings and all. `dWmLib::sc_ForceList` has 30 such
-  copies in the original. That is why this TU had a `.sdata` claim its bounds
-  derivation had confidently called empty.
-- **Consecutive `@NNNNN` pool IDs identify a TU.** The two `.sdata` strings are
-  `@72502`/`@72503` and this TU's array destructor is `__arraydtor$72504`. When
-  ownership of an anonymous object is unclear, look at the neighbouring pool
-  numbers — it is the cheapest attribution evidence available.
-- **A "bounds by elimination" claim is the weakest kind**, and the bounds agent
-  said so at the time. Both of its two flagged weak spots turned out wrong, and
-  both were caught only by linking.
-
-### Runners-up
-
-**`d_a_player_manager.cpp` (`daPyMng_c`)** — `0x8005E9A0`–`0x800613B0`,
-10,768 B span / 10,300 B code / 68 fns.
-`include/game/bases/d_a_player_manager.hpp` **already exists with 79 lines of
-real signatures** (not a `u8 mPad[]` stub) because the banked `d_a_player.cpp`
-and `d_a_player_base.cpp` call into it constantly. The class is **all-static
-with no vtable**, so there is no layout to reconstruct: every static member is a
-named symbol with a size in the map. `.text`, `.ctors` (`0x88-0x8c`, one free
-slot), `.bss` (`0x3790-0x4640`), `.sbss` (`0xe0-0x138`, corrected) and `.sdata`
-(`0x280-0x290`) are exact by subtraction. Three hazards keep it second:
-1. Its `.bss` embeds **four static class instances by value**, each with a 0xC
-   dtor record: `mDemoManager` (0x98, type `daPyDemoMng_c` — **undone**),
-   `mMultiManager` (0x5C), `mAttention` (0x58), `mEffectMng` (0xC5C). Their
-   `sizeof`s must be exact or the whole `.bss` shifts.
-2. Two **foreign weak inline copies sit mid-range** —
-   `getCourseIn__10dScStage_cFv` (8 B, `0x8005EC90`) and `getFileP__5dCd_cFi`
-   (32 B, `0x8005EE70`) — from classes whose TUs are *already banked*. That is
-   the pakkun weak-copy / `keepWeak` / `syms.txt` collision with live
-   neighbours, and it will only surface at the full link.
-3. `.data` (~`0xb388-0xb3b8`) and `.sdata2` (~`0xa18-0xa20`) need pool
-   attribution, because the un-banked `d_a_player_demo_manager.cpp` sits between
-   it and the previous banked claim in those two sections.
-
-**`d_a_player_demo_manager.cpp`** has been **promoted to the recommendation
-above** — see that section. Note its `.ctors` slot is `0x80-0x84`, one free slot.
-
-### Attractive-looking candidates with traps
-
-- **`0x80041C00`–`0x80044940` (11,584 B, 86 fns)** — the `d_a_lift_down_on_base`
-  / `d_a_move_pipe` gap. Perfect size, both neighbours banked, looks like one
-  free-bounds haul. It is **at least six TUs**: `daLiftDownOnBase_c` (20 fns),
-  `daIceAshibaBase_c` (15), `daLiftRemoconMain_c` (11), `daFlyDokan_c` (10),
-  `daMovePipe_c` (6), `daKawanagareObj_c` (5), `daLiftMain_c` (2),
-  `dRideRoll_c` (1). Only two `__sinit`s exist, so four internal boundaries are
-  invisible and every one must be derived. Outer bounds free, inner bounds not.
-- **`d_a_en_obj_coinblock.cpp` (`0x80036930`–`0x80037EA0`, 5,488 B, 39 fns)** —
-  fully bracketed, all bounds free, seven clean states, looks cheap. **The trap:
-  `__vt__18daEnObjCoinBlock_c` does not exist anywhere in the symbol map**, and
-  the range contains **no constructor, no destructor, no `create`, no
-  `execute`** — its lifecycle lives in a `.rel`. Playbook step 2 is simply
-  unavailable; the layout must come from `lwz`/`stw` displacements. Cheap bytes,
-  expensive class.
-- **`d_a_en_coin_main.cpp` (`0x800272F0`–`0x800281C0`, 3,792 B, 23 fns)** — all
-  bounds free, and it **is** a base class (`__vt__14daEnCoinMain_c` is 0x2EC,
-  same size as `daEnBlockMain_c`'s), so it gates the coin family in
-  `d_enemiesNP.rel`. But it has T-2's shape problem in milder form, and despite
-  the matching vtable size **its function names barely overlap blockmain's** —
-  siblings, not twins, so the "blockmain just landed" intuition does not pay.
-  Good filler, not a headline target.
-- **`d_a_farBG.cpp` (`0x80115BD0`–`0x8011A5B0`, 18,912 B, 55 fns)** — fully
-  bracketed, single `__sinit`, `__vt__9daFarBG_c` 0xD4 (no new virtuals over
-  `dActor_c`). But 55 functions across 18.6 KB is **339 B per function**, the
-  largest average of any candidate, with only 12% name precedent, and
-  background-scroll code is exactly the float/matrix-heavy shape to avoid. It
-  becomes the natural pick *after* hatena_balloon, which is its lower neighbour.
-- **`0x800451F0`–`0x800460D0` (3,808 B, 33 fns)** — highest precedent rate
-  measured (**68% of bytes share a name with banked code**) and it contains
-  **three base classes** (`daObjMoveOnBase_c`, `daObjPipeBase_c`,
-  `daObjSpinChildBase_c`), so it unblocks three families for 3.8 KB. The trap:
-  **no `__sinit` anywhere in the range**, so all three TU boundaries are
-  invisible — the `d_a_sink_dokan.cpp` condition below. Worth doing, but budget
-  the boundary derivation as its own stage.
-- **`d_a_boss_demo.cpp`** — still blocked on `d_en_boss.cpp`; nothing has
-  changed. Its pre-derived ranges below remain valid.
-
-### The pakkun pair — DONE, and the two rules it cost
-
-Both TUs are landed and linked: `d_a_en_dpakkun_base.cpp` 64/64 and
-`d_a_en_dfpakkun.cpp` 33/33, 19,808 bytes, the jump from 9.826% to **10.131%**.
-Two lessons are worth more than the files.
-
-#### A `nonMatching` slice is not linked at all
-
-`gen_lcf.py`, `slice_dol.py` and `configure.py` all skip it and splice the
-original bytes in. So the flag is not a progress annotation — it decides whether
-your object participates in the link, and **clearing it is the first real test
-your object has ever had**. Per-function diffs cannot see any of what follows.
-
-Three things surfaced only at that moment, and all three will recur:
-
-- **Weak-copy deadlock.** Inline members are emitted by every TU that includes
-  the header and the linker keeps one copy. The original kept
-  `daEnDpakkunBase_c`'s in `d_a_en_dfpakkun.cpp`. Flip the base on alone and its
-  object becomes the sole provider of ~35 weak copies, `.text` grows 0xE0, all
-  five binaries fail. **The pair had to be flipped together.** Expect this
-  whenever a base and its derived TU are both in flight.
-- **`.text` too long, from a symbol you are the only one defining.** Your object
-  emits a weak inline member the original resolved from a **still undecompiled**
-  TU; spliced bytes are not a definition the linker can see, so your copy wins.
-  Fix with a `syms.txt` entry at the original's address — that is what removed
-  `__dt__Q33m3d5mdl_c10callback_cFv` and the `timingB`/`timingC` stubs here.
-- **`keepWeak` and `syms.txt` are global, not per-slice.** Adding the entries a
-  `nonMatching` TU will need forces those symbols in whichever sibling *is*
-  linked, and breaks the build. They must land in the **same commit** as the
-  flag clears.
-
-#### Overrides are a free lever — the flush-order rule
-
-**Within a class, the end-of-TU inline flush block is emitted in strict reverse
-declaration order.** Declaration order is pinned by the vtable only for virtuals
-the class *introduces*; an **override** inherits its slot from the base and can
-be declared anywhere without moving the vtable. So for overrides, declaration
-order is free — and it is the *only* lever that moves the flush block.
-
-**Between classes, groups come out in reverse parse order**, base before derived,
-so `#include` order is the lever: parsing a class earlier pushes its flush group
-later. This mirrors exactly where the weak vtables land in `.data`, which gives
-you a second, independent way to check it.
-
-Eliminated, so nobody repeats them: out-of-class `inline` definitions, access
-specifiers, const-qualification, signature changes, interleaved members, taking a
-member's address — none of them move anything. Only *being called* moves a
-function, and that removes it from the block entirely.
-
-A ~120-TU sweep found **zero real inversions across every banked TU**, so the
-rule holds project-wide and was simply mis-declared here. `tools/` has no
-committed version of that sweep; it is worth rebuilding if this recurs.
-
-The concrete fix was two declaration moves and one `#include`, with no function
-body touched — see commit `5dc4095`.
-
-### The remaining actor TUs, with what is known about each
-
-Cross-check with `tools/tu_split.py` and `tools/tu_extent.py` (both tracked
-under `tools/`), or with the `__sinit_<file>_cpp` symbols in
-`bin/dtk/wiimj2d_symbols.txt`. Annotations are hard-won — read them before
-assigning.
-
-**These sizes are a hypothesis, and the errors run in both directions.** The
-size and count columns come from `tu_extent.py`'s heuristic ranges; on the last
-row that closed they were wrong by **7 functions and 840 bytes** — and that
-under-count survived into the plan. Re-derive from the symbol map before
-assigning. Where both figures are known, `Span` is what progress counts (it
-includes 16-byte inter-function alignment) and `Code` is the sum of function
-sizes; they are not the same number and neither is a typo for the other.
-
-| TU | Span B | Code B | Fns | Notes |
-|---|---|---|---|---|
-| `d_a_en_dfpakkun` | 10,624 | — | 72 | **DONE 33/33** authored (rest are weak base copies), landed and linked |
-| `d_a_en_jimen_pakkun_base` | 8,848 | — | 67 | **DONE 67/67**, landed and linked. Derives from `dEn_c`, NOT the pakkun base |
-| `d_a_en_bros_base` | 12,112 | 12,112 | 99 | **DONE 99/99**, landed and linked. Derives from `dEn_c` |
-| `d_a_en_blockmain` | 13,232 | 12,604 | 97 | **DONE 97/97**, landed and linked. Ten file-static functions (2,800 B, 22%) have no symbol-map name; the names in our source are invented |
-| `d_a_en_hatena_balloon` | 18,768 | 18,216 | 81 | **DONE 81/81**, landed and linked. Derives from `dEn_c` |
-| `d_a_player_manager` | 10,768 | 10,300 | 68 | Runner-up; all-static class, no vtable |
-| `d_a_player_demo_manager` | 9,280 | 8,976 | 51 | **DONE 51/51**, landed and linked |
-| `d_a_bullet` | 7,316 | — | 73 | |
-| `d_a_lift_down_on_base` | 6,280 | — | 58 | **At least six TUs** across the wider gap — see `tu_split.py` and the traps list above |
-| `d_a_move_pipe` | 5,380 | — | 29 | Part of the same multi-TU gap |
-| `d_a_en_obj_coinblock` | 5,488 | 5,204 | 39 | No `__vt__` in the symbol map — see the traps list |
-| `d_a_en_coin_main` | 3,792 | 3,652 | 23 | Base class, gates the coin family |
-| `d_a_wm_player_static` | 3,268 | — | 24 | |
-| `d_a_boss_demo` | 2,772 | — | 49 | **BLOCKED** — see below |
-| `d_a_wm_Map_static` | 2,308 | — | 17 | **17/18 done**, blocked on a 0x9C8 table — see below |
-| `d_a_player_hio_ADJ` | 2,032 | — | 15 | **15/16**, banked `nonMatching`. One function left, well-characterised — see below |
-| `d_a_farBG` | 18,912 | 18,636 | 55 | 339 B per function, the worst average measured |
-| `d_a_ice` | 32,176 | — | 151 | |
-| `d_a_yoshi` | 64,592 | — | 347 | The gap to `d_pausewindow.cpp` holds **three `__sinit`s** — `d_a_yoshi`, `d_fukidashiManager`, `d_gamedisplay` — so at least four TUs, not two. Also contains `daPlyIce_c` |
-
-### `d_a_en_lkuribo_base.cpp` — DONE, 58/58, banked whole
-
-Landed byte-exact: 9.681% -> **9.826%** (+9,456 bytes), `wiimj2d.dol` 18.891% ->
-**19.200%**. Six parallel authoring agents, every function matching on its first
-compile. The method that produced that is documented at the top of this file; the
-three findings it cost are the lazy-flush rule, the shadowed-state-ID trap and
-the comparator bug, all recorded below.
-
-Its `.rodata` owns the two 0x20 death-info templates that sit past a 4-byte gap
-and look like they belong to the next TU. They do not — `hitCallback_Fire` and
-`setDeathInfo_Hasami` reference them, and net_nokonoko's banked range starts
-exactly after them. The gap is alignment padding.
-
-### `d_a_wm_Map_static.cpp` is 17/18 — one table away
-
-Everything except `__sinit` matches. The gap is a guard-protected `mVec3_c` init
-inside a **0x9C8-byte static object at 0x8031CCC8** (guard byte at 0x8042A470) —
-a world-map parameter table whose initialiser pulls in 18 `.data` string
-literals (`"desert01"`…`"group04_2"`), ~0x220 of `.sdata` literals, and one
-`.sdata2` float. None of it emits code, which is why all 16 real functions match
-without it. Reconstructing it means naming ~2,500 bytes of struct fields.
-
-**Its slice ranges are unusable until that table is written** — a partial object
-would place the table's contents at the wrong addresses. Do not bank it early.
-Two signature findings from that work are already in the levers list.
-
-### `d_a_boss_demo.cpp` is blocked on `d_en_boss.cpp` — schedule it after
-
-Do not assign this TU yet. It was surveyed and deliberately not authored, which
-was the right call: `initializeState_BattleIn` calls `dEnBoss_c::setBattleReady`
-through vtable slot 0x2C8, and this TU *emits* that empty weak function. Getting
-the slot right means declaring the whole `dEn_c` → `dEnBoss_c` virtual chain —
-115 undecompiled symbols — and `d_en_boss.hpp` does not exist. Any stand-in
-would be a fabricated 176-slot class in a *shared* header.
-
-Everything else is banked ready for when it unblocks:
-
-- True `.text` is **0x8001CBB0–0x8001DA50** (0xEA0, 59 functions), not the
-  heuristic end — the eight template instantiations and `__arraydtor$70930`
-  after `__sinit` are ours. It ends where `daBullet_c`'s first stub begins.
-- Ranges: `.text 0x16430-0x172d0`, `.ctors 0x20-0x24`, `.data 0x3140-0x3420`,
-  `.bss 0xfd8-0x10e8`, `.sdata 0x180-0x190`, `.sbss 0x90-0x98`,
-  `.sdata2 0x188-0x198`. No `.rodata`.
-- The class definition is **verified byte-exact**: compiled against real headers
-  it emits a `__vt__12daBossDemo_c` identical to the target's, all 79 entries.
-- Its `.data` opens with `sc_ForceList__6dWmLib` and `.sbss` holds
-  `c_StartPointKinokoHouseID__6dWmLib` — header-scope statics duplicated into
-  every TU including `d_wm_lib.hpp`. Including that header reproduces them, their
-  dynamic initialisers in `__sinit`, and the `.bss` dtor record.
-
-**Integration hazard, flagged in advance:** this TU owns `finalUpdate`,
-`GetActorType`, `funsuiMoveX`, `setCarryFall`, `isSpinLiftUpEnable`, `getPlrNo`
-and `vf68` at 0x8001D1B0–0x8001D218. All seven are currently supplied by
-`syms.txt`, and four are in the global `deadstrip` list. When it lands, delete
-those `syms.txt` lines **and move those four from `deadstrip` to `keepWeak`**, or
-`.text` comes out short and every binary fails.
-
-### Prefer base classes — they unblock families
-
-Ranking by size alone is wrong. A *base* actor TU is worth more than its byte
-count because derived TUs cannot be attempted honestly until it exists, and any
-placeholder header written from a derived class's usage carries guesses that
-will mislead later work. The pakkun family was the clearest case —
-`d_a_en_dpakkun_base.cpp` gated `d_a_en_dfpakkun.cpp`, and until the base
-landed, the derived TU's placeholder header carried an unidentified 68-byte
-member region. Both are now done; the live instances are `d_a_en_coin_main.cpp`
-(gates the coin family in `d_enemiesNP.rel`) and the three base classes in the
-`0x800451F0` run.
-
-Second preference is a TU whose *shape* is already solved elsewhere — e.g.
-`d_a_rot_objs_base.cpp`, whose `searchParent_*` functions were reported as
-sharing an existing implementation verbatim.
-
-Note the trade-off is real and does not always favour the base: the recommended
-next target is not a base class at all, because all seven of its bounds are free
-and 43% of it has banked precedent. Weigh unblocking against cost, do not apply
-the rule mechanically.
-
-### All five binaries failing at once means a section changed size
-
-This looks catastrophic and is usually trivial. `d_a_fireball_base.cpp` matched
-51/51 functions and every data section, and still failed the hash on all five
-binaries — including `d_profileNP.rel`, which it cannot touch.
-
-**Diagnose from the DOL header, not the bytes.** Decode the section table of
-`bin/wiimj2d.dol` and `original/wiimj2d.dol` and compare sizes:
-
-```python
-off = struct.unpack('>18I', d[0x00:0x48])   # file offsets
-adr = struct.unpack('>18I', d[0x48:0x90])   # load addresses
-siz = struct.unpack('>18I', d[0x90:0xD8])   # sizes
-```
-
-`.text` was 64 bytes short, so every later section sat 0x40 low and every hash
-broke. The delta *is* the missing object: search the TU's address range for a
-function of exactly that size. Here it was `__dt__18dCircleLightMask_cFv`, 0x40.
-
-**Cause: an unreferenced weak function your TU emits gets deadstripped.** The
-original kept it, the linker drops it. Fix is one line — add the mangled name to
-`keepWeak` in `slices/wiimj2d.json`. Note `deadstrip` and `keepWeak` are
-separate lists there and neither is inferred; a weak symbol in neither list is
-dropped if unreferenced.
-
-Byte-diffing the two DOLs first is a trap: a size change shifts everything, so
-you get hundreds of thousands of diff runs and no signal. Section sizes first,
-always.
-
-### A one-byte whole-binary diff means a `.ctors` index error
-
-Distinct from the size-change failure above, and even easier to fix. Symptom:
-the DOL fails but the RELs pass, the two section tables are **identical**, and a
-byte-diff yields exactly **one** differing byte.
-
-That is your `__sinit` pointer written into the wrong `.ctors` slot. Decode the
-words either side and the off-by-one is immediately visible:
-
-```
-0x802edd2c  built 80032ab0   orig 80030ab0   <-- ours, one slot early
-0x802edd30  built 80032ab0   orig 80032ab0   <-- where it belongs
-```
-
-`.ctors` offsets are relative to **0x802edce0 directly**. Do not subtract the
-`"offset": "0x4"` that appears on the `.ctors` entry in `meta` — that is what
-went wrong here. The slot at `0x4c` belonged to the undecompiled
-`d_a_en_jimen_pakkun_base`, whose `__sinit` is at 0x80030ab0.
-
-Entries are in link order, so a TU's index follows its slice position. Sanity
-check by confirming the neighbouring words point at the `__sinit` addresses of
-the neighbouring TUs.
-
-### A constant shift in SDA-relative operands means an `.sbss` size error
-
-Third distinct whole-binary signature, and the cheapest to misdiagnose because
-**every section size matches and the `.ctors` table is byte-identical**. Symptom:
-the DOL fails, section sizes all agree, and a byte diff yields many single-byte
-differences scattered across `.text`, each one the low byte of a `d13`/`r13`
-operand, all off by the **same constant**:
-
-```
-ours 3bedb740   orig 3bedb738     addi r31, r13, ...   <-- +8
-ours 386db728   orig 386db720     addi r3,  r13, ...   <-- +8
-```
-
-Every affected instruction is SDA-relative (`ra == 13`). That is not a content
-error — it is your `.sbss` claim being the wrong *size*, which shifts every
-downstream `.sbss`-relative reference project-wide.
-
-**The rule: every `.sbss` claim in this project is a multiple of 8.** A 4-byte
-claim links cleanly, passes `--verify-obj`, and produces exactly the failure
-above. Check with:
-
-```python
-for sl in slices:
-    r = sl['memoryRanges'].get('.sbss')
-    if r:
-        lo, hi = (int(x, 16) for x in r.split('-'))
-        assert (hi - lo) % 8 == 0, sl['source']
-```
-
-Bisect it by removing the `.sbss` claim entirely and rebuilding: if the shift
-moves or changes character, `.sbss` is where to look. Note that a *symbol* in
-`.sbss` may genuinely be 4 bytes (`ms_num_of_instance` is `size:0x4`) — it is
-the **slice claim**, not the symbol, that must round up to 8.
-
-### The target list is incomplete: TUs with no `__sinit` are invisible
-
-`tu_extent.py` delimits TUs by `__sinit` symbols. **A TU with no file-scope
-static objects emits no `__sinit`**, so it does not appear in the list at all —
-it is silently absorbed into a neighbouring TU's reported range. This is not
-hypothetical: `d_a_sink_dokan.cpp` (`daSinkDokan_c`, ~0x920 bytes) was found
-sitting undetected between `d_a_rot_objs_base` and `d_a_spin_child_base`.
-
-`tools/tu_split.py` detects the condition. It demangles the class name out
-of every function in a reported range and counts them; a *second* class with a
-double-digit count means the range is two or more TUs. Current output:
-
-| Reported as | Actually contains |
+### `d_a_wm_grid.cpp` IS LANDED — 5/5 green. It is the project's first REL unit.
+
+Progress moved 11.088% -> **11.096%** (721,304 / 6,500,368). `d_basesNP.rel` is
+now 1.043% rather than 0.000%. Every earlier unit landed in the DOL; the REL
+landing mechanics were listed as an open unknown and they are now exercised
+end to end.
+
+It took **four defects** to get there, and I had earlier called this unit
+"10/10, complete". Every one of the four was invisible to the check I was using.
+
+**1. The `.data` bounds started 0x10 too high.** The claim opened at the first
+*named* symbol, `sc_ForceList`. But a unit's `.data` opens with the anonymous
+string literals that header static points at -- `"F7C0"` and `"W7C0"` from
+`dWmLib::sc_ForceList` in `d_wm_lib.hpp`. They are `LOCAL`, so the linker can
+neither merge nor drop them; they are as much part of the unit as the vtable.
+Proof, and the technique worth copying: compile the **landed, byte-exact**
+`d_a_wm_cloud.cpp` and read its object. Its `.data` opens with the same two
+strings at offsets 0x00/0x08 and its claim is exact. A known-good unit settles
+a bounds question in one step.
+
+**2. The `.text` bounds were wrong at both ends.** The array destructor at
+`0x164210` belongs to `d_a_wm_ghost.cpp` below it, not to grid; grid's own is at
+`0x164410`, *past* the claimed end -- its `__sinit` references it, which is how
+you find it. Real range: `0x164230-0x164430`. MWCC emits the array destructor
+for a header static LAST in the object, so a unit's `.text` extends beyond its
+`__sinit`. Do not assume `__sinit` closes the unit.
+
+**3. The class declared a virtual the original does not have, and missed one it
+does.** `(vtable size - 8) / 4` gave 22 slots against our 23. Comparing
+slot-for-slot with landed `d_a_wm_cloud.cpp` showed `processCutsceneCommand`
+does not exist on this class at all, and that `fn_2_164370` -- which a peer had
+labelled `processCutsceneCommand` -- is an override of `GetActorType`. Both
+functions are `li r3, 0; blr`, so nothing in `.text` could tell them apart.
+
+**4. Four functions were assigned to the wrong vtable slots.** This is the one
+worth internalising. `create`, `execute`, `draw` and `doDelete` are all
+`li r3, 1; blr` -- **identical bytes**. Any permutation of them produces a
+byte-identical `.text`. Only the vtable relocations say which is which, and ours
+had `doDelete` where the original has `execute`. The fix was reordering the
+definitions in the `.cpp` to `create, execute, draw, doDelete`.
+
+### The rule this establishes: `.text` byte-identity does not mean a unit is correct
+
+A unit can be 10/10 in `.text`, with every function verified instruction for
+instruction, and still be wrong in four independent ways. `.text` cannot see
+section sizes, cannot see vtable shape, and **cannot distinguish two functions
+that compile to the same bytes**. I declared four `wm` units complete on
+`.text` alone this week. Do not repeat that.
+
+### How to find the defect when `--verify-bin` fails
+
+This localised all of the above and is much faster than re-reading source:
+
+1. Compare section SIZES of `bin/<mod>.rel` against `original/<mod>.rel`.
+   Grid's `.text` was 0x10 over -- that alone identified a placed function that
+   should not have been placed.
+2. Compare section CONTENTS byte by byte. When all six sections match and the
+   md5 still differs, the defect is in the REL metadata.
+3. Decode the relocation table. Grid's final failure was **three bytes**, a
+   permutation of `0x40/0x50/0x60` across three 8-byte relocation entries --
+   the vtable slots for functions with identical bodies. Nothing else would have
+   found it.
+
+### Seeding the `.rodata` constant pool: use `DECL_WEAK`
+
+Grid's pool needed a leading `0.0f` that no placed function references. All
+three forms behave differently and only one works:
+
+| form | result |
 |---|---|
-| `d_a_lift_down_on_base` | `daLiftDownOnBase_c`, `daIceAshibaBase_c`, `daFlyDokan_c`, `daKawanagareObj_c` |
-| `d_a_move_pipe` | `daLiftRemoconMain_c`, `daMovePipe_c`, `daLiftMain_c` |
-| `d_a_yoshi` | `daYoshi_c`, `daPlyIce_c` |
-| `d_a_en_dfpakkun` | `daEnDfpakkun_c`, plus 11 `daEnDpakkunBase_c` weak copies |
+| `static void f() { static const float U[] = {0.0f}; }` | dropped outright, pool entry lost |
+| `void f() { ... }` (plain global) | placed -- `.text` overflows the claim by 0x10 |
+| `DECL_WEAK void f() { ... }` | **correct** -- code deadstripped, pool entry kept |
 
-Counts of 1–5 are usually inlined helpers or genuinely co-located effect classes
-(`d_a_ice.cpp`'s four `dIce*Ef_c`), not separate files. Treat ≥6 as the signal
-and verify before acting. The hidden TUs are a *bonus* — they are small and
-self-contained — but only once you know they exist.
+`d_a_wm_cloud.cpp` uses a plain global `DUMMY_UNUSED()` because its own `.text`
+claim has room for it. Grid's does not. Match the idiom to the unit, and note
+that a global also collides: `DUMMY_UNUSED` already exists in `d_a_wm_cloud.cpp`
+in the same module.
 
-### A class's functions can appear outside its own TU — weak copies
+### Tooling: `progress.py --verify-obj` already did half of this
 
-Header-defined and inline members are emitted by **every** TU that includes the
-header, and the linker keeps an arbitrary one. So a symbol map can attribute a
-function to your class at an address nowhere near your TU. `daEnDpakkunBase_c`
-has eleven such functions living inside `d_a_en_dfpakkun.cpp`'s range;
-`daSpinChildBase_c`'s destructor links from `d_a_obj_spin_child_base.cpp`.
+Before writing anything new, know that `progress.py --verify-obj` checks every
+slice section's length against the object. It found grid's `.text` overflow the
+moment the unit was in the slice file. **It only warns, and `.text` over-claim
+is normal and expected**, so the real signal sits in a stream of benign
+warnings -- which is why this went unnoticed.
 
-Do **not** stretch your slice to cover them — one contiguous range per section
-means that boundary is unreachable. Read them instead as evidence about *where
-the definition belongs*: a member whose surviving copy sits in another TU is
-almost certainly **inline in the header**, not out-of-line in your `.cpp`.
-Virtuals remain the exception — an empty virtual defined in the class body is
-inlined away by `-ipa file` and breaks the vtable slot.
+`wip/wm_units/check_sections.py` complements it rather than replacing it:
 
-The verification that closes the loop: compile, then check the weak copies your
-object emits are byte-identical to the ones the original linked elsewhere. That
-validates your header for the TU that owns those bytes, before anyone starts it.
+```
+python wip/wm_units/check_sections.py <draft.cpp|draft.o> <module> '<slice JSON>'
+python wip/wm_units/check_sections.py <draft.o> <module> --dump
+```
 
-### `tu_extent.py` had a boundary bug — check the ranges it gave you
+- works on a **draft**, before the unit is in the slice file and can build
+- treats `.data`/`.rodata`/`.bss`/`.ctors` over-claim as **fatal**, `.text` as expected
+- dumps that section's symbol table on mismatch, which is what localises the defect
 
-Its "banked slice tightens the start" test was containment
-(`prev_end <= lo < addr`) when it should have been **overlap** (`lo < addr and
-hi > prev_end`). A banked slice that *straddled* `prev_end` was silently
-ignored, so nine TUs were reported starting inside already-decompiled
-territory — `d_a_en_dpakkun_base` by 1,000 bytes, `d_a_fireball_base` by 992,
-`d_a_rot_objs_base` by 932. Fixed, but the lesson generalises: **a heuristic
-range is a starting hypothesis, and every agent must re-derive its own bounds
-from the symbol map and `slices/wiimj2d.json` before writing code.**
+Validated against landed `d_a_wm_cloud.cpp`: all five sections `SECTIONS CLEAN`.
+
+**It still does not check function order or vtable slot assignment.** Both bit
+this unit. Until it does, read the vtable relocations by hand before landing.
+
+### Still NOT ready to land: `d_a_wm_tower.cpp`
+
+Same treatment applied, same class of defect, not yet fixed:
+
+```
+.data   claim 0xd8 (corrected to 0x48080-0x48158)   object 0xd0   UNDER 0x8
+```
+
+Its vtable is `0x70` where the target's is `0x78` -- **two virtuals too few**,
+the mirror image of grid. Target `.data` layout, which is the specification:
+
+```
+0x48090  0x24  sc_ForceList          0x480c0  0x10  string
+0x480b4  0x0c  g_profile_WM_TOWER    0x480d0  0x09  string
+0x480e0  0x78  vtable  <-- 30 slots, we declare 28
+```
+
+Tower derives from `dWmDemoActor_c`, so use landed `d_a_wm_cloud.cpp`'s vtable
+(it has `checkCutEnd`/`setCutEnd`/`clearCutEnd`/`vf74`/`vf78` after
+`processCutsceneCommand`) as the reference. Also re-derive its `.text` bounds:
+the claim `0x1856f0-0x185b44` almost certainly has the same both-ends error grid
+had. And check whether tower's four trivial returns are in the right slots.
+
+`d_a_wm_smallcloud.cpp` and `d_a_wm_kinoko_1up.cpp` have still had no section
+check at all.
 
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 

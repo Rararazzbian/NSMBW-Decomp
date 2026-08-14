@@ -361,3 +361,67 @@ evidence of anything.
 
 If you finish early, say so and ask for more work rather than picking your own
 next target — the tree is usually busy and collisions are expensive.
+
+## `.text` byte-identity does not prove a unit correct
+
+Established by landing `d_a_wm_grid.cpp`, which was called "10/10 complete" and
+had **four** independent defects, none of which `.text` could show.
+
+**Two functions with the same body are indistinguishable in `.text`.** An actor
+whose `create`, `execute`, `draw` and `doDelete` all compile to `li r3, 1; blr`
+will produce a byte-identical `.text` under *any* permutation of those four. The
+only evidence for which is which is the **vtable relocations**. Grid had
+`doDelete` where the original has `execute`; fixing it meant reordering the
+definitions in the `.cpp`. Before landing an actor, read the vtable relocations
+and confirm each trivial function sits in the slot the base class dictates.
+
+**Check every section, not just `.text`.** `progress.py --verify-obj` does this
+for units already in the slice file, but only warns -- and `.text` over-claim is
+normal, so the real signal hides among benign warnings. For a draft, use
+`wip/wm_units/check_sections.py <draft.cpp|.o> <module> '<slice JSON>'`, which
+treats `.data`/`.rodata`/`.bss`/`.ctors` over-claim as fatal and dumps the
+offending section's symbols.
+
+**Sanity-check the vtable size.** `(vtable size - 8) / 4` is the slot count.
+Compare slot-for-slot against a landed sibling. Grid declared 23 where the
+original has 22; tower declares 28 where the original has 30.
+
+## Unit bounds: derive them from the object, not from the named symbols
+
+Two errors that each cost a landing attempt:
+
+- **`.data` opens before the first named symbol.** The anonymous string literals
+  a header static points at (`"F7C0"`/`"W7C0"` from `dWmLib::sc_ForceList`) lead
+  the section. They are `LOCAL`, so they are never merged or dropped, and they
+  belong to the unit. A claim starting at `sc_ForceList` is 0x10 too high.
+- **`.text` does not end at `__sinit`.** MWCC emits the array destructor for a
+  header static LAST in the object, so the unit extends past `__sinit`. Grid's
+  `__sinit` at `0x164380` is followed by its array destructor at `0x164410`; the
+  `__sinit`'s own relocation to it is how you find it.
+
+**The technique that settles these in one step: compile a landed, byte-exact
+sibling and read its object.** `d_a_wm_cloud.cpp` answered both questions
+immediately and refuted two hypotheses I would otherwise have tested by
+guesswork.
+
+## Seeding the `.rodata` constant pool
+
+To force a constant into the pool that no placed function references, only one
+of the three forms works:
+
+| form | result |
+|---|---|
+| `static` function holding `static const float U[]` | dropped; pool entry lost |
+| plain global function | **placed**; `.text` overflows the claim |
+| `DECL_WEAK` global function | correct: deadstripped, pool entry kept |
+
+`d_a_wm_cloud.cpp` uses a plain global `DUMMY_UNUSED()` only because its `.text`
+claim has room for it. Note that name also already exists in that module.
+
+## When `--verify-bin` fails, diff the binary before re-reading source
+
+1. Section **sizes** vs `original/<mod>.rel` -- an over-size names the section.
+2. Section **contents** byte by byte.
+3. If all sections match and the md5 still differs, decode the **relocation
+   table**. Grid's last defect was three bytes: a permutation of `0x40/0x50/0x60`
+   across three relocation entries, i.e. mis-assigned vtable slots.
