@@ -1214,6 +1214,59 @@ declaration order or a fixed-size local buffer that is too large. That is the
 stack-slot wall, NOT the register wall, and smallcloud's `createModel` closed on
 exactly this by changing `char arcName[8]` to `[6]`.
 
+### `d_a_wm_kinoko_1up.cpp` is COMPLETE and NOT LANDABLE — it depends on an un-decompiled TU
+
+All three checks pass, verified independently:
+
+```
+9/9 byte-identical modulo symbol names
+.text 0x1e0/0x310 over (weak, expected)   .ctors ok   .data 0xe8/0xe8 ok
+SECTIONS CLEAN            VTABLE CLEAN
+```
+
+Bounds: `.text 0x16b0f0-0x16b2d0`, `.ctors 0x3fc-0x400`,
+`.data 0x457b8-0x458a0`, `.bss 0xfe70-0xfe80`. No `.rodata`.
+
+**It still fails to link**, and the reason is not a defect in the unit:
+
+```
+Error: Symbol __ct__16daWmKinokoBase_cFv not found!
+Error: Symbol __dt__16daWmKinokoBase_cFv not found!
+Error: Symbol lbl_2_data_458A0 not found!
+```
+
+`daWmKinokoBase_c` is a **different, un-decompiled TU** at `0x16B300+`, and this
+unit inherits `create`/`execute`/`draw`/`doDelete` from it and calls its
+constructor and destructor. `d_a_wm_kinoko_1up.cpp` therefore cannot land before
+`d_a_wm_kinoko_base.cpp` does, or before those two symbols get `syms.txt`
+entries. **This is the first unit blocked on another unit rather than on its own
+correctness**, and it is worth checking for before starting any leaf actor with
+a non-trivial base: if the target vtable's slots point outside the unit's
+`.text`, the base lives elsewhere. `check_vtable.py` reports exactly that as
+`skip (inherited from another TU at 0x...)` -- five slots here.
+
+**The `extern "C" const char lbl_2_data_XXXX[]` idiom does NOT work.** Both
+labels exist in `bin/dtk/d_basesNP_symbols.txt`, but `lbl_2_data_458A0` does not
+resolve at link. No landed unit uses this idiom and it should not be adopted:
+those two `"cobKinoko1up"` strings are owned by the sibling TUs before and after
+this one, and referencing them by dtk label is a bridge, not a decompilation.
+
+### A real MWCC finding from this unit: file-scope vs function-local statics change scheduling
+
+`vf84` sat at 5 of 7 differing through six source permutations -- swapping
+declaration order, swapping assignment order, the comma operator, explicit
+intermediate locals. None moved it.
+
+**Moving the two tables from function-local `static` to file scope made it
+byte-exact immediately.** As function-local statics, `-O4,p` hoisted the
+address computation of the `lwz`-needing variable ahead of the `addi`-needing
+one regardless of source order; at file scope it emits in strict program order.
+Worth trying whenever a small function's instruction SCHEDULE is wrong but its
+instruction set is right.
+
+Also settled: `const char *const` (const pointer) pushes the object into
+`.rodata` and breaks `__sinit`; a plain `const char *` keeps it in `.data`.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
