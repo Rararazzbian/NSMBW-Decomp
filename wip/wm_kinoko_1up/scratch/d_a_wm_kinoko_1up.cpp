@@ -32,8 +32,13 @@ public:
     virtual int execute();
     virtual int draw();
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
-    virtual void vf7C();
+    // Declaration order sets the VTABLE slot order; definition order in this
+    // file sets the .text addresses. The two are deliberately opposite here:
+    // the target vtable lists 0x16B1E0 before 0x16B1D0, while 0x16B1D0 is the
+    // function defined first. Both bodies are a bare `blr`, so .text cannot
+    // show this -- only the vtable relocations can.
     virtual void vf80();
+    virtual void vf7C();
     virtual void vf84();
     virtual const char *getModelName();
 
@@ -58,8 +63,13 @@ public:
     daWmKinoko1up_c();
     virtual ~daWmKinoko1up_c();
 
-    virtual void vf7C();
+    // Declaration order sets the VTABLE slot order; definition order in this
+    // file sets the .text addresses. The two are deliberately opposite here:
+    // the target vtable lists 0x16B1E0 before 0x16B1D0, while 0x16B1D0 is the
+    // function defined first. Both bodies are a bare `blr`, so .text cannot
+    // show this -- only the vtable relocations can.
     virtual void vf80();
+    virtual void vf7C();
     virtual void vf84();
     virtual const char *getModelName();
 

@@ -977,6 +977,64 @@ Assume `d_a_wm_smallcloud.cpp` and `d_a_wm_kinoko_1up.cpp` have it too, and
 re-derive their bounds from the split objects before touching their source.
 Neither has had a section check.
 
+### `d_a_wm_smallcloud.cpp` and `d_a_wm_kinoko_1up.cpp` — bounds now derived, both still short
+
+Both had never had a section check. Bounds derived from the split objects the
+same way grid and tower were, and these are now settled:
+
+```
+smallcloud  .text   0x1797e0-0x179ff0      kinoko_1up  .text   0x16b0f0-0x16b2d0
+            .ctors  0x430-0x434                        .ctors  0x3fc-0x400
+            .rodata 0x8fa8-0x8fd0                       .data   0x457b8-0x458a0
+            .data   0x47258-0x47450
+            .bss    0x102a0-0x102c8
+```
+
+kinoko's `.text` claim was already right -- the only one in this family that
+was. smallcloud's was not.
+
+To find a unit's `.ctors` slot, disassemble its `__sinit` split object: dtk
+emits the `.ctors` word alongside it with its address in the header comment.
+That is faster than counting entries.
+
+**`d_a_wm_kinoko_1up.cpp` — 8/9, and it had grid's vtable defect.** The target
+vtable lists `0x16B1E0` **before** `0x16B1D0`; our class declared them the other
+way round. Both are a bare `blr`, so `.text` was 8/9 either way. Fixed by
+swapping the two *declarations* while leaving the *definitions* in place --
+declaration order sets vtable slots, definition order sets `.text` addresses,
+and here the original has them deliberately opposite. Verified: vtable order now
+matches and `.text` is unchanged at 8/9.
+
+Still open on kinoko:
+- `vf84` at `0x16b1f0` is **5 of 7 differing**.
+- `.data` is **0x40 too large**. The original stores one string,
+  `"cobKinokoAppear"` at `0x457F8`, and points at it twice from `0x45808`, plus
+  one pointer at `0x45810` to `0x457A8` outside the unit. Our draft emits six
+  separate strings for `smc_animResNames`/`smc_modelResName`. The resource-name
+  tables are the wrong shape, and that is almost certainly the same defect as
+  `vf84`, which is what fills them.
+- Its vtable is `0x88` (32 slots) and ours already matches. `create`, `execute`,
+  `draw` and `doDelete` are **inherited** from `daWmKinokoBase_c`, a different
+  TU at `0x16B470+` -- do not try to author them here.
+
+**`d_a_wm_smallcloud.cpp` — 14/16, not 15/16.** With the corrected bounds:
+
+```
+0x00179bb0  createModel   101 instrs   95 differing
+0x00179f40  __sinit        33 instrs    3 differing
+```
+
+`.rodata`, `.bss` and `.ctors` are exact. `.data` is **0x10 short**, and the
+shortfall is in the same place as the failing function: the original has a
+single `0x34` object at unit offset `0x7c` where our draft emits a `0xc` table
+plus several loose strings. Our vtable block is right (`0x78` own + `0x78` weak
+`dWmObjActor` + `0x18` weak `anmChr` = `0x108`, matching the target's merged
+label), it just sits `0x10` early. Fix the resource table shape and
+`createModel` and `.data` should close together.
+
+Neither unit is close to landing, and neither is blocked on the register wall --
+both are blocked on getting a data table's shape right, which is ordinary work.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
