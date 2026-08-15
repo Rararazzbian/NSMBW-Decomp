@@ -1132,6 +1132,88 @@ overload that `MERGED.md` proposed, evidenced by `setPosFromCourseNode`'s callee
 `GetNodePos__9daWmMap_cFPCcR7mVec3_c`. It is a shared-header change and has not
 been applied.
 
+### smallcloud is 16/16 in `.text` and STILL DOES NOT LINK — the pool words are `mData`
+
+A `.text` check, a section check and a vtable check can all pass on a unit that
+will not link. Trying to land it:
+
+```
+Error: Symbol mData__33sGlobalData_c<16daWmSmallCloud_c> not found!   (x5)
+Error: Symbol GetNodePos__9daWmMap_cFPCcR7mVec3_c not found!
+```
+
+`GetNodePos(const char*, mVec3_c&)` is solved: it lives in the **DOL** at
+`0x801007F0` (`bin/dtk/wiimj2d_symbols.txt`) and needs a `syms.txt` entry
+alongside the existing `GetNodePos__9daWmMap_cFlR7mVec3_c=0x801007D0`. The
+header overload is proved by the target's own tail call.
+
+**The two `0x00080000` words are `mData`.** `GlobalData_t` is
+`{s16 mBgmValueW5[2]; s16 mBgmValue[2];}` and `00 08 00 00 00 08 00 00`
+decodes big-endian as `{8,0},{8,0}`. So they are the specialization
+`sGlobalData_c<daWmSmallCloud_c>::mData`, which the header declares, `create()`
+uses via the `GLOBAL_DATA` macro, and **nothing defines**. A `DECL_WEAK` dummy
+holding `static const u32 UNUSED[] = {0x80000, 0x80000}` reproduces the bytes
+and gets 16/16 with clean sections -- but it is the right bytes via the wrong
+construct, and the symbol stays unresolved.
+
+Two obvious fixes, both tried, both FAILED -- do not repeat:
+
+| form | result |
+|---|---|
+| specialization defined before the functions | sections clean, but `create` **37 of 62 differing** -- MWCC constant-folds it |
+| specialization defined after the functions | 14/16 AND `.rodata` wrong -- emitted after the pool instead of before |
+
+The folding is the crux. The target LOADS at runtime where ours folds:
+
+```
+target: addi r5, r4, lbl_2_rodata_8FA8@l    ; address materialised
+        lha  r4, lbl_2_rodata_8FA8@l(r4)    ; loads mBgmValueW5[0]
+        subi r4, r4, 0x1
+draft:  li   r4, 0x7                        ; FOLDED 8-1
+        li   r0, 0x0                        ; FOLDED
+```
+
+So `mData` must be emitted FIRST in `.rodata`, defined in this TU (the target's
+`__sinit` uses it as the base for the float pool at `+0x24`, which is only
+possible same-TU), and NOT visible as a constant at `create`'s point of use.
+Currently unsolved.
+
+### `d_a_wm_ghost.cpp` is 12/13 with clean sections — and its `.data` bound was the RIGHT SIZE and the WRONG SPAN
+
+The experimental local model's draft is genuinely good: 12 of 13 functions
+byte-identical, and an independent audit confirms the vtable slot-for-slot.
+
+Its bounds claim was `.data 0x44a9c-0x44cb4`. The real span is
+**`0x44a68-0x44c80`**. Both are `0x218` bytes. The claim started at
+`g_profile_WM_GHOST` and ran to `g_profile_WM_GRID` -- it silently swapped
+ghost's leading string/`sc_ForceList` block for **grid's**, which I landed this
+morning and can confirm independently: grid's own strings start at `0x44c80`.
+
+**A size-only section check passes this.** `check_sections.py` reports
+`0x218 == 0x218  ok` on the wrong span. Only cross-referencing the claim's
+START ADDRESS against the target's actual symbol layout catches it. Add that
+step before landing anything: the first thing in a `wm` unit's `.data` is always
+the two anonymous `sc_ForceList` strings, so if the claim begins at the profile,
+it is 0x34 too high.
+
+Corrected and verified bounds, all five sections `SECTIONS CLEAN`:
+
+```
+.text   0x163620-0x164230      .data   0x44a68-0x44c80
+.ctors  0x3e0-0x3e4            .bss    0xfdc0-0xfdd0
+.rodata 0x8880-0x88b8
+```
+
+`.text` needed no correction -- ghost is the one unit in this family whose
+`.text` claim was right, because its array destructor at `0x164210` is inside
+its own range, which is also why grid's claim wrongly reached down to `0x164210`.
+
+Remaining: `createModel` at `0x163940` is **6 of 77 differing**, all ~8-byte
+stack-offset swaps (`r1+0x8`/`r1+0x14` vs `r1+0x10`/`r1+0xc`) -- local
+declaration order or a fixed-size local buffer that is too large. That is the
+stack-slot wall, NOT the register wall, and smallcloud's `createModel` closed on
+exactly this by changing `char arcName[8]` to `[6]`.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
