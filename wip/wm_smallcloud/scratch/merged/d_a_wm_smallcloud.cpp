@@ -158,12 +158,12 @@ void daWmSmallCloud_c::init_exec() {
 void daWmSmallCloud_c::mode_exec() {}
 
 void daWmSmallCloud_c::setPosFromCourseNode() {
-    // batchA's createModel() independently found a 4-entry table indexed the same way
-    // (resMdlNames[ACTOR_PARAM(CourseNo)]); mirroring that table size here since it is
-    // likely the real number of small-cloud variants, but the actual node-name strings
-    // are unconfirmed -- placeholders only. See MERGED.md.
+    // Confirmed against the target's .data: the four entries are at 0x47308,
+    // 0x47314, 0x47320 and 0x4732C, sizes 0xC/0xC/0xC/0xB. The placeholders that
+    // were here were 5 bytes each, which is exactly why this unit's .data came
+    // out 0x10 short.
     static const char *nodeNames[4] = {
-        "F0C0", "F0C1", "F0C2", "F0C3"
+        "MoveCloud01", "MoveCloud02", "MoveCloud03", "CloudLarge"
     };
     daWmMap_c::m_instance->GetNodePos(nodeNames[ACTOR_PARAM(CourseNo)], mPos);
 }

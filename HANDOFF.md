@@ -985,7 +985,7 @@ same way grid and tower were, and these are now settled:
 ```
 smallcloud  .text   0x1797e0-0x179ff0      kinoko_1up  .text   0x16b0f0-0x16b2d0
             .ctors  0x430-0x434                        .ctors  0x3fc-0x400
-            .rodata 0x8fa8-0x8fd0                       .data   0x457b8-0x458a0
+            .rodata 0x8fa8-0x8fd8                       .data   0x457b8-0x458a0
             .data   0x47258-0x47450
             .bss    0x102a0-0x102c8
 ```
@@ -1034,6 +1034,53 @@ label), it just sits `0x10` early. Fix the resource table shape and
 
 Neither unit is close to landing, and neither is blocked on the register wall --
 both are blocked on getting a data table's shape right, which is ordinary work.
+
+### smallcloud update: `.data` is now exact, and a bounds figure of mine was circular
+
+**`.data` is clean.** The shortfall was `setPosFromCourseNode`'s `nodeNames`,
+which the draft itself flagged as placeholders: four 5-byte strings where the
+original has `"MoveCloud01"`, `"MoveCloud02"`, `"MoveCloud03"`, `"CloudLarge"`
+(0xC/0xC/0xC/0xB at `0x47308`/`0x47314`/`0x47320`/`0x4732C`). That is exactly the
+0x10. All five sections now report `SECTIONS CLEAN`.
+
+The `createModel` data was never wrong: our `"CS_W6aCloud"`, the 4-pointer
+table, `"CS_W%d"` and `"g3d/model.brres"` already sit at unit offsets
+`0x7c`/`0x88`/`0x98`/`0xa0`, matching the target. dtk merges them into one
+`0x34` label only because just the first is referenced -- the batch note
+guessing at "one larger aggregate" was reading a dtk artefact, not a real
+difference.
+
+**Correction: the `.rodata` bound I committed an hour ago was derived
+circularly.** I took `0x8fa8-0x8fd0` because 0x28 was our object's size. The
+target's `__sinit` loads `lbl_2_rodata_8FA8` and reads the vec3 at `0x24/0x28/0x2c`,
+i.e. up to `0x8FD8`. The real bound is **`0x8fa8-0x8fd8` (0x30)**, and our pool
+is **8 bytes short at the front**:
+
+```
+        target                          draft
++0x00   00080000                        (missing)
++0x04   00080000                        (missing)
++0x08   43c80000  400.0                 +0x00
+...                                     ...
++0x24   45070000  2160.0                +0x1c   <- __sinit reads here
+```
+
+Word for word ours is the target's words 2..11. That single fact explains
+`__sinit`'s 3 differing instructions completely -- they are the three `lfs`
+offsets, 8 low. Same shape as grid, where a missing leading pool word moved
+every offset.
+
+**Never derive a section bound from your own object's size.** Take it from the
+target: the next unit's first symbol, or an offset the target's own code reads.
+
+What emits the two `0x00080000` words is unsettled. `0x80000` is a plausible
+frame-heap size, but I tested `createFrmHeap(0x80000, ...)` against the draft's
+`-1` and it changed nothing -- correctly, since that would be an immediate via
+`lis`, not a pool entry. A pool word of `0x00080000` is a denormal as a float,
+so it is unlikely to be a float literal. They are almost certainly referenced by
+`createModel`, which is still **95 of 101 differing** -- the one genuinely
+unfinished function in this unit, and the only thing between smallcloud and a
+landing now that its sections are clean.
 
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
