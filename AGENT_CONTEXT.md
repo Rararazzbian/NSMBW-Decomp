@@ -425,3 +425,36 @@ claim has room for it. Note that name also already exists in that module.
 3. If all sections match and the md5 still differs, decode the **relocation
    table**. Grid's last defect was three bytes: a permutation of `0x40/0x50/0x60`
    across three relocation entries, i.e. mis-assigned vtable slots.
+
+## Check the vtable SLOT ASSIGNMENT — `wip/wm_units/check_vtable.py`
+
+An actor's `create`, `execute`, `draw` and `doDelete` often all compile to
+`li r3, 1; blr` -- **identical bytes**. Any permutation of them across their
+vtable slots gives a byte-identical `.text`, so a per-function diff reports a
+clean 10/10 for a class that is semantically scrambled. The failure only
+surfaces at link time, as a few differing relocation bytes. This was present in
+three units in one day.
+
+```
+python wip/wm_units/check_vtable.py <draft.txt> <target_data.txt> \
+    <target_vt_label> <lo> <hi> <target_text.o> [...]
+```
+
+It pairs draft functions to target addresses by **placement order** -- targets
+in ascending address, consuming drafts in object order -- because that is what
+actually determines a function's address. Do not "improve" it to look
+functions up by content: content cannot disambiguate two identical bodies,
+which is the whole point, and the first version did exactly that and condemned
+the landed, 5/5-verified `d_a_wm_grid.cpp`.
+
+It distinguishes three non-defects from real ones: a slot pointing outside
+`[lo, hi)` is a method inherited from a base class in another TU (`skip`); a
+slot whose target function is still differing cannot be checked yet
+(`unverifiable`); everything else is a real `WRONG SLOT`.
+
+Regression cases, both of which must print `VTABLE CLEAN`:
+`bin/compiled/d_basesNP/d_basesNP/bases/d_a_wm_grid.o` and `d_a_wm_tower.o`.
+
+**Run all three checks before calling a unit ready:** `verify_anon.py` for the
+functions, `check_sections.py` for the section sizes, `check_vtable.py` for the
+slot assignment. Any one of them alone will pass a unit that does not link.
