@@ -1176,7 +1176,44 @@ draft:  li   r4, 0x7                        ; FOLDED 8-1
 So `mData` must be emitted FIRST in `.rodata`, defined in this TU (the target's
 `__sinit` uses it as the base for the float pool at `+0x24`, which is only
 possible same-TU), and NOT visible as a constant at `create`'s point of use.
-Currently unsolved.
+
+**The mechanism is `-ipa file`**, which is in `d_basesNP`'s
+`defaultCompilerFlags`. File-scope interprocedural analysis gives MWCC whole-TU
+visibility, so it folds a `const` **integer** scalar read wherever the definition
+sits. Four placements were tested -- top of file, end of file, forward
+declaration plus definition at either end, and reads through a local
+`const s16 *` -- and **all four fold identically**, 37 of 62 differing.
+
+Why no landed unit has hit this: `d_a_wm_cloud.cpp` only ever takes `mData`'s
+ADDRESS (`bgmSync->m_18 = ...`), never reads a scalar field, and indexes
+`mGroupNodeRadii[i]` at runtime. `d_a_wm_dokan_route.cpp` does read a scalar
+field, but a **float** -- PowerPC has no float-immediate load, so even a folded
+float still needs an `lfs` from some address and the codegen looks unchanged.
+Only an **integer** field gives MWCC a cheaper alternative (`li`), and
+smallcloud's `mBgmValueW5[0] - 1` is exactly that.
+
+**A data-only sibling TU does NOT solve it.** Moving the specialization into its
+own TU defeats the fold -- `create` matches -- but then `__sinit` breaks: it
+falls back to our own pool base with offsets `0x1c/0x20/0x24` where the target
+uses `0x24/0x28/0x2c` off `mData`. That is 15/16 and `.rodata` 8 short, i.e. the
+same total defect count, just moved. The two requirements are in direct tension:
+
+```
+mData IN this TU   -> __sinit right, .rodata right, create FOLDS      (15/16)
+mData in a sibling -> create right,  __sinit wrong, .rodata 8 short   (15/16)
+target             -> BOTH right: unfolded reads AND mData as pool base
+```
+
+The target proves `mData` is same-TU (nothing else explains `__sinit`'s base)
+AND unfolded. So the answer is a source form that is same-TU but not a
+compile-time constant at the point of use. Untested: giving `GlobalData_t` a
+user-declared constructor, which would make it non-constant-initialisable and
+therefore unfoldable -- note the TU already has a `__sinit`, so dynamic
+initialisation is not automatically disqualifying.
+
+Also settled: `GlobalData_t` is exactly `{s16 mBgmValueW5[2]; s16 mBgmValue[2];}`
+with values `{8,0},{8,0}`. The speculative `u8 mUnofficialPad[8]` was wrong and
+is gone.
 
 ### `d_a_wm_ghost.cpp` is 12/13 with clean sections — and its `.data` bound was the RIGHT SIZE and the WRONG SPAN
 
