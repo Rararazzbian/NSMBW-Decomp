@@ -1082,6 +1082,56 @@ so it is unlikely to be a float literal. They are almost certainly referenced by
 unfinished function in this unit, and the only thing between smallcloud and a
 landing now that its sections are clean.
 
+### smallcloud is 15/16 — and `createModel` was already solved yesterday, in a directory I did not check
+
+**Correction to everything I wrote about `createModel` today.** I reported it as
+95 of 101 differing and "the one genuinely unfinished function in this unit".
+It was closed on 2026-08-14 in commit `f7c9744`, in
+`wip/wm_smallcloud/scratch/createmodel/`, documented in
+`wip/wm_smallcloud/CREATEMODEL.md`. I was reading
+`wip/wm_smallcloud/scratch/merged/`, where the fix had never been carried over,
+and I took that file's own stale comment at face value.
+
+Independently verified by recompiling the combined source myself:
+
+```
+0x00179bb0 fn_2_179BB0  101  MATCH  <- createModel__16daWmSmallCloud_cFv
+15/16 byte-identical modulo symbol names
+.data  0x1f8  0x1f8  ok
+```
+
+`createModel` and `setPosFromCourseNode` were fixed in **two different working
+copies by two different sessions**, and neither knew about the other. `.data`
+is exact only with both applied. **Before declaring a function unfinished,
+`git log --all` for it and check every sibling directory under its `wip/`
+tree** — this unit has five (`batchA`, `batchB`, `createmodel`, `merged`,
+`merge_lead`) and the best version of a given function is not always in the one
+named `merged`.
+
+**My `0x00080000` hypothesis is refuted.** I claimed those two words were
+"almost certainly referenced by `createModel`". They are not: `createModel` is a
+full 101/101 MATCH with our pool lacking them, and so are the other fourteen
+matching functions. Whatever emits them is used earlier in the TU than anything
+we currently emit, since pool order is order of first use.
+
+The unit's ONLY remaining blocker is that one pool gap:
+
+```
+.rodata 0x8fa8-0x8fd8 (0x30)   our object 0x28   UNDER 0x8
+__sinit  3 of 33 differing     -- the three lfs offsets, all 8 low
+```
+
+These are one defect. The fix pattern is grid's: a `DECL_WEAK` global function
+holding a `static const` array, which is deadstripped while its pool entries
+survive. What produces two words of `0x00080000` is still unknown -- as a float
+that is a denormal, so a plain float literal is implausible; a `double` may
+explain the pair as one 8-byte entry.
+
+Also still needed to land: the `daWmMap_c::GetNodePos(const char*, mVec3_c&)`
+overload that `MERGED.md` proposed, evidenced by `setPosFromCourseNode`'s callee
+`GetNodePos__9daWmMap_cFPCcR7mVec3_c`. It is a shared-header change and has not
+been applied.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
