@@ -113,6 +113,21 @@ def main():
 
     print('draft vtable: %s  (%d slots, %#x bytes)' % (vtname, len(dents) - 2, len(dents) * 4))
     print('target      : %s  (%d slots, %#x bytes)' % (label, len(tents) - 2, len(tents) * 4))
+
+    # dtk labels only the addresses that something references, so a vtable is
+    # routinely merged with whatever follows it into one .obj: trailing zero
+    # padding, or the weak base-class vtables the unit also emits. Comparing the
+    # whole label then reports dozens of phantom MISSING SLOTs -- it did exactly
+    # that on d_a_wm_ghost.cpp (36) and d_a_wm_smallcloud.cpp (36), both of which
+    # are correct. If the target label is longer than the draft's vtable and the
+    # excess is ALL ZERO, it is a merge artefact, so trim it. A non-zero excess
+    # is a real slot-count difference and must still be reported.
+    if len(tents) > len(dents) and all(e == '0x00000000' for e in tents[len(dents):]):
+        print('note: target label is %d words longer, all zero -- dtk merged the '
+              'vtable with trailing data. Comparing the first %d.'
+              % (len(tents) - len(dents), len(dents)))
+        tents = tents[:len(dents)]
+
     if len(dents) != len(tents):
         print('\nSLOT COUNT DIFFERS by %d -- the class declares the wrong virtuals.'
               % (len(dents) - len(tents)))

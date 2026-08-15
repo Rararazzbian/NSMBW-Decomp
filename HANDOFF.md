@@ -1208,11 +1208,37 @@ Corrected and verified bounds, all five sections `SECTIONS CLEAN`:
 `.text` claim was right, because its array destructor at `0x164210` is inside
 its own range, which is also why grid's claim wrongly reached down to `0x164210`.
 
-Remaining: `createModel` at `0x163940` is **6 of 77 differing**, all ~8-byte
-stack-offset swaps (`r1+0x8`/`r1+0x14` vs `r1+0x10`/`r1+0xc`) -- local
-declaration order or a fixed-size local buffer that is too large. That is the
-stack-slot wall, NOT the register wall, and smallcloud's `createModel` closed on
-exactly this by changing `char arcName[8]` to `[6]`.
+Remaining: `createModel` at `0x163940`, **6 of 77 differing**. Seven variants
+swept and it did not move -- a documented negative:
+
+| variant | result |
+|---|---|
+| merged `resMdl` declare+init, `int i` into the `for` | 6, byte-identical |
+| `resAnmNames` moved after `mModel.create()` (cloud's order) | 6, byte-identical |
+| named `ResAnmChr` local instead of inline temporary | 6, byte-identical |
+| split declare-then-assign `resMdl` | 6, byte-identical |
+| `const ResFile` / `const ResMdl` | 6, byte-identical |
+| `while` loop instead of `for` | 6, byte-identical |
+| inline `GetResAnmChr(...)` as call argument | 6, byte-identical |
+
+Every one produced **literally identical bytes**, not merely the same count.
+`-O4` normalises all of these surface rewrites to one internal representation
+before stack slots are assigned.
+
+The defect is precise: identical registers (`_savegpr_24`, r24-r31), identical
+77-instruction sequence, identical `-0x40(r1)` frame. The only difference is a
+**3-way cyclic rotation** of three stack-slot immediates holding by-value
+argument temporaries -- target `[0x8, 0xc, 0x10]` in order of first appearance,
+draft `[0x10, 0x8, 0xc]`.
+
+**This is a third wall, distinct from the two already known.** Not register
+allocation, and not the stack-slot-order problem that declaration order fixes
+(smallcloud's `char arcName[8]` -> `[6]`). Do not spend more variants on the
+declaration-order family; it is ruled out. The one untested structural
+difference: cloud and smallcloud use a **member** `mResFile` where ghost's
+target genuinely uses a **local** `resFile`.
+
+
 
 ### `d_a_wm_kinoko_1up.cpp` is COMPLETE and NOT LANDABLE — it depends on an un-decompiled TU
 
