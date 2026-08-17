@@ -1922,6 +1922,39 @@ So it hand-rolls state machinery as a direct member while deriving from
 shows the exact pattern** (`sFStateMgr_c<T, sStateMethodUsr_FI_c> mStateMgr;`) --
 read that first rather than reversing `s_State.hpp` bottom-up.
 
+**The reframe: most of the 66 functions are per-state method TRIPLES.**
+`s_State.hpp` defines `STATE_FUNC_DECLARE(class, name)`, expanding to
+`initializeState_##name` / `executeState_##name` / `finalizeState_##name` plus a
+`static sFStateID_c<class> StateID_##name`. The
+`daWmSandPillar_c::StateID_ToWaitFromTheStart` string literal is
+`STATE_DEFINE`'s `#class "::StateID_" #name`. So the unit is WIDE (many named
+states, each contributing three tiny methods), not deep -- much better news than
+"66 functions" sounds.
+
+**The idiom is already landed six times over.** `grep -rln "STATE_DEFINE" source/`
+gives `d_a_enemy_ice.cpp`, `d_a_en_door.cpp`, `d_a_en_hatena_balloon.cpp`,
+`d_a_en_togezo_base.cpp`, `d_a_iceball.cpp`, `d_a_player.cpp`.
+`d_a_enemy_ice.cpp` is the smallest. Copy the idiom rather than deriving it.
+
+Member layout traced from the constructor, `sizeof == 0x508` from `classInit`:
+
+```
+u32 mUnk188                      +0x188   (untouched by the ctor)
+dHeapAllocator_c mAllocator      +0x18c
+m3d::mdl_c mModel                +0x1ac
+m3d::anmChr_c mAnim              +0x1ec
+m3d::anmTexSrt_c mAnimTexSrt     +0x228
+dEf::dLevelEffect_c mEffect1     +0x260
+dEf::dLevelEffect_c mEffect2     +0x388   (stride 0x128)
+sFStateMgr_c<...> mStateMgr      +0x4b0
+```
+
+`dLevelEffect_c`'s `0x128` stride is confirmed TWO independent ways: the landed
+header's own field names (`m_114`, `m_118`, ...) self-document `EGG::Effect`
+ending at `+0x114`, and the second instance lands exactly one stride later.
+`mStateMgr`'s `0x58` is still only a subtraction, not a component sum -- settle
+it with a compiled `sizeof` probe.
+
 66 functions, all anonymous, largest ~96 instructions. **13 `blr`-only stubs
 already located by address** (`0x177CE0, 0x178000, 0x1780F4, 0x178100,
 0x1781B0, 0x1781C0, 0x178540, 0x1785D8, 0x1785E0, 0x178660, 0x178670,
