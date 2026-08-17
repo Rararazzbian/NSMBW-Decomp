@@ -1590,8 +1590,29 @@ unconditional `c_START_ID` store at `+0xc`, and three floats
 `{0.0f, 100.0f, 50.0f}` written into a 28-byte `.data` object. That is the same
 "header static emitted per including TU" shape as `sc_ForceList`, which
 explained four separate mysteries across four units before anyone recognised it.
-Best hypothesis: a function-local `static` inside an INLINE function in the real
-`d_wm_lib.hpp`.
+First hypothesis -- a function-local `static` inside an inline function -- is
+**refuted in that shape**, but produced a real positive: with the three floats
+referenced, `.rodata` closes **exactly** 0x40/0x40, confirming
+`{0.0f, 100.0f, 50.0f}` are the right pool values. `.data` did not move and
+`.bss` got worse (a bare `mVec3_c` function-local static drags in guard, atexit
+and weak-destructor machinery the target lacks). Both the magic-static and a
+hand-written guard behaved identically, so the machinery is not the variable.
+
+**The diagnosis points straight at a pattern already proven in this codebase.**
+`-ipa file` folds any provably-constant object into `.rodata`; the target's is a
+genuinely MUTABLE 28-byte `.data` object written by three runtime `stfs`. That
+is exactly what `dWmLib::sc_ForceList` does: `ForceInCourseList_t` ends in an
+`mVec3_c mNodePos` which is ZERO in retail `.data`, with the values living in
+`.rodata` and written at runtime by `__sinit` -- because `mVec3_c` has a
+non-trivial constructor, so the aggregate is not constant-initialisable.
+
+So the second static is very likely **another aggregate with an `mVec3_c`
+member**, not a bare `mVec3_c`. The arithmetic fits: `ForceInCourseList_t` is
+0x24, and **0x1c is exactly four 4-byte fields plus an `mVec3_c`**. A file-scope
+static aggregate initialised through `__sinit` should also avoid the `.bss`
+overspend, since that is what the landed units already do. Being tested; read
+the retail bytes of `lbl_2_data_44010` to determine the four leading words
+rather than guessing them.
 
 Three symptoms probably share that one cause: the section shortfall;
 `createModel`'s 10 residual instructions, which are **offset-only drift of
