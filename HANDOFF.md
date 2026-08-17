@@ -1722,7 +1722,36 @@ accessor would have to write through a reference or pointer.
 **The guard is parked**, with five shapes measured and round 2's namespace array
 kept. It is not what blocks this unit anyway.
 
-**The two "unauthorable" functions are probably authorable after all.**
+### The two "unauthorable" functions were castle's own — a profile ID one digit off
+
+**Both my inline-method hypothesis AND the original "different class" reading
+were wrong.** The binding check killed mine immediately: `fn_2_15F8F0`,
+`fn_2_15F950` and `fn_2_15FAA0` are all **GLOBAL**, and an inline-in-header
+method is always weak. But the falsification led to the real answer -- the
+functions were read as another class's because of a misread profile ID.
+Compiler-verified: `WM_ANTLION_MNG` is `0x271`; **`0x272` is `WM_CASTLE`**.
+`fn_2_15F8F0` searches for another `daWmCastle_c`, and `fn_2_15F950` operates on
+its `mModel`/`mChrAnim`/`mPos` at this class's own established offsets, because
+it IS this class.
+
+That is the second time today that **verifying an enum by compiling a probe**
+caught a value source-line counting would have got wrong -- and this one had
+been frozen as a false "belongs to an undecompiled class" conclusion for three
+rounds. Never count enum positions in `f_profile_name.hpp`; it has macro-driven
+skew.
+
+Now **14/20**: `TriggerCastleStopReaction` exact, `applyStopReaction` 58 -> 18
+(the residual is entirely the missing `fn_80103420` call and its epilogue), and
+`fn_2_15FAA0` 14 -> 6 as a real member `getKoopaShipStopPos()`. The last 6 are
+pure instruction scheduling among identical operands on identical registers --
+stopped there, that is the wall.
+
+`fn_80103420` is **already resolvable**: it is in `syms.txt` as
+`fn_80103420=0x80103420`, added for `d_a_wm_course.cpp` which hits the same call.
+Signature corroborated from that unit's call-site registers:
+`extern "C" void fn_80103420(dWmEffectManager_c *, int kind, m3d::bmdl_c &, const char *, int, int)`.
+
+Superseded, for the record:
 `fn_2_15F8F0`/`fn_2_15F950` take their `this` from
 `searchBaseByProfName(WM_ANTLION_MNG, nullptr)`, so they belong to the ant-lion
 manager, not to `daWmCastle_c` -- correct, and correctly refused. But the next
