@@ -1362,6 +1362,55 @@ instruction set is right.
 Also settled: `const char *const` (const pointer) pushes the object into
 `.rodata` and breaks `__sinit`; a plain `const char *` keeps it in `.data`.
 
+### Verified bounds kits — three units ready to author
+
+Derived by a scouting pass and independently re-validated with
+`wip/wm_units/check_bounds.py`. All three report `BOUNDS PLAUSIBLE`.
+
+```
+WM_CASTLE      .text 0x15ecc0-0x15fbe0   .ctors 0x3c8-0x3cc
+               .rodata 0x86e8-0x8728     .data 0x43fd0-0x441b0
+               .bss 0xfd48-0xfd60
+               20 fns, ~3768 code bytes, vtable 0x108 (64 slots), no external base
+
+WM_COURSE      .text 0x1604a0-0x161940   .ctors 0x3d0-0x3d4
+               .rodata 0x87b0-0x87f0     .data 0x44400-0x44590
+               .bss 0xfd70-0xfd80
+               22 fns, ~5160 code bytes, vtable 0xf0 (58 slots), no external base
+
+WM_SANDPILLAR  .text 0x177690-0x179380   .ctors 0x428-0x42c
+               .rodata 0x8ef8-0x8fa8     .data 0x46be0-0x47180
+               .bss 0x10040-0x10290
+               66 fns, ~7400 code bytes, main class PLUS a nested sStateID_c helper
+```
+
+Castle is the easiest: both `.text` edges are pinned by LANDED neighbours -- it
+starts exactly where `d_a_wm_cannon.cpp` ends and ends exactly where
+`d_a_wm_cloud.cpp` begins.
+
+Two cautions carried from the scout, neither resolved:
+
+- Course's `.rodata` end has no landed neighbour beyond it. Internally
+  consistent, one step less firmly pinned than the rest.
+- Sandpillar's vtable has one slot resolving to `fn_2_15ABC0`, a trivial 2-instruction
+  stub OUTSIDE its `.text` and before the whole `wm` cluster. Most likely
+  identical-code folding of a one-line override shared with an already-compiled
+  TU rather than a real cross-TU dependency like kinoko_1up's -- but check
+  before landing, because which TU emits the folded copy decides the bytes.
+
+**Method note worth reusing:** where dtk could split a section cleanly, the split
+file's own header comment (`# 0xSTART..0xEND | size:`) is ground truth and needs
+no arithmetic. Most of this family is merged into a few large blobs where that
+is unavailable, and there the `profile - 0x34` rule is only a heuristic --
+`WM_CLOUD`'s real `.data` start sits 0xCC before what it would predict.
+
+The rest of the family is NOT bounded. `WM_BUBBLE` is inside a 0x9670-byte blob
+shared with five unrelated actors; fourteen more (`HANACHAN`, `ISLAND`, `ITEM`,
+`KILLER`, `KINOKO_RED`, `KINOKO_STAR`, `KINOPIO`, `KOOPAJR`, `KOOPASHIP`,
+`MANTA`, `MAP`, `NOTE`, ...) share one 0x2078-byte blob. Each needs the same
+per-unit disassembly-and-reference sweep; none of it is derivable from
+filenames.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
