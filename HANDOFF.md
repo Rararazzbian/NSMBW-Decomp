@@ -2003,10 +2003,31 @@ family of template methods from landed headers and **15 matched immediately with
 zero code written**. Only ONE of the 14 trivial `blr` stubs is in the vtable
 (slot 23, `finalUpdate`); the other 13 are plain non-virtual helpers.
 
-Remaining: real `create`/`execute`/destructor bodies (which should also clear
-the `FUNCTION ORDER IS WRONG` warning, since it comes from two weak
-instantiation points triggering at the wrong place while those are
-placeholders), then the nine state triples, then six larger unknown functions.
+**Now 41/66.** The destructor was already matching from the layout work, which
+independently corroborates the member order. `calcMdl` (`fn_2_177C30`) is a full
+MATCH -- the same `mMatrix.trans`/`ZXYrotM` + `setLocalMtx`/`setScale`/`calc`
+idiom as every wm sibling.
+
+**GAP 2 is named, not just sized: `mVec3_c mStartPos`**, from `create()`'s three
+stores at `+0x254/+0x258/+0x25c` (`mPos.x`, a per-type table lookup overwriting a
+copy of `mPos.y`, `mPos.z`). The destructor still matching after the type change
+corroborates it.
+
+Two real constants pulled from retail `.rodata` rather than invented: clip-sphere
+radius `350.0f` (`+0x8f7c`) and a 3-entry height table
+`{-320.0f, -200.0f, -200.0f}` (`+0x8f1c`) that `create()` indexes by
+`ACTOR_PARAM(Type)`.
+
+Remaining, in dependency order: `createMdl` (`fn_2_177D20`, 0x144) and
+`calcEffectPos` (`fn_2_1788B0`, 0xB0) are still EMPTY placeholders and some of
+`create()`'s 14 differing is attributable to them -- write those before tuning
+`create()` further, or you are tuning against noise from your own callees. Then
+`execute()`, whose first instruction is a virtual call through a slot not yet
+identified (it currently calls `mStateMgr.executeState()`, flagged in-source as
+probably wrong). Then the nine state triples, then six larger unknowns.
+
+`check_vtable.py` has still not been run on this unit -- it must be, before
+`execute()`, precisely because it identifies that slot.
 
 Superseded: All nine state names came straight out of `original/d_basesNP.rel`'s
 `.data` at `0x46fe8-0x47145`: Ready, BottomWait, MoveReady, MoveUp, TopWait,
