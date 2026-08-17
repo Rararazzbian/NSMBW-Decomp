@@ -570,9 +570,13 @@ variants.
 6. **Passing a global's address vs staging through a stack temporary.** The
    target staged `mVec3_c::Zero`'s three floats through a local before the call;
    passing `&mVec3_c::Zero` directly was 2 instructions off.
-7. **`return a == b;` compiles branchlessly** via `cntlzw`/`srwi`; nested
+7. **`!(a < b)` and `a >= b` are NOT the same to MWCC.** The negated-less-than
+   form emits the fast `bge`/`ble` branches; the direct `>=` form emits
+   `cror`-combined ones. This closed `approach()` outright. Try both phrasings
+   whenever a float comparison's branch shape is wrong.
+8. **`return a == b;` compiles branchlessly** via `cntlzw`/`srwi`; nested
    `if`/`return` gives the target's `bnelr` early returns.
-8. **Function-local `static` -> file scope** changes instruction scheduling. It
+9. **Function-local `static` -> file scope** changes instruction scheduling. It
    fixed a function stuck at 5/7 through six other permutations -- and
    REGRESSED a different unit 10 -> 18 by pulling a table out of a merged
    `.rodata` pool. Unit-specific; measure.
@@ -677,3 +681,24 @@ with the inherited method. The class compiles, sections are fine, and every
 function may match -- but the vtable points at the wrong function.
 `d_a_wm_sandpillar.cpp` had this at slot 24. **Run `check_vtable.py` every
 round**, not once at the end.
+
+
+## Definition order again: interleave by ADDRESS, not by logical grouping
+
+State-machine units are the sharp case. `d_a_wm_sandpillar.cpp` had its 27
+state-triple methods grouped tidily by state at the end of the file; the target
+interleaves them by address across all nine states. Restructuring the
+definitions into exact target address order cut `verify_anon.py`'s order
+violations from **15 to 1**.
+
+Group source however the target's `.text` is laid out, never however reads best.
+`verify_anon.py`'s `FUNCTION ORDER IS WRONG` output lists the target order --
+follow it literally.
+
+## A `u32` placeholder array hides types
+
+`mUnkTrailing[7]` looked fine until `approach()`'s `lfs`/`stfs` proved three of
+its seven slots are `float`. Sized placeholders are a legitimate way to get a
+layout right, but **replace them with individually typed fields as soon as any
+function reads them** -- an array of the wrong element type will silently
+mis-shape every access.
