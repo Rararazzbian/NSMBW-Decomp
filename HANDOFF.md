@@ -1658,12 +1658,30 @@ Two residuals remain, and they are probably one thing:
 target's one), and the target's three `stfs` for the `mVec3_c` are GUARDED and
 conditional while a namespace-scope object initialises unconditionally.
 
-The likely answer combines both experiments: a **function-local `static` of this
-struct** inside the inline accessor. Its POD fields are compile-time constants
-and land in `.data`; only the `mVec3_c` sub-object needs a constructor, so only
-that is guarded and only those three `stfs` are conditional. The earlier
-function-local attempt failed only because a bare `mVec3_c` has no constant part
-for `.data` to hold. Being tested.
+**REFUTED, and the reason is a new MWCC fact worth keeping: a function-local
+`static`'s guard-and-init is emitted at the CALL SITE and evaluated lazily, NOT
+inside `__sinit`.** The target's guard sequence is physically inside `__sinit`,
+so only unconditional namespace-scope construction can produce it.
+
+Four shapes measured. The namespace-scope ARRAY is kept:
+
+| shape | .data | .rodata | .bss | `__sinit` | `createModel` |
+|---|---|---|---|---|---|
+| **namespace array (kept)** | exact | exact | +4 over | **16** | **6** |
+| function-local single | exact | exact | -7 under | 52 | 6 |
+| namespace single, no array | exact | exact | -8 under | 40 | 6 |
+| bare `mVec3_c` local static | under | exact | +8 over | 52 | 10 |
+
+`createModel` sits at 6 across every shape, which proves that residual depends
+only on `.data`/`.rodata` byte layout and is now decoupled from the guard
+question -- attack it separately.
+
+The two remaining facts look contradictory: the guard must be INSIDE `__sinit`
+(so namespace scope) yet must be CONDITIONAL (so something guarded). The one
+shape that reconciles them, untested: `mOffset`'s initialiser is itself a call
+to a separate inline accessor holding its OWN function-local guarded static, so
+evaluating the aggregate's initialiser during `__sinit` inlines that guard
+sequence into `__sinit`. Being tested.
 
 **Correction to my own earlier steer:** I said a file-scope aggregate would avoid
 the `.bss` overspend "since that is what the landed units do". The measurement
