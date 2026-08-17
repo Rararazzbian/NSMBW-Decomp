@@ -540,3 +540,38 @@ relocation bytes and nothing else.
 **When a unit is byte-perfect in every section and still fails, diff the
 relocation tables.** Three landings today came down to that: grid's vtable slot
 permutation (3 bytes), smallcloud's `.bss` static order (6 bytes).
+
+
+## MWCC levers that have actually closed functions
+
+Ordered by how much they moved a real function. Try these before inventing
+variants.
+
+1. **`if`/`else if` dispatch chain -> `switch`.** Took one unit's
+   `processCutsceneCommand` from 192 to 24 differing in a single change. MWCC
+   collapses a branch in the chain form where the target emits explicit
+   sequential compares. **It does not always transfer** -- on another unit whose
+   dispatch was already a `switch`, forcing a case to the front made it 173 ->
+   215. Measure, do not assume.
+2. **A ternary between two adjacent small constants compiles to ARITHMETIC**
+   (`neg`/`or`/`srawi`/`addi`), not a branch. `x ? 10 : 11` became straight-line
+   maths where the target has branch-and-store. Writing it as an explicit
+   `if`/`else` took a function 167 -> 78.
+3. **Case LABEL declaration order sets body-block layout**, independently of the
+   dispatch comparison order -- the compares stayed byte-identical while
+   reordering the labels went 78 -> 30. This is the `switch` analogue of
+   "definition order sets `.text` placement".
+4. **Hoist singleton loads into named locals at the top** if the target loads
+   them before first use rather than lazily where used: 184 -> 167.
+5. **Branch polarity: settle it from the target's `beq`/`bne` bytes**, never from
+   guessed semantics. A `==`/`!=` flip has closed functions three times today,
+   most cheaply as `if (!X) {A} else {B}` -> `if (X) {B} else {A}`.
+6. **Passing a global's address vs staging through a stack temporary.** The
+   target staged `mVec3_c::Zero`'s three floats through a local before the call;
+   passing `&mVec3_c::Zero` directly was 2 instructions off.
+7. **`return a == b;` compiles branchlessly** via `cntlzw`/`srwi`; nested
+   `if`/`return` gives the target's `bnelr` early returns.
+8. **Function-local `static` -> file scope** changes instruction scheduling. It
+   fixed a function stuck at 5/7 through six other permutations -- and
+   REGRESSED a different unit 10 -> 18 by pulling a table out of a merged
+   `.rodata` pool. Unit-specific; measure.
