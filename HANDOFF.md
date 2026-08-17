@@ -1768,7 +1768,17 @@ The residual 25 is frame size (target `-0x30`, draft `-0x40`: the target reuses
 one stack slot for two `mVec3_c` temporaries) plus one `f2`/`f3` register-role
 swap -- scheduling only.
 
-**`processCutsceneCommand` (173) has a diagnosed structural defect.** At the
+**`processCutsceneCommand` MATCHES; castle is 16/20 with a fully clean vtable
+and zero unverifiable slots.** The defect was not devirtualisation as I guessed
+-- the vtable call was present all along, six instructions later than a
+misaligned diff suggested. The real cause: the draft's
+`if (A && (B||C)) {...} else { setCutEnd(); }` collapsed what the source has as
+**two separate nested `if`/`else` blocks, each with its own call site**
+(173 -> 162). Then the ternary-to-arithmetic lever again, on
+`m_2b4 = (found != nullptr) ? 1 : 0x3c` (162 -> 3), and a branch polarity flip
+closed the last 3.
+
+Superseded diagnosis, kept for the record: At the
 divergence point the target does `lwz r12,0x60(r31); lwz r12,0x68(r12); bctrl`
 -- a VIRTUAL dispatch through the vtable -- where the draft falls straight into
 the next case body. A qualified call (`dWmDemoActor_c::setCutEnd()`) compiles to

@@ -554,6 +554,7 @@ variants.
    dispatch was already a `switch`, forcing a case to the front made it 173 ->
    215. Measure, do not assume.
 2. **A ternary between two adjacent small constants compiles to ARITHMETIC**
+   -- the most reliable lever found so far, confirmed on two different units.
    (`neg`/`or`/`srawi`/`addi`), not a branch. `x ? 10 : 11` became straight-line
    maths where the target has branch-and-store. Writing it as an explicit
    `if`/`else` took a function 167 -> 78.
@@ -575,3 +576,20 @@ variants.
    fixed a function stuck at 5/7 through six other permutations -- and
    REGRESSED a different unit 10 -> 18 by pulling a table out of a merged
    `.rodata` pool. Unit-specific; measure.
+
+
+## A misaligned diff invents structural conclusions
+
+`verify_anon.py` compares by raw position, not by realigned content. One missing
+or extra instruction early makes everything after it read as "differing", and
+worse, it makes the two sides look structurally different when they are not.
+
+This produced a wrong diagnosis twice today. Once a residual was read as "the
+target's vtable dispatch is missing from our draft" when the call was present
+six instructions later. Once four individually-correct fixes were followed by a
+RISING count (176 -> 182 -> 190 -> 192) because a structural defect still
+dominated the score.
+
+**When a residual suggests a structural difference, re-extract both sides by
+raw content and compare them directly** before believing it. And never revert a
+change purely because the count went up.
