@@ -622,3 +622,43 @@ flat, which is what says "more than one gap".
 Watch for assumptions superseded by measurement: `mStateMgr` had been assumed
 `0x58` from a subtraction two rounds earlier; the compiled skeleton measured it
 at `0x3c`, which is what revealed the third gap sitting AFTER it.
+
+
+## THE STACK-SLOT WALL, SOLVED: pass by-value args through the INLINE wrapper
+
+For a long stretch this blocked five units. Drafts matched a function's every
+instruction and register but assigned the *same set* of stack slots to the
+by-value argument temporaries in a different ORDER.
+
+**Cause:** `m3d::mdl_c::create()` has two overloads -- a 5-arg real one taking a
+trailing `size_t *`, and a 4-arg **inline wrapper** forwarding `nullptr`.
+
+```cpp
+mModel.create(resMdl, &mAllocator, BUFFER_..., 1, nullptr);  // WRONG
+mModel.create(resMdl, &mAllocator, BUFFER_..., 1);            // RIGHT
+```
+
+The emitted call is byte-identical either way (same mangled 5-arg target, the
+wrapper inlined away at `-O4`). But passing a by-value struct through an inlined
+wrapper's parameter binding anchors its temporary as an **early, forward-order**
+allocation; passing it directly leaves it in the same reverse-order pool as
+every other pending temporary. That is the whole "non-loop groups forward, loop
+groups reversed" asymmetry.
+
+On `daWmKinokoBase_c::createModel` this took **10 differing to 0** and the unit
+to 17/17. **Check every `create()`-family call site for a spelled-out trailing
+`nullptr`.**
+
+Eleven levers had been ruled out first -- declaration order, loop shape, naming,
+`const`, storage class, array size, statement position, loop-folding, an extra
+temporary, argument order, and compiler version. None touched call-site ARITY.
+The lesson: when permutations of *statement* structure all fail, question which
+*overload* is being called.
+
+## A missing virtual override is invisible to every check except `check_vtable.py`
+
+If a class does not declare an override, the compiler silently fills the slot
+with the inherited method. The class compiles, sections are fine, and every
+function may match -- but the vtable points at the wrong function.
+`d_a_wm_sandpillar.cpp` had this at slot 24. **Run `check_vtable.py` every
+round**, not once at the end.
