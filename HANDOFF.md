@@ -1815,11 +1815,35 @@ unrelated preceding load, not `this` and not the search result. Declared and
 documented as unverifiable-while-blocked rather than given a confident wrong
 signature.
 
-**Do not start `create` (219 of 224).** This unit cannot land until whichever TU
-owns `.text:0x191BF0` lands, so large-function work here has no landing path.
-The right move is to identify and bound that TU -- it is called from two
-different functions, which suggests a shared helper other `wm` actors may also
-need. Being scouted.
+**Do not start `create` (219 of 224)** until the blocker below lands.
+
+### The blocker is `daWmKoopaCastle_c`, it is bounded, and it is NOT itself blocked
+
+`0x191BF0` belongs to `g_profile_WM_KOOPA_CASTLE` (`.data:0x4A2F4`, profile id
+`0x29e`), the Bowser's Castle world-map icon. Bounds derived by the standard
+method and independently re-validated with `check_bounds.py`:
+
+```
+.text   0x1910d0-0x191d40     .data   0x4a2c0-0x4a478
+.ctors  0x490-0x494           .bss    0x10538-0x10568
+.rodata 0x9860-0x9898
+```
+
+15 real functions plus `__sinit` and the array destructor, all anonymous.
+sizeof `0x288`. Vtable is the standard 28-slot `dWmDemoActor_c` shape (dtk
+reports `0x108` -- the merged-trailing-zero artifact again); `vf78` is
+INHERITED here, where course overrides it.
+
+**Every `bl` target resolves inside the unit's own range**, and `fn_2_191BF0`
+itself only calls `fManager_c::searchBaseByProfName` -- already declared and
+already used in course's draft. It searches for another instance of its own
+profile and reads one byte at `+0x284`. **No chain behind it.** Landing this
+unit resolves course's blocker completely.
+
+This is the highest-value authorable unit on the project: self-contained, and it
+unblocks a 15/23 draft sitting next door. One large function (`fn_2_1917E0`,
+226 instructions) and one medium (`fn_2_1915D0`, 121); nothing else notable.
+Being authored in `wip/wm_units/agent_koopa_castle/`.
 
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
