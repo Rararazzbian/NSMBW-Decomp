@@ -1671,6 +1671,48 @@ four `dWmLib` declarations (`GetModelNodePos` name overload, `hasKoopaShipStop`,
 `isKoopaShipOnCurrentWorld`, `isSpecialWorld`), two `CUTSCENE_CMD_e` values
 (18 and 95), and the inline-static hypothesis above.
 
+### `syms.txt` holds DOL addresses ONLY — REL-internal calls are a hard blocker
+
+Every entry in `syms.txt` is a `0x8xxxxxxx` DOL address. There is **no mechanism
+for a REL-internal symbol**, so a unit that calls an un-decompiled function in
+its own module cannot land until whichever TU owns that address lands. Two units
+are held this way:
+
+- `d_a_wm_kinoko_1up.cpp` (finished, 9/9) needs `daWmKinokoBase_c`'s ctor/dtor.
+- `d_a_wm_course.cpp` calls `fn_2_191BF0` (`.text:0x191BF0`, size 0x3C) from
+  `openNeighbors` and `updateOpenAnim`.
+
+**Do not stub such a call to make a unit link** -- a stub is wrong bytes and
+hides the dependency. Leave it correct and flagged.
+
+For anonymous **DOL** functions there IS a convention and it works:
+`syms.txt` already carries `fn_800CDD60=0x800CDD60` style entries. I added
+`fn_80103420=0x80103420` for course's effect-manager call; tree still verifies
+5/5. Declare such a function `extern "C"` in the draft, as
+`source/dol/bases/d_a_player_demo_manager.cpp` does.
+
+**Check for this BEFORE authoring a unit**, not after: if `check_vtable.py`
+prints `skip (inherited from another TU at 0x...)`, or a call target is a REL
+address you cannot name, the unit is blocked no matter how many functions close.
+
+### course, round 3: structural fixes that the MATCH count did not show
+
+The raw count held at 15/23 while two signature errors were found and fixed --
+the kind that would have poisoned every later round:
+
+- **`openNeighbors` is `static`.** The `fastRate` bool sits in `r3`, not `r4`,
+  so there is no `this` at all. Only readable from the raw bytes.
+- **`searchOpenNeighbor` returns `daWmCourse_c*`**, and `updateHelpFade` calls
+  `getMatClrFrame()` on the NEIGHBOUR, not on `this`. Fixing that closed the
+  whole first half of the function.
+
+Also confirmed exactly as predicted: forcing the `60` to a genuine runtime `int`
+rather than a folded float literal moved `__sinit`'s pool offset `0x1c -> 0x18`
+(target wants `0x30`) and shrank the `.rodata` gap correspondingly. The rest
+waits on `create`/`createModel`.
+
+`.data 0x190`, `.bss 0x10` and `.ctors` remain exact throughout.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
