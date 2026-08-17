@@ -1973,8 +1973,28 @@ sFStateMgr_c<...> mStateMgr      +0x4b0
 `dLevelEffect_c`'s `0x128` stride is confirmed TWO independent ways: the landed
 header's own field names (`m_114`, `m_118`, ...) self-document `EGG::Effect`
 ending at `+0x114`, and the second instance lands exactly one stride later.
-`mStateMgr`'s `0x58` is still only a subtraction, not a component sum -- settle
-it with a compiled `sizeof` probe.
+`mStateMgr`'s `0x58` is still only a subtraction, not a component sum.
+
+**Skeleton compiles; `sizeof` reads `0x4dc` against the target's `0x508` -- 44
+bytes short.** All nine state names came straight out of `original/d_basesNP.rel`'s
+`.data` at `0x46fe8-0x47145`: Ready, BottomWait, MoveReady, MoveUp, TopWait,
+MoveDown, BottomWaitForever, TopWaitForever, TopWaitFromTheStart.
+
+**The 44 bytes are BEFORE `mStateMgr`**, by arithmetic: target `mStateMgr` is at
+`+0x4b0` with `sizeof 0x508`, so it occupies `0x58`; the draft's `sizeof 0x4dc`
+puts its own at `0x484`, and `0x4b0 - 0x484 = 0x2c`. Tighter still, target
+`mEffect2` at `+0x388` with stride `0x128` ends exactly at `0x4b0`, so there is
+NO gap between it and `mStateMgr` -- the missing member sits at or before
+`mEffect1` (`+0x260`).
+
+Localise by compiling the skeleton and laying its own constructor's
+member-construction offsets beside the target's confirmed
+`0x18c / 0x1ac / 0x1ec / 0x228 / 0x260 / 0x388 / 0x4b0`. The first divergence is
+where the member goes. One compile-and-read, not a search.
+
+**The `static const int x[cond?1:-1]` static-assert idiom does NOT compile under
+this MWCC** (`illegal constant expression`). Read `classInit`'s own `li r3, N`
+instead -- that is the technique that works for checking a class size.
 
 66 functions, all anonymous, largest ~96 instructions. **13 `blr`-only stubs
 already located by address** (`0x177CE0, 0x178000, 0x1780F4, 0x178100,
