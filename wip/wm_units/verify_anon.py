@@ -30,6 +30,10 @@ Usage
 Prints, per target function in [lo, hi): its address, its size, and either the
 draft function that matches it or the number of differing instructions against
 its closest candidate.
+
+A name after `MATCH <-` is a real pairing. A name after `differing vs ~` is only
+the closest remaining draft function BY SIZE and is frequently not the target's
+actual identity -- do not read it as one, and do not pass it on as one.
 """
 import os
 import re
@@ -116,7 +120,13 @@ def main():
                         if (a[j] if j < len(a) else None) != (b[j] if j < len(b) else None))
                 if n < bestn:
                     best, bestn = dname, n
-            print('%#010x %-22s %5d  %d differing vs %s' % (addr, name, len(ins), bestn, best))
+            # NOTE: `best` is the CLOSEST REMAINING draft function by instruction
+            # count, not an identification. When a target function matches
+            # nothing, the nearest candidate is often an unrelated function that
+            # happens to be a similar size -- course's 0x161840 was reported
+            # "vs processCutsceneCommand" while actually being isWorld2SpecialType.
+            # Labelled '~' so a reader cannot mistake a guess for a fact.
+            print('%#010x %-22s %5d  %d differing vs ~%s' % (addr, name, len(ins), bestn, best))
     print('\n%d/%d byte-identical modulo symbol names' % (exact, len(target)))
 
     # ORDER CHECK. Matching every function proves nothing about their ORDER, and
