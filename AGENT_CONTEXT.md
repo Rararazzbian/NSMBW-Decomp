@@ -593,3 +593,32 @@ dominated the score.
 **When a residual suggests a structural difference, re-extract both sides by
 raw content and compare them directly** before believing it. And never revert a
 change purely because the count went up.
+
+
+## Get the TYPE declaration right before writing any bodies
+
+Declaring a templated member correctly instantiates a whole family of methods
+that may already match the target with **zero code written**. On
+`d_a_wm_sandpillar.cpp`, declaring
+`sFStateMgr_c<daWmSandPillar_c, sStateMethodUsr_FI_c> mStateMgr` pulled in
+`sStateMgr_c::initializeState/executeState/finalizeState/refreshState/getState/
+getNewStateID/getStateID/getOldStateID`, `sFStateFct_c::build/dispose`,
+`sFState_c::initialize/execute/finalize` and `sFStateID_c::...` -- all weak, all
+generated from already-landed headers, and **15 of them matched immediately**.
+
+The unit went 0/66 to 40/66 in a single round on the strength of the class
+declaration plus 14 trivial stubs. Spend the time on the layout and the member
+types first; the bodies are the cheap part.
+
+## Localise a `sizeof` gap by comparing constructor offsets, not by adjusting globally
+
+Compile the skeleton, dump your own constructor's member-construction offsets,
+and lay them beside the target's. The first divergence is where a member is
+missing, and the divergence SIZE is how big it is. On sandpillar this turned a
+44-byte "something is missing" into **three separate gaps** (`0x4` + `0xc` +
+`0x1c`) at three exact points -- the divergence grew at two places and then held
+flat, which is what says "more than one gap".
+
+Watch for assumptions superseded by measurement: `mStateMgr` had been assumed
+`0x58` from a subtraction two rounds earlier; the compiled skeleton measured it
+at `0x3c`, which is what revealed the third gap sitting AFTER it.
