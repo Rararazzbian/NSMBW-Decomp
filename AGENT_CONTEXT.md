@@ -650,7 +650,15 @@ every other pending temporary. That is the whole "non-loop groups forward, loop
 groups reversed" asymmetry.
 
 On `daWmKinokoBase_c::createModel` this took **10 differing to 0** and the unit
-to 17/17. **Check every `create()`-family call site for a spelled-out trailing
+to 17/17.
+
+**It does NOT fix every instance of the symptom.** `d_a_wm_koopa_castle.cpp`'s
+`createModel` shows the same 3-way slot permutation (`0x8/0xc/0x10` against
+`0x10/0x8/0xc`) and the wrapper form changes **not a single emitted
+instruction** there -- confirmed by three measured experiments. So the wrapper
+overload is one CAUSE of the symptom, not the whole story: check it first
+because it is cheap and it did solve one unit outright, but a residual that
+survives it is still open. **Check every `create()`-family call site for a spelled-out trailing
 `nullptr`.**
 
 **The pattern is family-wide, not specific to `mdl_c`.** `d_a_wm_sandpillar.cpp`

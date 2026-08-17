@@ -90,8 +90,16 @@ def main():
     target = []
     for obj in sys.argv[4:]:
         out = os.path.join(cache, os.path.basename(obj) + '.txt')
-        if not os.path.exists(out):
-            H.disasm(obj, out)
+        # Write via a PID-unique temp name and rename. Several agents share this
+        # cache dir, and one of them clearing or half-writing an entry while
+        # another reads it silently produced a wrong lookup.
+        if not os.path.exists(out) or os.path.getsize(out) == 0:
+            tmp = out + '.%d.tmp' % os.getpid()
+            H.disasm(obj, tmp)
+            try:
+                os.replace(tmp, out)
+            except OSError:
+                pass
         target += functions(out, with_addr=True)
     target = sorted(x for x in target if lo <= x[0] < hi)
 
