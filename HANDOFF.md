@@ -2003,7 +2003,26 @@ family of template methods from landed headers and **15 matched immediately with
 zero code written**. Only ONE of the 14 trivial `blr` stubs is in the vtable
 (slot 23, `finalUpdate`); the other 13 are plain non-virtual helpers.
 
-**Now 42/66, with two more functions near-exact.** `check_vtable.py` caught a
+**Now 45/66.** `__sinit` gave up the whole 27-function state map as predicted.
+`executeState_Ready` and `approach()` (`fn_2_177E70`) both MATCH.
+
+Three findings from that round, all in `AGENT_CONTEXT.md`:
+- `!(a < b)` and `a >= b` are NOT equivalent to MWCC -- the negated form emits
+  fast `bge`/`ble`, the direct form `cror`-combined branches. Closed `approach()`.
+- The `u32 mUnkTrailing[7]` placeholder was hiding types: `lfs`/`stfs` proved
+  three of its seven slots are `float`. Now seven individually named fields
+  (`mApproachCurrent`, `mApproachTarget`, `mApproachStep`, `mReadyFlag`, ...).
+- The 27 state methods were grouped by state; the target **interleaves them by
+  address** across all nine states. Restructuring cut order violations 15 -> 1.
+
+`finalizeState_Ready` parked at 3/12 (a tail-sharing polarity that resisted
+`||`, `switch`, `goto` and a bool intermediate).
+
+**This unit has a REL-internal dependency too:** `extern "C" int fn_2_171400()`.
+Like `course` and `kinoko_1up`, it cannot land until whatever owns `0x171400`
+lands -- the finish line is further than 66/66.
+
+Earlier: `check_vtable.py` caught a
 **missing virtual override** at slot 24 -- the draft declared no
 `processCutsceneCommand`, so the compiler silently filled the slot with the
 INHERITED one while the target has a real in-unit function there. That is
