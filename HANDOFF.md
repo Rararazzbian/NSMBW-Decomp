@@ -1584,7 +1584,22 @@ first instruction after the back-edge. The model survived.
 The target's behaviour is now certain to instruction level. What is unknown is
 which compiler-internal mechanism scopes the reversal to loop-local groups for
 the original source. Two units, ten levers, no eleventh idea that is not a
-restatement of the tenth. Do not re-test:
+restatement of the tenth.
+
+**Compiler VERSION is also ruled out.** The repo ships four
+(`compilers/Wii/1.0`, `1.1`, `1.3`, `1.7`) and the harness hardcodes 1.1, which
+nobody had ever questioned. Compiling `d_a_wm_kinoko_base.cpp` with all four
+gives **byte-identical output** -- 10 differing, 16/17, every time. That rules
+out a whole untested dimension and independently validates the hardcoded 1.1
+for this module.
+
+**The wall now blocks FIVE units**, which makes it the single highest-value
+unsolved problem on the project: `d_a_wm_ghost.cpp` (12/13),
+`d_a_wm_kinoko_base.cpp` (16/17) and `d_a_wm_koopa_castle.cpp` (11/17) hit it
+directly; the finished `d_a_wm_kinoko_1up.cpp` (9/9) and `d_a_wm_course.cpp`
+(15/23) sit blocked behind those two.
+
+Do not re-test:
 declaration order, loop shape, naming, `const` qualifiers, member-vs-local
 storage, array size, statement position, folding into the loop's first
 iteration, an extra `getRes()` temporary, or swapping the two `getRes()` calls
