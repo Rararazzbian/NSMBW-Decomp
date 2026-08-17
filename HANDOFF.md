@@ -1535,6 +1535,51 @@ Findings worth keeping from this unit:
   -- only its header is missing here. Several `dWmLib` free functions are
   likewise missing. All shadowed, none applied.
 
+### `d_a_wm_castle.cpp` — 13/20 first pass, and a probable SECOND header static
+
+In `wip/wm_units/agent_castle/`. Class `daWmCastle_c : dWmObjActor_c`,
+sizeof 0x2b8, definition order correct, vtable slot assignment clean.
+
+**The lead worth following: `.data`/`.rodata`/`.bss` are short by exactly
+0x20/0x4/0x8, traced to a second header static with a runtime initialiser.**
+The target's `__sinit` has an independently-guarded lazy-init block AFTER the
+`sc_ForceList` construction -- a byte guard at `lbl_2_bss_FD48+0x10`, an
+unconditional `c_START_ID` store at `+0xc`, and three floats
+`{0.0f, 100.0f, 50.0f}` written into a 28-byte `.data` object. That is the same
+"header static emitted per including TU" shape as `sc_ForceList`, which
+explained four separate mysteries across four units before anyone recognised it.
+Best hypothesis: a function-local `static` inside an INLINE function in the real
+`d_wm_lib.hpp`.
+
+Three symptoms probably share that one cause: the section shortfall;
+`createModel`'s 10 residual instructions, which are **offset-only drift of
+exactly 0x20** from a shared base register; and `fn_2_15FAA0`, a helper
+referenced from nowhere in this TU's own `.text` or `.data` -- which is what an
+inline-in-header function looks like when an out-of-line copy is also emitted.
+
+Two functions were deliberately NOT authored, correctly: `fn_2_15F8F0` and
+`fn_2_15F950` take their `this` from
+`searchBaseByProfName(WM_ANTLION_MNG, nullptr)`, so they belong to a different,
+undecompiled class. Inventing a member relationship to raise a count would have
+been worse than leaving them out.
+
+**Technique: verify enum values by COMPILING a probe, not by counting source
+lines.** `fProfile` has macro-driven skew before index 644, and three profile
+IDs compile one lower than their apparent position suggests. Compiler-verified:
+`WM_KOOPASHIP=0x284`, `WM_SURRENDER=0x29d`, `WM_KOOPAJR=0x2a3`. A wrong
+immediate here is invisible until it is a differing instruction.
+
+Also found: a missing `u32 mUnk188` between `mResNodeIdx` and `mAllocator`.
+Its absence shifted every later member store by 4 and made the ctor, dtor,
+`execute`, `calcModel` and `resetReaction` all differ; adding it turned all five
+into MATCH at once. **A single wrong member offset presents as many broken
+functions.**
+
+Shared-header proposals pending, to be applied and verified SEPARATELY:
+four `dWmLib` declarations (`GetModelNodePos` name overload, `hasKoopaShipStop`,
+`isKoopaShipOnCurrentWorld`, `isSpecialWorld`), two `CUTSCENE_CMD_e` values
+(18 and 95), and the inline-static hypothesis above.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
