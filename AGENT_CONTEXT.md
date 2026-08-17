@@ -649,6 +649,21 @@ On `daWmKinokoBase_c::createModel` this took **10 differing to 0** and the unit
 to 17/17. **Check every `create()`-family call site for a spelled-out trailing
 `nullptr`.**
 
+**The pattern is family-wide, not specific to `mdl_c`.** `d_a_wm_sandpillar.cpp`
+had three of them in one function, and fixing all three took it 12 differing
+to 4:
+
+| header | wrong | right |
+|---|---|---|
+| `m_3d/mdl.hpp:52` | `mModel.create(resMdl, &alloc, opt, 1, nullptr)` | drop the `nullptr` (4-arg) |
+| `m_3d/anm_chr.hpp:19` | `mAnim.create(resMdl, resAnmChr, &alloc, nullptr)` | drop it (3-arg) |
+| `m_3d/anm_tex_srt.hpp:30` | `mAnimTexSrt.create(resMdl, res, &alloc, nullptr, 1)` | drop it (4-arg) |
+
+Before concluding a residual is this pattern, **check the header for an
+alternate overload first**. `setAnm` has a single signature and no wrapper, so a
+2-slot swap there is a different, smaller problem -- not every stack-slot
+residual is this one.
+
 Eleven levers had been ruled out first -- declaration order, loop shape, naming,
 `const`, storage class, array size, statement position, loop-folding, an extra
 temporary, argument order, and compiler version. None touched call-site ARITY.
