@@ -1700,12 +1700,32 @@ Four shapes measured. The namespace-scope ARRAY is kept:
 only on `.data`/`.rodata` byte layout and is now decoupled from the guard
 question -- attack it separately.
 
-The two remaining facts look contradictory: the guard must be INSIDE `__sinit`
-(so namespace scope) yet must be CONDITIONAL (so something guarded). The one
-shape that reconciles them, untested: `mOffset`'s initialiser is itself a call
-to a separate inline accessor holding its OWN function-local guarded static, so
-evaluating the aggregate's initialiser during `__sinit` inlines that guard
-sequence into `__sinit`. Being tested.
+Shape 5 -- `mOffset` initialised by a call to a separate inline accessor holding
+its own guarded static -- is also REFUTED. The physical-placement half was
+right (the sequence DID inline into `__sinit`), but a by-value return does the
+three `stfs` into the accessor's own local and then three more copying the
+return into the aggregate: six writes where the target has three. A real
+accessor would have to write through a reference or pointer.
+
+**The guard is parked**, with five shapes measured and round 2's namespace array
+kept. It is not what blocks this unit anyway.
+
+**The two "unauthorable" functions are probably authorable after all.**
+`fn_2_15F8F0`/`fn_2_15F950` take their `this` from
+`searchBaseByProfName(WM_ANTLION_MNG, nullptr)`, so they belong to the ant-lion
+manager, not to `daWmCastle_c` -- correct, and correctly refused. But the next
+question was not asked: **why is another class's method inside castle's `.text`
+at all?** An out-of-line method could not be. An INLINE method declared in that
+class's header must be, in every TU that calls it -- the same mechanism as
+`sc_ForceList`. `fn_2_15FAA0` being referenced from nowhere fits the same
+picture.
+
+So the shape to test is a shadow header for the ant-lion manager with those
+methods defined inline IN THE CLASS BODY, called from castle at the sites the
+disassembly shows. **Check the target's symbol binding first**: inline-in-body
+gets `weak`, out-of-line gets `global`, so the binding says immediately whether
+the reading is right. Three residuals may close together -- those two functions,
+`fn_2_15FAA0`'s identity, and possibly the `.bss` registration count.
 
 **Correction to my own earlier steer:** I said a file-scope aggregate would avoid
 the `.bss` overspend "since that is what the landed units do". The measurement
