@@ -52,7 +52,15 @@ def norm(instructions):
         # normalised and every __sinit reported 2 spurious differences. This
         # tool then under-reported matches on exactly the functions it exists to
         # check, and I corrected a peer's results with it twice before noticing.
-        line = re.sub(r'"?[.A-Za-z_@$][^\s,]*"?@(ha|l|sda21|sda2)\b', r'SYM@\1', line)
+        # Two alternatives, and the QUOTED one must come first. MWCC quotes any
+        # symbol it cannot spell bare -- notably template instantiations like
+        # "__vt__32sFStateFct_c<daWmSandPillar_c,sStateMethodUsr_FI_c>". The
+        # unquoted pattern below uses [^\s,]*, which stops dead at the comma
+        # inside such a name, so the symbol never normalised and every function
+        # referencing a template vtable reported phantom differences.
+        # d_a_wm_sandpillar.cpp's constructor showed 4 that way, all fictitious.
+        line = re.sub(r'"[^"]*"@(ha|l|sda21|sda2)\b', r'SYM@\1', line)
+        line = re.sub(r'[.A-Za-z_@$][^\s,]*@(ha|l|sda21|sda2)\b', r'SYM@\1', line)
         line = re.sub(r'^(bl|b) \S+$', r'\1 SYM', line)
         line = re.sub(r'\.L_[0-9A-Fa-f]+', 'LBL', line)
         out.append(line)
