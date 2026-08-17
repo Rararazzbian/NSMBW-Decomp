@@ -2003,7 +2003,28 @@ family of template methods from landed headers and **15 matched immediately with
 zero code written**. Only ONE of the 14 trivial `blr` stubs is in the vtable
 (slot 23, `finalUpdate`); the other 13 are plain non-virtual helpers.
 
-**Now 41/66.** The destructor was already matching from the layout work, which
+**Now 42/66, with two more functions near-exact.** `check_vtable.py` caught a
+**missing virtual override** at slot 24 -- the draft declared no
+`processCutsceneCommand`, so the compiler silently filled the slot with the
+INHERITED one while the target has a real in-unit function there. That is
+invisible to every other check; it now MATCHes.
+
+The inline-wrapper fix applied here too, and generalised: three arity-mismatched
+call sites in one function (`mdl.hpp:52`, `anm_chr.hpp:19`,
+`anm_tex_srt.hpp:30`) took `createMdl` from 12 differing to 4. `calcEffectPos`
+is 3/44, all `addi r4, r31, N` off by a constant `0x38` -- pool position, not a
+wrong call, and it should resolve once the remaining pool contributors exist.
+
+GAP 1 is named: `nw4r::g3d::ResAnmTexSrt mResAnmTexSrt`, from
+`stw r3, 0x224(r29)`, mirroring `d_a_enemy_ice.hpp`'s own field. Strings
+`"cobSandpillar"`, `"g3d/model.brres"`, `"ef_cobSandpillar"`,
+`"Wm_cs_sandpillar01"`/`"02"` all read from retail `.data`, none invented.
+
+Remaining: the nine state triples (27 functions -- the largest block), then six
+larger unknowns. Watch `.data` as the `sFStateID_c` statics land; if it
+overshoots, the state list is wrong.
+
+Earlier: The destructor was already matching from the layout work, which
 independently corroborates the member order. `calcMdl` (`fn_2_177C30`) is a full
 MATCH -- the same `mMatrix.trans`/`ZXYrotM` + `setLocalMtx`/`setScale`/`calc`
 idiom as every wm sibling.
