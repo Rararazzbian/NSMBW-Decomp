@@ -2015,6 +2015,25 @@ Three findings from that round, all in `AGENT_CONTEXT.md`:
 - The 27 state methods were grouped by state; the target **interleaves them by
   address** across all nine states. Restructuring cut order violations 15 -> 1.
 
+**The sandpillar animates by SCALING vertically, not translating** --
+`mScale.y` at `+0xe0`, confirmed against `calcMdl`'s already-matched
+`setScale(mScale)` (`mScale.x/.y/.z` at `+0xdc/+0xe0/+0xe4`). That one field
+unblocked all six movement-state bodies.
+
+Six more bodies written and structurally exact (branch shapes, `cror` patterns,
+register flow and `changeState` targets all matching): `executeState_MoveUp`,
+`executeState_MoveDown`, and the `finalize`/`execute` pairs for `BottomWait`
+and `TopWait`. `MoveUp`/`MoveDown`'s asymmetry is NOT a sign flip on
+`mApproachTarget` -- that is set upstream in `finalizeState_MoveReady` -- but
+`MoveUp` needing two per-Type tables against `MoveDown`'s one.
+
+**One residual across five functions has a concrete fix:** eleven per-function
+`static const float[3]` tables each compile to their own `lfsx`-indexed pool,
+where the target has ONE `lbl_2_rodata_8EF8` of 33 words = 11 tables x 3 Types.
+That is not a merge that happens once enough siblings exist -- it is what a
+single file-scope `static const float smc_TypeTables[11][3]` produces. Read the
+33 words out of the retail binary and let their order define the row order.
+
 `finalizeState_Ready` parked at 3/12 (a tail-sharing polarity that resisted
 `||`, `switch`, `goto` and a bool intermediate).
 
