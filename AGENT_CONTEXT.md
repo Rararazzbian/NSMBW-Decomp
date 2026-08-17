@@ -2,7 +2,7 @@
 
 **Read this once per session, before your round's prompt.** It is the material
 that does not change between rounds. Your prompt file
-(`CODEX_PROMPT.md` / `GEMINI_PROMPT.md`) contains only what is specific to your
+(`QWEN_PROMPT.md` / `GEMINI_PROMPT.md`) contains only what is specific to your
 round and assumes you have read this.
 
 This file is maintained by Claude. **Do not edit it.** If something in it is
@@ -70,9 +70,9 @@ cosmetic: check the new mangled name against the symbol map before proposing it.
 
 | Worker | Owns | Never touches |
 |---|---|---|
-| **Claude** (lead + sub-agents) | The current translation unit. Runs the shared build. The **only** one who edits `slices/wiimj2d.json`, `syms.txt`, and any shared header. | `CODEX_HANDOFF.md` |
-| **Codex** | Whatever `CODEX_PROMPT.md` assigns. `CODEX_HANDOFF.md` is its private notebook. | `wip/`, `HANDOFF.md`, `GEMINI_*.md`, `AGENT_CONTEXT.md` |
-| **Gemini** | Whatever `GEMINI_PROMPT.md` assigns. | `wip/`, `HANDOFF.md`, `CODEX_*.md`, `AGENT_CONTEXT.md` |
+| **Claude** (lead + sub-agents) | The current translation unit. Runs the shared build. The **only** one who edits `slices/wiimj2d.json`, `syms.txt`, and any shared header. | `QWEN_HANDOFF.md` |
+| **QWEN** | Whatever `QWEN_PROMPT.md` assigns. `QWEN_HANDOFF.md` is its private notebook. | `wip/`, `HANDOFF.md`, `GEMINI_*.md`, `AGENT_CONTEXT.md` |
+| **Gemini** | Whatever `GEMINI_PROMPT.md` assigns. | `wip/`, `HANDOFF.md`, `QWEN_*.md`, `AGENT_CONTEXT.md` |
 
 `scratch/` is shared and disposable — use subfolders. `wip/` is Claude's agents'
 authoring area and is **off limits** to peers.
@@ -110,12 +110,12 @@ Each of these exists because something broke.
 5. **Report a negative result rather than manufacturing a positive one.** Twice
    now, Claude has asserted something false in a prompt and the peer's most
    valuable act was refusing to comply:
-   - Claude claimed a 4-byte gap proved a class contained a `double`. Codex
+   - Claude claimed a 4-byte gap proved a class contained a `double`. QWEN
      searched, found no `lfd`/`stfd` anywhere, and said "cannot distinguish".
      Claude was wrong — the real rule is that **MWCC aligns a `.bss` object to 8
      when its SIZE is a multiple of 8**, nothing to do with members.
-   - Claude asked Codex to name an offset as a new field. It was already
-     `mPlayerLayer`, a matched referenced member. Codex reported the
+   - Claude asked QWEN to name an offset as a new field. It was already
+     `mPlayerLayer`, a matched referenced member. QWEN reported the
      contradiction instead of splitting a pad that did not exist.
 
    **Treat anything Claude asserts that you can measure as a hypothesis.** A
@@ -458,3 +458,45 @@ Regression cases, both of which must print `VTABLE CLEAN`:
 **Run all three checks before calling a unit ready:** `verify_anon.py` for the
 functions, `check_sections.py` for the section sizes, `check_vtable.py` for the
 slot assignment. Any one of them alone will pass a unit that does not link.
+
+
+## Validate BOUNDS before building — `wip/wm_units/check_bounds.py`
+
+Bounds are the largest single source of wasted effort here: two landings failed
+on them today, and a third draft had a `.data` span with the RIGHT SIZE and the
+WRONG ADDRESSES (`0x44a9c-0x44cb4` vs the real `0x44a68-0x44c80`, both `0x218`).
+A size check reports `ok` on that. This validates a proposed slice block against
+dtk's target symbol map BEFORE anything is compiled:
+
+```
+python wip/wm_units/check_bounds.py <module> '<slice JSON>' [source-to-skip]
+```
+
+- every range must start on a real symbol boundary and end where one ends
+- no overlap with any range already in the slice file
+- gaps to neighbours reported (an unexplained gap usually means an
+  unidentified unit, not free space)
+- the two `wm`-family rules, both of which were landing-breaking errors:
+  `.data` opening on `g_profile_*` is 0x34 too high; `.data` opening on a `0x24`
+  object (`sc_ForceList`) is 0x10 too high, because the two anonymous 5-byte
+  strings come first; and a `.text` claim whose next symbol is `0x1c`
+  (array-destructor sized) ends too early, because a unit ends after its OWN
+  array destructor, past its `__sinit`.
+
+Regression cases: grid's original bounds and the wrong-span ghost claim must
+both FAIL; the landed grid, tower and cloud bound sets must all pass.
+
+## The four checks, and why each alone is insufficient
+
+| tool | catches | blind to |
+|---|---|---|
+| `check_bounds.py` | wrong span, overlap, family bound rules | anything about the source |
+| `verify_anon.py` | per-function codegen | section sizes, vtable, pooled constant VALUES, symbol names |
+| `check_sections.py` | section sizes | wrong span of the right size; slot assignment |
+| `check_vtable.py` | slot assignment, wrong base class | everything else |
+
+**None of them catches an unresolved symbol.** A unit can pass all four and
+still fail to link — `d_a_wm_kinoko_1up.cpp` is 9/9 with every check clean and
+cannot land, because it inherits from an un-decompiled TU. If `check_vtable.py`
+prints `skip (inherited from another TU at 0x...)`, that unit is blocked on
+whatever owns that address.
