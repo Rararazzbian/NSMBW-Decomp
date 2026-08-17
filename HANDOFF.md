@@ -2003,7 +2003,40 @@ family of template methods from landed headers and **15 matched immediately with
 zero code written**. Only ONE of the 14 trivial `blr` stubs is in the vtable
 (slot 23, `finalUpdate`); the other 13 are plain non-virtual helpers.
 
-**Now 45/66.** `__sinit` gave up the whole 27-function state map as predicted.
+**Now 60/66.** The table merge landed: all 33 words read from
+`.rodata+0x8EF8`, row-major confirmed at `row * 0xc`, replaced by one file-scope
+`smc_TypeTable`. **Rows 8/9/10 are `s32`, not float** (raw bits 3,1,1 / 100,10,40
+/ 100,100,100 -- not plausible floats). That plus a statement reorder in
+`create`/`execute` (the target sets `mPos.y` BEFORE the `mStartPos = mPos`
+struct copy) closed five functions at once. All three `*Forever`/`FromTheStart`
+variants and `finalizeState_MoveReady` also match.
+
+**Two functions the handoff called "written" were empty `{}` stubs** with real
+19- and 26-instruction bodies (`finalizeState_MoveUp` at `fn_2_1783C0`,
+`finalizeState_MoveDown` at `fn_2_178680`). Implementing them also cleared the
+function-order violations. **"Written" in a status report is not evidence** --
+verify before building on it.
+
+Remaining: the destructor and its helpers (`fn_2_177820/860/8A0/900`) are the
+last substantive block, and they gate two other things -- the one remaining
+order violation is tied to `__dt__Q23mEf8effect_cFv`, and the unreferenced three
+floats in `lbl_2_rodata_8F84` are probably theirs, which would close
+`.rodata` UNDER `0x14`.
+
+Parked: `finalizeState_Ready` (3), `createMdl` (4, a stack-slot swap -- note the
+inline-wrapper fix does NOT resolve every instance of that symptom), two
+1-instruction trailing-`blr` cases, and `executeState_MoveReady`'s single
+`bne`-vs-`bgt`. That last is HYPOTHESISED to be an `-ipa file` range-analysis
+effect of incomplete neighbours, which would resolve for free when the TU is
+complete -- plausible, currently unfalsifiable, re-measure rather than assume.
+
+`.data` UNDER `0x4`: `__vt__31sFStateID_c<...>` is `0x34` here and `0x38` in the
+target, the extra word a trailing zero rather than a function pointer. The same
+padding appears and is correctly reproduced on `__vt__32sFStateFct_c<...>`, so
+the likely reading is MWCC padding a weak vtable for whatever follows it in the
+NEXT TU -- not reproducible from a single-file compile.
+
+Earlier: `__sinit` gave up the whole 27-function state map as predicted.
 `executeState_Ready` and `approach()` (`fn_2_177E70`) both MATCH.
 
 Three findings from that round, all in `AGENT_CONTEXT.md`:
