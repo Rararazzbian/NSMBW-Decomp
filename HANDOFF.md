@@ -2034,6 +2034,25 @@ That is not a merge that happens once enough siblings exist -- it is what a
 single file-scope `static const float smc_TypeTables[11][3]` produces. Read the
 33 words out of the retail binary and let their order define the row order.
 
+**Row-major layout CONFIRMED** (measured, before the agent was cut off by a
+session limit): `ROW_OFFSET = row_index * 0xc` matches every function's observed
+byte offset into `lbl_2_rodata_8EF8`. Five of the eleven rows are mapped:
+
+```
+row 3   +0x24   smc_heightTable      (per-Type height, used by create/execute)
+row 5   +0x3c   MoveUp target
+row 7   +0x54   MoveUp threshold     (decides TopWait vs TopWaitForever)
+row 9   +0x6c   BottomWait counter
+row 10  +0x78   TopWait counter
+```
+
+Remaining step is mechanical: read all 33 words from `original/d_basesNP.rel` at
+`.rodata+0x8EF8`, lay them out as `smc_TypeTables[11][3]` in that order, and
+replace the eleven per-function `static const float[3]` locals with indexed
+accesses. That should close the `.rodata` gap and the five affected functions
+together.
+
+
 `finalizeState_Ready` parked at 3/12 (a tail-sharing polarity that resisted
 `||`, `switch`, `goto` and a bool intermediate).
 
