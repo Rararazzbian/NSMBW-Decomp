@@ -144,11 +144,21 @@ def main():
             if got == want:
                 verdict = 'ok'
             elif not (lo <= want < hi):
-                # The slot points outside this unit, so it is a method inherited
-                # from a base class living in another TU. Nothing to check here,
-                # and it is not a defect -- kinoko_1up inherits create/execute/
-                # draw/doDelete from daWmKinokoBase_c at 0x16B470+.
-                verdict = 'skip (inherited from another TU at %#x)' % want
+                # The slot points outside this unit: an inherited method. This is
+                # NOT automatically a blocker, and reading it as one wrongly
+                # parks units. Two different cases hide here:
+                #
+                #  - an inherited INLINE virtual whose body a header already
+                #    defines. Harmless: just do not declare it in this class and
+                #    let it inherit. dtk often leaves these as bare `fn_2_*`
+                #    because no landed sibling has referenced them by name yet --
+                #    a display gap in the tooling, not a linkage gap.
+                #  - a real out-of-line method in an un-decompiled TU. That IS a
+                #    blocker (see kinoko_1up, which needs daWmKinokoBase_c).
+                #
+                # Discriminate by SIZE and body: a 2-instruction `li rN, X; blr`
+                # at an address a header defines inline is the first case.
+                verdict = 'inherited, from %#x -- check whether a header defines it inline' % want
             elif got is None:
                 verdict = ('unverifiable -- no draft fn matches the target at %#x '
                            '(that function is still differing)' % want)

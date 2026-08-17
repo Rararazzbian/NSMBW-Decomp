@@ -447,10 +447,27 @@ functions up by content: content cannot disambiguate two identical bodies,
 which is the whole point, and the first version did exactly that and condemned
 the landed, 5/5-verified `d_a_wm_grid.cpp`.
 
-It distinguishes three non-defects from real ones: a slot pointing outside
-`[lo, hi)` is a method inherited from a base class in another TU (`skip`); a
-slot whose target function is still differing cannot be checked yet
-(`unverifiable`); everything else is a real `WRONG SLOT`.
+It distinguishes non-defects from real ones: a slot whose target function is
+still differing cannot be checked yet (`unverifiable`); everything else is a
+real `WRONG SLOT`.
+
+**A slot pointing OUTSIDE the unit is not automatically a blocker.** I said it
+was, all session, and that is wrong. Two different things hide there:
+
+- an inherited **inline** virtual whose body a header already defines. Harmless.
+  Just do not declare it in your class and let it inherit. dtk often leaves
+  these as bare `fn_2_*` because no landed sibling has referenced them by name
+  yet -- a display gap in the tooling, not a linkage gap in the binary.
+  `d_a_wm_sandpillar.cpp`'s slot 5 pointing at `fn_2_15ABC0` is this:
+  `li r3, 0x1; blr`, and `d_wm_demo_actor.hpp` already declares
+  `virtual int doDelete() { return SUCCEEDED; }`. An unrelated vtable elsewhere
+  points at the same address for the same slot, which only happens if neither
+  class overrides it.
+- a real **out-of-line** method in an un-decompiled TU. That IS a blocker --
+  `d_a_wm_kinoko_1up.cpp` needs `daWmKinokoBase_c`'s ctor and dtor.
+
+Discriminate by size and body: a 2-instruction `li rN, X; blr` at an address a
+header defines inline is the harmless case. Check before parking a unit.
 
 Regression cases, both of which must print `VTABLE CLEAN`:
 `bin/compiled/d_basesNP/d_basesNP/bases/d_a_wm_grid.o` and `d_a_wm_tower.o`.
