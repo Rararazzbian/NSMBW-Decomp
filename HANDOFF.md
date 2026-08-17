@@ -2284,6 +2284,38 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### `fn_2_171400`'s owner is `WM_MAP` / `dScWMap_c` — do NOT chase it
+
+Scouted to settle whether sandpillar's blocker was authorable. It is not:
+
+```
+sizeof            0x6C510  (433,664 bytes -- from classInit's own lis/subi pair)
+functions         72, ALL anonymous, ~19KB of code
+member arrays     4x dWmMapModel_c (0xbf8), 4x a dCsvData_c-derived type at
+                  0x16518 EACH (~365KB alone), 4x another at 0x3f08
+own dependencies  THREE, all themselves anonymous and un-decompiled
+                  (0x18cff0, 0x161420, 0x161220)
+```
+
+This is the world-map/course-configuration data for the whole game, not an actor
+in the normal sense, and chasing it opens a second chain behind the first.
+
+**A methodological catch worth copying:** the walk-backwards pattern found the
+WRONG owner first. `WM_MANTA`'s classInit at `0x170EB0` matched the
+`pad_*` / array-destructor / `gap_*` / `classInit` pattern perfectly, and Manta
+is a real, small, bounded unit. The tell that `fn_2_171400` was not Manta's:
+it sits AFTER Manta's last function with **no array-destructor pattern between
+them**. Reporting Manta would have sent someone to author the wrong unit.
+
+**But `fn_2_171400` is `dScWMap_c::getWorldNo()`**, declared in
+`include/game/bases/d_s_world_map_static.hpp:13` as
+`static u8 getWorldNo() NOINLINE { return m_WorldNo; }` -- **defined inside the
+class body in a shared header**, so it is an inline member with weak linkage,
+not an out-of-line function in an un-decompiled TU. That is a materially
+different situation from what `extern "C" int fn_2_171400()` assumes, and it is
+being tested: if a real `dScWMap_c::getWorldNo()` call matches byte-for-byte
+without the weak copy being placed, sandpillar is **not blocked at all**.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
