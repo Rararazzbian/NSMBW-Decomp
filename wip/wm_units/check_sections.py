@@ -27,10 +27,27 @@ UNDER in any section means something the original has is missing entirely.
 For a `.data`/`.rodata` mismatch the symbol table for that section is printed,
 which is what localised grid's defect in one step.
 
+WHAT THIS TOOL CANNOT SEE
+-------------------------
+**It compares aggregate section SIZE, never internal offsets.** Two different
+layouts of the same total size both pass. That is not hypothetical: in
+`d_a_wm_kinoko_base.cpp`, `getModelName()` returning `""` pooled a 1-byte
+literal whose 7 bytes of alignment padding summed to exactly the 8 bytes a real
+trailing object was missing -- so `.data` totalled the correct `0x1c0` while
+`__vt__` sat at unit offset `0x90` instead of the target's `0x88`. The unit read
+17/17 with SECTIONS CLEAN and VTABLE CLEAN, and would not have landed.
+
+`check_vtable.py` does not catch it either: that tool compares the vtable's
+SLOT CONTENTS, not the vtable object's own address.
+
+Pass `--layout` to print the strong-symbol offsets of the strict sections even
+when the sizes agree, and compare them against the target's own layout. A
+size-only pass is not a layout proof.
+
 Usage
 -----
     python wip/wm_units/check_sections.py <draft.cpp|draft.o> <module> \
-        '{".text": "0x164210-0x164404", ".data": "0x44c90-0x44d20", ...}'
+        '{".text": "0x164210-0x164404", ".data": "0x44c90-0x44d20", ...}' [--layout]
 
     python wip/wm_units/check_sections.py <draft.o> d_basesNP --dump
 
@@ -187,6 +204,16 @@ def main():
         if got != hi - lo and name in STRICT and (hi - lo) < strong_extent(symbols, name):
             print('\n  %s symbols:' % name)
             dump_symbols(symbols, name)
+
+    if '--layout' in argv:
+        # Size agreement is NOT layout agreement -- see the docstring. Print the
+        # strong-symbol offsets so a coincidental size match is visible.
+        for name in claim:
+            if name in STRICT and sections.get(name, {}).get('size'):
+                print('\n  %s layout (strong symbols -- compare against the target):' % name)
+                for _sec, value, size, nm, _w in sorted(
+                        x for x in symbols if x[0] == name and x[2] and not x[4]):
+                    print('      %#08x %#8x %s' % (value, size, nm))
 
     print('\n%s' % ('SECTIONS CLEAN' if not bad else '%d section(s) wrong -- NOT ready to land' % bad))
     return 0 if not bad else 1
