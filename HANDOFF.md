@@ -2017,11 +2017,32 @@ variants and `finalizeState_MoveReady` also match.
 function-order violations. **"Written" in a status report is not evidence** --
 verify before building on it.
 
-Remaining: the destructor and its helpers (`fn_2_177820/860/8A0/900`) are the
-last substantive block, and they gate two other things -- the one remaining
-order violation is tied to `__dt__Q23mEf8effect_cFv`, and the unreferenced three
-floats in `lbl_2_rodata_8F84` are probably theirs, which would close
-`.rodata` UNDER `0x14`.
+**Now 61/66** (the normaliser fix cleared `__ct__`'s four phantom differences).
+
+**Both of the "remaining work" items above were false premises. Corrected:**
+
+- **The destructor and its four helpers were ALREADY MATCHING** -- verified
+  fresh, not assumed. An empty user destructor still triggers the full
+  compiler-generated member/base teardown cascade, and that cascade was already
+  right from the class layout alone. The stale docstring claiming otherwise has
+  been replaced in the source.
+- **The order violation is not an ordering defect.** `verify_anon.py` paired
+  `__dt__Q23mEf8effect_cFv` with target `fn_2_179290`, which on inspection is
+  `sStateID_c`'s scalar deleting destructor -- a different class. Deleting-dtor
+  wrappers (null check, one member-dtor call, optional `__dl__`) are
+  byte-identical in shape across unrelated classes, so the greedy content
+  matcher collided. **A `FUNCTION ORDER IS WRONG` report can be a mis-pairing
+  artefact; confirm by reading the target function before acting on it.** Now
+  documented in the tool. The real gap is `sStateID_c`'s own deleting destructor
+  as a distinct symbol, tied to exit-time teardown of the nine static
+  `StateID_X` objects.
+
+Still open: `lbl_2_rodata_8F84`'s three unreferenced floats
+(`.rodata` UNDER `0x14`). NOT the destructor's. Note that
+`{2160.0, -30.0, -478.0}` is **exactly `dWmLib::sc_ForceList`'s `mVec3_c`** from
+`d_wm_lib.hpp`, which landed `d_a_wm_grid.cpp` and `d_a_wm_smallcloud.cpp` both
+emit into their own `.rodata` pools -- so the likely owner is that header static,
+not anything unknown.
 
 Parked: `finalizeState_Ready` (3), `createMdl` (4, a stack-slot swap -- note the
 inline-wrapper fix does NOT resolve every instance of that symptom), two
