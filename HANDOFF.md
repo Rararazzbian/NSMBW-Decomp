@@ -2175,6 +2175,38 @@ left the frame at `-0x40` against the target's `-0x30` and did not move a single
 instruction. That is the obvious first thing to try whenever a draft's frame is
 larger than the target's, and at this optimisation level it does nothing.
 
+### kinoko_base's last defect, diagnosed precisely
+
+The unit is **17/17**; one `.data` layout detail blocks the landing.
+
+`getModelName()` currently does `return "";`, which MWCC pools as a 1-byte
+object at unit offset `0x88` -- pushing `__vt__16daWmKinokoBase_c` to `0x90`
+where the target has it at `0x88`. That single byte is the whole defect: all six
+sections are otherwise byte-identical and only one relocation addend differs.
+
+The target's `getModelName` returns `lbl_2_data_45A68` = **unit offset `0x1b8`,
+an 8-byte ZERO object at the very END of `.data`** (`0x1b8 + 8 = 0x1c0`, exactly
+the claimed size), i.e. after the weak vtables, not in the string pool.
+
+Progress made, and where it stops:
+
+| attempt | result |
+|---|---|
+| `static const char smc_emptyModelName[8] = "";` | vtable moves to `0x88` and **17/17 holds**, but `const` sends the array to `.rodata` |
+| `static char smc_emptyModelName[8] = "";` | vtable at `0x88`, 17/17 holds, but an all-zero array goes to **`.bss`**, which overshoots `0x10` -> `0x18` |
+
+So the shape is right -- taking the literal out of the string pool fixes the
+vtable position -- but an all-zero object needs to land in `.data` at `0x1b8`,
+and MWCC puts zero-initialised data in `.bss`.
+
+Two readings worth testing:
+1. Something forces an all-zero object into `.data` here (a shape that is not
+   plainly zero-initialised).
+2. The `.data` claim is 8 bytes too long: the unit really ends at `0x45a68`
+   (`0x1b8`) and that 8-byte object belongs to the NEXT unit, with
+   `getModelName` referencing it across units. Note `check_bounds.py` reports
+   the current claim plausible, so this needs the neighbour's layout to settle.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
