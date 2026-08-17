@@ -500,3 +500,26 @@ still fail to link — `d_a_wm_kinoko_1up.cpp` is 9/9 with every check clean and
 cannot land, because it inherits from an un-decompiled TU. If `check_vtable.py`
 prints `skip (inherited from another TU at 0x...)`, that unit is blocked on
 whatever owns that address.
+
+
+## Function DEFINITION ORDER is part of the object
+
+`verify_anon.py` matching every function proves nothing about their order, and
+the linker lays a unit's `.text` down in object order, which is source
+definition order. `d_a_wm_smallcloud.cpp` reported a clean **16/16** while
+defining `processCutsceneCommand` before `createModel` where the original has it
+after `mode_exec`. Every function was byte-identical; the module still failed to
+match, because every `bl` past that point had the wrong displacement.
+
+`verify_anon.py` now checks this and prints `FUNCTION ORDER IS WRONG` with the
+target's order when the matched draft indices are not ascending.
+
+The same applies to **`.bss` and `.data` statics**: declaration order sets their
+layout. smallcloud needed `resAnmNames` declared before `sInit` inside
+`createModel` -- with them the other way round the sections were the right SIZE
+and the objects sat at the wrong addresses, which showed up as six differing
+relocation bytes and nothing else.
+
+**When a unit is byte-perfect in every section and still fails, diff the
+relocation tables.** Three landings today came down to that: grid's vtable slot
+permutation (3 bytes), smallcloud's `.bss` static order (6 bytes).

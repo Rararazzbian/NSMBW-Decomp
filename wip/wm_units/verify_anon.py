@@ -92,7 +92,7 @@ def main():
     target = sorted(x for x in target if lo <= x[0] < hi)
 
     drafts = functions(draft)
-    used, exact = set(), 0
+    used, exact, matched = set(), 0, []
     print('%-10s %-22s %5s  %s' % ('addr', 'target', 'size', 'result'))
     for addr, name, ins in target:
         want = norm(ins)
@@ -101,6 +101,7 @@ def main():
             if i not in used and norm(dins) == want:
                 hit = i
                 break
+        matched.append(hit)
         if hit is not None:
             used.add(hit)
             exact += 1
@@ -117,6 +118,28 @@ def main():
                     best, bestn = dname, n
             print('%#010x %-22s %5d  %d differing vs %s' % (addr, name, len(ins), bestn, best))
     print('\n%d/%d byte-identical modulo symbol names' % (exact, len(target)))
+
+    # ORDER CHECK. Matching every function proves nothing about their ORDER, and
+    # the linker lays a unit's .text down in object order -- which is source
+    # definition order. d_a_wm_smallcloud.cpp reported a clean 16/16 while
+    # defining processCutsceneCommand before createModel where the original has
+    # it after mode_exec; every function was byte-identical and the module still
+    # failed, because every `bl` past that point had the wrong displacement.
+    # The pairing above consumes drafts greedily in object order, so if the
+    # matched draft indices are not ascending, the definition order is wrong.
+    order = [i for i in matched if i is not None]
+    if order != sorted(order):
+        print('\nFUNCTION ORDER IS WRONG -- the draft defines these out of order.')
+        print('The linker places .text in definition order, so this will not link')
+        print('even at %d/%d. Target order:' % (exact, len(target)))
+        prev = -1
+        for addr, name, idx in zip([t[0] for t in target], [t[1] for t in target], matched):
+            if idx is None:
+                continue
+            flag = '   <-- defined too late' if idx < prev else ''
+            print('  %#010x  %s%s' % (addr, drafts[idx][0], flag))
+            prev = max(prev, idx)
+        return 1
     return 0
 
 

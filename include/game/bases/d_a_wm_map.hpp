@@ -10,6 +10,10 @@ class daWmMap_c : public dWmDemoActor_c {
 public:
     int GetNodeCount(int); ///< @unofficial
     void GetNodePos(long nodeIdx, mVec3_c &pos);
+    /// @unofficial Looks up a node by name instead of index. Evidenced by
+    /// daWmSmallCloud_c::setPosFromCourseNode() (0x179F10) tail-calling
+    /// GetNodePos__9daWmMap_cFPCcR7mVec3_c.
+    void GetNodePos(const char *nodeName, mVec3_c &pos);
 
     dHeapAllocator_c mAllocator;
     dWmMapModel_c mModels[4];
