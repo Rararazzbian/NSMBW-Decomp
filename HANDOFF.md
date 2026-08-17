@@ -1302,10 +1302,35 @@ Forcing the trip count to 1 makes the registers identical to landed
 `d_a_wm_cloud.cpp` (`r27`-`r31` all match) and the rotation is STILL wrong, so
 loop count is not the lever either.
 
-Being probed: whether the array size (`ANIM_COUNT` 6 vs cloud's 1) drives it,
-and whether folding the outer consumer into the loop's first iteration produces
-one ascending group -- which by the rule above would give exactly the target's
-`[0x8, 0xc, 0x10]`.
+**Both remaining hypotheses are now refuted, and this is a WALL. Stop grinding it.**
+
+| lever | result |
+|---|---|
+| array size (`ANIM_COUNT` 1 vs 6, destructive) | rotation byte-identical; registers moved, slots did not |
+| `mModel.create()` moved after the loop | slots become exactly `[0x8, 0xc, 0x10]` -- **and 39 instructions differ** |
+| outer consumer folded into the loop's `i == 0` branch | same rotated shape, NOT the single ascending group the rule predicts |
+| member vs local `resFile` | rotation byte-identical (previous round) |
+| decl order / loop shape / naming / `const` (7 variants) | literally identical bytes (round one) |
+
+**A trap worth remembering from this:** moving the call after the loop reproduces
+the target's exact slot triple *for the wrong reason* -- the call then sits in
+the wrong place in the instruction stream and wrecks 39 instructions. **The
+right numbers are not the right answer.** Always re-check the whole function,
+not the metric you were steering on.
+
+One methodological catch worth copying: the `i == 0` probe was first run at
+`ANIM_COUNT = 1`, where the optimizer proved the guard always true and erased
+the branch, silently reproducing the unmodified baseline. It had to be re-run
+with a real trip count for the guard to be genuine control flow. **A "no change"
+result is only meaningful once you have confirmed your change survived
+optimisation.**
+
+The rule explains the LOOP's two-item ordering in every variant. What remains
+unexplained is why the single pre-loop consumer sits at the group's LOW end in
+landed cloud, landed dokan_route and ghost's target, but at the HIGH end in
+every draft that keeps the call before the loop. That is a fourth wall. Ghost
+stays at 12/13 with all sections and the vtable clean; it is the closest
+unlanded unit in the family.
 
 
 
