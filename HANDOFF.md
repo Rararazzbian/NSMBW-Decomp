@@ -1985,8 +1985,30 @@ header's own field names (`m_114`, `m_118`, ...) self-document `EGG::Effect`
 ending at `+0x114`, and the second instance lands exactly one stride later.
 `mStateMgr`'s `0x58` is still only a subtraction, not a component sum.
 
-**Skeleton compiles; `sizeof` reads `0x4dc` against the target's `0x508` -- 44
-bytes short.** All nine state names came straight out of `original/d_basesNP.rel`'s
+**Now 40/66 with the layout exact.** `classInit` reads `li r3, 0x508` and all
+four confirmed member offsets (`0x228`/`0x260`/`0x388`/`0x4b0`) land on target.
+
+The 44 bytes were **three gaps, not one** -- `0x4` before `mAnimTexSrt`, `0xc`
+before `mEffect1`, `0x1c` after `mStateMgr` -- found by laying the skeleton's own
+constructor offsets beside the target's and watching the divergence grow twice
+then hold flat. `mStateMgr` measured `0x3c`, not the `0x58` assumed earlier from
+a subtraction, and that correction is what revealed the third gap. They are
+sized placeholders (`u32`, `u32[3]`, `u32[7]`), correct in size but not yet a
+decompilation; a `MoveUp`/`MoveDown` actor needs target heights, a speed and a
+timer, which is exactly the shape of field that leaves no constructor trace.
+
+**The 40 came mostly from the class declaration, not from writing bodies.**
+Declaring `sFStateMgr_c<daWmSandPillar_c, sStateMethodUsr_FI_c>` instantiated a
+family of template methods from landed headers and **15 matched immediately with
+zero code written**. Only ONE of the 14 trivial `blr` stubs is in the vtable
+(slot 23, `finalUpdate`); the other 13 are plain non-virtual helpers.
+
+Remaining: real `create`/`execute`/destructor bodies (which should also clear
+the `FUNCTION ORDER IS WRONG` warning, since it comes from two weak
+instantiation points triggering at the wrong place while those are
+placeholders), then the nine state triples, then six larger unknown functions.
+
+Superseded: All nine state names came straight out of `original/d_basesNP.rel`'s
 `.data` at `0x46fe8-0x47145`: Ready, BottomWait, MoveReady, MoveUp, TopWait,
 MoveDown, BottomWaitForever, TopWaitForever, TopWaitFromTheStart.
 
