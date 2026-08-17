@@ -1740,6 +1740,25 @@ waits on `create`/`createModel`.
 
 `.data 0x190`, `.bss 0x10` and `.ctors` remain exact throughout.
 
+**Round 4: course is at 15/23 MATCH with two functions one instruction short.**
+`openNeighbors` is 84 of 85 (a missing trailing `addi` for a rodata base) and
+`updateHelpFade` 43 of 44 (an `r4`-vs-`r5` register choice in two `setRate`
+calls) -- the latter stopped deliberately, it is the register wall.
+`fn_80103420` is implemented for real against the call site's argument registers
+now that `syms.txt` resolves it.
+
+`fn_2_191BF0` is declared **argument-less**, corrected from an earlier
+assumption: re-reading the bytes shows `r3` holds a leftover address from an
+unrelated preceding load, not `this` and not the search result. Declared and
+documented as unverifiable-while-blocked rather than given a confident wrong
+signature.
+
+**Do not start `create` (219 of 224).** This unit cannot land until whichever TU
+owns `.text:0x191BF0` lands, so large-function work here has no landing path.
+The right move is to identify and bound that TU -- it is called from two
+different functions, which suggests a shared helper other `wm` actors may also
+need. Being scouted.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
