@@ -1272,8 +1272,40 @@ draft `[0x10, 0x8, 0xc]`.
 allocation, and not the stack-slot-order problem that declaration order fixes
 (smallcloud's `char arcName[8]` -> `[6]`). Do not spend more variants on the
 declaration-order family; it is ruled out. The one untested structural
-difference: cloud and smallcloud use a **member** `mResFile` where ghost's
-target genuinely uses a **local** `resFile`.
+difference (cloud and smallcloud use a **member** `mResFile` where ghost's
+target uses a **local** `resFile`) is also REFUTED: making it a member left the
+6 rotation lines byte-identical, and the 3 lines that did change confirmed the
+target really is stack-relative (`r1+0x14`).
+
+### The mechanism, confirmed against landed retail bytes
+
+MWCC allocates these by-value argument temporaries in **groups**, and the groups
+come out in REVERSE order while the slots WITHIN a group ascend. Established by
+a synthetic N=4 probe and then independently confirmed against a landed,
+byte-exact function of the same shape --
+`d_a_wm_dokan_route.cpp::createModel`, which has two by-value consumers per
+iteration:
+
+```
+dokan_route (LANDED, byte-exact):
+  resMdl-outer   0x8    <- lowest
+  group 1: resAnmChr 0x14, resMdl-copy1 0x18
+  group 2: resAnmTexSrt 0xc, resMdl-copy2 0x10   <- later group, LOWER addresses
+```
+
+The decisive observation: in **both landed units and in ghost's target**, the
+pre-loop `resMdl` consumer sits at the LOWEST address with everything after it
+ascending. Our draft puts it HIGHEST. So the loop is not the problem -- the
+question is why our pre-loop consumer is grouped as though it came last.
+
+Forcing the trip count to 1 makes the registers identical to landed
+`d_a_wm_cloud.cpp` (`r27`-`r31` all match) and the rotation is STILL wrong, so
+loop count is not the lever either.
+
+Being probed: whether the array size (`ANIM_COUNT` 6 vs cloud's 1) drives it,
+and whether folding the outer consumer into the loop's first iteration produces
+one ascending group -- which by the rule above would give exactly the target's
+`[0x8, 0xc, 0x10]`.
 
 
 
