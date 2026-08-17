@@ -1886,6 +1886,35 @@ unblocks a 15/23 draft sitting next door. One large function (`fn_2_1917E0`,
 226 instructions) and one medium (`fn_2_1915D0`, 121); nothing else notable.
 Being authored in `wip/wm_units/agent_koopa_castle/`.
 
+### `d_a_wm_sandpillar.cpp` — NOT a leaf actor; budget accordingly
+
+Its suspicious vtable slot is cleared (see the corrected out-of-unit rule above),
+so it is authorable. But it is structurally unlike everything else in this
+family, and the leaf-actor playbook will not carry it.
+
+From the constructor (`fn_2_1776C0`, 0x160 bytes), read directly: it calls
+`__ct__14dWmDemoActor_cFv`, then constructs `dHeapAllocator_c` `+0x18c`,
+`m3d::mdl_c` `+0x1ac`, `m3d::fanm_c` `+0x1ec`, an `anmChr_c`-vtable'd member
+`+0x234`, an `anmTexSrt_c`-vtable'd object `+0x260`, **two**
+`dEf::dLevelEffect_c` objects, and `sStateMethodUsr_FI_c` at `+0x4b0`. Its
+`__sinit` is `0x740` -- almost certainly building a state-descriptor table, not
+the usual `sc_ForceList` boilerplate.
+
+So it hand-rolls state machinery as a direct member while deriving from
+`dWmDemoActor_c`. The machinery already exists landed in this project:
+`include/game/sLib/s_State.hpp`, `s_StateMethod.hpp`, `s_StateInterfaces.hpp`,
+`s_StateIDChk.hpp`, `s_FStateMgr.hpp`, and **`include/game/bases/d_actor_state.hpp`
+shows the exact pattern** (`sFStateMgr_c<T, sStateMethodUsr_FI_c> mStateMgr;`) --
+read that first rather than reversing `s_State.hpp` bottom-up.
+
+66 functions, all anonymous, largest ~96 instructions. **13 `blr`-only stubs
+already located by address** (`0x177CE0, 0x178000, 0x1780F4, 0x178100,
+0x1781B0, 0x1781C0, 0x178540, 0x1785D8, 0x1785E0, 0x178660, 0x178670,
+0x178780, 0x178850`), plus six `0x10` and three `0x1C` functions that are
+probably more of the same family. Those should close almost immediately once the
+class compiles -- get the skeleton and the member offsets right FIRST, since a
+single wrong member offset presents as many broken functions at once.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
