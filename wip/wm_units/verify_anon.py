@@ -34,6 +34,23 @@ its closest candidate.
 A name after `MATCH <-` is a real pairing. A name after `differing vs ~` is only
 the closest remaining draft function BY SIZE and is frequently not the target's
 actual identity -- do not read it as one, and do not pass it on as one.
+
+LIMIT OF THE PAIRING, AND OF THE ORDER CHECK BUILT ON IT
+--------------------------------------------------------
+The pairing is greedy on instruction content, so **two functions with identical
+bodies can be paired to each other's targets**. That is the same "two functions,
+one body" trap `check_vtable.py` exists for, and it reaches this tool too.
+
+Real case: `d_a_wm_sandpillar.cpp`'s `__dt__Q23mEf8effect_cFv` was paired with
+target `fn_2_179290`, which on inspection is `sStateID_c`'s scalar deleting
+destructor -- a different class entirely. Deleting-destructor wrappers (null
+check, one member-dtor call, optional `__dl__`) are byte-identical in shape
+across unrelated classes.
+
+Consequence: a reported `FUNCTION ORDER IS WRONG` can be an artefact of a
+mis-pairing rather than a real ordering defect. **Before acting on an order
+violation, read the target function at that address and confirm it is what the
+tool says it is.**
 """
 import os
 import re
