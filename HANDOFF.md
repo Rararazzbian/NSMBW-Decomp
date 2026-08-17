@@ -1572,7 +1572,19 @@ reverses EVERYTHING for our source, as if there were no loop/non-loop
 distinction at all. No source-level lever has been found that reproduces the
 distinction.
 
-Recorded as a **two-unit wall, characterised but unsolved**. Do not re-test:
+**CLOSED AS A WALL after a deliberate attempt to break the model.** Rather than
+test an eleventh lever, the model itself was doubted and re-derived from raw
+bytes: (a) exactly five `0xNN(r1)` slots exist, each traced to the instruction
+that writes and the one that reads it -- every group is a genuine re-spill of a
+value already live in a callee-saved register; (b) the loop is an ordinary
+post-test shape with ONE body instantiation, no peeling or unrolling, and PRE
+executes in straight-line code before the loop label; (c) POST's spill is the
+first instruction after the back-edge. The model survived.
+
+The target's behaviour is now certain to instruction level. What is unknown is
+which compiler-internal mechanism scopes the reversal to loop-local groups for
+the original source. Two units, ten levers, no eleventh idea that is not a
+restatement of the tenth. Do not re-test:
 declaration order, loop shape, naming, `const` qualifiers, member-vs-local
 storage, array size, statement position, folding into the loop's first
 iteration, an extra `getRes()` temporary, or swapping the two `getRes()` calls
