@@ -2313,8 +2313,18 @@ them**. Reporting Manta would have sent someone to author the wrong unit.
 class body in a shared header**, so it is an inline member with weak linkage,
 not an out-of-line function in an un-decompiled TU. That is a materially
 different situation from what `extern "C" int fn_2_171400()` assumes, and it is
-being tested: if a real `dScWMap_c::getWorldNo()` call matches byte-for-byte
-without the weak copy being placed, sandpillar is **not blocked at all**.
+**TESTED, and the `extern "C"` convention is CORRECT.** Calling
+`dScWMap_c::getWorldNo()` for real emitted `getWorldNo__9dScWMap_cFv, weak`
+as a PLACED 3-instruction function at the tail of `.text` (`+0x10`),
+byte-identical to the target's own `fn_2_171400`, NOT stripped. The build
+compiles landed slices fresh and copies un-landed regions verbatim, so there is
+no linkable WM_MAP object to weak-dedupe against -- sandpillar's own copy is the
+only candidate and shifts everything downstream. The call site also went
+0 -> 11 differing: spelling it `ClassName::method()` rather than through the bare
+`extern "C"` declaration changed MWCC's register scheduling around the call.
+
+**SANDPILLAR IS PARKED at 61/66**, correctly blocked on WM_MAP. Do not
+"improve" that `extern "C"` declaration into a typed call until WM_MAP lands.
 
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 

@@ -320,8 +320,27 @@ void daWmKinokoBase_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
     }
 }
 
+/// @unofficial The unit's last defect, precisely localised but NOT solved this
+/// round -- see the agent report for the full compiler-behaviour writeup and
+/// what was ruled out.
+///
+/// DO NOT "fix" this by reverting to a bare `return "";`. That reads as clean
+/// under all three checkers (`check_sections`/`check_vtable`/`verify_anon`),
+/// but only by COINCIDENCE: the 1-byte pooled literal plus 7 bytes of
+/// alignment padding before the vtable sums to the same 8 bytes the real
+/// trailing object is missing, so `.data`'s TOTAL size still lands on 0x1c0
+/// even though `__vt__16daWmKinokoBase_c` sits at unit offset 0x90 instead of
+/// the target's 0x88. `check_sections.py` only compares aggregate section
+/// size, not internal offsets, and `check_vtable.py` only compares SLOT
+/// CONTENT, not the vtable object's own address -- neither catches this. The
+/// `static char[8]` shape below is the worse-looking but MORE CORRECT state:
+/// it gets the vtable's address right (matching the target exactly) at the
+/// cost of an honest, checker-visible 8-byte `.bss` overshoot, which is the
+/// one real thing left to fix.
+static char smc_emptyModelName[8] = "";
+
 const char *daWmKinokoBase_c::getModelName() {
-    return "";
+    return smc_emptyModelName;
 }
 
 void daWmKinokoBase_c::vf80() {}
