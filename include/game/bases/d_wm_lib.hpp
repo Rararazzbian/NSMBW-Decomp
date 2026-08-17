@@ -79,6 +79,14 @@ namespace dWmLib {
     int getPointDir(const mVec3_c &v1, const mVec3_c &v2);
     int getEnemyRevivalCount(int, int);
 
+    /// @unofficial Guards the "all courses complete" cutscene branches in
+    /// daWmKinokoBase_c::processCutsceneCommand. Mangled IsAllComplete__6dWmLibFv.
+    bool IsAllComplete();
+    /// @unofficial Mangled clearZoromeTime__6dWmLibFv.
+    void clearZoromeTime();
+    /// @unofficial Mangled setStartPointKinokoHouseKindNum__6dWmLibFUc.
+    void setStartPointKinokoHouseKindNum(unsigned char kind);
+
     nw4r::math::VEC3 GetModelNodePos(const m3d::bmdl_c *model, int nodeId);
 
     static ForceInCourseList_t sc_ForceList[] = {

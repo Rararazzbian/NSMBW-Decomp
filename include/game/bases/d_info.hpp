@@ -71,7 +71,12 @@ public:
     int mCurrentCourseNode;
     char pad2[0xc];
     int m_54;
-    u8 pad3[0x8];
+    u8 pad3[0x4];
+    /// @unofficial [+0x5c] Set from dWmLib::getStartPointKinokoHouseKindNum() by
+    /// daWmKinokoBase_c::processCutsceneCommand's cutscene-command-0x3c branch,
+    /// which does `stw r0, 0x5c(r4)` on dInfo_c::m_instance. Declared int because
+    /// the target stores a word, not a byte. Total size of pad3 is unchanged.
+    int mStartPointKinokoHouseKind;
     int m_60;
     /// @brief [0x64] and [0x68]. Were hidden inside `pad4[0x8]`; both are plain
     /// `stw`s of small int/bool-like values from daPyDemoMng_c::executeGoalCastle.
