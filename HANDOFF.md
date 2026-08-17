@@ -1755,7 +1755,28 @@ been frozen as a false "belongs to an undecompiled class" conclusion for three
 rounds. Never count enum positions in `f_profile_name.hpp`; it has macro-driven
 skew.
 
-Now **14/20**: `TriggerCastleStopReaction` exact, `applyStopReaction` 58 -> 18
+Now **15/20**, with `checkCourseResult` **189 -> 25** -- the best single-function
+result of the session. The path, in order: `switch` conversion (189 -> 184),
+hoisting singleton loads into named locals (184 -> 167), rewriting a ternary
+between two adjacent constants as an explicit `if`/`else` (167 -> 78),
+reordering the CASE LABELS without touching dispatch order (78 -> 30), a branch
+polarity flip (30 -> 27), and staging `mVec3_c::Zero` through a local instead of
+passing its address (27 -> 25). All eight levers are catalogued in
+`AGENT_CONTEXT.md`.
+
+The residual 25 is frame size (target `-0x30`, draft `-0x40`: the target reuses
+one stack slot for two `mVec3_c` temporaries) plus one `f2`/`f3` register-role
+swap -- scheduling only.
+
+**`processCutsceneCommand` (173) has a diagnosed structural defect.** At the
+divergence point the target does `lwz r12,0x60(r31); lwz r12,0x68(r12); bctrl`
+-- a VIRTUAL dispatch through the vtable -- where the draft falls straight into
+the next case body. A qualified call (`dWmDemoActor_c::setCutEnd()`) compiles to
+a direct `bl`; an unqualified one on `this` goes through the vtable. Count slot
+`0x68` against the class's own vtable first to confirm which method is really
+being called.
+
+Earlier this round: `TriggerCastleStopReaction` exact, `applyStopReaction` 58 -> 18
 (the residual is entirely the missing `fn_80103420` call and its epilogue), and
 `fn_2_15FAA0` 14 -> 6 as a real member `getKoopaShipStopPos()`. The last 6 are
 pure instruction scheduling among identical operands on identical registers --
