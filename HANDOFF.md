@@ -1464,11 +1464,15 @@ straight from `stw r3, 0x1a4(r30)`), `m3d::smdl_c mModel@0x1a8`,
 **Two things must be resolved before this unit is landable, neither of which is
 a matching problem:**
 
-1. A field at `this+4`, read as a word with the low byte masked, drives
-   `GetCourseTypeFromCourseNo` and the object-kind checks. The draft reproduces
-   the bytes with `*(int*)((char*)obj+4) & 0xff`. That is a cast, not a
-   decompilation, and it must not land. It is NOT `fBase_c::mProfName` -- that
-   compiles to offset 0x8 as a halfword.
+1. RESOLVED. The field at `this+4` is **`fBase_c::mParam`**. `execute()` reads
+   it as a full unmasked word for the `c_START_ID` comparison; every other use
+   masks the low byte, which is `ACTOR_PARAM(CourseNo)` -- `dWmObjActor_c`
+   already declares `ACTOR_PARAM_CONFIG(CourseNo, 0, 8)` and landed
+   `d_a_wm_smallcloud.cpp` already uses it that way. Use
+   `ACTOR_PARAM(CourseNo)` for the object's own, `ACTOR_PARAM_LOCAL(obj->mParam,
+   CourseNo)` for searched objects, and bare `mParam` unmasked for the
+   `c_START_ID` compare. Per-call-site `cmpwi` vs `cmplwi` signedness had to be
+   confirmed by testing each site. No cast survives.
 2. Five `dWmLib` free functions the target calls do not exist in
    `include/game/bases/d_wm_lib.hpp`: `isSpecialWorld`, `IsAllComplete`,
    `isKoopaShipOnCurrentWorld`, `isSpecialWorldCourseOpen`,
@@ -1476,8 +1480,26 @@ a matching problem:**
    at a time** with five-binary verification between each -- a batch that fails
    says nothing about which member is wrong.
 
-Cheapest remaining work, in order: `processCutsceneCommand` (11 differing),
-`__sinit` (3), `updateSpecialWorld` (29), `execute` (29), `updateHelpFade` (37).
+Now **15/23**. `execute`, the constructor and `isWorld2SpecialType` all closed.
+Cheapest remaining: `updateHelpFade` (1 real differing instruction), then
+`openNeighbors` (57).
+
+`__sinit`'s 3 differing is **entangled, not isolated**: the missing leading pool
+content is the 8-byte bias-double for a runtime int-to-float conversion
+(`xoris`+`lfd`+`fsubs`) of the literal `60`, because the target converts an int
+at runtime where the draft's stub bodies pass a folded `60.0f`. `__sinit`,
+`.rodata`, `openNeighbors` and `updateOpenAnim` all close together.
+
+**MWCC lever worth reusing:** `return a == b;` compiles branchlessly via the
+`cntlzw`/`srwi` trick; nested `if`/`return` statements produce branch-based
+early returns (`bnelr`). Reach for this when a residual is "right logic, wrong
+branch structure".
+
+**Tool correction:** `verify_anon.py`'s `differing vs <name>` was only the
+closest remaining draft function BY SIZE, and I relayed those labels to an agent
+as if they were identities -- `fn_2_161840` was reported as
+`processCutsceneCommand` while actually being `isWorld2SpecialType`. It now
+prints `differing vs ~<name>`; only a name after `MATCH <-` is a real pairing.
 `__sinit` at 3-of-33 is the same signature seen twice today and both times it
 was the three `lfs` offsets from a `.rodata` pool short at the FRONT -- check
 for a real undefined object (smallcloud's `mData`) before reaching for a
