@@ -1483,6 +1483,58 @@ was the three `lfs` offsets from a `.rodata` pool short at the FRONT -- check
 for a real undefined object (smallcloud's `mData`) before reaching for a
 `DECL_WEAK` seed (grid's fix).
 
+### `d_a_wm_kinoko_base.cpp` — 15/17, and `daWmKinokoBase_c` sizeof is 0x290
+
+Authored from scratch this session in `wip/wm_units/agent_kinoko_base/`. Bounds,
+all evidence-backed, `SECTIONS CLEAN` and `VTABLE CLEAN`:
+
+```
+.text 0x16b2d0-0x16bda0   .ctors 0x400-0x404   .rodata 0x8ac8-0x8af0
+.data 0x458b0-0x45a70     .bss   0xfe80-0xfe90
+```
+
+**The sizeof is 0x290. Both 0x2B0 and 0x284 were wrong, and I recorded 0x284 as
+settled.** The argument is structural rather than arithmetic: `createModel` is
+`daWmKinokoBase_c`'s OWN method -- called non-virtually by `create()` -- and it
+reads `0x280`/`0x288`/`0x28c` through `this`. A base method cannot see derived
+members through `this`, so `mAnimResFile`, `mCutsceneTimer`, `mAnimResNames` and
+`mModelResName` belong to the BASE. The component sum then lands exactly on
+0x290 with no gap, and the leaf's single `mFlag` gives 0x294, matching
+`daWmKinoko1up_c`'s own `classInit` literal.
+
+**Consequence for the finished leaf:** `wip/wm_kinoko_1up/complete/d_a_wm_kinoko_1up.cpp`
+declares `mAnimResNames`/`mModelResName` as its OWN members. Once this base
+lands owning them, the leaf will have duplicates at wrong offsets. The leaf must
+be changed to inherit them before it can land.
+
+Two functions remain:
+
+- **`createModel` at 10 of 161**, and all ten are the same systematic +0x10
+  stack-offset shift -- ONE missing 16-byte stack object, not ten problems.
+  Best lead: a non-null out-parameter to one of three `.create()` calls that the
+  draft passes `nullptr`. This is the closest unlanded function on the project.
+- `processCutsceneCommand` at 192 of 209. Diagnosed: the draft's two command
+  arms both end in an identical `setCutEnd()` and MWCC tail-merges them into one
+  call, where the target keeps two separate inlined calls. Needs a shape that
+  defeats the merge.
+
+Findings worth keeping from this unit:
+
+- Function DEFINITION order (`.cpp` order) controls `.text` placement; class
+  DECLARATION order controls vtable slots. They are independent, and getting
+  them backwards cost two wrong `check_vtable` runs.
+- Comparison operand order changes register scheduling: writing
+  `X == c_StartPointKinokoHouseID` rather than the reverse closed 4 of 5
+  differing instructions in `execute`; a `==`/`!=` polarity flip closed the 5th.
+  **Settle branch polarity from the target's `beq`/`bne` bytes, not from guessed
+  semantics.**
+- An unreferenced `"cobKinokoAppear"` string sits in this unit's `.data` and is
+  loaded by no instruction in any of its functions, yet is required for
+  `createModel`'s stack offsets. Kept as a dead local; origin unsettled.
+- `dsChrLib::bindAnimToNode` is real -- implemented in the DOL at `0x800DFA80`
+  -- only its header is missing here. Several `dWmLib` free functions are
+  likewise missing. All shadowed, none applied.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
