@@ -710,3 +710,39 @@ its seven slots are `float`. Sized placeholders are a legitimate way to get a
 layout right, but **replace them with individually typed fields as soon as any
 function reads them** -- an array of the wrong element type will silently
 mis-shape every access.
+
+
+## A weak symbol defined ONLY in an un-landed region will be PLACED, and breaks the build
+
+This is a property of how the build works, and it changes when
+"unreferenced weak symbols are not placed" applies.
+
+The build reconstructs each `.rel` by compiling the landed slices fresh and
+copying everything else **verbatim** from the original binary. Un-landed regions
+are not linkable objects, so the linker cannot weak-dedupe a landed unit's copy
+against them.
+
+So if a landed unit REFERENCES a weak inline function whose only other
+definition lives in an un-landed TU, that unit's own copy is the sole candidate,
+gets placed inside or after its claim, shifts every byte downstream, and breaks
+the whole-binary MD5. It is not a benign `.text` over-claim.
+
+Measured on `d_a_wm_sandpillar.cpp`: calling `dScWMap_c::getWorldNo()` -- an
+inline member declared in a shared header, so weak -- emitted
+`getWorldNo__9dScWMap_cFv, weak` as a real 3-instruction function at the tail of
+`.text` (`+0x10`), byte-identical to the target's own `fn_2_171400`. Not
+stripped. The target resolves that call to WM_MAP's placed copy, and WM_MAP is
+not landed.
+
+**So the `extern "C"` FUN-address convention is the correct tool for a
+REL-internal call into an un-landed TU**, not a placeholder that happens to
+work. Do not "improve" it into a real typed call until the TU that owns the
+symbol has landed.
+
+Two other things confirmed while measuring this, worth knowing:
+- `NOINLINE` genuinely expands here (`__CWCC__` is defined), so a `NOINLINE`
+  inline member really is emitted out-of-line rather than folded away.
+- **Calling the same function as `ClassName::method()` rather than through a
+  bare `extern "C"` declaration changed MWCC's register scheduling** around the
+  call site -- same statements, same order, 11 of 63 instructions differed. The
+  call spelling is not neutral.
