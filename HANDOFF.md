@@ -2024,6 +2024,33 @@ Remaining: the nine state triples (27 functions -- the largest block), then six
 larger unknowns. Watch `.data` as the `sFStateID_c` statics land; if it
 overshoots, the state list is wrong.
 
+**How to get the state-to-address map: read `__sinit`.** It is `0x740` bytes,
+far too large for `sc_ForceList` boilerplate, and it builds the state-descriptor
+table. `STATE_DEFINE` constructs one `sFStateID_c<T>` per state, each taking
+three pointer-to-member-functions, so `__sinit` contains nine construction
+sequences each loading three `.text` addresses -- **the whole map, in
+declaration order, from one function.** The `.data` state-name strings appear in
+the same order.
+
+Do NOT try to extract it from the REL relocation table: that was attempted and
+did not converge, returning a repeating `0x1b0`-stride pattern of addresses
+(`0x128c8`, `0x129a8`, `0x129c8`) outside the unit's own `.text` entirely.
+Unexplained; the dump is kept at
+`wip/wm_units/agent_sandpillar/reloc_dump.txt` in case the stride means
+something later.
+
+GAP 3's four fields now have confirmed roles from real reads and writes, though
+they are not yet named or typed precisely: `+0x4f4` a current value stepped
+toward a target by `fn_2_177E70`; `+0x4f8` the target, from the per-type rodata
+table with a sign flip in one branch; `+0x4fc` an integer counter gating a
+`mStateMgr` vtable call at slot 6 when it hits zero; `+0x504` a flag shared with
+`fn_2_1783C0`, which calls `setRate()` on `mAnim`.
+
+When writing the triples, get ONE of each near-mirror pair (`MoveUp`/`MoveDown`,
+`TopWait`/`BottomWait`) fully exact before writing its twin -- a shared mistake
+copied into both costs twice as much to unpick, and the twin is nearly free once
+the first is right.
+
 Earlier: The destructor was already matching from the layout work, which
 independently corroborates the member order. `calcMdl` (`fn_2_177C30`) is a full
 MATCH -- the same `mMatrix.trans`/`ZXYrotM` + `setLocalMtx`/`setScale`/`calc`
