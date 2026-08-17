@@ -2014,6 +2014,19 @@ probably more of the same family. Those should close almost immediately once the
 class compiles -- get the skeleton and the member offsets right FIRST, since a
 single wrong member offset presents as many broken functions at once.
 
+### castle is PARKED at 16/20
+
+`.data` and `.rodata` exact, vtable clean with zero unverifiable slots. Four
+characterised residuals, none a logic defect: `createModel` (6, the ordering
+wall), `checkCourseResult` (25, frame size plus one `f2`/`f3` role swap),
+`getKoopaShipStopPos` (6, scheduling), `__sinit` (16, the parked guard).
+
+**Narrowing a local's lifetime does NOT reclaim its stack slot.** Putting each
+`mVec3_c` temporary in its own braced scope, so the two lifetimes are disjoint,
+left the frame at `-0x40` against the target's `-0x30` and did not move a single
+instruction. That is the obvious first thing to try whenever a draft's frame is
+larger than the target's, and at this optimisation level it does nothing.
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
