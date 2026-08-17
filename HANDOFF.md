@@ -1531,10 +1531,30 @@ be changed to inherit them before it can land.
 
 Two functions remain:
 
-- **`createModel` at 10 of 161**, and all ten are the same systematic +0x10
-  stack-offset shift -- ONE missing 16-byte stack object, not ten problems.
-  Best lead: a non-null out-parameter to one of three `.create()` calls that the
-  draft passes `nullptr`. This is the closest unlanded function on the project.
+- **`createModel` at 10 of 161. It is the SAME WALL as `d_a_wm_ghost.cpp`.**
+  The "missing 16-byte object" reading was wrong and has been retracted on
+  evidence: both frames are `stwu r1, -0x60(r1)`, so there is no room for a
+  missing local. All three `.create()` sites pass literal zero for the
+  out-param, killing that lead too. What is actually happening is a PERMUTATION
+  of five already-present by-value temporaries across the same offset set
+  `{0x8, 0xc, 0x10, 0x14, 0x18}` -- target puts the first `resMdl` copy at
+  `+0x8`, the draft at `+0x18`.
+
+  That is the identical signature to ghost: **the target's FIRST by-value
+  consumer sits LOWEST, every draft puts it HIGHEST.** Two independent units now
+  exhibit it, which makes it far more tractable than one. See the ghost section
+  for the group-allocation mechanism and the eight levers already ruled out.
+
+  Untested and only available on THIS unit: `createModel` calls `getRes()`
+  twice. If `getRes()` returns a `ResFile` by value, that is an extra by-value
+  temporary earlier than any of the five, and an extra early group would
+  renumber everything after it. Ghost had no equivalent to test.
+
+  Also measured here: moving `playModes` to file scope -- the lever that fixed
+  a scheduling problem in `d_a_wm_kinoko_1up.cpp` -- **regressed this unit**,
+  10 -> 18 differing AND breaking a previously-clean `__sinit`, by pulling
+  `playModes` out of the merged `.rodata` pool `__sinit` also draws from. A
+  lever that works in one unit can actively hurt another.
 - `processCutsceneCommand` at 192 of 209. Diagnosed: the draft's two command
   arms both end in an identical `setCutEnd()` and MWCC tail-merges them into one
   call, where the target keeps two separate inlined calls. Needs a shape that
