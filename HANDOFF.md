@@ -1545,10 +1545,38 @@ Two functions remain:
   exhibit it, which makes it far more tractable than one. See the ghost section
   for the group-allocation mechanism and the eight levers already ruled out.
 
-  Untested and only available on THIS unit: `createModel` calls `getRes()`
-  twice. If `getRes()` returns a `ResFile` by value, that is an extra by-value
-  temporary earlier than any of the five, and an extra early group would
-  renumber everything after it. Ghost had no equivalent to test.
+  The `getRes()` lead is RULED OUT from the target bytes: both calls are a `bl`
+  followed by a single `stw`, with no hidden-pointer copy -- `ResFile` fits in
+  one register and neither call materialises a by-value temporary.
+
+### The refined rule: the reversal is scoped to the LOOP
+
+This unit has a POST-loop by-value consumer (`mChrBlend.create`), which landed
+`d_a_wm_dokan_route.cpp` does not. That extra data point separates two readings
+the earlier work could not:
+
+```
+                        target        draft
+PRE   before loop        0x8          0x18
+LOOP-1  1st in body      0x14, 0x18   0x10, 0x14
+LOOP-2  2nd in body      0x10         0xc
+POST  after loop         0xc          0x8
+```
+
+**Non-loop groups (PRE, POST) are numbered in plain FORWARD appearance order and
+anchor the low end (`PRE < POST`). Only the loop's OWN per-iteration groups
+reverse relative to each other, in the block above them (`LOOP-2 < LOOP-1`).**
+
+The draft's loop-internal ordering already matches. What is wrong is that MWCC
+reverses EVERYTHING for our source, as if there were no loop/non-loop
+distinction at all. No source-level lever has been found that reproduces the
+distinction.
+
+Recorded as a **two-unit wall, characterised but unsolved**. Do not re-test:
+declaration order, loop shape, naming, `const` qualifiers, member-vs-local
+storage, array size, statement position, folding into the loop's first
+iteration, an extra `getRes()` temporary, or swapping the two `getRes()` calls
+(that last one regresses 10 -> 15).
 
   Also measured here: moving `playModes` to file scope -- the lever that fixed
   a scheduling problem in `d_a_wm_kinoko_1up.cpp` -- **regressed this unit**,
