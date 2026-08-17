@@ -2037,12 +2037,35 @@ verify before building on it.
   as a distinct symbol, tied to exit-time teardown of the nine static
   `StateID_X` objects.
 
-Still open: `lbl_2_rodata_8F84`'s three unreferenced floats
-(`.rodata` UNDER `0x14`). NOT the destructor's. Note that
-`{2160.0, -30.0, -478.0}` is **exactly `dWmLib::sc_ForceList`'s `mVec3_c`** from
-`d_wm_lib.hpp`, which landed `d_a_wm_grid.cpp` and `d_a_wm_smallcloud.cpp` both
-emit into their own `.rodata` pools -- so the likely owner is that header static,
-not anything unknown.
+**The `.rodata` UNDER `0x14` is a SECOND, distinct occurrence of the
+`sc_ForceList` triple, and it is unexplained.** My hypothesis that the missing
+floats were simply `sc_ForceList`'s `mVec3_c` was checked and is wrong in the
+way that matters: the draft ALREADY reproduces that correctly. Verified by
+disassembling the landed siblings' compiled objects (neither `d_a_wm_grid.cpp`
+nor `d_a_wm_smallcloud.cpp` names `sc_ForceList` in source -- it is pulled in
+transitively and invisibly in both):
+
+```
+grid.o        the triple appears ONCE, as three bare 4-byte pool objects
+smallcloud.o  identical shape
+sandpillar    already the same -- and still 0x14 short
+```
+
+The target has **two** blocks:
+```
+lbl_2_rodata_8F84  5 words  { 0.0, 2160.0, -30.0, -478.0, 0.0 }
+lbl_2_rodata_8F98  4 words  { 100.0, 2160.0, -30.0, -478.0 }
+```
+A leading AND trailing zero on the first, and a wholly separate second
+occurrence of the same triple with a different leading scalar. **Neither landed
+sibling has anything like the second block.** No inline method in
+`d_wm_obj_actor.hpp` pulls in a second `dWmLib` reference, and no
+`mVec3_c`/radius-pairing call site exists in any analysed function. Open.
+
+Also note: the `bne`/`bgt` hypothesis for `executeState_MoveReady` was to be
+re-measured "once the destructor is complete" -- but the destructor turned out
+to be complete already, so that condition was met all along and the residual
+persists. The `-ipa file` range-analysis explanation is weaker than it looked.
 
 Parked: `finalizeState_Ready` (3), `createMdl` (4, a stack-slot swap -- note the
 inline-wrapper fix does NOT resolve every instance of that symptom), two
