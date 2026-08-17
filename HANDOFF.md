@@ -1583,10 +1583,34 @@ iteration, an extra `getRes()` temporary, or swapping the two `getRes()` calls
   10 -> 18 differing AND breaking a previously-clean `__sinit`, by pulling
   `playModes` out of the merged `.rodata` pool `__sinit` also draws from. A
   lever that works in one unit can actively hurt another.
-- `processCutsceneCommand` at 192 of 209. Diagnosed: the draft's two command
-  arms both end in an identical `setCutEnd()` and MWCC tail-merges them into one
-  call, where the target keeps two separate inlined calls. Needs a shape that
-  defeats the merge.
+- `processCutsceneCommand` is **CLOSED (192 -> 0)**. The unit is 16/17 with
+  `SECTIONS CLEAN` and `VTABLE CLEAN` and no `unverifiable` slots at all.
+
+  **The tail-merge diagnosis above was WRONG, and checking it is what broke the
+  function open.** All three `setCutEnd()` sites are byte-identical and the
+  target keeps two of them separate, so MWCC was never merging anything. The
+  real defect: the draft called it in both command arms where the target calls
+  it once, in the `0x61` guard chain's `else`. Hunting for a way to suppress an
+  optimisation that was not happening would have produced nothing.
+
+  **Biggest single lever: `if`/`else if` chains vs `switch`.** Converting the
+  second dispatch alone took it 192 -> 24. MWCC collapses a branch in the chain
+  form where the target emits explicit sequential compares. Reach for this on
+  any dispatch-shaped function.
+
+  Also fixed along the way: a wrong `playSound` id (0x26 not 0x25), a wrong
+  argument order on the cross-module effect call (confirmed from the target's
+  own `mr`/`addi` register moves), `setRate`/`setFrame` before `mPlayMode`
+  rather than after, two missing `mVisible` writes, and one genuine tail merge
+  closed by flipping an `if (!X) {A} else {B}` to `if (X) {B} else {A}` --
+  polarity alone, no `return` needed.
+
+**A rising differing-count mid-round is NOT evidence of a wrong turn.**
+`verify_anon.py` scores by raw position, not a realigned diff, so one missing or
+extra instruction early cascades into "differing" for everything downstream.
+This unit's interim counts went 176 -> 182 -> 190 -> 192 through four
+individually-correct fixes, because a structural dispatch defect still dominated
+the score. Anyone steering on that number alone would have reverted all four.
 
 Findings worth keeping from this unit:
 
