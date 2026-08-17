@@ -1436,6 +1436,53 @@ shared with five unrelated actors; fourteen more (`HANACHAN`, `ISLAND`, `ITEM`,
 per-unit disassembly-and-reference sweep; none of it is derivable from
 filenames.
 
+### `d_a_wm_course.cpp` — 12/23 first pass, in `wip/wm_units/agent_course/`
+
+A large novel unit: 22 authored functions plus `__sinit` and the array
+destructor, ~5.1KB, three functions of 224/233/136 instructions. Bounds
+validated by `check_bounds.py`. `.data 0x190` and `.bss 0x10` are EXACT;
+`.ctors` exact; `.text` and `.rodata` are UNDER purely because several bodies
+are still stubs -- symptoms, not independent defects.
+
+`check_vtable.py` reports **VTABLE CLEAN** with all 28 real slots correctly
+assigned, and it auto-trimmed the 30 trailing zero words of the merged label
+without a manual workaround, which is the fix from earlier today working as
+intended. The 3 `unverifiable` lines are the still-differing functions, not
+misassignments.
+
+Confirmed byte-exact: `classInit`, the destructor, `draw`, `doDelete`,
+`calcModel`, `updateState`, `setMatClrAnm`, `searchOpenNeighbor`,
+`getMatClrFrame`, `updateSpecialWorld`(one of two), `vf78`, the array
+destructor.
+
+Class layout established from codegen: `dHeapAllocator_c mAllocator@0x188`,
+`nw4r::g3d::ResFile mResFile@0x1a4` (a MEMBER, like cloud and dokan_route,
+straight from `stw r3, 0x1a4(r30)`), `m3d::smdl_c mModel@0x1a8`,
+`m3d::anmMatClr_c mMatClrAnim[3]@0x1b4` (stride 0x2c, from the ctor's
+`__construct_array`), `mCurrentIndex@0x238`, `mState@0x240`, `mOpenState@0x244`.
+
+**Two things must be resolved before this unit is landable, neither of which is
+a matching problem:**
+
+1. A field at `this+4`, read as a word with the low byte masked, drives
+   `GetCourseTypeFromCourseNo` and the object-kind checks. The draft reproduces
+   the bytes with `*(int*)((char*)obj+4) & 0xff`. That is a cast, not a
+   decompilation, and it must not land. It is NOT `fBase_c::mProfName` -- that
+   compiles to offset 0x8 as a halfword.
+2. Five `dWmLib` free functions the target calls do not exist in
+   `include/game/bases/d_wm_lib.hpp`: `isSpecialWorld`, `IsAllComplete`,
+   `isKoopaShipOnCurrentWorld`, `isSpecialWorldCourseOpen`,
+   `SearchMapObjFromCsvIndex`. Being proven in a shadow header. **Apply them one
+   at a time** with five-binary verification between each -- a batch that fails
+   says nothing about which member is wrong.
+
+Cheapest remaining work, in order: `processCutsceneCommand` (11 differing),
+`__sinit` (3), `updateSpecialWorld` (29), `execute` (29), `updateHelpFade` (37).
+`__sinit` at 3-of-33 is the same signature seen twice today and both times it
+was the three `lfs` offsets from a `.rodata` pool short at the FRONT -- check
+for a real undefined object (smallcloud's `mData`) before reaching for a
+`DECL_WEAK` seed (grid's fix).
+
 ## MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
 
 Regardless of the type's own alignment. This is a placement rule, not a fact
