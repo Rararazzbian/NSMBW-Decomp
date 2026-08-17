@@ -1636,11 +1636,38 @@ non-trivial constructor, so the aggregate is not constant-initialisable.
 
 So the second static is very likely **another aggregate with an `mVec3_c`
 member**, not a bare `mVec3_c`. The arithmetic fits: `ForceInCourseList_t` is
-0x24, and **0x1c is exactly four 4-byte fields plus an `mVec3_c`**. A file-scope
-static aggregate initialised through `__sinit` should also avoid the `.bss`
-overspend, since that is what the landed units already do. Being tested; read
-the retail bytes of `lbl_2_data_44010` to determine the four leading words
-rather than guessing them.
+0x24, and **0x1c is exactly four 4-byte fields plus an `mVec3_c`**. **CONFIRMED as the shape.** With
+`struct KoopaShipStopConfig_t { float; float; mVec3_c; float; float; }` --
+non-const, file scope, `sc_ForceList`'s own recipe -- both sections close
+exactly and two functions improve:
+
+```
+.data    0x1e0 / 0x1e0   EXACT
+.rodata   0x40 /  0x40   EXACT
+createModel   10 -> 6 differing   (every pool-offset instruction now matches)
+__sinit       52 -> 16 differing  (first 27 instructions byte-for-byte)
+```
+
+A control with plain `float`s instead of the `mVec3_c` regressed `.rodata` and
+`.bss` back to UNDER, because MWCC then proves the whole object POD-constant and
+skips runtime init entirely. **The `mVec3_c` member is load-bearing** -- it is
+what forces dynamic initialisation, exactly as in `sc_ForceList`.
+
+Two residuals remain, and they are probably one thing:
+`.bss` is 4 OVER (two 12-byte `__register_global_object` blocks against the
+target's one), and the target's three `stfs` for the `mVec3_c` are GUARDED and
+conditional while a namespace-scope object initialises unconditionally.
+
+The likely answer combines both experiments: a **function-local `static` of this
+struct** inside the inline accessor. Its POD fields are compile-time constants
+and land in `.data`; only the `mVec3_c` sub-object needs a constructor, so only
+that is guarded and only those three `stfs` are conditional. The earlier
+function-local attempt failed only because a bare `mVec3_c` has no constant part
+for `.data` to hold. Being tested.
+
+**Correction to my own earlier steer:** I said a file-scope aggregate would avoid
+the `.bss` overspend "since that is what the landed units do". The measurement
+says otherwise for this object.
 
 Three symptoms probably share that one cause: the section shortfall;
 `createModel`'s 10 residual instructions, which are **offset-only drift of
