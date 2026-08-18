@@ -2284,6 +2284,61 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### koopa_castle 14/16 — and three new MWCC levers, all verified
+
+`processCutsceneCommand` went **218 differing -> MATCH** at 226 instructions,
+and `constructCompanion` **4 -> MATCH**. Both independently re-verified here
+against the target range `0x1910d0-0x191c60`: 13/15 in the unit's own range,
+with only `execute` (20) and `createModel` (6) still open.
+
+**The offset probe — a reusable technique, not a one-off.** To read an unknown
+member offset out of the compiler rather than guessing it: declare
+`struct Probe : TheClass {};`, take `&((Probe *)0)->member`, compile, and read
+the offset straight off the address-materialising instruction. This is how the
+unidentified virtual call in `processCutsceneCommand` was resolved, and it
+applies to every "which member is at 0x…" question this family keeps raising.
+
+**`daWmKoopaCastle_c`'s vtable pointer lives at `this+0x60`, not at offset 0.**
+Confirmed from the constructor, which is byte-identical to the target and does
+`stw r4, 0x60(r30)` with `r4 = __vt__17daWmKoopaCastle_c`. So a virtual call
+reading `lwz r12, 0x60(r30); lwz r12, 0x68(r12); bctrl` is dispatching through
+THIS class's own vtable at slot `0x68/4`, and `execute`'s own dispatch to
+`processCutsceneCommand` independently pins slot `0x60/4 = 24` to it. Reading
+such a sequence as an access through a data member is the wrong default for
+this family.
+
+`cOwnerSetMg_c` is ruled out as the source: it has no vtable at all, and a
+probed cast lands at `0x64`, not `0x60`.
+
+**Three new levers for the catalogue:**
+
+- **MWCC does not tail-merge identical else-branches.** Writing a combined
+  `if (A && B && C)` gives the three failure paths ONE shared else-block; the
+  target duplicates the block per exit. Matching the target means writing the
+  nested `if`/`else` form with the block written out at each exit, which reads
+  worse and compiles right. This closed the last instructions of
+  `processCutsceneCommand`.
+- **Naming a string literal into a local** (`const char *nodeName = "Koopa0";`
+  rather than passing it inline) — took `constructCompanion` 4 -> 2.
+- **Splitting a copy-initialisation into declaration plus assignment**
+  (`mVec3_c pos; pos = f(...);` rather than `mVec3_c pos = f(...);`) — took the
+  same function 2 -> 0. Cheap; try both first on any small residual.
+
+**Two corrections to earlier records for this unit:**
+
+- `field_0x139` is NOT a koopa_castle member. `0x139` is below `0x188`, where
+  this class's own fields start — it is the INHERITED
+  `dWmDemoActor_c::mIsCutEnd`, confirmed by probe and consistent with every
+  landed sibling.
+- `lbl_2_bss_10538` and `lbl_2_bss_10548` are **two separate `.bss` symbols**
+  (0x10 and 0x20 per the target's `.bss` map), not one object read at `+0x10`.
+  `execute` references `lbl_2_bss_10548` directly. The guarded float writes in
+  `__sinit` are plain `.rodata` constant loads, not a runtime CSV lookup —
+  there is no `bl` anywhere in that path.
+
+**Not ready to land**: `.rodata` is 8 under and `.bss` 0x20 under, both owed to
+`execute`'s unbuilt object.
+
 ### kinoko_base: 16/16, layout exact to `0x88`, and the tail is 8 bytes
 
 Re-measured from the target bytes rather than from the earlier summary, and two
