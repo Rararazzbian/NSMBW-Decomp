@@ -2284,6 +2284,62 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## koopa_castle `__sinit`: 19 -> 13, with a 12-shape measured sweep
+
+Unit is 16/17, verified over `0x1910d0-0x191d40` with all three objects. Only
+`__sinit` (`fn_2_191C30`, 58 instructions) is open, at 13 differing.
+
+What moved it: guard test at inlining depth 0 (in the constructor), writes
+pushed to depth 1 via an inline `doInit()`. Also settled -- the guard field must
+be **`s8`, not `bool`**: the target tests with `extsb.`, and `bool` compiles to
+a separate `cmpwi`. That did not change the count but it makes the instruction
+content correct, so keep it.
+
+The sweep, all measured against the same target:
+
+| shape | diffs |
+|---|---|
+| guard + writes both at depth 0 | 19 |
+| guard depth 0 / writes depth 1 (`doInit()`) | **13** |
+| writes pushed to depth 2 | 19 |
+| guard test through a depth-2 accessor | 13 |
+| guard-true assignment moved before the writes | 20 |
+| `doInit()` as a static taking an explicit reference | 13 |
+| `doInit()` as a free function naming the global | **57** -- breaks array registration, length 58 -> 34 |
+| writes as direct scalar field stores | 33 -- length 58 -> 52 |
+| `this` captured into a named local first | 13 |
+| `if (g.mDone == 0)` instead of `if (!g.mDone)` | 13 |
+| writes split into two per-vector helpers | 13 |
+
+Eight distinct shapes all land on exactly 13. That is a strong signal it is one
+register-allocation decision, not a family of source-level choices.
+
+**The residual, read off the instructions.** The target materialises the derived
+pointer only AFTER the `bne`, and then writes the FIRST field through the
+ORIGINAL base (`stfs f2, 0x10(r30)`), switching to the derived register only
+from the second field on. The draft materialises the pointer once, before the
+branch, and uses it uniformly for all six stores.
+
+**And the stack staging is ASYMMETRIC, which no shape has tried to reproduce:**
+
+```
+target                     draft
+stfs f1, 0x18(r1)   <- 1   stfs f2, 0x8(r1)    <- 3
+stfs f2, 0x10(r30)         stfs f1, 0xc(r1)
+stfs f1, 0x4(r3)           stfs f0, 0x10(r1)
+stfs f0, 0x8(r3)           stfs f2, 0x0(r4)
+stfs f2, 0x8(r1)    <- 3   stfs f1, 0x4(r4)
+stfs f2, 0xc(r1)           stfs f0, 0x8(r4)
+stfs f0, 0x10(r1)          stfs f2, 0x18(r1)   <- 1
+stfs f2, 0xc(r3)           stfs f2, 0xc(r4)
+```
+
+The target stages ONE value, writes the first vector, stages THREE, writes the
+second. The draft does three-then-one -- the same counts in the opposite order.
+That asymmetry is a source-level shape (one vector built from a named local, the
+other from a temporary), not a register-allocator whim, and it is the next thing
+to try.
+
 ## kinoko_base's 8 bytes are the CRITICAL PATH for three units
 
 Tried landing `d_a_wm_kinoko_red.cpp` on its own -- it declares

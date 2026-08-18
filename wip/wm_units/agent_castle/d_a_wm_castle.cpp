@@ -183,9 +183,13 @@ void daWmCastle_c::checkCourseResult() {
         csSeqMng->FUN_801017c0((dCsSeqMng_c::CUTSCENE_e) mCutscene, this, player, 200);
     }
 
+    // EXPERIMENTAL: one function-wide local reused across both distant call sites (rather than
+    // two block-scoped locals of the same name) -- testing whether that is what makes the target
+    // allocate a single stack slot for both, instead of two.
+    mVec3_c pos; // see function comment -- uninitialized in the target
+
     if (!dWmLib::isSpecialWorld() && dWmLib::isKoopaShipOnCurrentWorld()) {
         if (mCutscene == dCsSeqMng_c::SMC_DEMO_W1_CASTLE_CLR || mCutscene == dCsSeqMng_c::SMC_DEMO_W3_CASTLE_CLR) {
-            mVec3_c pos; // see function comment -- uninitialized in the target
             construct(fProfile::WM_KOOPASHIP, this, 2, &pos, nullptr);
 
             if (mCutscene == dCsSeqMng_c::SMC_DEMO_W3_CASTLE_CLR) {
@@ -196,7 +200,7 @@ void daWmCastle_c::checkCourseResult() {
     }
 
     if (!IsCourseClear()) {
-        mVec3_c pos = mVec3_c::Zero;
+        pos = mVec3_c::Zero;
         construct(fProfile::WM_KOOPASHIP, this, 1, &pos, nullptr);
     }
 

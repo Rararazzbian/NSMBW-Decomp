@@ -57,9 +57,9 @@ namespace {
     // RESULT of the split: 22 -> 19 differing, and critically the guard
     // byte itself now sits at the CORRECT address (`0x28(r30)` in both --
     // confirmed instruction-for-instruction) instead of +0x18 through a
-    // hoisted pointer. The remaining 19 are ALL the same single residual:
+    // hoisted pointer. The remaining 19 were ALL the same single residual:
     // the target computes the struct's derived pointer (`addi r3,r30,
-    // 0x10`) only AFTER the `bne` guard branch; the draft still computes
+    // 0x10`) only AFTER the `bne` guard branch; the draft still computed
     // it (into r4) right after the guard load and BEFORE testing it --
     // an eagerly-materialised "this" versus a lazily-materialised one.
     // Three more source shapes were tried against exactly this residual,
@@ -68,22 +68,78 @@ namespace {
     // AFTER the guard check, (3) building the two mVec3_c values as named
     // locals first and assigning them in, the same lever that closed
     // constructCompanion's stack-slot permutation. All three still
-    // compiled to 19. This looks like a second, narrower instance of the
-    // project's general "temporary/pointer materialisation timing" wall
-    // (see createModel's characterisation below) rather than something
-    // addressable by further source rephrasing of THIS function --
-    // flagging rather than continuing to guess.
-    // Guard type wraps the bool WITH its trailing 7 unknown/unwritten
+    // compiled to 19.
+    //
+    // SECOND ROUND -- 19 -> 13 via an inline-depth split, not a rephrasing.
+    // The general "inline wrapper depth" rule found elsewhere this session
+    // (createModel's 3-way stack-slot rotation, and the by-value-temporary
+    // wall broken for wm_ghost/kinoko_base) also applies here: pushing the
+    // GUARDED WRITES into their own inline member `doInit()` -- so the guard
+    // test sits at depth 0 (directly in the ctor, calling doInit()) and the
+    // writes sit at depth 1 (inside doInit()) instead of both at the same
+    // depth -- took the residual from 19 to 13. A small depth-pair sweep
+    // around that point (writes pushed to depth 2 via a further `assign()`
+    // wrapper; the guard test itself routed through a depth-2 `isDone()`
+    // accessor; doInit rewritten as a free function taking an explicit
+    // `KoopaShipPos_t&`/operating on the global by name instead of implicit
+    // `this`; the guarded writes split into two separate per-vector helper
+    // calls; the writes expressed as direct scalar field stores instead of
+    // `mPos1 = mVec3_c(...)`; naming `this` into a local first thing inside
+    // the guarded block; and swapping `if (!guard)` for `if (guard == 0)`)
+    // found only two other results: writes-at-depth-2 and the scalar-field
+    // form both REGRESSED (19 and 33 respectively, the scalar form also
+    // changing instruction count outright), and moving the guard-true
+    // assignment before the writes regressed to 20 (already known). Every
+    // other variant reproduced the identical 13-instruction residual below,
+    // with the sole exception of the guard's own STORAGE TYPE (see below).
+    //
+    // The 13 that remain split into two groups, both inside the guarded
+    // block, both variants of the same "materialise the pointer/register
+    // only where it becomes live" pattern the target follows and the draft
+    // does not:
+    //   (a) The guard test itself: the target loads the byte then performs
+    //       ONE `extsb. r0,r0` (sign-extend-and-record, folding the compare
+    //       into the extend) where the draft does a separate `cmpwi r0,0`.
+    //       This turned out to be the STORAGE TYPE of the guard, not the
+    //       test's source spelling: `bool` (unsigned byte, C++ bool
+    //       semantics) compiles the `cmpwi` form; changing ONLY the field's
+    //       type to `s8` (signed char, matching the target's implied
+    //       signed-byte test) reproduces the target's `extsb.` byte-for-byte
+    //       -- confirmed in isolation. It does not by itself change the
+    //       differing-count because of (b) below (an unrelated instruction
+    //       still separates the two loads, shifting `extsb.` one slot out of
+    //       phase), but it is a genuine, independently-verified fix and is
+    //       kept.
+    //   (b) The struct's derived pointer (`addi r3,r30,0x10`, i.e. &this
+    //       object, which is `this` for `doInit()`/the ctor): the target
+    //       computes it only AFTER the `bne`, and even then still writes
+    //       the FIRST field (`mPos1.x`) through the ORIGINAL base register
+    //       (`stfs f2,0x10(r30)`) rather than the freshly-computed pointer,
+    //       switching to the pointer only from the second field write
+    //       onward. The draft computes the pointer unconditionally at
+    //       doInit()'s entry (before the guard test) and uses it uniformly
+    //       for all six field writes. No source reshaping found in this
+    //       round changed WHEN or THROUGH WHICH REGISTER that pointer gets
+    //       materialised -- this looks like the same "temporary/pointer
+    //       materialisation timing" wall diagnosed in the first round
+    //       (see createModel's characterisation below), now narrowed to
+    //       exactly this one register-allocation decision, and not
+    //       addressable by further plain source rephrasing.
+    //
+    // Guard type wraps the byte WITH its trailing 7 unknown/unwritten
     // bytes (+0x29..+0x2f) in one object, rather than declaring the
     // padding as its own standalone global: an unreferenced standalone
     // global with no dynamic initialiser is exactly the kind of thing
     // `-ipa file` eliminates outright (tried it separately first -- .bss
     // stayed under by the padding's size, since nothing ever touches it).
-    // Bundling it with the guard bool means the whole object is kept
+    // Bundling it with the guard means the whole object is kept
     // because `mDone` IS referenced -- sizeof() doesn't shrink around an
     // unused sibling member the way an unused sibling GLOBAL can vanish.
     struct KoopaShipPosGuard_t {
-        bool mDone;
+        s8 mDone; ///< @unofficial Signed, not `bool`/`u8` -- matches the
+                   ///< target's `extsb.` (sign-extend-and-test) guard read;
+                   ///< see the long comment above. Same 0/1 values either
+                   ///< way, only the storage type's signedness differs.
         u8 mPad[7]; ///< @unofficial Never written by the target's __sinit
                      ///< -- needed purely to round the claimed .bss span
                      ///< out to the target's 0x30 total, exact meaning (if
@@ -95,12 +151,23 @@ namespace {
         mVec3_c mPos1;
         mVec3_c mPos2;
 
-        KoopaShipPos_t() {
+        // Depth-1 relative to the ctor (which stays depth-0, directly
+        // calling this). See the long comment above -- this split is what
+        // took the residual from 19 to 13; every depth variation tried
+        // around it (writes pushed one level deeper still, the guard test
+        // routed through its own accessor, free-function/explicit-self
+        // forms, two separate per-vector helpers) reproduced the same 13
+        // or regressed, so this is the shape being kept.
+        void doInit() {
             if (!s_koopaShipPosGuard.mDone) {
                 mPos1 = mVec3_c(0.0f, 50.0f, -100.0f);
                 mPos2 = mVec3_c(0.0f, 0.0f, -100.0f);
                 s_koopaShipPosGuard.mDone = true;
             }
+        }
+
+        KoopaShipPos_t() {
+            doInit();
         }
     };
 

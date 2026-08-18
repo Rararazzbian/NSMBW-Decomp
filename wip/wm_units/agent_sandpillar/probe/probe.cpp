@@ -677,9 +677,10 @@ void daWmSandPillar_c::finalizeState_TopWait() {
 void daWmSandPillar_c::executeState_TopWait() {
     if (--mUnk4F0 > 0) {
         return;
+    } else {
+        mStateMgr.changeState(StateID_MoveDown);
+        return;
     }
-    mStateMgr.changeState(StateID_MoveDown);
-    return;
 }
 
 /// @unofficial fn_2_1785D8, confirmed `blr`. Not a state method -- still
