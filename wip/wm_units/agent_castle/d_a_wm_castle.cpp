@@ -183,9 +183,13 @@ void daWmCastle_c::checkCourseResult() {
         csSeqMng->FUN_801017c0((dCsSeqMng_c::CUTSCENE_e) mCutscene, this, player, 200);
     }
 
-    // EXPERIMENTAL: one function-wide local reused across both distant call sites (rather than
-    // two block-scoped locals of the same name) -- testing whether that is what makes the target
-    // allocate a single stack slot for both, instead of two.
+    // CONFIRMED: one function-wide local reused across both distant call sites (rather than two
+    // block-scoped locals of the same name) is what makes the target allocate ONE stack slot for
+    // both instead of two -- closed the frame from -0x40 to the target's -0x30 and took this
+    // function's differing-instruction count from 25 to 4 (see this task's report). A prior round
+    // tried narrowing each temporary into its OWN disjoint brace scope and that did nothing; the
+    // lever that actually matters is a single declaration whose lifetime spans both use sites, not
+    // scope-narrowing.
     mVec3_c pos; // see function comment -- uninitialized in the target
 
     if (!dWmLib::isSpecialWorld() && dWmLib::isKoopaShipOnCurrentWorld()) {

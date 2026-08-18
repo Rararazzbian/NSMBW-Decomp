@@ -2284,6 +2284,52 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## castle 16/20 -> 17/20, and a new lever: WIDEN the scope, do not narrow it
+
+Verified over `0x15ecc0-0x15fbe0` with all three objects. `check_vtable` CLEAN,
+`check_bounds` PLAUSIBLE, `.data` and `.rodata` byte-exact.
+
+**The inline-wrapper rule closed `createModel` 6 -> 0.** That is now FOUR units
+fixed by it -- ghost, koopa_castle, castle and kinoko_base. Castle's outer
+`mModel.create(...)` was spelling the trailing `nullptr` and bypassing the
+wrapper; its loop call was already correct. Exactly the ghost shape.
+
+**NEW LEVER — one function-wide local beats two block-scoped ones (25 -> 4).**
+`checkCourseResult` has three widely separated `mVec3_c pos` uses. The target
+packs the FIRST and the LAST into ONE stack slot (`r1+0x14`) while a
+concurrently-live `pos2` gets its own (`r1+0x8`), giving frame `-0x30`.
+
+The fix is to declare `mVec3_c pos;` ONCE before the first block and REASSIGN it
+at the last use site, rather than re-declaring it in each block. That collapsed
+the frame to the target's `-0x30` and fixed 21 of 25 differing instructions in
+one step.
+
+**Note the direction, because the obvious move is the wrong one.** A prior round
+tried the opposite -- narrowing each temporary into its own disjoint brace scope
+-- and measured that it does nothing at this optimisation level. Widening the
+scope so two uses SHARE a slot is what matters; narrowing to hint that they
+should not share does nothing. Reach for this whenever a frame is larger than
+the target's.
+
+Residual 4 on that function is a pure `f2`/`f3` register-name swap in a
+three-float constructor. Staging through named float locals produces the same
+swap in the opposite direction -- no net gain, reverted.
+
+`getKoopaShipStopPos` stays at 6, a scheduling wall: two reorderings of the
+`x`/`y`/`z` local declarations both made it WORSE (13 and 7, up from 6). The
+original `z, y, x` order is the best found. Recorded so nobody re-tries it.
+
+### Two units now share the SAME `__sinit` shape
+
+castle's `__sinit` is 16 differing and koopa_castle's is 13, and both are the
+same construct: a guarded second header static -- byte guard, unconditional
+field store, guarded float writes, guard set. castle's instructions 0-27 and
+47-52 are byte-identical; only 28-46 differ.
+
+That is a triangulation opportunity of exactly the kind that broke the
+temporary-materialisation wall in one round after a dozen single-unit failures.
+**Attack these two together, not separately.**
+
 ## koopa_castle `__sinit`: 19 -> 13, with a 12-shape measured sweep
 
 Unit is 16/17, verified over `0x1910d0-0x191d40` with all three objects. Only

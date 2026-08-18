@@ -179,7 +179,9 @@ public:
     f32 mApproachCurrent; ///< @unofficial +0x4f4, driven toward
                           ///< mApproachTarget by approach().
     f32 mApproachTarget;  ///< @unofficial +0x4f8, approach()'s target value.
-    u32 mUnk4FC; ///< @unofficial +0x4fc, unknown.
+    s32 mUnk4FC; ///< @unofficial +0x4fc, unknown. Confirmed SIGNED: executeState_MoveReady's
+                 ///< `> 0` check compiles to `bgt` (signed ordering) only when this is s32 --
+                 ///< as u32 the compiler folds `> 0` into `!= 0` (bne) since unsigned x>0 == x!=0.
     f32 mApproachStep; ///< @unofficial +0x500, approach()'s step size.
     u32 mReadyFlag; ///< @unofficial +0x504, written by finalizeState_Ready,
                     ///< read by executeState_Ready.
@@ -498,11 +500,13 @@ void daWmSandPillar_c::finalizeState_BottomWait() {
 /// permanently -- BottomWaitForever's own final also sets this, presumably).
 /// Otherwise counts mUnk4F0 down to 0 and transitions to MoveReady.
 void daWmSandPillar_c::executeState_BottomWait() {
-    if (mUnk4EC == 0) {
-        if (--mUnk4F0 <= 0) {
-            mStateMgr.changeState(StateID_MoveReady);
-        }
+    if (mUnk4EC != 0) {
+        return;
     }
+    if (--mUnk4F0 > 0) {
+        return;
+    }
+    mStateMgr.changeState(StateID_MoveReady);
 }
 
 /// @unofficial fn_2_1780F4, confirmed `blr`. Not a state method -- still
@@ -677,10 +681,8 @@ void daWmSandPillar_c::finalizeState_TopWait() {
 void daWmSandPillar_c::executeState_TopWait() {
     if (--mUnk4F0 > 0) {
         return;
-    } else {
-        mStateMgr.changeState(StateID_MoveDown);
-        return;
     }
+    mStateMgr.changeState(StateID_MoveDown);
 }
 
 /// @unofficial fn_2_1785D8, confirmed `blr`. Not a state method -- still
