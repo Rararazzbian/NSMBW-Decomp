@@ -2284,6 +2284,60 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## WM_ANTLION_MNG is 22 functions, not 79 — and the landed header is NOT wrong
+
+**Scope correction, mine again.** I briefed this unit as "roughly 79 functions,
+the largest attempted here". It is **22**, over `.text 0x15b590-0x15c200`. The 79
+was the COMBINED span through WM_BOARD (and possibly WM_CASTLE): WM_BOARD's own
+classInit is `fn_2_15C200`, read out of the `.4byte fn_2_*` inside
+`g_profile_WM_BOARD`, and everything from there to `0x15e7e0` is its, not this
+unit's. Independently corroborated: `fn_2_15C200` has the same
+`li r3, sizeof; bl __nw__7fBase_cFUl` unit-start idiom as every other classInit
+in this family.
+
+That is the SECOND time I have mis-scoped a unit by reading a profile's
+neighbourhood rather than its classInit pointer. **Derive a unit's range only
+from the `.4byte fn_2_*` inside its own and its neighbour's profile objects.**
+
+Bounds, validated three ways (`check_bounds`, decoding the unit's own `__sinit`
+`fn_2_15C150` and array destructor `fn_2_15C1E0`, and `check_sections`):
+```
+.text 0x15b590-0x15c200   .ctors 0x3b8-0x3bc   .rodata 0x85c0-0x8618
+.data 0x43920-0x439d8     .bss   0xfce0-0xfcf0
+```
+
+`daWmAntlionMng_c : public dWmDemoActor_c`, `sizeof 0x1b0`, VTABLE CLEAN across
+26 slots. **14/22 byte-identical** on a first pass, order clean.
+
+### The `dWmDemoActor_c` "4-byte shortfall" is NOT a header bug
+
+The round flagged `sizeof(dWmDemoActor_c)` probing to `0x184` where the target
+needs `0x188`, and proposed it as a real shortfall in the already-landed
+`include/game/bases/d_wm_demo_actor.hpp` affecting every derived class. **Probed
+directly, and it is not:**
+
+```
+sizeof(dWmDemoActor_c) = 0x184
+sizeof(dWmObjActor_c)  = 0x188
+```
+
+`dWmObjActor_c` DERIVES from `dWmDemoActor_c` and adds exactly 4 bytes. So a
+derived class whose own first member sits at `0x188` has a 4-byte member of its
+own at `0x184` -- exactly as `dWmObjActor_c` does -- rather than the base being
+short. The local compensating pad is the right model; the header needs no
+change.
+
+**This mattered:** seven landed units depend on that header, and they verify
+byte-exact. A 4-byte error in it would have shifted every one of their member
+offsets and they could not pass. **When a proposed fix would invalidate already-
+landed work, that is evidence against the fix, and it is worth checking before
+touching a shared header.**
+
+Still open, all marked UNVERIFIED in-source: `processCutsceneCommand` (the
+largest, partly blocked on an un-decompiled `daWmPlayer_c` member),
+`checkAttackSequenceDone`, `rebuildAllModels`, `clearAllModels`, `reviveOnRoute`,
+`checkAllRevivalCountsZero`, `pickRevivedIndices`.
+
 ## course 18/23 -> 22/23, SECTIONS CLEAN. The DUMMY_ORDERING hack was WRONG.
 
 Four functions closed at once, and the reason matters more than the count:
