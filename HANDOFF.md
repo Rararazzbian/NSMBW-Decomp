@@ -2284,6 +2284,85 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### CORRECTION: kinoko_base's 8-byte tail IS its own. I got this wrong.
+
+I concluded that the `0x18` block at `0x45A68` belonged to WM_KINOKO_RED and
+that kinoko_base's `.data` was therefore `0x1b8` -- what the draft already
+produces. **That is wrong and the commit that recorded it overstates.**
+
+The string-pooling argument in it is sound and still holds: kinoko_base already
+emits `"cobKinokoRed"` at its own offset `0x68`, one TU cannot pool that literal
+twice, so the copy at `0x45A70` is RED's. What I then did was lump the 8 bytes
+at `0x45A68` in with it, and those are a separate object with separate evidence:
+`fn_2_16BCD0` is inside kinoko_base's own `.text` and is its own vtable slot 32,
+and it returns the ADDRESS of `lbl_2_data_45A68`. A unit's own method returning
+its own static is the ordinary reading; a method returning a pointer into the
+next TU's data is not, and I flagged that as a consequence rather than treating
+it as the refutation it was.
+
+WM_KINOKO_RED's `.data` starts at **`0x45A70`**, now confirmed constructively
+rather than by elimination -- the unit was authored against that split and its
+`.data` matches the target offset-for-offset at `0xf8`.
+
+**So kinoko_base's `.data` is `0x458b0-0x45a70` = `0x1c0`, the original claim,
+and the 8-byte object at `0x1b8` is still unexplained.** Everything else in the
+kinoko_base entry above stands: 16/16, the two-pointer fix, the weak-vtable
+reading, and the finding that MWCC emits every `.data` object before the vtable
+pool across nine tested shapes. That last one is what makes the object hard, and
+it is now a live blocker again rather than a dissolved one.
+
+### `d_a_wm_kinoko_red.cpp` — 8/8, exact layout, one 4-byte residual
+
+Authored this session in `wip/wm_units/agent_kinoko_red/`. Independently
+re-verified here, not taken on report:
+
+```
+.text 0x16BDA0-0x16BF70   .ctors 0x404-0x408   .rodata 0x8AF0-0x8B00
+.data 0x45A70-0x45B68     .bss   0xFE90-0xFEA0
+```
+
+`verify_anon` 7/7 over the object that covers it (the 8th, the array
+destructor, and the 9th, `sc_ForceList`'s `__sinit` at `fn_2_16BEC0`, are not
+in that `.o`). `check_bounds` PLAUSIBLE on all four mapped sections.
+`check_sections --layout` gives `.data` **ok at `0xf8` with every strong offset
+matching the target** -- `"cobKinokoRed"`@0, F7C0@0x10, W7C0@0x18,
+`sc_ForceList`@0x20, profile@0x44, `"cobKinokoAppear"`@0x50, the two-pointer
+array@0x60, the model-name pointer@0x68, vtable@0x70 -- and `.bss` **ok**.
+`check_vtable` **CLEAN** across all 32 slots. No shadow headers needed; it
+compiles against real `include/` only.
+
+**A real gap in `bin/dtkspl`:** no split `.o` covers `fn_2_16BEC0`. It was
+checked instead against raw bytes read out of `original/d_basesNP.rel` at file
+offset `0xF0 + 0x16BEC0`. Worth knowing that the split tree is not complete and
+that the REL itself is the fallback.
+
+**The residual, and why the obvious explanations are dead.** `.rodata` is 4
+bytes under: the target's block at `0x8AF0` is `0x10` -- the
+`(2160.0f, -30.0f, -478.0f)` triple followed by one zero word -- and the draft
+pools only the triple at `0xC`.
+
+The triple is `dWmLib::sc_ForceList`'s, a header static in `d_wm_lib.hpp`
+emitted into every TU that includes it, so **identical source cannot pool
+differently between TUs** and the difference must be positional. I dumped every
+`.rodata` block in the module and found the triple in ~70 of them. That killed
+both candidate rules at once:
+
+- It is NOT a blanket "the triple is always padded to four floats". Both shapes
+  occur throughout: `0x88B8` (landed grid) and `0x9320` (landed tower) are
+  `0x10` with the triple LAST and a word BEFORE it; `0x8AF0` (red) and `0x8B00`
+  (star) are `0x10` with the triple FIRST and a zero word after.
+- It is NOT end-of-section alignment. **Every** block ends 8-aligned in both
+  shapes, so alignment does not discriminate between them.
+
+The most promising remaining reading, untested: MWCC pools each distinct
+constant once per TU, and `0.0f` is deduped against an EARLIER pool slot in TUs
+that already use it. kinoko_base's own block (`0x8AC8`, `0x28`) does contain
+`0x00000000` before the triple and has no trailing zero, which fits. If that is
+right, the draft is missing a `0.0f` use rather than a padding word, and the
+question is which expression in RED's source produces one.
+
+**Not ready to land** on that 4 bytes alone.
+
 ### koopa_castle 14/16 — and three new MWCC levers, all verified
 
 `processCutsceneCommand` went **218 differing -> MATCH** at 226 instructions,
