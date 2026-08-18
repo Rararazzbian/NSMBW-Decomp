@@ -339,12 +339,12 @@
 /* 0000042C 0000046C  93 E1 00 0C */	stw r31, 0xc(r1)
 /* 00000430 00000470  7C 7F 1B 78 */	mr r31, r3
 /* 00000434 00000474  48 00 00 01 */	bl createModel__16daWmKinokoBase_cFv
-/* 00000438 00000478  3C 80 00 00 */	lis r4, "@13289"@ha
+/* 00000438 00000478  3C 80 00 00 */	lis r4, "@13290"@ha
 /* 0000043C 0000047C  C0 7F 00 AC */	lfs f3, 0xac(r31)
 /* 00000440 00000480  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
 /* 00000444 00000484  7F E3 FB 78 */	mr r3, r31
 /* 00000448 00000488  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
-/* 0000044C 0000048C  C0 04 00 00 */	lfs f0, "@13289"@l(r4)
+/* 0000044C 0000048C  C0 04 00 00 */	lfs f0, "@13290"@l(r4)
 /* 00000450 00000490  D0 7F 01 28 */	stfs f3, 0x128(r31)
 /* 00000454 00000494  D0 5F 01 2C */	stfs f2, 0x12c(r31)
 /* 00000458 00000498  D0 3F 01 30 */	stfs f1, 0x130(r31)
@@ -935,21 +935,21 @@
 /* 00000C7C 00000CBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0xC80 | size: 0xC
-# dWmDemoActor_c::setCutEnd()
-.fn setCutEnd__14dWmDemoActor_cFv, weak
-/* 00000C80 00000CC0  38 00 00 01 */	li r0, 0x1
-/* 00000C84 00000CC4  98 03 01 39 */	stb r0, 0x139(r3)
+# daWmKinokoBase_c::getModelName()
+.fn getModelName__16daWmKinokoBase_cFv, weak
+/* 00000C80 00000CC0  3C 60 00 00 */	lis r3, "@STRING@getModelName__16daWmKinokoBase_cFv"@ha
+/* 00000C84 00000CC4  38 63 00 00 */	addi r3, r3, "@STRING@getModelName__16daWmKinokoBase_cFv"@l
 /* 00000C88 00000CC8  4E 80 00 20 */	blr
-.endfn setCutEnd__14dWmDemoActor_cFv
+.endfn getModelName__16daWmKinokoBase_cFv
 /* 00000C8C 00000CCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0xC90 | size: 0xC
-# daWmKinokoBase_c::getModelName()
-.fn getModelName__16daWmKinokoBase_cFv, global
-/* 00000C90 00000CD0  3C 60 00 00 */	lis r3, smc_emptyModelName@ha
-/* 00000C94 00000CD4  38 63 00 00 */	addi r3, r3, smc_emptyModelName@l
+# dWmDemoActor_c::setCutEnd()
+.fn setCutEnd__14dWmDemoActor_cFv, weak
+/* 00000C90 00000CD0  38 00 00 01 */	li r0, 0x1
+/* 00000C94 00000CD4  98 03 01 39 */	stb r0, 0x139(r3)
 /* 00000C98 00000CD8  4E 80 00 20 */	blr
-.endfn getModelName__16daWmKinokoBase_cFv
+.endfn setCutEnd__14dWmDemoActor_cFv
 /* 00000C9C 00000CDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0xCA0 | size: 0x4
@@ -1153,11 +1153,11 @@
 .balign 8
 
 # .rodata:0x0 | size: 0x4
-.obj "@13289", local
+.obj "@13290", local
 # .rodata:0x0 | size: 0x0
 .sym ...rodata.0, local
 	.4byte 0x42F00000
-.endobj "@13289"
+.endobj "@13290"
 	.4byte 0x00000000
 
 # .rodata:0x8 | size: 0x8
@@ -1167,36 +1167,36 @@
 .endobj "@LOCAL@createModel__16daWmKinokoBase_cFv@playModes@1"
 
 # .rodata:0x10 | size: 0x4
-.obj "@13354", local
-	.4byte 0x00000000
-.endobj "@13354"
-
-# .rodata:0x14 | size: 0x4
 .obj "@13355", local
-	.4byte 0x3F800000
+	.4byte 0x00000000
 .endobj "@13355"
 
+# .rodata:0x14 | size: 0x4
+.obj "@13356", local
+	.4byte 0x3F800000
+.endobj "@13356"
+
 # .rodata:0x18 | size: 0x4
-.obj "@13402", local
+.obj "@13403", local
 	.4byte 0xBF800000
-.endobj "@13402"
+.endobj "@13403"
 
 # .rodata:0x1C | size: 0x4
-.obj "@13433", local
-	.4byte 0x45070000
-.endobj "@13433"
-
-# .rodata:0x20 | size: 0x4
 .obj "@13434", local
-	.4byte 0xC1F00000
+	.4byte 0x45070000
 .endobj "@13434"
 
-# .rodata:0x24 | size: 0x4
+# .rodata:0x20 | size: 0x4
 .obj "@13435", local
-	.4byte 0xC3EF0000
+	.4byte 0xC1F00000
 .endobj "@13435"
 
-# 0x00000000..0x000001B8 | size: 0x1B8
+# .rodata:0x24 | size: 0x4
+.obj "@13436", local
+	.4byte 0xC3EF0000
+.endobj "@13436"
+
+# 0x00000000..0x000001C0 | size: 0x1C0
 .data
 .balign 8
 
@@ -1238,53 +1238,53 @@
 .endobj g_profile_WM_KINOKO_BASE
 
 # .data:0x40 | size: 0x10
-.obj "@12921", local
+.obj "@12926", local
 	.4byte 0x636F624B
 	.4byte 0x696E6F6B
 	.4byte 0x6F417070
 	.4byte 0x65617200
-.endobj "@12921"
+.endobj "@12926"
 
 # .data:0x50 | size: 0x4
 # daWmKinokoBase_c::createModel()::smc_unusedAppearName
 .obj "@LOCAL@createModel__16daWmKinokoBase_cFv@smc_unusedAppearName", local
-	.4byte "@12921"
+	.4byte "@12926"
 .endobj "@LOCAL@createModel__16daWmKinokoBase_cFv@smc_unusedAppearName"
 
 # .data:0x54 | size: 0x4
 .obj "@LOCAL@createModel__16daWmKinokoBase_cFv@smc_unusedAppearName2@0", local
-	.4byte "@12921"
+	.4byte "@12926"
 .endobj "@LOCAL@createModel__16daWmKinokoBase_cFv@smc_unusedAppearName2@0"
 
 # .data:0x58 | size: 0x10
-.obj "@13352", local
+.obj "@13353", local
 	.4byte 0x6733642F
 	.4byte 0x6D6F6465
 	.4byte 0x6C2E6272
 	.4byte 0x72657300
-.endobj "@13352"
+.endobj "@13353"
 
 # .data:0x68 | size: 0xD
-.obj "@13353", local
+.obj "@13354", local
 	.4byte 0x636F624B
 	.4byte 0x696E6F6B
 	.4byte 0x6F526564
 	.byte 0x00
-.endobj "@13353"
+.endobj "@13354"
 	.byte 0x00, 0x00, 0x00
 
 # .data:0x78 | size: 0x7
-.obj "@13356", local
+.obj "@13357", local
 	.4byte 0x6B696E6F
 	.byte 0x6B, 0x6F, 0x00
-.endobj "@13356"
+.endobj "@13357"
 	.byte 0x00
 
 # .data:0x80 | size: 0x6
-.obj "@13357", local
+.obj "@13358", local
 	.4byte 0x7472756E
 	.2byte 0x6B00
-.endobj "@13357"
+.endobj "@13358"
 	.2byte 0x0000
 
 # .data:0x88 | size: 0x88
@@ -1383,7 +1383,14 @@
 	.4byte play__Q23m3d6fanm_cFv
 .endobj __vt__Q23m3d8anmChr_c
 
-# 0x00000000..0x00000018 | size: 0x18
+# .data:0x1B8 | size: 0x8
+# daWmKinokoBase_c::@STRING@getModelName()
+.obj "@STRING@getModelName__16daWmKinokoBase_cFv", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj "@STRING@getModelName__16daWmKinokoBase_cFv"
+
+# 0x00000000..0x00000010 | size: 0x10
 .section .bss, "wa", @nobits
 .balign 8
 
@@ -1397,8 +1404,3 @@
 .obj c_StartPointKinokoHouseID__6dWmLib, local
 	.skip 0x4
 .endobj c_StartPointKinokoHouseID__6dWmLib
-
-# .bss:0x10 | size: 0x8
-.obj smc_emptyModelName, local
-	.skip 0x8
-.endobj smc_emptyModelName

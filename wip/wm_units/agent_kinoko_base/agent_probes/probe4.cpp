@@ -1,3 +1,4 @@
+#pragma reuse_strings on
 #include <types.h>
 #include <game/framework/f_profile.hpp>
 #include <game/bases/d_wm_obj_actor.hpp>
@@ -65,7 +66,7 @@ public:
     }
     virtual void vf7C();
     virtual void vf84();
-    virtual const char *getModelName();
+    virtual const char *getModelName() { return "\0\0\0\0\0\0\0"; }
 
     void createModel();
     void calcModel();
@@ -349,6 +350,3 @@ void daWmKinokoBase_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
 /// it gets the vtable's address right (matching the target exactly) at the
 /// cost of an honest, checker-visible 8-byte `.bss` overshoot, which is the
 /// one real thing left to fix.
-const char *daWmKinokoBase_c::getModelName() {
-    return "\0\0\0\0\0\0\0";
-}

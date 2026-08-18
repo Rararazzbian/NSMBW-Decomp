@@ -13,7 +13,6 @@
 #include <game/bases/d_wm_se_manager.hpp>
 #include <game/bases/d_unk_anim_class.hpp>
 #include <game/bases/d_info.hpp>
-#include <game/bases/d_wm_lib_ext.hpp>
 #include <game/bases/d_s_chr_lib.hpp>
 
 // @unofficial cross-module call into the DOL. Unnamed in both the REL's own
@@ -60,12 +59,16 @@ public:
     virtual int execute();
     virtual int draw();
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
-    virtual void vf80() {
-        (void)"\0\0\0\0\0\0\0";
-    }
+    virtual void vf80();
     virtual void vf7C();
     virtual void vf84();
-    virtual const char *getModelName();
+
+    /// @unofficial Defined IN-CLASS (inline/vague-linkage), not out-of-line,
+    /// even though it is called by name twice below in
+    /// processCutsceneCommand(). This is the fix for the unit's last defect
+    /// -- see the long comment at the bottom of the file for the full
+    /// mechanism this exploits and the experiments that found it.
+    virtual const char *getModelName() { return "\0\0\0\0\0\0\0"; }
 
     void createModel();
     void calcModel();
@@ -332,23 +335,59 @@ void daWmKinokoBase_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
     }
 }
 
-/// @unofficial The unit's last defect, precisely localised but NOT solved this
-/// round -- see the agent report for the full compiler-behaviour writeup and
-/// what was ruled out.
+/// @unofficial `getModelName()`'s body -- `return "\0\0\0\0\0\0\0";`, an
+/// 8-byte all-zero string literal -- now lives IN-CLASS on the declaration
+/// (see above), not out-of-line here. That is the fix for the unit's former
+/// last defect: an 8-byte all-zero `.data` object that must land AFTER the
+/// three weak vtables at the end of the section (unit offset 0x1b8), which
+/// `getModelName()` (slot 32) returns the address of.
 ///
-/// DO NOT "fix" this by reverting to a bare `return "";`. That reads as clean
-/// under all three checkers (`check_sections`/`check_vtable`/`verify_anon`),
-/// but only by COINCIDENCE: the 1-byte pooled literal plus 7 bytes of
-/// alignment padding before the vtable sums to the same 8 bytes the real
-/// trailing object is missing, so `.data`'s TOTAL size still lands on 0x1c0
-/// even though `__vt__16daWmKinokoBase_c` sits at unit offset 0x90 instead of
-/// the target's 0x88. `check_sections.py` only compares aggregate section
-/// size, not internal offsets, and `check_vtable.py` only compares SLOT
-/// CONTENT, not the vtable object's own address -- neither catches this. The
-/// `static char[8]` shape below is the worse-looking but MORE CORRECT state:
-/// it gets the vtable's address right (matching the target exactly) at the
-/// cost of an honest, checker-visible 8-byte `.bss` overshoot, which is the
-/// one real thing left to fix.
-const char *daWmKinokoBase_c::getModelName() {
-    return "\0\0\0\0\0\0\0";
-}
+/// DO NOT move this back out-of-line, and do NOT reintroduce a NAMED static
+/// (e.g. `static char smc_emptyModelName[8]`) for it, even with
+/// `#pragma explicit_zero_data on`. Both were tried and both fail the same
+/// way: the object lands BEFORE `__vt__16daWmKinokoBase_c` instead of after
+/// it, growing `.data`'s total to the right size (0x1c0) by coincidence while
+/// leaving the vtable itself 8 bytes too high (unit offset 0x90 instead of
+/// 0x88) -- `check_sections.py` only compares aggregate section size and
+/// cannot see this; `--layout` can.
+///
+/// THE MECHANISM (established this round by direct experiment, see the agent
+/// report for the full probe set): MWCC emits a translation unit's `.data` in
+/// (at least) three passes -- named objects, then per-function anonymous
+/// literal/temp pools, then vtables -- but a function's own anonymous pool is
+/// only attributed to the NORMAL (pre-vtable) pass if the function is
+/// instantiated EAGERLY. A `virtual` member function that is (a) inline
+/// (vague linkage / WEAK, i.e. defined in-class or in a header, not
+/// out-of-line in a .cpp) and (b) reachable in this TU ONLY through its
+/// vtable slot's address being taken -- never through a direct call
+/// expression anywhere in the TU -- has its instantiation deferred until the
+/// vtable-construction pass, and an ANONYMOUS literal used inside its body
+/// (a raw string-literal expression, NOT a named variable) is pooled at that
+/// point too, landing after every vtable the TU emits.
+///
+/// The surprising part, confirmed by direct probe, is that condition (b) does
+/// NOT actually require "never called by name": what disqualified every
+/// earlier attempt at this site was never the two direct calls to
+/// `getModelName()` in `processCutsceneCommand()` below -- it was that the
+/// object was a NAMED static (always pass 1, unconditionally, regardless of
+/// which function(s) reference it -- verified separately) or that
+/// `getModelName()` was still defined out-of-line (making it STRONG, and
+/// strong/non-vague-linkage functions are never lazily instantiated, so
+/// nothing they contain can be deferred, called-by-name or not). Once
+/// `getModelName()` itself is made inline/WEAK and its own literal is
+/// anonymous, ITS deferral is enough by itself; no separate never-called
+/// helper function is needed to "hold" the object for it. (Named identical
+/// literals were also tested for cross-function pool sharing/merging, with
+/// and without `#pragma reuse_strings on` -- MWCC does not merge a
+/// STRONG-bound pass-1 copy with a WEAK-bound deferred one; this is why the
+/// single-inline-function shape above, not a two-function split, is what
+/// works.)
+///
+/// Verified: `check_sections.py --layout` reports `__vt__16daWmKinokoBase_c`
+/// at unit offset 0x88 (matching), `.data` at exactly 0x1c0 and `.bss` at
+/// exactly 0x10 (both matching, no overshoot in either), and `verify_anon.py`
+/// reports 17/17 with the new anonymous `.data` object landing at unit offset
+/// 0x1b8 -- the position was checked directly, not inferred from the 17/17
+/// alone (see the LIMIT note on `verify_anon.py`'s pool-symbol normalisation).
+
+void daWmKinokoBase_c::vf80() {}

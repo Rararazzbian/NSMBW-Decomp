@@ -44,6 +44,8 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int effectId, m3d::mdl_c *m
 /// (`li r3, 0x290`, fn_2_16B2D0) matches the component sum exactly, with no
 /// unexplained gap -- unlike the 0x284 reading, which left the classInit
 /// literal 0xC bytes higher than the class it was allegedly sizing.
+extern char smc_probeNamed[8];
+
 class daWmKinokoBase_c : public dWmObjActor_c {
 public:
     enum ANIM_e {
@@ -60,9 +62,7 @@ public:
     virtual int execute();
     virtual int draw();
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
-    virtual void vf80() {
-        (void)"\0\0\0\0\0\0\0";
-    }
+    virtual void vf80() { (void)smc_probeNamed; }
     virtual void vf7C();
     virtual void vf84();
     virtual const char *getModelName();
@@ -349,6 +349,10 @@ void daWmKinokoBase_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
 /// it gets the vtable's address right (matching the target exactly) at the
 /// cost of an honest, checker-visible 8-byte `.bss` overshoot, which is the
 /// one real thing left to fix.
+#pragma explicit_zero_data on
+char smc_probeNamed[8] = {0,0,0,0,0,0,0,0};
+#pragma explicit_zero_data off
+
 const char *daWmKinokoBase_c::getModelName() {
     return "\0\0\0\0\0\0\0";
 }

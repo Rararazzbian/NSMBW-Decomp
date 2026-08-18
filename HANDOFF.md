@@ -2284,6 +2284,50 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## SOLVED + LANDED: kinoko_base. The post-vtable emission rule is LINKAGE.
+
+The 8-byte object that gated three units is fixed, and the unit is landed. Five
+binaries verify.
+
+**The fix is one line.** `getModelName()` moved from an out-of-line definition
+returning a named `static char[8]` to an IN-CLASS (inline) definition returning
+a raw string literal:
+
+```cpp
+virtual const char *getModelName() { return "       "; }
+```
+
+No helper, no pragma, no dummy. `.data` is exactly `0x1c0` with
+`@STRING@getModelName__16daWmKinokoBase_cFv` at unit offset `0x1b8`, after all
+three weak vtables, and the vtable back at `0x88`.
+
+**THE RULE, and it corrects what this file previously recorded.** MWCC emits
+`.data` in passes -- named objects, then per-function anonymous literal pools,
+then vtables -- and what decides whether a function's pool lands in the
+pre-vtable pass is **VAGUE LINKAGE, not whether the function is called by name**:
+
+- A **STRONG** (out-of-line) function's literals are ALWAYS eager, whether or
+  not it is ever called. That is why ten earlier shapes failed, and why a
+  never-called out-of-line helper could never have worked.
+- A **WEAK** (inline) function's anonymous literal pool IS deferred to the
+  vtable-construction pass -- **even when the function is called by name
+  elsewhere in the TU.** The earlier reading, that kinoko_base's two direct
+  calls to `getModelName()` disqualified it, was WRONG and cost several rounds.
+- **Named objects are unconditionally pass-1**, no matter who references them.
+  Verified by probe: a named `#pragma explicit_zero_data` static referenced only
+  from a deferred function still lands before the vtable. So the literal must be
+  ANONYMOUS -- a raw literal in the function body, not a named static.
+- `#pragma reuse_strings on` does NOT merge a strong-bound copy with a
+  weak-bound one, so splitting across two functions to share the text does not
+  work. One function must be both inline and own the literal itself.
+
+The `d_a_en_noko.cpp` precedent was the right lead and the wrong explanation:
+its deferred strings belong to inline virtuals, and it is the INLINE part that
+matters, not the never-called-by-name part.
+
+**This unblocks `d_a_wm_kinoko_red.cpp` and `d_a_wm_kinoko_1up.cpp`**, whose
+vtables inherit slots defined in this TU.
+
 ## sandpillar 61/66 -> 64/66, and a signedness lever worth knowing
 
 Verified over the full range with all three objects. Three functions closed.

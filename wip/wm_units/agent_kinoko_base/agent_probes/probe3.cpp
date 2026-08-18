@@ -1,3 +1,4 @@
+#pragma reuse_strings on
 #include <types.h>
 #include <game/framework/f_profile.hpp>
 #include <game/bases/d_wm_obj_actor.hpp>
