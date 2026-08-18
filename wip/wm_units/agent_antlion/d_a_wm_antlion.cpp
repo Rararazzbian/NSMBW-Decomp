@@ -96,18 +96,25 @@ public:
     /// vtables, THEN calc() virtually (slot 0xc8) -- confirmed
     /// instruction-for-instruction against the target.
     virtual int execute();
-    /// @unofficial fn_2_15AF10. `mModel.entry(); return SUCCEEDED;` --
-    /// resolved this round by PROBING rather than reading the header chain
-    /// (per the coordinator's steer): three tiny compiled probes
-    /// (`m->remove()`, `m->setAnm(*a)`, `m->play()`) confirmed slots
-    /// 4/6/7 (+0x10/+0x18/+0x1c), leaving the target's actual +0x14 (slot 5)
-    /// unaccounted for by any of mdl_c's own re-declared virtuals. Slot 5 is
-    /// scnLeaf_c::entry() -- declared there, never re-declared by bmdl_c or
-    /// mdl_c, so it keeps scnLeaf_c's own original slot sitting BETWEEN
-    /// remove() (4) and bmdl_c's new setAnm() (6). Matches the `mModel.entry()`
-    /// idiom already landed in every sibling's own draw(). REAL vtable order
-    /// (from the lbl_2_data_43810 dump) is create(2)/draw(5)/execute(8)/
-    /// doDelete(11) -- doDelete comes AFTER execute, corrected this round.
+    /// @unofficial fn_2_15AF10. `mModel.entry(); return SUCCEEDED;` -- the
+    /// scnLeaf_c::entry() probe (three tiny compiled probes on
+    /// `m->remove()`/`m->setAnm(*a)`/`m->play()` located those at slots
+    /// 4/6/7; entry() keeps scnLeaf_c's own original slot 5, never
+    /// re-declared by bmdl_c/mdl_c) is real, but was attached to the WRONG
+    /// NAME for several rounds. The real vtable dump shows `preDelete`/
+    /// `postDelete` (dWmActor_c) immediately follow slot 5, and `preDraw`/
+    /// `postDraw` immediately follow slot 11 -- each lifecycle stage's pre/
+    /// post hooks sit right after THAT stage's own action slot, so slot 5
+    /// is doDelete's and slot 11 is draw's, the reverse of the earlier
+    /// assumption. `mModel.entry()` is the standard `draw()` idiom already
+    /// landed in every sibling (ghost, tower, ...) -- it belongs here, on
+    /// draw(), not on doDelete().
+    virtual int draw();
+    /// @unofficial fn_2_15AF40. Confirmed via the same real-vtable dump:
+    /// this slot is NOT overridden with anything beyond the trivial
+    /// dWmDemoActor_c default (`return SUCCEEDED;`) -- declared explicitly
+    /// out-of-line anyway (matching the "strong batch" lever below) so its
+    /// DEFINITION can be placed at the correct target address.
     virtual int doDelete();
     /// @unofficial fn_2_15B1C0. `switch`-shaped dispatch on cutsceneCommandId
     /// 0x48/0x4a, the first gated on isFirstFrame -- confirmed exact against
@@ -172,8 +179,48 @@ public:
     /// @unofficial slot 51 (fn_2_15B3B0), bare `blr` -- empty, matching
     /// dWmEnemy_c::calculateEffect()'s own DOL body (`{}`) but REL-local.
     virtual void calculateEffect();
+    /// @unofficial slot 61 (fn_2_15B320), the SAME "!= 4" branchless
+    /// comparison as dWmEnemy_c's own inline default -- turns out 0x6c4 is
+    /// simply `mCurrProc`'s fixed offset within the dWmEnemy_c layout
+    /// (PROC_TYPE_WAIT_WALK == 4), NOT an antlion-specific field as first
+    /// suspected. `mCurrProc`/`PROC_TYPE_WAIT_WALK` are private to
+    /// dWmEnemy_c so this can't be spelled directly from a derived class;
+    /// explicit-scope-calling the base's own (inline) method sidesteps
+    /// that while still producing an explicit, STRONG-linkage override
+    /// (needed to control DEFINITION-order placement -- root cause of the
+    /// order defect: this one weak/deferred function, sitting between
+    /// GetIndex and everything after it in the target's real address
+    /// order, was the single point pinning the whole rest of the sequence
+    /// to "too late").
+    virtual int isWaitWalkEnd();
     /// @unofficial slot 60 (fn_2_15B340), bare `blr` -- empty, REL-local.
     virtual void updateBgmAnimRate();
+    /// @unofficial slot 59 (fn_2_15B350), bare `blr` -- matches
+    /// dWmEnemy_c::PostWaitWalk()'s own inline default (`{}`) but REL-local
+    /// (explicit override needed to control DEFINITION-order placement --
+    /// see the "strong vs weak batch" note on draw() above).
+    virtual void PostWaitWalk();
+    /// @unofficial slot 46 (fn_2_15B3E0), bare `blr` -- matches
+    /// dWmEnemy_c::setWalkAnm(float)'s own inline default (`{}`), same
+    /// reasoning as PostWaitWalk() above.
+    virtual void setWalkAnm(float anmRate);
+    /// @unofficial The following are ALSO explicit re-declarations of
+    /// otherwise-untouched dWmEnemy_c inline defaults, same "strong batch"
+    /// reasoning as draw()/PostWaitWalk()/setWalkAnm() above -- needed so
+    /// their DEFINITIONS can be placed in target address order instead of
+    /// being deferred to the trailing weak-function block.
+    virtual short GetChangeDirRate();
+    virtual int GetMoveRate();
+    virtual short GetWalkWaitFrame();
+    virtual bool IsRandomMove();
+    virtual bool IsPlayerComing();
+    virtual int vfc4(int pointNo);
+    virtual float getWalkAnmRate();
+    virtual short getWaitAngle();
+    virtual mVec3_c calcBlowOffPos(float offsetX);
+    virtual float GetTerritory();
+    virtual int GetActorType();
+    virtual void initWalk();
 
     /// @unofficial fn_2_15AF50. Same shape as every landed sibling's
     /// createModel() -- archive "cobAntlion" confirmed directly out of
@@ -219,11 +266,7 @@ int daWmAntlion_c::create() {
     return SUCCEEDED;
 }
 
-/// @unofficial fn_2_15AE70. processCutsceneCommand() called through this
-/// class's OWN vtable (slot 24, +0x60 -- same slot sandpillar's report
-/// documents), THEN mAnimTexSrt.play() (vtable+0x14) and mModel.play()
-/// (vtable+0x1c) on the sub-objects' own vtables, THEN calc() virtually
-/// (slot 0xc8) -- confirmed instruction-for-instruction against the target.
+
 int daWmAntlion_c::execute() {
     dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
     processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
@@ -235,19 +278,22 @@ int daWmAntlion_c::execute() {
     return SUCCEEDED;
 }
 
-int daWmAntlion_c::doDelete() {
+/// @unofficial RENAMED this round: the `preDelete`/`postDelete` hooks
+/// (slot 6/7, dWmActor_c) immediately follow slot 5, and `preDraw`/
+/// `postDraw` (slot 12/13) immediately follow slot 11 -- each lifecycle
+/// stage's own pre/post hooks sit right after that stage's OWN action slot
+/// in the real vtable dump. That means slot 5 (fn_2_15AF40) is doDelete's
+/// slot and slot 11 (fn_2_15AF10) is draw's -- the OPPOSITE of what this
+/// draft assumed for several rounds. `mModel.entry(); return SUCCEEDED;`
+/// is the standard `draw()` idiom landed in every sibling (ghost, tower,
+/// ...); it belongs on draw(), not doDelete(), and now is.
+int daWmAntlion_c::draw() {
     mModel.entry();
     return SUCCEEDED;
 }
 
-void daWmAntlion_c::calc() {
-    mVec3_c pos = mPos;
-    mAng3_c angle = mAngle;
-    mMatrix.trans(pos);
-    mMatrix.ZXYrotM(angle);
-    mModel.setLocalMtx(&mMatrix);
-    mModel.setScale(mScale);
-    mModel.calc(false);
+int daWmAntlion_c::doDelete() {
+    return SUCCEEDED;
 }
 
 void daWmAntlion_c::createModel() {
@@ -274,7 +320,7 @@ void daWmAntlion_c::createModel() {
 
     static const char *sTexSrtAnmName = "cobAntlion";
     nw4r::g3d::ResAnmTexSrt resAnmTexSrt = resFile.GetResAnmTexSrt(sTexSrtAnmName);
-    mAnimTexSrt.create(resMdl, resAnmTexSrt, &mAllocator, 1);
+    mAnimTexSrt.create(resMdl, resAnmTexSrt, &mAllocator, nullptr, 1);
     mModel.setAnm(mAnimTexSrt);
     mAnimTexSrt.setPlayMode(m3d::FORWARD_LOOP, 0);
     mAnimTexSrt.setRate(0.0f, 0);
@@ -285,39 +331,15 @@ void daWmAntlion_c::createModel() {
     mAllocator.adjustFrmHeap();
 }
 
-int daWmAntlion_c::GetIndex() {
-    return mIndexCache;
+void daWmAntlion_c::calc() {
+    mVec3_c pos = mPos;
+    mAng3_c angle = mAngle;
+    mMatrix.trans(pos);
+    mMatrix.ZXYrotM(angle);
+    mModel.setLocalMtx(&mMatrix);
+    mModel.setScale(mScale);
+    mModel.calc(false);
 }
-
-int daWmAntlion_c::GetNextIndex() {
-    return GetIndex();
-}
-
-void daWmAntlion_c::initDemoStarLose() {
-    initDemoLose();
-}
-
-bool daWmAntlion_c::procDemoStarLose() {
-    return procDemoLose();
-}
-
-void daWmAntlion_c::initDemoBgmDance() {}
-
-bool daWmAntlion_c::procDemoBgmDance() {
-    return true;
-}
-
-mVec3_c daWmAntlion_c::getPointOffset(int index) {
-    return mVec3_c::Zero;
-}
-
-int daWmAntlion_c::getStartPoint() {
-    return ACTOR_PARAM(startPoint);
-}
-
-void daWmAntlion_c::calculateEffect() {}
-
-void daWmAntlion_c::updateBgmAnimRate() {}
 
 void daWmAntlion_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
     if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
@@ -366,4 +388,92 @@ void daWmAntlion_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFr
         mIsCutEnd = true;
         break;
     }
+}
+
+int daWmAntlion_c::GetIndex() {
+    return mIndexCache;
+}
+
+int daWmAntlion_c::isWaitWalkEnd() {
+    return dWmEnemy_c::isWaitWalkEnd();
+}
+
+void daWmAntlion_c::updateBgmAnimRate() {}
+
+void daWmAntlion_c::PostWaitWalk() {}
+
+short daWmAntlion_c::GetWalkWaitFrame() {
+    return 20;
+}
+
+int daWmAntlion_c::GetMoveRate() {
+    return 100;
+}
+
+short daWmAntlion_c::GetChangeDirRate() {
+    return 50;
+}
+
+bool daWmAntlion_c::IsRandomMove() {
+    return true;
+}
+
+bool daWmAntlion_c::IsPlayerComing() {
+    return IsPlayerComingCore();
+}
+
+void daWmAntlion_c::calculateEffect() {}
+
+int daWmAntlion_c::vfc4(int pointNo) {
+    return pointNo;
+}
+
+int daWmAntlion_c::getStartPoint() {
+    return ACTOR_PARAM(startPoint);
+}
+
+void daWmAntlion_c::setWalkAnm(float anmRate) {}
+
+float daWmAntlion_c::getWalkAnmRate() {
+    return 1.0f;
+}
+
+short daWmAntlion_c::getWaitAngle() {
+    return 0;
+}
+
+mVec3_c daWmAntlion_c::getPointOffset(int index) {
+    return mVec3_c::Zero;
+}
+
+mVec3_c daWmAntlion_c::calcBlowOffPos(float offsetX) {
+    return mVec3_c(mPos.x + offsetX, mPos.y, mPos.z);
+}
+
+bool daWmAntlion_c::procDemoBgmDance() {
+    return true;
+}
+
+void daWmAntlion_c::initDemoBgmDance() {}
+
+bool daWmAntlion_c::procDemoStarLose() {
+    return procDemoLose();
+}
+
+void daWmAntlion_c::initDemoStarLose() {
+    initDemoLose();
+}
+
+void daWmAntlion_c::initWalk() {}
+
+float daWmAntlion_c::GetTerritory() {
+    return 0.0f;
+}
+
+int daWmAntlion_c::GetActorType() {
+    return ACTOR_MAP_ENEMY;
+}
+
+int daWmAntlion_c::GetNextIndex() {
+    return GetIndex();
 }

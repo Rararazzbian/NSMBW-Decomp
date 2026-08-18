@@ -2284,6 +2284,71 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## antlion is 37/37, VTABLE CLEAN, BOUNDS PLAUSIBLE — 0xc of `.rodata` from landing
+
+Order block empty, `check_vtable` exit 0, `check_bounds` exit 0 with zero
+ownership problems, and `.text`/`.data`/`.bss`/`.ctors` all exact. Verified here
+over `0x15ac80-0x15b590` with all three covering objects.
+
+**THE PLACEMENT RULE, one layer deeper than this file had it.** Definition order
+does set `.text` placement -- but only among STRONG functions. An explicit
+out-of-line override has ordinary strong linkage and joins the definition-order
+batch **even when its body is byte-identical to the inherited default**. A
+virtual left purely inherited stays WEAK and is deferred to a block at the very
+end, regardless of where the strong functions around it sit.
+
+So a unit whose target interleaves overridden and inherited virtuals cannot be
+ordered by moving definitions alone: **the inherited ones must be written out as
+explicit out-of-line overrides to become strong and take their place.** Antlion
+needed 16 of them. The whole cascade traced to ONE pinned function --
+`isWaitWalkEnd()` at `0x15b320` was staying weak, and every function after it in
+target order was flagged as a consequence.
+
+The tell was `setCutEnd()`: weak, but CALLED BY NAME from
+`processCutsceneCommand`, and therefore already floating to the right place.
+
+Where a body cannot be spelled (private base members),
+`return dWmEnemy_c::isWaitWalkEnd();` works -- the base's inline body still
+inlines byte-identically.
+
+**`draw()` and `doDelete()` were semantically SWAPPED** from the first round, and
+the vtable dump proves which is which: `preDelete`/`postDelete` immediately
+follow slot 5 and `preDraw`/`postDraw` follow slot 11, so **each lifecycle
+stage's hooks sit directly after that stage's own action slot**. Slot 5 is
+`doDelete`, slot 11 is `draw` -- the reverse of what every earlier round assumed.
+`mModel.entry(); return SUCCEEDED;` belongs on `draw()`. That took
+`check_vtable` from 8 wrong slots to 0.
+
+**The inline-wrapper rule closed `createModel` -- six units now.** Spelling the
+trailing `size_t*` explicitly on `mAnimTexSrt.create(...)` bypasses
+`anm_tex_srt.hpp`'s double wrapper and fixed the last stack-slot swap.
+
+### The remaining `0xc`, and what the build says about it
+
+`.rodata` is `0xc` under: the target has a SECOND copy of the
+`(2160.0, -30.0, -478.0)` triple plus `(1, 0, 0)` at `0x85a8-0x85bc`.
+
+**Both bound choices were tested by building, and neither works:**
+- claim `0x8598-0x85b4` (matching the object's `0x1c`, reports SECTIONS CLEAN):
+  module comes out **8 bytes too LARGE**.
+- claim `0x8598-0x85c0` (the full span): module comes out **8 bytes too SMALL**.
+
+So the size is not a bounds question -- **the object genuinely has to emit those
+`0xc` bytes.** Every one of the 37 functions was diffed individually; the two
+that touch this pool (`GetTerritory`, `getWalkAnmRate`) are exact against the
+target's own `lbl_2_rodata_859C`/`85A0`, and the other 35 reference `.rodata` at
+all. Decoding the relocation stream, the ONLY references to `0x85a8-0x85c0` in
+the whole module come from `0x8f5f6` and `0x8f606` — far outside antlion.
+
+A second copy of the same triple in one TU is the shape the kinoko family had
+with its model-name string: **`reuse_strings` does not merge a strong-bound copy
+with a weak-bound one.** The candidate is a member that should be an in-class
+inline rather than out-of-line — but note the tension with the placement rule
+above, which needed the opposite. Not resolved.
+
+Antlion is reverted; the tree is green at 5/5. **Landing it unblocks sandpillar
+at 66/66.**
+
 ## antlion 36/37 on the corrected range; course 17/23 with `create` byte-exact
 
 **antlion**, re-measured over `0x15ac80-0x15b590` with all three covering
