@@ -2284,6 +2284,55 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## sandpillar 61/66 -> 64/66, and a signedness lever worth knowing
+
+Verified over the full range with all three objects. Three functions closed.
+
+**NEW LEVER: `unsigned x > 0` compiles as `x != 0`.** `executeState_MoveReady`
+differed by exactly one instruction -- target `bgt`, draft `bne` -- because the
+compared field was declared `u32`, and MWCC legally folds an unsigned
+"greater than zero" into "not equal to zero". Declaring the field `s32` makes
+the comparison signed and emits `bgt`. **Whenever a single branch differs
+between `bgt`/`blt` and `bne`/`beq`, suspect the SIGNEDNESS of the operand's
+type before rephrasing the condition.**
+
+**The inline-wrapper rule closed `createMdl`** -- five units now. Here it was
+the DOUBLE-wrapper form: calling the 3-arg `create(mdl, anmTexSrt, allocator)`,
+which forwards through `anm_tex_srt.hpp`'s own nested wrapper, rather than the
+4-arg wrapper with an explicit trailing `1`.
+
+**`goto` label ORDER pins branch polarity and block layout together.**
+`finalizeState_Ready` had two checks sharing one `goto` target, which compiled
+as a forward `beq` with the failure body placed inline first -- backwards from
+the target's physical layout. Giving the second check its own negative goto
+(`if (type != 2) goto clear;`) and placing `set:` before `clear:` in source
+order pinned both. Note what did NOT work, measured: `||`, `switch`, and an
+if/else chain all range-merge into a `subi`/`cmplwi`/`bgt` shape at 5 differing,
+WORSE than the 3 they replaced.
+
+**The two remaining residuals are one instruction each and precisely
+characterised.** `executeState_BottomWait` and `executeState_TopWait` both
+compile to the target's exact sequence plus one extra trailing `blr` after a
+tail-call `bctr`; the target ends cleanly with no epilogue. The trigger is
+isolated: **at least one conditional early-return preceding a final tail-call**
+-- the guard-free `executeState_TopWaitFromTheStart` compiles clean. Ruled out
+by measurement: positive-if wrap, guard-return, a combined `&&` condition, a
+`while(){break;}` reformulation, an explicit trailing `return;`, and fully
+nested if/else with `return` in every leaf. All canonicalise to the same
+extra `blr`.
+
+**But the unit is further from landing than 64/66 suggests.** The section checks
+the round did not run: **`.rodata` is `0x14` under and `.data` `0x4` under** --
+real shortfalls under the repaired checker, not padding. `.bss` and `.ctors` are
+exact and `check_bounds` reports PLAUSIBLE. Those missing constants are work
+nobody has scoped yet.
+
+**The `FUNCTION ORDER IS WRONG` flag on `__dt__Q23mEf8effect_cFv` is a KNOWN
+false alarm** -- `verify_anon.py`'s own docstring records that exact pairing:
+target `fn_2_179290` is `sStateID_c`'s scalar deleting destructor, not
+`effect_c`'s, and deleting-destructor wrappers are byte-identical across
+unrelated classes. Only that one function is flagged. Waive it.
+
 ## A `__sinit` pool-offset difference is a SYMPTOM, not a defect
 
 `d_a_wm_course.cpp` is 15/23, and its `__sinit` reads as only **3 differing** --

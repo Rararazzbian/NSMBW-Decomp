@@ -294,7 +294,7 @@ void daWmCourse_c::updateHelpFade() {
     }
     daWmCourse_c *neighbor = searchOpenNeighbor();
     if (neighbor != nullptr) {
-        if (mMatClrAnim[ANM_OPEN].getFrame(0) == neighbor->getMatClrFrame()) {
+        if (neighbor->getMatClrFrame() == mMatClrAnim[ANM_OPEN].getFrame(0)) {
             mMatClrAnim[ANM_OPEN].setRate(1.0f, 0);
             mUnk250 = false;
         }

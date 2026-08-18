@@ -179,7 +179,11 @@ public:
     f32 mApproachCurrent; ///< @unofficial +0x4f4, driven toward
                           ///< mApproachTarget by approach().
     f32 mApproachTarget;  ///< @unofficial +0x4f8, approach()'s target value.
-    u32 mUnk4FC; ///< @unofficial +0x4fc, unknown.
+    s32 mUnk4FC; ///< @unofficial +0x4fc. Confirmed SIGNED this round: executeState_MoveReady's
+                 ///< `> 0` check only compiles to a genuine `bgt` (signed ordering) when this
+                 ///< field is s32 -- as u32 MWCC legally folds `x > 0` into `x != 0` (since no
+                 ///< unsigned value is negative) and emits `bne` instead, which is exactly the
+                 ///< target/draft mismatch this round's probe found and fixed.
     f32 mApproachStep; ///< @unofficial +0x500, approach()'s step size.
     u32 mReadyFlag; ///< @unofficial +0x504, written by finalizeState_Ready,
                     ///< read by executeState_Ready.
@@ -380,7 +384,18 @@ void daWmSandPillar_c::createMdl() {
     mAnim.create(resMdl, resAnmChr, &mAllocator);
 
     mResAnmTexSrt = mResFile.GetResAnmTexSrt("cobSandpillar");
-    mAnimTexSrt.create(resMdl, mResAnmTexSrt, &mAllocator, 1);
+    /// @unofficial NEW this round, closing the unit's last 4-instruction gap:
+    /// the 3-arg DOUBLE wrapper (anm_tex_srt.hpp's `create(mdl, anmTexSrt,
+    /// allocator)`, which itself forwards through the 4-arg wrapper to the
+    /// real 5-arg function), NOT the 4-arg wrapper called directly with an
+    /// explicit trailing `1`. Both bind the SAME final call with the SAME
+    /// count=1 -- confirmed byte-identical apart from which two stack slots
+    /// (+0x8/+0xc) the resMdl/anmTexSrt by-value temporaries anchor to. This
+    /// is the double-wrapper half of the inline-wrapper rule already applied
+    /// to mAnim.create() above (anmChr_c's own double wrapper) and to
+    /// mModel.create() (a single wrapper): the OUTER-most available wrapper
+    /// wins for each of these three calls, not the innermost.
+    mAnimTexSrt.create(resMdl, mResAnmTexSrt, &mAllocator);
     mAnimTexSrt.setAnm(mModel, mResAnmTexSrt, 0, m3d::FORWARD_LOOP);
     mModel.setAnm(mAnimTexSrt, 1.0f);
 
@@ -416,25 +431,33 @@ void daWmSandPillar_c::approach() {
 
 /// @unofficial fn_2_177EC0. Sets mReadyFlag (+0x504) from ACTOR_PARAM(Type),
 /// consumed by executeState_Ready below.
-/// @unofficial Structurally right (both cmpwi are signed and correctly
-/// ordered), but MWCC's own tail-sharing choice for the 2nd branch inverts
-/// relative to target (`bne`-to-fail here vs target's `bne`-to-shared-tail)
-/// no matter how this is phrased in source (tried ||, switch, goto, and a
-/// bool intermediate -- all either range-merge into a subi/cmplwi/bgt or
-/// invert this one branch). Parked at 3/12 differing; not chasing further
-/// this round per the "don't chase a single-instruction residual" rule.
+/// @unofficial CLOSED this round -- the earlier "3/12, tail-sharing inverts
+/// no matter how phrased" note was chasing the wrong lever. `||`, `switch`,
+/// and if/else-chain all range-merge into a subi/cmplwi/bgt (worse, 5
+/// differing) because they don't tell MWCC which of the two equal-valued
+/// branches is the CANONICAL one to physically place first. The original
+/// goto form got the FIRST branch (type==1, shared tail) right already; the
+/// remaining fault was the SECOND check merging into the SAME goto label
+/// (`goto set`) again, which the compiler treated as an unconditional jump
+/// TO set (`beq set`) with the type!=2 body placed inline immediately after
+/// -- backwards from target's physical layout (set-block first, else-block
+/// second, reached by `bne` skip-away on the failing test). Spelling the
+/// second test as its own negative goto (`if (type != 2) goto clear;`) and
+/// placing `set:` before `clear:` in source order pins both the branch
+/// polarity AND the block order to match target exactly. 12/12.
 void daWmSandPillar_c::finalizeState_Ready() {
     int type = ACTOR_PARAM(Type);
     if (type == 1) {
         goto set;
     }
-    if (type == 2) {
-        goto set;
+    if (type != 2) {
+        goto clear;
     }
-    mReadyFlag = 0;
-    return;
 set:
     mReadyFlag = 1;
+    return;
+clear:
+    mReadyFlag = 0;
 }
 
 /// @unofficial fn_2_177EF0. Reads mReadyFlag (set by finalizeState_Ready),
@@ -497,6 +520,26 @@ void daWmSandPillar_c::finalizeState_BottomWait() {
 /// @unofficial fn_2_1780C0. If mUnk4EC is set, does nothing (parked
 /// permanently -- BottomWaitForever's own final also sets this, presumably).
 /// Otherwise counts mUnk4F0 down to 0 and transitions to MoveReady.
+/// @unofficial STILL 1/13 differing (draft emits an extra trailing `blr`
+/// after the tail-call `bctr`; target ends clean at `bctr`, confirmed by
+/// direct read of its next 0 bytes -- the very next byte is
+/// unk1780F4's own `blr`, so there is no room for one here). Tried this
+/// round, via a standalone compiled probe (mwcceppc.exe direct, module
+/// d_basesNP, same flags as the real build) rather than guessing:
+/// positive-if wrap instead of guard-return, single combined `&&`
+/// condition, a `while(){break;}` reformulation, an explicit trailing
+/// `return;`, and fully-nested if/else with a `return` in every leaf.
+/// ALL of them compile to the byte-identical 13 instructions plus the
+/// same extra `blr` -- MWCC canonicalizes every one of these source
+/// shapes to the same IR. executeState_TopWait below (a single guard
+/// instead of two) reproduces the identical extra `blr` under the same
+/// probing, while the zero-guard executeState_TopWaitFromTheStart (a bare
+/// `changeState()` call, no guard at all) compiles clean with no extra
+/// `blr` -- so the trigger is "at least one conditional early-return
+/// precedes the final tail-call", not the field being tested, its
+/// comparison operator, or the guard count. Since target manages a clean
+/// two-guard tail-call at this exact address with the same flags, some
+/// real source difference must exist; it was not found this round.
 void daWmSandPillar_c::executeState_BottomWait() {
     if (mUnk4EC != 0) {
         return;
@@ -676,6 +719,10 @@ void daWmSandPillar_c::finalizeState_TopWait() {
 
 /// @unofficial fn_2_1785B0. Mirrors executeState_BottomWait's countdown
 /// (no mUnk4EC gate here though), transitioning to MoveDown once expired.
+/// @unofficial STILL 1/10 differing -- same extra trailing `blr` as
+/// executeState_BottomWait above, same exhaustive probing this round, same
+/// null result. See that function's note; not duplicating the full list
+/// here.
 void daWmSandPillar_c::executeState_TopWait() {
     if (--mUnk4F0 > 0) {
         return;
