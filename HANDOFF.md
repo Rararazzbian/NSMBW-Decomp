@@ -2284,6 +2284,53 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## Relocations target a pool's BASE, never its entries. Do not search for
+## "who references this constant".
+
+This invalidated three separate pieces of reasoning today -- one of mine and one
+in each of two agent reports -- so it is worth stating on its own.
+
+**MWCC addresses a constant pool by materialising its BASE once (`lis`/`addi`)
+and then loading with displacements** (`lfs f1, 0x10(r31)`). The only relocation
+emitted is against the pool base. So decoding the relocation stream to ask "who
+references `.rodata:0x85a8`" returns nothing for an entry that is loaded
+constantly, and the absence proves nothing at all.
+
+What the relocation stream IS good for is settled and still true -- identifying
+which functions touch a `.bss`/`.data` OBJECT (each has its own relocation), and
+ownership of a claimed range. It is `.rodata` POOL ENTRIES specifically that are
+invisible to it.
+
+**The right test for whether a pool entry is live is the per-function diff.**
+Because entries are reached by displacement, a missing entry shifts the
+displacements of everything after it -- so if a function loads a constant you do
+not have, THAT FUNCTION CANNOT MATCH. Contrapositive, and this is the useful
+form: **if every function in the unit matches, any extra pool entry the target
+has is DEAD** -- pooled by something deadstripped, never loaded.
+
+That is how antlion's missing `1, 0, 0` was classified as dead entries rather
+than a missing use: 37/37 with correct displacements throughout means nothing
+loads them. `d_a_wm_grid.cpp`'s landed `DUMMY_ORDERING()` idiom -- a `DECL_WEAK`
+function whose `static const` array survives the function being stripped -- is
+the known shape that produces exactly this.
+
+### The two pools, dumped, for whoever picks these up
+
+**antlion `.rodata 0x8598-0x85b4`** -- draft emits the first seven words in the
+right positions; missing the trailing three:
+`100.0, 0.0, 1.0, -1.0, | 2160.0, -30.0, -478.0 | 1, 0, 0`
+
+**course `.rodata 0x87b0-0x87f0`** -- draft emits `0x2c` of `0x40`, and the five
+missing words are all AHEAD of the triple, which is why its `__sinit` reads the
+triple at +0x18 where the target reads +0x30:
+```
+0, 1.0, 003C000A, 0, 80.0, 1, 0, 0, 0, 1.0, 176.0, 80000000, | 2160.0, -30.0, -478.0 | 0
+```
+`003C000A` is not a float -- as two `u16`s it is 60 and 10. `80000000` is
+NEGATIVE zero, not zero, which is a distinctive fingerprint: it comes from a
+literal `-0.0f` or a negation. Both are strong leads for identifying the
+expressions that pool them.
+
 ## antlion is 37/37, VTABLE CLEAN, BOUNDS PLAUSIBLE — 0xc of `.rodata` from landing
 
 Order block empty, `check_vtable` exit 0, `check_bounds` exit 0 with zero
