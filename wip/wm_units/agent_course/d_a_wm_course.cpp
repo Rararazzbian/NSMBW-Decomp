@@ -194,7 +194,13 @@ void daWmCourse_c::createModel() {
     mResFile = dResMng_c::m_instance->getRes("cobCourse", "g3d/model.brres");
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobCourse");
 
-    mModel.create(resMdl, &mAllocator, 0x128, 1, nullptr);
+    /// @unofficial The 4-arg INLINE WRAPPER, not the 5-arg overload with an
+    /// explicit trailing nullptr. This is the inline-wrapper rule: an OUTER
+    /// by-value consumer must go THROUGH the wrapper while the loop call below
+    /// BYPASSES its own by spelling its trailing arguments. Spelling the
+    /// nullptr here costs 6 instructions of stack-slot rotation (12 differing
+    /// versus 6). Sixth unit this rule has fixed.
+    mModel.create(resMdl, &mAllocator, 0x128, 1);
 
     nw4r::g3d::ResMdl matResMdl = mModel.getResMdl();
 
@@ -538,23 +544,23 @@ void daWmCourse_c::updateSpecialWorld() {
 // two `IsCourse*Simple()==true` branches always use the fixed pair
 // unconditionally.
 void daWmCourse_c::updateClearAnim(bool immediate) {
-    u32 courseNo = ACTOR_PARAM(CourseNo);
+    int courseNo = ACTOR_PARAM(CourseNo);
     float baseRate = immediate ? 0.0f : sOpenFullRate;
 
     if (courseNo == 3 && dScWMap_c::m_WorldNo == 2) {
-        if (*reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)) {
-            if (IsCourseOmoteClearSimple()) {
+        if (!*reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)) {
+            if (IsCourseUraClearSimple()) {
                 setMatClrAnm(0, 0.0f, 1.0f);
-            } else if (IsCourseOtasukeClearSimple()) {
+            } else if (IsCourseUraOtasukeClearSimple()) {
                 setMatClrAnm(1, 1.0f, 0.0f);
             } else {
                 int frame = 0;
                 setMatClrAnm(2, baseRate, frame);
             }
         } else {
-            if (IsCourseUraClearSimple()) {
+            if (IsCourseOmoteClearSimple()) {
                 setMatClrAnm(0, 0.0f, 1.0f);
-            } else if (IsCourseUraOtasukeClearSimple()) {
+            } else if (IsCourseOtasukeClearSimple()) {
                 setMatClrAnm(1, 1.0f, 0.0f);
             } else {
                 int frame = 0;

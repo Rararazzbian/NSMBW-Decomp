@@ -2284,6 +2284,86 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## course 18/23 -> 22/23, SECTIONS CLEAN. The DUMMY_ORDERING hack was WRONG.
+
+Four functions closed at once, and the reason matters more than the count:
+**the previous round's `DUMMY_ORDERING` fix was right by accident.** That pool
+is not dead-seeded padding -- it is LIVE. Five functions (`createModel`'s two
+`ANM_OPEN` calls, `updateOpenAnim`, `openNeighbors`, `updateClearAnim`, and
+`updateHelpFade` twice) all read a shared `1.0f` from `lbl_2_rodata_87b0+0x4`,
+which is a DIFFERENT object from the separately-addressed `0.0f`/`1.0f` pair at
+`0x87d0`/`0x87d4` that every other call in the unit uses.
+
+Replacing the dead-code wrapper with a real, referenced `static const u32[4]`
+declared before `create()` puts it first in the pool -- correct placement for the
+right reason, since a named `static const` pools eagerly at its declaration
+point. `updateHelpFade` 22 -> MATCH, `openNeighbors` 41 -> MATCH,
+`updateOpenAnim` 40 -> MATCH, `updateClearAnim` 95 -> MATCH.
+
+**The lesson: a hack that produces the right bytes can still be the wrong
+explanation, and the wrong explanation blocks everything downstream.** Four
+functions were stuck behind a mis-diagnosis, not behind a hard problem.
+
+`updateClearAnim` also needed two known levers: `u32 courseNo` -> `int` for
+`cmpwi`/`bne` instead of `cmplwi`/`beq`, and inverting a byte check so the
+branches lay out in the target's order.
+
+### And the inline-wrapper rule closed half of what remained
+
+`createModel` was 125 -> 12 after the pool fix. I applied the inline-wrapper rule
+directly -- its OUTER `mModel.create(resMdl, &mAllocator, 0x128, 1, nullptr)`
+was spelling the trailing `nullptr`, bypassing the 4-arg wrapper, while the loop
+call correctly bypasses its own. Dropping it: **12 -> 6**. Sixth unit that rule
+has fixed; it had been flagged to the round twice and not tried.
+
+**Remaining 6, characterised exactly** -- a scheduling difference around the
+`mParam` / `c_StartPointKinokoHouseID` compare setup:
+
+```
+     target                              draft
+75   lis  r4, lbl_2_bss_FD7C@ha          li   r0, 0xff
+76   li   r5, 0xff                       stw  r0, 0x238(r30)
+77   lwz  r4, lbl_2_bss_FD7C@l(r4)       lis  r4, c_StartPointKinokoHouseID@ha
+78   mr   r29, r3                        lwz  r0, 0x4(r30)
+79   lwz  r0, 0x4(r30)                   lwz  r4, c_StartPointKinokoHouseID@l(r4)
+80   stw  r5, 0x238(r30)                 mr   r29, r3
+```
+
+The target BEGINS the static load, materialises `0xff` into `r5`, finishes the
+load, and stores `0xff` LAST. The draft stores it first, from `r0`. Swapping the
+`mCurrentIndex = 0xff;` and `courseType` statements makes it WORSE (6 -> 8) --
+measured, do not retry.
+
+Unit is **22/23, SECTIONS CLEAN, BOUNDS PLAUSIBLE, VTABLE CLEAN**.
+
+## castle PARKED at 18/20 — the registration/guard entanglement, mechanism found
+
+The `.bss` +4 and the `__sinit` residual are one defect, and its cause is now
+confirmed rather than suspected:
+
+**`mVec3_c` has a user-declared `~mVec3_c() {}`** (`m_vec.hpp:128`). A member with
+a user-declared destructor -- even an empty one -- makes the containing struct
+non-trivial, and **MWCC always emits array registration for a dynamically
+initialised array of a non-trivial type.** That single `bl __register_global_object`
+plus its `__arraydtor` is the entire extra call; the target has none for this
+object.
+
+Proved by Probe E: replacing the member's type with a hand-rolled trivial POD
+makes the registration DISAPPEAR. But it overshoots -- with nothing non-trivial
+left, MWCC folds the whole aggregate into `.data` at compile time and emits no
+runtime write at all, so `.rodata` goes 4 UNDER and `.bss` 8 UNDER. Worse, not
+better.
+
+**The target needs "guard present, registration absent" and no shape produces
+both.** Array-of-`mVec3_c` gives registration without guard; POD gives neither;
+Probes A-D gave guard at the cost of un-baking the `.data` scalars or growing the
+frame. Seven shapes now, plus 19 on the sibling unit's identical construct.
+
+Also worth recording: rows 0-27 of that `__sinit`, long assumed to be matching by
+luck, are `sc_ForceList__6dWmLib` -- a completely different object from the shared
+header that is already correct. Reading the target disassembly with REAL symbol
+names rather than normalised ones is what made that visible.
+
 ## koopa_castle PARKED at 16/17 — 19 measured shapes on one construct
 
 The declaration-versus-usage lever does NOT transfer, and the reason is a real

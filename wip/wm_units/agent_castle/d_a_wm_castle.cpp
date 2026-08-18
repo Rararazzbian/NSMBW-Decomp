@@ -58,6 +58,22 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &mode
 // `.rodata` byte-for-byte and gets `__sinit` to 16 differing of 53. The guard's exact origin
 // remains unexplained; `.bss` is 4 bytes over (two `__register_global_object` blocks vs. the
 // target's apparent one, see this task's `check_sections.py --layout` output).
+// PROBE E, this round: gave `mOffset` a hand-rolled trivial 3-float POD type instead of `mVec3_c`
+// (whose real declaration in `include/game/mLib/m_vec.hpp` has a user-declared `~mVec3_c() {}` --
+// confirmed by reading that header directly). CONFIRMED this is why the extra
+// `bl __register_global_object` exists: with a POD offset, `KoopaShipStopConfig_t` becomes
+// genuinely POD, the array needs no registration, and `__arraydtor`/`__dt__21KoopaShipStopConfig_tFv`
+// both disappear -- `.text`'s second `bl __register_global_object` (the one the target does not
+// have) is gone. But it overshoots: with NO non-trivial subobject left, MWCC now treats the whole
+// `{0.0f, 100.0f, 50.0f}` initialiser as compile-time-constant and folds it entirely into `.data`
+// at COMPILE time -- there is no runtime write AT ALL, not even an unconditional one, let alone the
+// target's GUARDED one. That silently drops the `.rodata` float constants the runtime write used
+// to load (`.rodata` UNDER by 4) and the guard-byte-and-friends `.bss` region the guard used to
+// occupy (`.bss` UNDER by 8, worse than the `.data`-baked shape's OVER by 4). Net regression,
+// reverted. The registration mechanism and the guarded-runtime-write are two SEPARATE, apparently
+// independent things the target has one of each of (registration for the unrelated `sc_ForceList`,
+// a guard for this object) and neither of my two known levers (array-of-mVec3_c vs. POD-array)
+// produces "guard present, registration absent" at once -- see this task's report.
 struct KoopaShipStopConfig_t {
     float mUnk0;   ///< @unofficial 100.0f in the target.
     float mUnk4;    ///< @unofficial 0.4f in the target.
