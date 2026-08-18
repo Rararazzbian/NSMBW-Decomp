@@ -2284,6 +2284,59 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### kinoko_red's 4-byte `.rodata`: dedup CONFIRMED for the leading pad, and the
+### trailing pad is a different phenomenon with no candidate in this TU
+
+The constant-pool dedup hypothesis is now confirmed -- but only for the family
+it explains, and that family is not red's.
+
+**The leading-pad units are explained, and one of them is a documented hack
+already in the landed tree.** `source/d_basesNP/bases/d_a_wm_grid.cpp` opens
+with:
+
+```cpp
+DECL_WEAK
+void DUMMY_ORDERING() {
+    static const float UNUSED[] = { 0.0f };
+}
+```
+
+commented as "required to ensure correct .rodata pool ordering … deadstripped by
+the linker later". So grid's leading `0.0` is a deliberate seed. Tower needs no
+such trick and has no `0.0f` anywhere: its leading word is **`100.0`, not
+`0.0`**, from `mClipSphere.set(mPos, 100.0f)` in `setClipSphere()`, called from
+`create()` -- tower's first-defined function. Re-extracted from
+`original/d_basesNP.rel` to confirm, since this contradicts the assumption that
+the leading word is always a zero. Tower is a genuine earlier-use dedup; grid is
+an accepted hack achieving the same ordering.
+
+**Red's trailing pad is NOT the same thing, and has no candidate:**
+
+- `fn_2_16BEC0` (red's `__sinit`), read from the REL directly, performs exactly
+  three `lfs` at pool offsets `0`, `4`, `8`. **It never reads `0xC`.**
+- Red's other six functions are byte-identical and contain **zero
+  floating-point instructions between them**. There is no missing `0.0f` use
+  anywhere in this TU's own code.
+
+**And the trick cannot be inverted, for a mechanical reason worth keeping:**
+reproducing grid's `DUMMY_ORDERING` at the far end of the file (so it compiles
+after every real function, landing at `.text:0x120`) still pools the constant
+BEFORE the triple. **The auto-generated `__sinit` is always the last thing
+compiled in a TU** -- true of every unit examined, base included -- so nothing
+user-written can compile after it. That is why a leading-pad trick exists in
+this codebase and a trailing-pad one does not.
+
+This mirrors the `.data` finding on kinoko_base exactly: there too, nothing the
+source can say gets an object emitted after the compiler's own end-of-TU output.
+**Two different sections, two different units, same shape of wall** -- the last
+thing MWCC emits is not addressable from source. That is now the single most
+valuable open question in this family, because it blocks kinoko_base's `.data`
+and kinoko_red's `.rodata` both, and solving either likely solves both.
+
+Recorded in red's source as an open residual rather than forced. The unit is
+otherwise complete: 8/8, `.data` and `.bss` exact, VTABLE CLEAN, bounds
+plausible.
+
 ### koopa_castle: `execute` MATCHES, but the unit is 14/16, not 15/16
 
 `execute` closed 20 -> 0 and `check_sections --layout` is now SECTIONS CLEAN

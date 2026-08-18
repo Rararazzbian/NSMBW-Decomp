@@ -80,30 +80,57 @@ public:
 };
 // sizeof(daWmKinokoBase_c) == 0x290.
 
-/// @unofficial UNRESOLVED: the target's own dWmLib::sc_ForceList float pool
-/// (lbl_2_rodata_8AF0) is 0x10 bytes (2160.0f, -30.0f, -478.0f, 0.0f) --
-/// FOUR floats -- while this TU's own compile of the identical
-/// `mVec3_c(2160.0f, -30.0f, -478.0f)` triple (from dWmLib::sc_ForceList's
-/// header-side initializer, included via d_wm_lib.hpp above) only pools
-/// THREE (0xC bytes), confirmed both by check_sections.py (`.rodata UNDER
-/// 0x4`) and by directly reading the raw bytes at .rodata:0x8AF0 out of
-/// original/d_basesNP.rel. Nothing in this TU's own code reads a 4th float
-/// there (fn_2_16BEC0's __sinit, read directly from the REL, does exactly
-/// three `lfs` at relative offsets 0, 4, 8 -- never 0xC), and mVec3_c /
-/// nw4r::math::VEC3 are confirmed tightly-packed 3-float PODs with no
-/// alignment padding of their own (include/lib/nw4r/math/math_types.h,
-/// include/game/mLib/m_vec.hpp), so the pad is not part of the type's own
-/// layout. A trailing `static const float = 0.0f;` declared adjacent in this
-/// file does NOT reproduce it -- an unreferenced float constant with no side
-/// effects is simply dead-code-eliminated, unlike the string-literal case
-/// above (which survived because the same literal was reachable from the
-/// later real use). daWmKinokoBase_c's OWN much larger rodata pool
-/// (lbl_2_rodata_8AC8, 0x28 bytes, containing several OTHER floats from
-/// createModel()/create() plus the SAME 3-float triple) shows NO equivalent
-/// trailing pad after its own copy of this triple, so it is not a blanket
-/// "every mVec3_c triple gets padded to 4 floats" rule either. Left open --
-/// the 4-byte `.rodata` shortfall is the one real defect remaining in this
-/// draft.
+/// @unofficial UNRESOLVED (re-investigated on request, still open): the
+/// target's own dWmLib::sc_ForceList float pool (lbl_2_rodata_8AF0) is 0x10
+/// bytes -- (2160.0f, -30.0f, -478.0f, 0.0f) -- while this TU's own compile
+/// of the identical `mVec3_c(2160.0f, -30.0f, -478.0f)` triple (from
+/// dWmLib::sc_ForceList's header-side initializer, included via d_wm_lib.hpp
+/// above) only pools THREE floats (0xC bytes). Confirmed both by
+/// check_sections.py (`.rodata UNDER 0x4`) and by directly reading the raw
+/// bytes at .rodata:0x8AF0 out of original/d_basesNP.rel.
+///
+/// Two landed siblings show the analogous LEADING-pad shape, both explained:
+/// - source/d_basesNP/bases/d_a_wm_grid.cpp opens its pool with a 0.0f via a
+///   deliberate `DECL_WEAK void DUMMY_ORDERING() { static const float
+///   UNUSED[] = { 0.0f }; }`, hand-documented as "required to ensure correct
+///   .rodata pool ordering" and "deadstripped by the linker later" -- i.e. a
+///   known, accepted workaround in this project for exactly this class of
+///   problem, not real game logic.
+/// - source/d_basesNP/bases/d_a_wm_tower.cpp has NO such trick and no 0.0f
+///   literal anywhere in its own source, yet its own pool (.rodata:0x9320)
+///   also opens with a leading word -- 100.0f, not 0.0f -- read directly out
+///   of original/d_basesNP.rel. That is tower's own real, referenced
+///   constant: `setClipSphere()` (include/game/bases/d_a_wm_tower.hpp) is
+///   `mClipSphere.set(mPos, 100.0f)`, called from `create()`, tower's own
+///   first-defined function -- so it is a genuine "missing/earlier use",
+///   confirming the coordinator's deduplication theory for the LEADING case.
+///
+/// For RED's TRAILING case, both explanations were tested and ruled out:
+/// - fn_2_16BEC0 (this unit's own __sinit, read directly from the REL) does
+///   exactly three `lfs` at relative pool offsets 0, 4, 8 -- never 0xC. It
+///   does not read the fourth word.
+/// - Every other function in this unit (ctor, dtor, vf7C, vf80, vf84,
+///   getModelName, classInit) is independently confirmed byte-identical by
+///   verify_anon.py, and none of them contains a floating-point instruction
+///   at all -- there is no candidate "missing use" of 0.0f anywhere in this
+///   TU's own compiled functions for a fifth pool entry to come from.
+/// - Empirically reproducing grid's own trick (a DECL_WEAK function-local
+///   `static const float UNUSED[] = { 0.0f };`) in this draft, placed at the
+///   VERY END of the file (textually after getModelName, and landing at
+///   .text offset 0x120 -- after every one of this unit's own real
+///   functions, and still before the compiler-generated __sinit, which is
+///   always the last-compiled function in every unit observed in this
+///   family, base included), still pools the dummy 0.0f BEFORE the triple,
+///   not after -- reproducing grid's shape, not red's. Nothing tried moves a
+///   user-declared float to the trailing position, because __sinit itself
+///   appears to always be the last thing compiled, so nothing textual can
+///   compile "after" it to explain a TRAILING pad the way grid/tower's
+///   LEADING pad is explained.
+///
+/// Net: this is a genuinely different finding from grid/tower's case, not
+/// the same mechanism with an undiscovered use. Recording it as such rather
+/// than forcing a fix. The 4-byte `.rodata` shortfall remains the one real
+/// defect left in this draft.
 
 /// @brief The actor for the Red Mushroom-house marker (course start point) on
 /// the World Map.
