@@ -17,13 +17,47 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &mode
 // report). Target evidence: lbl_2_data_44010 (28 bytes, no relocations, read via dtk) is
 //   0x42C80000 100.0f   0x3ECCCCCD 0.4f   [0.0f 100.0f 50.0f]=mVec3_c (dynamically initialised,
 //   guarded by a byte in lbl_2_bss_FD48)   0x41200000 10.0f    0x00000000 0.0f
-// A non-const, namespace/file-scope array with an mVec3_c member (the same shape as
-// dWmLib::sc_ForceList) reproduces .data and .rodata byte-for-byte and brings __sinit from 52 to
-// 16 differing instructions; four further shapes (function-local static, single struct instead
-// of array, inline-accessor-in-initialiser) were each tried and measurably worse. See this
-// task's reports for the full five-shape comparison. The guard's exact origin inside __sinit
-// remains unexplained; .bss is 4 bytes over (two __register_global_object blocks vs the
-// target's apparent one).
+//
+// PARKED at 16 differing (this shape), after four probes this round applying koopa_castle's
+// guard/doInit()/depth-split lever tried to drop it further and ALL FOUR regressed. Recorded here
+// so nobody re-tries them; __sinit's target disassembly for this object has NO
+// `bl __register_global_object` / `__arraydtor` pair at all -- a plain byte-guard test
+// (`lbz`/`extsb.`/`bne`) directly on a `.bss` byte, exactly koopa_castle's `KoopaShipPos_t` shape
+// -- which is WHY these were worth trying; none of them reproduced it:
+//   PROBE A -- give `KoopaShipStopConfig_t` its own constructor with a member-init-list
+//   (`mUnk0(100.0f), ...`) calling a guarded `doInit()`. 28 differing, and regressed `createModel`
+//   (0 -> 4) as a side effect. Once the type has ANY user-declared constructor, MWCC stops baking
+//   the scalar fields (`mUnk0`/`mUnk4`/`mUnk14`/`mUnk18`) into the static `.data` image -- it
+//   writes them at runtime instead, unconditionally, ahead of the guard branch. Structural, not
+//   a register-allocation regression: the whole object moved from `.data` into `.bss`.
+//   PROBE B -- drop the `[]` only, keep the plain aggregate initialiser, no constructor at all.
+//   40 differing: without a hand-authored guard there is nothing to branch on, and without the
+//   array there is no `__register_global_object` call either, so the compiler falls back to
+//   unconditional runtime writes for the WHOLE object -- no guard, no branch, wrong shape.
+//   PROBE C -- bare aggregate (no constructor), `mOffset` initialised via the empty-body
+//   `mVec3_c()` default constructor (confirmed to bake the target's zeroed pre-guard image, since
+//   a call that writes nothing has no observable effect to preserve), with the REAL values written
+//   later by a SEPARATE trigger object's constructor reaching into
+//   `sc_KoopaShipStopConfig.mOffset` from OUTSIDE the struct. 38 differing: the guard byte landed
+//   at `.bss+0x18` (not the target's `+0x10`) and the stack frame grew to `0x40` (target `0x30`)
+//   -- writing to another type's global through an external reference forces a
+//   temporary-then-copy-assign rather than an in-place write, and that temporary's stack slots
+//   aliased and reused the unrelated `sc_ForceList` staging slots earlier in the function.
+//   PROBE D -- same split as C, but the guarded write moved back inside `KoopaShipStopConfig_t`
+//   as an ORDINARY (non-constructor) member function `doInit()`, called on `this` the way
+//   koopa_castle's `mPos1 = mVec3_c(...)` is (not through an external reference). Measured
+//   BYTE-IDENTICAL to probe C, 38 differing, same `.bss+0x18` guard and `0x40` frame -- MWCC did
+//   not inline the cross-object member call the way it inlines a constructor calling its own
+//   class's `doInit()`, so the "member vs. external write" distinction that mattered for
+//   koopa_castle's single-guarded-type shape does not carry over to this mixed
+//   baked-scalars-plus-one-guarded-member shape.
+// Conclusion: the koopa_castle lever needs the WHOLE object to be guard-driven to work; here only
+// one field of five is, and every attempt to graft a guard onto part of an otherwise-aggregate
+// object cost the `.data` bake, the frame size, or both. A non-const, namespace/file-scope array
+// with an mVec3_c member (the shape below) remains the best found -- it reproduces `.data` and
+// `.rodata` byte-for-byte and gets `__sinit` to 16 differing of 53. The guard's exact origin
+// remains unexplained; `.bss` is 4 bytes over (two `__register_global_object` blocks vs. the
+// target's apparent one, see this task's `check_sections.py --layout` output).
 struct KoopaShipStopConfig_t {
     float mUnk0;   ///< @unofficial 100.0f in the target.
     float mUnk4;    ///< @unofficial 0.4f in the target.

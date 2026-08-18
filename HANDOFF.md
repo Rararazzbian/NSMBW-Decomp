@@ -2284,6 +2284,91 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## sandpillar is 66/66. The "extra trailing blr" was a TOOL ARTEFACT.
+
+Two agent rounds and ~17 measured source reformulations went into
+`executeState_BottomWait` and `executeState_TopWait`, each reporting
+"1 differing -- an extra trailing `blr`". **There was never a defect.**
+
+`dtk ends a function at an unconditional branch.** When MWCC emits an
+unreachable `blr` after a tail call, dtk splits that `blr` off as its own 4-byte
+"function", so a draft that correctly emits it reads one instruction longer.
+The target's own bytes settle it:
+
+```
+fn_2_1780C0 = .text:0x001780C0; size:0x34   <- ends 4E800420  (bctr)
+fn_2_1780F4 = .text:0x001780F4; size:0x4    <- 4E800020       (blr)
+fn_2_1785B0 = .text:0x001785B0; size:0x28   <- ends 4E800420
+fn_2_1785D8 = .text:0x001785D8; size:0x4    <- 4E800020
+```
+
+The tell was in the agent's own report: it found that ANY conditional branch
+before a tail call produces the trailing `blr`, while the target supposedly had
+two guards and no `blr`. That contradiction was the evidence, and it was read as
+a deeper mystery instead of as a wrong premise.
+
+`verify_anon.py` now accepts a draft that is the target plus one dead `blr`,
+**and only when the target's last instruction is `bctr`** -- after a tail call a
+`blr` is unreachable, so it cannot be a real function.
+
+**Two wrong fixes were measured first, both worth recording.** Restitching the
+TARGET's function list is the obvious move and it cascades: merging a lone `blr`
+after `b`/`blr`/`bctr` took a correct 64/66 down to **42/52**; restricting to
+`bctr` still swallowed four legitimate functions and invented two new
+differences. Whether the `blr` belongs to the previous function depends on
+whether the DRAFT emitted one, and only the comparison knows that. **Fix
+comparison bugs at the comparison.**
+
+### Landing sandpillar: one convention learned, one blocker left
+
+**To call into a still-un-landed region of the SAME REL, the symbol must be
+named `R_<module>_<section>_<offset>`, all hex** (`tools/elfconsts.py`:
+`REL_SYM`). Module 2 is d_basesNP, section 1 is `.text`. So
+`extern "C" int fn_2_171400();` compiles and verifies byte-identically and then
+FAILS TO LINK -- nothing defines that name. `extern "C" int R_2_1_171400();`
+links. The `fn_2_*` spelling has been recorded here as "the correct convention"
+for a long time; it is correct for CODEGEN and wrong for LINKING.
+
+**Remaining blocker: `.text` grows by `0x150`.** Built `.text` is `0x1c6154`
+against the original's `0x1c6004`; every other section is exact. The object is
+`0x648` over its claim, which is normally benign weak symbols -- but here some
+of them are being PLACED, because sandpillar is a heavy template user
+(`sFStateID_c<daWmSandPillar_c>`, `sFStateFct_c<...>`, `sStateMgr_c<...>`) and
+is currently the only landed provider of those instantiations. This is the
+already-recorded rule biting: **a weak symbol defined only in an un-landed
+region gets placed.** The unit is reverted and the tree is green at 5/5.
+
+## castle `__sinit`: a clean negative, and my triangulation premise was wrong
+
+I dispatched castle's and koopa_castle's `__sinit` as "two instances of one
+wall", expecting the setup that broke the temporary-materialisation wall. **They
+are not the same shape**, and four measured probes establish why:
+
+| probe | result |
+|---|---|
+| config struct with its own ctor + guarded `doInit()` | 28 differing, and REGRESSED `createModel` 0 -> 4 |
+| drop the array, no constructor | 40 differing |
+| bare aggregate, values written by an external trigger object | 38; guard at `.bss+0x18` not `+0x10`, frame `0x40` not `0x30` |
+| same, with the guarded write as an ordinary member function | byte-identical to the above, 38 |
+
+koopa_castle's guarded static contains ONLY `mVec3_c` members -- everything is
+guard-driven. Castle's is a MIXED aggregate: four compile-time-constant scalars
+that must stay baked in `.data`, plus one guarded `mVec3_c`. Any user-declared
+constructor stops MWCC baking the scalars and makes it write them at runtime;
+any external-reference assignment forces a temporary-then-copy whose stack slots
+alias `sc_ForceList`'s staging.
+
+**Castle's `.bss` +4 is REAL and is the same defect as its `__sinit` residual**,
+not independent: declaring the config as a one-element ARRAY emits a second
+`bl __register_global_object` plus an `__arraydtor`, because `mVec3_c` has a
+user-declared destructor and MWCC always registers arrays of such types. The
+target has no second registration at all -- it byte-guards a plain `.bss` byte.
+
+Also: `check_bounds.py`'s new ownership check flags a unit's own `__sinit` as
+unreferenced. That is a **known false positive** -- `__sinit` is reached from the
+static-init table, not a `bl` in `.text`. Include `.ctors` in the claim and it
+resolves; the castle claim omitted it.
+
 ## LANDED: kinoko_1up, seventh REL unit. The whole kinoko family is in.
 
 Landed straight after kinoko_base unblocked it -- 9/9 with SECTIONS CLEAN and

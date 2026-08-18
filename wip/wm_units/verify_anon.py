@@ -104,6 +104,39 @@ def norm(instructions):
     return out
 
 
+# dtk ENDS A FUNCTION AT AN UNCONDITIONAL BRANCH. When MWCC emits an
+# unreachable trailing `blr` after a tail call, dtk splits that `blr` off as its
+# own 4-byte "function" -- so a draft that correctly emits it reads as ONE
+# INSTRUCTION LONGER than the target.
+#
+# This cost a full agent round on d_a_wm_sandpillar.cpp: `executeState_BottomWait`
+# and `executeState_TopWait` each reported "1 differing -- an extra trailing
+# blr", and ten source reformulations were measured against a defect that did
+# not exist. The target's own bytes settle it -- `fn_2_1780C0` is 0x34 and ends
+# `4E800420` (bctr); the very next word at `0x1780F4` is `4E800020` (blr), which
+# dtk lists as `fn_2_1780F4`, size 0x4. The draft was byte-identical throughout.
+#
+# The fix belongs at the COMPARISON, not the parse. Restitching the target's
+# function list was tried twice and cascades: merging after `b`/`blr` as well
+# took a correct 64/66 to 42/52, and merging after `bctr` alone still swallowed
+# four legitimate functions and invented two new differences. Whether the `blr`
+# belongs to the previous function depends on whether the DRAFT emitted one, and
+# only the comparison knows that.
+def eq_mod_tail_blr(target, draft):
+    """True if `draft` equals `target`, or is `target` plus one dead `blr`.
+
+    Allowed ONLY when the target's last instruction is `bctr`: after a tail call
+    a `blr` is unreachable, so it cannot be a real function of its own and its
+    presence or absence changes nothing that executes.
+    """
+    if draft == target:
+        return True
+    return (len(draft) == len(target) + 1
+            and draft[:-1] == target
+            and draft[-1].strip() == 'blr'
+            and target and target[-1].strip() == 'bctr')
+
+
 def functions(path, with_addr=False):
     text = open(path, encoding='utf-8', errors='replace').read()
     out = []
@@ -155,7 +188,7 @@ def main():
         want = norm(ins)
         hit = None
         for i, (dname, dins) in enumerate(drafts):
-            if i not in used and norm(dins) == want:
+            if i not in used and eq_mod_tail_blr(want, norm(dins)):
                 hit = i
                 break
         matched.append(hit)
