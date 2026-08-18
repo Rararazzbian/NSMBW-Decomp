@@ -1,0 +1,123 @@
+void daPyMng_c::createCourseInit() {
+    dScStage_c *stage = dScStage_c::getInstance();
+    int action = getPlayerCreateAction();
+    mVec3_c pos;
+
+    // Written as three nested single-value checks, not `action != 0 && != 1
+    // && != 0x17`: the flattened form lets MWCC fold the 0/1 pair into one
+    // `cmplwi/ble` range test, but the target emits three separate `beq`s
+    // (see BATCH2.md).
+    if (action != 0) {
+        if (action != 1) {
+            if (action != 0x17) {
+                makeCourseInList(daPyDemoMng_c::mspInstance);
+                pos = getPlayerSetPos(stageField_0x120e(stage), stageField_0x1211(stage));
+                u8 flag;
+                if (pos.x <= dGameCom::getDispCenterX()) {
+                    flag = 0;
+                } else {
+                    flag = 1;
+                }
+                for (int i = 0; i < 4; i++) {
+                    create(i, &pos, action, flag);
+                }
+                return;
+            }
+        }
+    }
+
+    daPyDemoMng_c::mspInstance->init();
+    decideCtrlPlrNo();
+
+    if (dScStage_c::m_isStaffCredit) {
+        static const float scOfsX[4] = {-184.0f, 200.0f, -208.0f, 224.0f};
+        static const float scOfsY[4] = {-48.0f, -48.0f, 0.0f, 0.0f};
+        pos = getPlayerSetPos(stageField_0x120e(stage), stageField_0x1211(stage));
+        pos.x = 504.0f;
+        for (int i = 0; i < 4; i++) {
+            u8 flag = (scOfsX[i] >= 0.0f) ? 1 : 0;
+            mVec3_c p2;
+            p2.x = pos.x + scOfsX[i];
+            p2.y = pos.y + scOfsY[i];
+            p2.z = pos.z;
+            create(i, &p2, action, flag);
+        }
+        return;
+    }
+
+    pos = getPlayerSetPos(stageField_0x120e(stage), stageField_0x1211(stage));
+    dCdFile_c *file = dCd_c::getFileP(stageField_0x120e(stage));
+    u8 scrollDir = (u8)file->mpScrollData->mID;
+
+    if (dScStage_c::m_isCourseIn) {
+        dInfo_c *info = dInfo_c::getInstance();
+        if (infoField_0xaf4(info) >= 0) {
+            pos = infoField_0x10(info);
+            scrollDir = infoField_0x1c(info) & 1;
+        }
+    }
+
+    int order[4] = {-1, -1, -1, -1};
+    if (dScStage_c::m_gameMode == 2) {
+        order[0] = 0;
+        order[1] = 1;
+        order[2] = 2;
+        order[3] = 3;
+    } else {
+        float weight[4];
+        for (int i = 0; i < 4; i++) {
+            weight[i] = 0.1f + dGameCom::rnd();
+        }
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            int j = 0;
+            for (; j < count; j++) {
+                if (weight[i] < weight[j]) {
+                    break;
+                }
+            }
+            for (int k = count; k > j; k--) {
+                order[k] = order[k - 1];
+            }
+            if (j < 4) {
+                order[j] = i;
+            }
+            if (count < 4) {
+                count++;
+            }
+        }
+    }
+
+    int noBalloonCount = 0;
+    for (int i = 0; i < 4; i++) {
+        if (mPlayerEntry[i] != 0 && !isCreateBalloon(i)) {
+            noBalloonCount++;
+        }
+    }
+
+    float xStep = 12.0f * (float)(noBalloonCount - 1);
+    if (scrollDir != 0) {
+        pos.x -= xStep;
+    } else {
+        pos.x += xStep;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        int plrNo = order[i];
+        if (plrNo == -1) {
+            continue;
+        }
+        if (!create(plrNo, &pos, action, scrollDir)) {
+            continue;
+        }
+        if (isCreateBalloon(plrNo)) {
+            continue;
+        }
+        if (scrollDir == 0) {
+            pos.x += 24.0f;
+        } else {
+            pos.x -= 24.0f;
+        }
+    }
+}
+

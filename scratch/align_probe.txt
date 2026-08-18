@@ -1,0 +1,20 @@
+.include "macros.inc"
+.file "align_probe.cpp"
+
+# 0x00000000..0x00000098 | size: 0x98
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0x98
+.obj s1, global
+	.skip 0x98
+.endobj s1
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | size: 0x4
+.obj a1, global
+	.skip 0x4
+.endobj a1

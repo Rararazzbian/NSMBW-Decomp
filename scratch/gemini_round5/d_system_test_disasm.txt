@@ -1,0 +1,1434 @@
+.include "macros.inc"
+.file "d_system.cpp"
+
+# 0x00000000..0x00000E68 | size: 0xE68
+.text
+.balign 16
+
+# .text:0x0 | size: 0x6C
+# dSystem::createEffectManagerHeap(EGG::Heap*, EGG::Heap*)
+.fn createEffectManagerHeap__7dSystemFPQ23EGG4HeapPQ23EGG4Heap, global
+/* 00000000 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  3C A0 00 00 */	lis r5, sc_EffectManagerHeap1Name__7dSystem@ha
+/* 0000000C 0000004C  38 C0 00 20 */	li r6, 0x20
+/* 00000010 00000050  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000014 00000054  7C 60 1B 78 */	mr r0, r3
+/* 00000018 00000058  3C 60 00 10 */	lis r3, 0x10
+/* 0000001C 0000005C  38 A5 00 00 */	addi r5, r5, sc_EffectManagerHeap1Name__7dSystem@l
+/* 00000020 00000060  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000024 00000064  7C 9F 23 78 */	mr r31, r4
+/* 00000028 00000068  7C 04 03 78 */	mr r4, r0
+/* 0000002C 0000006C  38 E0 00 00 */	li r7, 0x0
+/* 00000030 00000070  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 00000034 00000074  90 60 00 00 */	stw r3, s_EffectManagerHeap1__7dSystem@sda21(r0)
+/* 00000038 00000078  3C A0 00 00 */	lis r5, sc_EffectManagerHeap2Name__7dSystem@ha
+/* 0000003C 0000007C  7F E4 FB 78 */	mr r4, r31
+/* 00000040 00000080  3C 60 00 28 */	lis r3, 0x28
+/* 00000044 00000084  38 A5 00 00 */	addi r5, r5, sc_EffectManagerHeap2Name__7dSystem@l
+/* 00000048 00000088  38 C0 00 20 */	li r6, 0x20
+/* 0000004C 0000008C  38 E0 00 04 */	li r7, 0x4
+/* 00000050 00000090  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 00000054 00000094  90 60 00 00 */	stw r3, s_EffectManagerHeap2__7dSystem@sda21(r0)
+/* 00000058 00000098  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0000005C 0000009C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000060 000000A0  7C 08 03 A6 */	mtlr r0
+/* 00000064 000000A4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000068 000000A8  4E 80 00 20 */	blr
+.endfn createEffectManagerHeap__7dSystemFPQ23EGG4HeapPQ23EGG4Heap
+/* 0000006C 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x70 | size: 0x18
+# dSys_c::beginRender()
+.fn beginRender__6dSys_cFv, global
+/* 00000070 000000B0  80 60 00 00 */	lwz r3, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000074 000000B4  80 63 00 4C */	lwz r3, 0x4c(r3)
+/* 00000078 000000B8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000007C 000000BC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000080 000000C0  7D 89 03 A6 */	mtctr r12
+/* 00000084 000000C4  4E 80 04 20 */	bctr
+.endfn beginRender__6dSys_cFv
+/* 00000088 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000008C 000000CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x90 | size: 0x54
+# dSys_c::endRender()
+.fn endRender__6dSys_cFv, global
+/* 00000090 000000D0  88 00 00 00 */	lbz r0, "@GUARD@endRender__6dSys_cFv@a"@sda21(r0)
+/* 00000094 000000D4  7C 00 07 75 */	extsb. r0, r0
+/* 00000098 000000D8  40 82 00 0C */	bne .L_000000A4
+/* 0000009C 000000DC  38 00 00 01 */	li r0, 0x1
+/* 000000A0 000000E0  98 00 00 00 */	stb r0, "@GUARD@endRender__6dSys_cFv@a"@sda21(r0)
+.L_000000A4:
+/* 000000A4 000000E4  88 00 00 00 */	lbz r0, "@GUARD@endRender__6dSys_cFv@b@0"@sda21(r0)
+/* 000000A8 000000E8  7C 00 07 75 */	extsb. r0, r0
+/* 000000AC 000000EC  40 82 00 0C */	bne .L_000000B8
+/* 000000B0 000000F0  38 00 00 01 */	li r0, 0x1
+/* 000000B4 000000F4  98 00 00 00 */	stb r0, "@GUARD@endRender__6dSys_cFv@b@0"@sda21(r0)
+.L_000000B8:
+/* 000000B8 000000F8  88 00 00 00 */	lbz r0, "@GUARD@endRender__6dSys_cFv@c@1"@sda21(r0)
+/* 000000BC 000000FC  7C 00 07 75 */	extsb. r0, r0
+/* 000000C0 00000100  40 82 00 0C */	bne .L_000000CC
+/* 000000C4 00000104  38 00 00 01 */	li r0, 0x1
+/* 000000C8 00000108  98 00 00 00 */	stb r0, "@GUARD@endRender__6dSys_cFv@c@1"@sda21(r0)
+.L_000000CC:
+/* 000000CC 0000010C  80 60 00 00 */	lwz r3, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 000000D0 00000110  80 63 00 4C */	lwz r3, 0x4c(r3)
+/* 000000D4 00000114  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 000000D8 00000118  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 000000DC 0000011C  7D 89 03 A6 */	mtctr r12
+/* 000000E0 00000120  4E 80 04 20 */	bctr
+.endfn endRender__6dSys_cFv
+/* 000000E4 00000124  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000E8 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000EC 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xF0 | size: 0x48
+# dSys_c::beginFrame()
+.fn beginFrame__6dSys_cFv, global
+/* 000000F0 00000130  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000000F4 00000134  7C 08 02 A6 */	mflr r0
+/* 000000F8 00000138  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000000FC 0000013C  80 60 00 00 */	lwz r3, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000100 00000140  80 63 00 4C */	lwz r3, 0x4c(r3)
+/* 00000104 00000144  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000108 00000148  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 0000010C 0000014C  7D 89 03 A6 */	mtctr r12
+/* 00000110 00000150  4E 80 04 21 */	bctrl
+/* 00000114 00000154  80 60 00 00 */	lwz r3, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000118 00000158  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000011C 0000015C  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 00000120 00000160  7D 89 03 A6 */	mtctr r12
+/* 00000124 00000164  4E 80 04 21 */	bctrl
+/* 00000128 00000168  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000012C 0000016C  7C 08 03 A6 */	mtlr r0
+/* 00000130 00000170  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000134 00000174  4E 80 00 20 */	blr
+.endfn beginFrame__6dSys_cFv
+/* 00000138 00000178  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000013C 0000017C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x140 | size: 0x4
+# EGG::ConfigurationData::onBeginFrame()
+.fn onBeginFrame__Q23EGG17ConfigurationDataFv, weak
+/* 00000140 00000180  4E 80 00 20 */	blr
+.endfn onBeginFrame__Q23EGG17ConfigurationDataFv
+/* 00000144 00000184  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000148 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000014C 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x150 | size: 0x48
+# dSys_c::endFrame()
+.fn endFrame__6dSys_cFv, global
+/* 00000150 00000190  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000154 00000194  7C 08 02 A6 */	mflr r0
+/* 00000158 00000198  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000015C 0000019C  80 60 00 00 */	lwz r3, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000160 000001A0  80 63 00 4C */	lwz r3, 0x4c(r3)
+/* 00000164 000001A4  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000168 000001A8  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 0000016C 000001AC  7D 89 03 A6 */	mtctr r12
+/* 00000170 000001B0  4E 80 04 21 */	bctrl
+/* 00000174 000001B4  80 60 00 00 */	lwz r3, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000178 000001B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000017C 000001BC  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 00000180 000001C0  7D 89 03 A6 */	mtctr r12
+/* 00000184 000001C4  4E 80 04 21 */	bctrl
+/* 00000188 000001C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000018C 000001CC  7C 08 03 A6 */	mtlr r0
+/* 00000190 000001D0  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000194 000001D4  4E 80 00 20 */	blr
+.endfn endFrame__6dSys_cFv
+/* 00000198 000001D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000019C 000001DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1A0 | size: 0x4
+# EGG::ConfigurationData::onEndFrame()
+.fn onEndFrame__Q23EGG17ConfigurationDataFv, weak
+/* 000001A0 000001E0  4E 80 00 20 */	blr
+.endfn onEndFrame__Q23EGG17ConfigurationDataFv
+/* 000001A4 000001E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001A8 000001E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001AC 000001EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1B0 | size: 0x80
+# dSys_c::setBlack(bool)
+.fn setBlack__6dSys_cFb, global
+/* 000001B0 000001F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001B4 000001F4  7C 08 02 A6 */	mflr r0
+/* 000001B8 000001F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001BC 000001FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001C0 00000200  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000001C4 00000204  7C 7E 1B 78 */	mr r30, r3
+/* 000001C8 00000208  80 60 00 00 */	lwz r3, mConfigData__Q23EGG10BaseSystem@sda21(r0)
+/* 000001CC 0000020C  80 80 00 00 */	lwz r4, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 000001D0 00000210  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000001D4 00000214  83 E4 00 4C */	lwz r31, 0x4c(r4)
+/* 000001D8 00000218  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 000001DC 0000021C  7D 89 03 A6 */	mtctr r12
+/* 000001E0 00000220  4E 80 04 21 */	bctrl
+/* 000001E4 00000224  88 03 00 04 */	lbz r0, 0x4(r3)
+/* 000001E8 00000228  54 00 07 FE */	clrlwi r0, r0, 31
+/* 000001EC 0000022C  7C 1E 00 40 */	cmplw r30, r0
+/* 000001F0 00000230  41 82 00 24 */	beq .L_00000214
+/* 000001F4 00000234  88 1F 00 09 */	lbz r0, 0x9(r31)
+/* 000001F8 00000238  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 000001FC 0000023C  40 82 00 18 */	bne .L_00000214
+/* 00000200 00000240  88 1F 00 09 */	lbz r0, 0x9(r31)
+/* 00000204 00000244  38 60 00 01 */	li r3, 0x1
+/* 00000208 00000248  60 00 00 01 */	ori r0, r0, 0x1
+/* 0000020C 0000024C  98 1F 00 09 */	stb r0, 0x9(r31)
+/* 00000210 00000250  48 00 00 08 */	b .L_00000218
+.L_00000214:
+/* 00000214 00000254  38 60 00 00 */	li r3, 0x0
+.L_00000218:
+/* 00000218 00000258  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000021C 0000025C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000220 00000260  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000224 00000264  7C 08 03 A6 */	mtlr r0
+/* 00000228 00000268  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000022C 0000026C  4E 80 00 20 */	blr
+.endfn setBlack__6dSys_cFb
+
+# .text:0x230 | size: 0x4
+# dSys_c::calcAudio()
+.fn calcAudio__6dSys_cFv, global
+/* 00000230 00000270  48 00 00 00 */	b execute__6dAudioFv
+.endfn calcAudio__6dSys_cFv
+/* 00000234 00000274  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000238 00000278  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000023C 0000027C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x240 | size: 0x18
+# dSys_c::setFrameRate(unsigned char)
+.fn setFrameRate__6dSys_cFUc, global
+/* 00000240 00000280  80 80 00 00 */	lwz r4, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000244 00000284  80 84 00 4C */	lwz r4, 0x4c(r4)
+/* 00000248 00000288  2C 04 00 00 */	cmpwi r4, 0x0
+/* 0000024C 0000028C  4D 82 00 20 */	beqlr
+/* 00000250 00000290  98 64 00 08 */	stb r3, 0x8(r4)
+/* 00000254 00000294  4E 80 00 20 */	blr
+.endfn setFrameRate__6dSys_cFUc
+/* 00000258 00000298  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000025C 0000029C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x260 | size: 0x44
+# dSys_c::setClearColor(nw4r::ut::Color)
+.fn setClearColor__6dSys_cFQ34nw4r2ut5Color, global
+/* 00000260 000002A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000264 000002A4  80 80 00 00 */	lwz r4, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000268 000002A8  80 84 00 4C */	lwz r4, 0x4c(r4)
+/* 0000026C 000002AC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000270 000002B0  41 82 00 2C */	beq .L_0000029C
+/* 00000274 000002B4  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 00000278 000002B8  90 01 00 08 */	stw r0, 0x8(r1)
+/* 0000027C 000002BC  88 01 00 08 */	lbz r0, 0x8(r1)
+/* 00000280 000002C0  98 04 00 14 */	stb r0, 0x14(r4)
+/* 00000284 000002C4  88 01 00 09 */	lbz r0, 0x9(r1)
+/* 00000288 000002C8  98 04 00 15 */	stb r0, 0x15(r4)
+/* 0000028C 000002CC  88 01 00 0A */	lbz r0, 0xa(r1)
+/* 00000290 000002D0  98 04 00 16 */	stb r0, 0x16(r4)
+/* 00000294 000002D4  88 01 00 0B */	lbz r0, 0xb(r1)
+/* 00000298 000002D8  98 04 00 17 */	stb r0, 0x17(r4)
+.L_0000029C:
+/* 0000029C 000002DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 000002A0 000002E0  4E 80 00 20 */	blr
+.endfn setClearColor__6dSys_cFQ34nw4r2ut5Color
+/* 000002A4 000002E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002A8 000002E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002AC 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2B0 | size: 0x40
+# nw4r::ut::Color::~Color()
+.fn __dt__Q34nw4r2ut5ColorFv, weak
+/* 000002B0 000002F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000002B4 000002F4  7C 08 02 A6 */	mflr r0
+/* 000002B8 000002F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000002BC 000002FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000002C0 00000300  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000002C4 00000304  7C 7F 1B 78 */	mr r31, r3
+/* 000002C8 00000308  41 82 00 10 */	beq .L_000002D8
+/* 000002CC 0000030C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000002D0 00000310  40 81 00 08 */	ble .L_000002D8
+/* 000002D4 00000314  48 00 00 01 */	bl __dl__FPv
+.L_000002D8:
+/* 000002D8 00000318  7F E3 FB 78 */	mr r3, r31
+/* 000002DC 0000031C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000002E0 00000320  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000002E4 00000324  7C 08 03 A6 */	mtlr r0
+/* 000002E8 00000328  38 21 00 10 */	addi r1, r1, 0x10
+/* 000002EC 0000032C  4E 80 00 20 */	blr
+.endfn __dt__Q34nw4r2ut5ColorFv
+
+# .text:0x2F0 | size: 0x28
+# dSys_c::getClearColor()
+.fn getClearColor__6dSys_cFv, global
+/* 000002F0 00000330  80 80 00 00 */	lwz r4, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 000002F4 00000334  80 84 00 4C */	lwz r4, 0x4c(r4)
+/* 000002F8 00000338  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000002FC 0000033C  41 82 00 10 */	beq .L_0000030C
+/* 00000300 00000340  80 04 00 14 */	lwz r0, 0x14(r4)
+/* 00000304 00000344  90 03 00 00 */	stw r0, 0x0(r3)
+/* 00000308 00000348  4E 80 00 20 */	blr
+.L_0000030C:
+/* 0000030C 0000034C  38 00 00 FF */	li r0, 0xff
+/* 00000310 00000350  90 03 00 00 */	stw r0, 0x0(r3)
+/* 00000314 00000354  4E 80 00 20 */	blr
+.endfn getClearColor__6dSys_cFv
+/* 00000318 00000358  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000031C 0000035C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x320 | size: 0x280
+# dSys_c::create()
+.fn create__6dSys_cFv, global
+/* 00000320 00000360  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000324 00000364  7C 08 02 A6 */	mflr r0
+/* 00000328 00000368  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0000032C 0000036C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 00000330 00000370  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 00000334 00000374  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 00000338 00000378  93 81 00 10 */	stw r28, 0x10(r1)
+/* 0000033C 0000037C  48 00 00 01 */	bl OSGetCurrentThread
+/* 00000340 00000380  3C 80 00 00 */	lis r4, s_configuration@ha
+/* 00000344 00000384  90 60 00 00 */	stw r3, s_MainThread@sda21(r0)
+/* 00000348 00000388  38 84 00 00 */	addi r4, r4, s_configuration@l
+/* 0000034C 0000038C  90 80 00 00 */	stw r4, "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"@sda21(r0)
+/* 00000350 00000390  7C 83 23 78 */	mr r3, r4
+/* 00000354 00000394  90 80 00 00 */	stw r4, mConfigData__Q23EGG10BaseSystem@sda21(r0)
+/* 00000358 00000398  81 84 00 00 */	lwz r12, 0x0(r4)
+/* 0000035C 0000039C  81 8C 00 38 */	lwz r12, 0x38(r12)
+/* 00000360 000003A0  7D 89 03 A6 */	mtctr r12
+/* 00000364 000003A4  4E 80 04 21 */	bctrl
+/* 00000368 000003A8  80 80 00 00 */	lwz r4, mConfigData__Q23EGG10BaseSystem@sda21(r0)
+/* 0000036C 000003AC  3C A0 00 00 */	lis r5, "@20528"@ha
+/* 00000370 000003B0  38 A5 00 00 */	addi r5, r5, "@20528"@l
+/* 00000374 000003B4  38 60 FF FF */	li r3, -0x1
+/* 00000378 000003B8  80 84 00 18 */	lwz r4, 0x18(r4)
+/* 0000037C 000003BC  38 C0 00 20 */	li r6, 0x20
+/* 00000380 000003C0  38 E0 00 04 */	li r7, 0x4
+/* 00000384 000003C4  48 00 00 01 */	bl createExpHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 00000388 000003C8  90 60 00 00 */	stw r3, ms_RootHeapMem1__6dSys_c@sda21(r0)
+/* 0000038C 000003CC  3C A0 00 00 */	lis r5, "@20529"@ha
+/* 00000390 000003D0  80 80 00 00 */	lwz r4, mConfigData__Q23EGG10BaseSystem@sda21(r0)
+/* 00000394 000003D4  38 A5 00 00 */	addi r5, r5, "@20529"@l
+/* 00000398 000003D8  38 60 FF FF */	li r3, -0x1
+/* 0000039C 000003DC  38 C0 00 20 */	li r6, 0x20
+/* 000003A0 000003E0  80 84 00 1C */	lwz r4, 0x1c(r4)
+/* 000003A4 000003E4  38 E0 00 04 */	li r7, 0x4
+/* 000003A8 000003E8  48 00 00 01 */	bl createExpHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 000003AC 000003EC  90 60 00 00 */	stw r3, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 000003B0 000003F0  7C 7D 1B 78 */	mr r29, r3
+/* 000003B4 000003F4  83 80 00 00 */	lwz r28, ms_RootHeapMem1__6dSys_c@sda21(r0)
+/* 000003B8 000003F8  48 00 00 01 */	bl create__6mVideoFv
+/* 000003BC 000003FC  80 80 00 00 */	lwz r4, ms_RootHeapMem1__6dSys_c@sda21(r0)
+/* 000003C0 00000400  3C 60 00 50 */	lis r3, 0x50
+/* 000003C4 00000404  48 00 00 01 */	bl createDylinkHeap__5mHeapFUlPQ23EGG4Heap
+/* 000003C8 00000408  80 80 00 00 */	lwz r4, ms_RootHeapMem1__6dSys_c@sda21(r0)
+/* 000003CC 0000040C  3C 60 00 98 */	lis r3, 0x98
+/* 000003D0 00000410  48 00 00 01 */	bl createGameHeap1__5mHeapFUlPQ23EGG4Heap
+/* 000003D4 00000414  80 80 00 00 */	lwz r4, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 000003D8 00000418  3C 60 00 70 */	lis r3, 0x70
+/* 000003DC 0000041C  48 00 00 01 */	bl createGameHeap2__5mHeapFUlPQ23EGG4Heap
+/* 000003E0 00000420  80 80 00 00 */	lwz r4, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 000003E4 00000424  3C 60 01 20 */	lis r3, 0x120
+/* 000003E8 00000428  48 00 00 01 */	bl createArchiveHeap__5mHeapFUlPQ23EGG4Heap
+/* 000003EC 0000042C  80 80 00 00 */	lwz r4, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 000003F0 00000430  38 60 10 00 */	li r3, 0x1000
+/* 000003F4 00000434  48 00 00 01 */	bl createCommandHeap__5mHeapFUlPQ23EGG4Heap
+/* 000003F8 00000438  3F C0 00 00 */	lis r30, g_gameHeaps__5mHeap@ha
+/* 000003FC 0000043C  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000400 00000440  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 00000404 00000444  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000408 00000448  48 00 00 01 */	bl init__12mAllocator_cFPQ23EGG4Heap
+/* 0000040C 0000044C  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000410 00000450  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 00000414 00000454  80 80 00 00 */	lwz r4, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 00000418 00000458  7C 7F 1B 78 */	mr r31, r3
+/* 0000041C 0000045C  3C 60 00 2A */	lis r3, 0x2a
+/* 00000420 00000460  48 00 00 01 */	bl initialize__Q23EGG13TextureBufferFUlPQ23EGG4Heap
+/* 00000424 00000464  7F E3 FB 78 */	mr r3, r31
+/* 00000428 00000468  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 0000042C 0000046C  48 00 00 01 */	bl create__4mPadFv
+/* 00000430 00000470  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000434 00000474  48 00 00 01 */	bl createInstance__10dGameKey_cFPQ23EGG4Heap
+/* 00000438 00000478  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 0000043C 0000047C  48 00 00 01 */	bl create__13dRemoconMng_cFPQ23EGG4Heap
+/* 00000440 00000480  3B C0 00 00 */	li r30, 0x0
+.L_00000444:
+/* 00000444 00000484  7F C3 F3 78 */	mr r3, r30
+/* 00000448 00000488  48 00 00 01 */	bl KPADDisableDPD
+/* 0000044C 0000048C  3B DE 00 01 */	addi r30, r30, 0x1
+/* 00000450 00000490  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 00000454 00000494  41 80 FF F0 */	blt .L_00000444
+/* 00000458 00000498  48 00 00 01 */	bl beginPad__4mPadFv
+/* 0000045C 0000049C  80 60 00 00 */	lwz r3, g_currentCore__4mPad@sda21(r0)
+/* 00000460 000004A0  C0 20 00 00 */	lfs f1, "@20530"@sda21(r0)
+/* 00000464 000004A4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000468 000004A8  C0 40 00 00 */	lfs f2, "@20531"@sda21(r0)
+/* 0000046C 000004AC  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 00000470 000004B0  7D 89 03 A6 */	mtctr r12
+/* 00000474 000004B4  4E 80 04 21 */	bctrl
+/* 00000478 000004B8  48 00 00 01 */	bl endPad__4mPadFv
+/* 0000047C 000004BC  3F C0 00 00 */	lis r30, g_gameHeaps__5mHeap@ha
+/* 00000480 000004C0  80 80 00 00 */	lwz r4, ms_RootHeapMem1__6dSys_c@sda21(r0)
+/* 00000484 000004C4  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000488 000004C8  80 A0 00 00 */	lwz r5, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 0000048C 000004CC  48 00 00 01 */	bl create__8dGraph_cFPQ23EGG4HeapPQ23EGG4HeapPQ23EGG4Heap
+/* 00000490 000004D0  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000494 000004D4  48 00 00 01 */	bl createFader__8dFader_cFPQ23EGG4Heap
+/* 00000498 000004D8  38 60 00 00 */	li r3, 0x0
+/* 0000049C 000004DC  48 00 00 01 */	bl setFader__8dFader_cFQ28dFader_c12fader_type_e
+/* 000004A0 000004E0  80 00 00 00 */	lwz r0, s_FontManagerHeap__7dSystem@sda21(r0)
+/* 000004A4 000004E4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 000004A8 000004E8  40 82 00 24 */	bne .L_000004CC
+/* 000004AC 000004EC  3C A0 00 00 */	lis r5, sc_FontManagerHeapName__7dSystem@ha
+/* 000004B0 000004F0  80 80 00 00 */	lwz r4, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 000004B4 000004F4  38 A5 00 00 */	addi r5, r5, sc_FontManagerHeapName__7dSystem@l
+/* 000004B8 000004F8  3C 60 00 40 */	lis r3, 0x40
+/* 000004BC 000004FC  38 C0 00 20 */	li r6, 0x20
+/* 000004C0 00000500  38 E0 00 04 */	li r7, 0x4
+/* 000004C4 00000504  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 000004C8 00000508  90 60 00 00 */	stw r3, s_FontManagerHeap__7dSystem@sda21(r0)
+.L_000004CC:
+/* 000004CC 0000050C  80 60 00 00 */	lwz r3, s_FontManagerHeap__7dSystem@sda21(r0)
+/* 000004D0 00000510  48 00 00 01 */	bl createInstance__13dRomFontMgr_cFPQ23EGG4Heap
+/* 000004D4 00000514  3F C0 00 00 */	lis r30, g_gameHeaps__5mHeap@ha
+/* 000004D8 00000518  3B FE 00 00 */	addi r31, r30, g_gameHeaps__5mHeap@l
+/* 000004DC 0000051C  80 7F 00 04 */	lwz r3, 0x4(r31)
+/* 000004E0 00000520  48 00 00 01 */	bl createInstance__9dDvdErr_cFPQ23EGG4Heap
+/* 000004E4 00000524  48 00 00 01 */	bl clear__10cCounter_cFv
+/* 000004E8 00000528  48 00 00 01 */	bl OSGetCurrentThread
+/* 000004EC 0000052C  48 00 00 01 */	bl OSGetThreadPriority
+/* 000004F0 00000530  80 80 00 00 */	lwz r4, g_commandHeap__5mHeap@sda21(r0)
+/* 000004F4 00000534  38 63 FF FF */	subi r3, r3, 0x1
+/* 000004F8 00000538  80 A0 00 00 */	lwz r5, g_archiveHeap__5mHeap@sda21(r0)
+/* 000004FC 0000053C  48 00 00 01 */	bl create__4dDvdFlPQ23EGG4HeapPQ23EGG4Heap
+/* 00000500 00000540  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 00000504 00000544  48 00 00 01 */	bl create__10dSaveMng_cFPQ23EGG4Heap
+/* 00000508 00000548  80 7E 00 00 */	lwz r3, g_gameHeaps__5mHeap@l(r30)
+/* 0000050C 0000054C  48 00 00 01 */	bl create__13dNandThread_cFPQ23EGG4Heap
+/* 00000510 00000550  80 7F 00 04 */	lwz r3, 0x4(r31)
+/* 00000514 00000554  48 00 00 01 */	bl CreateInstance__Q26dReset8Manage_cFPQ23EGG4Heap
+/* 00000518 00000558  80 7F 00 04 */	lwz r3, 0x4(r31)
+/* 0000051C 0000055C  48 00 00 01 */	bl CreateInstance__Q24dHbm8Manage_cFPQ23EGG4Heap
+/* 00000520 00000560  80 60 00 00 */	lwz r3, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 00000524 00000564  48 00 00 01 */	bl init__6dAudioFPQ23EGG4Heap
+/* 00000528 00000568  80 60 00 00 */	lwz r3, ms_RootHeapMem1__6dSys_c@sda21(r0)
+/* 0000052C 0000056C  80 80 00 00 */	lwz r4, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 00000530 00000570  48 00 00 01 */	bl createEffectManagerHeap__7dSystemFPQ23EGG4HeapPQ23EGG4Heap
+/* 00000534 00000574  3C 80 00 1C */	lis r4, 0x1c
+/* 00000538 00000578  80 60 00 00 */	lwz r3, ms_RootHeapMem2__6dSys_c@sda21(r0)
+/* 0000053C 0000057C  38 84 20 00 */	addi r4, r4, 0x2000
+/* 00000540 00000580  38 A0 00 04 */	li r5, 0x4
+/* 00000544 00000584  48 00 00 01 */	bl createReplayDataHeap__10dScStage_cFPQ23EGG4HeapUli
+/* 00000548 00000588  A0 1C 00 1C */	lhz r0, 0x1c(r28)
+/* 0000054C 0000058C  60 00 00 01 */	ori r0, r0, 0x1
+/* 00000550 00000590  B0 1C 00 1C */	sth r0, 0x1c(r28)
+/* 00000554 00000594  A0 1D 00 1C */	lhz r0, 0x1c(r29)
+/* 00000558 00000598  60 00 00 01 */	ori r0, r0, 0x1
+/* 0000055C 0000059C  B0 1D 00 1C */	sth r0, 0x1c(r29)
+/* 00000560 000005A0  48 00 00 01 */	bl setStartScene__8dScene_cFv
+/* 00000564 000005A4  38 60 00 01 */	li r3, 0x1
+/* 00000568 000005A8  48 00 00 01 */	bl setFrameRate__6dSys_cFUc
+/* 0000056C 000005AC  38 00 00 FF */	li r0, 0xff
+/* 00000570 000005B0  90 01 00 08 */	stw r0, 0x8(r1)
+/* 00000574 000005B4  38 61 00 08 */	addi r3, r1, 0x8
+/* 00000578 000005B8  48 00 00 01 */	bl setClearColor__6dSys_cFQ34nw4r2ut5Color
+/* 0000057C 000005BC  48 00 00 01 */	bl init__3d2dFv
+/* 00000580 000005C0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000584 000005C4  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 00000588 000005C8  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0000058C 000005CC  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 00000590 000005D0  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 00000594 000005D4  7C 08 03 A6 */	mtlr r0
+/* 00000598 000005D8  38 21 00 20 */	addi r1, r1, 0x20
+/* 0000059C 000005DC  4E 80 00 20 */	blr
+.endfn create__6dSys_cFv
+
+# .text:0x5A0 | size: 0x8
+# EGG::CoreController::setPosParam(float, float)
+.fn setPosParam__Q23EGG14CoreControllerFff, weak
+/* 000005A0 000005E0  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 000005A4 000005E4  48 00 00 00 */	b KPADSetPosParam
+.endfn setPosParam__Q23EGG14CoreControllerFff
+/* 000005A8 000005E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005AC 000005EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5B0 | size: 0x268
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::initialize()
+.fn "initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 000005B0 000005F0  94 21 FF B0 */	stwu r1, -0x50(r1)
+/* 000005B4 000005F4  7C 08 02 A6 */	mflr r0
+/* 000005B8 000005F8  90 01 00 54 */	stw r0, 0x54(r1)
+/* 000005BC 000005FC  93 E1 00 4C */	stw r31, 0x4c(r1)
+/* 000005C0 00000600  7C 7F 1B 78 */	mr r31, r3
+/* 000005C4 00000604  93 C1 00 48 */	stw r30, 0x48(r1)
+/* 000005C8 00000608  93 A1 00 44 */	stw r29, 0x44(r1)
+/* 000005CC 0000060C  48 00 00 01 */	bl DVDInit
+/* 000005D0 00000610  48 00 00 01 */	bl SCInit
+/* 000005D4 00000614  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 000005D8 00000618  7F E3 FB 78 */	mr r3, r31
+/* 000005DC 0000061C  81 8C 00 30 */	lwz r12, 0x30(r12)
+/* 000005E0 00000620  7D 89 03 A6 */	mtctr r12
+/* 000005E4 00000624  4E 80 04 21 */	bctrl
+/* 000005E8 00000628  83 A0 00 00 */	lwz r29, sCurrentHeap__Q23EGG4Heap@sda21(r0)
+/* 000005EC 0000062C  80 7F 00 38 */	lwz r3, 0x38(r31)
+/* 000005F0 00000630  7F A4 EB 78 */	mr r4, r29
+/* 000005F4 00000634  48 00 00 01 */	bl create__Q23EGG12GraphicsFifoFUlPQ23EGG4Heap
+/* 000005F8 00000638  80 7F 00 18 */	lwz r3, 0x18(r31)
+/* 000005FC 0000063C  48 00 00 01 */	bl createAssertHeap__5mHeapFPQ23EGG4Heap
+/* 00000600 00000640  7F A4 EB 78 */	mr r4, r29
+/* 00000604 00000644  38 60 00 0C */	li r3, 0xc
+/* 00000608 00000648  38 A0 00 04 */	li r5, 0x4
+/* 0000060C 0000064C  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 00000610 00000650  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000614 00000654  7C 7E 1B 78 */	mr r30, r3
+/* 00000618 00000658  41 82 00 20 */	beq .L_00000638
+/* 0000061C 0000065C  80 9F 00 3C */	lwz r4, 0x3c(r31)
+/* 00000620 00000660  38 00 00 00 */	li r0, 0x0
+/* 00000624 00000664  38 A0 00 00 */	li r5, 0x0
+/* 00000628 00000668  90 03 00 00 */	stw r0, 0x0(r3)
+/* 0000062C 0000066C  98 03 00 04 */	stb r0, 0x4(r3)
+/* 00000630 00000670  90 03 00 08 */	stw r0, 0x8(r3)
+/* 00000634 00000674  48 00 00 01 */	bl initialize__Q23EGG5VideoFP16_GXRenderModeObjPCQ33EGG5Video16RenderModeObjSet
+.L_00000638:
+/* 00000638 00000678  93 DF 00 44 */	stw r30, 0x44(r31)
+/* 0000063C 0000067C  7F A4 EB 78 */	mr r4, r29
+/* 00000640 00000680  38 60 00 10 */	li r3, 0x10
+/* 00000644 00000684  38 A0 00 04 */	li r5, 0x4
+/* 00000648 00000688  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 0000064C 0000068C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000650 00000690  41 82 00 1C */	beq .L_0000066C
+/* 00000654 00000694  38 00 00 00 */	li r0, 0x0
+/* 00000658 00000698  90 03 00 00 */	stw r0, 0x0(r3)
+/* 0000065C 0000069C  90 03 00 04 */	stw r0, 0x4(r3)
+/* 00000660 000006A0  90 03 00 08 */	stw r0, 0x8(r3)
+/* 00000664 000006A4  98 03 00 0C */	stb r0, 0xc(r3)
+/* 00000668 000006A8  98 03 00 0D */	stb r0, 0xd(r3)
+.L_0000066C:
+/* 0000066C 000006AC  90 7F 00 48 */	stw r3, 0x48(r31)
+/* 00000670 000006B0  3B C0 00 00 */	li r30, 0x0
+.L_00000674:
+/* 00000674 000006B4  7F A4 EB 78 */	mr r4, r29
+/* 00000678 000006B8  38 60 00 14 */	li r3, 0x14
+/* 0000067C 000006BC  38 A0 00 04 */	li r5, 0x4
+/* 00000680 000006C0  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 00000684 000006C4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000688 000006C8  7C 64 1B 78 */	mr r4, r3
+/* 0000068C 000006CC  41 82 00 10 */	beq .L_0000069C
+/* 00000690 000006D0  80 9F 00 1C */	lwz r4, 0x1c(r31)
+/* 00000694 000006D4  48 00 00 01 */	bl __ct__Q23EGG3XfbFPQ23EGG4Heap
+/* 00000698 000006D8  7C 64 1B 78 */	mr r4, r3
+.L_0000069C:
+/* 0000069C 000006DC  80 7F 00 48 */	lwz r3, 0x48(r31)
+/* 000006A0 000006E0  48 00 00 01 */	bl attach__Q23EGG10XfbManagerFPQ23EGG3Xfb
+/* 000006A4 000006E4  3B DE 00 01 */	addi r30, r30, 0x1
+/* 000006A8 000006E8  2C 1E 00 02 */	cmpwi r30, 0x2
+/* 000006AC 000006EC  41 80 FF C8 */	blt .L_00000674
+/* 000006B0 000006F0  7F A4 EB 78 */	mr r4, r29
+/* 000006B4 000006F4  38 60 00 C0 */	li r3, 0xc0
+/* 000006B8 000006F8  38 A0 00 04 */	li r5, 0x4
+/* 000006BC 000006FC  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 000006C0 00000700  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000006C4 00000704  41 82 00 0C */	beq .L_000006D0
+/* 000006C8 00000708  38 80 00 01 */	li r4, 0x1
+/* 000006CC 0000070C  48 00 00 01 */	bl __ct__Q23EGG12AsyncDisplayFUc
+.L_000006D0:
+/* 000006D0 00000710  90 7F 00 4C */	stw r3, 0x4c(r31)
+/* 000006D4 00000714  48 00 00 01 */	bl getTickPerVRetrace__Q23EGG5VideoFv
+/* 000006D8 00000718  7C 7E 1B 78 */	mr r30, r3
+/* 000006DC 0000071C  38 60 00 00 */	li r3, 0x0
+/* 000006E0 00000720  48 00 00 01 */	bl getTickPerVRetrace__Q23EGG5VideoFUl
+/* 000006E4 00000724  7C 03 F0 40 */	cmplw r3, r30
+/* 000006E8 00000728  41 82 00 0C */	beq .L_000006F4
+/* 000006EC 0000072C  80 7F 00 4C */	lwz r3, 0x4c(r31)
+/* 000006F0 00000730  48 00 00 01 */	bl FUN_802bb750__Q23EGG12AsyncDisplayFv
+.L_000006F4:
+/* 000006F4 00000734  38 00 00 FF */	li r0, 0xff
+/* 000006F8 00000738  90 01 00 0C */	stw r0, 0xc(r1)
+/* 000006FC 0000073C  80 7F 00 4C */	lwz r3, 0x4c(r31)
+/* 00000700 00000740  88 01 00 0C */	lbz r0, 0xc(r1)
+/* 00000704 00000744  98 03 00 14 */	stb r0, 0x14(r3)
+/* 00000708 00000748  88 01 00 0D */	lbz r0, 0xd(r1)
+/* 0000070C 0000074C  98 03 00 15 */	stb r0, 0x15(r3)
+/* 00000710 00000750  88 01 00 0E */	lbz r0, 0xe(r1)
+/* 00000714 00000754  98 03 00 16 */	stb r0, 0x16(r3)
+/* 00000718 00000758  88 01 00 0F */	lbz r0, 0xf(r1)
+/* 0000071C 0000075C  98 03 00 17 */	stb r0, 0x17(r3)
+/* 00000720 00000760  80 7F 00 4C */	lwz r3, 0x4c(r31)
+/* 00000724 00000764  48 00 00 01 */	bl clearEFB__Q23EGG12AsyncDisplayFv
+/* 00000728 00000768  38 61 00 18 */	addi r3, r1, 0x18
+/* 0000072C 0000076C  48 00 00 01 */	bl __ct__Q33EGG9GfxEngine13ConfigurationFv
+/* 00000730 00000770  A0 81 00 1A */	lhz r4, 0x1a(r1)
+/* 00000734 00000774  38 A1 00 08 */	addi r5, r1, 0x8
+/* 00000738 00000778  A0 61 00 2C */	lhz r3, 0x2c(r1)
+/* 0000073C 0000077C  A0 C1 00 2E */	lhz r6, 0x2e(r1)
+/* 00000740 00000780  80 01 00 1C */	lwz r0, 0x1c(r1)
+/* 00000744 00000784  B0 61 00 14 */	sth r3, 0x14(r1)
+/* 00000748 00000788  A0 61 00 18 */	lhz r3, 0x18(r1)
+/* 0000074C 0000078C  B0 C1 00 16 */	sth r6, 0x16(r1)
+/* 00000750 00000790  80 C1 00 20 */	lwz r6, 0x20(r1)
+/* 00000754 00000794  B0 81 00 10 */	sth r4, 0x10(r1)
+/* 00000758 00000798  B0 81 00 12 */	sth r4, 0x12(r1)
+/* 0000075C 0000079C  90 01 00 08 */	stw r0, 0x8(r1)
+/* 00000760 000007A0  48 00 00 01 */	bl initialize__Q23EGG7StateGXFUsUs8_GXColor11_GXPixelFmt
+/* 00000764 000007A4  38 61 00 14 */	addi r3, r1, 0x14
+/* 00000768 000007A8  38 81 00 10 */	addi r4, r1, 0x10
+/* 0000076C 000007AC  38 A0 00 00 */	li r5, 0x0
+/* 00000770 000007B0  48 00 00 01 */	bl Initialize__Q23EGG6ScreenFPCUsPCUsPQ23EGG6Screen
+/* 00000774 000007B4  48 00 00 01 */	bl SetTVModeDefault__Q23EGG6ScreenFv
+/* 00000778 000007B8  48 00 00 01 */	bl initialize__Q23EGG6ThreadFv
+/* 0000077C 000007BC  7F A4 EB 78 */	mr r4, r29
+/* 00000780 000007C0  38 60 00 4C */	li r3, 0x4c
+/* 00000784 000007C4  38 A0 00 04 */	li r5, 0x4
+/* 00000788 000007C8  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 0000078C 000007CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000790 000007D0  7C 7E 1B 78 */	mr r30, r3
+/* 00000794 000007D4  41 82 00 1C */	beq .L_000007B0
+/* 00000798 000007D8  48 00 00 01 */	bl OSGetCurrentThread
+/* 0000079C 000007DC  7C 64 1B 78 */	mr r4, r3
+/* 000007A0 000007E0  7F C3 F3 78 */	mr r3, r30
+/* 000007A4 000007E4  38 A0 00 04 */	li r5, 0x4
+/* 000007A8 000007E8  48 00 00 01 */	bl __ct__Q23EGG6ThreadFP8OSThreadi
+/* 000007AC 000007EC  7C 7E 1B 78 */	mr r30, r3
+.L_000007B0:
+/* 000007B0 000007F0  93 DF 00 28 */	stw r30, 0x28(r31)
+/* 000007B4 000007F4  48 00 00 01 */	bl initialize__Q23EGG7DvdFileFv
+/* 000007B8 000007F8  48 00 00 01 */	bl WPADGetWorkMemorySize
+/* 000007BC 000007FC  38 03 00 E8 */	addi r0, r3, 0xe8
+/* 000007C0 00000800  90 00 00 00 */	stw r0, sWPADWorkSize__Q23EGG17CoreControllerMgr@sda21(r0)
+/* 000007C4 00000804  48 00 00 01 */	bl createInstance__Q23EGG17CoreControllerMgrFv
+/* 000007C8 00000808  7F A6 EB 78 */	mr r6, r29
+/* 000007CC 0000080C  38 60 00 40 */	li r3, 0x40
+/* 000007D0 00000810  38 80 00 64 */	li r4, 0x64
+/* 000007D4 00000814  38 A0 00 01 */	li r5, 0x1
+/* 000007D8 00000818  38 E0 00 01 */	li r7, 0x1
+/* 000007DC 0000081C  48 00 00 01 */	bl create__Q23EGG9ExceptionFUsUsUsPQ23EGG4Heapi
+/* 000007E0 00000820  3C 60 00 00 */	lis r3, "@LOCAL@initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv@s_PadInfoBp"@ha
+/* 000007E4 00000824  38 63 00 00 */	addi r3, r3, "@LOCAL@initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv@s_PadInfoBp"@l
+/* 000007E8 00000828  48 00 00 01 */	bl setPadInfo__Q23EGG9ExceptionFPCUs
+/* 000007EC 0000082C  38 60 00 3F */	li r3, 0x3f
+/* 000007F0 00000830  48 00 00 01 */	bl Exception_SetDisplayInfo__Q24nw4r2dbFUs
+/* 000007F4 00000834  80 7F 00 18 */	lwz r3, 0x18(r31)
+/* 000007F8 00000838  48 00 00 01 */	bl becomeCurrentHeap__Q23EGG4HeapFv
+/* 000007FC 0000083C  80 01 00 54 */	lwz r0, 0x54(r1)
+/* 00000800 00000840  83 E1 00 4C */	lwz r31, 0x4c(r1)
+/* 00000804 00000844  83 C1 00 48 */	lwz r30, 0x48(r1)
+/* 00000808 00000848  83 A1 00 44 */	lwz r29, 0x44(r1)
+/* 0000080C 0000084C  7C 08 03 A6 */	mtlr r0
+/* 00000810 00000850  38 21 00 50 */	addi r1, r1, 0x50
+/* 00000814 00000854  4E 80 00 20 */	blr
+.endfn "initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000818 00000858  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000081C 0000085C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x820 | size: 0x24
+# @unnamed@d_system_cpp@::myDylinkInitPhase_0(void*)
+.fn "myDylinkInitPhase_0__22@unnamed@d_system_cpp@FPv", local
+/* 00000820 00000860  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000824 00000864  7C 08 02 A6 */	mflr r0
+/* 00000828 00000868  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000082C 0000086C  48 00 00 01 */	bl InitAsync__4dDylFv
+/* 00000830 00000870  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000834 00000874  38 60 00 01 */	li r3, 0x1
+/* 00000838 00000878  7C 08 03 A6 */	mtlr r0
+/* 0000083C 0000087C  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000840 00000880  4E 80 00 20 */	blr
+.endfn "myDylinkInitPhase_0__22@unnamed@d_system_cpp@FPv"
+/* 00000844 00000884  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000848 00000888  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000084C 0000088C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x850 | size: 0x2C
+# @unnamed@d_system_cpp@::myDylinkInitPhase_1(void*)
+.fn "myDylinkInitPhase_1__22@unnamed@d_system_cpp@FPv", local
+/* 00000850 00000890  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000854 00000894  7C 08 02 A6 */	mflr r0
+/* 00000858 00000898  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000085C 0000089C  48 00 00 01 */	bl InitAsyncIsDone__4dDylFv
+/* 00000860 000008A0  7C 03 00 D0 */	neg r0, r3
+/* 00000864 000008A4  7C 00 1B 78 */	or r0, r0, r3
+/* 00000868 000008A8  54 03 0F FE */	srwi r3, r0, 31
+/* 0000086C 000008AC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000870 000008B0  7C 08 03 A6 */	mtlr r0
+/* 00000874 000008B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000878 000008B8  4E 80 00 20 */	blr
+.endfn "myDylinkInitPhase_1__22@unnamed@d_system_cpp@FPv"
+/* 0000087C 000008BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x880 | size: 0x24
+# @unnamed@d_system_cpp@::myDylinkInitPhase_4(void*)
+.fn "myDylinkInitPhase_4__22@unnamed@d_system_cpp@FPv", local
+/* 00000880 000008C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000884 000008C4  7C 08 02 A6 */	mflr r0
+/* 00000888 000008C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000088C 000008CC  48 00 00 01 */	bl initLoader__7dBase_cFv
+/* 00000890 000008D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000894 000008D4  38 60 00 01 */	li r3, 0x1
+/* 00000898 000008D8  7C 08 03 A6 */	mtlr r0
+/* 0000089C 000008DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 000008A0 000008E0  4E 80 00 20 */	blr
+.endfn "myDylinkInitPhase_4__22@unnamed@d_system_cpp@FPv"
+/* 000008A4 000008E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008A8 000008E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008AC 000008EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8B0 | size: 0x168
+# dSys_c::execute()
+.fn execute__6dSys_cFv, global
+/* 000008B0 000008F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000008B4 000008F4  7C 08 02 A6 */	mflr r0
+/* 000008B8 000008F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000008BC 000008FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000008C0 00000900  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000008C4 00000904  80 60 00 00 */	lwz r3, m_pInstance__9dDvdErr_c@sda21(r0)
+/* 000008C8 00000908  48 00 00 01 */	bl isErrorOccured__9dDvdErr_cFv
+/* 000008CC 0000090C  7C 7E 1B 78 */	mr r30, r3
+/* 000008D0 00000910  48 00 00 01 */	bl GetInstance__Q24dHbm8Manage_cFv
+/* 000008D4 00000914  80 63 01 D0 */	lwz r3, 0x1d0(r3)
+/* 000008D8 00000918  38 03 FF FE */	subi r0, r3, 0x2
+/* 000008DC 0000091C  7C 00 00 34 */	cntlzw r0, r0
+/* 000008E0 00000920  54 1F D9 7E */	srwi r31, r0, 5
+/* 000008E4 00000924  48 00 00 01 */	bl beginFrame__6dSys_cFv
+/* 000008E8 00000928  48 00 00 01 */	bl calcMaterial__3m3dFv
+/* 000008EC 0000092C  48 00 00 01 */	bl beginPad_BR__4dPadFv
+/* 000008F0 00000930  48 00 00 01 */	bl reset__3m3dFv
+/* 000008F4 00000934  48 00 00 01 */	bl beginRender__6dSys_cFv
+/* 000008F8 00000938  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000008FC 0000093C  40 82 00 18 */	bne .L_00000914
+/* 00000900 00000940  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 00000904 00000944  40 82 00 10 */	bne .L_00000914
+/* 00000908 00000948  80 60 00 00 */	lwz r3, ms_Instance__8dGraph_c@sda21(r0)
+/* 0000090C 0000094C  48 00 00 01 */	bl painter__8dGraph_cFv
+/* 00000910 00000950  48 00 00 01 */	bl draw__8dFader_cFv
+.L_00000914:
+/* 00000914 00000954  48 00 00 01 */	bl GetInstance__Q24dHbm8Manage_cFv
+/* 00000918 00000958  48 00 00 01 */	bl DrawMenu__Q24dHbm8Manage_cFv
+/* 0000091C 0000095C  48 00 00 01 */	bl GetInstance__Q26dReset8Manage_cFv
+/* 00000920 00000960  48 00 00 01 */	bl Draw__Q26dReset8Manage_cFv
+/* 00000924 00000964  80 60 00 00 */	lwz r3, m_pInstance__9dDvdErr_c@sda21(r0)
+/* 00000928 00000968  48 00 00 01 */	bl draw__9dDvdErr_cFv
+/* 0000092C 0000096C  48 00 00 01 */	bl GetInstance__Q24dHbm8Manage_cFv
+/* 00000930 00000970  48 00 00 01 */	bl DrawIcon__Q24dHbm8Manage_cFv
+/* 00000934 00000974  48 00 00 01 */	bl endRender__6dSys_cFv
+/* 00000938 00000978  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0000093C 0000097C  40 82 00 0C */	bne .L_00000948
+/* 00000940 00000980  48 00 00 01 */	bl reset__3m2dFv
+/* 00000944 00000984  48 00 00 01 */	bl clear__3m3dFv
+.L_00000948:
+/* 00000948 00000988  80 60 00 00 */	lwz r3, m_pInstance__9dDvdErr_c@sda21(r0)
+/* 0000094C 0000098C  48 00 00 01 */	bl execute__9dDvdErr_cFv
+/* 00000950 00000990  80 60 00 00 */	lwz r3, m_pInstance__9dDvdErr_c@sda21(r0)
+/* 00000954 00000994  48 00 00 01 */	bl isErrorOccured__9dDvdErr_cFv
+/* 00000958 00000998  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000095C 0000099C  7C 7F 1B 78 */	mr r31, r3
+/* 00000960 000009A0  41 82 00 14 */	beq .L_00000974
+/* 00000964 000009A4  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 00000968 000009A8  40 82 00 0C */	bne .L_00000974
+/* 0000096C 000009AC  38 60 00 01 */	li r3, 0x1
+/* 00000970 000009B0  48 00 00 01 */	bl VIEnableDimming
+.L_00000974:
+/* 00000974 000009B4  48 00 00 01 */	bl GetInstance__Q24dHbm8Manage_cFv
+/* 00000978 000009B8  48 00 00 01 */	bl Calculate__Q24dHbm8Manage_cFv
+/* 0000097C 000009BC  48 00 00 01 */	bl GetInstance__Q26dReset8Manage_cFv
+/* 00000980 000009C0  48 00 00 01 */	bl Calculate__Q26dReset8Manage_cFv
+/* 00000984 000009C4  48 00 00 01 */	bl GetInstance__Q24dHbm8Manage_cFv
+/* 00000988 000009C8  80 63 01 D0 */	lwz r3, 0x1d0(r3)
+/* 0000098C 000009CC  38 03 FF FE */	subi r0, r3, 0x2
+/* 00000990 000009D0  7C 00 00 34 */	cntlzw r0, r0
+/* 00000994 000009D4  54 1E D9 7E */	srwi r30, r0, 5
+/* 00000998 000009D8  48 00 00 01 */	bl execute__13dRemoconMng_cFv
+/* 0000099C 000009DC  48 00 00 01 */	bl play__10dScStage_cFv
+/* 000009A0 000009E0  80 60 00 00 */	lwz r3, m_instance__10dGameKey_c@sda21(r0)
+/* 000009A4 000009E4  48 00 00 01 */	bl read__10dGameKey_cFv
+/* 000009A8 000009E8  48 00 00 01 */	bl updateBgmInfo__6dAudioFv
+/* 000009AC 000009EC  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 000009B0 000009F0  40 82 00 38 */	bne .L_000009E8
+/* 000009B4 000009F4  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000009B8 000009F8  40 82 00 30 */	bne .L_000009E8
+/* 000009BC 000009FC  38 60 00 00 */	li r3, "myDylinkInitPhase__22@unnamed@d_system_cpp@"@sda21
+/* 000009C0 00000A00  38 80 00 00 */	li r4, 0x0
+/* 000009C4 00000A04  48 00 00 01 */	bl callMethod__8sPhase_cFPv
+/* 000009C8 00000A08  2C 03 00 02 */	cmpwi r3, 0x2
+/* 000009CC 00000A0C  40 82 00 18 */	bne .L_000009E4
+/* 000009D0 00000A10  48 00 00 01 */	bl createNextScene__8dScene_cFv
+/* 000009D4 00000A14  48 00 00 01 */	bl mainLoop__10fManager_cFv
+/* 000009D8 00000A18  80 60 00 00 */	lwz r3, m_exeFrame__10cCounter_c@sda21(r0)
+/* 000009DC 00000A1C  38 03 00 01 */	addi r0, r3, 0x1
+/* 000009E0 00000A20  90 00 00 00 */	stw r0, m_exeFrame__10cCounter_c@sda21(r0)
+.L_000009E4:
+/* 000009E4 00000A24  48 00 00 01 */	bl calc__8dFader_cFv
+.L_000009E8:
+/* 000009E8 00000A28  48 00 00 01 */	bl calcAudio__6dSys_cFv
+/* 000009EC 00000A2C  48 00 00 01 */	bl endPad_BR__4dPadFv
+/* 000009F0 00000A30  48 00 00 01 */	bl endFrame__6dSys_cFv
+/* 000009F4 00000A34  80 60 00 00 */	lwz r3, m_gameFrame__10cCounter_c@sda21(r0)
+/* 000009F8 00000A38  38 03 00 01 */	addi r0, r3, 0x1
+/* 000009FC 00000A3C  90 00 00 00 */	stw r0, m_gameFrame__10cCounter_c@sda21(r0)
+/* 00000A00 00000A40  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000A04 00000A44  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000A08 00000A48  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000A0C 00000A4C  7C 08 03 A6 */	mtlr r0
+/* 00000A10 00000A50  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000A14 00000A54  4E 80 00 20 */	blr
+.endfn execute__6dSys_cFv
+/* 00000A18 00000A58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A1C 00000A5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA20 | size: 0xB0
+# dSystem::createEffectManagerPhase1(void*)
+.fn createEffectManagerPhase1__7dSystemFPv, global
+/* 00000A20 00000A60  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000A24 00000A64  7C 08 02 A6 */	mflr r0
+/* 00000A28 00000A68  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000A2C 00000A6C  80 00 00 00 */	lwz r0, l_breffCommand__7dSystem@sda21(r0)
+/* 00000A30 00000A70  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000A34 00000A74  40 82 00 2C */	bne .L_00000A60
+/* 00000A38 00000A78  3C 60 00 00 */	lis r3, "@20603"@ha
+/* 00000A3C 00000A7C  80 A0 00 00 */	lwz r5, s_EffectManagerHeap2__7dSystem@sda21(r0)
+/* 00000A40 00000A80  38 63 00 00 */	addi r3, r3, "@20603"@l
+/* 00000A44 00000A84  38 80 00 00 */	li r4, 0x0
+/* 00000A48 00000A88  48 00 00 01 */	bl create__16mDvd_toMainRam_cFPCcUcPQ23EGG4Heap
+/* 00000A4C 00000A8C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000A50 00000A90  90 60 00 00 */	stw r3, l_breffCommand__7dSystem@sda21(r0)
+/* 00000A54 00000A94  40 82 00 0C */	bne .L_00000A60
+/* 00000A58 00000A98  38 60 00 00 */	li r3, 0x0
+/* 00000A5C 00000A9C  48 00 00 64 */	b .L_00000AC0
+.L_00000A60:
+/* 00000A60 00000AA0  80 00 00 00 */	lwz r0, l_breftCommand__7dSystem@sda21(r0)
+/* 00000A64 00000AA4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000A68 00000AA8  40 82 00 2C */	bne .L_00000A94
+/* 00000A6C 00000AAC  3C 60 00 00 */	lis r3, "@20604"@ha
+/* 00000A70 00000AB0  80 A0 00 00 */	lwz r5, s_EffectManagerHeap2__7dSystem@sda21(r0)
+/* 00000A74 00000AB4  38 63 00 00 */	addi r3, r3, "@20604"@l
+/* 00000A78 00000AB8  38 80 00 00 */	li r4, 0x0
+/* 00000A7C 00000ABC  48 00 00 01 */	bl create__16mDvd_toMainRam_cFPCcUcPQ23EGG4Heap
+/* 00000A80 00000AC0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000A84 00000AC4  90 60 00 00 */	stw r3, l_breftCommand__7dSystem@sda21(r0)
+/* 00000A88 00000AC8  40 82 00 0C */	bne .L_00000A94
+/* 00000A8C 00000ACC  38 60 00 00 */	li r3, 0x0
+/* 00000A90 00000AD0  48 00 00 30 */	b .L_00000AC0
+.L_00000A94:
+/* 00000A94 00000AD4  80 60 00 00 */	lwz r3, l_breffCommand__7dSystem@sda21(r0)
+/* 00000A98 00000AD8  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 00000A9C 00000ADC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000AA0 00000AE0  41 82 00 14 */	beq .L_00000AB4
+/* 00000AA4 00000AE4  80 60 00 00 */	lwz r3, l_breftCommand__7dSystem@sda21(r0)
+/* 00000AA8 00000AE8  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 00000AAC 00000AEC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000AB0 00000AF0  40 82 00 0C */	bne .L_00000ABC
+.L_00000AB4:
+/* 00000AB4 00000AF4  38 60 00 00 */	li r3, 0x0
+/* 00000AB8 00000AF8  48 00 00 08 */	b .L_00000AC0
+.L_00000ABC:
+/* 00000ABC 00000AFC  38 60 00 01 */	li r3, 0x1
+.L_00000AC0:
+/* 00000AC0 00000B00  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000AC4 00000B04  7C 08 03 A6 */	mtlr r0
+/* 00000AC8 00000B08  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000ACC 00000B0C  4E 80 00 20 */	blr
+.endfn createEffectManagerPhase1__7dSystemFPv
+
+# .text:0xAD0 | size: 0x64
+# dSystem::createEffectManagerPhase2(void*)
+.fn createEffectManagerPhase2__7dSystemFPv, global
+/* 00000AD0 00000B10  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000AD4 00000B14  7C 08 02 A6 */	mflr r0
+/* 00000AD8 00000B18  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000ADC 00000B1C  80 60 00 00 */	lwz r3, s_EffectManagerHeap1__7dSystem@sda21(r0)
+/* 00000AE0 00000B20  80 80 00 00 */	lwz r4, s_EffectManagerHeap2__7dSystem@sda21(r0)
+/* 00000AE4 00000B24  48 00 00 01 */	bl create__15EffectManager_cFPQ23EGG4HeapPQ23EGG4Heap
+/* 00000AE8 00000B28  80 60 00 00 */	lwz r3, s_EffectManagerHeap2__7dSystem@sda21(r0)
+/* 00000AEC 00000B2C  48 00 00 01 */	bl dump__Q23EGG4HeapFv
+/* 00000AF0 00000B30  80 60 00 00 */	lwz r3, l_breffCommand__7dSystem@sda21(r0)
+/* 00000AF4 00000B34  80 80 00 00 */	lwz r4, l_breftCommand__7dSystem@sda21(r0)
+/* 00000AF8 00000B38  80 63 00 10 */	lwz r3, 0x10(r3)
+/* 00000AFC 00000B3C  80 84 00 10 */	lwz r4, 0x10(r4)
+/* 00000B00 00000B40  48 00 00 01 */	bl setResource__15EffectManager_cFPvPv
+/* 00000B04 00000B44  80 60 00 00 */	lwz r3, l_breffCommand__7dSystem@sda21(r0)
+/* 00000B08 00000B48  48 00 00 01 */	bl destroy__14mDvd_command_cFv
+/* 00000B0C 00000B4C  80 60 00 00 */	lwz r3, l_breftCommand__7dSystem@sda21(r0)
+/* 00000B10 00000B50  48 00 00 01 */	bl destroy__14mDvd_command_cFv
+/* 00000B14 00000B54  38 00 00 00 */	li r0, 0x0
+/* 00000B18 00000B58  90 00 00 00 */	stw r0, l_breffCommand__7dSystem@sda21(r0)
+/* 00000B1C 00000B5C  38 60 00 01 */	li r3, 0x1
+/* 00000B20 00000B60  90 00 00 00 */	stw r0, l_breftCommand__7dSystem@sda21(r0)
+/* 00000B24 00000B64  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000B28 00000B68  7C 08 03 A6 */	mtlr r0
+/* 00000B2C 00000B6C  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000B30 00000B70  4E 80 00 20 */	blr
+.endfn createEffectManagerPhase2__7dSystemFPv
+/* 00000B34 00000B74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000B38 00000B78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000B3C 00000B7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xB40 | size: 0x40
+# dSystem::createFontManagerPhase(void*)
+.fn createFontManagerPhase__7dSystemFPv, global
+/* 00000B40 00000B80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000B44 00000B84  7C 08 02 A6 */	mflr r0
+/* 00000B48 00000B88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000B4C 00000B8C  80 60 00 00 */	lwz r3, s_FontManagerHeap__7dSystem@sda21(r0)
+/* 00000B50 00000B90  48 00 00 01 */	bl create__10dFontMng_cFPQ23EGG4Heap
+/* 00000B54 00000B94  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000B58 00000B98  40 82 00 0C */	bne .L_00000B64
+/* 00000B5C 00000B9C  38 60 00 00 */	li r3, 0x0
+/* 00000B60 00000BA0  48 00 00 10 */	b .L_00000B70
+.L_00000B64:
+/* 00000B64 00000BA4  80 60 00 00 */	lwz r3, s_FontManagerHeap__7dSystem@sda21(r0)
+/* 00000B68 00000BA8  48 00 00 01 */	bl dump__Q23EGG4HeapFv
+/* 00000B6C 00000BAC  38 60 00 01 */	li r3, 0x1
+.L_00000B70:
+/* 00000B70 00000BB0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000B74 00000BB4  7C 08 03 A6 */	mtlr r0
+/* 00000B78 00000BB8  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000B7C 00000BBC  4E 80 00 20 */	blr
+.endfn createFontManagerPhase__7dSystemFPv
+
+# .text:0xB80 | size: 0x8C
+# dSystem::createMessageManagerPhase(void*)
+.fn createMessageManagerPhase__7dSystemFPv, global
+/* 00000B80 00000BC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000B84 00000BC4  7C 08 02 A6 */	mflr r0
+/* 00000B88 00000BC8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000B8C 00000BCC  80 00 00 00 */	lwz r0, s_MessageManagerHeap__7dSystem@sda21(r0)
+/* 00000B90 00000BD0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000B94 00000BD4  40 82 00 30 */	bne .L_00000BC4
+/* 00000B98 00000BD8  3C 60 00 00 */	lis r3, g_gameHeaps__5mHeap@ha
+/* 00000B9C 00000BDC  3C A0 00 00 */	lis r5, sc_MessageManagerHeapName__7dSystem@ha
+/* 00000BA0 00000BE0  38 63 00 00 */	addi r3, r3, g_gameHeaps__5mHeap@l
+/* 00000BA4 00000BE4  3C C0 00 01 */	lis r6, 0x1
+/* 00000BA8 00000BE8  80 83 00 08 */	lwz r4, 0x8(r3)
+/* 00000BAC 00000BEC  38 66 C8 00 */	subi r3, r6, 0x3800
+/* 00000BB0 00000BF0  38 A5 00 00 */	addi r5, r5, sc_MessageManagerHeapName__7dSystem@l
+/* 00000BB4 00000BF4  38 C0 00 20 */	li r6, 0x20
+/* 00000BB8 00000BF8  38 E0 00 04 */	li r7, 0x4
+/* 00000BBC 00000BFC  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 00000BC0 00000C00  90 60 00 00 */	stw r3, s_MessageManagerHeap__7dSystem@sda21(r0)
+.L_00000BC4:
+/* 00000BC4 00000C04  80 60 00 00 */	lwz r3, s_MessageManagerHeap__7dSystem@sda21(r0)
+/* 00000BC8 00000C08  48 00 00 01 */	bl create__10dMessage_cFPQ23EGG4Heap
+/* 00000BCC 00000C0C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000BD0 00000C10  40 82 00 0C */	bne .L_00000BDC
+/* 00000BD4 00000C14  38 60 00 00 */	li r3, 0x0
+/* 00000BD8 00000C18  48 00 00 24 */	b .L_00000BFC
+.L_00000BDC:
+/* 00000BDC 00000C1C  80 60 00 00 */	lwz r3, s_MessageManagerHeap__7dSystem@sda21(r0)
+/* 00000BE0 00000C20  48 00 00 01 */	bl dump__Q23EGG4HeapFv
+/* 00000BE4 00000C24  80 60 00 00 */	lwz r3, s_MessageManagerHeap__7dSystem@sda21(r0)
+/* 00000BE8 00000C28  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000BEC 00000C2C  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 00000BF0 00000C30  7D 89 03 A6 */	mtctr r12
+/* 00000BF4 00000C34  4E 80 04 21 */	bctrl
+/* 00000BF8 00000C38  38 60 00 01 */	li r3, 0x1
+.L_00000BFC:
+/* 00000BFC 00000C3C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C00 00000C40  7C 08 03 A6 */	mtlr r0
+/* 00000C04 00000C44  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000C08 00000C48  4E 80 00 20 */	blr
+.endfn createMessageManagerPhase__7dSystemFPv
+/* 00000C0C 00000C4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xC10 | size: 0x5C
+# dSystem::fixArena()
+.fn fixArena__7dSystemFv, global
+/* 00000C10 00000C50  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000C14 00000C54  7C 08 02 A6 */	mflr r0
+/* 00000C18 00000C58  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000C1C 00000C5C  48 00 00 01 */	bl OSGetMEM1ArenaLo
+/* 00000C20 00000C60  3C 00 80 6E */	lis r0, 0x806e
+/* 00000C24 00000C64  90 60 00 00 */	stw r3, s_OrgMEM1ArenaLo__7dSystem@sda21(r0)
+/* 00000C28 00000C68  7C 03 00 40 */	cmplw r3, r0
+/* 00000C2C 00000C6C  90 00 00 00 */	stw r0, s_NewMEM1ArenaLo__7dSystem@sda21(r0)
+/* 00000C30 00000C70  40 80 00 0C */	bge .L_00000C3C
+/* 00000C34 00000C74  3C 60 80 6E */	lis r3, 0x806e
+/* 00000C38 00000C78  48 00 00 01 */	bl OSSetMEM1ArenaLo
+.L_00000C3C:
+/* 00000C3C 00000C7C  48 00 00 01 */	bl OSGetMEM1ArenaHi
+/* 00000C40 00000C80  3C 00 81 7F */	lis r0, 0x817f
+/* 00000C44 00000C84  90 60 00 00 */	stw r3, s_OrgMEM1ArenaHi__7dSystem@sda21(r0)
+/* 00000C48 00000C88  7C 03 00 40 */	cmplw r3, r0
+/* 00000C4C 00000C8C  90 00 00 00 */	stw r0, s_NewMEM1ArenaHi__7dSystem@sda21(r0)
+/* 00000C50 00000C90  40 81 00 0C */	ble .L_00000C5C
+/* 00000C54 00000C94  3C 60 81 7F */	lis r3, 0x817f
+/* 00000C58 00000C98  48 00 00 01 */	bl OSSetMEM1ArenaHi
+.L_00000C5C:
+/* 00000C5C 00000C9C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C60 00000CA0  7C 08 03 A6 */	mtlr r0
+/* 00000C64 00000CA4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000C68 00000CA8  4E 80 00 20 */	blr
+.endfn fixArena__7dSystemFv
+/* 00000C6C 00000CAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xC70 | size: 0xD0
+# dSystem::fixHeapsSub(EGG::ExpHeap*, int)
+.fn fixHeapsSub__7dSystemFPQ23EGG7ExpHeapi, global
+/* 00000C70 00000CB0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000C74 00000CB4  7C 08 02 A6 */	mflr r0
+/* 00000C78 00000CB8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000C7C 00000CBC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000C80 00000CC0  7C 9F 23 78 */	mr r31, r4
+/* 00000C84 00000CC4  38 80 00 FF */	li r4, 0xff
+/* 00000C88 00000CC8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000C8C 00000CCC  7C 7E 1B 78 */	mr r30, r3
+/* 00000C90 00000CD0  48 00 00 01 */	bl setGroupID__Q23EGG7ExpHeapFUs
+/* 00000C94 00000CD4  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 00000C98 00000CD8  7F C3 F3 78 */	mr r3, r30
+/* 00000C9C 00000CDC  7F E4 FB 78 */	mr r4, r31
+/* 00000CA0 00000CE0  38 A0 FF E0 */	li r5, -0x20
+/* 00000CA4 00000CE4  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000CA8 00000CE8  7D 89 03 A6 */	mtctr r12
+/* 00000CAC 00000CEC  4E 80 04 21 */	bctrl
+/* 00000CB0 00000CF0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000CB4 00000CF4  7C 7F 1B 78 */	mr r31, r3
+/* 00000CB8 00000CF8  40 82 00 0C */	bne .L_00000CC4
+/* 00000CBC 00000CFC  60 00 00 00 */	nop
+.L_00000CC0:
+/* 00000CC0 00000D00  48 00 00 00 */	b .L_00000CC0
+.L_00000CC4:
+/* 00000CC4 00000D04  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 00000CC8 00000D08  7F C3 F3 78 */	mr r3, r30
+/* 00000CCC 00000D0C  38 80 00 04 */	li r4, 0x4
+/* 00000CD0 00000D10  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 00000CD4 00000D14  7D 89 03 A6 */	mtctr r12
+/* 00000CD8 00000D18  4E 80 04 21 */	bctrl
+/* 00000CDC 00000D1C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000CE0 00000D20  7C 64 1B 78 */	mr r4, r3
+/* 00000CE4 00000D24  41 82 00 20 */	beq .L_00000D04
+/* 00000CE8 00000D28  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 00000CEC 00000D2C  7F C3 F3 78 */	mr r3, r30
+/* 00000CF0 00000D30  38 A0 00 04 */	li r5, 0x4
+/* 00000CF4 00000D34  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000CF8 00000D38  7D 89 03 A6 */	mtctr r12
+/* 00000CFC 00000D3C  4E 80 04 21 */	bctrl
+/* 00000D00 00000D40  4B FF FF C4 */	b .L_00000CC4
+.L_00000D04:
+/* 00000D04 00000D44  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 00000D08 00000D48  7F C3 F3 78 */	mr r3, r30
+/* 00000D0C 00000D4C  7F E4 FB 78 */	mr r4, r31
+/* 00000D10 00000D50  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 00000D14 00000D54  7D 89 03 A6 */	mtctr r12
+/* 00000D18 00000D58  4E 80 04 21 */	bctrl
+/* 00000D1C 00000D5C  7F C3 F3 78 */	mr r3, r30
+/* 00000D20 00000D60  38 80 00 01 */	li r4, 0x1
+/* 00000D24 00000D64  48 00 00 01 */	bl setGroupID__Q23EGG7ExpHeapFUs
+/* 00000D28 00000D68  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000D2C 00000D6C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000D30 00000D70  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000D34 00000D74  7C 08 03 A6 */	mtlr r0
+/* 00000D38 00000D78  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000D3C 00000D7C  4E 80 00 20 */	blr
+.endfn fixHeapsSub__7dSystemFPQ23EGG7ExpHeapi
+
+# .text:0xD40 | size: 0x60
+# dSystem::fixHeaps()
+.fn fixHeaps__7dSystemFv, global
+/* 00000D40 00000D80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000D44 00000D84  7C 08 02 A6 */	mflr r0
+/* 00000D48 00000D88  3C 60 00 00 */	lis r3, g_gameHeaps__5mHeap@ha
+/* 00000D4C 00000D8C  3C 80 00 68 */	lis r4, 0x68
+/* 00000D50 00000D90  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000D54 00000D94  38 63 00 00 */	addi r3, r3, g_gameHeaps__5mHeap@l
+/* 00000D58 00000D98  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000D5C 00000D9C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000D60 00000DA0  83 E3 00 08 */	lwz r31, 0x8(r3)
+/* 00000D64 00000DA4  83 C0 00 00 */	lwz r30, g_archiveHeap__5mHeap@sda21(r0)
+/* 00000D68 00000DA8  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 00000D6C 00000DAC  48 00 00 01 */	bl fixHeapsSub__7dSystemFPQ23EGG7ExpHeapi
+/* 00000D70 00000DB0  7F E3 FB 78 */	mr r3, r31
+/* 00000D74 00000DB4  3C 80 00 50 */	lis r4, 0x50
+/* 00000D78 00000DB8  48 00 00 01 */	bl fixHeapsSub__7dSystemFPQ23EGG7ExpHeapi
+/* 00000D7C 00000DBC  7F C3 F3 78 */	mr r3, r30
+/* 00000D80 00000DC0  3C 80 00 A0 */	lis r4, 0xa0
+/* 00000D84 00000DC4  48 00 00 01 */	bl fixHeapsSub__7dSystemFPQ23EGG7ExpHeapi
+/* 00000D88 00000DC8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000D8C 00000DCC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000D90 00000DD0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000D94 00000DD4  7C 08 03 A6 */	mtlr r0
+/* 00000D98 00000DD8  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000D9C 00000DDC  4E 80 00 20 */	blr
+.endfn fixHeaps__7dSystemFv
+
+# .text:0xDA0 | size: 0x40
+.fn "__sinit_\d_system_cpp", local
+/* 00000DA0 00000DE0  3D 20 00 00 */	lis r9, s_configuration@ha
+/* 00000DA4 00000DE4  3D 00 00 08 */	lis r8, 0x8
+/* 00000DA8 00000DE8  38 E9 00 00 */	addi r7, r9, s_configuration@l
+/* 00000DAC 00000DEC  3C C0 00 00 */	lis r6, "__vt__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13Configuration"@ha
+/* 00000DB0 00000DF0  38 68 74 00 */	addi r3, r8, 0x7400
+/* 00000DB4 00000DF4  38 00 00 00 */	li r0, 0x0
+/* 00000DB8 00000DF8  38 C6 00 00 */	addi r6, r6, "__vt__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13Configuration"@l
+/* 00000DBC 00000DFC  3C 80 00 00 */	lis r4, "myDylinkInitPhaseMethod__22@unnamed@d_system_cpp@"@ha
+/* 00000DC0 00000E00  90 67 00 34 */	stw r3, 0x34(r7)
+/* 00000DC4 00000E04  38 84 00 00 */	addi r4, r4, "myDylinkInitPhaseMethod__22@unnamed@d_system_cpp@"@l
+/* 00000DC8 00000E08  38 60 00 00 */	li r3, "myDylinkInitPhase__22@unnamed@d_system_cpp@"@sda21
+/* 00000DCC 00000E0C  38 A0 00 03 */	li r5, 0x3
+/* 00000DD0 00000E10  90 C9 00 00 */	stw r6, s_configuration@l(r9)
+/* 00000DD4 00000E14  91 07 00 38 */	stw r8, 0x38(r7)
+/* 00000DD8 00000E18  90 07 00 3C */	stw r0, 0x3c(r7)
+/* 00000DDC 00000E1C  48 00 00 00 */	b __ct__8sPhase_cFPPFPv_Q28sPhase_c15METHOD_RESULT_ei
+.endfn "__sinit_\d_system_cpp"
+
+# .text:0xDE0 | size: 0x4
+# EGG::ConfigurationData::initRenderMode()
+.fn initRenderMode__Q23EGG17ConfigurationDataFv, weak
+/* 00000DE0 00000E20  4E 80 00 20 */	blr
+.endfn initRenderMode__Q23EGG17ConfigurationDataFv
+/* 00000DE4 00000E24  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000DE8 00000E28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000DEC 00000E2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xDF0 | size: 0x8
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getVideo()
+.fn "getVideo__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000DF0 00000E30  80 63 00 44 */	lwz r3, 0x44(r3)
+/* 00000DF4 00000E34  4E 80 00 20 */	blr
+.endfn "getVideo__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000DF8 00000E38  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000DFC 00000E3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE00 | size: 0x8
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getSystemHeap()
+.fn "getSystemHeap__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000E00 00000E40  80 63 00 24 */	lwz r3, 0x24(r3)
+/* 00000E04 00000E44  4E 80 00 20 */	blr
+.endfn "getSystemHeap__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000E08 00000E48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E0C 00000E4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE10 | size: 0x8
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getDisplay()
+.fn "getDisplay__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000E10 00000E50  80 63 00 4C */	lwz r3, 0x4c(r3)
+/* 00000E14 00000E54  4E 80 00 20 */	blr
+.endfn "getDisplay__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000E18 00000E58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E1C 00000E5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE20 | size: 0x8
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getXfbMgr()
+.fn "getXfbMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000E20 00000E60  80 63 00 48 */	lwz r3, 0x48(r3)
+/* 00000E24 00000E64  4E 80 00 20 */	blr
+.endfn "getXfbMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000E28 00000E68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E2C 00000E6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE30 | size: 0x14
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getPerfView()
+.fn "getPerfView__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000E30 00000E70  80 63 00 50 */	lwz r3, 0x50(r3)
+/* 00000E34 00000E74  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000E38 00000E78  4D 82 00 20 */	beqlr
+/* 00000E3C 00000E7C  38 63 00 4C */	addi r3, r3, 0x4c
+/* 00000E40 00000E80  4E 80 00 20 */	blr
+.endfn "getPerfView__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000E44 00000E84  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E48 00000E88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E4C 00000E8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE50 | size: 0x8
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getSceneMgr()
+.fn "getSceneMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000E50 00000E90  80 63 00 54 */	lwz r3, 0x54(r3)
+/* 00000E54 00000E94  4E 80 00 20 */	blr
+.endfn "getSceneMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+/* 00000E58 00000E98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E5C 00000E9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE60 | size: 0x8
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::getAudioMgr()
+.fn "getAudioMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv", weak
+/* 00000E60 00000EA0  80 63 00 40 */	lwz r3, 0x40(r3)
+/* 00000E64 00000EA4  4E 80 00 20 */	blr
+.endfn "getAudioMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_system_cpp"
+
+# 0x00000000..0x0000005B | size: 0x5B
+.rodata
+.balign 8
+
+# .rodata:0x0 | size: 0xF
+# dSystem::sc_EffectManagerHeap1Name
+.obj sc_EffectManagerHeap1Name__7dSystem, global
+	.4byte 0x83478374
+	.4byte 0x8346834E
+	.4byte 0x83678AC7
+	.byte 0x97, 0x9D, 0x00
+.endobj sc_EffectManagerHeap1Name__7dSystem
+	.byte 0x00
+
+# .rodata:0x10 | size: 0x13
+# dSystem::sc_EffectManagerHeap2Name
+.obj sc_EffectManagerHeap2Name__7dSystem, global
+	.4byte 0x83478374
+	.4byte 0x8346834E
+	.4byte 0x8367838A
+	.4byte 0x835C815B
+	.byte 0x83, 0x58, 0x00
+.endobj sc_EffectManagerHeap2Name__7dSystem
+	.byte 0x00
+
+# .rodata:0x24 | size: 0xD
+# dSystem::sc_FontManagerHeapName
+.obj sc_FontManagerHeapName__7dSystem, global
+	.4byte 0x83748348
+	.4byte 0x83938367
+	.4byte 0x8AC7979D
+	.byte 0x00
+.endobj sc_FontManagerHeapName__7dSystem
+	.byte 0x00, 0x00, 0x00
+
+# .rodata:0x34 | size: 0x16
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::initialize()::s_PadInfoBp
+.obj "@LOCAL@initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv@s_PadInfoBp", weak
+	.4byte 0x80001000
+	.4byte 0x00101000
+	.4byte 0x00100200
+	.4byte 0x01000200
+	.4byte 0x01000800
+	.2byte 0x0000
+.endobj "@LOCAL@initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv@s_PadInfoBp"
+	.2byte 0x0000
+
+# .rodata:0x4C | size: 0xF
+# dSystem::sc_MessageManagerHeapName
+.obj sc_MessageManagerHeapName__7dSystem, global
+	.4byte 0x83818362
+	.4byte 0x835A815B
+	.4byte 0x83578AC7
+	.byte 0x97, 0x9D, 0x00
+.endobj sc_MessageManagerHeapName__7dSystem
+
+# 0x00000000..0x000000B8 | size: 0xB8
+.data
+.balign 8
+
+# .data:0x0 | size: 0x15
+.obj "@20528", local
+	.4byte 0x64537973
+	.4byte 0x5F633A3A
+	.4byte 0x526F6F74
+	.4byte 0x48656170
+	.4byte 0x4D454D31
+	.byte 0x00
+.endobj "@20528"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x18 | size: 0x15
+.obj "@20529", local
+	.4byte 0x64537973
+	.4byte 0x5F633A3A
+	.4byte 0x526F6F74
+	.4byte 0x48656170
+	.4byte 0x4D454D32
+	.byte 0x00
+.endobj "@20529"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x30 | size: 0xC
+# @unnamed@d_system_cpp@::myDylinkInitPhaseMethod
+.obj "myDylinkInitPhaseMethod__22@unnamed@d_system_cpp@", local
+	.4byte "myDylinkInitPhase_0__22@unnamed@d_system_cpp@FPv"
+	.4byte "myDylinkInitPhase_1__22@unnamed@d_system_cpp@FPv"
+	.4byte "myDylinkInitPhase_4__22@unnamed@d_system_cpp@FPv"
+.endobj "myDylinkInitPhaseMethod__22@unnamed@d_system_cpp@"
+
+# .data:0x3C | size: 0x1D
+.obj "@20603", local
+	.4byte 0x2F456666
+	.4byte 0x6563742F
+	.4byte 0x65666665
+	.4byte 0x63745F77
+	.4byte 0x6E6D6172
+	.4byte 0x696F2E62
+	.4byte 0x72656666
+	.byte 0x00
+.endobj "@20603"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x5C | size: 0x1D
+.obj "@20604", local
+	.4byte 0x2F456666
+	.4byte 0x6563742F
+	.4byte 0x65666665
+	.4byte 0x63745F77
+	.4byte 0x6E6D6172
+	.4byte 0x696F2E62
+	.4byte 0x72656674
+	.byte 0x00
+.endobj "@20604"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x7C | size: 0x3C
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::Configuration::__vtable
+.obj "__vt__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13Configuration", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "getVideo__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte "getSystemHeap__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte "getDisplay__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte "getXfbMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte "getPerfView__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte "getSceneMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte "getAudioMgr__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+	.4byte onBeginFrame__Q23EGG17ConfigurationDataFv
+	.4byte onEndFrame__Q23EGG17ConfigurationDataFv
+	.4byte initRenderMode__Q23EGG17ConfigurationDataFv
+	.4byte initMemory__Q23EGG17ConfigurationDataFv
+	.4byte run__Q23EGG17ConfigurationDataFv
+	.4byte "initialize__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13ConfigurationFv"
+.endobj "__vt__Q33EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>13Configuration"
+
+# 0x00000000..0x00000088 | size: 0x88
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0x58
+.obj s_configuration, local
+	.skip 0x58
+.endobj s_configuration
+
+# .bss:0x58 | size: 0x10
+# dSys_c::endRender()::a
+.obj "@LOCAL@endRender__6dSys_cFv@a", local
+	.skip 0x10
+.endobj "@LOCAL@endRender__6dSys_cFv@a"
+
+# .bss:0x68 | size: 0x10
+.obj "@LOCAL@endRender__6dSys_cFv@b@0", local
+	.skip 0x10
+.endobj "@LOCAL@endRender__6dSys_cFv@b@0"
+
+# .bss:0x78 | size: 0x10
+.obj "@LOCAL@endRender__6dSys_cFv@c@1", local
+	.skip 0x10
+.endobj "@LOCAL@endRender__6dSys_cFv@c@1"
+
+# 0x00000000..0x00000044 | size: 0x44
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | size: 0x4
+# dSystem::s_EffectManagerHeap1
+.obj s_EffectManagerHeap1__7dSystem, global
+	.skip 0x4
+.endobj s_EffectManagerHeap1__7dSystem
+
+# .sbss:0x4 | size: 0x4
+# dSystem::s_EffectManagerHeap2
+.obj s_EffectManagerHeap2__7dSystem, global
+	.skip 0x4
+.endobj s_EffectManagerHeap2__7dSystem
+
+# .sbss:0x8 | size: 0x4
+.obj s_MainThread, global
+	.skip 0x4
+.endobj s_MainThread
+
+# .sbss:0xC | size: 0x4
+# EGG::TSystem<EGG::Video, EGG::AsyncDisplay, EGG::XfbManager, EGG::SimpleAudioMgr, EGG::SceneManager, EGG::ProcessMeter>::sConfiguration
+.obj "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>", global
+	.skip 0x4
+.endobj "sConfiguration__Q23EGG126TSystem<Q23EGG5Video,Q23EGG12AsyncDisplay,Q23EGG10XfbManager,Q23EGG14SimpleAudioMgr,Q23EGG12SceneManager,Q23EGG12ProcessMeter>"
+
+# .sbss:0x10 | size: 0x4
+# dSys_c::ms_RootHeapMem1
+.obj ms_RootHeapMem1__6dSys_c, global
+	.skip 0x4
+.endobj ms_RootHeapMem1__6dSys_c
+
+# .sbss:0x14 | size: 0x4
+# dSys_c::ms_RootHeapMem2
+.obj ms_RootHeapMem2__6dSys_c, global
+	.skip 0x4
+.endobj ms_RootHeapMem2__6dSys_c
+
+# .sbss:0x18 | size: 0x4
+# dSystem::s_FontManagerHeap
+.obj s_FontManagerHeap__7dSystem, global
+	.skip 0x4
+.endobj s_FontManagerHeap__7dSystem
+
+# .sbss:0x1C | size: 0x1
+# dSys_c::endRender()::a guard
+.obj "@GUARD@endRender__6dSys_cFv@a", local
+	.skip 0x1
+.endobj "@GUARD@endRender__6dSys_cFv@a"
+
+# .sbss:0x1D | size: 0x1
+.obj "@GUARD@endRender__6dSys_cFv@b@0", local
+	.skip 0x1
+.endobj "@GUARD@endRender__6dSys_cFv@b@0"
+
+# .sbss:0x1E | size: 0x1
+.obj "@GUARD@endRender__6dSys_cFv@c@1", local
+	.skip 0x1
+.endobj "@GUARD@endRender__6dSys_cFv@c@1"
+	.skip 0x1
+
+# .sbss:0x20 | size: 0x8
+# @unnamed@d_system_cpp@::myDylinkInitPhase
+.obj "myDylinkInitPhase__22@unnamed@d_system_cpp@", local
+	.skip 0x8
+.endobj "myDylinkInitPhase__22@unnamed@d_system_cpp@"
+
+# .sbss:0x28 | size: 0x4
+# dSystem::l_breffCommand
+.obj l_breffCommand__7dSystem, global
+	.skip 0x4
+.endobj l_breffCommand__7dSystem
+
+# .sbss:0x2C | size: 0x4
+# dSystem::l_breftCommand
+.obj l_breftCommand__7dSystem, global
+	.skip 0x4
+.endobj l_breftCommand__7dSystem
+
+# .sbss:0x30 | size: 0x4
+# dSystem::s_MessageManagerHeap
+.obj s_MessageManagerHeap__7dSystem, global
+	.skip 0x4
+.endobj s_MessageManagerHeap__7dSystem
+
+# .sbss:0x34 | size: 0x4
+# dSystem::s_OrgMEM1ArenaLo
+.obj s_OrgMEM1ArenaLo__7dSystem, global
+	.skip 0x4
+.endobj s_OrgMEM1ArenaLo__7dSystem
+
+# .sbss:0x38 | size: 0x4
+# dSystem::s_NewMEM1ArenaLo
+.obj s_NewMEM1ArenaLo__7dSystem, global
+	.skip 0x4
+.endobj s_NewMEM1ArenaLo__7dSystem
+
+# .sbss:0x3C | size: 0x4
+# dSystem::s_OrgMEM1ArenaHi
+.obj s_OrgMEM1ArenaHi__7dSystem, global
+	.skip 0x4
+.endobj s_OrgMEM1ArenaHi__7dSystem
+
+# .sbss:0x40 | size: 0x4
+# dSystem::s_NewMEM1ArenaHi
+.obj s_NewMEM1ArenaHi__7dSystem, global
+	.skip 0x4
+.endobj s_NewMEM1ArenaHi__7dSystem
+
+# 0x00000000..0x00000008 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | size: 0x4
+.obj "@20530", local
+	.4byte 0x3DCCCCCD
+.endobj "@20530"
+
+# .sdata2:0x4 | size: 0x4
+.obj "@20531", local
+	.4byte 0x3F800000
+.endobj "@20531"

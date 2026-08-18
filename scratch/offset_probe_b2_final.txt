@@ -1,0 +1,22 @@
+.include "macros.inc"
+.file "offset_probe_b2_final.cpp"
+
+# 0x00000000..0x00000018 | size: 0x18
+.text
+.balign 16
+
+# .text:0x0 | size: 0x8
+# probe_override()
+.fn probe_override__Fv, global
+/* 00000000 00000040  38 60 0A FC */	li r3, 0xafc
+/* 00000004 00000044  4E 80 00 20 */	blr
+.endfn probe_override__Fv
+/* 00000008 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000000C 0000004C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x10 | size: 0x8
+# probe_size()
+.fn probe_size__Fv, global
+/* 00000010 00000050  38 60 0B 5C */	li r3, 0xb5c
+/* 00000014 00000054  4E 80 00 20 */	blr
+.endfn probe_size__Fv

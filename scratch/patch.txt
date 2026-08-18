@@ -1,0 +1,9 @@
+*** Begin Patch
+*** Update File: scratch/shadow/game/bases/d_info.hpp
+@@
+-    u8 pad11[0x712];
++    u8 pad_before_mEffectStopOverride[0x710];
++    /// @brief Byte tested by daPyMng_c::isEffectStop at dInfo_c + 0xafc. A non-zero value prevents effects from being considered stopped. @unofficial
++    u8 mEffectStopOverride;
++    u8 pad_after_mEffectStopOverride[0x1];
+*** End Patch

@@ -1,0 +1,31 @@
+.include "macros.inc"
+.file "test_align.cpp"
+
+# 0x00000000..0x00000014 | size: 0x14
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | size: 0x4
+.obj align_Thread, global
+	.4byte 0x00000004
+.endobj align_Thread
+
+# .sdata:0x4 | size: 0x4
+.obj align_Mutex, global
+	.4byte 0x00000004
+.endobj align_Mutex
+
+# .sdata:0x8 | size: 0x4
+.obj align_OSMutex, global
+	.4byte 0x00000004
+.endobj align_OSMutex
+
+# .sdata:0xC | size: 0x4
+.obj align_OSCond, global
+	.4byte 0x00000004
+.endobj align_OSCond
+
+# .sdata:0x10 | size: 0x4
+.obj align_OSThreadQueue, global
+	.4byte 0x00000004
+.endobj align_OSThreadQueue

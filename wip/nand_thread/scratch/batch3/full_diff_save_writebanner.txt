@@ -1,0 +1,163 @@
+==== save__13dNandThread_cFv target 95 draft 86
+    0 | want: stwu r1, -0xa0(r1)                             got: stwu r1, -0xa0(r1)
+    1 | want: mflr r0                                        got: mflr r0
+    2 | want: li r4, 0x3c                                    got: li r4, 0x3c
+    3 | want: li r5, 0x0                                     got: li r5, 0x0
+    4 | want: stw r0, 0xa4(r1)                               got: stw r0, 0xa4(r1)
+    5 | want: stw r31, 0x9c(r1)                              got: stw r31, 0x9c(r1)
+**  6 | want: mr r31, r3                                     got: lis r31, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@ha
+    7 | want: stw r30, 0x98(r1)                              got: stw r30, 0x98(r1)
+**  8 | want: lis r30, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@ha got: mr r30, r3
+**  9 | want: addi r3, r30, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l got: addi r3, r31, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l
+   10 | want: bl NANDCreate                                  got: bl NANDCreate
+   11 | want: mr r4, r3                                      got: mr r4, r3
+** 12 | want: mr r3, r31                                     got: mr r3, r30
+   13 | want: bl setNandError__13dNandThread_cFl             got: bl setNandError__13dNandThread_cFl
+** 14 | want: lwz r0, 0x78(r31)                              got: lwz r0, 0x78(r30)
+** 15 | want: cntlzw r0, r0                                  got: cmpwi r0, 0x0
+** 16 | want: srwi. r0, r0, 5                                got: bne .L |408200FC|
+** 17 | want: bne .L |4082000C|                              got: lis r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@ha
+** 18 | want: li r3, 0x1                                     got: addi r3, r31, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l
+** 19 | want: b .L |48000118|                                got: addi r4, r1, 0x8
+** 20 | want: lis r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@ha got: li r5, 0x2
+** 21 | want: addi r3, r30, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l got: addi r6, r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@l
+** 22 | want: addi r4, r1, 0x8                               got: li r7, 0x4000
+** 23 | want: li r5, 0x2                                     got: bl NANDSimpleSafeOpen
+** 24 | want: addi r6, r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@l got: mr r4, r3
+** 25 | want: li r7, 0x4000                                  got: mr r3, r30
+** 26 | want: bl NANDSimpleSafeOpen                          got: bl setNandError__13dNandThread_cFl
+** 27 | want: mr r4, r3                                      got: lwz r0, 0x78(r30)
+** 28 | want: mr r3, r31                                     got: cmpwi r0, 0x0
+** 29 | want: bl setNandError__13dNandThread_cFl             got: bne .L |408200A4|
+** 30 | want: lwz r3, 0x78(r31)                              got: lis r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha
+** 31 | want: cntlzw r0, r3                                  got: addi r3, r1, 0x8
+** 32 | want: srwi. r0, r0, 5                                got: addi r4, r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l
+** 33 | want: bne .L |40820030|                              got: li r5, 0x3fa0
+** 34 | want: subi r0, r3, 0x6                               got: bl NANDWrite
+** 35 | want: cntlzw r0, r0                                  got: cmpwi r3, 0x0
+** 36 | want: srwi. r0, r0, 5                                got: mr r4, r3
+** 37 | want: beq .L |41820018|                              got: bge .L |40800050|
+** 38 | want: addi r3, r1, 0x8                               got: mr r3, r30
+** 39 | want: bl NANDSimpleSafeCancel                        got: bl setNandError__13dNandThread_cFl
+** 40 | want: mr r4, r3                                      got: lwz r0, 0x78(r30)
+** 41 | want: mr r3, r31                                     got: cmpwi r0, 0x0
+** 42 | want: bl setNandError__13dNandThread_cFl             got: beq .L |4182003C|
+** 43 | want: li r3, 0x1                                     got: cmpwi r0, 0x6
+** 44 | want: b .L |480000B4|                                got: beq .L |4182002C|
+** 45 | want: lis r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha got: addi r3, r1, 0x8
+** 46 | want: addi r3, r1, 0x8                               got: bl NANDSimpleSafeCancel
+** 47 | want: addi r4, r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l got: mr r4, r3
+** 48 | want: li r5, 0x3fa0                                  got: mr r3, r30
+** 49 | want: bl NANDWrite                                   got: bl setNandError__13dNandThread_cFl
+** 50 | want: cmpwi r3, 0x0                                  got: lwz r0, 0x78(r30)
+** 51 | want: mr r4, r3                                      got: cmpwi r0, 0x0
+** 52 | want: bge .L |40800060|                              got: bne .L |4082000C|
+** 53 | want: mr r3, r31                                     got: li r3, 0x2
+** 54 | want: bl setNandError__13dNandThread_cFl             got: b .L |48000068|
+** 55 | want: lwz r3, 0x78(r31)                              got: li r3, 0x1
+** 56 | want: cntlzw r0, r3                                  got: b .L |48000060|
+** 57 | want: srwi. r0, r0, 5                                got: addi r3, r1, 0x8
+** 58 | want: bne .L |40820048|                              got: bl NANDSimpleSafeClose
+** 59 | want: subi r0, r3, 0x6                               got: mr r4, r3
+** 60 | want: cntlzw r0, r0                                  got: mr r3, r30
+** 61 | want: srwi. r0, r0, 5                                got: bl setNandError__13dNandThread_cFl
+** 62 | want: beq .L |41820030|                              got: lwz r0, 0x78(r30)
+** 63 | want: addi r3, r1, 0x8                               got: cmpwi r0, 0x0
+** 64 | want: bl NANDSimpleSafeCancel                        got: bne .L |40820010|
+** 65 | want: mr r4, r3                                      got: mr r3, r30
+** 66 | want: mr r3, r31                                     got: bl createBanner__13dNandThread_cFv
+** 67 | want: bl setNandError__13dNandThread_cFl             got: b .L |48000034|
+** 68 | want: lwz r0, 0x78(r31)                              got: li r3, 0x1
+** 69 | want: cntlzw r0, r0                                  got: b .L |4800002C|
+** 70 | want: srwi. r0, r0, 5                                got: cmpwi r0, 0x6
+** 71 | want: beq .L |4182000C|                              got: beq .L |41820018|
+** 72 | want: li r3, 0x2                                     got: addi r3, r1, 0x8
+** 73 | want: b .L |48000040|                                got: bl NANDSimpleSafeCancel
+** 74 | want: li r3, 0x1                                     got: mr r4, r3
+** 75 | want: b .L |48000038|                                got: mr r3, r30
+** 76 | want: addi r3, r1, 0x8                               got: bl setNandError__13dNandThread_cFl
+** 77 | want: bl NANDSimpleSafeClose                         got: li r3, 0x1
+** 78 | want: mr r4, r3                                      got: b .L |48000008|
+** 79 | want: mr r3, r31                                     got: li r3, 0x1
+** 80 | want: bl setNandError__13dNandThread_cFl             got: lwz r0, 0xa4(r1)
+** 81 | want: lwz r0, 0x78(r31)                              got: lwz r31, 0x9c(r1)
+** 82 | want: cntlzw r0, r0                                  got: lwz r30, 0x98(r1)
+** 83 | want: srwi. r0, r0, 5                                got: mtlr r0
+** 84 | want: bne .L |4082000C|                              got: addi r1, r1, 0xa0
+** 85 | want: li r3, 0x1                                     got: blr
+** 86 | want: b .L |4800000C|                                got: <none>
+** 87 | want: mr r3, r31                                     got: <none>
+** 88 | want: bl createBanner__13dNandThread_cFv             got: <none>
+** 89 | want: lwz r0, 0xa4(r1)                               got: <none>
+** 90 | want: lwz r31, 0x9c(r1)                              got: <none>
+** 91 | want: lwz r30, 0x98(r1)                              got: <none>
+** 92 | want: mtlr r0                                        got: <none>
+** 93 | want: addi r1, r1, 0xa0                              got: <none>
+** 94 | want: blr                                            got: <none>
+==== writeBanner__13dNandThread_cFP12NANDFileInfo target 66 draft 63
+    0 | want: stwu r1, -0x20(r1)                             got: stwu r1, -0x20(r1)
+    1 | want: mflr r0                                        got: mflr r0
+    2 | want: stw r0, 0x24(r1)                               got: stw r0, 0x24(r1)
+**  3 | want: addi r11, r1, 0x20                             got: stw r31, 0x1c(r1)
+**  4 | want: bl _savegpr_27                                 got: stw r30, 0x18(r1)
+**  5 | want: lis r27, 0x1                                   got: lis r30, 0x1
+**  6 | want: mr r31, r4                                     got: addi r3, r30, 0x5f91
+**  7 | want: addi r3, r27, 0x5f91                           got: stw r29, 0x14(r1)
+**  8 | want: li r4, 0x1                                     got: stw r28, 0x10(r1)
+**  9 | want: bl getMsg__10dMessage_cFUlUl                   got: mr r28, r4
+** 10 | want: mr r28, r3                                     got: li r4, 0x1
+** 11 | want: addi r3, r27, 0x5f91                           got: bl getMsg__10dMessage_cFUlUl
+** 12 | want: li r4, 0x0                                     got: mr r29, r3
+** 13 | want: bl getMsg__10dMessage_cFUlUl                   got: addi r3, r30, 0x5f91
+** 14 | want: lis r27, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_bannerSYM0"@ha got: li r4, 0x0
+** 15 | want: mr r6, r3                                      got: bl getMsg__10dMessage_cFUlUl
+** 16 | want: mr r5, r28                                     got: lis r31, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"@ha
+** 17 | want: li r4, 0x0                                     got: mr r6, r3
+** 18 | want: addi r3, r27, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_bannerSYM0"@l got: mr r5, r29
+** 19 | want: bl NANDInitBanner                              got: li r4, 0x0
+** 20 | want: lwz r3, m_instance__9dResMng_c@sda21(r0)       got: addi r3, r31, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"@l
+** 21 | want: lis r5, "SYM1"@ha                              got: bl NANDInitBanner
+** 22 | want: lis r28, "SYM2"@ha                             got: lwz r3, m_instance__9dResMng_c@sda21(r0)
+** 23 | want: addi r5, r5, "SYM1"@l                          got: lis r5, "SYM0"@ha
+** 24 | want: addi r3, r3, 0x4                               got: lis r30, "SYM1"@ha
+** 25 | want: addi r4, r28, "SYM2"@l                         got: addi r5, r5, "SYM0"@l
+** 26 | want: bl getRes__6dRes_cCFPCcPCc                     got: addi r3, r3, 0x4
+** 27 | want: lwz r0, 0x1c(r3)                               got: addi r4, r30, "SYM1"@l
+** 28 | want: mr r4, r3                                      got: bl getRes__6dRes_cCFPCcPCc
+** 29 | want: addi r27, r27, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_bannerSYM0"@l got: lwz r0, 0x1c(r3)
+** 30 | want: li r5, 0x6000                                  got: mr r4, r3
+** 31 | want: addi r3, r27, 0xa0                             got: addi r31, r31, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"@l
+** 32 | want: add r4, r4, r0                                 got: li r5, 0x6000
+** 33 | want: bl memcpy                                      got: addi r3, r31, 0xa0
+** 34 | want: lwz r6, m_instance__9dResMng_c@sda21(r0)       got: add r4, r4, r0
+** 35 | want: addi r4, r28, "SYM2"@l                         got: bl memcpy
+** 36 | want: lwz r5, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@c_icon_res"@sda21(r0) got: lwz r3, m_instance__9dResMng_c@sda21(r0)
+** 37 | want: li r30, 0x0                                    got: addi r4, r30, "SYM1"@l
+** 38 | want: addi r3, r6, 0x4                               got: lwz r5, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@c_icon_resSYM2"@sda21(r0)
+** 39 | want: li r28, 0x3                                    got: addi r3, r3, 0x4
+** 40 | want: li r29, 0x2                                    got: bl getRes__6dRes_cCFPCcPCc
+** 41 | want: bl getRes__6dRes_cCFPCcPCc                     got: mr r4, r3
+** 42 | want: mr r4, r3                                      got: addi r3, r31, 0x60a0
+** 43 | want: addi r3, r27, 0x60a0                           got: lwz r0, 0x1c(r4)
+** 44 | want: lwz r0, 0x1c(r4)                               got: li r5, 0x1200
+** 45 | want: li r5, 0x1200                                  got: add r4, r4, r0
+** 46 | want: add r4, r4, r0                                 got: bl memcpy
+** 47 | want: bl memcpy                                      got: lhz r0, 0x8(r31)
+** 48 | want: lhz r4, 0x8(r27)                               got: mr r3, r28
+** 49 | want: slw r3, r28, r30                               got: mr r4, r31
+** 50 | want: slw r0, r29, r30                               got: li r5, 0x72a0
+** 51 | want: li r5, 0x72a0                                  got: clrrwi r0, r0, 2
+** 52 | want: andc r3, r4, r3                                got: ori r0, r0, 0x2
+** 53 | want: mr r4, r27                                     got: sth r0, 0x8(r31)
+** 54 | want: or r0, r3, r0                                  got: bl NANDWrite
+** 55 | want: clrlwi r0, r0, 16                              got: lwz r0, 0x24(r1)
+** 56 | want: mr r3, r31                                     got: lwz r31, 0x1c(r1)
+** 57 | want: rlwinm r0, r0, 0, 30, 27                       got: lwz r30, 0x18(r1)
+** 58 | want: sth r0, 0x8(r27)                               got: lwz r29, 0x14(r1)
+** 59 | want: bl NANDWrite                                   got: lwz r28, 0x10(r1)
+** 60 | want: addi r11, r1, 0x20                             got: mtlr r0
+** 61 | want: bl _restgpr_27                                 got: addi r1, r1, 0x20
+** 62 | want: lwz r0, 0x24(r1)                               got: blr
+** 63 | want: mtlr r0                                        got: <none>
+** 64 | want: addi r1, r1, 0x20                              got: <none>
+** 65 | want: blr                                            got: <none>

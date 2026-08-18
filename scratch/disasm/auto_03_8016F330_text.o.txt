@@ -1,0 +1,414 @@
+.include "macros.inc"
+.file "auto_03_8016F330_text"
+
+# 0x8016F330..0x8016F7B0 | size: 0x480
+.text
+.balign 4
+
+# .text:0x0 | 0x8016F330 | size: 0x30
+# mPad::create()
+.fn create__4mPadFv, global
+/* 8016F330 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016F334 00000044  7C 08 02 A6 */	mflr r0
+/* 8016F338 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016F33C 0000004C  80 00 00 00 */	lwz r0, sInstance__Q23EGG17CoreControllerMgr@sda21(r0)
+/* 8016F340 00000050  90 00 00 00 */	stw r0, g_padMg__4mPad@sda21(r0)
+/* 8016F344 00000054  48 00 00 01 */	bl initWPADInfo__4mPadFv
+/* 8016F348 00000058  48 00 00 01 */	bl beginPad__4mPadFv
+/* 8016F34C 0000005C  48 00 00 01 */	bl endPad__4mPadFv
+/* 8016F350 00000060  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016F354 00000064  7C 08 03 A6 */	mtlr r0
+/* 8016F358 00000068  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016F35C 0000006C  4E 80 00 20 */	blr
+.endfn create__4mPadFv
+
+# .text:0x30 | 0x8016F360 | size: 0x1E4
+# mPad::beginPad()
+.fn beginPad__4mPadFv, global
+/* 8016F360 00000070  94 21 FF B0 */	stwu r1, -0x50(r1)
+/* 8016F364 00000074  7C 08 02 A6 */	mflr r0
+/* 8016F368 00000078  90 01 00 54 */	stw r0, 0x54(r1)
+/* 8016F36C 0000007C  39 61 00 40 */	addi r11, r1, 0x40
+/* 8016F370 00000080  DB E1 00 40 */	stfd f31, 0x40(r1)
+/* 8016F374 00000084  F3 E1 00 48 */	psq_st f31, 0x48(r1), 0, qr0
+/* 8016F378 00000088  48 00 00 01 */	bl _savegpr_25
+/* 8016F37C 0000008C  80 80 00 00 */	lwz r4, g_PadFrame__4mPad@sda21(r0)
+/* 8016F380 00000090  80 60 00 00 */	lwz r3, g_padMg__4mPad@sda21(r0)
+/* 8016F384 00000094  38 04 00 01 */	addi r0, r4, 0x1
+/* 8016F388 00000098  90 00 00 00 */	stw r0, g_PadFrame__4mPad@sda21(r0)
+/* 8016F38C 0000009C  81 83 00 10 */	lwz r12, 0x10(r3)
+/* 8016F390 000000A0  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 8016F394 000000A4  7D 89 03 A6 */	mtctr r12
+/* 8016F398 000000A8  4E 80 04 21 */	bctrl
+/* 8016F39C 000000AC  3F 80 00 00 */	lis r28, g_core__4mPad@ha
+/* 8016F3A0 000000B0  3F 60 00 00 */	lis r27, g_PadAdditionalData__4mPad@ha
+/* 8016F3A4 000000B4  C3 E0 00 00 */	lfs f31, "@14502_8042E010"@sda21(r0)
+/* 8016F3A8 000000B8  3B 9C 00 00 */	addi r28, r28, g_core__4mPad@l
+/* 8016F3AC 000000BC  3B 7B 00 00 */	addi r27, r27, g_PadAdditionalData__4mPad@l
+/* 8016F3B0 000000C0  3B 20 00 00 */	li r25, 0x0
+/* 8016F3B4 000000C4  3B 40 00 00 */	li r26, g_IsConnected__4mPad@sda21
+/* 8016F3B8 000000C8  3B C0 00 01 */	li r30, 0x1
+/* 8016F3BC 000000CC  3B E0 00 00 */	li r31, 0x0
+.L_8016F3C0:
+/* 8016F3C0 000000D0  80 60 00 00 */	lwz r3, g_padMg__4mPad@sda21(r0)
+/* 8016F3C4 000000D4  7F 24 CB 78 */	mr r4, r25
+/* 8016F3C8 000000D8  48 00 00 01 */	bl getNthController__Q23EGG17CoreControllerMgrFi
+/* 8016F3CC 000000DC  90 7C 00 00 */	stw r3, 0x0(r28)
+/* 8016F3D0 000000E0  7C 7D 1B 78 */	mr r29, r3
+/* 8016F3D4 000000E4  88 03 0B 1C */	lbz r0, 0xb1c(r3)
+/* 8016F3D8 000000E8  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 8016F3DC 000000EC  41 82 00 B0 */	beq .L_8016F48C
+/* 8016F3E0 000000F0  C0 43 00 70 */	lfs f2, 0x70(r3)
+/* 8016F3E4 000000F4  C0 3B 00 04 */	lfs f1, 0x4(r27)
+/* 8016F3E8 000000F8  C0 63 00 6C */	lfs f3, 0x6c(r3)
+/* 8016F3EC 000000FC  C0 1B 00 00 */	lfs f0, 0x0(r27)
+/* 8016F3F0 00000100  EC 82 08 28 */	fsubs f4, f2, f1
+/* 8016F3F4 00000104  88 1A 00 00 */	lbz r0, 0x0(r26)
+/* 8016F3F8 00000108  D0 7B 00 00 */	stfs f3, 0x0(r27)
+/* 8016F3FC 0000010C  EC A3 00 28 */	fsubs f5, f3, f0
+/* 8016F400 00000110  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016F404 00000114  D0 5B 00 04 */	stfs f2, 0x4(r27)
+/* 8016F408 00000118  C0 1B 00 08 */	lfs f0, 0x8(r27)
+/* 8016F40C 0000011C  C0 3B 00 0C */	lfs f1, 0xc(r27)
+/* 8016F410 00000120  EC C5 00 28 */	fsubs f6, f5, f0
+/* 8016F414 00000124  D0 61 00 18 */	stfs f3, 0x18(r1)
+/* 8016F418 00000128  EC 04 08 28 */	fsubs f0, f4, f1
+/* 8016F41C 0000012C  D0 DB 00 10 */	stfs f6, 0x10(r27)
+/* 8016F420 00000130  D0 1B 00 14 */	stfs f0, 0x14(r27)
+/* 8016F424 00000134  D0 BB 00 08 */	stfs f5, 0x8(r27)
+/* 8016F428 00000138  D0 41 00 1C */	stfs f2, 0x1c(r1)
+/* 8016F42C 0000013C  D0 A1 00 10 */	stfs f5, 0x10(r1)
+/* 8016F430 00000140  D0 81 00 14 */	stfs f4, 0x14(r1)
+/* 8016F434 00000144  D0 C1 00 08 */	stfs f6, 0x8(r1)
+/* 8016F438 00000148  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 8016F43C 0000014C  D0 9B 00 0C */	stfs f4, 0xc(r27)
+/* 8016F440 00000150  40 82 00 08 */	bne .L_8016F448
+/* 8016F444 00000154  9B DA 00 00 */	stb r30, 0x0(r26)
+.L_8016F448:
+/* 8016F448 00000158  80 00 00 00 */	lwz r0, s_GetWPADInfoInterval__4mPad@sda21(r0)
+/* 8016F44C 0000015C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016F450 00000160  41 82 00 7C */	beq .L_8016F4CC
+/* 8016F454 00000164  28 00 00 01 */	cmplwi r0, 0x1
+/* 8016F458 00000168  41 82 00 28 */	beq .L_8016F480
+/* 8016F45C 0000016C  80 60 00 00 */	lwz r3, s_GetWPADInfoCount__4mPad@sda21(r0)
+/* 8016F460 00000170  7C 03 C8 40 */	cmplw r3, r25
+/* 8016F464 00000174  41 82 00 1C */	beq .L_8016F480
+/* 8016F468 00000178  28 00 00 03 */	cmplwi r0, 0x3
+/* 8016F46C 0000017C  41 81 00 60 */	bgt .L_8016F4CC
+/* 8016F470 00000180  54 63 07 FE */	clrlwi r3, r3, 31
+/* 8016F474 00000184  57 20 07 FE */	clrlwi r0, r25, 31
+/* 8016F478 00000188  7C 03 00 40 */	cmplw r3, r0
+/* 8016F47C 0000018C  40 82 00 50 */	bne .L_8016F4CC
+.L_8016F480:
+/* 8016F480 00000190  7F 23 CB 78 */	mr r3, r25
+/* 8016F484 00000194  48 00 00 01 */	bl getWPADInfoAsync__4mPadFQ24mPad4CH_e
+/* 8016F488 00000198  48 00 00 44 */	b .L_8016F4CC
+.L_8016F48C:
+/* 8016F48C 0000019C  88 1A 00 00 */	lbz r0, 0x0(r26)
+/* 8016F490 000001A0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016F494 000001A4  41 82 00 38 */	beq .L_8016F4CC
+/* 8016F498 000001A8  38 63 00 18 */	addi r3, r3, 0x18
+/* 8016F49C 000001AC  48 00 00 01 */	bl init__Q23EGG10CoreStatusFv
+/* 8016F4A0 000001B0  7F A3 EB 78 */	mr r3, r29
+/* 8016F4A4 000001B4  48 00 00 01 */	bl sceneReset__Q23EGG14CoreControllerFv
+/* 8016F4A8 000001B8  D3 FB 00 00 */	stfs f31, 0x0(r27)
+/* 8016F4AC 000001BC  7F 23 CB 78 */	mr r3, r25
+/* 8016F4B0 000001C0  D3 FB 00 04 */	stfs f31, 0x4(r27)
+/* 8016F4B4 000001C4  D3 FB 00 10 */	stfs f31, 0x10(r27)
+/* 8016F4B8 000001C8  D3 FB 00 14 */	stfs f31, 0x14(r27)
+/* 8016F4BC 000001CC  D3 FB 00 08 */	stfs f31, 0x8(r27)
+/* 8016F4C0 000001D0  D3 FB 00 0C */	stfs f31, 0xc(r27)
+/* 8016F4C4 000001D4  48 00 00 01 */	bl clearWPADInfo__4mPadFQ24mPad4CH_e
+/* 8016F4C8 000001D8  9B FA 00 00 */	stb r31, 0x0(r26)
+.L_8016F4CC:
+/* 8016F4CC 000001DC  3B 39 00 01 */	addi r25, r25, 0x1
+/* 8016F4D0 000001E0  3B 7B 00 18 */	addi r27, r27, 0x18
+/* 8016F4D4 000001E4  2C 19 00 04 */	cmpwi r25, 0x4
+/* 8016F4D8 000001E8  3B 5A 00 01 */	addi r26, r26, 0x1
+/* 8016F4DC 000001EC  3B 9C 00 04 */	addi r28, r28, 0x4
+/* 8016F4E0 000001F0  41 80 FE E0 */	blt .L_8016F3C0
+/* 8016F4E4 000001F4  80 80 00 00 */	lwz r4, s_GetWPADInfoInterval__4mPad@sda21(r0)
+/* 8016F4E8 000001F8  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8016F4EC 000001FC  41 82 00 20 */	beq .L_8016F50C
+/* 8016F4F0 00000200  80 60 00 00 */	lwz r3, s_GetWPADInfoCount__4mPad@sda21(r0)
+/* 8016F4F4 00000204  38 03 00 01 */	addi r0, r3, 0x1
+/* 8016F4F8 00000208  90 00 00 00 */	stw r0, s_GetWPADInfoCount__4mPad@sda21(r0)
+/* 8016F4FC 0000020C  7C 00 20 40 */	cmplw r0, r4
+/* 8016F500 00000210  40 81 00 0C */	ble .L_8016F50C
+/* 8016F504 00000214  38 00 00 00 */	li r0, 0x0
+/* 8016F508 00000218  90 00 00 00 */	stw r0, s_GetWPADInfoCount__4mPad@sda21(r0)
+.L_8016F50C:
+/* 8016F50C 0000021C  80 00 00 00 */	lwz r0, g_currentCoreID__4mPad@sda21(r0)
+/* 8016F510 00000220  3C 60 00 00 */	lis r3, g_core__4mPad@ha
+/* 8016F514 00000224  38 63 00 00 */	addi r3, r3, g_core__4mPad@l
+/* 8016F518 00000228  54 00 10 3A */	slwi r0, r0, 2
+/* 8016F51C 0000022C  7C 03 00 2E */	lwzx r0, r3, r0
+/* 8016F520 00000230  90 00 00 00 */	stw r0, g_currentCore__4mPad@sda21(r0)
+/* 8016F524 00000234  E3 E1 00 48 */	psq_l f31, 0x48(r1), 0, qr0
+/* 8016F528 00000238  CB E1 00 40 */	lfd f31, 0x40(r1)
+/* 8016F52C 0000023C  39 61 00 40 */	addi r11, r1, 0x40
+/* 8016F530 00000240  48 00 00 01 */	bl _restgpr_25
+/* 8016F534 00000244  80 01 00 54 */	lwz r0, 0x54(r1)
+/* 8016F538 00000248  7C 08 03 A6 */	mtlr r0
+/* 8016F53C 0000024C  38 21 00 50 */	addi r1, r1, 0x50
+/* 8016F540 00000250  4E 80 00 20 */	blr
+.endfn beginPad__4mPadFv
+
+# .text:0x214 | 0x8016F544 | size: 0xC
+.fn gap_03_8016F544_text, global
+.hidden gap_03_8016F544_text
+/* 8016F544 00000254  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F548 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F54C 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F544_text
+
+# .text:0x220 | 0x8016F550 | size: 0x14
+# mPad::endPad()
+.fn endPad__4mPadFv, global
+/* 8016F550 00000260  80 60 00 00 */	lwz r3, g_padMg__4mPad@sda21(r0)
+/* 8016F554 00000264  81 83 00 10 */	lwz r12, 0x10(r3)
+/* 8016F558 00000268  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8016F55C 0000026C  7D 89 03 A6 */	mtctr r12
+/* 8016F560 00000270  4E 80 04 20 */	bctr
+.endfn endPad__4mPadFv
+
+# .text:0x234 | 0x8016F564 | size: 0xC
+.fn gap_03_8016F564_text, global
+.hidden gap_03_8016F564_text
+/* 8016F564 00000274  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F568 00000278  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F56C 0000027C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F564_text
+
+# .text:0x240 | 0x8016F570 | size: 0x24
+# mPad::setCurrentChannel(mPad::CH_e)
+.fn setCurrentChannel__4mPadFQ24mPad4CH_e, global
+/* 8016F570 00000280  7C 65 1B 78 */	mr r5, r3
+/* 8016F574 00000284  3C 80 00 00 */	lis r4, g_core__4mPad@ha
+/* 8016F578 00000288  80 60 00 00 */	lwz r3, g_currentCoreID__4mPad@sda21(r0)
+/* 8016F57C 0000028C  54 A0 10 3A */	slwi r0, r5, 2
+/* 8016F580 00000290  38 84 00 00 */	addi r4, r4, g_core__4mPad@l
+/* 8016F584 00000294  7C 04 00 2E */	lwzx r0, r4, r0
+/* 8016F588 00000298  90 A0 00 00 */	stw r5, g_currentCoreID__4mPad@sda21(r0)
+/* 8016F58C 0000029C  90 00 00 00 */	stw r0, g_currentCore__4mPad@sda21(r0)
+/* 8016F590 000002A0  4E 80 00 20 */	blr
+.endfn setCurrentChannel__4mPadFQ24mPad4CH_e
+
+# .text:0x264 | 0x8016F594 | size: 0xC
+.fn gap_03_8016F594_text, global
+.hidden gap_03_8016F594_text
+/* 8016F594 000002A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F598 000002A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F59C 000002AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F594_text
+
+# .text:0x270 | 0x8016F5A0 | size: 0x30
+# mPad::getBatteryLevel_ch(mPad::CH_e)
+.fn getBatteryLevel_ch__4mPadFQ24mPad4CH_e, global
+/* 8016F5A0 000002B0  38 80 00 00 */	li r4, s_WPADInfoAvailable__4mPad@sda21
+/* 8016F5A4 000002B4  7C 04 18 AE */	lbzx r0, r4, r3
+/* 8016F5A8 000002B8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016F5AC 000002BC  41 82 00 1C */	beq .L_8016F5C8
+/* 8016F5B0 000002C0  1C 03 00 18 */	mulli r0, r3, 0x18
+/* 8016F5B4 000002C4  3C 60 00 00 */	lis r3, s_WPADInfo__4mPad@ha
+/* 8016F5B8 000002C8  38 63 00 00 */	addi r3, r3, s_WPADInfo__4mPad@l
+/* 8016F5BC 000002CC  7C 63 02 14 */	add r3, r3, r0
+/* 8016F5C0 000002D0  88 63 00 14 */	lbz r3, 0x14(r3)
+/* 8016F5C4 000002D4  4E 80 00 20 */	blr
+.L_8016F5C8:
+/* 8016F5C8 000002D8  38 60 FF FF */	li r3, -0x1
+/* 8016F5CC 000002DC  4E 80 00 20 */	blr
+.endfn getBatteryLevel_ch__4mPadFQ24mPad4CH_e
+
+# .text:0x2A0 | 0x8016F5D0 | size: 0x68
+# mPad::setWPADInfo(mPad::CH_e, const WPADInfo&)
+.fn setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo, global
+/* 8016F5D0 000002E0  1D 03 00 18 */	mulli r8, r3, 0x18
+/* 8016F5D4 000002E4  3C E0 00 00 */	lis r7, s_WPADInfo__4mPad@ha
+/* 8016F5D8 000002E8  80 04 00 00 */	lwz r0, 0x0(r4)
+/* 8016F5DC 000002EC  38 A0 00 00 */	li r5, s_WPADInfoAvailable__4mPad@sda21
+/* 8016F5E0 000002F0  38 E7 00 00 */	addi r7, r7, s_WPADInfo__4mPad@l
+/* 8016F5E4 000002F4  80 C4 00 04 */	lwz r6, 0x4(r4)
+/* 8016F5E8 000002F8  7C 07 41 2E */	stwx r0, r7, r8
+/* 8016F5EC 000002FC  7D 07 42 14 */	add r8, r7, r8
+/* 8016F5F0 00000300  38 00 00 01 */	li r0, 0x1
+/* 8016F5F4 00000304  80 E4 00 08 */	lwz r7, 0x8(r4)
+/* 8016F5F8 00000308  90 C8 00 04 */	stw r6, 0x4(r8)
+/* 8016F5FC 0000030C  80 C4 00 0C */	lwz r6, 0xc(r4)
+/* 8016F600 00000310  90 E8 00 08 */	stw r7, 0x8(r8)
+/* 8016F604 00000314  80 E4 00 10 */	lwz r7, 0x10(r4)
+/* 8016F608 00000318  90 C8 00 0C */	stw r6, 0xc(r8)
+/* 8016F60C 0000031C  88 C4 00 14 */	lbz r6, 0x14(r4)
+/* 8016F610 00000320  90 E8 00 10 */	stw r7, 0x10(r8)
+/* 8016F614 00000324  88 E4 00 15 */	lbz r7, 0x15(r4)
+/* 8016F618 00000328  98 C8 00 14 */	stb r6, 0x14(r8)
+/* 8016F61C 0000032C  88 C4 00 16 */	lbz r6, 0x16(r4)
+/* 8016F620 00000330  98 E8 00 15 */	stb r7, 0x15(r8)
+/* 8016F624 00000334  88 84 00 17 */	lbz r4, 0x17(r4)
+/* 8016F628 00000338  98 C8 00 16 */	stb r6, 0x16(r8)
+/* 8016F62C 0000033C  98 88 00 17 */	stb r4, 0x17(r8)
+/* 8016F630 00000340  7C 05 19 AE */	stbx r0, r5, r3
+/* 8016F634 00000344  4E 80 00 20 */	blr
+.endfn setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo
+
+# .text:0x308 | 0x8016F638 | size: 0x8
+.fn gap_03_8016F638_text, global
+.hidden gap_03_8016F638_text
+/* 8016F638 00000348  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F63C 0000034C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F638_text
+
+# .text:0x310 | 0x8016F640 | size: 0x44
+# mPad::clearWPADInfo(mPad::CH_e)
+.fn clearWPADInfo__4mPadFQ24mPad4CH_e, global
+/* 8016F640 00000350  1C A3 00 18 */	mulli r5, r3, 0x18
+/* 8016F644 00000354  3C 80 00 00 */	lis r4, s_WPADInfo__4mPad@ha
+/* 8016F648 00000358  38 00 00 00 */	li r0, 0x0
+/* 8016F64C 0000035C  38 84 00 00 */	addi r4, r4, s_WPADInfo__4mPad@l
+/* 8016F650 00000360  7C 04 29 2E */	stwx r0, r4, r5
+/* 8016F654 00000364  7C 84 2A 14 */	add r4, r4, r5
+/* 8016F658 00000368  38 A0 00 00 */	li r5, s_WPADInfoAvailable__4mPad@sda21
+/* 8016F65C 0000036C  90 04 00 04 */	stw r0, 0x4(r4)
+/* 8016F660 00000370  90 04 00 08 */	stw r0, 0x8(r4)
+/* 8016F664 00000374  90 04 00 0C */	stw r0, 0xc(r4)
+/* 8016F668 00000378  90 04 00 10 */	stw r0, 0x10(r4)
+/* 8016F66C 0000037C  98 04 00 14 */	stb r0, 0x14(r4)
+/* 8016F670 00000380  98 04 00 15 */	stb r0, 0x15(r4)
+/* 8016F674 00000384  98 04 00 16 */	stb r0, 0x16(r4)
+/* 8016F678 00000388  7C 05 19 AE */	stbx r0, r5, r3
+/* 8016F67C 0000038C  98 04 00 17 */	stb r0, 0x17(r4)
+/* 8016F680 00000390  4E 80 00 20 */	blr
+.endfn clearWPADInfo__4mPadFQ24mPad4CH_e
+
+# .text:0x354 | 0x8016F684 | size: 0xC
+.fn gap_03_8016F684_text, global
+.hidden gap_03_8016F684_text
+/* 8016F684 00000394  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F688 00000398  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F68C 0000039C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F684_text
+
+# .text:0x360 | 0x8016F690 | size: 0x3C
+# mPad::initWPADInfo()
+.fn initWPADInfo__4mPadFv, global
+/* 8016F690 000003A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016F694 000003A4  7C 08 02 A6 */	mflr r0
+/* 8016F698 000003A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016F69C 000003AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016F6A0 000003B0  3B E0 00 00 */	li r31, 0x0
+.L_8016F6A4:
+/* 8016F6A4 000003B4  7F E3 FB 78 */	mr r3, r31
+/* 8016F6A8 000003B8  48 00 00 01 */	bl clearWPADInfo__4mPadFQ24mPad4CH_e
+/* 8016F6AC 000003BC  3B FF 00 01 */	addi r31, r31, 0x1
+/* 8016F6B0 000003C0  2C 1F 00 04 */	cmpwi r31, 0x4
+/* 8016F6B4 000003C4  41 80 FF F0 */	blt .L_8016F6A4
+/* 8016F6B8 000003C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016F6BC 000003CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016F6C0 000003D0  7C 08 03 A6 */	mtlr r0
+/* 8016F6C4 000003D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016F6C8 000003D8  4E 80 00 20 */	blr
+.endfn initWPADInfo__4mPadFv
+
+# .text:0x39C | 0x8016F6CC | size: 0x4
+.fn gap_03_8016F6CC_text, global
+.hidden gap_03_8016F6CC_text
+/* 8016F6CC 000003DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F6CC_text
+
+# .text:0x3A0 | 0x8016F6D0 | size: 0x3C
+.fn getWPADInfoCb, global
+/* 8016F6D0 000003E0  80 00 00 00 */	lwz r0, s_GetWPADInfoInterval__4mPad@sda21(r0)
+/* 8016F6D4 000003E4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8016F6D8 000003E8  4D 82 00 20 */	beqlr
+/* 8016F6DC 000003EC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8016F6E0 000003F0  41 82 00 10 */	beq .L_8016F6F0
+/* 8016F6E4 000003F4  2C 04 FF FF */	cmpwi r4, -0x1
+/* 8016F6E8 000003F8  41 82 00 1C */	beq .L_8016F704
+/* 8016F6EC 000003FC  4E 80 00 20 */	blr
+.L_8016F6F0:
+/* 8016F6F0 00000400  1C 03 00 18 */	mulli r0, r3, 0x18
+/* 8016F6F4 00000404  3C 80 00 00 */	lis r4, s_WPADInfoTmp__4mPad@ha
+/* 8016F6F8 00000408  38 84 00 00 */	addi r4, r4, s_WPADInfoTmp__4mPad@l
+/* 8016F6FC 0000040C  7C 84 02 14 */	add r4, r4, r0
+/* 8016F700 00000410  48 00 00 00 */	b setWPADInfo__4mPadFQ24mPad4CH_eRC8WPADInfo
+.L_8016F704:
+/* 8016F704 00000414  48 00 00 00 */	b clearWPADInfo__4mPadFQ24mPad4CH_e
+/* 8016F708 00000418  4E 80 00 20 */	blr
+.endfn getWPADInfoCb
+
+# .text:0x3DC | 0x8016F70C | size: 0x4
+.fn gap_03_8016F70C_text, global
+.hidden gap_03_8016F70C_text
+/* 8016F70C 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F70C_text
+
+# .text:0x3E0 | 0x8016F710 | size: 0x64
+# mPad::getWPADInfoAsync(mPad::CH_e)
+.fn getWPADInfoAsync__4mPadFQ24mPad4CH_e, global
+/* 8016F710 00000420  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016F714 00000424  7C 08 02 A6 */	mflr r0
+/* 8016F718 00000428  3C 80 00 00 */	lis r4, s_WPADInfoTmp__4mPad@ha
+/* 8016F71C 0000042C  3C A0 00 00 */	lis r5, getWPADInfoCb@ha
+/* 8016F720 00000430  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016F724 00000434  1C 03 00 18 */	mulli r0, r3, 0x18
+/* 8016F728 00000438  38 84 00 00 */	addi r4, r4, s_WPADInfoTmp__4mPad@l
+/* 8016F72C 0000043C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016F730 00000440  38 A5 00 00 */	addi r5, r5, getWPADInfoCb@l
+/* 8016F734 00000444  7C 84 02 14 */	add r4, r4, r0
+/* 8016F738 00000448  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8016F73C 0000044C  7C 7E 1B 78 */	mr r30, r3
+/* 8016F740 00000450  48 00 00 01 */	bl WPADGetInfoAsync
+/* 8016F744 00000454  2C 03 FF FF */	cmpwi r3, -0x1
+/* 8016F748 00000458  7C 7F 1B 78 */	mr r31, r3
+/* 8016F74C 0000045C  40 82 00 0C */	bne .L_8016F758
+/* 8016F750 00000460  7F C3 F3 78 */	mr r3, r30
+/* 8016F754 00000464  48 00 00 01 */	bl clearWPADInfo__4mPadFQ24mPad4CH_e
+.L_8016F758:
+/* 8016F758 00000468  7F E3 FB 78 */	mr r3, r31
+/* 8016F75C 0000046C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016F760 00000470  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8016F764 00000474  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016F768 00000478  7C 08 03 A6 */	mtlr r0
+/* 8016F76C 0000047C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016F770 00000480  4E 80 00 20 */	blr
+.endfn getWPADInfoAsync__4mPadFQ24mPad4CH_e
+
+# .text:0x444 | 0x8016F774 | size: 0xC
+.fn gap_03_8016F774_text, global
+.hidden gap_03_8016F774_text
+/* 8016F774 00000484  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F778 00000488  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F77C 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F774_text
+
+# .text:0x450 | 0x8016F780 | size: 0x14
+# mPad::setGetWPADInfoInterval(unsigned long)
+.fn setGetWPADInfoInterval__4mPadFUl, global
+/* 8016F780 00000490  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016F784 00000494  90 60 00 00 */	stw r3, s_GetWPADInfoInterval__4mPad@sda21(r0)
+/* 8016F788 00000498  4C 82 00 20 */	bnelr
+/* 8016F78C 0000049C  48 00 00 00 */	b initWPADInfo__4mPadFv
+/* 8016F790 000004A0  4E 80 00 20 */	blr
+.endfn setGetWPADInfoInterval__4mPadFUl
+
+# .text:0x464 | 0x8016F794 | size: 0xC
+.fn gap_03_8016F794_text, global
+.hidden gap_03_8016F794_text
+/* 8016F794 000004A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F798 000004A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F79C 000004AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F794_text
+
+# .text:0x470 | 0x8016F7A0 | size: 0x8
+# mPad::getGetWPADInfoInterval()
+.fn getGetWPADInfoInterval__4mPadFv, global
+/* 8016F7A0 000004B0  80 60 00 00 */	lwz r3, s_GetWPADInfoInterval__4mPad@sda21(r0)
+/* 8016F7A4 000004B4  4E 80 00 20 */	blr
+.endfn getGetWPADInfoInterval__4mPadFv
+
+# .text:0x478 | 0x8016F7A8 | size: 0x8
+.fn gap_03_8016F7A8_text, global
+.hidden gap_03_8016F7A8_text
+/* 8016F7A8 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016F7AC 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016F7A8_text

@@ -1,0 +1,62 @@
+.include "macros.inc"
+.file "bss_align2.cpp"
+
+# 0x00000000..0x00000080 | size: 0x80
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0xC
+.obj n0, global
+	.skip 0xC
+.endobj n0
+
+# .bss:0xC | size: 0xC
+.obj n1, global
+	.skip 0xC
+.endobj n1
+
+# .bss:0x18 | size: 0xC
+.obj n2, global
+	.skip 0xC
+.endobj n2
+	.skip 0x4
+
+# .bss:0x28 | size: 0x10
+.obj a10, global
+	.skip 0x10
+.endobj a10
+
+# .bss:0x38 | size: 0xC
+.obj n3, global
+	.skip 0xC
+.endobj n3
+
+# .bss:0x44 | size: 0x14
+.obj a14, global
+	.skip 0x14
+.endobj a14
+
+# .bss:0x58 | size: 0xC
+.obj n4, global
+	.skip 0xC
+.endobj n4
+	.skip 0x4
+
+# .bss:0x68 | size: 0x18
+.obj a18, global
+	.skip 0x18
+.endobj a18
+
+# 0x00000000..0x0000000C | size: 0xC
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | size: 0x8
+.obj a8, global
+	.skip 0x8
+.endobj a8
+
+# .sbss:0x8 | size: 0x4
+.obj a4, global
+	.skip 0x4
+.endobj a4

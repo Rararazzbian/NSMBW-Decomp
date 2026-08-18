@@ -1,0 +1,848 @@
+# PauseManager_c::PauseManager_c()
+.fn __ct__14PauseManager_cFv, global
+/* 800D0A90 000000D8  3C 80 00 00 */	lis r4, __vt__14PauseManager_c@ha
+/* 800D0A94 000000DC  38 00 00 00 */	li r0, 0x0
+/* 800D0A98 000000E0  38 84 00 00 */	addi r4, r4, __vt__14PauseManager_c@l
+/* 800D0A9C 000000E4  90 83 00 00 */	stw r4, 0x0(r3)
+/* 800D0AA0 000000E8  98 03 00 18 */	stb r0, 0x18(r3)
+/* 800D0AA4 000000EC  90 60 00 00 */	stw r3, m_instance__14PauseManager_c@sda21(r0)
+/* 800D0AA8 000000F0  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D0AAC 000000F4  98 03 00 1A */	stb r0, 0x1a(r3)
+/* 800D0AB0 000000F8  4E 80 00 20 */	blr
+.endfn __ct__14PauseManager_cFv
+
+# .text:0xBC | 0x800D0AB4 | size: 0xC
+# PauseManager_c::~PauseManager_c()
+.fn __dt__14PauseManager_cFv, global
+/* 800D0AC0 00000108  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D0AC4 0000010C  7C 08 02 A6 */	mflr r0
+/* 800D0AC8 00000110  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0ACC 00000114  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D0AD0 00000118  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800D0AD4 0000011C  7C 7F 1B 78 */	mr r31, r3
+/* 800D0AD8 00000120  41 82 00 1C */	beq .L_800D0AF4
+/* 800D0ADC 00000124  2C 04 00 00 */	cmpwi r4, 0x0
+/* 800D0AE0 00000128  38 00 00 00 */	li r0, 0x0
+/* 800D0AE4 0000012C  90 00 00 00 */	stw r0, m_instance__14PauseManager_c@sda21(r0)
+/* 800D0AE8 00000130  98 00 00 00 */	stb r0, m_Created__14PauseManager_c@sda21(r0)
+/* 800D0AEC 00000134  40 81 00 08 */	ble .L_800D0AF4
+/* 800D0AF0 00000138  48 00 00 01 */	bl __dl__FPv
+.L_800D0AF4:
+/* 800D0AF4 0000013C  7F E3 FB 78 */	mr r3, r31
+/* 800D0AF8 00000140  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800D0AFC 00000144  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D0B00 00000148  7C 08 03 A6 */	mtlr r0
+/* 800D0B04 0000014C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D0B08 00000150  4E 80 00 20 */	blr
+.endfn __dt__14PauseManager_cFv
+
+# .text:0x114 | 0x800D0B0C | size: 0x4
+# PauseManager_c::CourseHoinitialize()
+.fn CourseHoinitialize__14PauseManager_cFv, global
+/* 800D0B10 00000158  80 80 00 00 */	lwz r4, m_gameMode__10dScStage_c@sda21(r0)
+/* 800D0B14 0000015C  38 00 00 00 */	li r0, 0x0
+/* 800D0B18 00000160  38 84 FF FF */	subi r4, r4, 0x1
+/* 800D0B1C 00000164  7C 84 00 34 */	cntlzw r4, r4
+/* 800D0B20 00000168  54 84 D9 7E */	srwi r4, r4, 5
+/* 800D0B24 0000016C  98 80 00 00 */	stb r4, m_OtasukeAfter__14PauseManager_c@sda21(r0)
+/* 800D0B28 00000170  98 03 00 1D */	stb r0, 0x1d(r3)
+/* 800D0B2C 00000174  4E 80 00 20 */	blr
+.endfn CourseHoinitialize__14PauseManager_cFv
+
+# .text:0x138 | 0x800D0B30 | size: 0x2C
+# PauseManager_c::initialize()
+.fn initialize__14PauseManager_cFv, global
+/* 800D0B30 00000178  38 80 00 00 */	li r4, 0x0
+/* 800D0B34 0000017C  98 83 00 18 */	stb r4, 0x18(r3)
+/* 800D0B38 00000180  38 00 00 01 */	li r0, 0x1
+/* 800D0B3C 00000184  90 83 00 04 */	stw r4, 0x4(r3)
+/* 800D0B40 00000188  90 83 00 08 */	stw r4, 0x8(r3)
+/* 800D0B44 0000018C  98 83 00 19 */	stb r4, 0x19(r3)
+/* 800D0B48 00000190  98 00 00 00 */	stb r0, m_Created__14PauseManager_c@sda21(r0)
+/* 800D0B4C 00000194  98 80 00 00 */	stb r4, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D0B50 00000198  98 83 00 1B */	stb r4, 0x1b(r3)
+/* 800D0B54 0000019C  98 83 00 1C */	stb r4, 0x1c(r3)
+/* 800D0B58 000001A0  4E 80 00 20 */	blr
+.endfn initialize__14PauseManager_cFv
+
+# .text:0x164 | 0x800D0B5C | size: 0x4
+# PauseManager_c::execute()
+.fn execute__14PauseManager_cFv, global
+/* 800D0B60 000001A8  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800D0B64 000001AC  7C 08 02 A6 */	mflr r0
+/* 800D0B68 000001B0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800D0B6C 000001B4  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800D0B70 000001B8  7C 7F 1B 78 */	mr r31, r3
+/* 800D0B74 000001BC  48 00 00 01 */	bl isWarning__17dWarningManager_cFv
+/* 800D0B78 000001C0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0B7C 000001C4  40 82 00 74 */	bne .L_800D0BF0
+/* 800D0B80 000001C8  88 1F 00 18 */	lbz r0, 0x18(r31)
+/* 800D0B84 000001CC  54 00 07 7B */	rlwinm. r0, r0, 0, 29, 29
+/* 800D0B88 000001D0  41 82 00 1C */	beq .L_800D0BA4
+/* 800D0B8C 000001D4  88 7F 00 18 */	lbz r3, 0x18(r31)
+/* 800D0B90 000001D8  38 00 00 01 */	li r0, 0x1
+/* 800D0B94 000001DC  60 63 00 01 */	ori r3, r3, 0x1
+/* 800D0B98 000001E0  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D0B9C 000001E4  70 60 00 FB */	andi. r0, r3, 0xfb
+/* 800D0BA0 000001E8  98 1F 00 18 */	stb r0, 0x18(r31)
+.L_800D0BA4:
+/* 800D0BA4 000001EC  80 1F 00 04 */	lwz r0, 0x4(r31)
+/* 800D0BA8 000001F0  3C 80 00 00 */	lis r4, "@LOCAL@execute__14PauseManager_cFv@MainProc_tbl"@ha
+/* 800D0BAC 000001F4  38 84 00 00 */	addi r4, r4, "@LOCAL@execute__14PauseManager_cFv@MainProc_tbl"@l
+/* 800D0BB0 000001F8  38 61 00 08 */	addi r3, r1, 0x8
+/* 800D0BB4 000001FC  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 800D0BB8 00000200  7C C4 02 14 */	add r6, r4, r0
+/* 800D0BBC 00000204  7C A4 00 2E */	lwzx r5, r4, r0
+/* 800D0BC0 00000208  80 86 00 04 */	lwz r4, 0x4(r6)
+/* 800D0BC4 0000020C  80 06 00 08 */	lwz r0, 0x8(r6)
+/* 800D0BC8 00000210  90 A1 00 08 */	stw r5, 0x8(r1)
+/* 800D0BCC 00000214  90 81 00 0C */	stw r4, 0xc(r1)
+/* 800D0BD0 00000218  90 01 00 10 */	stw r0, 0x10(r1)
+/* 800D0BD4 0000021C  48 00 00 01 */	bl __ptmf_test
+/* 800D0BD8 00000220  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0BDC 00000224  41 82 00 14 */	beq .L_800D0BF0
+/* 800D0BE0 00000228  7F E3 FB 78 */	mr r3, r31
+/* 800D0BE4 0000022C  39 81 00 08 */	addi r12, r1, 0x8
+/* 800D0BE8 00000230  48 00 00 01 */	bl __ptmf_scall
+/* 800D0BEC 00000234  60 00 00 00 */	nop
+.L_800D0BF0:
+/* 800D0BF0 00000238  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800D0BF4 0000023C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800D0BF8 00000240  7C 08 03 A6 */	mtlr r0
+/* 800D0BFC 00000244  38 21 00 20 */	addi r1, r1, 0x20
+/* 800D0C00 00000248  4E 80 00 20 */	blr
+.endfn execute__14PauseManager_cFv
+
+# .text:0x20C | 0x800D0C04 | size: 0xC
+# PauseManager_c::setPauseEnable(bool)
+.fn setPauseEnable__14PauseManager_cFb, global
+/* 800D0C10 00000258  2C 04 00 00 */	cmpwi r4, 0x0
+/* 800D0C14 0000025C  40 82 00 14 */	bne .L_800D0C28
+/* 800D0C18 00000260  88 03 00 18 */	lbz r0, 0x18(r3)
+/* 800D0C1C 00000264  60 00 00 02 */	ori r0, r0, 0x2
+/* 800D0C20 00000268  98 03 00 18 */	stb r0, 0x18(r3)
+/* 800D0C24 0000026C  4E 80 00 20 */	blr
+.L_800D0C28:
+/* 800D0C28 00000270  88 03 00 18 */	lbz r0, 0x18(r3)
+/* 800D0C2C 00000274  70 00 00 FD */	andi. r0, r0, 0xfd
+/* 800D0C30 00000278  98 03 00 18 */	stb r0, 0x18(r3)
+/* 800D0C34 0000027C  4E 80 00 20 */	blr
+.endfn setPauseEnable__14PauseManager_cFb
+
+# .text:0x240 | 0x800D0C38 | size: 0x8
+# PauseManager_c::isDisable()
+.fn isDisable__14PauseManager_cFv, global
+/* 800D0C40 00000288  88 03 00 18 */	lbz r0, 0x18(r3)
+/* 800D0C44 0000028C  54 03 FF FE */	extrwi r3, r0, 1, 30
+/* 800D0C48 00000290  4E 80 00 20 */	blr
+.endfn isDisable__14PauseManager_cFv
+
+# .text:0x254 | 0x800D0C4C | size: 0x4
+# PauseManager_c::ProcMainInit()
+.fn ProcMainInit__14PauseManager_cFv, global
+/* 800D0C50 00000298  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D0C54 0000029C  7C 08 02 A6 */	mflr r0
+/* 800D0C58 000002A0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D0C5C 000002A4  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800D0C60 000002A8  3B E0 00 00 */	li r31, 0x0
+/* 800D0C64 000002AC  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800D0C68 000002B0  7C 7E 1B 78 */	mr r30, r3
+/* 800D0C6C 000002B4  88 03 00 1B */	lbz r0, 0x1b(r3)
+/* 800D0C70 000002B8  9B E3 00 1A */	stb r31, 0x1a(r3)
+/* 800D0C74 000002BC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D0C78 000002C0  41 82 00 50 */	beq .L_800D0CC8
+/* 800D0C7C 000002C4  48 00 00 01 */	bl getGameDisplay__10dScStage_cFv
+/* 800D0C80 000002C8  88 1E 00 18 */	lbz r0, 0x18(r30)
+/* 800D0C84 000002CC  38 C0 00 01 */	li r6, 0x1
+/* 800D0C88 000002D0  3C A0 00 00 */	lis r5, mPlayerType__9daPyMng_c@ha
+/* 800D0C8C 000002D4  90 DE 00 04 */	stw r6, 0x4(r30)
+/* 800D0C90 000002D8  60 00 00 01 */	ori r0, r0, 0x1
+/* 800D0C94 000002DC  98 1E 00 18 */	stb r0, 0x18(r30)
+/* 800D0C98 000002E0  38 A5 00 00 */	addi r5, r5, mPlayerType__9daPyMng_c@l
+/* 800D0C9C 000002E4  93 FE 00 08 */	stw r31, 0x8(r30)
+/* 800D0CA0 000002E8  93 FE 00 10 */	stw r31, 0x10(r30)
+/* 800D0CA4 000002EC  9B FE 00 19 */	stb r31, 0x19(r30)
+/* 800D0CA8 000002F0  80 80 00 00 */	lwz r4, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D0CAC 000002F4  98 C4 02 91 */	stb r6, 0x291(r4)
+/* 800D0CB0 000002F8  80 1E 00 0C */	lwz r0, 0xc(r30)
+/* 800D0CB4 000002FC  80 80 00 00 */	lwz r4, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D0CB8 00000300  54 00 10 3A */	slwi r0, r0, 2
+/* 800D0CBC 00000304  7C 05 00 2E */	lwzx r0, r5, r0
+/* 800D0CC0 00000308  90 04 02 8C */	stw r0, 0x28c(r4)
+/* 800D0CC4 0000030C  90 C3 04 38 */	stw r6, 0x438(r3)
+.L_800D0CC8:
+/* 800D0CC8 00000310  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D0CCC 00000314  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800D0CD0 00000318  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800D0CD4 0000031C  7C 08 03 A6 */	mtlr r0
+/* 800D0CD8 00000320  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D0CDC 00000324  4E 80 00 20 */	blr
+.endfn ProcMainInit__14PauseManager_cFv
+
+# .text:0x2E8 | 0x800D0CE0 | size: 0xC
+# PauseManager_c::ProcMainPauseOn()
+.fn ProcMainPauseOn__14PauseManager_cFv, global
+/* 800D0CE0 00000328  38 00 00 02 */	li r0, 0x2
+/* 800D0CE4 0000032C  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D0CE8 00000330  4E 80 00 20 */	blr
+.endfn ProcMainPauseOn__14PauseManager_cFv
+
+# .text:0x2F4 | 0x800D0CEC | size: 0x4
+# PauseManager_c::SelectSoundSet(int)
+.fn SelectSoundSet__14PauseManager_cFi, global
+/* 800D0CF0 00000338  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D0CF4 0000033C  7C 08 02 A6 */	mflr r0
+/* 800D0CF8 00000340  2C 04 00 00 */	cmpwi r4, 0x0
+/* 800D0CFC 00000344  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D0D00 00000348  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800D0D04 0000034C  7C 9F 23 78 */	mr r31, r4
+/* 800D0D08 00000350  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800D0D0C 00000354  7C 7E 1B 78 */	mr r30, r3
+/* 800D0D10 00000358  40 80 00 08 */	bge .L_800D0D18
+/* 800D0D14 0000035C  3B E0 00 00 */	li r31, 0x0
+.L_800D0D18:
+/* 800D0D18 00000360  2C 1F 00 02 */	cmpwi r31, 0x2
+/* 800D0D1C 00000364  41 80 00 08 */	blt .L_800D0D24
+/* 800D0D20 00000368  3B E0 00 01 */	li r31, 0x1
+.L_800D0D24:
+/* 800D0D24 0000036C  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 800D0D28 00000370  7C 00 F8 00 */	cmpw r0, r31
+/* 800D0D2C 00000374  41 82 00 54 */	beq .L_800D0D80
+/* 800D0D30 00000378  2C 1F 00 01 */	cmpwi r31, 0x1
+/* 800D0D34 0000037C  40 82 00 24 */	bne .L_800D0D58
+/* 800D0D38 00000380  48 00 00 01 */	bl isNowCourseClear__8dGameComFv
+/* 800D0D3C 00000384  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0D40 00000388  40 82 00 18 */	bne .L_800D0D58
+/* 800D0D44 0000038C  3C 60 00 00 */	lis r3, m_startGameInfo__7dInfo_c@ha
+/* 800D0D48 00000390  38 63 00 00 */	addi r3, r3, m_startGameInfo__7dInfo_c@l
+/* 800D0D4C 00000394  88 03 00 0D */	lbz r0, 0xd(r3)
+/* 800D0D50 00000398  28 00 00 23 */	cmplwi r0, 0x23
+/* 800D0D54 0000039C  40 82 00 2C */	bne .L_800D0D80
+.L_800D0D58:
+/* 800D0D58 000003A0  3C 60 00 00 */	lis r3, m_startGameInfo__7dInfo_c@ha
+/* 800D0D5C 000003A4  38 63 00 00 */	addi r3, r3, m_startGameInfo__7dInfo_c@l
+/* 800D0D60 000003A8  88 63 00 0D */	lbz r3, 0xd(r3)
+/* 800D0D64 000003AC  38 03 00 E0 */	addi r0, r3, 0xe0
+/* 800D0D68 000003B0  54 00 06 3E */	clrlwi r0, r0, 24
+/* 800D0D6C 000003B4  28 00 00 02 */	cmplwi r0, 0x2
+/* 800D0D70 000003B8  40 81 00 10 */	ble .L_800D0D80
+/* 800D0D74 000003BC  80 60 00 00 */	lwz r3, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D0D78 000003C0  93 E3 02 84 */	stw r31, 0x284(r3)
+/* 800D0D7C 000003C4  93 FE 00 08 */	stw r31, 0x8(r30)
+.L_800D0D80:
+/* 800D0D80 000003C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D0D84 000003CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800D0D88 000003D0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800D0D8C 000003D4  7C 08 03 A6 */	mtlr r0
+/* 800D0D90 000003D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D0D94 000003DC  4E 80 00 20 */	blr
+.endfn SelectSoundSet__14PauseManager_cFi
+
+# .text:0x3A0 | 0x800D0D98 | size: 0x8
+# PauseManager_c::KeyChack()
+.fn KeyChack__14PauseManager_cFv, global
+/* 800D0DA0 000003E8  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800D0DA4 000003EC  7C 08 02 A6 */	mflr r0
+/* 800D0DA8 000003F0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800D0DAC 000003F4  39 61 00 20 */	addi r11, r1, 0x20
+/* 800D0DB0 000003F8  48 00 00 01 */	bl _savegpr_26
+/* 800D0DB4 000003FC  7C 7F 1B 78 */	mr r31, r3
+/* 800D0DB8 00000400  38 60 FF FA */	li r3, -0x6
+/* 800D0DBC 00000404  48 00 00 01 */	bl isGameStop__8dGameComFUl
+/* 800D0DC0 00000408  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0DC4 0000040C  40 82 01 58 */	bne .L_800D0F1C
+/* 800D0DC8 00000410  83 5F 00 0C */	lwz r26, 0xc(r31)
+/* 800D0DCC 00000414  83 7F 00 08 */	lwz r27, 0x8(r31)
+/* 800D0DD0 00000418  7F 43 D3 78 */	mr r3, r26
+/* 800D0DD4 0000041C  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800D0DD8 00000420  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0DDC 00000424  41 82 01 40 */	beq .L_800D0F1C
+/* 800D0DE0 00000428  80 60 00 00 */	lwz r3, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D0DE4 0000042C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0DE8 00000430  41 82 01 34 */	beq .L_800D0F1C
+/* 800D0DEC 00000434  88 03 02 94 */	lbz r0, 0x294(r3)
+/* 800D0DF0 00000438  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D0DF4 0000043C  41 82 00 08 */	beq .L_800D0DFC
+/* 800D0DF8 00000440  48 00 01 24 */	b .L_800D0F1C
+.L_800D0DFC:
+/* 800D0DFC 00000444  3C 60 00 00 */	lis r3, g_core__4mPad@ha
+/* 800D0E00 00000448  57 5C 10 3A */	slwi r28, r26, 2
+/* 800D0E04 0000044C  38 63 00 00 */	addi r3, r3, g_core__4mPad@l
+/* 800D0E08 00000450  83 A0 00 00 */	lwz r29, m_instance__10dGameKey_c@sda21(r0)
+/* 800D0E0C 00000454  7C 63 E0 2E */	lwzx r3, r3, r28
+/* 800D0E10 00000458  38 80 09 00 */	li r4, 0x900
+/* 800D0E14 0000045C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800D0E18 00000460  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 800D0E1C 00000464  7D 89 03 A6 */	mtctr r12
+/* 800D0E20 00000468  4E 80 04 21 */	bctrl
+/* 800D0E24 0000046C  7C 7E 1B 78 */	mr r30, r3
+/* 800D0E28 00000470  7F 43 D3 78 */	mr r3, r26
+/* 800D0E2C 00000474  48 00 00 01 */	bl chkCancelButton__8dGameComFi
+/* 800D0E30 00000478  7C 9D E2 14 */	add r4, r29, r28
+/* 800D0E34 0000047C  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 800D0E38 00000480  80 04 00 1C */	lwz r0, 0x1c(r4)
+/* 800D0E3C 00000484  54 00 06 F7 */	rlwinm. r0, r0, 0, 27, 27
+/* 800D0E40 00000488  40 82 00 14 */	bne .L_800D0E54
+/* 800D0E44 0000048C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0E48 00000490  40 82 00 0C */	bne .L_800D0E54
+/* 800D0E4C 00000494  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 800D0E50 00000498  41 82 00 9C */	beq .L_800D0EEC
+.L_800D0E54:
+/* 800D0E54 0000049C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D0E58 000004A0  40 82 00 0C */	bne .L_800D0E64
+/* 800D0E5C 000004A4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0E60 000004A8  41 82 00 0C */	beq .L_800D0E6C
+.L_800D0E64:
+/* 800D0E64 000004AC  7F E3 FB 78 */	mr r3, r31
+/* 800D0E68 000004B0  48 00 00 01 */	bl ProcMainPauseOffInit__14PauseManager_cFv
+.L_800D0E6C:
+/* 800D0E6C 000004B4  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 800D0E70 000004B8  41 82 00 5C */	beq .L_800D0ECC
+/* 800D0E74 000004BC  80 1F 00 08 */	lwz r0, 0x8(r31)
+/* 800D0E78 000004C0  2C 00 00 01 */	cmpwi r0, 0x1
+/* 800D0E7C 000004C4  40 82 00 24 */	bne .L_800D0EA0
+/* 800D0E80 000004C8  48 00 00 01 */	bl isNowCourseClear__8dGameComFv
+/* 800D0E84 000004CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0E88 000004D0  40 82 00 18 */	bne .L_800D0EA0
+/* 800D0E8C 000004D4  3C 60 00 00 */	lis r3, m_startGameInfo__7dInfo_c@ha
+/* 800D0E90 000004D8  38 63 00 00 */	addi r3, r3, m_startGameInfo__7dInfo_c@l
+/* 800D0E94 000004DC  88 03 00 0D */	lbz r0, 0xd(r3)
+/* 800D0E98 000004E0  28 00 00 23 */	cmplwi r0, 0x23
+/* 800D0E9C 000004E4  40 82 00 80 */	bne .L_800D0F1C
+.L_800D0EA0:
+/* 800D0EA0 000004E8  7F E3 FB 78 */	mr r3, r31
+/* 800D0EA4 000004EC  48 00 00 01 */	bl ProcMainPauseOffInit__14PauseManager_cFv
+/* 800D0EA8 000004F0  80 60 00 00 */	lwz r3, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D0EAC 000004F4  38 00 00 01 */	li r0, 0x1
+/* 800D0EB0 000004F8  38 80 00 79 */	li r4, 0x79
+/* 800D0EB4 000004FC  38 A0 00 01 */	li r5, 0x1
+/* 800D0EB8 00000500  98 03 02 93 */	stb r0, 0x293(r3)
+/* 800D0EBC 00000504  98 1F 00 19 */	stb r0, 0x19(r31)
+/* 800D0EC0 00000508  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 800D0EC4 0000050C  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 800D0EC8 00000510  48 00 00 54 */	b .L_800D0F1C
+.L_800D0ECC:
+/* 800D0ECC 00000514  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 800D0ED0 00000518  38 80 00 7A */	li r4, 0x7a
+/* 800D0ED4 0000051C  38 A0 00 01 */	li r5, 0x1
+/* 800D0ED8 00000520  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 800D0EDC 00000524  80 60 00 00 */	lwz r3, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D0EE0 00000528  38 00 00 01 */	li r0, 0x1
+/* 800D0EE4 0000052C  98 03 02 92 */	stb r0, 0x292(r3)
+/* 800D0EE8 00000530  48 00 00 34 */	b .L_800D0F1C
+.L_800D0EEC:
+/* 800D0EEC 00000534  80 64 00 1C */	lwz r3, 0x1c(r4)
+/* 800D0EF0 00000538  54 60 07 FF */	clrlwi. r0, r3, 31
+/* 800D0EF4 0000053C  41 82 00 14 */	beq .L_800D0F08
+/* 800D0EF8 00000540  7F E3 FB 78 */	mr r3, r31
+/* 800D0EFC 00000544  38 9B 00 01 */	addi r4, r27, 0x1
+/* 800D0F00 00000548  48 00 00 01 */	bl SelectSoundSet__14PauseManager_cFi
+/* 800D0F04 0000054C  48 00 00 18 */	b .L_800D0F1C
+.L_800D0F08:
+/* 800D0F08 00000550  54 60 07 BD */	rlwinm. r0, r3, 0, 30, 30
+/* 800D0F0C 00000554  41 82 00 10 */	beq .L_800D0F1C
+/* 800D0F10 00000558  7F E3 FB 78 */	mr r3, r31
+/* 800D0F14 0000055C  38 9B FF FF */	subi r4, r27, 0x1
+/* 800D0F18 00000560  48 00 00 01 */	bl SelectSoundSet__14PauseManager_cFi
+.L_800D0F1C:
+/* 800D0F1C 00000564  39 61 00 20 */	addi r11, r1, 0x20
+/* 800D0F20 00000568  48 00 00 01 */	bl _restgpr_26
+/* 800D0F24 0000056C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800D0F28 00000570  7C 08 03 A6 */	mtlr r0
+/* 800D0F2C 00000574  38 21 00 20 */	addi r1, r1, 0x20
+/* 800D0F30 00000578  4E 80 00 20 */	blr
+.endfn KeyChack__14PauseManager_cFv
+
+# .text:0x53C | 0x800D0F34 | size: 0xC
+# PauseManager_c::ProcMainPause()
+.fn ProcMainPause__14PauseManager_cFv, global
+/* 800D0F40 00000588  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D0F44 0000058C  7C 08 02 A6 */	mflr r0
+/* 800D0F48 00000590  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D0F4C 00000594  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800D0F50 00000598  7C 7F 1B 78 */	mr r31, r3
+/* 800D0F54 0000059C  48 00 00 01 */	bl getGameDisplay__10dScStage_cFv
+/* 800D0F58 000005A0  7F E3 FB 78 */	mr r3, r31
+/* 800D0F5C 000005A4  48 00 00 01 */	bl KeyChack__14PauseManager_cFv
+/* 800D0F60 000005A8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D0F64 000005AC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800D0F68 000005B0  7C 08 03 A6 */	mtlr r0
+/* 800D0F6C 000005B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D0F70 000005B8  4E 80 00 20 */	blr
+.endfn ProcMainPause__14PauseManager_cFv
+
+# .text:0x57C | 0x800D0F74 | size: 0xC
+# PauseManager_c::ProcMainPauseOffInit()
+.fn ProcMainPauseOffInit__14PauseManager_cFv, global
+/* 800D0F80 000005C8  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800D0F84 000005CC  7C 08 02 A6 */	mflr r0
+/* 800D0F88 000005D0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800D0F8C 000005D4  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800D0F90 000005D8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800D0F94 000005DC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800D0F98 000005E0  7C 7D 1B 78 */	mr r29, r3
+/* 800D0F9C 000005E4  48 00 00 01 */	bl getGameDisplay__10dScStage_cFv
+/* 800D0FA0 000005E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D0FA4 000005EC  41 82 00 0C */	beq .L_800D0FB0
+/* 800D0FA8 000005F0  38 00 00 01 */	li r0, 0x1
+/* 800D0FAC 000005F4  90 03 04 40 */	stw r0, 0x440(r3)
+.L_800D0FB0:
+/* 800D0FB0 000005F8  88 7D 00 18 */	lbz r3, 0x18(r29)
+/* 800D0FB4 000005FC  38 80 00 03 */	li r4, 0x3
+/* 800D0FB8 00000600  38 00 00 00 */	li r0, 0x0
+/* 800D0FBC 00000604  90 9D 00 04 */	stw r4, 0x4(r29)
+/* 800D0FC0 00000608  70 63 00 FB */	andi. r3, r3, 0xfb
+/* 800D0FC4 0000060C  3B C0 00 00 */	li r30, 0x0
+/* 800D0FC8 00000610  98 1D 00 1B */	stb r0, 0x1b(r29)
+/* 800D0FCC 00000614  3B E0 00 00 */	li r31, 0x0
+/* 800D0FD0 00000618  98 7D 00 18 */	stb r3, 0x18(r29)
+.L_800D0FD4:
+/* 800D0FD4 0000061C  80 00 00 00 */	lwz r0, m_instance__13dRemoconMng_c@sda21(r0)
+/* 800D0FD8 00000620  7C 60 FA 14 */	add r3, r0, r31
+/* 800D0FDC 00000624  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 800D0FE0 00000628  48 00 00 01 */	bl onRumbleEnable__Q213dRemoconMng_c10dConnect_cFv
+/* 800D0FE4 0000062C  3B DE 00 01 */	addi r30, r30, 0x1
+/* 800D0FE8 00000630  3B FF 00 04 */	addi r31, r31, 0x4
+/* 800D0FEC 00000634  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 800D0FF0 00000638  41 80 FF E4 */	blt .L_800D0FD4
+/* 800D0FF4 0000063C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800D0FF8 00000640  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800D0FFC 00000644  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800D1000 00000648  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800D1004 0000064C  7C 08 03 A6 */	mtlr r0
+/* 800D1008 00000650  38 21 00 20 */	addi r1, r1, 0x20
+/* 800D100C 00000654  4E 80 00 20 */	blr
+.endfn ProcMainPauseOffInit__14PauseManager_cFv
+
+# .text:0x618 | 0x800D1010 | size: 0xB4
+# PauseManager_c::ProcMainPauseOff()
+.fn ProcMainPauseOff__14PauseManager_cFv, global
+/* 800D1010 00000658  80 80 00 00 */	lwz r4, m_instance__13Pausewindow_c@sda21(r0)
+/* 800D1014 0000065C  88 04 02 91 */	lbz r0, 0x291(r4)
+/* 800D1018 00000660  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D101C 00000664  4C 82 00 20 */	bnelr
+/* 800D1020 00000668  88 03 00 19 */	lbz r0, 0x19(r3)
+/* 800D1024 0000066C  38 80 00 00 */	li r4, 0x0
+/* 800D1028 00000670  38 A0 00 01 */	li r5, 0x1
+/* 800D102C 00000674  90 83 00 04 */	stw r4, 0x4(r3)
+/* 800D1030 00000678  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D1034 0000067C  98 A3 00 1A */	stb r5, 0x1a(r3)
+/* 800D1038 00000680  41 82 00 74 */	beq .L_800D10AC
+/* 800D103C 00000684  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 800D1040 00000688  98 83 00 19 */	stb r4, 0x19(r3)
+/* 800D1044 0000068C  2C 00 00 01 */	cmpwi r0, 0x1
+/* 800D1048 00000690  40 82 00 64 */	bne .L_800D10AC
+/* 800D104C 00000694  80 80 00 00 */	lwz r4, m_instance__10dScStage_c@sda21(r0)
+/* 800D1050 00000698  80 C4 12 04 */	lwz r6, 0x1204(r4)
+/* 800D1054 0000069C  98 A6 02 95 */	stb r5, 0x295(r6)
+/* 800D1058 000006A0  80 00 00 00 */	lwz r0, mGameFlag__7dInfo_c@sda21(r0)
+/* 800D105C 000006A4  54 00 06 F7 */	rlwinm. r0, r0, 0, 27, 27
+/* 800D1060 000006A8  41 82 00 10 */	beq .L_800D1070
+/* 800D1064 000006AC  38 00 00 0D */	li r0, 0xd
+/* 800D1068 000006B0  90 06 02 8C */	stw r0, 0x28c(r6)
+/* 800D106C 000006B4  48 00 00 2C */	b .L_800D1098
+.L_800D1070:
+/* 800D1070 000006B8  3C 80 00 00 */	lis r4, m_startGameInfo__7dInfo_c@ha
+/* 800D1074 000006BC  38 84 00 00 */	addi r4, r4, m_startGameInfo__7dInfo_c@l
+/* 800D1078 000006C0  88 04 00 0D */	lbz r0, 0xd(r4)
+/* 800D107C 000006C4  28 00 00 28 */	cmplwi r0, 0x28
+/* 800D1080 000006C8  40 82 00 10 */	bne .L_800D1090
+/* 800D1084 000006CC  38 00 00 1A */	li r0, 0x1a
+/* 800D1088 000006D0  90 06 02 8C */	stw r0, 0x28c(r6)
+/* 800D108C 000006D4  48 00 00 0C */	b .L_800D1098
+.L_800D1090:
+/* 800D1090 000006D8  38 00 00 0C */	li r0, 0xc
+/* 800D1094 000006DC  90 06 02 8C */	stw r0, 0x28c(r6)
+.L_800D1098:
+/* 800D1098 000006E0  38 80 00 01 */	li r4, 0x1
+/* 800D109C 000006E4  38 00 00 05 */	li r0, 0x5
+/* 800D10A0 000006E8  90 83 00 14 */	stw r4, 0x14(r3)
+/* 800D10A4 000006EC  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D10A8 000006F0  4E 80 00 20 */	blr
+.L_800D10AC:
+/* 800D10AC 000006F4  38 00 00 00 */	li r0, 0x0
+/* 800D10B0 000006F8  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D10B4 000006FC  88 03 00 18 */	lbz r0, 0x18(r3)
+/* 800D10B8 00000700  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 800D10BC 00000704  98 03 00 18 */	stb r0, 0x18(r3)
+/* 800D10C0 00000708  4E 80 00 20 */	blr
+.endfn ProcMainPauseOff__14PauseManager_cFv
+
+# .text:0x6CC | 0x800D10C4 | size: 0xC
+# PauseManager_c::CourseOutConfirmation()
+.fn CourseOutConfirmation__14PauseManager_cFv, global
+/* 800D10D0 00000718  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800D10D4 0000071C  7C 08 02 A6 */	mflr r0
+/* 800D10D8 00000720  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800D10DC 00000724  39 61 00 20 */	addi r11, r1, 0x20
+/* 800D10E0 00000728  48 00 00 01 */	bl _savegpr_27
+/* 800D10E4 0000072C  80 80 00 00 */	lwz r4, m_instance__10dScStage_c@sda21(r0)
+/* 800D10E8 00000730  7C 7F 1B 78 */	mr r31, r3
+/* 800D10EC 00000734  83 C4 12 04 */	lwz r30, 0x1204(r4)
+/* 800D10F0 00000738  88 1E 02 97 */	lbz r0, 0x297(r30)
+/* 800D10F4 0000073C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D10F8 00000740  40 82 00 DC */	bne .L_800D11D4
+/* 800D10FC 00000744  83 83 00 14 */	lwz r28, 0x14(r3)
+/* 800D1100 00000748  83 A0 00 00 */	lwz r29, m_instance__10dGameKey_c@sda21(r0)
+/* 800D1104 0000074C  80 63 00 0C */	lwz r3, 0xc(r3)
+/* 800D1108 00000750  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800D110C 00000754  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1110 00000758  41 82 00 C4 */	beq .L_800D11D4
+/* 800D1114 0000075C  83 7F 00 0C */	lwz r27, 0xc(r31)
+/* 800D1118 00000760  57 65 10 3A */	slwi r5, r27, 2
+/* 800D111C 00000764  7C 7D 2A 14 */	add r3, r29, r5
+/* 800D1120 00000768  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 800D1124 0000076C  80 63 00 1C */	lwz r3, 0x1c(r3)
+/* 800D1128 00000770  54 60 07 7B */	rlwinm. r0, r3, 0, 29, 29
+/* 800D112C 00000774  41 82 00 10 */	beq .L_800D113C
+/* 800D1130 00000778  2C 1C 00 01 */	cmpwi r28, 0x1
+/* 800D1134 0000077C  40 82 00 08 */	bne .L_800D113C
+/* 800D1138 00000780  3B 80 00 00 */	li r28, 0x0
+.L_800D113C:
+/* 800D113C 00000784  54 60 07 39 */	rlwinm. r0, r3, 0, 28, 28
+/* 800D1140 00000788  41 82 00 10 */	beq .L_800D1150
+/* 800D1144 0000078C  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 800D1148 00000790  40 82 00 08 */	bne .L_800D1150
+/* 800D114C 00000794  3B 80 00 01 */	li r28, 0x1
+.L_800D1150:
+/* 800D1150 00000798  80 1F 00 14 */	lwz r0, 0x14(r31)
+/* 800D1154 0000079C  7C 1C 00 00 */	cmpw r28, r0
+/* 800D1158 000007A0  41 82 00 10 */	beq .L_800D1168
+/* 800D115C 000007A4  93 9F 00 14 */	stw r28, 0x14(r31)
+/* 800D1160 000007A8  93 9E 02 84 */	stw r28, 0x284(r30)
+/* 800D1164 000007AC  48 00 00 70 */	b .L_800D11D4
+.L_800D1168:
+/* 800D1168 000007B0  3C 60 00 00 */	lis r3, g_core__4mPad@ha
+/* 800D116C 000007B4  38 80 09 00 */	li r4, 0x900
+/* 800D1170 000007B8  38 63 00 00 */	addi r3, r3, g_core__4mPad@l
+/* 800D1174 000007BC  7C 63 28 2E */	lwzx r3, r3, r5
+/* 800D1178 000007C0  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800D117C 000007C4  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 800D1180 000007C8  7D 89 03 A6 */	mtctr r12
+/* 800D1184 000007CC  4E 80 04 21 */	bctrl
+/* 800D1188 000007D0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D118C 000007D4  41 82 00 24 */	beq .L_800D11B0
+/* 800D1190 000007D8  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 800D1194 000007DC  38 00 00 01 */	li r0, 0x1
+/* 800D1198 000007E0  98 1E 02 96 */	stb r0, 0x296(r30)
+/* 800D119C 000007E4  40 82 00 08 */	bne .L_800D11A4
+/* 800D11A0 000007E8  98 1E 02 98 */	stb r0, 0x298(r30)
+.L_800D11A4:
+/* 800D11A4 000007EC  38 00 00 06 */	li r0, 0x6
+/* 800D11A8 000007F0  90 1F 00 04 */	stw r0, 0x4(r31)
+/* 800D11AC 000007F4  48 00 00 28 */	b .L_800D11D4
+.L_800D11B0:
+/* 800D11B0 000007F8  7F 63 DB 78 */	mr r3, r27
+/* 800D11B4 000007FC  48 00 00 01 */	bl chkCancelButton__8dGameComFi
+/* 800D11B8 00000800  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D11BC 00000804  41 82 00 18 */	beq .L_800D11D4
+/* 800D11C0 00000808  38 60 00 01 */	li r3, 0x1
+/* 800D11C4 0000080C  98 7E 02 99 */	stb r3, 0x299(r30)
+/* 800D11C8 00000810  38 00 00 06 */	li r0, 0x6
+/* 800D11CC 00000814  90 7E 02 84 */	stw r3, 0x284(r30)
+/* 800D11D0 00000818  90 1F 00 04 */	stw r0, 0x4(r31)
+.L_800D11D4:
+/* 800D11D4 0000081C  39 61 00 20 */	addi r11, r1, 0x20
+/* 800D11D8 00000820  48 00 00 01 */	bl _restgpr_27
+/* 800D11DC 00000824  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800D11E0 00000828  7C 08 03 A6 */	mtlr r0
+/* 800D11E4 0000082C  38 21 00 20 */	addi r1, r1, 0x20
+/* 800D11E8 00000830  4E 80 00 20 */	blr
+.endfn CourseOutConfirmation__14PauseManager_cFv
+
+# .text:0x7F4 | 0x800D11EC | size: 0x4
+# PauseManager_c::ConfirmationSelectDecisionWait()
+.fn ConfirmationSelectDecisionWait__14PauseManager_cFv, global
+/* 800D11F0 00000838  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D11F4 0000083C  7C 08 02 A6 */	mflr r0
+/* 800D11F8 00000840  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D11FC 00000844  80 80 00 00 */	lwz r4, m_instance__10dScStage_c@sda21(r0)
+/* 800D1200 00000848  80 84 12 04 */	lwz r4, 0x1204(r4)
+/* 800D1204 0000084C  88 04 02 97 */	lbz r0, 0x297(r4)
+/* 800D1208 00000850  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D120C 00000854  40 82 00 64 */	bne .L_800D1270
+/* 800D1210 00000858  80 04 02 84 */	lwz r0, 0x284(r4)
+/* 800D1214 0000085C  2C 00 00 01 */	cmpwi r0, 0x1
+/* 800D1218 00000860  40 82 00 1C */	bne .L_800D1234
+/* 800D121C 00000864  38 80 00 01 */	li r4, 0x1
+/* 800D1220 00000868  98 83 00 1B */	stb r4, 0x1b(r3)
+/* 800D1224 0000086C  38 00 00 00 */	li r0, 0x0
+/* 800D1228 00000870  98 80 00 00 */	stb r4, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D122C 00000874  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D1230 00000878  48 00 00 40 */	b .L_800D1270
+.L_800D1234:
+/* 800D1234 0000087C  80 00 00 00 */	lwz r0, mGameFlag__7dInfo_c@sda21(r0)
+/* 800D1238 00000880  54 00 06 F7 */	rlwinm. r0, r0, 0, 27, 27
+/* 800D123C 00000884  41 82 00 20 */	beq .L_800D125C
+/* 800D1240 00000888  38 60 00 05 */	li r3, 0x5
+/* 800D1244 0000088C  48 00 00 01 */	bl setFader__8dFader_cFQ28dFader_c12fader_type_e
+/* 800D1248 00000890  38 60 00 0B */	li r3, 0xb
+/* 800D124C 00000894  38 80 00 00 */	li r4, 0x0
+/* 800D1250 00000898  38 A0 00 00 */	li r5, 0x0
+/* 800D1254 0000089C  48 00 00 01 */	bl setNextScene__8dScene_cFUsUlb
+/* 800D1258 000008A0  48 00 00 18 */	b .L_800D1270
+.L_800D125C:
+/* 800D125C 000008A4  38 60 00 03 */	li r3, 0x3
+/* 800D1260 000008A8  38 80 00 00 */	li r4, 0x0
+/* 800D1264 000008AC  38 A0 00 02 */	li r5, 0x2
+/* 800D1268 000008B0  38 C0 00 05 */	li r6, 0x5
+/* 800D126C 000008B4  48 00 00 01 */	bl setNextScene__10dScStage_cFUsiQ210dScStage_c6Exit_eQ28dFader_c12fader_type_e
+.L_800D1270:
+/* 800D1270 000008B8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D1274 000008BC  7C 08 03 A6 */	mtlr r0
+/* 800D1278 000008C0  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D127C 000008C4  4E 80 00 20 */	blr
+.endfn ConfirmationSelectDecisionWait__14PauseManager_cFv
+
+# .text:0x888 | 0x800D1280 | size: 0x54
+# PauseManager_c::OtasukeDisp()
+.fn OtasukeDisp__14PauseManager_cFv, global
+/* 800D1280 000008C8  80 80 00 00 */	lwz r4, m_OtasukeInfo_p__14PauseManager_c@sda21(r0)
+/* 800D1284 000008CC  88 04 02 69 */	lbz r0, 0x269(r4)
+/* 800D1288 000008D0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D128C 000008D4  4C 82 00 20 */	bnelr
+/* 800D1290 000008D8  88 03 00 1C */	lbz r0, 0x1c(r3)
+/* 800D1294 000008DC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D1298 000008E0  41 82 00 24 */	beq .L_800D12BC
+/* 800D129C 000008E4  38 00 00 00 */	li r0, 0x0
+/* 800D12A0 000008E8  98 03 00 1C */	stb r0, 0x1c(r3)
+/* 800D12A4 000008EC  98 03 00 1B */	stb r0, 0x1b(r3)
+/* 800D12A8 000008F0  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D12AC 000008F4  88 03 00 18 */	lbz r0, 0x18(r3)
+/* 800D12B0 000008F8  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 800D12B4 000008FC  98 03 00 18 */	stb r0, 0x18(r3)
+/* 800D12B8 00000900  48 00 00 10 */	b .L_800D12C8
+.L_800D12BC:
+/* 800D12BC 00000904  38 00 00 01 */	li r0, 0x1
+/* 800D12C0 00000908  98 03 00 1B */	stb r0, 0x1b(r3)
+/* 800D12C4 0000090C  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+.L_800D12C8:
+/* 800D12C8 00000910  38 00 00 00 */	li r0, 0x0
+/* 800D12CC 00000914  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D12D0 00000918  4E 80 00 20 */	blr
+.endfn OtasukeDisp__14PauseManager_cFv
+
+# .text:0x8DC | 0x800D12D4 | size: 0xC
+# PauseManager_c::PauseSetUp(int)
+.fn PauseSetUp__14PauseManager_cFi, global
+/* 800D12E0 00000928  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D12E4 0000092C  7C 08 02 A6 */	mflr r0
+/* 800D12E8 00000930  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D12EC 00000934  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800D12F0 00000938  7C 9F 23 78 */	mr r31, r4
+/* 800D12F4 0000093C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800D12F8 00000940  7C 7E 1B 78 */	mr r30, r3
+/* 800D12FC 00000944  7F E3 FB 78 */	mr r3, r31
+/* 800D1300 00000948  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800D1304 0000094C  38 00 00 01 */	li r0, 0x1
+/* 800D1308 00000950  98 1E 00 1B */	stb r0, 0x1b(r30)
+/* 800D130C 00000954  38 80 00 7C */	li r4, 0x7c
+/* 800D1310 00000958  38 A0 00 01 */	li r5, 0x1
+/* 800D1314 0000095C  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D1318 00000960  93 FE 00 0C */	stw r31, 0xc(r30)
+/* 800D131C 00000964  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 800D1320 00000968  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 800D1324 0000096C  38 60 00 01 */	li r3, 0x1
+/* 800D1328 00000970  48 00 00 01 */	bl VIEnableDimming
+/* 800D132C 00000974  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D1330 00000978  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800D1334 0000097C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800D1338 00000980  7C 08 03 A6 */	mtlr r0
+/* 800D133C 00000984  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D1340 00000988  4E 80 00 20 */	blr
+.endfn PauseSetUp__14PauseManager_cFi
+
+# .text:0x94C | 0x800D1344 | size: 0xC
+# PauseManager_c::setPause()
+.fn setPause__14PauseManager_cFv, global
+/* 800D1350 00000998  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800D1354 0000099C  7C 08 02 A6 */	mflr r0
+/* 800D1358 000009A0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800D135C 000009A4  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800D1360 000009A8  7C 7F 1B 78 */	mr r31, r3
+/* 800D1364 000009AC  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800D1368 000009B0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800D136C 000009B4  48 00 00 01 */	bl isDisable__14PauseManager_cFv
+/* 800D1370 000009B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1374 000009BC  40 82 02 10 */	bne .L_800D1584
+/* 800D1378 000009C0  88 1F 00 1D */	lbz r0, 0x1d(r31)
+/* 800D137C 000009C4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D1380 000009C8  41 82 00 08 */	beq .L_800D1388
+/* 800D1384 000009CC  48 00 02 00 */	b .L_800D1584
+.L_800D1388:
+/* 800D1388 000009D0  38 60 FF FE */	li r3, -0x2
+/* 800D138C 000009D4  48 00 00 01 */	bl isGameStop__8dGameComFUl
+/* 800D1390 000009D8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1394 000009DC  40 82 01 F0 */	bne .L_800D1584
+/* 800D1398 000009E0  48 00 00 01 */	bl getGameDisplay__10dScStage_cFv
+/* 800D139C 000009E4  80 03 04 3C */	lwz r0, 0x43c(r3)
+/* 800D13A0 000009E8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D13A4 000009EC  40 82 01 E0 */	bne .L_800D1584
+/* 800D13A8 000009F0  88 1F 00 18 */	lbz r0, 0x18(r31)
+/* 800D13AC 000009F4  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 800D13B0 000009F8  40 82 01 D4 */	bne .L_800D1584
+/* 800D13B4 000009FC  88 00 00 00 */	lbz r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D13B8 00000A00  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D13BC 00000A04  41 82 00 08 */	beq .L_800D13C4
+/* 800D13C0 00000A08  48 00 01 C4 */	b .L_800D1584
+.L_800D13C4:
+/* 800D13C4 00000A0C  80 60 00 00 */	lwz r3, m_gameMode__10dScStage_c@sda21(r0)
+/* 800D13C8 00000A10  2C 03 00 02 */	cmpwi r3, 0x2
+/* 800D13CC 00000A14  41 82 01 B8 */	beq .L_800D1584
+/* 800D13D0 00000A18  88 00 00 00 */	lbz r0, m_isStaffCredit__10dScStage_c@sda21(r0)
+/* 800D13D4 00000A1C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D13D8 00000A20  40 82 01 AC */	bne .L_800D1584
+/* 800D13DC 00000A24  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D13E0 00000A28  40 82 00 14 */	bne .L_800D13F4
+/* 800D13E4 00000A2C  80 60 00 00 */	lwz r3, m_OtasukeInfo_p__14PauseManager_c@sda21(r0)
+/* 800D13E8 00000A30  88 03 02 6D */	lbz r0, 0x26d(r3)
+/* 800D13EC 00000A34  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D13F0 00000A38  40 82 01 94 */	bne .L_800D1584
+.L_800D13F4:
+/* 800D13F4 00000A3C  80 60 00 00 */	lwz r3, mFader__8mFader_c@sda21(r0)
+/* 800D13F8 00000A40  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800D13FC 00000A44  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 800D1400 00000A48  7D 89 03 A6 */	mtctr r12
+/* 800D1404 00000A4C  4E 80 04 21 */	bctrl
+/* 800D1408 00000A50  38 03 FF FF */	subi r0, r3, 0x1
+/* 800D140C 00000A54  7C 00 00 34 */	cntlzw r0, r0
+/* 800D1410 00000A58  54 00 D9 7F */	srwi. r0, r0, 5
+/* 800D1414 00000A5C  41 82 01 70 */	beq .L_800D1584
+/* 800D1418 00000A60  80 60 00 00 */	lwz r3, m_instance__17dActorCreateMng_c@sda21(r0)
+/* 800D141C 00000A64  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1420 00000A68  41 82 00 10 */	beq .L_800D1430
+/* 800D1424 00000A6C  88 03 0B CB */	lbz r0, 0xbcb(r3)
+/* 800D1428 00000A70  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D142C 00000A74  40 82 01 58 */	bne .L_800D1584
+.L_800D1430:
+/* 800D1430 00000A78  A0 00 00 00 */	lhz r0, m_nextScene__8dScene_c@sda21(r0)
+/* 800D1434 00000A7C  28 00 02 EE */	cmplwi r0, 0x2ee
+/* 800D1438 00000A80  40 82 01 4C */	bne .L_800D1584
+/* 800D143C 00000A84  80 00 00 00 */	lwz r0, m_gameMode__10dScStage_c@sda21(r0)
+/* 800D1440 00000A88  83 C0 00 00 */	lwz r30, m_instance__10dGameKey_c@sda21(r0)
+/* 800D1444 00000A8C  2C 00 00 01 */	cmpwi r0, 0x1
+/* 800D1448 00000A90  41 82 00 18 */	beq .L_800D1460
+/* 800D144C 00000A94  2C 00 00 04 */	cmpwi r0, 0x4
+/* 800D1450 00000A98  41 82 00 10 */	beq .L_800D1460
+/* 800D1454 00000A9C  88 1F 00 1C */	lbz r0, 0x1c(r31)
+/* 800D1458 00000AA0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D145C 00000AA4  41 82 00 88 */	beq .L_800D14E4
+.L_800D1460:
+/* 800D1460 00000AA8  80 60 00 00 */	lwz r3, m_instance__7dInfo_c@sda21(r0)
+/* 800D1464 00000AAC  88 03 0B 5A */	lbz r0, 0xb5a(r3)
+/* 800D1468 00000AB0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D146C 00000AB4  40 82 01 18 */	bne .L_800D1584
+/* 800D1470 00000AB8  38 60 00 00 */	li r3, 0x0
+/* 800D1474 00000ABC  48 00 00 01 */	bl isPlayerPauseEnable__9daPyMng_cFSc
+/* 800D1478 00000AC0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D147C 00000AC4  41 82 00 68 */	beq .L_800D14E4
+/* 800D1480 00000AC8  80 7E 00 04 */	lwz r3, 0x4(r30)
+/* 800D1484 00000ACC  38 80 00 10 */	li r4, 0x10
+/* 800D1488 00000AD0  48 00 00 01 */	bl triggerAnyMenu__14dGameKeyCore_cFUl
+/* 800D148C 00000AD4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1490 00000AD8  41 82 00 54 */	beq .L_800D14E4
+/* 800D1494 00000ADC  80 00 00 00 */	lwz r0, m_gameMode__10dScStage_c@sda21(r0)
+/* 800D1498 00000AE0  2C 00 00 01 */	cmpwi r0, 0x1
+/* 800D149C 00000AE4  40 82 00 30 */	bne .L_800D14CC
+/* 800D14A0 00000AE8  7F E3 FB 78 */	mr r3, r31
+/* 800D14A4 00000AEC  38 80 00 00 */	li r4, 0x0
+/* 800D14A8 00000AF0  48 00 00 01 */	bl PauseSetUp__14PauseManager_cFi
+/* 800D14AC 00000AF4  88 7F 00 18 */	lbz r3, 0x18(r31)
+/* 800D14B0 00000AF8  38 80 00 00 */	li r4, 0x0
+/* 800D14B4 00000AFC  38 00 00 04 */	li r0, 0x4
+/* 800D14B8 00000B00  98 9F 00 1B */	stb r4, 0x1b(r31)
+/* 800D14BC 00000B04  60 63 00 01 */	ori r3, r3, 0x1
+/* 800D14C0 00000B08  98 7F 00 18 */	stb r3, 0x18(r31)
+/* 800D14C4 00000B0C  90 1F 00 04 */	stw r0, 0x4(r31)
+/* 800D14C8 00000B10  48 00 00 0C */	b .L_800D14D4
+.L_800D14CC:
+/* 800D14CC 00000B14  38 00 00 01 */	li r0, 0x1
+/* 800D14D0 00000B18  98 00 00 00 */	stb r0, m_Pause__14PauseManager_c@sda21(r0)
+.L_800D14D4:
+/* 800D14D4 00000B1C  80 60 00 00 */	lwz r3, m_OtasukeInfo_p__14PauseManager_c@sda21(r0)
+/* 800D14D8 00000B20  38 00 00 01 */	li r0, 0x1
+/* 800D14DC 00000B24  98 03 02 69 */	stb r0, 0x269(r3)
+/* 800D14E0 00000B28  48 00 00 A4 */	b .L_800D1584
+.L_800D14E4:
+/* 800D14E4 00000B2C  3B A0 00 00 */	li r29, 0x0
+.L_800D14E8:
+/* 800D14E8 00000B30  7F A3 EB 78 */	mr r3, r29
+/* 800D14EC 00000B34  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800D14F0 00000B38  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D14F4 00000B3C  41 82 00 30 */	beq .L_800D1524
+/* 800D14F8 00000B40  80 7E 00 04 */	lwz r3, 0x4(r30)
+/* 800D14FC 00000B44  80 03 00 1C */	lwz r0, 0x1c(r3)
+/* 800D1500 00000B48  54 00 06 F7 */	rlwinm. r0, r0, 0, 27, 27
+/* 800D1504 00000B4C  41 82 00 20 */	beq .L_800D1524
+/* 800D1508 00000B50  7F A3 07 74 */	extsb r3, r29
+/* 800D150C 00000B54  48 00 00 01 */	bl isPlayerPauseEnable__9daPyMng_cFSc
+/* 800D1510 00000B58  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1514 00000B5C  41 82 00 10 */	beq .L_800D1524
+/* 800D1518 00000B60  7F E3 FB 78 */	mr r3, r31
+/* 800D151C 00000B64  7F A4 EB 78 */	mr r4, r29
+/* 800D1520 00000B68  48 00 00 01 */	bl PauseSetUp__14PauseManager_cFi
+.L_800D1524:
+/* 800D1524 00000B6C  3B BD 00 01 */	addi r29, r29, 0x1
+/* 800D1528 00000B70  3B DE 00 04 */	addi r30, r30, 0x4
+/* 800D152C 00000B74  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 800D1530 00000B78  41 80 FF B8 */	blt .L_800D14E8
+/* 800D1534 00000B7C  88 00 00 00 */	lbz r0, m_Created__14PauseManager_c@sda21(r0)
+/* 800D1538 00000B80  38 60 00 00 */	li r3, 0x0
+/* 800D153C 00000B84  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D1540 00000B88  41 82 00 14 */	beq .L_800D1554
+/* 800D1544 00000B8C  88 00 00 00 */	lbz r0, m_Pause__14PauseManager_c@sda21(r0)
+/* 800D1548 00000B90  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D154C 00000B94  41 82 00 08 */	beq .L_800D1554
+/* 800D1550 00000B98  38 60 00 01 */	li r3, 0x1
+.L_800D1554:
+/* 800D1554 00000B9C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D1558 00000BA0  41 82 00 2C */	beq .L_800D1584
+/* 800D155C 00000BA4  3B A0 00 00 */	li r29, 0x0
+/* 800D1560 00000BA8  3B E0 00 00 */	li r31, 0x0
+.L_800D1564:
+/* 800D1564 00000BAC  80 00 00 00 */	lwz r0, m_instance__13dRemoconMng_c@sda21(r0)
+/* 800D1568 00000BB0  7C 60 FA 14 */	add r3, r0, r31
+/* 800D156C 00000BB4  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 800D1570 00000BB8  48 00 00 01 */	bl offRumbleEnable__Q213dRemoconMng_c10dConnect_cFv
+/* 800D1574 00000BBC  3B BD 00 01 */	addi r29, r29, 0x1
+/* 800D1578 00000BC0  3B FF 00 04 */	addi r31, r31, 0x4
+/* 800D157C 00000BC4  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 800D1580 00000BC8  41 80 FF E4 */	blt .L_800D1564
+.L_800D1584:
+/* 800D1584 00000BCC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800D1588 00000BD0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800D158C 00000BD4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800D1590 00000BD8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800D1594 00000BDC  7C 08 03 A6 */	mtlr r0
+/* 800D1598 00000BE0  38 21 00 20 */	addi r1, r1, 0x20
+/* 800D159C 00000BE4  4E 80 00 20 */	blr
+.endfn setPause__14PauseManager_cFv
+
+# .text:0xBA8 | 0x800D15A0 | size: 0x24
+# PauseManager_c::onDispOtasukeWindow()
+.fn onDispOtasukeWindow__14PauseManager_cFv, global
+/* 800D15A0 00000BE8  80 60 00 00 */	lwz r3, m_OtasukeInfo_p__14PauseManager_c@sda21(r0)
+/* 800D15A4 00000BEC  38 80 00 01 */	li r4, 0x1
+/* 800D15A8 00000BF0  98 83 02 69 */	stb r4, 0x269(r3)
+/* 800D15AC 00000BF4  80 00 00 00 */	lwz r0, m_gameMode__10dScStage_c@sda21(r0)
+/* 800D15B0 00000BF8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800D15B4 00000BFC  4C 82 00 20 */	bnelr
+/* 800D15B8 00000C00  80 60 00 00 */	lwz r3, m_OtasukeInfo_p__14PauseManager_c@sda21(r0)
+/* 800D15BC 00000C04  98 83 02 6D */	stb r4, 0x26d(r3)
+/* 800D15C0 00000C08  4E 80 00 20 */	blr
+.endfn onDispOtasukeWindow__14PauseManager_cFv
+
+# .text:0xBCC | 0x800D15C4 | size: 0xC
+# PauseManager_c::isOtasukePause()
+.fn isOtasukePause__14PauseManager_cFv, global
+/* 800D15D0 00000C18  80 60 00 00 */	lwz r3, m_OtasukeInfo_p__14PauseManager_c@sda21(r0)
+/* 800D15D4 00000C1C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D15D8 00000C20  40 82 00 0C */	bne .L_800D15E4
+/* 800D15DC 00000C24  38 60 00 00 */	li r3, 0x0
+/* 800D15E0 00000C28  4E 80 00 20 */	blr
+.L_800D15E4:
+/* 800D15E4 00000C2C  88 63 02 6D */	lbz r3, 0x26d(r3)
+/* 800D15E8 00000C30  4E 80 00 20 */	blr
+.endfn isOtasukePause__14PauseManager_cFv
+
+# .text:0xBF4 | 0x800D15EC | size: 0x4

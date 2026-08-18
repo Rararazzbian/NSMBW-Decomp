@@ -1,0 +1,48 @@
+.include "macros.inc"
+.file "bss_align.cpp"
+
+# 0x00000000..0x00000DE0 | size: 0xDE0
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0xC
+.obj n0, global
+	.skip 0xC
+.endobj n0
+	.skip 0x4
+
+# .bss:0x10 | size: 0x98
+.obj o98, global
+	.skip 0x98
+.endobj o98
+
+# .bss:0xA8 | size: 0xC
+.obj n1, global
+	.skip 0xC
+.endobj n1
+
+# .bss:0xB4 | size: 0x5C
+.obj o5c, global
+	.skip 0x5C
+.endobj o5c
+
+# .bss:0x110 | size: 0xC
+.obj n2, global
+	.skip 0xC
+.endobj n2
+	.skip 0x4
+
+# .bss:0x120 | size: 0x58
+.obj o58, global
+	.skip 0x58
+.endobj o58
+
+# .bss:0x178 | size: 0xC
+.obj n3, global
+	.skip 0xC
+.endobj n3
+
+# .bss:0x184 | size: 0xC5C
+.obj oc5c, global
+	.skip 0xC5C
+.endobj oc5c

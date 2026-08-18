@@ -1,0 +1,17 @@
+compile OK
+disasm OK
+======================================================================
+cmdExistCheck__13dNandThread_cFv target instr*4 = 0x70 (OK)
+cmdExistCheck__13dNandThread_cFv -> MATCH (28 instructions)
+======================================================================
+existCheck__13dNandThread_cFv target instr*4 = 0xD8 (OK)
+existCheck__13dNandThread_cFv -> MATCH (54 instructions)
+======================================================================
+cmdSpaceCheck__13dNandThread_cFv target instr*4 = 0x6C (OK)
+cmdSpaceCheck__13dNandThread_cFv -> MATCH (27 instructions)
+======================================================================
+spaceCheck__13dNandThread_cFv target instr*4 = 0x94 (OK)
+spaceCheck__13dNandThread_cFv -> DIFF  size: target 37, draft 37
+   21 | want: lwz r3, 0x8(r1)                              got: lwz r4, 0x8(r1)
+   22 | want: andi. r0, r3, 0x5                            got: andi. r0, r4, 0x5
+   27 | want: andi. r0, r3, 0xa                            got: andi. r0, r4, 0xa

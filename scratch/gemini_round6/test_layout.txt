@@ -1,0 +1,26 @@
+.include "macros.inc"
+.file "test_layout.cpp"
+
+# 0x00000000..0x00000010 | size: 0x10
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | size: 0x4
+.obj sizeA, global
+	.4byte 0x00000070
+.endobj sizeA
+
+# .sdata:0x4 | size: 0x4
+.obj offA, global
+	.4byte 0x0000004C
+.endobj offA
+
+# .sdata:0x8 | size: 0x4
+.obj sizeB, global
+	.4byte 0x00000074
+.endobj sizeB
+
+# .sdata:0xC | size: 0x4
+.obj offB, global
+	.4byte 0x00000050
+.endobj offB

@@ -1,0 +1,16 @@
+.include "macros.inc"
+.file "chk.cpp"
+
+# 0x00000000..0x00000C70 | size: 0xC70
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0xB5C
+.obj a, global
+	.skip 0xB5C
+.endobj a
+
+# .bss:0xB5C | size: 0x114
+.obj b, global
+	.skip 0x114
+.endobj b

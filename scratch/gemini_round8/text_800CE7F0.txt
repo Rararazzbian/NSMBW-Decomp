@@ -1,0 +1,111 @@
+.include "macros.inc"
+.file "auto_03_800CE7F0_text"
+
+# 0x800CE7F0..0x800CE8F0 | size: 0x100
+.text
+.balign 4
+
+# .text:0x0 | 0x800CE7F0 | size: 0x3C
+# MsgRes_c::MsgRes_c(const void*, EGG::Heap*)
+.fn __ct__8MsgRes_cFPCvPQ23EGG4Heap, global
+/* 800CE7F0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CE7F4 00000044  7C 08 02 A6 */	mflr r0
+/* 800CE7F8 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CE7FC 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CE800 00000050  7C 7F 1B 78 */	mr r31, r3
+/* 800CE804 00000054  48 00 00 01 */	bl __ct__Q23EGG6MsgResFPCv
+/* 800CE808 00000058  3C 80 00 00 */	lis r4, __vt__8MsgRes_c@ha
+/* 800CE80C 0000005C  7F E3 FB 78 */	mr r3, r31
+/* 800CE810 00000060  38 84 00 00 */	addi r4, r4, __vt__8MsgRes_c@l
+/* 800CE814 00000064  90 9F 00 1C */	stw r4, 0x1c(r31)
+/* 800CE818 00000068  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CE81C 0000006C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CE820 00000070  7C 08 03 A6 */	mtlr r0
+/* 800CE824 00000074  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CE828 00000078  4E 80 00 20 */	blr
+.endfn __ct__8MsgRes_cFPCvPQ23EGG4Heap
+
+# .text:0x3C | 0x800CE82C | size: 0x4
+.fn gap_03_800CE82C_text, global
+.hidden gap_03_800CE82C_text
+/* 800CE82C 0000007C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CE82C_text
+
+# .text:0x40 | 0x800CE830 | size: 0x58
+# MsgRes_c::~MsgRes_c()
+.fn __dt__8MsgRes_cFv, global
+/* 800CE830 00000080  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CE834 00000084  7C 08 02 A6 */	mflr r0
+/* 800CE838 00000088  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800CE83C 0000008C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CE840 00000090  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CE844 00000094  7C 9F 23 78 */	mr r31, r4
+/* 800CE848 00000098  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800CE84C 0000009C  7C 7E 1B 78 */	mr r30, r3
+/* 800CE850 000000A0  41 82 00 1C */	beq .L_800CE86C
+/* 800CE854 000000A4  38 80 00 00 */	li r4, 0x0
+/* 800CE858 000000A8  48 00 00 01 */	bl __dt__Q23EGG6MsgResFv
+/* 800CE85C 000000AC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800CE860 000000B0  40 81 00 0C */	ble .L_800CE86C
+/* 800CE864 000000B4  7F C3 F3 78 */	mr r3, r30
+/* 800CE868 000000B8  48 00 00 01 */	bl __dl__FPv
+.L_800CE86C:
+/* 800CE86C 000000BC  7F C3 F3 78 */	mr r3, r30
+/* 800CE870 000000C0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CE874 000000C4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800CE878 000000C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CE87C 000000CC  7C 08 03 A6 */	mtlr r0
+/* 800CE880 000000D0  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CE884 000000D4  4E 80 00 20 */	blr
+.endfn __dt__8MsgRes_cFv
+
+# .text:0x98 | 0x800CE888 | size: 0x8
+.fn gap_03_800CE888_text, global
+.hidden gap_03_800CE888_text
+/* 800CE888 000000D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CE88C 000000DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CE888_text
+
+# .text:0xA0 | 0x800CE890 | size: 0x24
+# MsgRes_c::getScale(unsigned long, unsigned long)
+.fn getScale__8MsgRes_cFUlUl, global
+/* 800CE890 000000E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CE894 000000E4  7C 08 02 A6 */	mflr r0
+/* 800CE898 000000E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CE89C 000000EC  48 00 00 01 */	bl getMsgEntry__Q23EGG6MsgResFUlUl
+/* 800CE8A0 000000F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CE8A4 000000F4  A0 63 00 04 */	lhz r3, 0x4(r3)
+/* 800CE8A8 000000F8  7C 08 03 A6 */	mtlr r0
+/* 800CE8AC 000000FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CE8B0 00000100  4E 80 00 20 */	blr
+.endfn getScale__8MsgRes_cFUlUl
+
+# .text:0xC4 | 0x800CE8B4 | size: 0xC
+.fn gap_03_800CE8B4_text, global
+.hidden gap_03_800CE8B4_text
+/* 800CE8B4 00000104  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CE8B8 00000108  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CE8BC 0000010C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CE8B4_text
+
+# .text:0xD0 | 0x800CE8C0 | size: 0x24
+# MsgRes_c::getFont(unsigned long, unsigned long)
+.fn getFont__8MsgRes_cFUlUl, global
+/* 800CE8C0 00000110  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CE8C4 00000114  7C 08 02 A6 */	mflr r0
+/* 800CE8C8 00000118  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CE8CC 0000011C  48 00 00 01 */	bl getMsgEntry__Q23EGG6MsgResFUlUl
+/* 800CE8D0 00000120  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CE8D4 00000124  88 63 00 06 */	lbz r3, 0x6(r3)
+/* 800CE8D8 00000128  7C 08 03 A6 */	mtlr r0
+/* 800CE8DC 0000012C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CE8E0 00000130  4E 80 00 20 */	blr
+.endfn getFont__8MsgRes_cFUlUl
+
+# .text:0xF4 | 0x800CE8E4 | size: 0xC
+.fn gap_03_800CE8E4_text, global
+.hidden gap_03_800CE8E4_text
+/* 800CE8E4 00000134  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CE8E8 00000138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CE8EC 0000013C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CE8E4_text

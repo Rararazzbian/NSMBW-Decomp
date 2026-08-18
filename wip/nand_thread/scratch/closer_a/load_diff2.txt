@@ -1,0 +1,164 @@
+compile ok True
+sizes 161 162
+      0 | want: stwu r1, -0xa0(r1)                         got: stwu r1, -0xa0(r1)
+      1 | want: mflr r0                                    got: mflr r0
+!!!   2 | want: lis r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@ha got: lis r6, "l_safeCopyBuf__23@unnamed@load_test_cpp@"@ha
+!!!   3 | want: lis r5, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@ha got: lis r5, "sc_GAME_FILE__23@unnamed@load_test_cpp@"@ha
+      4 | want: stw r0, 0xa4(r1)                           got: stw r0, 0xa4(r1)
+      5 | want: addi r4, r1, 0xc                           got: addi r4, r1, 0xc
+!!!   6 | want: addi r6, r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@l got: addi r6, r6, "l_safeCopyBuf__23@unnamed@load_test_cpp@"@l
+      7 | want: li r7, 0x4000                              got: li r7, 0x4000
+      8 | want: stw r31, 0x9c(r1)                          got: stw r31, 0x9c(r1)
+      9 | want: mr r31, r3                                 got: mr r31, r3
+!!!  10 | want: addi r3, r5, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l got: addi r3, r5, "sc_GAME_FILE__23@unnamed@load_test_cpp@"@l
+     11 | want: li r5, 0x1                                 got: li r5, 0x1
+     12 | want: bl NANDSimpleSafeOpen                      got: bl NANDSimpleSafeOpen
+     13 | want: mr r4, r3                                  got: mr r4, r3
+     14 | want: mr r3, r31                                 got: mr r3, r31
+     15 | want: bl setNandError__13dNandThread_cFl         got: bl setNandError__13dNandThread_cFl
+!!!  16 | want: lwz r3, 0x78(r31)                          got: lwz r0, 0x78(r31)
+!!!  17 | want: cntlzw r0, r3                              got: cntlzw r0, r0
+     18 | want: srwi. r0, r0, 5                            got: srwi. r0, r0, 5
+!!!  19 | want: bne .L |40820030|                          got: bne .L |40820034|
+!!!  20 | want: subi r0, r3, 0x6                           got: lwz r3, 0x78(r31)
+!!!  21 | want: cntlzw r0, r0                              got: subi r0, r3, 0x6
+!!!  22 | want: srwi. r0, r0, 5                            got: cntlzw r0, r0
+!!!  23 | want: beq .L |41820018|                          got: srwi. r0, r0, 5
+!!!  24 | want: addi r3, r1, 0xc                           got: beq .L |41820018|
+!!!  25 | want: bl NANDSimpleSafeCancel                    got: addi r3, r1, 0xc
+!!!  26 | want: mr r4, r3                                  got: bl NANDSimpleSafeCancel
+!!!  27 | want: mr r3, r31                                 got: mr r4, r3
+!!!  28 | want: bl setNandError__13dNandThread_cFl         got: mr r3, r31
+!!!  29 | want: li r3, 0x1                                 got: bl setNandError__13dNandThread_cFl
+!!!  30 | want: b .L |480001F8|                            got: li r3, 0x1
+!!!  31 | want: addi r3, r1, 0xc                           got: b .L |480001F8|
+!!!  32 | want: addi r4, r1, 0x8                           got: addi r3, r1, 0xc
+!!!  33 | want: bl NANDGetLength                           got: addi r4, r1, 0x8
+!!!  34 | want: mr r4, r3                                  got: bl NANDGetLength
+!!!  35 | want: mr r3, r31                                 got: mr r4, r3
+!!!  36 | want: bl setNandError__13dNandThread_cFl         got: mr r3, r31
+!!!  37 | want: lwz r3, 0x78(r31)                          got: bl setNandError__13dNandThread_cFl
+!!!  38 | want: cntlzw r0, r3                              got: lwz r0, 0x78(r31)
+!!!  39 | want: srwi. r0, r0, 5                            got: cntlzw r0, r0
+!!!  40 | want: bne .L |40820030|                          got: srwi. r0, r0, 5
+!!!  41 | want: subi r0, r3, 0x6                           got: bne .L |40820034|
+!!!  42 | want: cntlzw r0, r0                              got: lwz r3, 0x78(r31)
+!!!  43 | want: srwi. r0, r0, 5                            got: subi r0, r3, 0x6
+!!!  44 | want: beq .L |41820018|                          got: cntlzw r0, r0
+!!!  45 | want: addi r3, r1, 0xc                           got: srwi. r0, r0, 5
+!!!  46 | want: bl NANDSimpleSafeCancel                    got: beq .L |41820018|
+!!!  47 | want: mr r4, r3                                  got: addi r3, r1, 0xc
+!!!  48 | want: mr r3, r31                                 got: bl NANDSimpleSafeCancel
+!!!  49 | want: bl setNandError__13dNandThread_cFl         got: mr r4, r3
+!!!  50 | want: li r3, 0x1                                 got: mr r3, r31
+!!!  51 | want: b .L |480001A4|                            got: bl setNandError__13dNandThread_cFl
+!!!  52 | want: lwz r0, 0x8(r1)                            got: li r3, 0x1
+!!!  53 | want: cmplwi r0, 0x3fa0                          got: b .L |480001A0|
+!!!  54 | want: beq .L |41820040|                          got: lwz r0, 0x8(r1)
+!!!  55 | want: addi r3, r1, 0xc                           got: cmplwi r0, 0x3fa0
+!!!  56 | want: bl NANDSimpleSafeClose                     got: beq .L |41820038|
+!!!  57 | want: mr r4, r3                                  got: addi r3, r1, 0xc
+!!!  58 | want: mr r3, r31                                 got: bl NANDSimpleSafeClose
+!!!  59 | want: bl setNandError__13dNandThread_cFl         got: mr r4, r3
+!!!  60 | want: lwz r0, 0x78(r31)                          got: mr r3, r31
+!!!  61 | want: cntlzw r0, r0                              got: bl setNandError__13dNandThread_cFl
+!!!  62 | want: srwi. r0, r0, 5                            got: lwz r0, 0x78(r31)
+!!!  63 | want: bne .L |4082000C|                          got: cntlzw r0, r0
+!!!  64 | want: li r3, 0x1                                 got: srwi. r0, r0, 5
+!!!  65 | want: b .L |4800016C|                            got: beq .L |4182000C|
+     66 | want: li r0, 0x6                                 got: li r0, 0x6
+     67 | want: stw r0, 0x78(r31)                          got: stw r0, 0x78(r31)
+     68 | want: li r3, 0x1                                 got: li r3, 0x1
+!!!  69 | want: b .L |4800015C|                            got: b .L |48000160|
+!!!  70 | want: lis r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha got: lis r4, "l_tmpSave__23@unnamed@load_test_cpp@"@ha
+     71 | want: addi r3, r1, 0xc                           got: addi r3, r1, 0xc
+!!!  72 | want: addi r4, r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l got: addi r4, r4, "l_tmpSave__23@unnamed@load_test_cpp@"@l
+     73 | want: li r5, 0x3fa0                              got: li r5, 0x3fa0
+     74 | want: bl NANDRead                                got: bl NANDRead
+     75 | want: cmpwi r3, 0x0                              got: cmpwi r3, 0x0
+     76 | want: mr r4, r3                                  got: mr r4, r3
+!!!  77 | want: bge .L |40800060|                          got: bge .L |40800064|
+     78 | want: mr r3, r31                                 got: mr r3, r31
+     79 | want: bl setNandError__13dNandThread_cFl         got: bl setNandError__13dNandThread_cFl
+!!!  80 | want: lwz r3, 0x78(r31)                          got: lwz r0, 0x78(r31)
+!!!  81 | want: cntlzw r0, r3                              got: cntlzw r0, r0
+     82 | want: srwi. r0, r0, 5                            got: srwi. r0, r0, 5
+!!!  83 | want: bne .L |40820048|                          got: bne .L |4082004C|
+!!!  84 | want: subi r0, r3, 0x6                           got: lwz r3, 0x78(r31)
+!!!  85 | want: cntlzw r0, r0                              got: subi r0, r3, 0x6
+!!!  86 | want: srwi. r0, r0, 5                            got: cntlzw r0, r0
+!!!  87 | want: beq .L |41820030|                          got: srwi. r0, r0, 5
+!!!  88 | want: addi r3, r1, 0xc                           got: beq .L |41820030|
+!!!  89 | want: bl NANDSimpleSafeCancel                    got: addi r3, r1, 0xc
+!!!  90 | want: mr r4, r3                                  got: bl NANDSimpleSafeCancel
+!!!  91 | want: mr r3, r31                                 got: mr r4, r3
+!!!  92 | want: bl setNandError__13dNandThread_cFl         got: mr r3, r31
+!!!  93 | want: lwz r0, 0x78(r31)                          got: bl setNandError__13dNandThread_cFl
+!!!  94 | want: cntlzw r0, r0                              got: lwz r0, 0x78(r31)
+!!!  95 | want: srwi. r0, r0, 5                            got: cntlzw r0, r0
+!!!  96 | want: beq .L |4182000C|                          got: srwi. r0, r0, 5
+!!!  97 | want: li r3, 0x2                                 got: beq .L |4182000C|
+!!!  98 | want: b .L |480000E8|                            got: li r3, 0x2
+!!!  99 | want: li r3, 0x1                                 got: b .L |480000E8|
+!!! 100 | want: b .L |480000E0|                            got: li r3, 0x1
+!!! 101 | want: addi r3, r1, 0xc                           got: b .L |480000E0|
+!!! 102 | want: bl NANDSimpleSafeClose                     got: addi r3, r1, 0xc
+!!! 103 | want: mr r4, r3                                  got: bl NANDSimpleSafeClose
+!!! 104 | want: mr r3, r31                                 got: mr r4, r3
+!!! 105 | want: bl setNandError__13dNandThread_cFl         got: mr r3, r31
+!!! 106 | want: lwz r0, 0x78(r31)                          got: bl setNandError__13dNandThread_cFl
+!!! 107 | want: cntlzw r0, r0                              got: lwz r0, 0x78(r31)
+!!! 108 | want: srwi. r0, r0, 5                            got: cntlzw r0, r0
+!!! 109 | want: bne .L |4082000C|                          got: srwi. r0, r0, 5
+!!! 110 | want: li r3, 0x1                                 got: bne .L |4082000C|
+!!! 111 | want: b .L |480000B4|                            got: li r3, 0x1
+!!! 112 | want: lis r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha got: b .L |480000B4|
+!!! 113 | want: lbz r0, "SYM0"@sda21(r0)                   got: lis r4, "l_tmpSave__23@unnamed@load_test_cpp@"@ha
+!!! 114 | want: lbz r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l(r4) got: lbz r0, "SYM0"@sda21(r0)
+!!! 115 | want: extsb r0, r0                               got: lbz r3, "l_tmpSave__23@unnamed@load_test_cpp@"@l(r4)
+!!! 116 | want: extsb r3, r3                               got: extsb r0, r0
+!!! 117 | want: cmpw r3, r0                                got: extsb r3, r3
+!!! 118 | want: bne .L |4082003C|                          got: cmpw r3, r0
+!!! 119 | want: addi r5, r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l got: bne .L |4082003C|
+!!! 120 | want: li r4, "SYM0"@sda21                        got: addi r5, r4, "l_tmpSave__23@unnamed@load_test_cpp@"@l
+!!! 121 | want: lbz r3, 0x1(r5)                            got: li r4, "SYM0"@sda21
+!!! 122 | want: lbz r0, 0x1(r4)                            got: lbz r3, 0x1(r5)
+!!! 123 | want: extsb r3, r3                               got: lbz r0, 0x1(r4)
+!!! 124 | want: extsb r0, r0                               got: extsb r3, r3
+!!! 125 | want: cmpw r3, r0                                got: extsb r0, r0
+!!! 126 | want: bne .L |4082001C|                          got: cmpw r3, r0
+!!! 127 | want: lbz r3, 0x2(r5)                            got: bne .L |4082001C|
+!!! 128 | want: lbz r0, 0x2(r4)                            got: lbz r3, 0x2(r5)
+!!! 129 | want: extsb r3, r3                               got: lbz r0, 0x2(r4)
+!!! 130 | want: extsb r0, r0                               got: extsb r3, r3
+!!! 131 | want: cmpw r3, r0                                got: extsb r0, r0
+!!! 132 | want: beq .L |41820014|                          got: cmpw r3, r0
+!!! 133 | want: li r0, 0x6                                 got: beq .L |41820014|
+!!! 134 | want: stw r0, 0x78(r31)                          got: li r0, 0x6
+!!! 135 | want: li r3, 0x1                                 got: stw r0, 0x78(r31)
+!!! 136 | want: b .L |48000050|                            got: li r3, 0x1
+!!! 137 | want: lbz r3, 0x3(r5)                            got: b .L |48000050|
+!!! 138 | want: lbz r0, 0x3(r4)                            got: lbz r3, 0x3(r5)
+!!! 139 | want: extsb r3, r3                               got: lbz r0, 0x3(r4)
+!!! 140 | want: extsb r0, r0                               got: extsb r3, r3
+!!! 141 | want: cmpw r3, r0                                got: extsb r0, r0
+!!! 142 | want: beq .L |41820014|                          got: cmpw r3, r0
+!!! 143 | want: li r0, 0x6                                 got: beq .L |41820014|
+!!! 144 | want: stw r0, 0x78(r31)                          got: li r0, 0x6
+!!! 145 | want: li r3, 0x1                                 got: stw r0, 0x78(r31)
+!!! 146 | want: b .L |48000028|                            got: li r3, 0x1
+!!! 147 | want: mr r3, r31                                 got: b .L |48000028|
+!!! 148 | want: bl checkCRC__13dNandThread_cFv             got: mr r3, r31
+!!! 149 | want: cmpwi r3, 0x0                              got: bl checkCRC__13dNandThread_cFv
+!!! 150 | want: bne .L |40820014|                          got: cmpwi r3, 0x0
+!!! 151 | want: li r0, 0x6                                 got: bne .L |40820014|
+!!! 152 | want: stw r0, 0x78(r31)                          got: li r0, 0x6
+!!! 153 | want: li r3, 0x1                                 got: stw r0, 0x78(r31)
+!!! 154 | want: b .L |48000008|                            got: li r3, 0x1
+!!! 155 | want: li r3, 0x0                                 got: b .L |48000008|
+!!! 156 | want: lwz r0, 0xa4(r1)                           got: li r3, 0x0
+!!! 157 | want: lwz r31, 0x9c(r1)                          got: lwz r0, 0xa4(r1)
+!!! 158 | want: mtlr r0                                    got: lwz r31, 0x9c(r1)
+!!! 159 | want: addi r1, r1, 0xa0                          got: mtlr r0
+!!! 160 | want: blr                                        got: addi r1, r1, 0xa0
+!!! 161 | want: <none>                                     got: blr

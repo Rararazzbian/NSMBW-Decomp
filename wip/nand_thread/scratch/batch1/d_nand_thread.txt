@@ -1,0 +1,399 @@
+.include "macros.inc"
+.file "d_nand_thread.cpp"
+
+# 0x00000000..0x000003F4 | size: 0x3F4
+.text
+.balign 16
+
+# .text:0x0 | size: 0x10C
+# dNandThread_c::dNandThread_c(int, EGG::Heap*)
+.fn __ct__13dNandThread_cFiPQ23EGG4Heap, global
+/* 00000000 00000040  54 2B 06 FE */	clrlwi r11, r1, 27
+/* 00000004 00000044  7C 2C 0B 78 */	mr r12, r1
+/* 00000008 00000048  21 6B C0 20 */	subfic r11, r11, -0x3fe0
+/* 0000000C 0000004C  7C 21 59 6E */	stwux r1, r1, r11
+/* 00000010 00000050  7C 08 02 A6 */	mflr r0
+/* 00000014 00000054  7D 8B 63 78 */	mr r11, r12
+/* 00000018 00000058  90 0C 00 04 */	stw r0, 0x4(r12)
+/* 0000001C 0000005C  48 00 00 01 */	bl _savegpr_27
+/* 00000020 00000060  7C 86 23 78 */	mr r6, r4
+/* 00000024 00000064  7C A7 2B 78 */	mr r7, r5
+/* 00000028 00000068  7C 7B 1B 78 */	mr r27, r3
+/* 0000002C 0000006C  38 80 40 00 */	li r4, 0x4000
+/* 00000030 00000070  38 A0 00 00 */	li r5, 0x0
+/* 00000034 00000074  48 00 00 01 */	bl __ct__Q23EGG6ThreadFUliiPQ23EGG4Heap
+/* 00000038 00000078  3C 60 00 00 */	lis r3, __vt__13dNandThread_c@ha
+/* 0000003C 0000007C  3C 80 00 00 */	lis r4, __vt__6mMutex@ha
+/* 00000040 00000080  38 63 00 00 */	addi r3, r3, __vt__13dNandThread_c@l
+/* 00000044 00000084  90 7B 00 00 */	stw r3, 0x0(r27)
+/* 00000048 00000088  38 84 00 00 */	addi r4, r4, __vt__6mMutex@l
+/* 0000004C 0000008C  90 9B 00 50 */	stw r4, 0x50(r27)
+/* 00000050 00000090  38 7B 00 54 */	addi r3, r27, 0x54
+/* 00000054 00000094  48 00 00 01 */	bl OSInitMutex
+/* 00000058 00000098  38 7B 00 6C */	addi r3, r27, 0x6c
+/* 0000005C 0000009C  48 00 00 01 */	bl OSInitCond
+/* 00000060 000000A0  38 00 00 00 */	li r0, 0x0
+/* 00000064 000000A4  90 1B 00 74 */	stw r0, 0x74(r27)
+/* 00000068 000000A8  38 61 00 20 */	addi r3, r1, 0x20
+/* 0000006C 000000AC  38 A0 06 A0 */	li r5, 0x6a0
+/* 00000070 000000B0  83 A0 00 00 */	lwz r29, m_instance__10dSaveMng_c@sda21(r0)
+/* 00000074 000000B4  93 60 00 00 */	stw r27, m_instance__13dNandThread_c@sda21(r0)
+/* 00000078 000000B8  38 9D 00 20 */	addi r4, r29, 0x20
+/* 0000007C 000000BC  48 00 00 01 */	bl memcpy
+/* 00000080 000000C0  3B E1 06 C0 */	addi r31, r1, 0x6c0
+/* 00000084 000000C4  3B C1 23 40 */	addi r30, r1, 0x2340
+/* 00000088 000000C8  3B 80 00 00 */	li r28, 0x0
+.L_0000008C:
+/* 0000008C 000000CC  7F A3 EB 78 */	mr r3, r29
+/* 00000090 000000D0  7F 84 07 74 */	extsb r4, r28
+/* 00000094 000000D4  48 00 00 01 */	bl getSaveGame__10dSaveMng_cFSc
+/* 00000098 000000D8  7C 64 1B 78 */	mr r4, r3
+/* 0000009C 000000DC  7F E3 FB 78 */	mr r3, r31
+/* 000000A0 000000E0  38 A0 09 80 */	li r5, 0x980
+/* 000000A4 000000E4  48 00 00 01 */	bl memcpy
+/* 000000A8 000000E8  7F A3 EB 78 */	mr r3, r29
+/* 000000AC 000000EC  7F 84 07 74 */	extsb r4, r28
+/* 000000B0 000000F0  48 00 00 01 */	bl getTempGame__10dSaveMng_cFSc
+/* 000000B4 000000F4  7C 64 1B 78 */	mr r4, r3
+/* 000000B8 000000F8  7F C3 F3 78 */	mr r3, r30
+/* 000000BC 000000FC  38 A0 09 80 */	li r5, 0x980
+/* 000000C0 00000100  48 00 00 01 */	bl memcpy
+/* 000000C4 00000104  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 000000C8 00000108  3B FF 09 80 */	addi r31, r31, 0x980
+/* 000000CC 0000010C  2C 1C 00 03 */	cmpwi r28, 0x3
+/* 000000D0 00000110  3B DE 09 80 */	addi r30, r30, 0x980
+/* 000000D4 00000114  41 80 FF B8 */	blt .L_0000008C
+/* 000000D8 00000118  3C 60 00 00 */	lis r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha
+/* 000000DC 0000011C  38 81 00 20 */	addi r4, r1, 0x20
+/* 000000E0 00000120  38 63 00 00 */	addi r3, r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l
+/* 000000E4 00000124  38 A0 3F A0 */	li r5, 0x3fa0
+/* 000000E8 00000128  48 00 00 01 */	bl memcpy
+/* 000000EC 0000012C  7F 63 DB 78 */	mr r3, r27
+/* 000000F0 00000130  81 41 00 00 */	lwz r10, 0x0(r1)
+/* 000000F4 00000134  7D 4B 53 78 */	mr r11, r10
+/* 000000F8 00000138  48 00 00 01 */	bl _restgpr_27
+/* 000000FC 0000013C  80 0A 00 04 */	lwz r0, 0x4(r10)
+/* 00000100 00000140  7C 08 03 A6 */	mtlr r0
+/* 00000104 00000144  7D 41 53 78 */	mr r1, r10
+/* 00000108 00000148  4E 80 00 20 */	blr
+.endfn __ct__13dNandThread_cFiPQ23EGG4Heap
+/* 0000010C 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x110 | size: 0x40
+# EGG::Mutex::~Mutex()
+.fn __dt__Q23EGG5MutexFv, weak
+/* 00000110 00000150  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000114 00000154  7C 08 02 A6 */	mflr r0
+/* 00000118 00000158  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000011C 0000015C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000120 00000160  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000124 00000164  7C 7F 1B 78 */	mr r31, r3
+/* 00000128 00000168  41 82 00 10 */	beq .L_00000138
+/* 0000012C 0000016C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000130 00000170  40 81 00 08 */	ble .L_00000138
+/* 00000134 00000174  48 00 00 01 */	bl __dl__FPv
+.L_00000138:
+/* 00000138 00000178  7F E3 FB 78 */	mr r3, r31
+/* 0000013C 0000017C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000140 00000180  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000144 00000184  7C 08 03 A6 */	mtlr r0
+/* 00000148 00000188  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000014C 0000018C  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG5MutexFv
+
+# .text:0x150 | size: 0x40
+# mMutex::~mMutex()
+.fn __dt__6mMutexFv, weak
+/* 00000150 00000190  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000154 00000194  7C 08 02 A6 */	mflr r0
+/* 00000158 00000198  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000015C 0000019C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000160 000001A0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000164 000001A4  7C 7F 1B 78 */	mr r31, r3
+/* 00000168 000001A8  41 82 00 10 */	beq .L_00000178
+/* 0000016C 000001AC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000170 000001B0  40 81 00 08 */	ble .L_00000178
+/* 00000174 000001B4  48 00 00 01 */	bl __dl__FPv
+.L_00000178:
+/* 00000178 000001B8  7F E3 FB 78 */	mr r3, r31
+/* 0000017C 000001BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000180 000001C0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000184 000001C4  7C 08 03 A6 */	mtlr r0
+/* 00000188 000001C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000018C 000001CC  4E 80 00 20 */	blr
+.endfn __dt__6mMutexFv
+
+# .text:0x190 | size: 0x60
+# dNandThread_c::~dNandThread_c()
+.fn __dt__13dNandThread_cFv, global
+/* 00000190 000001D0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000194 000001D4  7C 08 02 A6 */	mflr r0
+/* 00000198 000001D8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000019C 000001DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001A0 000001E0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001A4 000001E4  7C 9F 23 78 */	mr r31, r4
+/* 000001A8 000001E8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000001AC 000001EC  7C 7E 1B 78 */	mr r30, r3
+/* 000001B0 000001F0  41 82 00 24 */	beq .L_000001D4
+/* 000001B4 000001F4  38 00 00 00 */	li r0, 0x0
+/* 000001B8 000001F8  90 00 00 00 */	stw r0, m_instance__13dNandThread_c@sda21(r0)
+/* 000001BC 000001FC  38 80 00 00 */	li r4, 0x0
+/* 000001C0 00000200  48 00 00 01 */	bl __dt__Q23EGG6ThreadFv
+/* 000001C4 00000204  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000001C8 00000208  40 81 00 0C */	ble .L_000001D4
+/* 000001CC 0000020C  7F C3 F3 78 */	mr r3, r30
+/* 000001D0 00000210  48 00 00 01 */	bl __dl__FPv
+.L_000001D4:
+/* 000001D4 00000214  7F C3 F3 78 */	mr r3, r30
+/* 000001D8 00000218  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000001DC 0000021C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000001E0 00000220  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000001E4 00000224  7C 08 03 A6 */	mtlr r0
+/* 000001E8 00000228  38 21 00 10 */	addi r1, r1, 0x10
+/* 000001EC 0000022C  4E 80 00 20 */	blr
+.endfn __dt__13dNandThread_cFv
+
+# .text:0x1F0 | size: 0xDC
+# dNandThread_c::run()
+.fn run__13dNandThread_cFv, global
+/* 000001F0 00000230  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001F4 00000234  7C 08 02 A6 */	mflr r0
+/* 000001F8 00000238  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001FC 0000023C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000200 00000240  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000204 00000244  7C 7E 1B 78 */	mr r30, r3
+/* 00000208 00000248  38 63 00 54 */	addi r3, r3, 0x54
+/* 0000020C 0000024C  48 00 00 01 */	bl OSLockMutex
+/* 00000210 00000250  3B E0 00 00 */	li r31, 0x0
+.L_00000214:
+/* 00000214 00000254  93 FE 00 74 */	stw r31, 0x74(r30)
+/* 00000218 00000258  38 7E 00 6C */	addi r3, r30, 0x6c
+/* 0000021C 0000025C  38 9E 00 54 */	addi r4, r30, 0x54
+/* 00000220 00000260  48 00 00 01 */	bl OSWaitCond
+/* 00000224 00000264  80 1E 00 74 */	lwz r0, 0x74(r30)
+/* 00000228 00000268  2C 00 00 01 */	cmpwi r0, 0x1
+/* 0000022C 0000026C  41 82 00 30 */	beq .L_0000025C
+/* 00000230 00000270  2C 00 00 02 */	cmpwi r0, 0x2
+/* 00000234 00000274  41 82 00 34 */	beq .L_00000268
+/* 00000238 00000278  2C 00 00 04 */	cmpwi r0, 0x4
+/* 0000023C 0000027C  41 82 00 38 */	beq .L_00000274
+/* 00000240 00000280  2C 00 00 05 */	cmpwi r0, 0x5
+/* 00000244 00000284  41 82 00 44 */	beq .L_00000288
+/* 00000248 00000288  2C 00 00 03 */	cmpwi r0, 0x3
+/* 0000024C 0000028C  41 82 00 50 */	beq .L_0000029C
+/* 00000250 00000290  2C 00 00 06 */	cmpwi r0, 0x6
+/* 00000254 00000294  41 82 00 54 */	beq .L_000002A8
+/* 00000258 00000298  4B FF FF BC */	b .L_00000214
+.L_0000025C:
+/* 0000025C 0000029C  7F C3 F3 78 */	mr r3, r30
+/* 00000260 000002A0  48 00 00 01 */	bl existCheck__13dNandThread_cFv
+/* 00000264 000002A4  4B FF FF B0 */	b .L_00000214
+.L_00000268:
+/* 00000268 000002A8  7F C3 F3 78 */	mr r3, r30
+/* 0000026C 000002AC  48 00 00 01 */	bl spaceCheck__13dNandThread_cFv
+/* 00000270 000002B0  4B FF FF A4 */	b .L_00000214
+.L_00000274:
+/* 00000274 000002B4  7F C3 F3 78 */	mr r3, r30
+/* 00000278 000002B8  48 00 00 01 */	bl save__13dNandThread_cFv
+/* 0000027C 000002BC  2C 03 00 02 */	cmpwi r3, 0x2
+/* 00000280 000002C0  41 82 FF F4 */	beq .L_00000274
+/* 00000284 000002C4  4B FF FF 90 */	b .L_00000214
+.L_00000288:
+/* 00000288 000002C8  7F C3 F3 78 */	mr r3, r30
+/* 0000028C 000002CC  48 00 00 01 */	bl load__13dNandThread_cFv
+/* 00000290 000002D0  2C 03 00 02 */	cmpwi r3, 0x2
+/* 00000294 000002D4  41 82 FF F4 */	beq .L_00000288
+/* 00000298 000002D8  4B FF FF 7C */	b .L_00000214
+.L_0000029C:
+/* 0000029C 000002DC  7F C3 F3 78 */	mr r3, r30
+/* 000002A0 000002E0  48 00 00 01 */	bl deleteFile__13dNandThread_cFv
+/* 000002A4 000002E4  4B FF FF 70 */	b .L_00000214
+.L_000002A8:
+/* 000002A8 000002E8  38 7E 00 54 */	addi r3, r30, 0x54
+/* 000002AC 000002EC  48 00 00 01 */	bl OSUnlockMutex
+/* 000002B0 000002F0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000002B4 000002F4  38 60 00 00 */	li r3, 0x0
+/* 000002B8 000002F8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000002BC 000002FC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000002C0 00000300  7C 08 03 A6 */	mtlr r0
+/* 000002C4 00000304  38 21 00 10 */	addi r1, r1, 0x10
+/* 000002C8 00000308  4E 80 00 20 */	blr
+.endfn run__13dNandThread_cFv
+/* 000002CC 0000030C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2D0 | size: 0x78
+# dNandThread_c::create(EGG::Heap*)
+.fn create__13dNandThread_cFPQ23EGG4Heap, global
+/* 000002D0 00000310  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000002D4 00000314  7C 08 02 A6 */	mflr r0
+/* 000002D8 00000318  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000002DC 0000031C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000002E0 00000320  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000002E4 00000324  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 000002E8 00000328  7C 7E 1B 78 */	mr r30, r3
+/* 000002EC 0000032C  38 60 00 80 */	li r3, 0x80
+/* 000002F0 00000330  48 00 00 01 */	bl __nw__FUl
+/* 000002F4 00000334  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000002F8 00000338  7C 7F 1B 78 */	mr r31, r3
+/* 000002FC 0000033C  41 82 00 24 */	beq .L_00000320
+/* 00000300 00000340  48 00 00 01 */	bl OSGetCurrentThread
+/* 00000304 00000344  48 00 00 01 */	bl OSGetThreadPriority
+/* 00000308 00000348  7C 64 1B 78 */	mr r4, r3
+/* 0000030C 0000034C  7F E3 FB 78 */	mr r3, r31
+/* 00000310 00000350  38 84 FF FF */	subi r4, r4, 0x1
+/* 00000314 00000354  38 A0 00 00 */	li r5, 0x0
+/* 00000318 00000358  48 00 00 01 */	bl __ct__13dNandThread_cFiPQ23EGG4Heap
+/* 0000031C 0000035C  7C 7F 1B 78 */	mr r31, r3
+.L_00000320:
+/* 00000320 00000360  7F C3 F3 78 */	mr r3, r30
+/* 00000324 00000364  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 00000328 00000368  80 7F 00 08 */	lwz r3, 0x8(r31)
+/* 0000032C 0000036C  48 00 00 01 */	bl OSResumeThread
+/* 00000330 00000370  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000334 00000374  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000338 00000378  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0000033C 0000037C  7C 08 03 A6 */	mtlr r0
+/* 00000340 00000380  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000344 00000384  4E 80 00 20 */	blr
+.endfn create__13dNandThread_cFPQ23EGG4Heap
+/* 00000348 00000388  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000034C 0000038C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x350 | size: 0x78
+# dNandThread_c::setNandError(long)
+.fn setNandError__13dNandThread_cFl, global
+/* 00000350 00000390  38 04 00 0F */	addi r0, r4, 0xf
+/* 00000354 00000394  28 00 00 0F */	cmplwi r0, 0xf
+/* 00000358 00000398  41 81 00 64 */	bgt .L_000003BC
+/* 0000035C 0000039C  3C 80 00 00 */	lis r4, "@3937"@ha
+/* 00000360 000003A0  54 00 10 3A */	slwi r0, r0, 2
+/* 00000364 000003A4  38 84 00 00 */	addi r4, r4, "@3937"@l
+/* 00000368 000003A8  7C 84 00 2E */	lwzx r4, r4, r0
+/* 0000036C 000003AC  7C 89 03 A6 */	mtctr r4
+/* 00000370 000003B0  4E 80 04 20 */	bctr
+.L_00000374:
+/* 00000374 000003B4  38 00 00 00 */	li r0, 0x0
+/* 00000378 000003B8  90 03 00 78 */	stw r0, 0x78(r3)
+/* 0000037C 000003BC  4E 80 00 20 */	blr
+.L_00000380:
+/* 00000380 000003C0  38 00 00 01 */	li r0, 0x1
+/* 00000384 000003C4  90 03 00 78 */	stw r0, 0x78(r3)
+/* 00000388 000003C8  4E 80 00 20 */	blr
+.L_0000038C:
+/* 0000038C 000003CC  38 00 00 02 */	li r0, 0x2
+/* 00000390 000003D0  90 03 00 78 */	stw r0, 0x78(r3)
+/* 00000394 000003D4  4E 80 00 20 */	blr
+.L_00000398:
+/* 00000398 000003D8  38 00 00 03 */	li r0, 0x3
+/* 0000039C 000003DC  90 03 00 78 */	stw r0, 0x78(r3)
+/* 000003A0 000003E0  4E 80 00 20 */	blr
+.L_000003A4:
+/* 000003A4 000003E4  38 00 00 04 */	li r0, 0x4
+/* 000003A8 000003E8  90 03 00 78 */	stw r0, 0x78(r3)
+/* 000003AC 000003EC  4E 80 00 20 */	blr
+.L_000003B0:
+/* 000003B0 000003F0  38 00 00 06 */	li r0, 0x6
+/* 000003B4 000003F4  90 03 00 78 */	stw r0, 0x78(r3)
+/* 000003B8 000003F8  4E 80 00 20 */	blr
+.L_000003BC:
+/* 000003BC 000003FC  38 00 00 05 */	li r0, 0x5
+/* 000003C0 00000400  90 03 00 78 */	stw r0, 0x78(r3)
+/* 000003C4 00000404  4E 80 00 20 */	blr
+.endfn setNandError__13dNandThread_cFl
+/* 000003C8 00000408  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000003CC 0000040C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x3D0 | size: 0xC
+# dNandThread_c::getSaveData()
+.fn getSaveData__13dNandThread_cFv, global
+/* 000003D0 00000410  3C 60 00 00 */	lis r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha
+/* 000003D4 00000414  38 63 00 00 */	addi r3, r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l
+/* 000003D8 00000418  4E 80 00 20 */	blr
+.endfn getSaveData__13dNandThread_cFv
+/* 000003DC 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x3E0 | size: 0x4
+# EGG::Thread::onExit()
+.fn onExit__Q23EGG6ThreadFv, weak
+/* 000003E0 00000420  4E 80 00 20 */	blr
+.endfn onExit__Q23EGG6ThreadFv
+/* 000003E4 00000424  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000003E8 00000428  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000003EC 0000042C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x3F0 | size: 0x4
+# EGG::Thread::onEnter()
+.fn onEnter__Q23EGG6ThreadFv, weak
+/* 000003F0 00000430  4E 80 00 20 */	blr
+.endfn onEnter__Q23EGG6ThreadFv
+
+# 0x00000000..0x00000070 | size: 0x70
+.data
+.balign 8
+
+# .data:0x0 | size: 0x40
+.obj "@3937", local
+	.rel setNandError__13dNandThread_cFl, .L_000003B0
+	.rel setNandError__13dNandThread_cFl, .L_000003BC
+	.rel setNandError__13dNandThread_cFl, .L_000003BC
+	.rel setNandError__13dNandThread_cFl, .L_00000374
+	.rel setNandError__13dNandThread_cFl, .L_00000398
+	.rel setNandError__13dNandThread_cFl, .L_000003BC
+	.rel setNandError__13dNandThread_cFl, .L_0000038C
+	.rel setNandError__13dNandThread_cFl, .L_000003BC
+	.rel setNandError__13dNandThread_cFl, .L_000003BC
+	.rel setNandError__13dNandThread_cFl, .L_00000374
+	.rel setNandError__13dNandThread_cFl, .L_000003B0
+	.rel setNandError__13dNandThread_cFl, .L_00000380
+	.rel setNandError__13dNandThread_cFl, .L_000003A4
+	.rel setNandError__13dNandThread_cFl, .L_000003A4
+	.rel setNandError__13dNandThread_cFl, .L_000003BC
+	.rel setNandError__13dNandThread_cFl, .L_00000374
+.endobj "@3937"
+
+# .data:0x40 | size: 0x18
+# dNandThread_c::__vtable
+.obj __vt__13dNandThread_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__13dNandThread_cFv
+	.4byte run__13dNandThread_cFv
+	.4byte onEnter__Q23EGG6ThreadFv
+	.4byte onExit__Q23EGG6ThreadFv
+.endobj __vt__13dNandThread_c
+
+# .data:0x58 | size: 0xC
+# mMutex::__vtable
+.obj __vt__6mMutex, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__6mMutexFv
+.endobj __vt__6mMutex
+
+# .data:0x64 | size: 0xC
+# EGG::Mutex::__vtable
+.obj __vt__Q23EGG5Mutex, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__Q23EGG5MutexFv
+.endobj __vt__Q23EGG5Mutex
+
+# 0x00000000..0x00003FA0 | size: 0x3FA0
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0x3FA0
+# @unnamed@d_nand_thread_cpp@::l_tmpSave
+.obj "l_tmpSave__27@unnamed@d_nand_thread_cpp@", local
+	.skip 0x3FA0
+.endobj "l_tmpSave__27@unnamed@d_nand_thread_cpp@"
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | size: 0x4
+# dNandThread_c::m_instance
+.obj m_instance__13dNandThread_c, global
+	.skip 0x4
+.endobj m_instance__13dNandThread_c

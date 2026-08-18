@@ -1,0 +1,66 @@
+Task B, EGG::Effect unknown data investigation (Round 6)
+
+Source/object discovery
+
+- Constructor: __ct__Q23EGG6EffectFv at 0x802D7D90, size 0x74.
+- Destructor: __dt__Q23EGG6EffectFv at 0x802D7E10, size 0x5C.
+- Both are in bin/dtkspl/obj/auto_03_802D72FC_text.o, whose text range is 0x802D72FC..0x802D8BB0.
+- Effect vtable symbol is 0x80350AF8, size 0x9C. Therefore virtual count is (0x9C - 8) / 4 = 37.
+- The constructor calls ExEffectParam::ExEffectParam at object offset 0x7C. The destructor calls ExEffectParam::~ExEffectParam at the same offset.
+- ExEffectParam occupies the remaining 0x98 bytes, 0x7C..0x113, preserving sizeof(Effect) = 0x114.
+
+Verified Effect-level layout (object offsets)
+
+0x00  vptr
+0x04  u8 state/creation flag (constructor initializes to 0)
+0x05..0x07  u8 pad[3], unverified
+0x08..0x23  u8 pad[0x1C], unverified
+0x24  u32 effect state (constructor initializes to 0; create/fade/kill paths use it)
+0x28  u32 effect flags (reset initializes to 0; update tests bits 0, 29, and 30)
+0x2C  float scaleX
+0x30  float scaleY
+0x34  float scaleZ
+0x38  float posX
+0x3C  float posY
+0x40  float posZ
+0x44..0x73  nw4r::math::MTX34 matrix (reset calls PSMTXIdentity at 0x44)
+0x74..0x7B  nw4r::ef::HandleBase effect handle (Effect methods pass this subobject to GetPtr/assignment)
+0x7C..0x113  ExEffectParam parameter block, detailed below
+
+Verified ExEffectParam fields, relative to Effect (add 0x7C to the relative offset)
+
+0x80  u32 parameter status flags (constructor initializes to 0)
+0x88  u16 life (ExEffectParam+0x0C)
+0x8A..0x8B  u8 pad[2], unverified
+0x8C  float emitRatio (ExEffectParam+0x10)
+0x90  u16 emitInterval (ExEffectParam+0x14)
+0x92  u16 emitEmitDiv (ExEffectParam+0x16)
+0x94  s8 initVelocityRandom (ExEffectParam+0x18)
+0x95..0x97  u8 pad[3], unverified
+0x98  float powerYAxis (ExEffectParam+0x1C)
+0x9C  float powerRadiationDir (ExEffectParam+0x20)
+0xA0  float powerSpecDir (ExEffectParam+0x24)
+0xA4  float powerSpecDirAdd (ExEffectParam+0x28)
+0xA8  nw4r::math::VEC3 specDir (ExEffectParam+0x2C)
+0xB4  nw4r::math::VEC3 specDirAdd (ExEffectParam+0x38)
+0xC0  nw4r::ut::Color color (ExEffectParam+0x44)
+0xC4..0xE3  register-color storage beginning at ExEffectParam+0x48; indexed access uses an 8-byte stride by register/channel and alpha bytes at relative +0x4B and +0x4F within each pair
+0xD4  nw4r::math::VEC2 defaultParticleSize (ExEffectParam+0x58), overlaid with the register-color storage
+0xDC  nw4r::math::VEC2 particleScale (ExEffectParam+0x60), overlaid with the register-color storage
+0xE4  nw4r::math::VEC3 defaultParticleRotate (ExEffectParam+0x68)
+0xF0  nw4r::math::VEC3 particleRotate (ExEffectParam+0x74)
+0xFC  nw4r::math::VEC3 emitterSize (ExEffectParam+0x80)
+0x108  remaining ExEffectParam bytes, including emitter-size mode flag and any tail storage, unverified
+
+Setter evidence
+
+Effect setters at 0x802D82F0..0x802D8514 all adjust r3 by 0x7C and tail-call ExEffectParam setters. The ExEffectParam setters verify these destinations: life +0x0C, emit ratio +0x10, emit interval +0x14, emit divisor +0x16, initial velocity random +0x18, Y/radiation/spec/spec-add powers +0x1C/+0x20/+0x24/+0x28, spec directions +0x2C and +0x38.
+
+Color setters use ExEffectParam color storage beginning at relative +0x44 (Effect +0xC0). The constructor constructs four nw4r::ut::Color objects at relative +0x48 (Effect +0xC4) and initializes the status/flag word at relative +0x44 to 0xFFFFFFFF. Register-color and particle-size storage overlap, consistent with the status-bit-selected ExEffectParam representation.
+
+Unverified regions
+
+- Effect +0x08..+0x23 remains unnamed.
+- ExEffectParam relative +0x00..+0x08 and +0x0C..+0x40 are only partially named above where getter/setter instructions prove the type and offset.
+- ExEffectParam relative +0x48 onward contains the verified color array, particle size/scale/rotation vectors, and emitter-size vector.
+- No include/, slices/, or symbol files were modified.

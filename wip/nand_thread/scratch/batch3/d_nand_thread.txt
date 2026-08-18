@@ -1,0 +1,406 @@
+.include "macros.inc"
+.file "d_nand_thread.cpp"
+
+# 0x00000000..0x0000046C | size: 0x46C
+.text
+.balign 16
+
+# .text:0x0 | size: 0x8C
+# dNandThread_c::cmdSave(const void*)
+.fn cmdSave__13dNandThread_cFPCv, global
+/* 00000000 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000000C 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000010 00000050  7C 9F 23 78 */	mr r31, r4
+/* 00000014 00000054  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000018 00000058  7C 7E 1B 78 */	mr r30, r3
+/* 0000001C 0000005C  38 63 00 54 */	addi r3, r3, 0x54
+/* 00000020 00000060  48 00 00 01 */	bl OSTryLockMutex
+/* 00000024 00000064  7C 03 00 D0 */	neg r0, r3
+/* 00000028 00000068  7C 00 1B 78 */	or r0, r0, r3
+/* 0000002C 0000006C  54 00 0F FF */	srwi. r0, r0, 31
+/* 00000030 00000070  41 82 00 40 */	beq .L_00000070
+/* 00000034 00000074  38 80 00 00 */	li r4, 0x0
+/* 00000038 00000078  38 00 00 04 */	li r0, 0x4
+/* 0000003C 0000007C  3C 60 00 00 */	lis r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha
+/* 00000040 00000080  90 9E 00 78 */	stw r4, 0x78(r30)
+/* 00000044 00000084  7F E4 FB 78 */	mr r4, r31
+/* 00000048 00000088  38 A0 3F A0 */	li r5, 0x3fa0
+/* 0000004C 0000008C  90 1E 00 74 */	stw r0, 0x74(r30)
+/* 00000050 00000090  38 63 00 00 */	addi r3, r3, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l
+/* 00000054 00000094  48 00 00 01 */	bl memcpy
+/* 00000058 00000098  38 7E 00 54 */	addi r3, r30, 0x54
+/* 0000005C 0000009C  48 00 00 01 */	bl OSUnlockMutex
+/* 00000060 000000A0  38 7E 00 6C */	addi r3, r30, 0x6c
+/* 00000064 000000A4  48 00 00 01 */	bl OSSignalCond
+/* 00000068 000000A8  38 60 00 01 */	li r3, 0x1
+/* 0000006C 000000AC  48 00 00 08 */	b .L_00000074
+.L_00000070:
+/* 00000070 000000B0  38 60 00 00 */	li r3, 0x0
+.L_00000074:
+/* 00000074 000000B4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000078 000000B8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0000007C 000000BC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000080 000000C0  7C 08 03 A6 */	mtlr r0
+/* 00000084 000000C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000088 000000C8  4E 80 00 20 */	blr
+.endfn cmdSave__13dNandThread_cFPCv
+/* 0000008C 000000CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x90 | size: 0x158
+# dNandThread_c::save()
+.fn save__13dNandThread_cFv, global
+/* 00000090 000000D0  94 21 FF 60 */	stwu r1, -0xa0(r1)
+/* 00000094 000000D4  7C 08 02 A6 */	mflr r0
+/* 00000098 000000D8  38 80 00 3C */	li r4, 0x3c
+/* 0000009C 000000DC  38 A0 00 00 */	li r5, 0x0
+/* 000000A0 000000E0  90 01 00 A4 */	stw r0, 0xa4(r1)
+/* 000000A4 000000E4  93 E1 00 9C */	stw r31, 0x9c(r1)
+/* 000000A8 000000E8  3F E0 00 00 */	lis r31, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@ha
+/* 000000AC 000000EC  93 C1 00 98 */	stw r30, 0x98(r1)
+/* 000000B0 000000F0  7C 7E 1B 78 */	mr r30, r3
+/* 000000B4 000000F4  38 7F 00 00 */	addi r3, r31, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l
+/* 000000B8 000000F8  48 00 00 01 */	bl NANDCreate
+/* 000000BC 000000FC  7C 64 1B 78 */	mr r4, r3
+/* 000000C0 00000100  7F C3 F3 78 */	mr r3, r30
+/* 000000C4 00000104  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 000000C8 00000108  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 000000CC 0000010C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 000000D0 00000110  40 82 00 FC */	bne .L_000001CC
+/* 000000D4 00000114  3C C0 00 00 */	lis r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@ha
+/* 000000D8 00000118  38 7F 00 00 */	addi r3, r31, "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"@l
+/* 000000DC 0000011C  38 81 00 08 */	addi r4, r1, 0x8
+/* 000000E0 00000120  38 A0 00 02 */	li r5, 0x2
+/* 000000E4 00000124  38 C6 00 00 */	addi r6, r6, "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"@l
+/* 000000E8 00000128  38 E0 40 00 */	li r7, 0x4000
+/* 000000EC 0000012C  48 00 00 01 */	bl NANDSimpleSafeOpen
+/* 000000F0 00000130  7C 64 1B 78 */	mr r4, r3
+/* 000000F4 00000134  7F C3 F3 78 */	mr r3, r30
+/* 000000F8 00000138  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 000000FC 0000013C  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 00000100 00000140  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000104 00000144  40 82 00 A4 */	bne .L_000001A8
+/* 00000108 00000148  3C 80 00 00 */	lis r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@ha
+/* 0000010C 0000014C  38 61 00 08 */	addi r3, r1, 0x8
+/* 00000110 00000150  38 84 00 00 */	addi r4, r4, "l_tmpSave__27@unnamed@d_nand_thread_cpp@"@l
+/* 00000114 00000154  38 A0 3F A0 */	li r5, 0x3fa0
+/* 00000118 00000158  48 00 00 01 */	bl NANDWrite
+/* 0000011C 0000015C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000120 00000160  7C 64 1B 78 */	mr r4, r3
+/* 00000124 00000164  40 80 00 50 */	bge .L_00000174
+/* 00000128 00000168  7F C3 F3 78 */	mr r3, r30
+/* 0000012C 0000016C  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000130 00000170  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 00000134 00000174  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000138 00000178  41 82 00 3C */	beq .L_00000174
+/* 0000013C 0000017C  2C 00 00 06 */	cmpwi r0, 0x6
+/* 00000140 00000180  41 82 00 2C */	beq .L_0000016C
+/* 00000144 00000184  38 61 00 08 */	addi r3, r1, 0x8
+/* 00000148 00000188  48 00 00 01 */	bl NANDSimpleSafeCancel
+/* 0000014C 0000018C  7C 64 1B 78 */	mr r4, r3
+/* 00000150 00000190  7F C3 F3 78 */	mr r3, r30
+/* 00000154 00000194  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000158 00000198  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 0000015C 0000019C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000160 000001A0  40 82 00 0C */	bne .L_0000016C
+/* 00000164 000001A4  38 60 00 02 */	li r3, 0x2
+/* 00000168 000001A8  48 00 00 68 */	b .L_000001D0
+.L_0000016C:
+/* 0000016C 000001AC  38 60 00 01 */	li r3, 0x1
+/* 00000170 000001B0  48 00 00 60 */	b .L_000001D0
+.L_00000174:
+/* 00000174 000001B4  38 61 00 08 */	addi r3, r1, 0x8
+/* 00000178 000001B8  48 00 00 01 */	bl NANDSimpleSafeClose
+/* 0000017C 000001BC  7C 64 1B 78 */	mr r4, r3
+/* 00000180 000001C0  7F C3 F3 78 */	mr r3, r30
+/* 00000184 000001C4  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000188 000001C8  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 0000018C 000001CC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000190 000001D0  40 82 00 10 */	bne .L_000001A0
+/* 00000194 000001D4  7F C3 F3 78 */	mr r3, r30
+/* 00000198 000001D8  48 00 00 01 */	bl createBanner__13dNandThread_cFv
+/* 0000019C 000001DC  48 00 00 34 */	b .L_000001D0
+.L_000001A0:
+/* 000001A0 000001E0  38 60 00 01 */	li r3, 0x1
+/* 000001A4 000001E4  48 00 00 2C */	b .L_000001D0
+.L_000001A8:
+/* 000001A8 000001E8  2C 00 00 06 */	cmpwi r0, 0x6
+/* 000001AC 000001EC  41 82 00 18 */	beq .L_000001C4
+/* 000001B0 000001F0  38 61 00 08 */	addi r3, r1, 0x8
+/* 000001B4 000001F4  48 00 00 01 */	bl NANDSimpleSafeCancel
+/* 000001B8 000001F8  7C 64 1B 78 */	mr r4, r3
+/* 000001BC 000001FC  7F C3 F3 78 */	mr r3, r30
+/* 000001C0 00000200  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+.L_000001C4:
+/* 000001C4 00000204  38 60 00 01 */	li r3, 0x1
+/* 000001C8 00000208  48 00 00 08 */	b .L_000001D0
+.L_000001CC:
+/* 000001CC 0000020C  38 60 00 01 */	li r3, 0x1
+.L_000001D0:
+/* 000001D0 00000210  80 01 00 A4 */	lwz r0, 0xa4(r1)
+/* 000001D4 00000214  83 E1 00 9C */	lwz r31, 0x9c(r1)
+/* 000001D8 00000218  83 C1 00 98 */	lwz r30, 0x98(r1)
+/* 000001DC 0000021C  7C 08 03 A6 */	mtlr r0
+/* 000001E0 00000220  38 21 00 A0 */	addi r1, r1, 0xa0
+/* 000001E4 00000224  4E 80 00 20 */	blr
+.endfn save__13dNandThread_cFv
+/* 000001E8 00000228  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000001EC 0000022C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x1F0 | size: 0x178
+# dNandThread_c::createBanner()
+.fn createBanner__13dNandThread_cFv, global
+/* 000001F0 00000230  94 21 FF 20 */	stwu r1, -0xe0(r1)
+/* 000001F4 00000234  7C 08 02 A6 */	mflr r0
+/* 000001F8 00000238  38 80 00 3C */	li r4, 0x3c
+/* 000001FC 0000023C  38 A0 00 00 */	li r5, 0x0
+/* 00000200 00000240  90 01 00 E4 */	stw r0, 0xe4(r1)
+/* 00000204 00000244  93 E1 00 DC */	stw r31, 0xdc(r1)
+/* 00000208 00000248  3F E0 00 00 */	lis r31, "sc_TEMP_BANNER_FILE__27@unnamed@d_nand_thread_cpp@"@ha
+/* 0000020C 0000024C  93 C1 00 D8 */	stw r30, 0xd8(r1)
+/* 00000210 00000250  7C 7E 1B 78 */	mr r30, r3
+/* 00000214 00000254  38 7F 00 00 */	addi r3, r31, "sc_TEMP_BANNER_FILE__27@unnamed@d_nand_thread_cpp@"@l
+/* 00000218 00000258  48 00 00 01 */	bl NANDCreate
+/* 0000021C 0000025C  7C 64 1B 78 */	mr r4, r3
+/* 00000220 00000260  7F C3 F3 78 */	mr r3, r30
+/* 00000224 00000264  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000228 00000268  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 0000022C 0000026C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000230 00000270  41 82 00 0C */	beq .L_0000023C
+/* 00000234 00000274  38 60 00 01 */	li r3, 0x1
+/* 00000238 00000278  48 00 01 18 */	b .L_00000350
+.L_0000023C:
+/* 0000023C 0000027C  38 7F 00 00 */	addi r3, r31, "sc_TEMP_BANNER_FILE__27@unnamed@d_nand_thread_cpp@"@l
+/* 00000240 00000280  38 81 00 48 */	addi r4, r1, 0x48
+/* 00000244 00000284  38 A0 00 02 */	li r5, 0x2
+/* 00000248 00000288  48 00 00 01 */	bl NANDOpen
+/* 0000024C 0000028C  7C 64 1B 78 */	mr r4, r3
+/* 00000250 00000290  7F C3 F3 78 */	mr r3, r30
+/* 00000254 00000294  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000258 00000298  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 0000025C 0000029C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000260 000002A0  41 82 00 0C */	beq .L_0000026C
+/* 00000264 000002A4  38 60 00 01 */	li r3, 0x1
+/* 00000268 000002A8  48 00 00 E8 */	b .L_00000350
+.L_0000026C:
+/* 0000026C 000002AC  7F C3 F3 78 */	mr r3, r30
+/* 00000270 000002B0  38 81 00 48 */	addi r4, r1, 0x48
+/* 00000274 000002B4  48 00 00 01 */	bl writeBanner__13dNandThread_cFP12NANDFileInfo
+/* 00000278 000002B8  28 03 72 A0 */	cmplwi r3, 0x72a0
+/* 0000027C 000002BC  7C 64 1B 78 */	mr r4, r3
+/* 00000280 000002C0  41 82 00 14 */	beq .L_00000294
+/* 00000284 000002C4  7F C3 F3 78 */	mr r3, r30
+/* 00000288 000002C8  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 0000028C 000002CC  38 60 00 01 */	li r3, 0x1
+/* 00000290 000002D0  48 00 00 C0 */	b .L_00000350
+.L_00000294:
+/* 00000294 000002D4  38 61 00 48 */	addi r3, r1, 0x48
+/* 00000298 000002D8  48 00 00 01 */	bl NANDClose
+/* 0000029C 000002DC  7C 64 1B 78 */	mr r4, r3
+/* 000002A0 000002E0  7F C3 F3 78 */	mr r3, r30
+/* 000002A4 000002E4  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 000002A8 000002E8  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 000002AC 000002EC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 000002B0 000002F0  41 82 00 0C */	beq .L_000002BC
+/* 000002B4 000002F4  38 60 00 01 */	li r3, 0x1
+/* 000002B8 000002F8  48 00 00 98 */	b .L_00000350
+.L_000002BC:
+/* 000002BC 000002FC  38 00 00 00 */	li r0, 0x0
+/* 000002C0 00000300  90 01 00 08 */	stw r0, 0x8(r1)
+/* 000002C4 00000304  38 61 00 08 */	addi r3, r1, 0x8
+/* 000002C8 00000308  90 01 00 0C */	stw r0, 0xc(r1)
+/* 000002CC 0000030C  90 01 00 10 */	stw r0, 0x10(r1)
+/* 000002D0 00000310  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000002D4 00000314  90 01 00 18 */	stw r0, 0x18(r1)
+/* 000002D8 00000318  90 01 00 1C */	stw r0, 0x1c(r1)
+/* 000002DC 0000031C  90 01 00 20 */	stw r0, 0x20(r1)
+/* 000002E0 00000320  90 01 00 24 */	stw r0, 0x24(r1)
+/* 000002E4 00000324  90 01 00 28 */	stw r0, 0x28(r1)
+/* 000002E8 00000328  90 01 00 2C */	stw r0, 0x2c(r1)
+/* 000002EC 0000032C  90 01 00 30 */	stw r0, 0x30(r1)
+/* 000002F0 00000330  90 01 00 34 */	stw r0, 0x34(r1)
+/* 000002F4 00000334  90 01 00 38 */	stw r0, 0x38(r1)
+/* 000002F8 00000338  90 01 00 3C */	stw r0, 0x3c(r1)
+/* 000002FC 0000033C  90 01 00 40 */	stw r0, 0x40(r1)
+/* 00000300 00000340  90 01 00 44 */	stw r0, 0x44(r1)
+/* 00000304 00000344  48 00 00 01 */	bl NANDGetHomeDir
+/* 00000308 00000348  7C 64 1B 78 */	mr r4, r3
+/* 0000030C 0000034C  7F C3 F3 78 */	mr r3, r30
+/* 00000310 00000350  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000314 00000354  80 1E 00 78 */	lwz r0, 0x78(r30)
+/* 00000318 00000358  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0000031C 0000035C  41 82 00 0C */	beq .L_00000328
+/* 00000320 00000360  38 60 00 01 */	li r3, 0x1
+/* 00000324 00000364  48 00 00 2C */	b .L_00000350
+.L_00000328:
+/* 00000328 00000368  38 7F 00 00 */	addi r3, r31, "sc_TEMP_BANNER_FILE__27@unnamed@d_nand_thread_cpp@"@l
+/* 0000032C 0000036C  38 81 00 08 */	addi r4, r1, 0x8
+/* 00000330 00000370  48 00 00 01 */	bl NANDMove
+/* 00000334 00000374  7C 64 1B 78 */	mr r4, r3
+/* 00000338 00000378  7F C3 F3 78 */	mr r3, r30
+/* 0000033C 0000037C  48 00 00 01 */	bl setNandError__13dNandThread_cFl
+/* 00000340 00000380  80 7E 00 78 */	lwz r3, 0x78(r30)
+/* 00000344 00000384  7C 03 00 D0 */	neg r0, r3
+/* 00000348 00000388  7C 00 1B 78 */	or r0, r0, r3
+/* 0000034C 0000038C  54 03 0F FE */	srwi r3, r0, 31
+.L_00000350:
+/* 00000350 00000390  80 01 00 E4 */	lwz r0, 0xe4(r1)
+/* 00000354 00000394  83 E1 00 DC */	lwz r31, 0xdc(r1)
+/* 00000358 00000398  83 C1 00 D8 */	lwz r30, 0xd8(r1)
+/* 0000035C 0000039C  7C 08 03 A6 */	mtlr r0
+/* 00000360 000003A0  38 21 00 E0 */	addi r1, r1, 0xe0
+/* 00000364 000003A4  4E 80 00 20 */	blr
+.endfn createBanner__13dNandThread_cFv
+/* 00000368 000003A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000036C 000003AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x370 | size: 0xFC
+# dNandThread_c::writeBanner(NANDFileInfo*)
+.fn writeBanner__13dNandThread_cFP12NANDFileInfo, global
+/* 00000370 000003B0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000374 000003B4  7C 08 02 A6 */	mflr r0
+/* 00000378 000003B8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0000037C 000003BC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 00000380 000003C0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 00000384 000003C4  3F C0 00 01 */	lis r30, 0x1
+/* 00000388 000003C8  38 7E 5F 91 */	addi r3, r30, 0x5f91
+/* 0000038C 000003CC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 00000390 000003D0  93 81 00 10 */	stw r28, 0x10(r1)
+/* 00000394 000003D4  7C 9C 23 78 */	mr r28, r4
+/* 00000398 000003D8  38 80 00 01 */	li r4, 0x1
+/* 0000039C 000003DC  48 00 00 01 */	bl getMsg__10dMessage_cFUlUl
+/* 000003A0 000003E0  7C 7D 1B 78 */	mr r29, r3
+/* 000003A4 000003E4  38 7E 5F 91 */	addi r3, r30, 0x5f91
+/* 000003A8 000003E8  38 80 00 00 */	li r4, 0x0
+/* 000003AC 000003EC  48 00 00 01 */	bl getMsg__10dMessage_cFUlUl
+/* 000003B0 000003F0  3F E0 00 00 */	lis r31, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"@ha
+/* 000003B4 000003F4  7C 66 1B 78 */	mr r6, r3
+/* 000003B8 000003F8  7F A5 EB 78 */	mr r5, r29
+/* 000003BC 000003FC  38 80 00 00 */	li r4, 0x0
+/* 000003C0 00000400  38 7F 00 00 */	addi r3, r31, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"@l
+/* 000003C4 00000404  48 00 00 01 */	bl NANDInitBanner
+/* 000003C8 00000408  80 60 00 00 */	lwz r3, m_instance__9dResMng_c@sda21(r0)
+/* 000003CC 0000040C  3C A0 00 00 */	lis r5, "@10622"@ha
+/* 000003D0 00000410  3F C0 00 00 */	lis r30, "@10623"@ha
+/* 000003D4 00000414  38 A5 00 00 */	addi r5, r5, "@10622"@l
+/* 000003D8 00000418  38 63 00 04 */	addi r3, r3, 0x4
+/* 000003DC 0000041C  38 9E 00 00 */	addi r4, r30, "@10623"@l
+/* 000003E0 00000420  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 000003E4 00000424  80 03 00 1C */	lwz r0, 0x1c(r3)
+/* 000003E8 00000428  7C 64 1B 78 */	mr r4, r3
+/* 000003EC 0000042C  3B FF 00 00 */	addi r31, r31, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"@l
+/* 000003F0 00000430  38 A0 60 00 */	li r5, 0x6000
+/* 000003F4 00000434  38 7F 00 A0 */	addi r3, r31, 0xa0
+/* 000003F8 00000438  7C 84 02 14 */	add r4, r4, r0
+/* 000003FC 0000043C  48 00 00 01 */	bl memcpy
+/* 00000400 00000440  80 60 00 00 */	lwz r3, m_instance__9dResMng_c@sda21(r0)
+/* 00000404 00000444  38 9E 00 00 */	addi r4, r30, "@10623"@l
+/* 00000408 00000448  80 A0 00 00 */	lwz r5, "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@c_icon_res@0"@sda21(r0)
+/* 0000040C 0000044C  38 63 00 04 */	addi r3, r3, 0x4
+/* 00000410 00000450  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 00000414 00000454  7C 64 1B 78 */	mr r4, r3
+/* 00000418 00000458  38 7F 60 A0 */	addi r3, r31, 0x60a0
+/* 0000041C 0000045C  80 04 00 1C */	lwz r0, 0x1c(r4)
+/* 00000420 00000460  38 A0 12 00 */	li r5, 0x1200
+/* 00000424 00000464  7C 84 02 14 */	add r4, r4, r0
+/* 00000428 00000468  48 00 00 01 */	bl memcpy
+/* 0000042C 0000046C  A0 1F 00 08 */	lhz r0, 0x8(r31)
+/* 00000430 00000470  7F 83 E3 78 */	mr r3, r28
+/* 00000434 00000474  7F E4 FB 78 */	mr r4, r31
+/* 00000438 00000478  38 A0 72 A0 */	li r5, 0x72a0
+/* 0000043C 0000047C  54 00 00 3A */	clrrwi r0, r0, 2
+/* 00000440 00000480  60 00 00 02 */	ori r0, r0, 0x2
+/* 00000444 00000484  B0 1F 00 08 */	sth r0, 0x8(r31)
+/* 00000448 00000488  48 00 00 01 */	bl NANDWrite
+/* 0000044C 0000048C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000450 00000490  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 00000454 00000494  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 00000458 00000498  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 0000045C 0000049C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 00000460 000004A0  7C 08 03 A6 */	mtlr r0
+/* 00000464 000004A4  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000468 000004A8  4E 80 00 20 */	blr
+.endfn writeBanner__13dNandThread_cFP12NANDFileInfo
+
+# 0x00000000..0x0000001C | size: 0x1C
+.rodata
+.balign 8
+
+# .rodata:0x0 | size: 0x10
+# @unnamed@d_nand_thread_cpp@::sc_TEMP_BANNER_FILE
+.obj "sc_TEMP_BANNER_FILE__27@unnamed@d_nand_thread_cpp@", local
+	.4byte 0x2F746D70
+	.4byte 0x2F62616E
+	.4byte 0x6E65722E
+	.4byte 0x62696E00
+.endobj "sc_TEMP_BANNER_FILE__27@unnamed@d_nand_thread_cpp@"
+
+# .rodata:0x10 | size: 0xC
+# @unnamed@d_nand_thread_cpp@::sc_GAME_FILE
+.obj "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@", local
+	.4byte 0x7769696D
+	.4byte 0x6A32642E
+	.4byte 0x73617600
+.endobj "sc_GAME_FILE__27@unnamed@d_nand_thread_cpp@"
+
+# 0x00000000..0x00000030 | size: 0x30
+.data
+.balign 8
+
+# .data:0x0 | size: 0xE
+.obj "@10535", local
+	.4byte 0x73617665
+	.4byte 0x5F69636F
+	.4byte 0x6E2E6274
+	.2byte 0x6900
+.endobj "@10535"
+	.2byte 0x0000
+
+# .data:0x10 | size: 0x13
+.obj "@10622", local
+	.4byte 0x73617665
+	.4byte 0x5F62616E
+	.4byte 0x6E65725F
+	.4byte 0x45552E62
+	.byte 0x74, 0x69, 0x00
+.endobj "@10622"
+	.byte 0x00
+
+# .data:0x24 | size: 0xC
+.obj "@10623", local
+	.4byte 0x73617665
+	.4byte 0x5F62616E
+	.4byte 0x6E657200
+.endobj "@10623"
+
+# 0x00000000..0x00017040 | size: 0x17040
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0x4000
+# @unnamed@d_nand_thread_cpp@::l_safeCopyBuf
+.obj "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@", local
+	.skip 0x4000
+.endobj "l_safeCopyBuf__27@unnamed@d_nand_thread_cpp@"
+
+# .bss:0x4000 | size: 0x3FA0
+# @unnamed@d_nand_thread_cpp@::l_tmpSave
+.obj "l_tmpSave__27@unnamed@d_nand_thread_cpp@", local
+	.skip 0x3FA0
+.endobj "l_tmpSave__27@unnamed@d_nand_thread_cpp@"
+
+# .bss:0x7FA0 | size: 0xF0A0
+# dNandThread_c::writeBanner(NANDFileInfo*)::a_banner
+.obj "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner", local
+	.skip 0xF0A0
+.endobj "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@a_banner"
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | size: 0x4
+.obj "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@c_icon_res@0", local
+	.4byte "@10535"
+.endobj "@LOCAL@writeBanner__13dNandThread_cFP12NANDFileInfo@c_icon_res@0"
