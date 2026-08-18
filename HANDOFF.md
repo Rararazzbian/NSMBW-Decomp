@@ -2284,6 +2284,51 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## kinoko_base's 8 bytes are the CRITICAL PATH for three units
+
+Tried landing `d_a_wm_kinoko_red.cpp` on its own -- it declares
+`daWmKinokoBase_c` inline in its own `.cpp`, so it looked self-contained. **It
+is not.** The link fails with 9 unresolved symbols: `create`, `doDelete`,
+`execute`, `draw`, `processCutsceneCommand` and four more
+`__16daWmKinokoBase_cF*`, all inherited vtable slots whose definitions live in
+kinoko_base's un-landed TU.
+
+The `extern "C" fn_2_XXXXXX` convention cannot help here. It works for a CALL,
+because the call site names the symbol; it cannot work for a compiler-generated
+VTABLE, whose slots carry the mangled names the class declaration produced.
+Aliasing them is not an option either: `bin/dtk/*_symbols.txt` is generated and
+gitignored, so an edit there is not durable.
+
+**So kinoko_red, kinoko_1up and kinoko_base all wait on kinoko_base's 8-byte
+`.data` object.** That single unexplained object is now the highest-value open
+question in this family by a wide margin -- it gates three units, not one.
+
+### And `.rodata` has a two-pass emission rule, measured
+
+From the kinoko_red round, compiled and measured rather than argued: **every
+named object is emitted before any function's anonymous pooled literals**,
+unconditionally. Tested with grid's `DUMMY_ORDERING` trick moved to the physical
+end of the file, with a bare unreferenced array, and with an
+`__attribute__((used))` array at end of file. All three land at `.rodata+0x0`,
+ahead of the triple. Textual position does not matter.
+
+That **refutes the "unreferenced trailing array" hypothesis outright** -- no
+named-array construction can produce a trailing pool word.
+
+A shape that DOES reproduce kinoko_red's `.rodata` byte-for-byte exists: a
+second dynamically-initialised static declared after `sc_ForceList` in parse
+order. But it is disqualified as-is -- `-ipa file` will not strip a class-typed
+static with a user-declared constructor even when completely unreferenced, so
+`.bss` grows by `0xC` and `__sinit` by `0x24`, and both of those are already
+exact. Since the target's `__sinit` is 33 instructions and the draft MATCHES it,
+the target has no such second object, so this is the right mechanism and the
+wrong source.
+
+What remains: the target's TU pools a fourth `0.0f` after the triple that no
+instruction loads, with a byte-identical `__sinit`. A pool entry with no
+corresponding code is possible -- pool entries are data -- but nothing yet
+explains what emits it.
+
 ## CORRECTION: sandpillar is NOT blocked on WM_MAP. It is 5 small functions out.
 
 This file records sandpillar as "PARKED at 61/66, correctly blocked on WM_MAP".

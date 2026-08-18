@@ -80,7 +80,7 @@ void daWmCastle_c::createModel() {
     mResFile = dResMng_c::m_instance->getRes("cobCastle", "g3d/model.brres");
 
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobCastle");
-    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
+    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
 
     static const char *resAnmNames[ANIM_COUNT] = {
         "cobCastleOpen",
