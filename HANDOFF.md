@@ -2284,6 +2284,53 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## antlion is ONE BYTE from landing
+
+Built with `.rodata 0x8598-0x85b8` (8-aligned) and diffed the whole REL against
+the original:
+
+```
+sizes 0x2e1228 vs 0x2e1228 | 1 run, 1 byte differs
+  .rodata+0x85b7   built=00   orig=01
+```
+
+**One byte in the entire module.** `.text`, `.ctors`, `.data`, `.bss` and the
+whole relocation table are byte-identical. The byte is the low byte of a `u32`
+`1` the target pools at `.rodata` unit offset `0x1c`, immediately after
+`sc_ForceList`'s `(2160, -30, -478)` triple.
+
+Everything else about the unit is finished: **37/37, order clean, VTABLE CLEAN,
+`.text`/`.data`/`.bss`/`.ctors` all exact.** Landing it also unblocks sandpillar
+at 66/66, so one byte currently gates two units.
+
+**What is ruled out, each by measurement:**
+- The array-destructor / `__register_global_object` path: `fn_2_15B570` passes
+  element size and count as IMMEDIATES (`li r5, 0x24`, `li r6, 0x1`), not pool
+  loads. Falsified from the target's own bytes.
+- The `0x20` "structured object" at `0x85A0`: a mirage. `fn_2_15B3F0` is a
+  three-instruction getter returning the single float `1.0f`; dtk's `0x20` is
+  distance-to-next-label across a pool it cannot subdivide.
+- Grid's `DECL_WEAK` idiom in three forms (named `static const int[]`, anonymous
+  literal, private non-virtual member): all pool at offset `0x10`, AHEAD of the
+  triple. Consistent with the leading/trailing rule -- every user-written
+  function compiles before `__sinit`.
+- Declaring a `ForceInCourseList_t[1]`: lands in `.bss` with a construction
+  guard, wrong mechanism entirely.
+
+**The one shape NOT yet tried**, and the reason it is worth trying: the linkage
+deferral that landed three kinoko units was an IN-CLASS INLINE definition, not a
+`DECL_WEAK` out-of-line one. In `.data` that demonstrably defers a weak
+function's literals PAST the vtable pool -- i.e. past the last strong emission.
+If `.rodata` has the same two-pass behaviour, an in-class inline member whose
+body pools a `u32` `1` would defer past `__sinit`'s triple, which is exactly the
+position needed. The three attempts so far were all out-of-line and therefore
+strong.
+
+Note also what the constant is: an integer `1` in a POOL rather than an `li`
+immediate. MWCC uses `li` for a plain integer literal, so a pooled `1` implies
+it is an ELEMENT of an aggregate -- a `static const` array or struct initialiser
+-- not a bare scalar.
+
 ## course 18/23, SECTIONS CLEAN — and the LEADING vs TRAILING pool distinction
 
 The pool gap is solved and it produced the rule that explains all three units
