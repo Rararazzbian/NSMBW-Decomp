@@ -44,6 +44,28 @@ Pass `--layout` to print the strong-symbol offsets of the strict sections even
 when the sizes agree, and compare them against the target's own layout. A
 size-only pass is not a layout proof.
 
+AND WHAT IT USED TO GET WRONG IN THE OTHER DIRECTION
+----------------------------------------------------
+Every other defect found in this tool produced a FALSE CLEAN. This one produced
+a FALSE ALARM, and it cost two full investigation rounds on `d_a_wm_kinoko_red.cpp`
+chasing a 4-byte `.rodata` "shortfall" that was never real.
+
+A slice claim runs to where the NEXT unit's first symbol begins, not to where
+this unit's own content ends. The bytes in between are inter-unit padding, they
+belong inside the claim, and no compiled object will ever contain them. So a
+claim can legitimately be a few bytes larger than the object.
+
+Six ALREADY-LANDED units have exactly this shape and all six were reported
+`NOT ready to land` by the old logic: `d_awa.cpp`, `d_a_wm_cannon.cpp`,
+`d_a_wm_dokan_route.cpp`, `d_a_remo_door.cpp`, `d_a_en_noko.cpp` and
+`d_a_en_snake_block.cpp`.
+
+The fix is not a fudge factor. The tool now reads the target's own symbol map
+and asks whether the object covers every REAL symbol in the claimed range; if
+it does, the remainder is padding and the section is clean. If it does not, a
+real object is genuinely missing and it still fails. Pass `--module-map` off
+only if the map is unavailable, which reverts to the old, noisier behaviour.
+
 Usage
 -----
     python wip/wm_units/check_sections.py <draft.cpp|draft.o> <module> \
@@ -61,6 +83,39 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools', 'auto_decomp'))
 import harness as H  # noqa: E402
+
+
+def target_content_end(module, section, lo, hi):
+    """End offset, relative to `lo`, of the last REAL target symbol in [lo, hi).
+
+    A slice claim runs to the next unit's first symbol, so the tail of a claim
+    can be inter-unit padding that no object will ever contain. Everything up to
+    the last real symbol IS this unit's and must be present; past it is padding.
+    Returns None when the map has nothing to say, so the caller falls back to
+    comparing against the claim itself.
+    """
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))), 'bin', 'dtk', module + '_symbols.txt')
+    if not os.path.exists(path):
+        return None
+    import re
+    pat = re.compile(r'^(\S+)\s*=\s*(\.\w+):(0x[0-9A-Fa-f]+);(?:.*size:(0x[0-9A-Fa-f]+))?')
+    end = None
+    with open(path, encoding='utf-8', errors='replace') as fh:
+        for line in fh:
+            m = pat.match(line.strip())
+            if not m or m.group(2) != section:
+                continue
+            addr = int(m.group(3), 16)
+            if not (lo <= addr < hi):
+                continue
+            size = int(m.group(4), 16) if m.group(4) else 0
+            # dtk's `gap_*` and `pad_*` labels are padding by definition and must
+            # not be counted as content this unit owes.
+            if m.group(1).startswith(('gap_', 'pad_')):
+                continue
+            end = max(end or 0, min(addr + size, hi) - lo)
+    return end
 
 # Sections the linker places wholesale, where a surplus really does shift
 # everything downstream. `.text` is deliberately absent -- see the docstring.
@@ -184,13 +239,20 @@ def main():
         # gaps below the last one and wildly overstates what must be placed --
         # it failed the landed, 5/5-verified d_a_wm_grid.cpp when applied there.
         strong = strong_extent(symbols, name) if name in STRICT else 0
+        # What this unit actually OWES is content up to the last real target
+        # symbol, not the whole claim -- the tail can be inter-unit padding.
+        content = target_content_end(module, name, lo, hi)
         if got == want:
             verdict = 'ok'
         elif want < strong:
             verdict = 'UNDER %#x of strong symbols -- REAL DEFECT' % (strong - want)
             bad += 1
+        elif got < want and content is not None and got >= content:
+            verdict = ('%#x short of the claim, but covers all %#x of real target '
+                       'content -- the rest is inter-unit padding, ok' % (want - got, content))
         elif got < want:
-            verdict = 'UNDER %#x  -- something is missing' % (want - got)
+            missing = (want - got) if content is None else (content - got)
+            verdict = 'UNDER %#x  -- something is missing' % missing
             bad += 1
         elif name in STRICT:
             verdict = 'over %#x, all weak (%#x strong) -- ok' % (got - want, strong)

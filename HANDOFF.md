@@ -2284,6 +2284,69 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### `check_sections.py` had a FALSE-ALARM defect, affecting six landed units
+
+Every previously-found defect in this tool produced a false CLEAN. This one
+produced a false ALARM, and it cost two full investigation rounds on
+kinoko_red's `.rodata` before anyone questioned the tool instead of the unit.
+
+A slice claim runs to where the NEXT unit's first symbol begins, not to where
+this unit's own content ends. The bytes between are inter-unit padding: they
+belong inside the claim and no compiled object will ever contain them. So a
+claim can legitimately exceed the object.
+
+**Six already-landed, in-tree units have exactly this shape and all six were
+reported `NOT ready to land`:** `d_awa.cpp`, `d_a_wm_cannon.cpp`,
+`d_a_wm_dokan_route.cpp`, `d_a_remo_door.cpp`, `d_a_en_noko.cpp`,
+`d_a_en_snake_block.cpp`. Verified directly here: compiling landed
+`d_a_wm_cannon.cpp` against its own committed slice claim reported
+`.rodata UNDER 0x4 -- something is missing`.
+
+Fixed, and NOT with a fudge factor. The tool now reads the target's own symbol
+map and asks whether the object covers every real symbol in the claimed range,
+ignoring dtk's `gap_*`/`pad_*` labels. Covers them -> the remainder is padding
+and the section is clean. Does not -> a real object is missing and it still
+fails. Landed cannon and dokan_route now report SECTIONS CLEAN; kinoko_base,
+whose missing 8 bytes ARE a real labelled target symbol, still fails.
+
+### …and the fix REFUTES the generalisation that prompted it
+
+kinoko_red was reported as "the same benign artifact". **It is not, and the
+repaired tool is what shows it.** The six landed cases have UNLABELLED trailing
+bytes -- dtk knows the last object's real size and leaves a hole. kinoko_red's
+`lbl_2_rodata_8AF0` is a labelled object whose size covers the full `0x10`, so
+the repaired check still reports `UNDER 0x4`.
+
+The two situations look identical in the old size-only output and are distinct
+in the map. **kinoko_red's 4 bytes remain unexplained**, and the unit is still
+not ready to land. Do not clear it on the "known false positive" reading.
+
+### The post-vtable-pool wall: data CAN follow it, under one narrow condition
+
+The general question -- can source ever cause data to be emitted after the
+vtable pool -- has a precedent, and the answer is yes:
+`source/d_enemiesNP/bases/d_a_en_noko.cpp` places
+`@STRING@slideEffect__10daEnNoko_cFv` and two siblings AFTER the weak template
+vtables `__vt__32sFStateVirtualID_c<10daEnNoko_c>` and
+`__vt__25sFStateID_c<10daEnNoko_c>`, themselves after the class's own strong
+vtable. Those strings are literals inside `slideEffect()`/`kickEffect()` --
+inline virtuals declared in `d_a_en_shell.hpp`/`d_a_en_noko.hpp`, inherited and
+NOT overridden, reachable in that TU only through a vtable slot and never called
+by name. Reproduced synthetically and confirmed.
+
+**It cannot apply to kinoko_base.** Deferral to the late pool is gated on the
+emitting function having no direct textual call in the TU, and kinoko_base's
+`getModelName()` is called by name twice in its own `processCutsceneCommand`.
+Making it inline plus `#pragma explicit_zero_data` got `.data`/`.bss` totals to
+the target exactly (`0x1c0`/`0x10`) but still placed the object at offset
+`0x40`, before `g_profile`. That is a tenth tested shape, failing for an
+identifiable structural reason rather than by chance.
+
+So: the flat rule "vtables are always absolutely last" is WRONG and should not
+be recorded as such. The accurate rule is narrower -- **a function reachable
+only through an inherited, unoverridden vtable slot has its literals deferred to
+a late pool** -- and kinoko_base is structurally excluded from it.
+
 ### koopa_castle 15/17 — and how to add padding under `-ipa file`
 
 Re-verified over the full range `0x1910d0-0x191d40` with all three target
