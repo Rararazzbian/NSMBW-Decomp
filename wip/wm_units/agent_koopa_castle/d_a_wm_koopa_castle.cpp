@@ -20,6 +20,35 @@ int daWmKoopaCastle_c::create() {
     return SUCCEEDED;
 }
 
+// @unofficial New types for two unnamed statics this TU's __sinit
+// constructs (lbl_2_bss_10538, lbl_2_bss_10548) -- see execute()'s comment
+// below for how the layout and values were derived. Kept file-local since
+// no existing header declares a matching shape (grepped
+// include/game/bases/, include/game/mLib/, and the landed WM siblings
+// d_a_wm_smallcloud.cpp/grid.cpp/tower.cpp/cloud.cpp/peach_castle.cpp --
+// none has a 2x-mVec3_c+bool or 4-int static of this shape).
+namespace {
+    struct KoopaShipPos_t {
+        mVec3_c mPos1;
+        mVec3_c mPos2;
+        bool mDone;
+        int mUnk1c; ///< @unofficial Never written by the target's __sinit
+                     ///< (offsets 0x19-0x1f are untouched) -- needed purely
+                     ///< to round sizeof() up to the target's 0x20, exact
+                     ///< meaning (if any) unknown.
+
+        KoopaShipPos_t() {
+            if (!mDone) {
+                mPos1 = mVec3_c(0.0f, 50.0f, -100.0f);
+                mPos2 = mVec3_c(0.0f, 0.0f, -100.0f);
+                mDone = true;
+            }
+        }
+    };
+
+    KoopaShipPos_t s_koopaShipPos;
+}
+
 int daWmKoopaCastle_c::execute() {
     static const ProcFunc Proc_tbl[PROC_COUNT] = {
         &daWmKoopaCastle_c::mode_exec
@@ -32,59 +61,45 @@ int daWmKoopaCastle_c::execute() {
     mModel.play();
     calcModel();
 
-    // TODO: not yet matched -- target reads 6 floats from lbl_2_bss_10548
-    // into mUnk26c..mUnk280 here every frame (fn_2_1912B0 tail, 20 instrs).
+    // lbl_2_bss_10538 (16 bytes) and lbl_2_bss_10548 (32 bytes) are this
+    // TU's two __sinit-constructed statics. lbl_2_bss_10538 turned out to
+    // need NO new declaration: its only observed field (+0xc = int
+    // dCsvData_c::c_START_ID) is already emitted automatically as
+    // `dWmLib::c_StartPointKinokoHouseID` (d_wm_lib.hpp: `static int
+    // c_StartPointKinokoHouseID = dCsvData_c::c_START_ID;`), pulled in
+    // transitively the same way `dWmLib::sc_ForceList` already is -- both
+    // are header-scope statics with dynamic (extern-const-dependent)
+    // initialisers, so -ipa file keeps them regardless of whether this TU
+    // reads them. check_sections confirmed it: the pre-existing, unnamed
+    // 12-byte `@12806` (dWmLib::sc_ForceList's own array-registration
+    // bookkeeping) plus `c_StartPointKinokoHouseID`'s 4 bytes sum to
+    // exactly 0x10 at exactly the right relative offset (+0xc) -- adding a
+    // SEPARATE declaration for lbl_2_bss_10538 double-counted it and
+    // overshot .bss by 0x10 (tried and reverted).
     //
-    // CORRECTION to the previous round's read: lbl_2_bss_10538 and
-    // lbl_2_bss_10548 are TWO SEPARATE bss symbols, not one 0x30-byte
-    // object read at a +0x10 offset -- confirmed from bss_10040.txt (the
-    // target's .bss map): `lbl_2_bss_10538, size 0x10` immediately
-    // followed by `lbl_2_bss_10548, size 0x20`, and execute() itself loads
-    // `lbl_2_bss_10548@ha/@l` DIRECTLY (see fn_2_1912B0), never
-    // bss_10538+0x10. The apparent "+0x10 offset" in __sinit (fn_2_191C30)
-    // is `addi r3, r30, 0x10` where r30 = &lbl_2_bss_10538 -- that IS the
-    // address of lbl_2_bss_10548, just computed relative to its neighbour
-    // instead of via its own lis/ha (the two are laid out adjacently).
-    //
-    // Re-mapping the __sinit writes onto the two REAL objects:
-    //   * lbl_2_bss_10538 (16 bytes): ONE write observed, +0xc = int
-    //     dCsvData_c::c_START_ID, unconditional (not guarded). +0x0..+0xb
-    //     are never written by this TU -- unknown, left as .bss zero.
-    //   * lbl_2_bss_10548 (32 bytes): +0x0/+0x4/+0x8 = 3 floats loaded
-    //     DIRECTLY from lbl_2_rodata_9860+0x1c/+0x30/+0x34 (plain constant
-    //     loads, NO function call in the guarded block -- this is NOT a
-    //     runtime CSV lookup, contrary to the previous round's guess).
-    //     +0xc/+0x10 duplicate the +0x1c-rodata value a second and third
-    //     time, +0x14 duplicates the +0x34-rodata value a second time.
-    //     +0x18 = a guard byte, tested via extsb./bne BEFORE the writes and
-    //     set to 1 after -- always 0 on first run since .bss zero-inits,
-    //     so (as before) the guard is never observed skipping anything.
-    //     +0x19..+0x1f (7 bytes) are never written -- likely alignment
-    //     padding, but could hide another field.
-    //   execute()'s 6-float copy is exactly lbl_2_bss_10548+0x0..+0x18.
-    //
-    // Also confirmed: lbl_2_data_4A2D0 (.data, size 0x24, dtor
-    // __dt__Q26dWmLib19ForceInCourseList_tFv via array-dtor fn_2_191D20)
-    // IS dWmLib::sc_ForceList (d_wm_lib.hpp) -- its fields (c_CASTLE_ID at
-    // +0xc, 3 floats at +0x18/+0x1c/+0x20 from lbl_2_rodata_9860+
-    // 0x24/0x28/0x2c) match the header's existing initialiser
-    // {WORLD_7,"F7C0",WORLD_7,c_CASTLE_ID,4,"W7C0",mVec3_c(2160,-30,-478)}
-    // exactly -- getting this TU to odr-use sc_ForceList (not yet done
-    // below) should emit it automatically, no new type needed for THAT
-    // part.
-    //
-    // Still open: no existing header declares a type shaped like
-    // lbl_2_bss_10538/10548. Given the guard is on the SECOND object only
-    // and both are written by the SAME __sinit call with no intervening
-    // function call, the likeliest shape is two plain file-scope statics
-    // (not a class with a lazy-init member function) -- e.g. a bare
-    // `int s_level = dCsvData_c::c_START_ID;` plus a guarded
-    // `struct { mVec3_c a, b; bool done; } s_pos;` pair initialised by a
-    // single free function called once at namespace scope. NOT attempted
-    // this round: getting __sinit itself byte-exact (it is not one of the
-    // 16 counted functions, but execute() needs the right symbols to
-    // exist) requires iterating on that free function's exact shape, which
-    // needs a fresh compile/diff cycle against fn_2_191C30 -- next round.
+    // lbl_2_bss_10548 (KoopaShipPos_t below) genuinely is new. Its values
+    // were read from the target's raw rodata bytes, not guessed: the
+    // target's __sinit (fn_2_191C30) loads lbl_2_rodata_9860+0x1c/+0x30/
+    // +0x34, and lbl_2_rodata_9860 is itself only a 4-byte symbol (800.0f,
+    // used by mClipSphere.set in create()) -- the disassembler expresses
+    // those loads as offsets FROM it because the surrounding float
+    // constants are pooled without individual labels. Resolving the
+    // addresses against the real rodata dump (rodata_8ef8.txt) gives
+    // 0.0f / 50.0f / -100.0f -- plain compile-time constants, confirmed by
+    // there being no `bl` in the guarded __sinit block (so NOT a runtime
+    // CSV lookup, contrary to an earlier round's guess). mDone relies on
+    // the SAME static-zero-init mechanism (starts false with no
+    // constructor init-list entry, matching "always 0 on first run" from
+    // the disassembly) rather than an explicit `: mDone(false)`, which the
+    // compiler could constant-fold away and never emit the guard check
+    // for at all. mUnk1c pads sizeof() to the target's 0x20 -- see its own
+    // comment.
+    mUnk26c = s_koopaShipPos.mPos1.x;
+    mUnk270 = s_koopaShipPos.mPos1.y;
+    mUnk274 = s_koopaShipPos.mPos1.z;
+    mUnk278 = s_koopaShipPos.mPos2.x;
+    mUnk27c = s_koopaShipPos.mPos2.y;
+    mUnk280 = s_koopaShipPos.mPos2.z;
 
     return SUCCEEDED;
 }

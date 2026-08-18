@@ -2284,6 +2284,80 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### koopa_castle: `execute` MATCHES, but the unit is 14/16, not 15/16
+
+`execute` closed 20 -> 0 and `check_sections --layout` is now SECTIONS CLEAN
+and `check_vtable` VTABLE CLEAN with zero unverifiable slots. Both re-verified
+here.
+
+**The 15/16 count is measured on a range that excludes one of the unit's own
+functions.** `fn_2_191C30` (0xE8, 58 instructions) is koopa_castle's `__sinit`,
+and it lives in `auto_fn_2_191C30_text.o` -- an object that is NOT in the
+`TARGET_OBJS` map in `wip/wm_units/agent_koopa_castle/diffdump.py`, so neither
+that script nor a verify run built on the same two objects can see it. Over the
+unit's real range `0x1910d0-0x191d40` with that object included, the count is
+**14/16**: `createModel` (6 differing) and `__sinit` (differing) are both open.
+
+Structure of the unit's `.text`, for whoever picks it up:
+`0x1910d0` classInit … `0x191bf0` isReady, `0x191c30` `__sinit`,
+`0x191d20` the array destructor (0x1c), next unit at `0x191d40`. The
+`__arraydtor$12805` at `0x1910B0`, which sits BEFORE classInit, is the PREVIOUS
+unit's -- consistent with the rule that a wm unit ends after its own array
+destructor. A verify run whose `lo` reaches back to `0x1910B0` therefore picks
+up a foreign function and reports a spurious `FUNCTION ORDER IS WRONG`. **That
+warning was an artefact of the range, not a defect**; over `0x1910d0-0x191d40`
+no ordering violation is reported, so it can be waived.
+
+**`__sinit`'s difference is addressing, not layout.** Both are 58 instructions
+and the object layout is already right -- the guard sits at `r30+0x28`, which is
+struct-base `+0x18` inside a 0x20 struct, in both. What differs:
+
+```
+target                         draft
+lbz  r0, 0x28(r30)             addi r4, r30, 0x10     <- pointer computed FIRST
+extsb. r0, r0                  lbz  r0, 0x18(r4)
+addi r3, r30, 0x10             cmpwi r0, 0x0
+```
+
+Two separable signals. The target computes the struct pointer AFTER testing the
+guard and reads the guard off the original anchor `r30`, while the draft hoists
+the derived pointer and addresses everything through it. And the target tests
+with **`extsb.`** where the draft uses **`cmpwi`** -- `extsb.` is the signed-char
+test MWCC emits under `-char signed`, which points at the guard being declared
+as a `char`/`s8` and tested as `if (!g)`, not as a `bool` member reached through
+the struct pointer.
+
+That suggests the guard is a separate file-scope static declared adjacent to the
+struct rather than a member of it -- same address, same total `.bss`, different
+addressing. Worth trying before anything more elaborate.
+
+**`createModel` is a clean 3-way stack-slot rotation**, characterised exactly:
+
+| temporary | target slot | draft slot |
+|---|---|---|
+| outer `resMdl` copy passed to `mModel.create` | `0x8(r1)` | `0x10(r1)` |
+| per-iteration `ResAnmChr` copy | `0xc(r1)` | `0x8(r1)` |
+| per-iteration `resMdl` re-copy | `0x10(r1)` | `0xc(r1)` |
+
+Six instructions, all `stw`/`addi` immediates; everything else byte-identical.
+This is the same loop-local group wall as ghost, and the inline-wrapper fix is
+confirmed dead for this instance.
+
+**A `.bss` lesson worth generalising:** an unexplained `.bss` symbol is not
+automatically a missing declaration. `lbl_2_bss_10538` needed NO new static --
+the anonymous `@12806` (0xc, `sc_ForceList`'s array-registration bookkeeping)
+plus `dWmLib::c_StartPointKinokoHouseID` (0x4) already summed to 0x10 at the
+right offset, pulled in transitively by the same `-ipa file` mechanism that
+keeps `sc_ForceList` itself. Declaring a new one put `.bss` 10 bytes over.
+**Check `check_sections`'s symbol dump for something already present at the
+right size and offset before declaring anything.**
+
+Also confirmed against the target bytes: the guarded float writes are plain
+`.rodata` constant loads (`0.0f`, `50.0f`, `-100.0f`), with no `bl` in the
+block -- the earlier "runtime CSV lookup" reading is dead. And a guard given
+`: mDone(false)` in the constructor init-list gets constant-folded away; relying
+on implicit static-storage zero-init is what makes the check get emitted.
+
 ### CORRECTION: kinoko_base's 8-byte tail IS its own. I got this wrong.
 
 I concluded that the `0x18` block at `0x45A68` belonged to WM_KINOKO_RED and
