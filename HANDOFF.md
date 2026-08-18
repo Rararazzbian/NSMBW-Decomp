@@ -2284,6 +2284,52 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## koopa_castle PARKED at 16/17 — 19 measured shapes on one construct
+
+The declaration-versus-usage lever does NOT transfer, and the reason is a real
+limit on that lever worth knowing.
+
+**Staging through named locals breaks MWCC's cross-statement constant-folding
+scope.** koopa_castle's `__sinit` writes two `mVec3_c` values that SHARE two of
+their three constants, and the direct-temporary form lets MWCC reuse the same
+registers (`f2` for `0.0`, `f0` for `-100.0`) across BOTH constructions -- it
+treats the whole `doInit()` body as one folding scope. Every variant that
+introduced named locals broke that scope: the compiler stopped sharing registers
+across the two constructions and loaded each local independently, producing FOUR
+loads where the target has three.
+
+So the lever controls WHICH register holds WHICH value. koopa_castle's residual
+is WHEN the derived pointer is materialised. Different axis; the lever cannot
+reach it.
+
+Measured this round, load order recorded rather than just diff counts. The
+target's sequence for the first vector is `f2(x=0.0), f0(z=-100.0), f1(y=50.0)`
+-- and **the current landed baseline already matches that exactly**:
+
+| shape | load order | diffs |
+|---|---|---|
+| baseline, direct temporaries | `f2(x), f0(z), f1(y)` -- matches target | **13** |
+| locals in x,z,y, natural-order call | collapsed to 4 loads, sharing broken | 20 |
+| locals for both vectors, natural order | same collapse | 20 |
+| locals in strict right-to-left z,y,x | `f2(x), f0(y), f1(z)` -- position right, VALUES swapped | 14 |
+| locals in y,z,x | different swap | 17 |
+| base pointer as a local declared first in the guarded block | identical to baseline | 13 |
+| that plus locals | same collapse | 20 |
+
+The closest miss (14) only reordered two already-matching loads. **None of the
+seven touched the pointer-materialisation instructions at all** -- they stayed
+byte-for-byte identical to baseline in every variant.
+
+Also checked and excluded: the ABI-shape caveat from castle does not apply here.
+`__sinit` writes through a global in every variant, not a hidden result pointer.
+
+**That is 19 distinct measured shapes across two units** (12 in the earlier
+sweep, 7 here) landing on the same construct without closing it. Recording the
+construct as a documented wall rather than an unexplored gap.
+
+`d_a_wm_koopa_castle.cpp` is **16/17, SECTIONS CLEAN, VTABLE CLEAN**, with only
+`__sinit`'s 13 open.
+
 ## castle 18/20 — NEW LEVER: decouple DECLARATION order from USAGE order
 
 `checkCourseResult` closed 4 -> MATCH, and the lever is new and general.

@@ -10,21 +10,22 @@
 #include <game/bases/d_info.hpp>
 #include <game/framework/f_manager.hpp>
 
-// @unofficial Pool-ordering probe -- NOT confirmed correct, experimental.
-// Target .rodata:0x87b0-0x87f0 opens with four words {0.0f, 1.0f, 0x003C000A,
-// 0.0f} that no placed function in this unit's .text loads at any pool
-// displacement (checked exhaustively against every base-register load site,
-// cross-verified against the REL's own relocation stream via
-// wip/wm_units/check_bounds.py referrers(), which also comes up empty for
-// this address). That shape -- real bytes, no live reader -- matches the
-// documented d_a_wm_grid.cpp trick: a DECL_WEAK function whose body is
-// deadstripped by the linker but whose literal-pool entries survive, used
-// there to seed a single leading 0.0f. 0x003C000A decodes as two big-endian
-// s16 (60, 10).
-DECL_WEAK
-void DUMMY_ORDERING() {
-    static const u32 UNUSED[4] = {0x00000000, 0x3F800000, 0x003C000A, 0x00000000};
-}
+// Corrects the earlier "DUMMY_ORDERING" reading: this pool IS live. Five
+// functions below (createModel's two ANM_OPEN setMatClrAnm calls,
+// updateOpenAnim, openNeighbors, updateClearAnim, updateHelpFade x2) read a
+// shared 1.0f from .rodata:0x87b0+0x4 via a freshly-materialised base
+// register each time, NOT from the separate, independently-addressed 0.0f/
+// 1.0f pair at 0x87d0/0x87d4 that every OTHER 0.0f/1.0f call in this unit
+// uses. A named `static const` pools eagerly at its DECLARATION point
+// (project-wide rule), so declaring it here, before create(), lands it first
+// in the unit's rodata -- matching the target's own 0x87b0 placement, ahead
+// of create()'s 80.0f (0x87c0) and createModel()'s generic 0.0f/1.0f pair
+// (0x87d0/0x87d4). Elements [2]/[3] (0x003C000A -- two big-endian s16, 60 and
+// 10 -- then a second 0.0f) are read verbatim off the target's own pool dump
+// but have no identified reader in this TU; kept as trailing words so the
+// object's total size and the pool's byte content still match exactly.
+static const u32 sOpenFullRateSeed[4] = {0x00000000, 0x3F800000, 0x003C000A, 0x00000000};
+#define sOpenFullRate (*reinterpret_cast<const float *>(&sOpenFullRateSeed[1]))
 
 ACTOR_PROFILE(WM_COURSE, daWmCourse_c, 0);
 
@@ -237,7 +238,7 @@ void daWmCourse_c::createModel() {
             case 3:
                 switch (GetClearStatus()) {
                     case 0:
-                        setMatClrAnm(2, 1.0f, 0.0f);
+                        setMatClrAnm(2, sOpenFullRate, 0.0f);
                         if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, (int)ACTOR_PARAM(CourseNo))) {
                             setMatClrAnm(1, 1.0f, 0.0f);
                         }
@@ -267,7 +268,7 @@ void daWmCourse_c::createModel() {
         }
     } else {
         if (!IsCourseClear()) {
-            setMatClrAnm(2, 1.0f, 0.0f);
+            setMatClrAnm(2, sOpenFullRate, 0.0f);
         } else {
             setMatClrAnm(0, 0.0f, 0.0f);
         }
@@ -436,7 +437,7 @@ bool daWmCourse_c::updateOpenAnim() {
             case 1:
                 fn_80103420(dWmEffectManager_c::m_pInstance, 0x21, mModel, "cobCourse", 0, 0);
                 dWmSeManager_c::m_pInstance->playSound(0x1f, mPos, 1);
-                setMatClrAnm(2, 1.0f, 0.0f);
+                setMatClrAnm(2, sOpenFullRate, 0.0f);
                 mOpenState = 3;
                 break;
             case 3: {
@@ -507,7 +508,7 @@ void daWmCourse_c::openNeighbors(bool fastRate) {
     daWmCourse_c *neighbor = (daWmCourse_c *)fManager_c::searchBaseByProfName(0x27e, nullptr);
     while (neighbor != nullptr) {
         if (fastRate) {
-            neighbor->mMatClrAnim[ANM_OPEN].setRate(1.0f, 0);
+            neighbor->mMatClrAnim[ANM_OPEN].setRate(sOpenFullRate, 0);
         } else {
             neighbor->mMatClrAnim[ANM_OPEN].setRate(0.0f, 0);
             int frames = 60;
@@ -538,7 +539,7 @@ void daWmCourse_c::updateSpecialWorld() {
 // unconditionally.
 void daWmCourse_c::updateClearAnim(bool immediate) {
     u32 courseNo = ACTOR_PARAM(CourseNo);
-    float baseRate = immediate ? 0.0f : 1.0f;
+    float baseRate = immediate ? 0.0f : sOpenFullRate;
 
     if (courseNo == 3 && dScWMap_c::m_WorldNo == 2) {
         if (*reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)) {
@@ -573,12 +574,12 @@ void daWmCourse_c::updateHelpFade() {
         float neighborFrame = neighbor->getMatClrFrame();
         float ownFrame = mMatClrAnim[ANM_OPEN].getFrame(0);
         if (ownFrame == neighborFrame) {
-            mMatClrAnim[ANM_OPEN].setRate(1.0f, 0);
+            mMatClrAnim[ANM_OPEN].setRate(sOpenFullRate, 0);
             mUnk250 = false;
         }
         return;
     }
-    mMatClrAnim[ANM_OPEN].setRate(1.0f, 0);
+    mMatClrAnim[ANM_OPEN].setRate(sOpenFullRate, 0);
     mUnk250 = false;
 }
 
