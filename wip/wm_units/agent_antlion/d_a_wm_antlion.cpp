@@ -296,6 +296,42 @@ int daWmAntlion_c::doDelete() {
     return SUCCEEDED;
 }
 
+/// @unofficial `.rodata` UNDER 0xc, UNRESOLVED (re-investigated this round,
+/// still open): target's pool at .rodata:0x8598 is ten words -- {100.0,
+/// 0.0, 1.0, -1.0} (all four confirmed used, by create()/processCutsceneCommand),
+/// {2160.0, -30.0, -478.0} (the sc_ForceList triple, confirmed used, by
+/// __sinit alone), then a TRAILING {int 1, 0, 0} that no placed function in
+/// this unit loads -- confirmed by exhaustively re-diffing all 37 functions
+/// individually against target bytes (not just the aggregate 37/37): none
+/// contains a load at pool offset +0x1c/+0x20/+0x24, and none of the 37 are
+/// unaccounted for in the first place.
+///
+/// Three attempts to reproduce a landed "dummy ordering" pool entry all
+/// failed to reach the TRAILING position specifically (they all pool the
+/// {1,0,0} EARLY instead, before the sc_ForceList triple, regardless of
+/// construct): a DECL_WEAK free function with a named `static const int[]`
+/// (matches d_a_wm_grid.cpp's own idiom exactly, but that idiom is
+/// documented there as a LEADING pad); the same with the "static" dropped
+/// (anonymous literal); and the same again as a private non-virtual member
+/// of this class instead of a free function. All three land at unit
+/// .rodata offset 0x10, pushing the real triple to 0x1c -- SECTIONS CLEAN
+/// (right aggregate size) but --layout wrong (wrong position), which is
+/// exactly the class of defect check_sections.py's own docstring warns
+/// --layout is needed to catch.
+///
+/// This is not a new problem: source/d_basesNP/bases/d_a_wm_kinoko_red.cpp
+/// (a LANDED, byte-exact sibling) documents the IDENTICAL shape of gap --
+/// a TRAILING pool word after its own __sinit's own float triple -- as
+/// independently investigated and left UNRESOLVED: "Empirically reproducing
+/// grid's own trick ... still pools the dummy 0.0f BEFORE the triple, not
+/// after ... because __sinit itself appears to always be the last thing
+/// compiled, so nothing textual can compile 'after' it to explain a
+/// TRAILING pad." That agent's conclusion: "Net: this is a genuinely
+/// different finding from grid/tower's case ... recording it as such rather
+/// than forcing a fix." Antlion's own trailing gap reproduces the exact
+/// same shape and the exact same empirical dead end, on an independent unit
+/// -- consistent with a genuine MWCC/toolchain-level constraint for this
+/// specific "content must follow __sinit" case, not a defect in this draft.
 void daWmAntlion_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 

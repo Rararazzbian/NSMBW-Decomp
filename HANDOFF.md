@@ -2284,6 +2284,45 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## antlion needs ONE integer word, and the claim end must be 8-ALIGNED
+
+Sharpened by building, not by argument. Three facts, each measured:
+
+**1. A slice's `.rodata` claim end must be 8-byte aligned.** With
+`.rodata 0x8598-0x85b4` -- the bound that exactly matches the object's `0x1c` --
+the module's `.rodata` comes out `0xa604` against the original's `0xa5fc`, EIGHT
+BYTES LARGE, purely from alignment quantisation. With the end at `0x85b8` or
+`0x85bc` (both 8-aligned) `.rodata` is **exactly `0xa5fc`** and the whole REL is
+the right size, `0x2e1228`. `0x85b4` is not 8-aligned; that was the entire
+size discrepancy, and it had nothing to do with missing content.
+
+**2. `.text`, `.data`, `.bss` and `.ctors` all link EXACTLY.** Confirmed from the
+built REL's own section table against the original's. Antlion does NOT have
+sandpillar's placed-weak-symbol problem.
+
+**3. The real shortfall is ONE WORD, not three.** With the 8-aligned claim the
+first differing byte is at `.rodata:0x85b7` -- the low byte of the integer `1` at
+`0x85b4`. The object provides seven words ending at `0x85b4`; the target has an
+eighth. The `0, 0` after it are inside the alignment tail, not content the object
+owes.
+
+So antlion is **37/37, order clean, vtable clean, bounds plausible, four of five
+sections exact, and one pooled integer `1` from landing** -- which then unblocks
+sandpillar at 66/66.
+
+**What has been ruled out for producing it**, all measured: grid's
+`DECL_WEAK` + named `static const int[]` idiom; the same with the `static`
+dropped (anonymous literal); and the same as a private non-virtual member. All
+three pool at unit offset `0x10`, AHEAD of the `sc_ForceList` triple, pushing it
+to `0x1c` -- size right, layout backwards.
+
+That matches `d_a_wm_kinoko_red.cpp`'s independently-recorded dead end on the
+same shape. **But note kinoko_red LANDED**, and its resolution was that its
+trailing bytes were zero and the linker filled them. Antlion's missing word is
+`1`, so that escape does not apply -- the object genuinely has to emit it.
+
+Reverted; tree green at 5/5.
+
 ## Relocations target a pool's BASE, never its entries. Do not search for
 ## "who references this constant".
 
