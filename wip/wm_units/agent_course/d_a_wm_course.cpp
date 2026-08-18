@@ -1,5 +1,6 @@
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_a_wm_map.hpp>
+#include <game/bases/d_a_wm_player.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_a_wm_course.hpp>
 #include <game/bases/d_wm_lib_course_ext.hpp>
@@ -30,6 +31,23 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &mode
 // argument-less; declared that way, but unverifiable while blocked.
 extern "C" bool fn_2_191BF0();
 
+// @unofficial Unnamed in the symbol map (fn_2_189A20, .text:0x189A20, 0x64 B;
+// fn_2_189990, .text:0x189990, 0x88 B), both owned by a different not-yet-
+// landed TU inside d_basesNP -- fn_2_189990 shows up as the destination of a
+// switch jump table in two other wip units' `.data` (`agent_koopa_castle` and
+// `agent_sandpillar`'s `fn_2_189990+0x20 .. +0x74` entries), which is the
+// function's OWN internal dispatch, not a class vtable; it tells us nothing
+// about this call site's argument types. Same class of blocker as
+// fn_2_191BF0/fn_80103420: syms.txt only carries DOL addresses, so a
+// REL-internal symbol from an unlanded TU cannot resolve here. At the one
+// call site below, `fn_2_189A20(world)` is called with no `this` setup and
+// its return sits untouched in r3 right up to the `bl fn_2_189990`, which is
+// only possible if that return value IS fn_2_189990's first argument -- the
+// two calls chain. Declared as a plain int-in/pointer-out pair on that
+// evidence; unverifiable further while blocked.
+extern "C" void *fn_2_189A20(int world);
+extern "C" void fn_2_189990(void *obj, int, int);
+
 static const char *sResAnmNames[daWmCourse_c::ANIM_COUNT] = {
     "cobCourseClear",
     "cobCourseHelp",
@@ -50,6 +68,14 @@ static const m3d::playMode_e sPlayModes[daWmCourse_c::ANIM_COUNT] = {
 daWmCourse_c::daWmCourse_c() : mOpenState(0) {}
 daWmCourse_c::~daWmCourse_c() {}
 
+// Matches fn_2_160610's shape. GetCourseTypeFromCourseNo()==8 is the "Koopa
+// ship" course type; the branches below construct either a WM_KOOPASHIP or a
+// WM_ANCHOR child actor at a stack-local copy of mVec3_c::Zero (staged
+// through a local, not `&mVec3_c::Zero` directly -- see AGENT_CONTEXT.md
+// lever 6) and fire one of several airship-themed dCsSeqMng_c cutscenes.
+// IsCourseClear()/IsCourseFirstOmoteClear() are each called twice at
+// different points in the target's bytes rather than cached, which is why
+// the same calls appear twice below instead of once in a shared local.
 int daWmCourse_c::create() {
     createModel();
     calcModel();
@@ -57,13 +83,60 @@ int daWmCourse_c::create() {
     mUnk250 = false;
     mClipSphere.set(mPos, 80.0f);
 
-    // TODO: not yet matched -- target dispatches on GetCourseTypeFromCourseNo(),
-    // m_WorldNo, isKoopaShipOnCurrentWorld(), IsCourseClear()/IsCourseFirstOmoteClear()
-    // here (fn_2_160610, ~224 instructions) when !isSpecialWorld().
-    if (!dWmLib::isSpecialWorld()) {
-        dWmLib::GetCourseTypeFromCourseNo(ACTOR_PARAM(CourseNo));
+    if (!dWmLib::isSpecialWorld() && dWmLib::GetCourseTypeFromCourseNo((int)ACTOR_PARAM(CourseNo)) == 8) {
+        u8 world = dScWMap_c::m_WorldNo;
+
+        if (dWmLib::isKoopaShipOnCurrentWorld()) {
+            if (!IsCourseClear() || IsCourseFirstOmoteClear()) {
+                int param = 3;
+                if (IsCourseFirstOmoteClear() && dScWMap_c::m_WorldNo != 7) {
+                    param = 4;
+                }
+
+                mVec3_c zeroPos = mVec3_c::Zero;
+                dWmActor_c *ship = dWmActor_c::construct(fProfile::WM_KOOPASHIP, this, param, &zeroPos, nullptr);
+
+                if (world != 7) {
+                    if (IsCourseFirstClear()) {
+                        daWmPlayer_c::ms_instance->mPos = ship->mPos;
+                        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_AIRSHIP_GONEXT, nullptr, nullptr, 200);
+                    }
+                } else {
+                    if (IsCourseFirstOmoteClear()) {
+                        fn_2_189990(fn_2_189A20(world), 0, 4);
+                        daWmPlayer_c::ms_instance->mPos = ship->mPos;
+                        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_KOOPACASTLEAPPEAR, nullptr, nullptr, 200);
+                    }
+                }
+            } else if (IsCourseClear()) {
+                if (world == 7) {
+                    mVec3_c zeroPos = mVec3_c::Zero;
+                    dWmActor_c::construct(fProfile::WM_KOOPASHIP, this, 3, &zeroPos, nullptr);
+
+                    if ((int)ACTOR_PARAM(CourseNo) == 0x25 && dInfo_c::m_instance->m_54 == 0x25
+                        && (u32)(dInfo_c::m_instance->m_60 - 2) <= 3) {
+                        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_AIRSHIP_CLEAR, nullptr, nullptr, 200);
+                    }
+                } else {
+                    mVec3_c zeroPos = mVec3_c::Zero;
+                    dWmActor_c::construct(fProfile::WM_ANCHOR, this, 0, &zeroPos, nullptr);
+                }
+            }
+
+            if (IsCourseFailed() && (!IsCourseClear() || world == 7)) {
+                dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_AIRSHIP_COURSE_OUT, nullptr, nullptr, 200);
+            }
+        } else {
+            mVec3_c zeroPos = mVec3_c::Zero;
+            dWmActor_c::construct(fProfile::WM_ANCHOR, this, 0, &zeroPos, nullptr);
+
+            if (IsCourseFirstClear()) {
+                dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_W36_CLEAR_NORMAL, nullptr, nullptr, 200);
+            }
+        }
     }
 
+    mModel.setPriorityDraw(0, 0);
     return SUCCEEDED;
 }
 

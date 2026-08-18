@@ -2284,6 +2284,49 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## CORRECTION: WM_ANTLION is `0x15AC80-0x15B590`. I gave the wrong bounds.
+
+I dispatched antlion with `.text 0x15ab40-0x15b450`, derived by scanning
+`g_profile_*` symbols and taking their addresses. **That scan read each profile
+OBJECT's own `.data` address instead of the classInit it points at.** Read
+properly, from the profile objects' first word:
+
+```
+g_profile_WM_ANTLION      -> fn_2_15AC80
+g_profile_WM_ANTLION_MNG  -> fn_2_15B590
+```
+
+So WM_ANTLION is **`0x15AC80-0x15B590`**, and both ends of what I supplied were
+wrong: `0x15ab40` reaches back into the PREVIOUS unit, and `0x15b450` cuts the
+unit short by `0x140`.
+
+The agent suspected the upper bound independently and was right: `fn_2_15B4E0`
+(0x84) and `fn_2_15B570` (0x1c) read antlion's OWN `sc_ForceList`
+(`lbl_2_data_43798`), confirmed from the relocation stream, and both sit past
+`0x15b450`. A unit does not reach across a boundary for another TU's copy of a
+per-TU header static -- so those functions are antlion's, and the claim had to
+extend.
+
+**A unit's `.text` starts AT its classInit**, as every landed unit does. Deriving
+a range from a profile's own address rather than from `.4byte fn_2_*` inside the
+profile object is a mistake to avoid repeating.
+
+**This also confirms the sandpillar dependency.** The shared state-framework
+functions at `0x15B320-0x15B4C0` fall inside the corrected antlion range, so
+antlion really is the owner and really does supply sandpillar's dedup partner.
+The relocation stream shows those functions referenced from vtables scattered
+across `.data` (around `0x43868`, `0x496f8`, `0x4a1a0`, `0x4a500`, `0x4a730`,
+`0x4b0a0`), i.e. by many different actors -- exactly what shared framework code
+looks like.
+
+**Antlion progress so far, on the WRONG bounds and so worth re-measuring:**
+26/36, with constructor, destructor, `create`, `execute`, `calc` and
+`processCutsceneCommand` byte-identical. `daWmAntlion_c : public dWmEnemy_c`,
+`sizeof 0x7b0`, members `dHeapAllocator_c +0x6e8`, `m3d::mdl_c +0x704`,
+`m3d::anmChr_c +0x744`, `m3d::anmTexSrt_c +0x77c`. `createModel` is 106/110 with
+one stack-slot pair swapped; `doDelete` is 11/12 with `mModel.remove()` landing
+on vtable slot 4 where the target wants slot 5.
+
 ## course: `create` is NOT blocked on the mystery static. Only `createModel` is.
 
 The course round deferred BOTH `create` (217 differing) and the back half of
