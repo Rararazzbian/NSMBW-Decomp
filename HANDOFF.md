@@ -2284,6 +2284,45 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## antlion: PARKED one byte short. The mechanism is understood and closed.
+
+Every path to producing that `u32` `1` has now been tested. The result is a
+clean impossibility argument rather than a list of failed guesses:
+
+**Surviving `-ipa file` as a dead symbol requires a FREE function.** `DECL_WEAK`
+preserves a free function whose code is never called -- all three earlier
+attempts survived, just at the wrong position. Applied to a MEMBER function it
+does NOT: `-ipa file` proves a member with no caller and no vtable slot is
+unreachable from any TU and removes code and pool together. Measured twice, with
+and without `DECL_WEAK`; the symbol is absent from `.text` entirely.
+
+**Deferring a pool past the last strong emission requires `virtual` + an
+ANONYMOUS literal.** That is the kinoko condition, re-read from kinoko_base's own
+notes: being called by name is fine, but the definition must be an in-class
+inline VIRTUAL, and the literal must be anonymous -- **a named `static const`
+pools eagerly regardless of which function uses it.**
+
+**The two requirements are mutually exclusive here.** A free function cannot be
+virtual. Making it a virtual member would add a vtable slot and grow `.data` by
+4 bytes -- and `.data` is already byte-identical to the target, as is `.text`.
+That trades a correct section for an incorrect one, so it is a regression, not a
+fix. The agent declined to compile it destructively, which was right.
+
+**Final state: 37/37, order clean, VTABLE CLEAN, `.text`/`.ctors`/`.data`/`.bss`
+all byte-identical, one byte of `.rodata` short.** The whole REL differs from the
+original by that single byte with claim `.rodata 0x8598-0x85b8`.
+
+**The open possibility, for a future pass:** that the `1` is not antlion's at all
+but the first word of the NEXT unit's pool, with antlion ending at `0x85b4`. That
+bound makes `.rodata` 8 bytes LARGE through alignment quantisation rather than
+1 byte wrong, so the slice format cannot currently express it -- but WM_ANTLION_MNG
+(`0x15b590`, 79 functions) is the neighbour, and landing it would settle
+ownership the same way kinoko_base settled kinoko_red's.
+
+Do not spend more rounds forcing this from antlion's own source. It gates
+sandpillar, which is unfortunate, but breaking two exact sections to fix one byte
+is the wrong trade.
+
 ## antlion is ONE BYTE from landing
 
 Built with `.rodata 0x8598-0x85b8` (8-aligned) and diffed the whole REL against
