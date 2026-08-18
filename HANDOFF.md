@@ -2284,6 +2284,82 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### kinoko_base: 16/16, layout exact to `0x88`, and the tail is 8 bytes
+
+Re-measured from the target bytes rather than from the earlier summary, and two
+things changed.
+
+**1. `createModel` MATCHES.** The wrapper fix took: all 16 target functions in
+`0x16b2d0-0x16bda0` are byte-identical modulo symbol names, `createModel`
+included (161 instructions). The "same wall as ghost" note for this unit is
+stale -- ghost's instance of it is still open, kinoko_base's is not.
+
+**2. A second `.data` defect, invisible to every size check, is fixed.**
+`lbl_2_data_458F0` carries `.4byte lbl_2_data_458F0` TWICE, at unit offsets
+`0x50` AND `0x54` -- two distinct function-local `const char *` statics both
+initialised to `"cobKinokoAppear"`. The draft had one. Because `0x54` is
+padding either way, `.data` totals `0x1b8` with one pointer or two, so
+`check_sections.py` reports the identical size and `--layout` shows no gap.
+The only way to see it is to read the target's relocated words. Fixed by
+declaring `smc_unusedAppearName2` alongside the first; `.text` is unchanged at
+`0xe60` and the layout now matches the target symbol-for-symbol through `0x88`.
+
+**3. `getModelName`'s target is confirmed, not inferred.** `fn_2_16BCD0` (the
+unit's last vtable slot) is `lis r3, lbl_2_data_45A68@ha; addi; blr`. So the
+8-byte object at unit offset `0x1b8` is real and is what `getModelName` returns.
+
+**4. The weak vtables ARE placed.** `lbl_2_data_45938` is `0x130` = the `0x88`
+`__vt__16daWmKinokoBase_c` plus `0xA8` that dtk renders as zeros. `0xA8` is
+exactly `__vt__13dWmObjActor_c` (0x78) + `__vt__Q23m3d13anmChrBlend_c` (0x18) +
+`__vt__Q23m3d8anmChr_c` (0x18), the three weak vtables the draft emits. They
+render as zeros because their entries are cross-module REL imports, not
+self-relocations. Do not read a zero run in a REL data dump as absent data.
+
+**5. `#pragma explicit_zero_data on` is the third MWCC data category.** The
+open question was how to get an all-zero object into `.data` when MWCC sends
+zero-initialised data to `.bss`. This pragma does it, scoped to the declaration:
+`.data` becomes exactly `0x1c0` and `.bss` exactly `0x10`, both matching the
+claim. It is a real, contained answer to a question that had been open.
+
+**It is still not enough, and the reason is a rule worth keeping:** MWCC emits
+every `.data` object BEFORE the vtable pool, without exception. Nine shapes were
+tested -- plain static, `const`, `__declspec(weak)`, `__declspec(section)`,
+anonymous namespace, class static member, template static member, a static
+local of an inline (weak) function, and a definition physically at end of file
+behind a forwarder. **All nine land at `0x88`, in front of `__vt__`**, pushing
+the vtable to `0x90`. Weakness does not move an object into the vtable group;
+they are separate pools and the vtable pool is last.
+
+So the target's object at `0x1b8` was not emitted by this TU's data pass, and
+the question is no longer "which construct" but "whose object".
+
+**The neighbour settles the shape of the answer.** `g_profile_WM_KINOKO_RED` is
+at `0x45AB4`, and WM_KINOKO_RED's `.data` reproduces kinoko_base's pattern
+exactly -- `F7C0` `0x45A80`, `W7C0` `0x45A88`, `sc_ForceList` `0x45A90`, profile
+`0x45AB4`, `"cobKinokoAppear"` `0x45AC0`, **two pointers to it** `0x45AD0`, then
+`0x45AD8` = `{ptr to "cobKinokoRed", 0}`, then its vtable at `0x45AE0`. The
+two-pointer idiom is in BOTH units, which confirms finding 2 independently.
+
+That leaves `0x45A68` (8 zeros) and `0x45A70` (`"cobKinokoRed"`, 0xD, +3 pad) as
+a `0x18` block between the two units, and a hard constraint on who owns it:
+**MWCC pools identical string literals, and kinoko_base already has its own
+`"cobKinokoRed"` at unit offset `0x68`.** One TU cannot emit that string twice.
+So the `0x45A70` copy is NOT kinoko_base's, and the `0x18` block belongs to
+WM_KINOKO_RED -- whose `.data` therefore starts at `0x45A68`, not `0x45A80`.
+
+**Which makes kinoko_base's `.data` `0x458b0-0x45a68` = `0x1b8`, exactly what
+the draft already produces**, and moves the whole 8-byte puzzle into the
+neighbour, where it appears as a leading rather than a trailing object.
+
+Two consequences, both needing a build to settle:
+- `getModelName` would then return a pointer into the NEXT unit's `.data`, which
+  no landed unit does and which the slice format cannot express directly.
+- The `.bss` claim `0xfe80-0xfe90` needs re-deriving; the draft wants `0x18`.
+
+**Do not treat the `.data 0x458b0-0x45a70` claim as settled.** It was validated
+by `check_bounds.py`, and `check_bounds.py`'s wm family rule -- "a unit's `.data`
+opens on F7C0/W7C0" -- is the very assumption this evidence puts in doubt.
+
 ### `fn_2_171400`'s owner is `WM_MAP` / `dScWMap_c` — do NOT chase it
 
 Scouted to settle whether sandpillar's blocker was authorable. It is not:

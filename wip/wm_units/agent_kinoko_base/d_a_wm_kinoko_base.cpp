@@ -140,8 +140,18 @@ void daWmKinokoBase_c::createModel() {
     /// `addi rX, r27, N` in this function landing 0x18 bytes higher in the
     /// target than a draft missing it. Kept as a dead local; true origin
     /// unsettled (see agent report).
+    /// TWO pointers to "cobKinokoAppear", not one. The target has a
+    /// relocated word at unit offset 0x50 AND at 0x54, both resolving to
+    /// lbl_2_data_458F0 ("cobKinokoAppear") -- read directly out of
+    /// bin/dtkspl/.../auto_04_00044A68_data.txt. A draft with only one
+    /// leaves 0x54 as four ZERO bytes, and because 0x54 is padding either
+    /// way the section SIZE is identical -- check_sections.py cannot see
+    /// it. This is the same size-vs-layout blind spot the vtable-offset
+    /// defect exposed, in the same unit, four bytes lower.
     static const char *smc_unusedAppearName = "cobKinokoAppear";
+    static const char *smc_unusedAppearName2 = "cobKinokoAppear";
     (void)smc_unusedAppearName;
+    (void)smc_unusedAppearName2;
 
     mResFile = dResMng_c::m_instance->getRes(mModelResName, "g3d/model.brres");
     mAnimResFile = dResMng_c::m_instance->getRes("cobKinokoRed", "g3d/model.brres");
