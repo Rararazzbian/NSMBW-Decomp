@@ -2284,6 +2284,58 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## sandpillar's real blocker, finally identified: WM_ANTLION owns its state code
+
+The unit is 66/66 with every section exact. It cannot land, and the reason is a
+LANDING-ORDER dependency, not a defect.
+
+Four weak symbols are live in sandpillar's object, referenced only from its own
+weak vtables, and have **no dedup partner anywhere in the currently-landed
+tree**:
+
+| symbol | size |
+|---|---|
+| `__dt__13sStateIDChk_cFv` | 0x40 |
+| `isNormalID__13sStateIDChk_cCFRC12sStateIDIf_c` | 0x8 |
+| `__dt__29sFState_c<16daWmSandPillar_c>Fv` | 0x40 |
+| `__dt__32sFStateFct_c<16daWmSandPillar_c>Fv` | 0x40 |
+
+That is `0xC8`, and the link grows `.text` by `0x150` -- the rest being alignment
+slack across the dispersed insertions. Every other section is byte-exact.
+
+**Where the target keeps them: `0x15B320-0x15B4C0`.** Read straight out of the
+target's own `.data` -- sandpillar's vtable slots in `auto_04_00046BE0_data`
+point at `fn_2_15B320`, `fn_2_15B350`, `fn_2_15B370`, `fn_2_15B440`,
+`fn_2_15B480`, `fn_2_15B490`, `fn_2_15B4C0` and friends, all tiny (0x4, 0x8,
+0x18) and all OUTSIDE `[0x177690, 0x179380)`. Those addresses sit between
+`g_profile_WM_ANTLION`'s classInit (`0x15AB40`) and `g_profile_WM_BOARD`'s, i.e.
+inside **WM_ANTLION / WM_ANTLION_MNG**.
+
+So the shared `sLib/s_State.hpp` framework's inline functions were first
+instantiated by the antlion units, and every later user -- sandpillar included --
+dedupes against those copies. With antlion un-landed there is nothing to dedupe
+against, so sandpillar's copies get placed and shift the module.
+
+**This also means sandpillar's vtable slot CONTENTS differ from the target's**:
+ours point at our own emitted copies, the target's point into antlion. That is
+the same defect seen from the other side, not a second one.
+
+**Sizes, for whoever picks this up:** WM_ANTLION is `0x15ab40-0x15b450`,
+**36 functions**, 3 covering objects. WM_ANTLION_MNG is `0x15b450-0x15e7e0`,
+**79 functions**, 9 covering objects -- much larger.
+
+**Correction to a long-standing note:** this file recorded sandpillar as blocked
+on WM_MAP. That was wrong twice over -- the `fn_2_171400` call is fine through
+the `R_2_1_171400` form, and the real dependency is antlion.
+
+**Also resolved while investigating:** `fn_2_179290` is
+`__dt__31sFStateID_c<16daWmSandPillar_c>Fv`, NOT `__dt__Q23mEf8effect_cFv`.
+Traced through this TU's own `.rela.data`: offset `0x570` is the dtor slot of
+`__vt__31sFStateID_c<16daWmSandPillar_c>`, and the target's vtable at the
+corresponding address `0x47148` has `fn_2_179290` in exactly that slot, flanked
+by already-matched neighbours. The long-standing `FUNCTION ORDER IS WRONG` flag
+on that function is now explained, not merely waived.
+
 ## sandpillar is 66/66. The "extra trailing blr" was a TOOL ARTEFACT.
 
 Two agent rounds and ~17 measured source reformulations went into

@@ -21,7 +21,13 @@
 /// its raw target symbol name so the linker resolves the `bl` directly,
 /// matching the FUN_XXXXXXXX placeholder convention already used for
 /// undocumented cross-TU calls (see FUN_80915600 in d_cs_seq_manager.hpp).
-extern "C" int fn_2_171400();
+///
+/// NOTE: a call into a still-un-landed region of the SAME REL must use the
+/// symbol form `R_<module>_<section>_<offset>` (all hex; see tools/elfconsts.py,
+/// REL_SYM) -- module 2 is d_basesNP, section 1 is `.text`. `fn_2_171400()`
+/// compiles and verifies byte-identically but fails to LINK ("Symbol
+/// fn_2_171400 not found"); `R_2_1_171400()` links.
+extern "C" int R_2_1_171400();
 
 /// @unofficial Provisional reconstruction of daWmSandPillar_c. NOT landed --
 /// draft, sizeof/layout being verified this round via compiled probe.
@@ -265,23 +271,31 @@ daWmSandPillar_c::daWmSandPillar_c() : mStateMgr(*this, StateID_Ready) {}
 /// nothing left to write here -- confirmed via verify_anon.py, not assumed.
 ///
 /// One order violation remains nearby (`__dt__Q23mEf8effect_cFv` "defined
-/// too late") but it is NOT this destructor's fault. Investigated this
-/// round: the target function verify_anon pairs it with, fn_2_179290 (near
-/// __sinit/__arraydtor at the end of the TU), is NOT mEf::effect_c's dtor at
-/// all on inspection -- its body is `bl __dt__10sStateID_cFv` then a
-/// conditional `bl __dl__FPv`, i.e. it's sStateID_c's own scalar deleting
-/// destructor, byte-identical in shape (a null check + one member-dtor call
-/// + optional delete) to whatever weak dtor my draft has at that same
-/// generic shape early in the file. Two different classes' deleting-dtor
-/// wrappers collide byte-for-byte -- the same "two functions, one body"
-/// trap check_vtable.py exists for, just hitting the anonymous-function
-/// pairing in verify_anon.py instead of a vtable slot. My draft is missing
-/// sStateID_c's OWN deleting destructor as a distinct emitted symbol
-/// (likely triggered by the 9 static StateID_X objects' program-exit
-/// teardown registration, which __sinit already matches byte-for-byte, so
-/// whatever triggers this specific weak symbol is a step removed from
-/// __sinit itself) -- not chased further this round; flagging rather than
-/// guessing at the trigger site.
+/// too late") but it is NOT this destructor's fault, and it is a confirmed
+/// false alarm -- waive it. `__dt__Q23mEf8effect_cFv` is itself dead code
+/// (unreferenced by anything reachable in this TU) and never gets placed;
+/// verify_anon.py's greedy pairing only assigned it to fn_2_179290 because
+/// both are the same size and shape (a null check + one member-dtor call +
+/// optional delete), the exact "two functions, one body" trap check_vtable.py
+/// exists for, here hitting the anonymous-function pairing instead of a
+/// vtable slot.
+///
+/// RESOLVED THIS ROUND: fn_2_179290's real identity is
+/// `__dt__31sFStateID_c<16daWmSandPillar_c>Fv`, confirmed directly from this
+/// TU's own relocations rather than shape-matching -- `.rela.data` places it
+/// at .data+0x570, which is exactly the dtor slot (third word) of
+/// `__vt__31sFStateID_c<16daWmSandPillar_c>` at .data+0x568; the target's own
+/// vtable at the corresponding address (0x47148) has fn_2_179290 in that same
+/// slot position, flanked by fn_2_1792F0/fn_2_178B00/fn_2_178AD0/fn_2_178AA0
+/// (isSameName/initializeState/executeState/finalizeState -- all already
+/// byte-matched) and by isNull__10sStateID_cCFv/isEqual.../__eq__.../__ne__.../
+/// name.../number__10sStateID_cCFv (the un-overridden base sStateID_c slots,
+/// already-known external symbols). So the deleting-destructor body calling
+/// `__dt__10sStateID_cFv` is exactly what compiles for
+/// `sFStateID_c<16daWmSandPillar_c>`'s own auto-generated dtor when the
+/// template adds no members beyond the base -- nothing is missing from the
+/// draft, and fn_2_179290 is fully accounted for as `__dt__31sFStateID_c<
+/// 16daWmSandPillar_c>Fv`, already present and already correctly placed.
 daWmSandPillar_c::~daWmSandPillar_c() {}
 
 /// @unofficial fn_2_177AB0. createMdl()/calcMdl() calls and the clip-sphere
@@ -480,7 +494,7 @@ void daWmSandPillar_c::executeState_Ready() {
         /// value to 8 bits when saving it here -- the LOCAL is narrow (u8),
         /// not necessarily fn_2_171400() itself; its own declared return
         /// type is unconfirmed (see the extern "C" declaration's own note).
-        u8 world = fn_2_171400();
+        u8 world = R_2_1_171400();
         int course = dWmLib::GetCourseNoFromPointName("W205");
         if (dWmLib::IsCourseClear(world, course)) {
             if (dWmLib::IsCourseFirstClear(world, course)) {
