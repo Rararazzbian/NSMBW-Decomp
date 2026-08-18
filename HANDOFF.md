@@ -2284,6 +2284,69 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## check_bounds.py now checks OWNERSHIP, from the REL's relocation stream
+
+sandpillar's `.rodata` "0x14 missing" was never missing. **The claim's upper
+bound was 0x10 too high**: `0x8ef8-0x8fa8` swept in `lbl_2_rodata_8F98`
+(`{100.0, 2160.0, -30.0, -478.0}`), which belongs to a different class
+entirely -- a `m3d::scnLeaf_c` user with members at `0x7c`/`0xac`/`0x1a4`,
+nothing like `daWmSandPillar_c` whose members start at `0x18c`.
+
+Proved from the REL's own relocation table: every reference to `0x8F98` comes
+from `0x1794ca`, `0x1794de`, `0x17973a`, `0x179742` -- all outside the unit's
+`.text` claim `[0x177690, 0x179380)`. With the bound corrected to `0x8f98` the
+unit reports **SECTIONS CLEAN**. The real `.rodata` is `0x8ef8-0x8f98`.
+
+**And `check_bounds.py` said PLAUSIBLE**, because `0x8fa8` IS a real symbol
+boundary. Checks 1-3 in that tool all ask whether ADDRESSES line up; none asked
+whether the CONTENT is ours. That is the same blind spot as ghost's
+`0x218 == 0x218` on the wrong span, in a new place.
+
+So the tool now decodes the REL's relocation stream and, per symbol, asks
+whether ANY reference originates inside ANY range the unit claims.
+
+**Two wrong versions of this check, both worth recording:**
+- A whole-RANGE test is useless: shared data, vtables and profile objects are
+  legitimately referenced from other units, and landed ghost has 15 of 25
+  references coming from outside.
+- A `.text`-ONLY test is also useless: strings are routinely referenced from the
+  unit's own `.data` (`sc_ForceList` points at its two 5-byte names; animation
+  arrays point at model names), and that version reported **10 problems on
+  landed, byte-exact ghost**.
+
+Only "no reference from anywhere inside the unit" is evidence. Validated: passes
+landed ghost, kinoko_red and kinoko_base on their full claims; fails sandpillar's
+wrong claim; passes sandpillar's corrected one. **Pass the COMPLETE claim
+including `.ctors`** -- a `__sinit` is referenced only from `.ctors`, so omitting
+it produces a false flag.
+
+## course 15/23 -> 16/23, and `processCutsceneCommand` is byte-exact
+
+`processCutsceneCommand` went from a stub at 129 differing to **0**. Function
+identities were pinned first, which mattered: `.text` address order matches
+member-definition order exactly, resolving the duplicate `~openNeighbors` /
+`~updateHelpFade` size-guess labels. `0x160610` = `create`,
+`0x160AA0` = `createModel`, `0x160F50` = `processCutsceneCommand`,
+`0x161220` = `updateOpenAnim`, `0x161420` = `openNeighbors`,
+`0x1615F0` = `updateClearAnim`, `0x161790` = `updateHelpFade`.
+
+Also found by reading bytes rather than guessing: `mUnk248` compiles with SIGNED
+opcodes (`cmpwi`/`ble`), so its type is `int`, not `u32` -- the same signedness
+lever that closed a sandpillar function. And `updateOpenAnim` actually **returns
+`bool`**, not `void`.
+
+**Proposed header diff** for `include/game/bases/d_a_wm_course.hpp`:
+`bool updateOpenAnim()` (was `void`), `int mUnk248` (was `u32`).
+
+Two functions are confirmed STRUCTURALLY CORRECT already -- `openNeighbors` and
+`updateHelpFade` -- with every remaining difference being the self-resolving
+pool-offset artefact from `create`/`createModel` not yet pooling their floats.
+Do not chase those counts.
+
+`create` (217) and the back half of `createModel` (198) both hinge on an
+unidentified `.bss` word `lbl_2_bss_FD7C`, compared against the RAW packed actor
+param rather than the extracted courseNo byte. Deliberately not guessed at.
+
 ## LANDED: kinoko_red, sixth REL unit — and a SECOND check_sections false alarm
 
 11.235% -> 11.243%. Landed by applying kinoko_base's linkage rule: an in-class

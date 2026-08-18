@@ -33,7 +33,7 @@ public:
     void setMatClrAnm(int index, float rate, float frame);
     void updateState();
     bool updateOpenAnim();
-    void updateClearAnim(bool unused);
+    void updateClearAnim(bool immediate);
     void updateHelpFade();
     daWmCourse_c *searchOpenNeighbor();
     static void openNeighbors(bool fastRate);
@@ -49,7 +49,9 @@ public:
     bool mUnk23c; ///< @0x23c @unofficial
     int mState; ///< @0x240
     int mOpenState; ///< @0x244
-    u32 mUnk248; ///< @unofficial
+    // Signed: processCutsceneCommand's target compiles its "> 0" / "== 1"
+    // guards on this field with cmpwi/ble (signed opcodes), not cmplwi/blt.
+    int mUnk248; ///< @0x248 @unofficial
     u32 mUnk24c; ///< @unofficial
     bool mUnk250; ///< @0x250 @unofficial
 };

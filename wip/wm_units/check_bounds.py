@@ -24,6 +24,22 @@ What it checks
 4. Family rule for `wm` actors: a unit's `.data` opens on the two anonymous
    5-byte `sc_ForceList` strings ("F7C0"/"W7C0"), NOT on `g_profile_*`. If the
    first contained symbol is a profile, the claim is 0x34 too high.
+5. **OWNERSHIP.** Every symbol inside a claimed range must actually be
+   REFERENCED from inside the unit's own `.text`. A claim can end on a perfectly
+   real symbol boundary and still be wrong, because the symbol belongs to the
+   NEIGHBOUR.
+
+   That is not hypothetical. `d_a_wm_sandpillar.cpp` claimed
+   `.rodata 0x8ef8-0x8fa8` and this tool said PLAUSIBLE, because `0x8fa8` is a
+   real boundary -- the end of `lbl_2_rodata_8F98`. But every relocation
+   targeting `0x8F98` originates at `0x1794ca`, `0x1794de`, `0x17973a` and
+   `0x179742`, all OUTSIDE the unit's `.text` claim `[0x177690, 0x179380)`. The
+   array belongs to a different class entirely. The real bound is `0x8f98`, and
+   with it the unit reports SECTIONS CLEAN.
+
+   Checks 1-3 are all about ADDRESSES lining up. Only this one asks whether the
+   content is the unit's, and it is the check that catches a same-shape,
+   same-size, wrong-owner claim.
 
 Usage
 -----
@@ -36,9 +52,47 @@ e.g.
 import json
 import os
 import re
+import struct
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+# REL section indices are fixed by the format.
+REL_SECTION_INDEX = {'.text': 1, '.ctors': 2, '.dtors': 3, '.rodata': 4,
+                     '.data': 5, '.bss': 6}
+
+
+def referrers(module, lo, hi):
+    """Every `.text` address that relocates against [lo, hi), from the REL itself.
+
+    The relocation stream is the only place ownership is actually written down.
+    dtk's symbol map says where things START; it does not say who USES them, and
+    a claim that ends on a real boundary can still have swept in a neighbour's
+    object. Returns a sorted list of referring addresses, or None if the REL is
+    unavailable.
+    """
+    path = os.path.join(ROOT, 'original', module + '.rel')
+    if not os.path.exists(path):
+        return None
+    b = open(path, 'rb').read()
+    impOff, impSize = struct.unpack_from('>II', b, 0x28)
+    out = set()
+    for i in range(0, impSize, 8):
+        _mid, roff = struct.unpack_from('>II', b, impOff + i)
+        pos, addr = roff, 0
+        while pos + 8 <= len(b):
+            o, t, _sec, add = struct.unpack_from('>HBBI', b, pos)
+            pos += 8
+            if t == 203:      # R_DOLPHIN_END
+                break
+            if t == 202:      # R_DOLPHIN_SECTION -- restart the running offset
+                addr = 0
+                continue
+            addr += o
+            if t != 201 and lo <= add < hi:   # 201 = R_DOLPHIN_NOP
+                out.add(addr)
+    return sorted(out)
 
 
 def load_symbols(module):
@@ -129,6 +183,39 @@ def main():
                   % above[0][3])
             print('  its OWN array destructor, which sits past its __sinit, not at the __sinit.')
             bad += 1
+
+        # OWNERSHIP, per SYMBOL. A symbol belongs to this unit if ANY reference
+        # to it originates inside ANY range the unit claims -- not just `.text`.
+        # Strings are routinely referenced only from the unit's own `.data`
+        # (sc_ForceList points at its two 5-byte names; animation-name arrays
+        # point at model names), and a .text-only test false-flags every one of
+        # them: it reported 10 problems on the LANDED, byte-exact
+        # d_a_wm_ghost.cpp. A whole-RANGE test is equally useless in the other
+        # direction, since shared data and profile objects are legitimately
+        # referenced from other units -- ghost has 15 of 25 references coming
+        # from outside and is correct.
+        #
+        # What IS evidence is a single symbol with no reference from anywhere
+        # inside the unit at all.
+        own = []
+        for csec, crng in claim.items():
+            clo, chi = (int(x, 16) for x in crng.split('-'))
+            own.append((clo, chi))
+        for saddr, ssize, sname in ((x[1], x[2], x[3]) for x in inside):
+            if not ssize or sname.startswith(('gap_', 'pad_')):
+                continue
+            refs = referrers(module, saddr, saddr + ssize)
+            if refs is None:
+                break
+            if refs and not any(lo2 <= r < hi2 for r in refs for lo2, hi2 in own):
+                print('  %s (%#x, %#x bytes) is NEVER referenced from anywhere'
+                      % (sname, saddr, ssize))
+                print('  inside this unit -- all %d references come from outside every'
+                      % len(refs))
+                print('  claimed range, e.g. %s.'
+                      % ', '.join('%#x' % r for r in refs[:4]))
+                print('  This object belongs to a NEIGHBOUR. The claim reaches too far.')
+                bad += 1
 
         for esec, elo, ehi, src in existing:
             if esec == sec and lo < ehi and elo < hi:

@@ -36,6 +36,17 @@ static const char *sResAnmNames[daWmCourse_c::ANIM_COUNT] = {
     "cobCourseOpen"
 };
 
+// Read directly off the target's rodata pool (lbl_2_rodata_87C0, words
+// +0x4/+0x8/+0xc: 0x1,0x0,0x0), which createModel's per-index setPlayMode
+// call indexes with a pointer that increments by 4 each loop iteration --
+// an array read, not a repeated constant. m3d::FORWARD_ONCE == 1,
+// m3d::FORWARD_LOOP == 0 (m_3d/banm.hpp), matching the byte values exactly.
+static const m3d::playMode_e sPlayModes[daWmCourse_c::ANIM_COUNT] = {
+    m3d::FORWARD_ONCE,
+    m3d::FORWARD_LOOP,
+    m3d::FORWARD_LOOP
+};
+
 daWmCourse_c::daWmCourse_c() : mOpenState(0) {}
 daWmCourse_c::~daWmCourse_c() {}
 
@@ -96,9 +107,9 @@ void daWmCourse_c::createModel() {
     for (int i = 0; i < ANIM_COUNT; i++) {
         nw4r::g3d::ResAnmClr resAnmClr = mResFile.GetResAnmClr(sResAnmNames[i]);
         mMatClrAnim[i].create(matResMdl, resAnmClr, &mAllocator, nullptr, 1);
-        mMatClrAnim[i].setRate(1.0f, 0);
-        mMatClrAnim[i].setFrame(1.0f, 0);
-        mMatClrAnim[i].setPlayMode(m3d::FORWARD_ONCE, 0);
+        mMatClrAnim[i].setRate(0.0f, 0);
+        mMatClrAnim[i].setFrame(0.0f, 0);
+        mMatClrAnim[i].setPlayMode(sPlayModes[i], 0);
     }
 
     int courseNo = ACTOR_PARAM(CourseNo);
@@ -367,11 +378,37 @@ void daWmCourse_c::updateSpecialWorld() {
     }
 }
 
-// TODO: not yet matched (fn_2_1615F0, ~102 instructions).
-void daWmCourse_c::updateClearAnim(bool unused) {
-    (void)unused;
-    if (dWmObjActor_c::IsCourseOmoteClearSimple()) {
-        setMatClrAnm(0, 0.0f, 0.0f);
+// Matches fn_2_1615F0's shape. Gated on courseNo==3 && m_WorldNo==2 (a
+// world-2-course-3-specific clear animation), then branches again on the
+// same dInfo_c +0x380 byte seen in processCutsceneCommand -- Omote/Otasuke
+// guards when set, Ura/UraOtasuke guards when clear. `immediate` selects
+// which of the two fixed rates (0.0f/1.0f) feeds the fallback branch; the
+// two `IsCourse*Simple()==true` branches always use the fixed pair
+// unconditionally.
+void daWmCourse_c::updateClearAnim(bool immediate) {
+    u32 courseNo = ACTOR_PARAM(CourseNo);
+    float baseRate = immediate ? 0.0f : 1.0f;
+
+    if (courseNo == 3 && dScWMap_c::m_WorldNo == 2) {
+        if (*reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)) {
+            if (IsCourseOmoteClearSimple()) {
+                setMatClrAnm(0, 0.0f, 1.0f);
+            } else if (IsCourseOtasukeClearSimple()) {
+                setMatClrAnm(1, 1.0f, 0.0f);
+            } else {
+                int frame = 0;
+                setMatClrAnm(2, baseRate, frame);
+            }
+        } else {
+            if (IsCourseUraClearSimple()) {
+                setMatClrAnm(0, 0.0f, 1.0f);
+            } else if (IsCourseUraOtasukeClearSimple()) {
+                setMatClrAnm(1, 1.0f, 0.0f);
+            } else {
+                int frame = 0;
+                setMatClrAnm(2, baseRate, frame);
+            }
+        }
     }
 }
 
