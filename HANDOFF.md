@@ -2284,6 +2284,47 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## LANDED: `d_a_wm_ghost.cpp` — the fourth REL unit. 11.145% -> 11.193%
+
+All five binaries verify. `d_basesNP.rel` md5 `17096d0ed441d44a0c31039138a8d7f8`.
+
+Landing needed three things beyond the 13/13 draft, and the last two are the
+interesting ones.
+
+1. `syms.txt` needed `OSReport=0x8015F870`. The original code has a leftover
+   `OSReport("testtest
+")` debug print, and nothing in the REL resolved it.
+
+2. **`verify_anon.py` reported a clean 13/13 on a unit that loaded the WRONG
+   CONSTANT.** `create()` passed `0.0f` to `mClipSphere.set()` where the
+   original passes `180.0f`. The tool normalises the relocation symbol -- it has
+   to, since target symbols are anonymous -- so `lfs f1, <this>@l` and
+   `lfs f1, <that>@l` are the same string. `check_sections.py` could not see it
+   either: the pool was the right SIZE, just permuted. Nor could
+   `check_vtable.py`.
+
+   It surfaced ONLY in the linked binary, as **two bytes** in the REL's
+   relocation table: an `@ha`/`@l` pair with addend `0x88a0` where the original
+   has `0x8884`. Decoding those entries pointed straight at the defect.
+
+   **The technique is now the standard last step: when a unit reads clean and
+   the link still fails, byte-diff `bin/*.rel` against `original/*.rel` and
+   decode the differing relocation entries as `>HBBI` (offset, type, section,
+   addend).** It localises to the exact instruction. Recorded in the tool's own
+   docstring so nobody trusts an N/N as more than it is.
+
+3. **A `const` scalar at namespace scope is FOLDED and never reaches `.rodata`.**
+   The pool head had to be two ONE-ELEMENT ARRAYS --
+   `sGhostUnusedFloat[] = {1.3f}` at `+0x0` and `sGhostClipRadius[] = {180.0f}`
+   at `+0x4` -- because `const float x = 180.0f;` is inlined at its use site and
+   `__attribute__((used))` does not save it. Arrays are emitted; const scalars
+   are not. The first is genuinely unreferenced and holds slot 0, the same job
+   grid's `DUMMY_ORDERING()` does.
+
+   Getting this wrong is expensive rather than merely wrong: a pool 4 bytes
+   short shifted every downstream symbol and took the diff from 59 bytes to
+   419,171.
+
 ## THE TEMPORARY-MATERIALISATION WALL IS BROKEN
 
 Three units were blocked on it and more than a dozen single-unit attempts had

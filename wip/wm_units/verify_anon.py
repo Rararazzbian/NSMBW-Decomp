@@ -35,6 +35,26 @@ A name after `MATCH <-` is a real pairing. A name after `differing vs ~` is only
 the closest remaining draft function BY SIZE and is frequently not the target's
 actual identity -- do not read it as one, and do not pass it on as one.
 
+WHAT SYMBOL NORMALISATION COSTS YOU -- READ THIS BEFORE TRUSTING AN N/N
+-----------------------------------------------------------------------
+Normalising the relocation symbol is REQUIRED (see above) and it has a price:
+**a reference to the WRONG pool entry compares byte-identical.**
+`lfs f1, lbl_2_rodata_8884@l(r3)` and `lfs f1, lbl_2_rodata_88A0@l(r3)` both
+reduce to `lfs f1, SYM@l(r3)`.
+
+This is not hypothetical. `d_a_wm_ghost.cpp` read a clean 13/13 while its
+`create()` passed `0.0f` to `mClipSphere.set()` where the original passes
+`180.0f` -- a real semantic difference, invisible here, invisible to
+`check_sections.py` (the pool was the right SIZE) and invisible to
+`check_vtable.py`. It surfaced only in the LINKED binary, as two bytes in the
+REL's relocation table pointing at `.rodata+0x20` instead of `+0x4`.
+
+So an N/N from this tool means "every instruction matches modulo which symbol it
+names". It does NOT mean the unit loads the right constants. When a unit reads
+clean and the link still fails, diff the built REL against `original/` and
+decode the differing relocation entries -- that is the only view that shows
+which pool entry an instruction actually reaches.
+
 LIMIT OF THE PAIRING, AND OF THE ORDER CHECK BUILT ON IT
 --------------------------------------------------------
 The pairing is greedy on instruction content, so **two functions with identical
