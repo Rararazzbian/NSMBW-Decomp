@@ -2284,6 +2284,40 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## course: `create` is NOT blocked on the mystery static. Only `createModel` is.
+
+The course round deferred BOTH `create` (217 differing) and the back half of
+`createModel` (198) as hinging on an unidentified `.bss` word,
+`lbl_2_bss_FD7C`. **Decoding the REL's relocation stream shows `create` never
+touches it.**
+
+Every reference to `.bss:0xFD7C` in the whole module:
+
+```
+from .text 0x160bce  (inside fn_2_160AA0 = createModel)
+from .text 0x160bd6  (inside fn_2_160AA0 = createModel)
+from .text 0x1618fa  (inside fn_2_161890 = __sinit)
+from .text 0x161902  (inside fn_2_161890 = __sinit)
+```
+
+Four sites, two functions: `createModel` and `__sinit`. Nothing in
+`create` (`fn_2_160610`, `0x160610-0x160AA0`) references it at all.
+
+So the word is an ordinary file-scope static with a dynamic initialiser --
+written by `__sinit`, read by `createModel` -- the same shape as `sc_ForceList`,
+not the cross-function state flag it was taken for. And `create` is unblocked:
+its 217 differing are its own problem and can be worked on now.
+
+**The technique generalises and is cheap.** To find out what an unidentified
+symbol IS, decode who references it rather than reasoning about what it might
+mean. `original/<module>.rel`'s import table is at header offset `0x28`
+(offset, size); each relocation is `>HBBI` = (running offset delta, type,
+section, addend); type 202 restarts the running offset, 203 ends the table, 201
+is a no-op. Map the resulting `.text` addresses back through
+`bin/dtk/<module>_symbols.txt` to name the referring functions. That is the same
+decode that identified sandpillar's `.rodata` bound and the ghost wrong-constant
+defect.
+
 ## sandpillar's real blocker, finally identified: WM_ANTLION owns its state code
 
 The unit is 66/66 with every section exact. It cannot land, and the reason is a
