@@ -231,7 +231,24 @@ void daWmCastle_c::checkCourseResult() {
             construct(fProfile::WM_KOOPASHIP, this, 2, &pos, nullptr);
 
             if (mCutscene == dCsSeqMng_c::SMC_DEMO_W3_CASTLE_CLR) {
-                mVec3_c pos2(mPos.x, mPos.y, mPos.z - 100.0f);
+                // CONFIRMED: this is the third arrangement, and the one that matches. The direct
+                // constructor call `mVec3_c pos2(mPos.x, mPos.y, mPos.z - 100.0f)` evaluates right
+                // to left (z, y, x -- matching target instruction order) but MWCC allocates f2/f3 to
+                // y/x in DESCENDING order (first-evaluated gets the higher-numbered register),
+                // whereas the target allocates them ASCENDING (first-evaluated gets f2, next gets
+                // f3) -- a pure register-numbering swap, 4 differing. Staging ALL THREE through
+                // named locals declared x2,y2,z2 (natural order) flips to ascending allocation but
+                // ALSO flips the evaluation order to x,y,z (mismatching target's z,y,x), still 4
+                // differing, in the opposite pair of instructions -- this is the "opposite direction"
+                // swap. Declaring the locals in z2,y2,x2 order (matching the target's own evaluation
+                // order) while still PASSING them to the constructor in natural x2,y2,z2 order gets
+                // BOTH right at once: evaluation order z,y,x (from declaration order) and ascending
+                // f2/f3 allocation (from routing through already-live named locals rather than raw
+                // member expressions) -- byte-exact.
+                float z2 = mPos.z - 100.0f;
+                float y2 = mPos.y;
+                float x2 = mPos.x;
+                mVec3_c pos2(x2, y2, z2);
                 construct(fProfile::WM_KOOPAJR, this, 0, &pos2, nullptr);
             }
         }
@@ -398,6 +415,36 @@ bool daWmCastle_c::getKoopaPos(mVec3_c &out) const {
     return true;
 }
 
+// PARKED at 6 differing (this shape) after this task's round of probes, none of which moved it.
+// Two defects, and they may not be independent: (1) computing x's operands, the target loads
+// `mPos.x` THEN `offset.x` (register f1 then reuses f0); this draft loads `offset.x` THEN
+// `mPos.x` (register f0 reused first, then f1) -- backwards only for x; z and y both load their
+// `mPos.*` member before their `offset.*` member, matching the target's own pattern for z/y, so
+// x is the outlier. (2) the target defers ALL THREE field stores to after all three adds are
+// computed (store order y, x, z); this draft computes z and y, STORES z immediately, THEN
+// computes x and stores y, x -- an extra store is scheduled early relative to the target.
+//
+// Per this task's brief, reordering the x/y/z LOCAL DECLARATIONS was not retried here (two
+// orderings already measured worse, 13 and 7 against this 6). What WAS tried this round, all
+// giving byte-identical output to this shape (no change) unless noted:
+//   - swapping the STORE statement order (result.x=x;result.y=y;result.z=z, and z,y,x) -- MWCC
+//     schedules these independent stores by its own readiness heuristic regardless of the written
+//     order; no combination of store order changed a single byte.
+//   - dropping the `offset` reference and reading `sc_KoopaShipStopConfig[0].mOffset.*` fresh at
+//     each use -- CSE's the address back to one `lis/addi` either way, byte-identical.
+//   - `return mVec3_c(x, y, z);` in place of a named `result` local with field assignments --
+//     byte-identical (MWCC already applies RVO to the named-local form).
+//   - collapsing straight to `return mVec3_c(mPos.x + offset.x, mPos.y + offset.y, mPos.z +
+//     offset.z);` with no locals at all -- still evaluates z, y, x (right-to-left) and is
+//     byte-identical to the baseline shape above.
+//   - flipping x's addend order to `offset.x + mPos.x` -- DID change the instructions (f0/f1
+//     swap in the opposite direction, still register f0/f1 misassigned) but not the differing
+//     COUNT: still 6, just a different pair of wrong instructions. Reverted.
+// The lever that closed the analogous f2/f3 swap in checkCourseResult (decoupling local
+// DECLARATION order from constructor ARGUMENT order) was tried here too, in the no-locals and
+// direct-mVec3_c-construction forms above, without effect -- this function returns through a
+// hidden result pointer (r3) rather than storing into a stack temporary later passed by address,
+// and that ABI difference may be why the lever does not transfer.
 mVec3_c daWmCastle_c::getKoopaShipStopPos() const {
     const mVec3_c &offset = sc_KoopaShipStopConfig[0].mOffset;
     float z = mPos.z + offset.z;

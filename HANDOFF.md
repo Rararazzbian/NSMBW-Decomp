@@ -2284,6 +2284,56 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## castle 18/20 — NEW LEVER: decouple DECLARATION order from USAGE order
+
+`checkCourseResult` closed 4 -> MATCH, and the lever is new and general.
+
+The residual was an `f2`/`f3` register swap in a three-float constructor. MWCC
+evaluates constructor arguments RIGHT-TO-LEFT, so the target's instruction order
+is `z, y, x` -- but float register assignment follows DECLARATION order. Those
+are two separate orders and a single expression couples them:
+
+- `mVec3_c pos2(mPos.x, mPos.y, mPos.z - 100.0f)` -- evaluation order right,
+  registers assigned descending where the target assigns ascending. 4 differing.
+- Staging all three through locals declared `x2, y2, z2` -- registers now
+  ascending, but evaluation flips to `x, y, z` and no longer matches. Still 4,
+  the mirror-image swap.
+- **Declare the locals in the TARGET'S EVALUATION ORDER (`z2, y2, x2`), then pass
+  them in natural order `(x2, y2, z2)`.** Byte-exact.
+
+**The general form: when evaluation order and register assignment disagree,
+decouple them by staging through locals whose DECLARATION order matches the
+evaluation order and whose USE order matches the call.** Staging only one or two
+of the three does nothing -- all three must be staged.
+
+Measured limit, worth knowing: the lever did NOT transfer to
+`getKoopaShipStopPos`, which returns via a hidden result pointer in `r3` rather
+than storing into a stack temporary passed by address. Different ABI shape,
+different problem.
+
+`getKoopaShipStopPos` stays at 6 and is now well characterised as two coupled
+defects -- `x`'s operand load order is backwards relative to `z`/`y`, and an
+extra `result.z` store is scheduled before `x` is even computed where the target
+defers all three stores to the end. **Six more shapes measured with no effect**,
+all recorded in the source: all six store-statement orderings (MWCC schedules
+independent stores by its own readiness heuristic and ignores written order);
+dropping the cached `offset` reference (CSE reproduces the same address
+computation); `return mVec3_c(x,y,z)` versus named result plus field assignment
+(RVO makes them identical); a fully inlined return with no locals; and flipping
+`x`'s addend order (which DID change the instructions but not the count).
+
+### castle's `.bss` +4 is REAL, and the alignment rule does not apply
+
+I suggested it might be quantisation like antlion's. It is not: `0xfd60` is
+already 8-byte aligned, so the 4 bytes are content, not padding. Good check --
+the antlion rule is real but narrow, and applies only when a claim end is NOT
+8-aligned.
+
+Also re-confirmed: `check_bounds.py`'s ownership check flags a unit's own
+`__sinit` unless `.ctors` is in the claim, because its only reference is the
+`.ctors` slot. Castle's claim was missing it. **Always pass the complete
+five-section claim.**
+
 ## antlion: PARKED one byte short. The mechanism is understood and closed.
 
 Every path to producing that `u32` `1` has now been tested. The result is a
