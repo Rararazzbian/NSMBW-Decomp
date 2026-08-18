@@ -186,23 +186,82 @@ void daWmCourse_c::createModel() {
     }
 
     int courseNo = ACTOR_PARAM(CourseNo);
+    int courseType = dWmLib::GetCourseTypeFromCourseNo(courseNo);
     mCurrentIndex = 0xff;
 
-    // TODO: not yet matched -- target dispatches on GetOpenStatus()/GetClearStatus()
-    // here (fn_2_160AA0, ~233 instructions) picking one of several setMatClrAnm()
-    // calls with rodata-sourced rate/frame pairs. Placeholder below.
-    if (dWmLib::GetCourseTypeFromCourseNo(courseNo) != 0) {
-        setMatClrAnm(0, 1.0f, 0.0f);
+    // `lbl_2_bss_FD7C` decodes (via the REL's relocation stream: exactly four
+    // references in the whole module, a write pair in __sinit and a read pair
+    // here) to dWmLib::c_StartPointKinokoHouseID -- an EXISTING header static
+    // (d_wm_lib.hpp, namespace-scope, `= dCsvData_c::c_START_ID`) that every
+    // TU including d_wm_lib.hpp gets its own copy of. Misleadingly named for
+    // whatever caller elsewhere actually uses it for kinoko-house purposes,
+    // but its value is dCsvData_c::c_START_ID, matching execute()'s direct
+    // `dCsvData_c::c_START_ID != mParam` check (already matched) -- same
+    // sentinel, compared through the header's cached copy here instead of
+    // the constant directly, which is why the two sites disassemble
+    // differently even though they test the same value.
+    //
+    // Every other actor falls into the GetOpenStatus()/GetClearStatus()
+    // dispatch. Case-label order below follows the target's own body layout
+    // (case 0, case 1, case 2/3, default -- ascending), even though the
+    // dispatch COMPARES the case-2/3 range first; MWCC tests grouped-value
+    // cases before singletons regardless of declaration order.
+    if (mParam != (u32)dWmLib::c_StartPointKinokoHouseID) {
+        switch (GetOpenStatus()) {
+            case 0:
+                setMatClrAnm(0, 0.0f, 0.0f);
+                break;
+            case 1:
+                setMatClrAnm(0, 0.0f, 0.0f);
+                break;
+            case 2:
+            case 3:
+                switch (GetClearStatus()) {
+                    case 0:
+                        setMatClrAnm(2, 1.0f, 0.0f);
+                        if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, courseNo)) {
+                            setMatClrAnm(1, 1.0f, 0.0f);
+                        }
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        if (courseType == 4) {
+                            setMatClrAnm(0, 0.0f, 0.0f);
+                        } else {
+                            setMatClrAnm(0, 0.0f, 1.0f);
+                        }
+                        break;
+                    case 4:
+                        setMatClrAnm(1, 1.0f, 0.0f);
+                        break;
+                    default:
+                        if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, courseNo)) {
+                            setMatClrAnm(1, 1.0f, 0.0f);
+                        }
+                        break;
+                }
+                break;
+            default:
+                setMatClrAnm(0, 0.0f, 0.0f);
+                break;
+        }
+    } else {
+        if (!IsCourseClear()) {
+            setMatClrAnm(2, 1.0f, 0.0f);
+        } else {
+            setMatClrAnm(0, 0.0f, 0.0f);
+        }
     }
 
     if (dWmLib::IsAllComplete()) {
         if (dWmLib::GetCourseTypeFromCourseNo(courseNo) == 4) {
-            setMatClrAnm(0, 1.0f, 0.0f);
+            setMatClrAnm(0, 0.0f, 1.0f);
         }
     }
 
     if (dScWMap_c::m_WorldNo == 0 && courseNo == 0x28) {
-        setMatClrAnm(0, 1.0f, 0.0f);
+        setMatClrAnm(0, 0.0f, 1.0f);
     }
 
     if (dWmLib::isSpecialWorld()) {

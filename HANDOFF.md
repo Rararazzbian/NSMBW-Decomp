@@ -2284,6 +2284,64 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## antlion 36/37 on the corrected range; course 17/23 with `create` byte-exact
+
+**antlion**, re-measured over `0x15ac80-0x15b590` with all three covering
+objects: **36/37**. The corrected bounds were right at both ends -- the old head
+cluster is confirmed a neighbour's, and `fn_2_15B4E0`/`fn_2_15B570` are
+antlion's own `__sinit` and array destructor, both MATCH.
+
+Validated 5-section claim, **BOUNDS PLAUSIBLE with zero ownership problems**:
+```
+.text 0x15ac80-0x15b590   .ctors 0x3b4-0x3b8   .rodata 0x8598-0x85c0
+.data 0x43788-0x43920     .bss   0xfcd0-0xfce0
+```
+Note `.rodata`'s LOWER bound was wrong too, the same neighbour-boundary mistake
+as `.text` -- `0x8570-0x8584` belongs to the previous unit.
+
+**Two probe-based identifications worth copying**, both settled by compiling
+rather than reading headers:
+- `doDelete()` wanted vtable slot 5, and three one-line probes (`remove()`,
+  `setAnm()`, `play()`) placed those at 4/6/7 -- so slot 5 is
+  `scnLeaf_c::entry()`, never re-declared by `bmdl_c`/`mdl_c` and therefore
+  keeping its original slot. The call is `mModel.entry()`, not `remove()`.
+- `sizeof(m3d::anmTexSrt_c)` is **0x2c, not 0x34**, which revealed two
+  undocumented trailing `int` members after `mAnimTexSrt`; `GetIndex()` reads
+  the second at `+0x7ac`.
+
+Ten vtable slots turned out to be LOCAL OVERRIDES that redeclare a `dWmEnemy_c`
+default which is otherwise DOL-imported -- several behaviourally identical to the
+DOL body, just compiled locally. Dumping the target's real vtable object
+(`lbl_2_data_43810`) rather than inferring from headers is what found them.
+
+**The open defect is PLACEMENT, and the fix is DEFINITION order.** Eight vtable
+slots hold byte-identical trivial functions sitting at each other's addresses --
+content right, position wrong. Two attempts at reordering class declarations did
+not fix it, and one introduced a `.rodata` regression.
+
+**That is because the two orders are independent, and this file has said so all
+along: function DEFINITION order sets `.text` placement; class DECLARATION order
+sets vtable slots.** Reordering declarations moves slots, not addresses. The
+`FUNCTION ORDER IS WRONG` block in `verify_anon.py` already prints the exact
+target sequence and flags each function `defined too late` -- reorder the
+DEFINITIONS in the `.cpp` to that address order and leave the class declaration
+alone.
+
+**course** is **17/23**: `create` went 217 differing -> byte-exact, 224
+instructions, decoding the whole Koopa-ship/Anchor dispatch the stub had
+deferred. Two levers did it -- one `m_WorldNo` comparison must read the static
+FRESH rather than reuse the cached register the rest of the function keeps it
+in, and a branch-polarity flip on the `world == 7` split.
+
+`lbl_2_bss_FD7C` is identified: it is **`dWmLib::c_StartPointKinokoHouseID`**, an
+existing namespace-scope static in `d_wm_lib.hpp`, not a symbol to invent. A
+first attempt hand-declared a duplicate and doubled the `__sinit` registration --
+caught by `check_sections.py --dump` showing two symbols storing the same load.
+
+`createModel`'s logic is now verified correct line by line; its residual is the
+whole-file `.rodata` pool cascade, as are `updateOpenAnim`'s and
+`updateClearAnim`'s. Those three close when the pool fills.
+
 ## CORRECTION: WM_ANTLION is `0x15AC80-0x15B590`. I gave the wrong bounds.
 
 I dispatched antlion with `.text 0x15ab40-0x15b450`, derived by scanning

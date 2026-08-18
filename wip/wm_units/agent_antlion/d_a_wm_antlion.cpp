@@ -85,32 +85,95 @@ public:
     daWmAntlion_c();
     ~daWmAntlion_c();
 
+    /// @unofficial fn_2_15AE00. createModel(); mClipSphere.set(mPos, 100.0f)
+    /// (radius confirmed directly out of original/d_basesNP.rel's .rodata at
+    /// +0x8598); calc() called virtually (through this class's own vtable, slot
+    /// 0xc8) exactly like execute()'s tail call to the same slot.
     virtual int create();
+    /// @unofficial fn_2_15AE70. processCutsceneCommand() called through this
+    /// class's OWN vtable (slot 24, +0x60), THEN mAnimTexSrt.play()
+    /// (vtable+0x14) and mModel.play() (vtable+0x1c) on the sub-objects' own
+    /// vtables, THEN calc() virtually (slot 0xc8) -- confirmed
+    /// instruction-for-instruction against the target.
     virtual int execute();
-    /// @unofficial fn_2_15AF10. `mModel.remove(); return SUCCEEDED;` -- the
-    /// call reads *(this+0x704) [mModel's own vtable] then dispatches a slot
-    /// with `this` retargeted to `&mModel` itself (`lwzu` folding the
-    /// `this+0x704` address computation into the same load), matching
-    /// m3d::mdl_c's own `virtual void remove();` in every way except ONE:
-    /// this compiles to vtable+0x10 (slot 4), target wants +0x14 (slot 5) --
-    /// an 11/12 instruction near-miss, one virtual short somewhere in the
-    /// scnLeaf_c/bmdl_c/smdl_c/mdl_c chain ahead of remove(). NOT resolved
-    /// this round.
+    /// @unofficial fn_2_15AF10. `mModel.entry(); return SUCCEEDED;` --
+    /// resolved this round by PROBING rather than reading the header chain
+    /// (per the coordinator's steer): three tiny compiled probes
+    /// (`m->remove()`, `m->setAnm(*a)`, `m->play()`) confirmed slots
+    /// 4/6/7 (+0x10/+0x18/+0x1c), leaving the target's actual +0x14 (slot 5)
+    /// unaccounted for by any of mdl_c's own re-declared virtuals. Slot 5 is
+    /// scnLeaf_c::entry() -- declared there, never re-declared by bmdl_c or
+    /// mdl_c, so it keeps scnLeaf_c's own original slot sitting BETWEEN
+    /// remove() (4) and bmdl_c's new setAnm() (6). Matches the `mModel.entry()`
+    /// idiom already landed in every sibling's own draw(). REAL vtable order
+    /// (from the lbl_2_data_43810 dump) is create(2)/draw(5)/execute(8)/
+    /// doDelete(11) -- doDelete comes AFTER execute, corrected this round.
     virtual int doDelete();
+    /// @unofficial fn_2_15B1C0. `switch`-shaped dispatch on cutsceneCommandId
+    /// 0x48/0x4a, the first gated on isFirstFrame -- confirmed exact against
+    /// the target.
+    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
+
+    /// @unofficial The following overrides (through updateBgmAnimRate below)
+    /// were found via `check_vtable.py` against the REAL vtable
+    /// (`lbl_2_data_43810`, dumped from
+    /// `bin/dtkspl/d_basesNP/obj/auto_04_0003A960_data.o` -- almost every
+    /// OTHER slot carries a real exported name already, e.g.
+    /// `doWalk__10dWmEnemy_cFv`, `initDemoAnger__10dWmEnemy_cFv`, proving
+    /// dWmEnemy_c's own non-inline virtuals are normally IMPORTED from the
+    /// DOL when left un-overridden. These slots are `fn_2_XXXXXX` instead --
+    /// REL-LOCAL, not imported -- so despite several of them having the
+    /// exact same behaviour as dWmEnemy_c's own DOL-side body (read directly
+    /// out of source/dol/bases/d_wm_enemy.cpp), the ORIGINAL source really
+    /// does redeclare each one locally. DECLARED HERE in dWmEnemy_c's own
+    /// header order (matching the vtable's flattened slot order), not
+    /// grouped by discovery order, on the theory that MWCC's emission order
+    /// for un-overridden inherited defaults tracks declaration/slot order --
+    /// see the "FUNCTION ORDER" note in the task report for whether this
+    /// actually closed the gap.
+    /// @unofficial slot 28 (fn_2_15B310, `lwz r3,0x7ac(r3); blr`). +0x7ac is
+    /// NOT inside mAnimTexSrt (that ends at +0x7a8, sizeof 0x2c, confirmed by
+    /// probe) -- it is the second of two trailing int members after it.
+    virtual int GetIndex();
+    /// @unofficial slot 29 (fn_2_15B4D0), a `bctr` tail-call through THIS
+    /// class's own vtable+0x70 -- exactly GetIndex()'s slot.
+    virtual int GetNextIndex();
+    /// @unofficial slot 38 (fn_2_15B490), `bctr` tail-call to vtable+0x8c
+    /// (initDemoLose()'s own slot).
+    virtual void initDemoStarLose();
+    /// @unofficial slot 39 (fn_2_15B480), `bctr` tail-call to vtable+0x90
+    /// (procDemoLose()'s own slot).
+    virtual bool procDemoStarLose();
+    /// @unofficial slot 40 (fn_2_15B470), bare `blr` -- empty body, REL-local
+    /// rather than importing dWmEnemy_c's own (also empty, per
+    /// d_wm_enemy.cpp -- but that copy is never referenced here).
+    virtual void initDemoBgmDance();
+    /// @unofficial slot 41 (fn_2_15B460), `li r3,1; blr`.
+    virtual bool procDemoBgmDance();
+    /// @unofficial slot 43 (fn_2_15B410). Bytes are `mVec3_c::Zero` copied
+    /// into the return slot -- IDENTICAL to dWmEnemy_c::getPointOffset()'s
+    /// own DOL body (`return mVec3_c::Zero;`, d_wm_enemy.cpp), just declared
+    /// locally instead of imported.
+    virtual mVec3_c getPointOffset(int index);
+    /// @unofficial slot 48 (fn_2_15B3D0), `lwz r0,4(r3); extrwi r3,r0,4,24;
+    /// blr` -- a 4-bit field at bit offset 4, IDENTICAL to
+    /// dWmEnemy_c::getStartPoint()'s own DOL body (`return
+    /// ACTOR_PARAM(startPoint);`, d_wm_enemy.cpp). dWmEnemy_c's own
+    /// `ACTOR_PARAM_CONFIG(startPoint, 4, 4)` is private to dWmEnemy_c, so
+    /// this class needs its own copy of the same (offset, width) pair to
+    /// spell the identical extraction.
+    virtual int getStartPoint();
     /// @unofficial Overrides dWmEnemy_c::calc() (matches fn_2_15B110: the
     /// same PSMTXTrans/ZXYrotM/setLocalMtx/setScale/calc(false) idiom as
     /// every other landed wm sibling's calcModel(), just reached through the
     /// vtable slot dWmEnemy_c already reserves for calc() rather than a
     /// direct call).
     virtual void calc();
-    /// @unofficial fn_2_15B1C0. Best-effort reconstruction of the 0x150-byte
-    /// target -- shape (two symmetric dispatches on cutsceneCommandId 0x48/
-    /// 0x4a, first gated on isFirstFrame, second not) is confirmed; the two
-    /// vtable calls (slot 0x70, checked `< 0`; slot 0x68, void) are guessed
-    /// as GetIndex() (dWmEnemy_c's default returns -1 exactly when dead) and
-    /// setCutEnd() by shape/semantics, NOT yet confirmed against the vtable
-    /// directly -- flagged as the least certain function in this draft.
-    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
+    /// @unofficial slot 51 (fn_2_15B3B0), bare `blr` -- empty, matching
+    /// dWmEnemy_c::calculateEffect()'s own DOL body (`{}`) but REL-local.
+    virtual void calculateEffect();
+    /// @unofficial slot 60 (fn_2_15B340), bare `blr` -- empty, REL-local.
+    virtual void updateBgmAnimRate();
 
     /// @unofficial fn_2_15AF50. Same shape as every landed sibling's
     /// createModel() -- archive "cobAntlion" confirmed directly out of
@@ -127,6 +190,17 @@ public:
     m3d::mdl_c mModel;
     m3d::anmChr_c mChrAnim;
     m3d::anmTexSrt_c mAnimTexSrt;
+    /// @unofficial +0x7a8. sizeof(m3d::anmTexSrt_c) is 0x2c (probed directly:
+    /// `(int)sizeof(m3d::anmTexSrt_c)` compiles to `li r3,0x2c`), so
+    /// mAnimTexSrt ends at +0x7a8, NOT at sizeof(daWmAntlion_c) (+0x7b0) as
+    /// first assumed -- there are 8 more bytes after it. GetIndex() reads
+    /// the SECOND word of this pair (+0x7ac); the first is unaccounted for.
+    int mUnk7A8;
+    int mIndexCache; ///< @unofficial +0x7ac, read directly by GetIndex().
+
+    /// @unofficial Private to dWmEnemy_c there; redeclared here so
+    /// getStartPoint() can spell the identical bit-extraction locally.
+    ACTOR_PARAM_CONFIG(startPoint, 4, 4);
 };
 
 ACTOR_PROFILE(WM_ANTLION, daWmAntlion_c, 0);
@@ -145,11 +219,6 @@ int daWmAntlion_c::create() {
     return SUCCEEDED;
 }
 
-int daWmAntlion_c::doDelete() {
-    mModel.remove();
-    return SUCCEEDED;
-}
-
 /// @unofficial fn_2_15AE70. processCutsceneCommand() called through this
 /// class's OWN vtable (slot 24, +0x60 -- same slot sandpillar's report
 /// documents), THEN mAnimTexSrt.play() (vtable+0x14) and mModel.play()
@@ -163,6 +232,11 @@ int daWmAntlion_c::execute() {
     mModel.play();
     calc();
 
+    return SUCCEEDED;
+}
+
+int daWmAntlion_c::doDelete() {
+    mModel.entry();
     return SUCCEEDED;
 }
 
@@ -199,7 +273,8 @@ void daWmAntlion_c::createModel() {
     mModel.setAnm(mChrAnim);
 
     static const char *sTexSrtAnmName = "cobAntlion";
-    mAnimTexSrt.create(resMdl, resFile.GetResAnmTexSrt(sTexSrtAnmName), &mAllocator, 1);
+    nw4r::g3d::ResAnmTexSrt resAnmTexSrt = resFile.GetResAnmTexSrt(sTexSrtAnmName);
+    mAnimTexSrt.create(resMdl, resAnmTexSrt, &mAllocator, 1);
     mModel.setAnm(mAnimTexSrt);
     mAnimTexSrt.setPlayMode(m3d::FORWARD_LOOP, 0);
     mAnimTexSrt.setRate(0.0f, 0);
@@ -209,6 +284,40 @@ void daWmAntlion_c::createModel() {
     dWmActor_c::setSoftLight_MapObj(mModel);
     mAllocator.adjustFrmHeap();
 }
+
+int daWmAntlion_c::GetIndex() {
+    return mIndexCache;
+}
+
+int daWmAntlion_c::GetNextIndex() {
+    return GetIndex();
+}
+
+void daWmAntlion_c::initDemoStarLose() {
+    initDemoLose();
+}
+
+bool daWmAntlion_c::procDemoStarLose() {
+    return procDemoLose();
+}
+
+void daWmAntlion_c::initDemoBgmDance() {}
+
+bool daWmAntlion_c::procDemoBgmDance() {
+    return true;
+}
+
+mVec3_c daWmAntlion_c::getPointOffset(int index) {
+    return mVec3_c::Zero;
+}
+
+int daWmAntlion_c::getStartPoint() {
+    return ACTOR_PARAM(startPoint);
+}
+
+void daWmAntlion_c::calculateEffect() {}
+
+void daWmAntlion_c::updateBgmAnimRate() {}
 
 void daWmAntlion_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
     if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
