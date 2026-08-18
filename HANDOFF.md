@@ -2284,6 +2284,38 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## Run `text_objects.py` BEFORE quoting any per-function count
+
+dtk does not split on unit boundaries. A unit's `.text` is routinely spread over
+two or three objects, and a lone function -- almost always the compiler-generated
+`__sinit` -- frequently gets an `auto_fn_2_*_text.o` of its very own. Pass fewer
+objects than that and `verify_anon.py` cannot tell: a function in an object
+nobody handed it simply does not exist, and its absence looks exactly like a
+smaller unit.
+
+**This has now produced a wrong count three times, in both directions:**
+
+- `d_a_wm_koopa_castle.cpp` read 15/16 while its `__sinit` was open and
+  differing -- flattering, and it would have been landed broken.
+- `d_a_wm_ghost.cpp` read 11/11 against one object; with all three it is 13/13.
+- `d_a_wm_kinoko_base.cpp` read 16/16 against two objects; with all three it is
+  **17/17**, its `__sinit` matching too. Conservative this time, but wrong.
+
+`wip/wm_units/text_objects.py <module> <lo> <hi>` lists every covering object,
+prints a ready-to-paste `verify_anon.py` command line, and names any function in
+range with NO covering object at all -- those exist, and the only way to check
+them is raw bytes from `original/<module>.rel` at file offset `0xF0 + address`.
+
+Note it matches BOTH naming forms, `auto_NN_<ADDR>_text.o` and
+`auto_fn_2_<ADDR>_text.o`. Matching only the first is precisely how koopa_castle's
+`__sinit` went unmeasured for a round.
+
+### kinoko_base is 17/17
+
+Every function matches, `__sinit` and array destructor included. The unit's ONLY
+remaining defect is the 8-byte `.data` object at unit offset `0x1b8`, after the
+weak vtables. Nothing in `.text` is open.
+
 ## LANDED: `d_a_wm_ghost.cpp` — the fourth REL unit. 11.145% -> 11.193%
 
 All five binaries verify. `d_basesNP.rel` md5 `17096d0ed441d44a0c31039138a8d7f8`.
