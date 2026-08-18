@@ -32,7 +32,7 @@ public:
     void calcModel();
     void setMatClrAnm(int index, float rate, float frame);
     void updateState();
-    void updateOpenAnim();
+    bool updateOpenAnim();
     void updateClearAnim(bool unused);
     void updateHelpFade();
     daWmCourse_c *searchOpenNeighbor();

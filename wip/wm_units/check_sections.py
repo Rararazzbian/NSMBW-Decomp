@@ -85,6 +85,38 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools', 
 import harness as H  # noqa: E402
 
 
+# A REL's section table, so the TARGET's own bytes can be read for any address.
+# Index order is fixed by the format: 1 .text, 2 .ctors, 3 .dtors, 4 .rodata,
+# 5 .data, 6 .bss. Verified against d_basesNP.rel, whose section sizes match the
+# claims in slices/.
+REL_SECTION_INDEX = {'.text': 1, '.ctors': 2, '.dtors': 3, '.rodata': 4,
+                     '.data': 5, '.bss': 6}
+
+
+def target_bytes(module, section, lo, hi):
+    """The ORIGINAL binary's bytes for [lo, hi) in `section`, or None.
+
+    Why this exists: a claim can legitimately be larger than the compiled
+    object, and the ONLY way to tell a benign shortfall from a real one is to
+    look at what the target actually has there. `.bss` is not file-backed, so it
+    returns None and the caller falls back.
+    """
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))), 'original', module + '.rel')
+    idx = REL_SECTION_INDEX.get(section)
+    if idx is None or not os.path.exists(path):
+        return None
+    blob = open(path, 'rb').read()
+    num, info = struct.unpack_from('>II', blob, 0x0C)
+    if idx >= num:
+        return None
+    off, size = struct.unpack_from('>II', blob, info + idx * 8)
+    off &= ~3
+    if not off or hi > size:          # off == 0 means .bss: no file data
+        return None
+    return blob[off + lo:off + hi]
+
+
 def target_content_end(module, section, lo, hi):
     """End offset, relative to `lo`, of the last REAL target symbol in [lo, hi).
 
@@ -186,6 +218,14 @@ def strong_extent(symbols, section, align=4):
     return (end + align - 1) & ~(align - 1)
 
 
+def _tail_is_zero(module, section, lo, hi):
+    """True when the original's bytes in [lo, hi) are all zero."""
+    if hi <= lo:
+        return False
+    raw = target_bytes(module, section, lo, hi)
+    return raw is not None and len(raw) == hi - lo and not any(raw)
+
+
 def dump_symbols(symbols, section):
     rows = sorted(x for x in symbols if x[0] == section and x[2])
     if not rows:
@@ -250,6 +290,15 @@ def main():
         elif got < want and content is not None and got >= content:
             verdict = ('%#x short of the claim, but covers all %#x of real target '
                        'content -- the rest is inter-unit padding, ok' % (want - got, content))
+        elif got < want and _tail_is_zero(module, name, lo + got, hi):
+            # The shortfall region is all ZERO in the original binary. The
+            # linker zero-fills the remainder of a claim, so the object being
+            # short here changes nothing. This is NOT hypothetical: it is
+            # exactly d_a_wm_kinoko_red.cpp's `.rodata`, which read
+            # `UNDER 0x4 -- something is missing` for two full investigation
+            # rounds and then landed 5/5 UNCHANGED with the original claim.
+            verdict = ('%#x short, but those bytes are ZERO in the original -- '
+                       'the linker fills them, ok' % (want - got))
         elif got < want:
             missing = (want - got) if content is None else (content - got)
             verdict = 'UNDER %#x  -- something is missing' % missing

@@ -2284,6 +2284,48 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## LANDED: kinoko_red, sixth REL unit — and a SECOND check_sections false alarm
+
+11.235% -> 11.243%. Landed by applying kinoko_base's linkage rule: an in-class
+inline `getModelName()` returning a raw literal, deferring the string to unit
+offset `0xf8`, after `__vt__`, where the target has it. The out-of-line form
+emitted it eagerly and left a dangling reference to an address outside the
+slice, which is how the link failure pointed straight at the fix.
+
+**The `.data` claim had to grow** from `0x45b68` to `0x45b78` to cover the
+deferred string and its padding.
+
+**And the unit carries `"cobKinokoRed"` TWICE** -- a strong copy at offset 0 for
+the model-name pointer, and the weak deferred copy at `0xf8`. So does the
+target. That **refutes an argument I made earlier this session**, that one TU
+cannot pool the same literal twice and therefore the second copy must belong to
+the next unit. It can, when the copies differ in linkage, because
+`reuse_strings` does not merge across it.
+
+### The 4-byte `.rodata` "defect" never existed
+
+Two full agent rounds went into kinoko_red's `.rodata` reading
+`UNDER 0x4 -- something is missing`. It landed 5/5 with the claim UNCHANGED.
+The four bytes are zero in the original and **the linker fills them**.
+
+`check_sections.py` now reads the ORIGINAL BINARY to settle this: it parses the
+REL section table (index order is fixed -- 1 `.text`, 2 `.ctors`, 3 `.dtors`,
+4 `.rodata`, 5 `.data`, 6 `.bss`) and, when an object is short, checks whether
+every byte of the shortfall is zero in the target. All zero -> the linker fills
+it, clean. Otherwise -> still a real defect.
+
+Validated three ways: the landed kinoko_red now reports SECTIONS CLEAN;
+sandpillar's `.rodata` `0x14` shortfall is still flagged REAL (non-zero bytes);
+and sandpillar's `.data` `0x4` is correctly downgraded to benign.
+
+**That last one is a live correction:** I told the sandpillar round that both its
+`.data` and `.rodata` shortfalls were real. Only the `.rodata` one is.
+
+**This is the tool's SECOND false alarm and both cost multiple rounds.** The
+lesson is not about this tool: **when a check says a unit cannot land and the
+unit otherwise looks complete, try landing it.** The build is the authority and
+it is cheap; the checks are heuristics standing in for it.
+
 ## SOLVED + LANDED: kinoko_base. The post-vtable emission rule is LINKAGE.
 
 The 8-byte object that gated three units is fixed, and the unit is landed. Five

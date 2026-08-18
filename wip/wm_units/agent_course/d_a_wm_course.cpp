@@ -6,6 +6,7 @@
 #include <game/bases/d_wm_se_manager.hpp>
 #include <game/bases/d_wm_effect_manager.hpp>
 #include <game/bases/d_s_world_map_static.hpp>
+#include <game/bases/d_info.hpp>
 #include <game/framework/f_manager.hpp>
 
 ACTOR_PROFILE(WM_COURSE, daWmCourse_c, 0);
@@ -158,10 +159,83 @@ void daWmCourse_c::updateState() {
     }
 }
 
-// TODO: not yet matched (fn_2_160F50, ~136 instructions, vtable slot 23).
+// Matches fn_2_160F50's shape. Two open items, both documented at the point
+// of use below: the dInfo_c byte at +0x380 falls inside that class's still
+// -unnamed pad11 (real header not editable from here), read via a raw offset
+// cast instead of a named member; and the vtable slot the "call through the
+// vtable" sites use was pinned down with check_vtable.py against the
+// target's own vtable dump (lbl_2_data_444A0) -- offset +0x68 is
+// setCutEnd__14dWmDemoActor_cFv, NOT vf74/vf78 as first guessed. The default
+// case's "stb 0x139" is the SAME field (dWmDemoActor_c::mIsCutEnd) written
+// directly rather than through the vtable, so it is a plain field write here
+// instead of a virtual setCutEnd() call.
 void daWmCourse_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
-    (void)cutsceneCommandId;
-    (void)isFirstFrame;
+    if (cutsceneCommandId == -1) {
+        return;
+    }
+
+    if (isFirstFrame) {
+        switch (cutsceneCommandId) {
+            case 0x5e:
+                mUnk248 = 0;
+                if (isWorld2SpecialType()) {
+                    if (!*reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)
+                        || IsCourseOmoteClear()) {
+                        mUnk248 = 0xa;
+                    }
+                }
+                break;
+            case 0x93:
+                mUnk248 = 0;
+                if (isWorld2SpecialType()) {
+                    mUnk248 = 0x1f;
+                }
+                if (!*reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)) {
+                    mUnk248 = 0;
+                }
+                if (IsCourseOmoteClear()) {
+                    mUnk248 = 0;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    switch (cutsceneCommandId) {
+        case 3:
+            if (updateOpenAnim()) {
+                setCutEnd();
+            }
+            break;
+        case 0x5e:
+            if (mUnk248 > 0) {
+                if (mUnk248 == 1) {
+                    updateClearAnim(true);
+                }
+                mUnk248 -= 1;
+            } else {
+                setCutEnd();
+            }
+            break;
+        case 0x93:
+            if (mUnk248 > 0) {
+                if (mUnk248 == 1
+                    && *reinterpret_cast<u8 *>(reinterpret_cast<char *>(dInfo_c::m_instance) + 0x380)) {
+                    updateClearAnim(true);
+                    fn_80103420(dWmEffectManager_c::m_pInstance, 0x21, mModel, "cobCourse", 0, 0);
+                    dWmSeManager_c::m_pInstance->playSound(0x1f, mPos, 1);
+                    mUnk250 = true;
+                }
+                mUnk248 -= 1;
+            } else {
+                setCutEnd();
+            }
+            break;
+        default:
+            mIsCutEnd = true;
+            break;
+    }
 }
 
 void daWmCourse_c::setMatClrAnm(int index, float rate, float frame) {
@@ -178,35 +252,49 @@ void daWmCourse_c::setMatClrAnm(int index, float rate, float frame) {
 // resolve at link time until that TU lands -- same class of blocker as
 // d_a_wm_kinoko_1up.cpp. Left in, correct and named, deliberately not
 // stubbed: a stub would be wrong bytes and would hide the dependency.
-// The call is a side effect only -- every path below reaches the switch
-// regardless of its result, confirmed by tracing every branch target.
-void daWmCourse_c::updateOpenAnim() {
-    if (GetOpenStatus() != 1 && dScWMap_c::m_WorldNo == 7 && (int)ACTOR_PARAM(CourseNo) == 0x17) {
-        fn_2_191BF0();
-    }
-
-    switch (mOpenState) {
-        case 0:
-            mOpenState = 1;
-            break;
-        case 1:
-            fn_80103420(dWmEffectManager_c::m_pInstance, 0x21, mModel, "cobCourse", 0, 0);
-            dWmSeManager_c::m_pInstance->playSound(0x1f, mPos, 1);
-            setMatClrAnm(2, 1.0f, 0.0f);
-            mOpenState = 3;
-            break;
-        case 3: {
-            int frames = 60;
-            if (mMatClrAnim[ANM_OPEN].checkFrame(frames, 0)) {
-                openNeighbors(true);
-                mOpenState = 4;
+//
+// Return type corrected to bool: the target initialises r31=0 at entry and
+// returns it in r3, setting it to 1 on the "gate failed" early-out and on
+// case 4 only -- every other exit (case 0/1/3/default) returns the initial
+// 0. This function is not called anywhere visible in this TU; the true
+// caller (a state-function-pointer table elsewhere) is out of view, but the
+// target's own bytes are unambiguous about the return value existing.
+// The world==7/courseNo==0x17/fn_2_191BF0() gate is NOT a side-effect-only
+// call as previously assumed -- when GetOpenStatus() != 1 the target skips
+// the switch entirely and returns true unless ALL three gate conditions
+// hold, in which case it falls into the switch below.
+bool daWmCourse_c::updateOpenAnim() {
+    bool result = false;
+    if (GetOpenStatus() == 1
+        || (dScWMap_c::m_WorldNo == 7 && (int)ACTOR_PARAM(CourseNo) == 0x17 && fn_2_191BF0())) {
+        switch (mOpenState) {
+            case 0:
+                mOpenState = 1;
+                break;
+            case 1:
+                fn_80103420(dWmEffectManager_c::m_pInstance, 0x21, mModel, "cobCourse", 0, 0);
+                dWmSeManager_c::m_pInstance->playSound(0x1f, mPos, 1);
+                setMatClrAnm(2, 1.0f, 0.0f);
+                mOpenState = 3;
+                break;
+            case 3: {
+                int frames = 60;
+                if (mMatClrAnim[ANM_OPEN].checkFrame(frames, 0)) {
+                    openNeighbors(true);
+                    mOpenState = 4;
+                }
+                break;
             }
-            break;
+            case 4:
+                result = true;
+                break;
+            default:
+                break;
         }
-        case 4:
-        default:
-            break;
+    } else {
+        result = true;
     }
+    return result;
 }
 
 // dWmLib::SearchMapObjFromCsvIndex loop matching fn_2_161390's shape.
@@ -294,7 +382,9 @@ void daWmCourse_c::updateHelpFade() {
     }
     daWmCourse_c *neighbor = searchOpenNeighbor();
     if (neighbor != nullptr) {
-        if (neighbor->getMatClrFrame() == mMatClrAnim[ANM_OPEN].getFrame(0)) {
+        float neighborFrame = neighbor->getMatClrFrame();
+        float ownFrame = mMatClrAnim[ANM_OPEN].getFrame(0);
+        if (ownFrame == neighborFrame) {
             mMatClrAnim[ANM_OPEN].setRate(1.0f, 0);
             mUnk250 = false;
         }
