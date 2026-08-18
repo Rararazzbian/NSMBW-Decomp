@@ -382,7 +382,7 @@ void daWmSandPillar_c::createMdl() {
     mAnim.create(resMdl, resAnmChr, &mAllocator);
 
     mResAnmTexSrt = mResFile.GetResAnmTexSrt("cobSandpillar");
-    mAnimTexSrt.create(resMdl, mResAnmTexSrt, &mAllocator, 1);
+    mAnimTexSrt.create(resMdl, mResAnmTexSrt, &mAllocator);
     mAnimTexSrt.setAnm(mModel, mResAnmTexSrt, 0, m3d::FORWARD_LOOP);
     mModel.setAnm(mAnimTexSrt, 1.0f);
 
@@ -430,13 +430,14 @@ void daWmSandPillar_c::finalizeState_Ready() {
     if (type == 1) {
         goto set;
     }
-    if (type == 2) {
-        goto set;
+    if (type != 2) {
+        goto clear;
     }
-    mReadyFlag = 0;
-    return;
 set:
     mReadyFlag = 1;
+    return;
+clear:
+    mReadyFlag = 0;
 }
 
 /// @unofficial fn_2_177EF0. Reads mReadyFlag (set by finalizeState_Ready),
@@ -500,13 +501,9 @@ void daWmSandPillar_c::finalizeState_BottomWait() {
 /// permanently -- BottomWaitForever's own final also sets this, presumably).
 /// Otherwise counts mUnk4F0 down to 0 and transitions to MoveReady.
 void daWmSandPillar_c::executeState_BottomWait() {
-    if (mUnk4EC != 0) {
-        return;
+    if (mUnk4EC == 0 && --mUnk4F0 <= 0) {
+        mStateMgr.changeState(StateID_MoveReady);
     }
-    if (--mUnk4F0 > 0) {
-        return;
-    }
-    mStateMgr.changeState(StateID_MoveReady);
 }
 
 /// @unofficial fn_2_1780F4, confirmed `blr`. Not a state method -- still

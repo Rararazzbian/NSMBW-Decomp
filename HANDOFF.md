@@ -2396,25 +2396,54 @@ ORIGINAL base (`stfs f2, 0x10(r30)`), switching to the derived register only
 from the second field on. The draft materialises the pointer once, before the
 branch, and uses it uniformly for all six stores.
 
-**And the stack staging is ASYMMETRIC, which no shape has tried to reproduce:**
+**CORRECTION — I claimed the stack staging was asymmetric. It is not.** I read
+a `difflib` opcode dump, which prints only the DIFFERING runs from each side,
+and mistook the two lists of differing lines for the two full instruction
+streams. Zip-aligned, both sides stage three values, write three fields, stage
+three more, write three more, at IDENTICAL stack offsets. An agent spent a round
+testing eight shapes against a premise that was an artefact of how I read the
+diff. **When comparing two instruction streams, align them index-by-index; never
+infer structure from a diff that shows only the differing lines.**
+
+The real residual, zip-aligned, is 13 instructions in two groups and ONE cause:
 
 ```
-target                     draft
-stfs f1, 0x18(r1)   <- 1   stfs f2, 0x8(r1)    <- 3
-stfs f2, 0x10(r30)         stfs f1, 0xc(r1)
-stfs f1, 0x4(r3)           stfs f0, 0x10(r1)
-stfs f0, 0x8(r3)           stfs f2, 0x0(r4)
-stfs f2, 0x8(r1)    <- 3   stfs f1, 0x4(r4)
-stfs f2, 0xc(r1)           stfs f0, 0x8(r4)
-stfs f0, 0x10(r1)          stfs f2, 0x18(r1)   <- 1
-stfs f2, 0xc(r3)           stfs f2, 0xc(r4)
+#    target                       draft
+31   extsb. r0, r0                addi r4, r30, 0x10     <- draft hoists the pointer
+32   stw  r3, 0xc(r30)            extsb. r0, r0
+33   bne  .L_00191D00             stw  r3, 0xc(r30)
+34   lfs  f2, 0x1c(r31)           bne  .L_00000F00
+35   addi r3, r30, 0x10           lfs  f2, 0x1c(r31)     <- target computes it HERE
+36   lfs  f0, 0x34(r31)           li   r0, 0x1
+37   li   r0, 0x1                 lfs  f0, 0x34(r31)
+...
+42   stfs f2, 0x10(r30)           stfs f2, 0x0(r4)       <- first field via BASE
+43   stfs f1, 0x4(r3)             stfs f1, 0x4(r4)
+44   stfs f0, 0x8(r3)             stfs f0, 0x8(r4)
+48   stfs f2, 0xc(r3)             stfs f2, 0xc(r4)
+49   stfs f2, 0x10(r3)            stfs f2, 0x10(r4)
+50   stfs f0, 0x14(r3)            stfs f0, 0x14(r4)
 ```
 
-The target stages ONE value, writes the first vector, stages THREE, writes the
-second. The draft does three-then-one -- the same counts in the opposite order.
-That asymmetry is a source-level shape (one vector built from a named local, the
-other from a temporary), not a register-allocator whim, and it is the next thing
-to try.
+The draft materialises the derived pointer EARLY, before the guard test, and
+uses it for all six stores. The target materialises it LATE, after the branch,
+and still writes the FIRST field through the original base at `0x10(r30)`.
+Seven instructions of ordering plus six of register choice = 13.
+
+Twenty shapes have now been measured against this across two rounds and none
+moves it. Also newly ruled out, with measurements: named-local vs temporary for
+either vector (13, no change); the reverse (19, and it REVIVES the already-solved
+stack-window defect, so direction does matter for that one); mixed
+field-by-field plus temporary either way round (33, frame collapses);
+`mPos1.set(...)` vs the constructor either way round (33).
+
+On the wrapper question specifically: `mVec3_c(f32,f32,f32)` in `m_vec.hpp` does
+NOT forward to `set()` -- it assigns fields in its own body -- and `set()`,
+inherited from `EGG::Vector3f`, is a plain field-setter, not a forwarding
+wrapper. So the `create()` wrapper-vs-bypass distinction has no analogue here.
+(`mVec2_c` DOES have real wrapper chains, if that ever matters elsewhere.)
+
+**koopa_castle is PARKED at 16/17** on one MWCC register-allocation decision.
 
 ## kinoko_base's 8 bytes are the CRITICAL PATH for three units
 
