@@ -2284,6 +2284,68 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## THE TEMPORARY-MATERIALISATION WALL IS BROKEN
+
+Three units were blocked on it and more than a dozen single-unit attempts had
+failed. Attacking all three instances together found the rule in one round.
+
+**The rule.** MWCC anchors a by-value temporary's stack slot to the LOW end of
+its region only when that temporary is passed through an INLINE WRAPPER call --
+an overload that omits a trailing default argument and forwards it from inside
+its own inlined body -- and NOT when it is passed to the real function directly
+with the trailing argument spelled at the call site. For the shape "outer
+by-value consumer, then a loop or statements reusing that value": **the outer
+call must go through one level of inline wrapper, and the inner/loop call must
+BYPASS its own wrapper by spelling the trailing argument explicitly.** Any other
+combination puts the outer temporary at the HIGH end.
+
+Measured 2x2, synthetic probes plus both real units:
+
+| outer call | inner/loop call | outer temp slot | matches target |
+|---|---|---|---|
+| wrapper | bypass | LOW (0x8) | **YES** |
+| wrapper | wrapper | HIGH | no |
+| bypass | bypass | HIGH | no -- ghost before the fix |
+| bypass | wrapper | HIGH | no |
+
+**This corrects a rule recorded earlier in this file.** "Call the 4-arg inline
+wrapper, not the 5-arg overload with an explicit `nullptr`" was stated as a
+general fix. It is not general -- it is correct for the OUTER call and exactly
+BACKWARDS for the inner one. That is why it closed kinoko_base and left
+koopa_castle untouched: koopa_castle's outer call was already right and its
+LOOP call was the wrong one.
+
+**Two units fixed by one line each, both verified here:**
+
+- `d_a_wm_koopa_castle.cpp` -- the loop's `mChrAnim[i].create(...)` was going
+  through `anmChr_c`'s DOUBLE wrapper (`create` -> `create2` -> real 4-arg).
+  Adding the explicit trailing `nullptr` makes `createModel` byte-exact.
+  **Unit is now 16/17**, only `__sinit` open.
+- `d_a_wm_ghost.cpp` -- the mirror image: its loop call was already correct and
+  its OUTER `mModel.create(...)` spelled the trailing `nullptr`, bypassing its
+  own wrapper. Removing it makes `createModel` byte-exact. **Unit is now 13/13
+  -- every function including `__sinit` and the array destructor -- with
+  SECTIONS CLEAN, BOUNDS PLAUSIBLE and VTABLE CLEAN.**
+
+**A methodological note that mattered:** the landed precedent
+`d_a_wm_dokan_route.cpp` was cited in this file as evidence about loops with
+by-value consumers. Reading its COMPILED OBJECT rather than its source shows its
+loop has `ANIM_COUNT == 1` and is fully unrolled with no back-branch at all. It
+was never evidence about loops. Read the object, not the source, before citing a
+landed unit as precedent.
+
+Also genuinely refuted along the way, by measurement rather than by argument:
+loop vs straight-line, unrolled vs real loop, call count per iteration,
+preceding unrelated statements, register pressure, and distinct vs shared
+temporary types. None of them moves the slot assignment.
+
+`koopa_castle::__sinit` improved 19 -> 13 by the same depth intuition (pushing
+the guarded writes into an inline member so the guard test and the writes sit at
+different inlining depths), which also fixed a secondary symptom -- two
+`mVec3_c` staging groups that had been landing reversed -- proving that anomaly
+was a downstream cascade rather than independent. The residual 13 is the root
+cause alone: the target materialises the derived pointer after the guard branch.
+
 ### `check_sections.py` had a FALSE-ALARM defect, affecting six landed units
 
 Every previously-found defect in this tool produced a false CLEAN. This one

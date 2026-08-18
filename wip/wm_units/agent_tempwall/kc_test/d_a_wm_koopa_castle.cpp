@@ -95,12 +95,22 @@ namespace {
         mVec3_c mPos1;
         mVec3_c mPos2;
 
-        KoopaShipPos_t() {
+        // EXPERIMENT (agent_tempwall probe): route the write-path through an
+        // extra level of inlining, mirroring the depth-asymmetry that fixed
+        // createModel's 3-way rotation (outer call through ONE MORE level of
+        // inline wrapper than the loop's call). Here the GUARD TEST sits at
+        // depth 0 (directly in the ctor) and the WRITES are pushed to depth 1
+        // via this helper, instead of both sitting at the same depth.
+        void doInit() {
             if (!s_koopaShipPosGuard.mDone) {
                 mPos1 = mVec3_c(0.0f, 50.0f, -100.0f);
                 mPos2 = mVec3_c(0.0f, 0.0f, -100.0f);
                 s_koopaShipPosGuard.mDone = true;
             }
+        }
+
+        KoopaShipPos_t() {
+            doInit();
         }
     };
 
