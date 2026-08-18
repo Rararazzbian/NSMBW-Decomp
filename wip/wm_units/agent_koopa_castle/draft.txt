@@ -1142,10 +1142,10 @@
 /* 00000E94 00000ED4  D0 26 00 1C */	stfs f1, 0x1c(r6)
 /* 00000E98 00000ED8  D0 06 00 20 */	stfs f0, 0x20(r6)
 /* 00000E9C 00000EDC  48 00 00 01 */	bl __register_global_object
-/* 00000EA0 00000EE0  38 9E 00 10 */	addi r4, r30, 0x10
+/* 00000EA0 00000EE0  88 1E 00 28 */	lbz r0, 0x28(r30)
 /* 00000EA4 00000EE4  3C 60 00 00 */	lis r3, c_START_ID__10dCsvData_c@ha
-/* 00000EA8 00000EE8  88 04 00 18 */	lbz r0, 0x18(r4)
-/* 00000EAC 00000EEC  80 63 00 00 */	lwz r3, c_START_ID__10dCsvData_c@l(r3)
+/* 00000EA8 00000EE8  80 63 00 00 */	lwz r3, c_START_ID__10dCsvData_c@l(r3)
+/* 00000EAC 00000EEC  38 9E 00 10 */	addi r4, r30, 0x10
 /* 00000EB0 00000EF0  2C 00 00 00 */	cmpwi r0, 0x0
 /* 00000EB4 00000EF4  90 7E 00 0C */	stw r3, 0xc(r30)
 /* 00000EB8 00000EF8  40 82 00 48 */	bne .L_00000F00
@@ -1165,7 +1165,7 @@
 /* 00000EF0 00000F30  D0 44 00 0C */	stfs f2, 0xc(r4)
 /* 00000EF4 00000F34  D0 44 00 10 */	stfs f2, 0x10(r4)
 /* 00000EF8 00000F38  D0 04 00 14 */	stfs f0, 0x14(r4)
-/* 00000EFC 00000F3C  98 04 00 18 */	stb r0, 0x18(r4)
+/* 00000EFC 00000F3C  98 1E 00 28 */	stb r0, 0x28(r30)
 .L_00000F00:
 /* 00000F00 00000F40  80 01 00 44 */	lwz r0, 0x44(r1)
 /* 00000F04 00000F44  83 E1 00 3C */	lwz r31, 0x3c(r1)
@@ -1477,8 +1477,14 @@
 	.skip 0x4
 .endobj c_StartPointKinokoHouseID__6dWmLib
 
-# .bss:0x10 | size: 0x20
+# .bss:0x10 | size: 0x18
 # @unnamed@d_a_wm_koopa_castle_cpp@::s_koopaShipPos
 .obj "s_koopaShipPos__33@unnamed@d_a_wm_koopa_castle_cpp@", local
-	.skip 0x20
+	.skip 0x18
 .endobj "s_koopaShipPos__33@unnamed@d_a_wm_koopa_castle_cpp@"
+
+# .bss:0x28 | size: 0x8
+# @unnamed@d_a_wm_koopa_castle_cpp@::s_koopaShipPosGuard
+.obj "s_koopaShipPosGuard__33@unnamed@d_a_wm_koopa_castle_cpp@", local
+	.skip 0x8
+.endobj "s_koopaShipPosGuard__33@unnamed@d_a_wm_koopa_castle_cpp@"

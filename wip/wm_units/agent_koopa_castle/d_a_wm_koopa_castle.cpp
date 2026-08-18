@@ -28,25 +28,84 @@ int daWmKoopaCastle_c::create() {
 // d_a_wm_smallcloud.cpp/grid.cpp/tower.cpp/cloud.cpp/peach_castle.cpp --
 // none has a 2x-mVec3_c+bool or 4-int static of this shape).
 namespace {
+    // The guard is a SEPARATE file-scope static, not a struct member: the
+    // target reads it off the ORIGINAL anchor (r30) and only computes the
+    // struct's own derived pointer AFTER the guard test, whereas a member
+    // guard has the draft hoist the derived pointer first and address the
+    // guard through it too. Splitting it out reproduces that -- the
+    // compiler has no reason to compute &s_koopaShipPos before it's
+    // actually needed (inside the `if`), matching the target's ordering.
+    // No initialiser on the guard either, same reasoning as before: an
+    // explicit `= false` is something the compiler could prove and fold
+    // the check away entirely; relying on static zero-init keeps the
+    // guard real.
+    //
+    // DECLARATION ORDER matters here (as elsewhere in this project): the
+    // guard's DEFINITION (the one that actually reserves .bss storage)
+    // must come AFTER s_koopaShipPos, not before, or it lands in .bss
+    // BEFORE the struct's own two mVec3_c fields instead of after them
+    // (tried declaring+defining it first -- landed at +0x10 instead of
+    // the target's +0x28; measured, not guessed). An out-of-line
+    // constructor definition was ALSO tried, to let the guard be declared
+    // after the class while still ordering its storage last -- that
+    // regressed badly (21 -> 56 differing, the whole __sinit reshuffled),
+    // so this uses a forward `extern` declaration instead, keeping the
+    // constructor INLINE as before: the extern gives the inline method
+    // early visibility of the name without affecting where the real
+    // (non-extern) definition below reserves its storage.
+    //
+    // RESULT of the split: 22 -> 19 differing, and critically the guard
+    // byte itself now sits at the CORRECT address (`0x28(r30)` in both --
+    // confirmed instruction-for-instruction) instead of +0x18 through a
+    // hoisted pointer. The remaining 19 are ALL the same single residual:
+    // the target computes the struct's derived pointer (`addi r3,r30,
+    // 0x10`) only AFTER the `bne` guard branch; the draft still computes
+    // it (into r4) right after the guard load and BEFORE testing it --
+    // an eagerly-materialised "this" versus a lazily-materialised one.
+    // Three more source shapes were tried against exactly this residual,
+    // none moved the count: (1) early-return (`if (done) return;` instead
+    // of `if (!done) {...}`), (2) capturing `this` into a named local
+    // AFTER the guard check, (3) building the two mVec3_c values as named
+    // locals first and assigning them in, the same lever that closed
+    // constructCompanion's stack-slot permutation. All three still
+    // compiled to 19. This looks like a second, narrower instance of the
+    // project's general "temporary/pointer materialisation timing" wall
+    // (see createModel's characterisation below) rather than something
+    // addressable by further source rephrasing of THIS function --
+    // flagging rather than continuing to guess.
+    // Guard type wraps the bool WITH its trailing 7 unknown/unwritten
+    // bytes (+0x29..+0x2f) in one object, rather than declaring the
+    // padding as its own standalone global: an unreferenced standalone
+    // global with no dynamic initialiser is exactly the kind of thing
+    // `-ipa file` eliminates outright (tried it separately first -- .bss
+    // stayed under by the padding's size, since nothing ever touches it).
+    // Bundling it with the guard bool means the whole object is kept
+    // because `mDone` IS referenced -- sizeof() doesn't shrink around an
+    // unused sibling member the way an unused sibling GLOBAL can vanish.
+    struct KoopaShipPosGuard_t {
+        bool mDone;
+        u8 mPad[7]; ///< @unofficial Never written by the target's __sinit
+                     ///< -- needed purely to round the claimed .bss span
+                     ///< out to the target's 0x30 total, exact meaning (if
+                     ///< any) unknown.
+    };
+    extern KoopaShipPosGuard_t s_koopaShipPosGuard;
+
     struct KoopaShipPos_t {
         mVec3_c mPos1;
         mVec3_c mPos2;
-        bool mDone;
-        int mUnk1c; ///< @unofficial Never written by the target's __sinit
-                     ///< (offsets 0x19-0x1f are untouched) -- needed purely
-                     ///< to round sizeof() up to the target's 0x20, exact
-                     ///< meaning (if any) unknown.
 
         KoopaShipPos_t() {
-            if (!mDone) {
+            if (!s_koopaShipPosGuard.mDone) {
                 mPos1 = mVec3_c(0.0f, 50.0f, -100.0f);
                 mPos2 = mVec3_c(0.0f, 0.0f, -100.0f);
-                mDone = true;
+                s_koopaShipPosGuard.mDone = true;
             }
         }
     };
 
     KoopaShipPos_t s_koopaShipPos;
+    KoopaShipPosGuard_t s_koopaShipPosGuard;
 }
 
 int daWmKoopaCastle_c::execute() {

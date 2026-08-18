@@ -2284,6 +2284,49 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+### koopa_castle 15/17 — and how to add padding under `-ipa file`
+
+Re-verified over the full range `0x1910d0-0x191d40` with all three target
+objects: **15/17**, no order violation, SECTIONS CLEAN, VTABLE CLEAN with zero
+unverifiable slots. `createModel` (6) and `__sinit` (19, down from 22) remain.
+`diffdump.py`'s `TARGET_OBJS` now includes `auto_fn_2_191C30_text.o`, so the
+unit's `__sinit` is visible to the tooling at last.
+
+**The most transferable finding: `-ipa file` deletes an unreferenced global, but
+keeps an unreferenced MEMBER.** Padding a section out to the target's size with
+a standalone unused global does not work -- the flag eliminates it outright and
+the `.bss` UNDER silently returns. Bundling the padding into a struct alongside
+a member that IS referenced keeps it. **A referenced member preserves its unused
+struct siblings; a referenced global does not preserve anything.** That is the
+general way to add otherwise-unmotivated bytes to a section in this project.
+
+**Declaration order controls `.bss` placement**, exactly as it already does for
+`.text`, for vtable slots and for `.data`. Splitting the `__sinit` guard out of
+the struct put it at `+0x10` instead of the target's `+0x28` until the
+DEFINITION was moved after the struct -- reachable early via a forward `extern`
+so an inline constructor can still name it. That combination moved the guard
+byte to the exact target address, confirmed instruction-for-instruction.
+
+**A warning worth recording: an out-of-line constructor reshuffles the ENTIRE
+`__sinit`.** Tried as an alternative route to the same ordering, it took the
+function from 21 differing to 56, moving unrelated code with it. Revert rather
+than chase.
+
+**The remaining 19 is a third instance of one wall.** The target materialises
+the struct's derived pointer only AFTER the guard's `bne`; the draft computes it
+eagerly, before testing. Three levers were tried against exactly this and none
+moved the count: an early-return form, capturing the pointer into a named local
+after the check, and building the two `mVec3_c` values as named locals first
+(the lever that closed `constructCompanion`).
+
+So this unit now carries TWO instances of the same wall -- `createModel`'s
+three-way stack-slot rotation and `__sinit`'s pointer-materialisation timing --
+and `d_a_wm_ghost.cpp` carries a third. **All three are the same question: WHEN
+MWCC materialises a temporary or derived pointer relative to the code that uses
+it.** That is worth attacking with the three instances side by side rather than
+one unit at a time; single-unit attempts have now failed on it more than a dozen
+times.
+
 ### kinoko_red's 4-byte `.rodata`: dedup CONFIRMED for the leading pad, and the
 ### trailing pad is a different phenomenon with no candidate in this TU
 

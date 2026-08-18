@@ -12,6 +12,7 @@ os.makedirs(CACHE, exist_ok=True)
 
 TARGET_OBJS = {
     0x1910A4: 'bin/dtkspl/d_basesNP/obj/auto_00_001910A4_text.o',
+    0x191C30: 'bin/dtkspl/d_basesNP/obj/auto_fn_2_191C30_text.o',
     0x191D18: 'bin/dtkspl/d_basesNP/obj/auto_00_00191D18_text.o',
 }
 DRAFT_TXT = 'wip/wm_units/agent_koopa_castle/draft.txt'
