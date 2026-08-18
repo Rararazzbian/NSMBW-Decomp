@@ -2284,6 +2284,42 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## LANDED: kinoko_1up, seventh REL unit. The whole kinoko family is in.
+
+Landed straight after kinoko_base unblocked it -- 9/9 with SECTIONS CLEAN and
+BOUNDS PLAUSIBLE on the first compile. Three things were still needed, and all
+three are the same pattern kinoko_red needed, which makes them a family recipe
+rather than one-offs:
+
+1. **`getModelName()` inline**, deferring its literal to the end of `.data`.
+   The out-of-line form leaves a dangling reference past the slice, and the link
+   error points straight at the address.
+2. **`.data` claim widened at BOTH ends**: `0x457a8-0x458b0`, not
+   `0x457b8-0x458a0`. The strong `"cobKinoko1up"` copy OPENS the unit's `.data`,
+   ahead of `sc_ForceList`'s F7C0/W7C0 strings, and the weak deferred copy
+   closes it. The recorded bounds were `0x10` too high at the bottom and `0x10`
+   short at the top -- and the size was right, so no size check could see it.
+3. **A `.rodata` claim that did not exist at all.** The unit was recorded as
+   having no `.rodata`; its object emits `0xc` for `sc_ForceList`'s triple, and
+   with no claim the linker appended it and shifted the whole module. Real
+   range: `0x8ab8-0x8ac8`, immediately below kinoko_base's.
+
+**THE FAMILY RECIPE, now confirmed on two leaves.** A kinoko leaf needs its model
+name string in TWO places -- pooled FIRST, ahead of the header's own strings, and
+pointed at by a `smc_modelResName` variable that sits LATE, just before the
+vtable. One declaration cannot do both: its position fixes the pointer AND, on
+first use, the literal. So declare a deliberately unreferenced pointer to the
+same literal ABOVE the `d_wm_lib.hpp` include:
+
+```cpp
+static const char *smc_poolCobKinoko1upEarly_1up = "cobKinoko1up";
+#include <game/bases/d_wm_lib.hpp>
+```
+
+`-ipa file` deletes the pointer as an unreferenced global; **the pooled literal
+survives**, which is the entire point. This is the same dead-pointer idiom as
+kinoko_base's `smc_unusedAppearName`/`smc_unusedAppearName2` pair.
+
 ## check_bounds.py now checks OWNERSHIP, from the REL's relocation stream
 
 sandpillar's `.rodata` "0x14 missing" was never missing. **The claim's upper
