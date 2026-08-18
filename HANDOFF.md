@@ -2284,6 +2284,36 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## A `__sinit` pool-offset difference is a SYMPTOM, not a defect
+
+`d_a_wm_course.cpp` is 15/23, and its `__sinit` reads as only **3 differing** --
+temptingly close. It is not close, and chasing it would be wasted work.
+
+Both are 33 instructions and the only difference is three load offsets:
+
+```
+target                 draft
+lfs f2, 0x30(r5)       lfs f2, 0x18(r5)
+lfs f1, 0x34(r5)       lfs f1, 0x1c(r5)
+lfs f0, 0x38(r5)       lfs f0, 0x20(r5)
+```
+
+`r5` is the `.rodata` pool base, so the target's `sc_ForceList` triple sits
+`0x18` further into the pool than the draft's. That is not a defect in `__sinit`
+at all -- it is **six words of constants that the unit's eight still-unwritten
+functions have not pooled yet.** `check_sections` confirms the shape: `.rodata`
+is `0x5c` under, `.text` `0x57c` under, `.data` `0x1d8` under.
+
+`__sinit` will close by itself once the missing functions are authored, and no
+amount of work on `__sinit` will close it before then. **A low differing-count on
+`__sinit` where the whole difference is pool offsets means the unit is
+INCOMPLETE, not nearly done** -- read it as a progress indicator for the other
+functions, not as a target.
+
+Course's real claim, for the record:
+`.text 0x1604a0-0x161940`, `.ctors 0x3d0-0x3d4`, `.rodata 0x87b0-0x87f0`,
+`.data 0x44400-0x44590`, `.bss 0xfd70-0xfd80`.
+
 ## castle 16/20 -> 17/20, and a new lever: WIDEN the scope, do not narrow it
 
 Verified over `0x15ecc0-0x15fbe0` with all three objects. `check_vtable` CLEAN,
