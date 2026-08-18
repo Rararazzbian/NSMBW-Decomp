@@ -2284,6 +2284,35 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## CORRECTION: sandpillar is NOT blocked on WM_MAP. It is 5 small functions out.
+
+This file records sandpillar as "PARKED at 61/66, correctly blocked on WM_MAP".
+**The count is right and the framing is wrong.** Re-measured with the full
+object set: 61/66, and NONE of the five open functions involves `fn_2_171400`.
+That call works through the existing `extern "C"` declaration, which remains the
+correct convention. Blocked-on-WM_MAP was inferred from one investigation into
+that symbol and then written down as the unit's status; it never followed.
+
+Its `__sinit` is 464 instructions and MATCHES, which is worth noting on its own
+given how much of this unit is state machinery.
+
+The five, with measured diffs:
+
+| function | addr | differing | shape |
+|---|---|---|---|
+| `executeState_BottomWait` | `0x1780C0` | 1 | draft has ONE EXTRA TRAILING `blr` (target 13 insns, draft 14) |
+| `executeState_TopWait` | `0x1785B0` | 1 | same shape (target 10, draft 11) |
+| `executeState_MoveReady` | `0x178230` | 1 | target `bgt`, draft `bne` -- both 96 insns |
+| `createMdl` | `0x177D20` | 4 | 81 insns; prime candidate for the inline-wrapper rule |
+| `finalizeState_Ready` | `0x177EC0` | 3 | 12 insns |
+
+Three of them differ by a single instruction. This is one of the closest units
+in the family, not a parked one.
+
+**The general lesson: a blocker found while investigating a unit is not the same
+as the unit's status.** Recording "blocked on X" without checking that X actually
+accounts for the open functions parks work that was nearly done.
+
 ## Run `text_objects.py` BEFORE quoting any per-function count
 
 dtk does not split on unit boundaries. A unit's `.text` is routinely spread over
