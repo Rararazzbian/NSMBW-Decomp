@@ -2284,6 +2284,56 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## course 18/23, SECTIONS CLEAN — and the LEADING vs TRAILING pool distinction
+
+The pool gap is solved and it produced the rule that explains all three units
+that have hit this.
+
+**A deadstripped function's pooled literals SURVIVE. That fixes a LEADING gap
+and cannot fix a TRAILING one.** Course's five missing words sat BEFORE
+`create()`'s own first use, so a `DECL_WEAK void DUMMY_ORDERING()` holding them
+works -- the linker strips the code and keeps the constants. Antlion's and
+kinoko_red's gaps sit AFTER their `__sinit`, and `__sinit` always compiles last,
+so no user-written function can pool behind it. **Same symptom, opposite
+solvability.** That is why grid's landed idiom transfers to one and not the
+others.
+
+Two mechanical details that mattered:
+- **One `u32[4]` array, not four separate typed statics.** Separate declarations
+  get regrouped by MWCC -- the integer array jumps to the front and the floats
+  defer to the very end, past the real content. A single array preserves element
+  order.
+- **Pool position follows FIRST USE, not declaration.** Moving `sPlayModes`'s
+  declaration down to immediately before `createModel()` (its actual first use)
+  put it after `create()`'s `80.0f`, matching the target. Declaring it at file
+  scope above `create()` did not.
+
+**And a correction to my own byte table.** I read `43300000` / `80000000` at
+`+0x28`/`+0x2c` as two floats, `176.0f` and negative zero. They are ONE 8-byte
+DOUBLE, `0x4330000080000000` -- the standard MWCC int-to-float magic constant,
+confirmed by three `lfd` (not `lfs`) instructions in `updateOpenAnim`,
+`openNeighbors` and `updateClearAnim` converting integers to float. The bytes
+were right; the reading was wrong. **A `43300000` word followed by anything is
+almost certainly the top half of that magic double, not a float.**
+
+`__sinit` closed to MATCH; `createModel` went 165 -> 125 with the offset cascade
+gone. Note the other four functions did NOT move: their gaps are a different
+register-allocation choice (whether a persistent base pointer is cached at all),
+so they were never downstream of the pool.
+
+### antlion: the 0x20 "object" is a mirage
+
+`check_bounds` flags `lbl_2_rodata_85A0` as a `0x20` object, which looked like a
+structured table worth chasing. It is not: `fn_2_15B3F0` is a three-instruction
+getter --
+`lis r3, lbl_2_rodata_85A0@ha; lfs f1, lbl_2_rodata_85A0@l(r3); blr` --
+returning the single float `1.0f` at `0x85A0`. dtk's `0x20` is just
+distance-to-the-next-label across a pool it cannot subdivide.
+
+Also falsified from target bytes: the array-destructor lead. `fn_2_15B570` uses
+`li r5, 0x24` and `li r6, 0x1` -- element size and count are IMMEDIATES, not pool
+loads -- so the registration machinery is not the source of the missing word.
+
 ## antlion needs ONE integer word, and the claim end must be 8-ALIGNED
 
 Sharpened by building, not by argument. Three facts, each measured:

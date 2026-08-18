@@ -10,6 +10,22 @@
 #include <game/bases/d_info.hpp>
 #include <game/framework/f_manager.hpp>
 
+// @unofficial Pool-ordering probe -- NOT confirmed correct, experimental.
+// Target .rodata:0x87b0-0x87f0 opens with four words {0.0f, 1.0f, 0x003C000A,
+// 0.0f} that no placed function in this unit's .text loads at any pool
+// displacement (checked exhaustively against every base-register load site,
+// cross-verified against the REL's own relocation stream via
+// wip/wm_units/check_bounds.py referrers(), which also comes up empty for
+// this address). That shape -- real bytes, no live reader -- matches the
+// documented d_a_wm_grid.cpp trick: a DECL_WEAK function whose body is
+// deadstripped by the linker but whose literal-pool entries survive, used
+// there to seed a single leading 0.0f. 0x003C000A decodes as two big-endian
+// s16 (60, 10).
+DECL_WEAK
+void DUMMY_ORDERING() {
+    static const u32 UNUSED[4] = {0x00000000, 0x3F800000, 0x003C000A, 0x00000000};
+}
+
 ACTOR_PROFILE(WM_COURSE, daWmCourse_c, 0);
 
 // @unofficial Unnamed in the symbol map (fn_80103420, DOL 0x80103420, 0x74 B).
@@ -52,17 +68,6 @@ static const char *sResAnmNames[daWmCourse_c::ANIM_COUNT] = {
     "cobCourseClear",
     "cobCourseHelp",
     "cobCourseOpen"
-};
-
-// Read directly off the target's rodata pool (lbl_2_rodata_87C0, words
-// +0x4/+0x8/+0xc: 0x1,0x0,0x0), which createModel's per-index setPlayMode
-// call indexes with a pointer that increments by 4 each loop iteration --
-// an array read, not a repeated constant. m3d::FORWARD_ONCE == 1,
-// m3d::FORWARD_LOOP == 0 (m_3d/banm.hpp), matching the byte values exactly.
-static const m3d::playMode_e sPlayModes[daWmCourse_c::ANIM_COUNT] = {
-    m3d::FORWARD_ONCE,
-    m3d::FORWARD_LOOP,
-    m3d::FORWARD_LOOP
 };
 
 daWmCourse_c::daWmCourse_c() : mOpenState(0) {}
@@ -167,6 +172,21 @@ int daWmCourse_c::doDelete() {
     return SUCCEEDED;
 }
 
+// Read directly off the target's rodata pool (lbl_2_rodata_87C0, words
+// +0x4/+0x8/+0xc: 0x1,0x0,0x0), which createModel's per-index setPlayMode
+// call indexes with a pointer that increments by 4 each loop iteration --
+// an array read, not a repeated constant. m3d::FORWARD_ONCE == 1,
+// m3d::FORWARD_LOOP == 0 (m_3d/banm.hpp), matching the byte values exactly.
+// Declared here (immediately before its first use in createModel(), rather
+// than at file scope above create()) because pool placement empirically
+// follows first-USE order, not declaration order: moving it here put it
+// after create()'s own 80.0f in the emitted pool, matching the target.
+static const m3d::playMode_e sPlayModes[daWmCourse_c::ANIM_COUNT] = {
+    m3d::FORWARD_ONCE,
+    m3d::FORWARD_LOOP,
+    m3d::FORWARD_LOOP
+};
+
 void daWmCourse_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
@@ -185,8 +205,7 @@ void daWmCourse_c::createModel() {
         mMatClrAnim[i].setPlayMode(sPlayModes[i], 0);
     }
 
-    int courseNo = ACTOR_PARAM(CourseNo);
-    int courseType = dWmLib::GetCourseTypeFromCourseNo(courseNo);
+    int courseType = dWmLib::GetCourseTypeFromCourseNo((int)ACTOR_PARAM(CourseNo));
     mCurrentIndex = 0xff;
 
     // `lbl_2_bss_FD7C` decodes (via the REL's relocation stream: exactly four
@@ -206,7 +225,7 @@ void daWmCourse_c::createModel() {
     // (case 0, case 1, case 2/3, default -- ascending), even though the
     // dispatch COMPARES the case-2/3 range first; MWCC tests grouped-value
     // cases before singletons regardless of declaration order.
-    if (mParam != (u32)dWmLib::c_StartPointKinokoHouseID) {
+    if ((u32)dWmLib::c_StartPointKinokoHouseID != mParam) {
         switch (GetOpenStatus()) {
             case 0:
                 setMatClrAnm(0, 0.0f, 0.0f);
@@ -219,7 +238,7 @@ void daWmCourse_c::createModel() {
                 switch (GetClearStatus()) {
                     case 0:
                         setMatClrAnm(2, 1.0f, 0.0f);
-                        if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, courseNo)) {
+                        if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, (int)ACTOR_PARAM(CourseNo))) {
                             setMatClrAnm(1, 1.0f, 0.0f);
                         }
                         break;
@@ -236,7 +255,7 @@ void daWmCourse_c::createModel() {
                         setMatClrAnm(1, 1.0f, 0.0f);
                         break;
                     default:
-                        if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, courseNo)) {
+                        if (dWmLib::IsCourseUraOtasukeClearSimple(dScWMap_c::m_WorldNo, (int)ACTOR_PARAM(CourseNo))) {
                             setMatClrAnm(1, 1.0f, 0.0f);
                         }
                         break;
@@ -255,12 +274,12 @@ void daWmCourse_c::createModel() {
     }
 
     if (dWmLib::IsAllComplete()) {
-        if (dWmLib::GetCourseTypeFromCourseNo(courseNo) == 4) {
+        if (dWmLib::GetCourseTypeFromCourseNo((int)ACTOR_PARAM(CourseNo)) == 4) {
             setMatClrAnm(0, 0.0f, 1.0f);
         }
     }
 
-    if (dScWMap_c::m_WorldNo == 0 && courseNo == 0x28) {
+    if (dScWMap_c::m_WorldNo == 0 && (int)ACTOR_PARAM(CourseNo) == 0x28) {
         setMatClrAnm(0, 0.0f, 1.0f);
     }
 
