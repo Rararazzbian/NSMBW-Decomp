@@ -1083,3 +1083,126 @@ __sinit 51 differing (measured directly via difftool.py, bypassing verify_anon's
 - `__sinit`'s missing guarded block (patching `sStepTable`'s `dx/dy/dz`
   fields, magic-static-shaped) identified but not authored -- don't know
   which function's local it is or its trigger condition.
+
+---
+
+## Update after coordinator's seventh round: calcModelFor authored (size gap closed, content still open), __sinit's guard block characterized further, no source found for it
+
+All numbers below from difftool.py with explicit names, per instruction --
+none from verify_anon's heuristic pairing.
+
+### calcModelFor -- authored from the disassembly; size gap closed from 54 to 4 instructions, content not yet matching
+
+Wrote out the full reconstruction from the target disassembly (previously
+left alone; the coordinator reversed that instruction this round because
+its size mismatch was corrupting verify_anon's pairing for the rest of
+the unit). Semantic structure implemented (see the .cpp for the exact
+current source):
+
+- mVec3_c pos = mPos; mAng3_c angle = mAngle;
+- float frameMax = mChrAnim[0].mFrameMax;
+- u8 idx = mParam & 0xff; const float *entry computed as
+  (const u8*)&sStepTable + idx*8 (an @unofficial indexing guess).
+- float frame1 = mChrAnim[0].getFrame(); pos.y += (frame1 / (frameMax -
+  K1)) * entry[1];
+- reload frameMax, second getFrame() call, compute ratio = frame2/(frameMax
+  - K1); if mChrAnim[0].getRate() > K2, ratio = (float)(K4 - ratio) where
+  K4 is read as a DOUBLE (matching the target's lfd);
+- angleRad = K3 * ratio * mAng::DegreeToAngleCoefficient; angle.y =
+  (mAng)(int)angleRad;
+- mMatrix.trans(pos); mMatrix.ZXYrotM(angle); mdl->setLocalMtx(&mMatrix);
+  mdl->setScale(mScale); mdl->calc(false).
+
+K1..K4 are a placeholder struct standing in for lbl_2_rodata_87F0's
+sub-offsets (+0x4, +0x18, +0x20 as a double, +0x28) -- values unknown, the
+shape (one shared base, several typed sub-offsets) taken directly from the
+disassembly.
+
+Two variants measured with difftool.py (target size 101 throughout):
+- The mParam-index computed once into a named "const float *entry" local,
+  then entry[1] read where needed: draft size 105 (4 over target). 101 of
+  105 lines differ -- essentially all content, but the SIZE is now close.
+- The same computation as a single inline dereference with no named
+  pointer: draft size 107 (6 over, worse) -- picked up TWO extra saved
+  float registers (f30, f29 alongside f31) instead of just one. Reverted;
+  kept the entry-pointer version as the better of the two.
+
+Kept the entry-pointer variant (size 105, 4 over target's 101). This is a
+large improvement from where it stood (47 vs 101, a 54-instruction gap)
+even though the instruction content still differs almost entirely (101 of
+105 lines). Did not keep iterating on the exact float-blend maths this
+round -- the coordinator's stated reason for touching this function at all
+was to stop it corrupting verify_anon's pairing, and a 54-instruction gap
+shrunk to a 4-instruction gap is the relevant win for that purpose. Getting
+the actual maths byte-right (unknown constants, uncertain table semantics,
+register-scheduling residuals of the kind seen throughout this unit) would
+need more rounds.
+
+### __sinit -- guard mechanism characterised further, no source shape found that produces it
+
+Re-confirmed via difftool.py after this round's changes: still 51
+differing on a 52-instruction function, unchanged (did not touch __sinit
+itself this round).
+
+What I can now state precisely about the missing block:
+
+- The guard byte lives at lbl_2_bss_FD80+0x10, immediately after
+  dWmLib::c_StartPointKinokoHouseID's own storage slot (+0xc, 4 bytes) --
+  adjacent, but I don't have evidence they're part of the same construct
+  beyond proximity, and proximity alone is exactly the kind of "gap
+  implies a field" reasoning this project's rules warn against
+  over-trusting, so I am not asserting a relationship.
+- The guarded block does NOT construct new storage for a local -- it
+  patches three fields of sStepTable in place
+  (lbl_2_data_445D0+0x40/+0x44/+0x48, our own class's position-delta
+  table) from lbl_2_rodata_87F0+0x4 and +0x38. That is an unusual target
+  for a "magic static" in the ordinary sense (constructing the static's
+  own memory) -- here the guarded side effect targets a different,
+  pre-existing global. Two shapes could plausibly produce this: (a) a
+  function-local static object whose constructor body writes into
+  sStepTable as a side effect, or (b) a hand-written static bool guard
+  with an ordinary "if (!flag) { ...; flag = true; }" block that the
+  compiler hoists into __sinit because everything referenced is a
+  compile-time constant with no other order dependency. Could not
+  distinguish these from the disassembly alone, and did not guess by
+  picking one and writing it -- given last round's experience authoring
+  calcModelFor from a structural guess (54-instruction gap, still nearly
+  all content differing), a wrong __sinit attempt could as easily land at
+  zero differing lines saved as at a completely different, equally-52-
+  instruction wrong shape, and there is no landed sibling with an
+  identical "patches another global" guard to check against.
+- For whoever picks this up next (on this unit or the castle unit): the
+  guard TEST itself is confirmed precisely --
+  lbz r0, BSS+0x10(rBase); extsb. r0, r0; bne SKIP -- the guard byte is
+  read, sign-extended to a full word, and the branch is taken (skipping
+  the init) when the sign-extended value is NON-ZERO. That is a slightly
+  different idiom from a plain "guard == 0" zero test. I have not looked
+  at castle's disassembly and am not claiming this generalises -- only
+  reporting the one instance read here, twice, carefully.
+
+### Table
+
+classInit MATCH | ctor 4 (untouched) | dtor 21 (untouched) | create() 49 (untouched)
+execute() MATCH | draw() MATCH | doDelete() MATCH | createModel() 70 (untouched this round)
+tailHelper() MATCH | calcModelFor() 101 differing, size 105 vs target 101 (was fully unauthored)
+startStep() 13 (untouched) | resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+__sinit 51 differing, size 33 vs target 52 (unchanged; guard block still unauthored)
+
+9/16 byte-identical
+
+### Negatives this round
+
+- calcModelFor's exact float-blend arithmetic and the real
+  lbl_2_rodata_87F0/lbl_2_data_445D0 values remain unresolved -- authored
+  the shape well enough to close the size gap from 54 to 4 instructions,
+  not the content.
+- Two calcModelFor register-shape variants tried (named pointer vs. inline
+  dereference for the table read); the named-pointer form used fewer
+  extra saved float registers and was kept.
+- Did not author __sinit's guarded block. Identified two plausible C++
+  shapes that could produce a "guard protects a patch to a different
+  global" pattern but could not distinguish them from the disassembly, and
+  judged a blind attempt not worth a round given no way to
+  partially-verify it against a landed sibling. Confirmed the guard
+  read/branch idiom precisely (extsb. sign-extend, bne on non-zero) for
+  whoever picks this up next.

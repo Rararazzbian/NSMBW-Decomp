@@ -167,13 +167,46 @@ void daWmDancePakkun_c::tailHelper() {
     mModel.play();
 }
 
+namespace {
+    // @unofficial -- rodata_87F0 sub-offset constants used by calcModelFor;
+    // real values unknown, placeholders below so the SHAPE (same base,
+    // several sub-offsets, one used as a double) matches. See MAPPING.md.
+    struct CalcConsts_t {
+        float f00, f04;         // +0x0, +0x4  (K2 at +0x4)
+        u8 pad08[0x14];
+        float f18;               // +0x18      (K1)
+        double f20;               // +0x20     (K4, read as a double)
+        float f28;                 // +0x28    (K3)
+    };
+    const CalcConsts_t sCalcConsts = { 0.0f, 2.0f, {0}, 1.0f, 3.0, 4.0f };
+}
+
 void daWmDancePakkun_c::calcModelFor(m3d::mdl_c *mdl) {
-    // @unofficial -- the real function derives a dance-rotation offset from
-    // mChrAnim[0].getFrame()/getRate() blended against lbl_2_data_445D0 and
-    // mAngle before building mMatrix; not reproduced (MAPPING.md). Left
-    // unauthored per the coordinator's explicit priority ordering.
     mVec3_c pos = mPos;
     mAng3_c angle = mAngle;
+
+    float frameMax = mChrAnim[0].mFrameMax;
+    u8 idx = mParam & 0xff;
+    // @unofficial -- lbl_2_data_445D0 indexed by idx*8 from its BASE (not
+    // the +0x34 offset create() uses); the float read is at +4 of that
+    // 8-byte slot. Real semantics/values unresolved -- see MAPPING.md.
+    const float *entry = (const float *)((const u8 *)&sStepTable + (u32)idx * 8);
+
+    float frame1 = mChrAnim[0].getFrame();
+    float denom1 = frameMax - sCalcConsts.f18;
+    pos.y = pos.y + (frame1 / denom1) * entry[1];
+
+    frameMax = mChrAnim[0].mFrameMax;
+    float frame2 = mChrAnim[0].getFrame();
+    float denom2 = frameMax - sCalcConsts.f18;
+    float ratio = frame2 / denom2;
+    if (mChrAnim[0].getRate() > sCalcConsts.f04) {
+        ratio = (float)(sCalcConsts.f20 - ratio);
+    }
+
+    float angleRad = sCalcConsts.f28 * ratio * mAng::DegreeToAngleCoefficient;
+    angle.y = (mAng)(int)angleRad;
+
     mMatrix.trans(pos);
     mMatrix.ZXYrotM(angle);
     mdl->setLocalMtx(&mMatrix);
