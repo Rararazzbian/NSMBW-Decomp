@@ -9323,3 +9323,47 @@ was extending that to the next object because it sat inside the same run.
   `unk_1682F0` reports 6 differing, all `lbl_2_*` versus real mangled names, zero
   real bytes. Check what the differing lines *are* before treating a small count
   as an open defect.
+
+## WM_KILLER 13/23 -> 17/23: eight transferable findings in one round
+
+- **An unconditional fallback computed BEFORE the branch, not in an `else`.** The
+  target computes `(mPos.x, mPos.y + 50.0f, mPos.z)` up front and overwrites it
+  only on success. Writing it as an `else` arm does not match.
+- **Two declare-before-call locals, and their ORDER mattered.**
+  `mVec3_c pos = mPos; mAng3_c angle = mAngle;` — declaring `pos` first was the
+  one that closed it. Store-order swap, same lever as castle's.
+- **A `static` free function taking NO arguments — not even `this`.** Proven from
+  the only call site setting up nothing in `r3` before the `bl`. Do not assume a
+  function inside a class's range is a member.
+- **Two DIFFERENT mangled classes can share a method name.**
+  `fManager_c::searchBaseByProfName` and `dBase_c::searchBaseByProfName` are both
+  used in this unit, by different functions. Resolved from the target's own
+  symbol, not assumed from the name.
+- **A field treated as padding was a real `int`**, proven by `stw`/`lwz`/`cmpw`
+  against it. Retyping it also fixed two other stubs that had been aliasing it.
+  **Access width and instruction kind identify a field's type.**
+- **Name a comparison's boolean result as its own local** rather than branching
+  straight off the `fcmpo` — closed a `fabs`-compare-branch sequence.
+- **Do NOT cache a static pointer when the target re-reads it.** A four-call chain
+  re-reads `daWmPlayer_c::ms_instance` fresh before each call; caching it into a
+  local breaks the shape. **This is the inverse of the bind-a-repeatedly-accessed-
+  value lever — hold both and read the target.**
+- **A four-way boolean chain must be a single `||` expression**, not `if`/`else if`
+  — the latter duplicates the "set flag" store four times against the target's one
+  shared label.
+
+## The offset-folding rule, and its MIRROR
+
+WM_ITEM established: **MWCC folds an offset into the `lfs` immediate only when the
+address is an object's OWN first element, never for an indexed read into a shared
+array.** There the draft carried an extra `addi` the target lacked, and no
+phrasing removed it — a wall.
+
+**WM_KILLER has the mirror.** Its target HAS the `addi`, which is the signature of
+an indexed read into a shared array, while the draft's bare `300.0f` gets its own
+pool slot with the offset folded. So the fix is to **declare the constants as one
+named array in the target's order and index it** — producing exactly the `addi`
+the wall produced unwanted elsewhere.
+
+**Same rule, opposite sign, depending on which side has the extra instruction.**
+Third rule today that turns out to be a question rather than a fixed preference.

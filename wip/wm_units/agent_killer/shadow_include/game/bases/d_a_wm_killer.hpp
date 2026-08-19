@@ -58,7 +58,7 @@ public:
                          ///< discarded), then on Kind==1 sets the direction from
                          ///< mVec3_c(#mTargetPos) - mPos via the landed dWmDemoActor_c::setDirection.
     void unk_167FB0(); ///< @unofficial fn_2_167FB0, 0xb0 bytes, called last from #create AND from
-                         ///< #unk_167C70 (two call sites, not one).
+                         ///< #unk_167C70 (two call sites, not one). Authored this round.
 
     // fn_2_1680F0/fn_2_1681C0's call sites (inside #unk_167C70) put the object pointer in r4 and
     // an out-buffer address in r3 -- the classic hidden-return-pointer ABI shape for a
@@ -73,7 +73,11 @@ public:
     void unk_1682D0(int index, u8 value); ///< @unofficial fn_2_1682D0, 0x1c bytes. Authored this round.
     void unk_1682F0(); ///< @unofficial fn_2_1682F0, 0x84 bytes.
     void unk_168380(); ///< @unofficial fn_2_168380, 0x114 bytes.
-    void unk_168590(); ///< @unofficial fn_2_168590, 0x9c bytes.
+    // Genuinely takes NO arguments -- not even `this` (confirmed: its only call site,
+    // #unk_1684A0, sets up nothing in r3 before the `bl`). Searches every daWmKiller_c sibling
+    // via fManager_c::searchBaseByProfName(WM_KILLER, prev) and checks each one's own
+    // #mClipSphere against the camera's view clip.
+    static bool unk_168590(); ///< @unofficial fn_2_168590, 0x9c bytes. Authored this round.
 
     u32 mUnk188; ///< @unused @unofficial offset 0x188, identical position to every other landed WM actor's mUnk188.
     dHeapAllocator_c mAllocator; ///< The allocator. @unofficial offset 0x18c.
@@ -95,8 +99,11 @@ public:
     // was mis-classified as padding when this offset range was first sized (see the
     // mChildren-offset fix note above); this is where the real member actually lives.
     float mTargetPos[3];
-    u8 mPad_204[0x4]; ///< @unofficial offset 0x204, size 0x4 -- placeholder padding up to the
-                        ///< flag byte at 0x208, NOT individually verified.
+    // @unofficial offset 0x204, size 0x4. A real `int`, not padding -- confirmed by #unk_168380's
+    // `stw`/`lwz`/`cmpw` (word-sized, signed-compared) accesses. Tracks the ACTOR_PARAM(SpawnKind)
+    // of whichever sibling daWmKiller_c actor is currently within #unk_168380's own distance
+    // threshold of the player, or -1 once that sibling falls back out of range.
+    int m_204;
     bool m_208; ///< @unofficial offset 0x208. Zeroed by the constructor.
     u8 mPad_209[0x3]; ///< @unofficial offset 0x209, size 0x3 -- placeholder padding, NOT
                         ///< individually verified.

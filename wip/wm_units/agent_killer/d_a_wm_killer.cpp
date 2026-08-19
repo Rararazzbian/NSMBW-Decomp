@@ -5,7 +5,20 @@
 #include <game/bases/d_wm_effect_manager.hpp>
 #include <game/bases/d_wm_se_manager.hpp>
 #include <game/bases/d_a_wm_map.hpp>
+#include <game/bases/d_w_camera.hpp>
+#include <game/framework/f_manager.hpp>
+#include <game/bases/d_a_wm_player.hpp>
+#include <game/bases/d_base.hpp>
 #include <string.h>
+#include <cmath>
+
+// #unk_1684A0's two far-actor state getters on daWmPlayer_c. Both live well outside this
+// unit's own claimed .text range (0x167940-0x1686e0), in the same REL module but an
+// un-landed TU -- the R_2_1_ same-module cross-TU convention (see agent_sandpillar's own
+// R_2_1_171400 precedent), not the DOL-absolute extern "C" form.
+extern "C" int R_2_1_1994D0(daWmPlayer_c *player);
+extern "C" int R_2_1_1994B0(daWmPlayer_c *player);
+
 
 // #unk_1681C0's node-name template. The target .data emits this string's own pointer
 // (lbl_2_data_4526C, at data+0x3c) BEFORE ACTOR_PROFILE's own g_profile object -- confirmed
@@ -14,6 +27,16 @@
 // local buffer, nulls a 5th byte, then adds `(char)mParam` to the last character to select one
 // of several per-instance world-map nodes ("Fk00", "Fk01", ...).
 static const char *smc_nodeNameTemplate = "Fk00";
+
+// #unk_1680F0's own node name -- a plain, fixed "Killer" (distinct from #unk_1681C0's
+// per-instance "Fk0N" template). Also used as the mesh-node name for a SECOND, undeclared
+// dWmLib overload: getModelNodePos__6dWmLibFPCQ23m3d6bmdl_cPCc, lowercase, taking a node NAME
+// string rather than the header's own uppercase GetModelNodePos(model, int nodeId) overload.
+// Forward-declared here (shadow-only, not touching the shared header) so the compiler emits
+// the exact matching mangled symbol via ordinary C++ overload resolution.
+namespace dWmLib {
+    nw4r::math::VEC3 getModelNodePos(const m3d::bmdl_c *model, const char *nodeName);
+}
 
 ACTOR_PROFILE(WM_KILLER, daWmKiller_c, 0);
 
@@ -63,7 +86,7 @@ int daWmKiller_c::create() {
 // #unk_167FB0) is NOT yet authored -- content unconfirmed, not guessed.
 int daWmKiller_c::execute() {
     processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
-    mPad_204[0] = 0x1;
+    m_204 = 1;
     return SUCCEEDED;
 }
 
@@ -141,9 +164,18 @@ void daWmKiller_c::unk_167F20() {
     }
 }
 
-// NOT YET AUTHORED (0xb0 bytes). Called last from #create.
+// unk_167FB0(). Called from #create's tail AND from #unk_167C70's own start (two call sites).
+// Rebuilds #mMatrix from #mPos/#mAngle (both inherited dBaseActor_c members, no offset casts
+// needed -- mMatrix@0x7c, mPos@0xac and mAngle@0x100 all confirmed via the landed
+// d_base_actor.o corpus), then pushes it (and #mScale) down into #mModel.
 void daWmKiller_c::unk_167FB0() {
-    mPad_204[0] = 0x5;
+    mVec3_c pos = mPos;
+    mAng3_c angle = mAngle;
+    mMatrix.trans(pos);
+    mMatrix.ZXYrotM(angle);
+    mModel.setLocalMtx(&mMatrix);
+    mModel.setScale(*(const nw4r::math::VEC3 *) &mScale);
+    mModel.calc(false);
 }
 
 // processCutsceneCommand. Structurally confirmed: early-return on cutsceneCommandId==-1, then
@@ -163,11 +195,30 @@ void daWmKiller_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFra
     }
 }
 
-// NOT YET AUTHORED (0xc4 bytes). Called from #unk_167C70 as unk_1680F0(this), result discarded
-// there -- real body/return value still unconfirmed.
+// unk_1680F0(daWmKiller_c *self). Sibling to #unk_1681C0, same hidden-return shape, but looks
+// up a fixed "Killer" mesh node (via m3d::getNodeID against #mModel's own ResMdl) instead of a
+// per-instance map node. On success, uses dWmLib::getModelNodePos (the undeclared string-taking
+// overload, see its own forward declaration above); on failure (nodeID < 0), falls back to
+// mVec3_c(mPos.x, mPos.y + 50.0f, mPos.z) (real constant read from .rodata). Writes the result
+// into #mMotion (NOT #mTargetPos -- the spawn position #unk_167F20 uses) and returns it.
 mVec3_c daWmKiller_c::unk_1680F0(daWmKiller_c *self) {
-    self->mPad_204[0] = 0x6;
-    return self->mPos;
+    nw4r::g3d::ResMdl resMdl = self->mModel.getResMdl();
+    int nodeID = m3d::getNodeID(resMdl, "Killer");
+
+    // Unconditional fallback, only overwritten below on success -- matches the target's own
+    // shape exactly (it computes this BEFORE branching on nodeID, not in an else-arm).
+    mVec3_c pos(self->mPos.x, self->mPos.y + 50.0f, self->mPos.z);
+    if (nodeID >= 0) {
+        nw4r::math::VEC3 nodePos = dWmLib::getModelNodePos(&self->mModel, "Killer");
+        pos.x = nodePos.x;
+        pos.y = nodePos.y;
+        pos.z = nodePos.z;
+    }
+
+    self->mMotion[0] = pos.x;
+    self->mMotion[1] = pos.y;
+    self->mMotion[2] = pos.z;
+    return pos;
 }
 
 // unk_1681C0(daWmKiller_c *self). Confirmed content: builds a per-instance world-map node name
@@ -211,7 +262,7 @@ bool daWmKiller_c::unk_168260(int index) {
 // mChildren[index] (a WM_KILLERBULLET child, an unowned/undeclared sibling class) at raw
 // offset 0x1f8+0xc=0x204 and writes a literal 1 -- the same raw-offset-cast technique already
 // established for reaching into an unowned class's field (see WM_START's `this+0x139` and
-// `daWmPlayer_c+0x29c` precedent). Coincidentally the SAME offset this unit's own #mPad_204
+// `daWmPlayer_c+0x29c` precedent). Coincidentally the SAME offset this unit's own #m_204
 // occupies, suggesting the sibling class shares this unit's layout up to that point, but its
 // real identity/layout is not owned here.
 void daWmKiller_c::unk_1682B0(int index) {
@@ -240,16 +291,70 @@ void daWmKiller_c::unk_1682F0() {
     dWmSeManager_c::m_pInstance->playSound(0x63, mPos, 1);
 }
 
+// unk_168380(). Iterates every daWmKiller_c sibling (dBase_c::searchBaseByProfName over the
+// shared WM_KILLER profile, note the DIFFERENT mangled class from #unk_168590's
+// fManager_c::searchBaseByProfName -- confirmed from the target's own mangled symbol, not
+// guessed) and tracks which one's #mTargetPos is within 300.0f (real constant) of the player's
+// position into #m_204, via ACTOR_PARAM(SpawnKind). No-op (early return) if no sibling exists.
 void daWmKiller_c::unk_168380() {
-    mPad_204[0] = 0xc;
+    daWmKiller_c *sibling = (daWmKiller_c *) dBase_c::searchBaseByProfName(fProfile::WM_KILLER, nullptr);
+    mVec3_c playerPos = daWmPlayer_c::ms_instance->mPos;
+
+    if (sibling == nullptr) {
+        return;
+    }
+
+    float threshold = 300.0f;
+    do {
+        mVec3_c targetPos(sibling->mTargetPos[0], sibling->mTargetPos[1], sibling->mTargetPos[2]);
+        bool isClose = std::fabs(playerPos.distTo(targetPos)) < threshold;
+        if (isClose) {
+            m_204 = ACTOR_PARAM_LOCAL(sibling->mParam, SpawnKind);
+        } else if (m_204 == (int) ACTOR_PARAM_LOCAL(sibling->mParam, SpawnKind)) {
+            m_204 = -1;
+        }
+        sibling = (daWmKiller_c *) dBase_c::searchBaseByProfName(fProfile::WM_KILLER, sibling);
+    } while (sibling != nullptr);
 }
 
-void daWmKiller_c::unk_168590() {
-    mPad_204[0] = 0xd;
+// unk_168590(). Static (no `this` -- confirmed from its only call site). Iterates every
+// daWmKiller_c sibling actor (searchBaseByProfName over the shared WM_KILLER profile) and
+// checks whether any with ACTOR_PARAM(SpawnKind) >= 1 has its own #mClipSphere inside the
+// camera's view clip.
+bool daWmKiller_c::unk_168590() {
+    daWmKiller_c *killer = (daWmKiller_c *) fManager_c::searchBaseByProfName(fProfile::WM_KILLER, nullptr);
+    bool result = false;
+    while (killer != nullptr) {
+        if ((int) ACTOR_PARAM_LOCAL(killer->mParam, SpawnKind) >= 1) {
+            if (dWCamera_c::m_instance->mViewClip.CheckClipSphere(&killer->mClipSphere)) {
+                result = true;
+                break;
+            }
+        }
+        killer = (daWmKiller_c *) fManager_c::searchBaseByProfName(fProfile::WM_KILLER, killer);
+    }
+    return result;
 }
 
-// NOT YET AUTHORED (0xe4 bytes). Called from #processCutsceneCommand with (this, true) --
-// placeholder bool(bool) signature inferred only from the call site.
-bool daWmKiller_c::unk_1684A0(bool b) {
-    return b;
+// unk_1684A0(bool isFirstFrame). Two genuine early returns (bypassing the flag/#unk_168590
+// computation entirely): a cutscene-command-0x38 special case returning #m_208 directly, and
+// an ACTOR_PARAM(SpawnKind)==0 case returning the camera's own CheckClipSphere directly. Only
+// the remaining (SpawnKind != 0) path reaches the daWmPlayer_c state checks and #unk_168590.
+bool daWmKiller_c::unk_1684A0(bool isFirstFrame) {
+    if (!isFirstFrame && dCsSeqMng_c::ms_instance->GetCutName() == dCsSeqMng_c::CUTSCENE_CMD_56) {
+        return m_208;
+    }
+
+    if (ACTOR_PARAM(SpawnKind) == 0) {
+        return dWCamera_c::m_instance->mViewClip.CheckClipSphere(&mClipSphere);
+    }
+
+    bool flag = false;
+    if (R_2_1_1994D0(daWmPlayer_c::ms_instance) == 0x17 || R_2_1_1994D0(daWmPlayer_c::ms_instance) == 0x25 ||
+        R_2_1_1994B0(daWmPlayer_c::ms_instance) == 0x25 || R_2_1_1994B0(daWmPlayer_c::ms_instance) == 0x17) {
+        flag = true;
+    }
+
+    bool viewResult = unk_168590();
+    return !flag && viewResult;
 }
