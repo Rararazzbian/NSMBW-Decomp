@@ -9675,3 +9675,51 @@ moved on.
 **Distinct from the De Morgan finding**, where restructuring a compound condition
 *did* change the output. Here there is no compound condition to restructure —
 a single predicate's branch type is not always reachable.
+
+## dtk UNDER-sizes objects as well as over-sizing them. Relocations are the authority.
+
+WM_KILLERBULLET hit an architectural puzzle: `create()` writes a plain
+`lbl_2_data_43E34` address into an object's offset 0 with **no `__vt__`-named
+symbol anywhere**, yet the destructor dispatches through that offset as if it
+were a vtable.
+
+**It IS a vtable.** dtk reports `size:0xC`; the relocations run well past it:
+
+```
++0x00  0            \  offset-to-top and RTTI, both null in this ABI
++0x04  0            /  -- the standard C++ vtable header
++0x08  -> .text:0x15cdc0     +0x14  -> .text:0x15ce00
++0x18  -> DOL:0x800f28e0     +0x1c  -> DOL:0x800f2910
++0x20  -> .text:0x15d200     +0x24  -> DOL:0x800f2920
++0x28  -> DOL:0x800f2950
+```
+
+Two null words followed by function pointers is a vtable. It is unnamed only
+because the class (`dWmRotater_c`) is not landed, so there is no `__vt__` symbol
+for dtk to attach — and dtk then sized the object from its own heuristics rather
+than from where the relocations stop.
+
+**So the class is genuinely polymorphic**, its destructor release is an ordinary
+virtual call, and the symmetry with the neighbouring polymorphic member — which
+looked anomalous — is real.
+
+### The general caveat
+
+```
+earlier today:  a vtable reported 0x108, real slots ended at 0x78   (OVER-merge)
+here:           an object reported 0xC,  relocations run to 0x2c+   (UNDER-size)
+```
+
+**dtk's reported object size is unreliable in BOTH directions. Count the
+relocations and read where they stop.** This now applies to vtables, tables of
+function pointers, and constant pools alike — the same measurement has settled
+table entry counts on three units today.
+
+## An unnamed vtable does not mean a non-polymorphic class
+
+If an object's offset 0 receives a `.data` address and something later dispatches
+through it, **decode that address's relocations before concluding anything.** A
+class that is not landed has no `__vt__` symbol, so its vtable looks like an
+anonymous data blob — but it is still a vtable, and the class should be modelled
+with the virtuals it implies rather than with a raw pointer cast that matches
+bytes.

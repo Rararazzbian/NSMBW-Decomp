@@ -18,6 +18,7 @@ extern "C" bool unk_168260__12daWmKiller_cFi(void *self, int index);
 // ownership check. Declared extern via the same R_<module>_<section>_<offset> convention
 // already proven for a far .bss symbol (R_2_6_FE40 in WM_KILLER); section 5 is .data.
 extern "C" const float R_2_5_45428[];
+extern "C" const u8 R_2_5_43E34[];
 
 // #state2's two remaining far calls, both raw DOL-absolute addresses (unowned, no mangled
 // name -- modelled by call shape only, per the project's established convention for such
@@ -39,15 +40,58 @@ static const float sc_0_001 = 0.001f; // lbl_2_rodata_8A38
 
 daWmKillerBullet_c::daWmKillerBullet_c() : m_1d4(false) {}
 
-// NOT YET AUTHORED (0x104 bytes). See the header's own note on #m_1fc/#m_200's destructor
-// release calls -- their real class is unconfirmed for #m_200, so left unauthored rather than
-// guessed via a raw vtable-pointer cast.
-daWmKillerBullet_c::~daWmKillerBullet_c() {}
+// PARTIALLY AUTHORED (0x104 bytes). #mBgmSync is a real, polymorphic, landed class (see its
+// own note), so its release is an ordinary `delete`. #m_1fc's own release call is NOT yet
+// authored: #create's own construction of that object writes no `__vt__`-named vtable pointer
+// at its offset 0 (just a plain data-table address, lbl_2_data_43E34), yet the target's
+// destructor dispatches through that same offset as if it *were* a vtable -- a real
+// architectural question about that still-unlanded class I don't have an answer to yet, so
+// left unauthored rather than guessed.
+daWmKillerBullet_c::~daWmKillerBullet_c() {
+    if (m_1fc != nullptr) {
+        ((void (*)(void *, int)) (*(void ***) m_1fc)[2])(m_1fc, 1);
+    }
+    if (mBgmSync != nullptr) {
+        delete mBgmSync;
+    }
+}
 
 // create(). Vtable slot 2, confirmed via check_vtable.py. NOT YET AUTHORED (0x128 bytes) --
 // content not yet read.
+// create(). Vtable slot 2, confirmed via check_vtable.py. Confirmed content: allocates
+// #mBgmSync (a real, already-landed dWmBgmSync_c -- found by grepping include/ before
+// shadow-declaring anything, per the coordinator's own precedent on agent_board), reads its
+// fields from the shared table (matching agent_board's own createModel()-adjacent shape
+// exactly, just sourced from #R_2_5_45428 instead of a local static array), then a second,
+// still-unowned dWmRotater_c-shaped 0x40-byte allocation (#m_1fc) constructed via raw field
+// writes (no landed header exists for that class), #mClipSphere setup, and two helper calls.
 int daWmKillerBullet_c::create() {
-    m_1c0 = 1;
+    dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
+    mBgmSync = bgmSync;
+    bgmSync->m_18 = (const s16 *) ((const u8 *) R_2_5_45428 + 0x50);
+    bgmSync->m_04 = bgmSync->m_18[0] - 1;
+    bgmSync->m_08 = bgmSync->m_18[1];
+    m_1e4 = -1;
+
+    unk_168C80();
+    unk_168990();
+
+    mClipSphere.set(mPos, sc_60);
+
+    void *rotaterMem = ::operator new(0x40);
+    if (rotaterMem != nullptr) {
+        *(const void **) ((u8 *) rotaterMem + 0x0) = (const void *) R_2_5_43E34;
+        *(float *) ((u8 *) rotaterMem + 0xc) = sc_0;
+        *(int *) ((u8 *) rotaterMem + 0x20) = 0;
+        *(bool *) ((u8 *) rotaterMem + 0x28) = false;
+    }
+    m_1fc = (dWmRotater_c *) rotaterMem;
+    *(const void **) ((u8 *) rotaterMem + 0x3c) = (const u8 *) R_2_5_45428 + 0x28;
+
+    unk_168D50();
+
+    m_205 = false;
+    m_1bc = true;
     return SUCCEEDED;
 }
 
@@ -68,10 +112,7 @@ static const StateFunc_t sc_StateTable[5] = {
 };
 
 int daWmKillerBullet_c::execute() {
-    // m_200's own vtable slot 3 (offset 0xc), no extra args -- real class unconfirmed, raw
-    // dispatch rather than an invented type (see this function's own note above).
-    void **m200Vtbl = *(void ***) m_200;
-    ((void (*)(void *)) m200Vtbl[3])(m_200);
+    mBgmSync->execute();
 
     dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
     if (csSeqMng->FUN_80915600()) {
@@ -184,6 +225,8 @@ void daWmKillerBullet_c::unk_1694A0() {
 }
 
 void daWmKillerBullet_c::unk_169430() { m_1c0 = 20; }
+void daWmKillerBullet_c::unk_168C80() { m_1c0 = 21; }
+void daWmKillerBullet_c::unk_168990() { m_1c0 = 22; }
 // #unk_169530. Confirmed content: a tail call into WM_KILLER's own unk_168260(int) (another
 // real, cross-unit-confirmed call, same landing-order dependency as #checkParentFlag) on
 // #mParentKiller, with an index derived from the low byte of #mParam (0 -> 9, else value-1).
@@ -275,7 +318,7 @@ void daWmKillerBullet_c::state2() {
         }
     }
 
-    if (*((const u8 *) m_200 + 0xd) != 0) {
+    if (mBgmSync->m_0d) {
         m_1c0 = 0;
         fn_80103A00(m_1fc, true, -1, sc_0);
     }

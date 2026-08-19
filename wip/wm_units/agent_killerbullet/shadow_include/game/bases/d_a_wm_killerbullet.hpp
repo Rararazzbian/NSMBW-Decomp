@@ -3,6 +3,7 @@
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/mLib/m_3d/smdl.hpp>
 #include <game/bases/d_wm_demo_actor.hpp>
+#include <game/bases/d_wm_bgm_sync.hpp>
 
 /**
 * @brief The actor for the killer cannon's fired projectile on the World Map (World 7).
@@ -55,6 +56,8 @@ public:
     void endStateOrTransition(); ///< @unofficial fn_2_168F50.
     bool unk_169530(); ///< @unofficial fn_2_169530 -- called from #state1.
     void unk_169430(); ///< @unofficial fn_2_169430, called from #unk_1694A0.
+    void unk_168C80(); ///< @unofficial fn_2_168C80, called from #create.
+    void unk_168990(); ///< @unofficial fn_2_168990, called from #create.
     void unk_1694A0(); ///< @unofficial fn_2_1694A0.
     void *unk_169510(); ///< @unofficial fn_2_169510 -- returns a pointer used as a float source.
     void unk_1691A0(); ///< @unofficial fn_2_1691A0.
@@ -89,7 +92,8 @@ public:
 
     int m_1b8; ///< @unofficial offset 0x1b8. A decrementing counter/timer (`subi ..., 1`).
 
-    u8 mPad_1bc[0x4]; ///< @unofficial offset 0x1bc, size 0x4 -- placeholder, NOT verified.
+    bool m_1bc; ///< @unofficial offset 0x1bc. Set true unconditionally by #create.
+    u8 mPad_1bd[0x3]; ///< @unofficial offset 0x1bd, size 0x3 -- placeholder, NOT verified.
 
     int m_1c0; ///< @unofficial offset 0x1c0. Zeroed by #state2.
 
@@ -119,11 +123,12 @@ public:
     // and released via a virtual call in the destructor.
     dWmRotater_c *m_1fc;
 
-    // @unofficial offset 0x200. A pointer (type unconfirmed, provisionally void*) with the
-    // same destructor-release shape as #m_1fc, and dispatched through its own vtable slot 3
-    // (offset 0xc) by #execute, and read at offset 0xd (a byte field) by #state2. Distinct
-    // object -- not the same field.
-    void *m_200;
+    // @unofficial offset 0x200. Confirmed `dWmBgmSync_c*` -- include/game/bases/d_wm_bgm_sync.hpp
+    // is a real, already-landed header (found by grepping include/ before shadow-declaring it,
+    // per the coordinator's own precedent on agent_board). Heap-allocated in #create(),
+    // released via an ordinary `delete` in the destructor -- same pattern as agent_board's own
+    // mBgmSync.
+    dWmBgmSync_c *mBgmSync;
 
     bool m_204; ///< @unofficial offset 0x204. Set/checked by #state1/#endStateOrTransition.
     bool m_205; ///< @unofficial offset 0x205. Checked by #execute (distinct byte from #m_204,
