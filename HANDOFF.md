@@ -8746,3 +8746,41 @@ mScale.x = v; mScale.y = v; mScale.z = v;
 
 **`calcModel` 60 -> 15, with instruction count and frame size both exact**
 (70/70, `0x30` on both sides) -- the largest single jump on that unit.
+
+## A single object's `.bss` contribution is CONTIGUOUS — so "non-contiguous ownership" is impossible
+
+WM_KILLER's first round concluded its `.bss` was two non-contiguous runs with
+0x30 bytes of other units' statics between them, and asked whether the slice
+format could express that. **It cannot, and it does not need to.**
+
+Two independent arguments:
+
+1. **A relocation proves a READ, not OWNERSHIP.** The evidence was that a function
+   in this unit's `.text` references `lbl_2_bss_FE40`. `.bss` is one shared section
+   across the module and a function can reference a static another TU defines --
+   that is what `extern` produces. This is the same inference I made in the
+   opposite direction earlier today and had to retract.
+2. **The linker CONCATENATES input sections; it does not interleave one object's
+   `.bss` with another's.** So no translation unit can own two non-contiguous
+   `.bss` runs. The premise is structurally impossible, which means the ownership
+   reading is wrong rather than the tooling being inadequate.
+
+Resolution: the unit's `.bss` is the standard `0xfe00-0xfe10` -- registration node
+plus the `c_StartPointKinokoHouseID` copy -- and the far address is another TU's
+static that this unit merely reads. Declare it `extern`.
+
+**Flagging it rather than forcing a contiguous claim was still right**: forcing one
+would have overclaimed another unit's bytes.
+
+### The ownership test that IS valid, restated
+
+**A compile-time displacement in a TU's own instruction proves that TU emits
+everything up to that displacement**, because the compiler cannot address into an
+object whose placement it does not know. Distinguish that from a relocated
+address, which proves only a read.
+
+Three uses of this test are now on record, decisive every time: antlion did NOT
+own bytes below its pool (its `__sinit` never reached past `+0x18`); antlion_mng
+DID own a disputed block (`+0x48` could only be computed by a compiler that laid
+out both ends); and adding a candidate object and watching the displacement move
+by exactly its size confirms placement without knowing what the data means.
