@@ -9956,3 +9956,52 @@ the layout work needs to account for construction at all.
 One field was then pinned from a *user*: a 0x1c-byte function copying three
 floats from `array[0] + 0x10` into the inherited `mPos` fixes an `mVec3_c`-shaped
 field at struct offset `+0x10`.
+
+## The registration trigger is DYNAMIC INITIALISATION, not a non-trivial destructor
+
+WM_KINOPIO tried to avoid a spurious `.ctors` entry by hand-mirroring
+`ForceInCourseList_t` instead of including `d_wm_lib.hpp`. **All three variants
+made MWCC stop emitting `__register_global_object` entirely**, losing the
+array-destructor callback that was already matching.
+
+The agent correctly ruled out the obvious explanation: `mVec3_c` has a
+user-declared destructor in both the real header and the mirror, so
+non-triviality is not the discriminator.
+
+**The discriminator is how the array is INITIALISED.** The real one:
+
+```cpp
+static ForceInCourseList_t sc_ForceList[] = {
+    {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0",
+     mVec3_c(2160.0f, -30.0f, -478.0f)}      // a CONSTRUCTOR CALL
+};
+```
+
+A **constructor call** in the initialiser makes the array dynamically
+initialised, which is what forces the registration and the destructor callback.
+Brace-initialising the vector as `{2160.0f, -30.0f, -478.0f}` instead lets MWCC
+fold the whole aggregate into `.data` at compile time — no runtime write, no
+registration.
+
+**Same mechanism as castle's**, where a hand-rolled POD member removed the
+registration and took `.rodata` and `.bss` *under*; and the same
+brace-init-versus-constructor distinction that closed castle's `__sinit`.
+
+**So: to reproduce a registration, the initialiser must call a constructor.**
+
+## Two ordering constraints that CONFLICT mean a NAMED constant
+
+WM_KINOPIO's `resetPosition` (3 differing) looked like a genuine deadlock: the
+shared constants pool in function-**definition** order, but the target's pool
+order implies the opposite function order to the one `.text` requires, and both
+functions are strong fixed-address symbols that cannot be reordered.
+
+**A real conflict between those two constraints means the constants are not both
+anonymous pool entries.** An anonymous literal pools with its function; a **named
+`static const` pools at its own declaration point**, independent of where any
+function sits. Declaring the contested constant as a named object, positioned to
+satisfy the pool while the functions stay in target address order, satisfies both.
+
+That is the mechanism behind course's pool fix and antlion_mng's, and **it is the
+only way the real source could produce an order that a purely
+anonymous-pool shape cannot.**

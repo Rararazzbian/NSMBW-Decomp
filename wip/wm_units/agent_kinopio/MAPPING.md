@@ -381,3 +381,79 @@ scheduling behavior rather than a per-unit fluke.
 | `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | auto-generated `__arraydtor` from the `sForceList` static |
 
 **13/19 byte-identical this round (up from 7/19).**
+
+## Round 3: the .ctors investigation (unresolved) plus re-verification
+
+**Score unchanged at 13/19** -- the .ctors fix did not land, so `resetPosition`
+and `checkAnmLoop` were re-measured but not improved.
+
+### `.ctors` entry count confirmed as a real, decisive signal -- but the fix did not reproduce
+
+The coordinator's diagnosis is accepted and evidenced: this unit's target
+`.ctors` section has exactly **one** entry, so the real source cannot
+include `d_wm_lib.hpp` (whose own `sc_ForceList` static would add a
+second). Three variants of "declare only what's used" were tried this
+round, all keeping the same 7-field `dWmLib::ForceInCourseList_t` layout
+and a bare `namespace dWmLib { bool IsSingleEntry(); }` declaration
+instead of the header:
+
+1. Plain hand-declared struct (no destructor stated explicitly).
+2. Same, with an explicit empty `~ForceInCourseList_t() {}`.
+3. (implicitly tested via 1/2) struct nested inside the anonymous namespace
+   alongside `sForceList` vs. at `namespace dWmLib` scope.
+
+**All three produce the same result**: MWCC stops emitting
+`__register_global_object`/the guarded dynamic-init shape entirely for
+`sForceList` -- it becomes a bare, unguarded sequence of stores, and
+`fn_2_16D270` (the array-destructor callback) never gets generated at all.
+This is not simply "the compiler doesn't see a non-trivial destructor" --
+`mVec3_c` has a user-declared (if empty-bodied) destructor either way,
+which is what makes a class non-trivially-destructible by the standard's
+rules, and that fact is identical whether the struct comes from the real
+header or the hand-rolled mirror. Whatever triggers MWCC to route a static
+object through `__register_global_object` instead of a bare store was not
+identified this round.
+
+**Reverted to including `d_wm_lib.hpp`** (the state that scored 13/19):
+it reproduces `fn_2_16D270` exactly, at the cost of `fn_2_16D1E0` doing
+`sc_ForceList`'s registration work in addition to its own (net: one
+function still open, versus zero MATCH-worthy functions in any of the
+three no-include variants). This is recorded as an open, unresolved
+question for the next round -- not a dead end to retry with the same
+three shapes again, since none of them worked.
+
+### `resetPosition` (3) and `checkAnmLoop` (34) re-measured, unchanged
+
+Per instruction, both were re-checked (their neighbours `create`,
+`execute`, `createModel`, `calcModel` all newly fixed this session) in
+case either would move on its own. Neither did -- confirmed independent
+of the `.ctors` question and of each other. `resetPosition`'s 3
+(6 raw `difftool.py` lines, one being a benign symbol name) is entirely
+the `.rodata`-pooling-order question already characterized: the shared
+constants `-500.0f`/`5.0f`/`0.5f`/`0.8f` pool in FUNCTION-DEFINITION order
+(`calcModel`'s `0.5f`/`0.8f` first, since `calcModel` is defined earlier
+in the file than `resetPosition`), not in the target's real memory order
+(`-500.0f`/`5.0f`/`0.5f`/`0.8f`). Reordering the two functions themselves
+would fix the pool order but break `.text` definition-order matching
+(both are strong, address-fixed symbols) -- so this is a real conflict
+between two ordering constraints, not a simple oversight. `checkAnmLoop`
+is unchanged at 34/35: the vtable slot is correct
+(`setFrame(float)` at target slot `0x84`, confirmed via the `dPyMdlBase_c`
++2-slot rule), but the source's exact operand-evaluation/register-holding
+shape (target holds the `mFrameMax`-derived value in the non-volatile
+`f31` across the `getFrame()` call, needing a `stfd f31`/`psq_st f31`
+prologue our current phrasing does not produce) has not been matched.
+
+## Final result this round: 13/19, unchanged from round 2
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate | — | **MATCH** (11 functions) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | auto-generated, contingent on keeping the `d_wm_lib.hpp` include |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | rodata pooling-order conflict with `.text` ordering, see above |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | vtable slot correct; `f31`-holding evaluation shape not yet matched |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | carries `sc_ForceList`'s extra work; three no-include variants tried and all worse (lose the registration mechanism entirely) |
+| `fn_2_16C5E0` processCutsceneCommand, `fn_2_16D100` startJump | — | not attempted |
+| `fn_2_16C810` stepCutscene70 (0x834) | — | left alone, per instruction |
+
+**13/19 byte-identical.**

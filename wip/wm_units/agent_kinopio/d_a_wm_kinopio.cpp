@@ -10,20 +10,24 @@
 // @unofficial cross-module DOL call, unnamed in both symbol tables.
 extern "C" int fn_800FCB30(int);
 
-// @unofficial KNOWN ISSUE, not resolved this round: including
-// d_wm_lib.hpp (needed for dWmLib::ForceInCourseList_t / IsSingleEntry())
-// also pulls in that header's own `static ForceInCourseList_t
-// sc_ForceList[] = {...}` (namespace scope, dynamic initializer via
-// dCsvData_c::c_CASTLE_ID) into THIS translation unit's __sinit, since a
-// side-effecting static initializer cannot be proven dead even when
-// unreferenced. The real target's __sinit does not do this extra work.
-// A hand-rolled forward declaration of ForceInCourseList_t (avoiding the
-// header) was tried instead and made things WORSE: without the real
-// header MWCC did not generate any __register_global_object call at all,
-// so fn_2_16D1E0 lost its whole shape, not just gained the extra copy.
-// Kept as the real include since it at least gets fn_2_16D270 (the
-// generated __arraydtor callback) to MATCH.
-
+// @unofficial KNOWN ISSUE, not resolved: the target's .ctors section has
+// exactly 1 entry for this unit; the real source therefore does NOT
+// include d_wm_lib.hpp (that header's own `static ForceInCourseList_t
+// sc_ForceList[] = {...}` carries a side-effecting dynamic initializer,
+// so including it would add a second .ctors entry). Tried declaring only
+// what's used instead of including the header -- `namespace dWmLib { bool
+// IsSingleEntry(); struct ForceInCourseList_t { ...same 7 fields... }; }`,
+// no include -- three variants (plain, with an explicit empty `~ForceIn
+// CourseList_t(){}`, struct at namespace scope vs nested): ALL of them
+// make MWCC stop emitting `__register_global_object` for `sForceList`
+// entirely -- it just does a bare unguarded store, no atexit/array-dtor
+// registration at all, unlike the target (and unlike this same object
+// when d_wm_lib.hpp IS included). The trigger for that codegen difference
+// was not identified this round -- it is not simply "does the compiler
+// see a non-trivial destructor" (mVec3_c's IS user-declared, present
+// either way). Reverted to the real include, which at least reproduces
+// fn_2_16D270 (the generated __arraydtor callback) exactly; fn_2_16D1E0
+// itself still carries the extra sc_ForceList work on top of its own.
 
 ACTOR_PROFILE(WM_KINOPIO, daWmKinopio_c, 0);
 
