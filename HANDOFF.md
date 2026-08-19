@@ -7339,3 +7339,50 @@ by-value argument can be passed directly.**
   constant at offset 0 -- emitted first because `create()` compiles before
   `__sinit` -- with `sc_ForceList`'s `mNodePos` floats at 4/8/c. Consistent with
   declaration-order placement and `__sinit` last.
+
+## antlion_mng 17/22 -> 18/22: `__sinit` MATCHES, and the ownership argument is confirmed empirically
+
+The disputed `.rodata` really was this TU's to declare. Two named objects closed
+it, and **the confirmation is better than the argument was**: adding the first
+object shifted the compiled displacement from `+0x20` to `+0x38` -- exactly its
+own size, `0x18`. That verifies position and size independently of knowing what
+the object means. The second closed the remaining `0x10`, taking the
+displacement to `+0x48` and `__sinit` straight to MATCH.
+
+```cpp
+// @unofficial -- bytes read from the retail binary, semantics unidentified.
+extern const unsigned int g_unofficial_85C0[6] = {9, 2, 0x00010100, 0, 0x003c0014, 0};
+// declared immediately before sProcTable
+
+const int unofficialTable85F8[4] = {0, 1, 0, 1};
+// declared inside reviveOnRoute, right after worldIndexTable
+```
+
+The first keeps `extern` because `fn_2_19B170`, in `daWmPlayer_c`'s TU, reads its
+`+4` word through a confirmed relocation -- which is exactly the
+declared-here-referenced-there pattern predicted when the earlier
+"the relocation proves another TU owns it" reading was overturned.
+
+**Neither object's meaning is identified, and neither was invented.** The bytes
+come straight out of the retail binary and are marked `@unofficial`. That is the
+right trade when the position and size are provable but the semantics are not --
+several landed units already carry data on the same footing.
+
+### The rule this validates, now with a positive case
+
+**A compile-time displacement in a TU's own instruction proves that TU emits
+everything up to it.** Antlion gave the negative case (its `__sinit` never
+reached past `+0x18`, so it did not own the bytes below); antlion_mng gives the
+positive one (`+0x48` could only be computed by a compiler that laid out both
+ends of that span itself). Same measurement, opposite answers, decisive twice.
+
+And the practical test for a candidate object: **add it and check the
+displacement moves by exactly its size.** That confirms placement without needing
+to know what the data is for.
+
+### Still open on this unit
+
+`pickRevivedIndices` 39, `reviveOnRoute` 29, and the two 8s. The
+`excludeCurrent` four-branch merge-point quirk remains unexplained after three
+rounds; both compare instructions are confirmed against the same parameter
+register, so "the two tests compare different things" is now ruled out too.

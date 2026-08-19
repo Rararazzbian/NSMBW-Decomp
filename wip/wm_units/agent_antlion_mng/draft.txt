@@ -1042,10 +1042,10 @@
 /* 00000D10 00000D50  38 A5 00 00 */	addi r5, r5, ...rodata.0@l
 /* 00000D14 00000D54  90 01 00 24 */	stw r0, 0x24(r1)
 /* 00000D18 00000D58  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
-/* 00000D1C 00000D5C  C0 45 00 20 */	lfs f2, 0x20(r5)
+/* 00000D1C 00000D5C  C0 45 00 48 */	lfs f2, 0x48(r5)
 /* 00000D20 00000D60  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib@l
-/* 00000D24 00000D64  C0 25 00 24 */	lfs f1, 0x24(r5)
-/* 00000D28 00000D68  C0 05 00 28 */	lfs f0, 0x28(r5)
+/* 00000D24 00000D64  C0 25 00 4C */	lfs f1, 0x4c(r5)
+/* 00000D28 00000D68  C0 05 00 50 */	lfs f0, 0x50(r5)
 /* 00000D2C 00000D6C  3C 80 00 00 */	lis r4, __arraydtor$12465@ha
 /* 00000D30 00000D70  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
 /* 00000D34 00000D74  3C A0 00 00 */	lis r5, "@12466"@ha
@@ -1112,13 +1112,23 @@
 .balign 4
 	.4byte "__sinit_\d_a_wm_antlion_mng_cpp"
 
-# 0x00000000..0x0000002C | size: 0x2C
+# 0x00000000..0x00000054 | size: 0x54
 .rodata
 .balign 8
 # .rodata:0x0 | size: 0x0
 .sym ...rodata.0, local
 
 # .rodata:0x0 | size: 0x18
+.obj g_unofficial_85C0, global
+	.4byte 0x00000009
+	.4byte 0x00000002
+	.4byte 0x00010100
+	.4byte 0x00000000
+	.4byte 0x003C0014
+	.4byte 0x00000000
+.endobj g_unofficial_85C0
+
+# .rodata:0x18 | size: 0x18
 # daWmAntlionMng_c::sProcTable
 .obj sProcTable__16daWmAntlionMng_c, global
 	.4byte 0x00000000
@@ -1129,26 +1139,34 @@
 	.4byte procCheck__16daWmAntlionMng_cFv
 .endobj sProcTable__16daWmAntlionMng_c
 
-# .rodata:0x18 | size: 0x8
+# .rodata:0x30 | size: 0x8
 .obj "@14736", local
 	.4byte 0x00000000
 	.4byte 0x00000001
 .endobj "@14736"
 
-# .rodata:0x20 | size: 0x4
-.obj "@15294", local
-	.4byte 0x45070000
-.endobj "@15294"
+# .rodata:0x38 | size: 0x10
+.obj "@14738", local
+	.4byte 0x00000000
+	.4byte 0x00000001
+	.4byte 0x00000000
+	.4byte 0x00000001
+.endobj "@14738"
 
-# .rodata:0x24 | size: 0x4
-.obj "@15295", local
-	.4byte 0xC1F00000
-.endobj "@15295"
-
-# .rodata:0x28 | size: 0x4
+# .rodata:0x48 | size: 0x4
 .obj "@15296", local
-	.4byte 0xC3EF0000
+	.4byte 0x45070000
 .endobj "@15296"
+
+# .rodata:0x4C | size: 0x4
+.obj "@15297", local
+	.4byte 0xC1F00000
+.endobj "@15297"
+
+# .rodata:0x50 | size: 0x4
+.obj "@15298", local
+	.4byte 0xC3EF0000
+.endobj "@15298"
 
 # 0x00000000..0x000000B8 | size: 0xB8
 .data

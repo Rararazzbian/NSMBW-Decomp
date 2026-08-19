@@ -235,6 +235,18 @@ public:
     ACTOR_PARAM_CONFIG(startMode, 0, 8);
 };
 
+/// @unofficial Named object, `0x85c0-0x85d8` in the retail binary, sitting immediately before
+/// `sProcTable` (named objects emit before function pools -- confirmed by `__sinit`'s own pool
+/// anchor: the target's `__sinit` reads `mNodePos` at pool-base+0x48, which only resolves to a
+/// sane address if this TU's own rodata contribution runs the whole `0x85c0-0x8608` span, not
+/// just the `sProcTable`/`worldIndexTable`/`mNodePos` pieces already identified). `fn_2_19B170`
+/// (daWmPlayer_c's own TU) reads one word out of the middle of it (`+4`, confirmed via a
+/// relocation from `0x19b198/0x19b1a4` straight into `0x85c4`), consistent with this being
+/// declared here and referenced `extern` there. Byte-exact from the retail binary; shape read as
+/// {count?=9, index?=2, flags={0,1,1,0}, pad=0, timerPair={60,20}, pad=0} but NOT confirmed
+/// against any consumer inside this unit -- no function here reads it.
+extern const unsigned int g_unofficial_85C0[6] = {9, 2, 0x00010100, 0, 0x003c0014, 0};
+
 const daWmAntlionMng_c::ProcFunc_t daWmAntlionMng_c::sProcTable[2] = {
     &daWmAntlionMng_c::procNone,
     &daWmAntlionMng_c::procCheck,
@@ -474,6 +486,14 @@ void daWmAntlionMng_c::reviveOnRoute() {
     /// are numerically identical to `route` (0, 1) but the codegen shape (aggregate-initialised
     /// local array, not a bare loop variable) is what the target's stack layout requires.
     const int worldIndexTable[2] = {0, 1};
+
+    /// @unofficial Second unidentified rodata run this round: `0x85f8-0x8608` (4 words), same
+    /// `{0,1,0,1}` shape as `worldIndexTable` immediately preceding it, sitting right before
+    /// `sc_ForceList`'s own `mNodePos` vec3 in the pool. Not consumed by anything found in this
+    /// unit; declared unused, purely to reproduce the retail byte layout and close `__sinit`'s
+    /// pool-offset residual (`+0x38` without it, target wants `+0x48`).
+    const int unofficialTable85F8[4] = {0, 1, 0, 1};
+    (void)unofficialTable85F8;
 
     for (int route = 0, accum = 0; route < 2; route++, accum += 2) {
         int picked[2];
