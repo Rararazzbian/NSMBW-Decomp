@@ -315,7 +315,7 @@ void daWmKinoBalloon_c::moveUp() {
         dWmSeManager_c::m_pInstance->playSound(0x6f, mPos, 1);
         resetState();
     } else {
-        mScale += mVec3_c(mRate, mRate, mRate);
+        mScale = mVec3_c(mScale.x + mRate, mScale.y + mRate, mScale.z + mRate);
     }
 }
 
@@ -331,7 +331,7 @@ void daWmKinoBalloon_c::moveDown() {
         mVisible = false;
         resetState();
     } else {
-        mScale += mVec3_c(mRate, mRate, mRate);
+        mScale = mVec3_c(mScale.x + mRate, mScale.y + mRate, mScale.z + mRate);
     }
 }
 
@@ -375,14 +375,14 @@ void daWmKinoBalloon_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
             if (mScale.x >= mTargetHeight) {
                 setCutEnd();
             } else {
-                mScale += mVec3_c(mRate, mRate, mRate);
+                mScale = mVec3_c(mScale.x + mRate, mScale.y + mRate, mScale.z + mRate);
             }
         } else if ((int)ACTOR_PARAM(BalloonType) == 2) {
             if (mScale.x <= 0.01f) {
                 mVisible = false;
                 setCutEnd();
             } else {
-                mScale += mVec3_c(mRate, mRate, mRate);
+                mScale = mVec3_c(mScale.x + mRate, mScale.y + mRate, mScale.z + mRate);
             }
         } else {
             setCutEnd();

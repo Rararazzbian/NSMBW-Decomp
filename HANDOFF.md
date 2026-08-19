@@ -8419,3 +8419,51 @@ createModel             51       parked: register-reuse scheduling, four forms b
 Three of the five carry **one** shared pattern. Being attacked together, on the
 precedent that three units sharing a stack-materialisation defect resisted twelve
 individual attempts and all fell in a single round once addressed as one problem.
+
+## NEW LEVER: read WHAT IS IN the stack temp to identify the operator form
+
+kinoballoon went **21/26 -> 24/26** — three functions to MATCH on one substitution,
+found by asking what the target's stack scratch slot actually holds.
+
+```cpp
+mScale += mVec3_c(mRate, mRate, mRate);                              // 14 differing
+mScale = mScale + mVec3_c(mRate, mRate, mRate);                      // 28 -- WORSE
+mScale = mVec3_c(mScale.x+mRate, mScale.y+mRate, mScale.z+mRate);    // MATCH
+```
+
+**The diagnostic:**
+
+- **Compound assignment (`+=`) materialises the ADDEND** at the stack slot.
+  `mVec3_c::operator+=(const mVec3_c &v)` binds its by-reference parameter to a
+  real stack slot, so the unmodified `{mRate, mRate, mRate}` appears there.
+- **Constructor-plus-assignment writes the RESULT** to the slot — the `fadds`
+  happens *before* the `stfs`, and the same registers go straight to the real
+  fields with no reload. **No addend struct ever appears.**
+- **Binary `operator+` produces TWO temps** — the addend plus the by-value return
+  slot — and grew the frame `0x20 -> 0x30`. It is not in play here at all.
+
+So: **trace whether the value stored to the stack temp is the addend or the sum.**
+That single question distinguishes three source forms that all look equivalent.
+
+The substitution applied unchanged to `moveDown` and to both sites inside
+`processCutsceneCommand` — **four sites, no per-site tuning, all straight to
+MATCH.** Attacking a shared pattern as one problem paid off again.
+
+### Method note: read the raw block, not the diff, once order diverges
+
+The agent found this by pulling the full `.fn`-to-`.endfn` block from **both**
+target and draft and reading them in true program order, because **the diff
+tool's line-by-line alignment is misleading once instruction order diverges** —
+it pairs lines that are not counterparts. This is the same hazard as the
+misaligned-diff warning, in a different guise: there the cause was a size
+mismatch, here it is reordering.
+
+**When a diff stops making sense, stop reading the diff and read both blocks.**
+
+### kinoballoon stands at 24/26
+
+```
+createModel   51   parked: four source forms byte-identical, _savegpr_27 already correct,
+                   cause is a mid-function register reuse the compiler normalises toward
+markDone       5   parked: info/idx register-order swap, resisted several attempts
+```
