@@ -54,7 +54,7 @@ namespace dWmLib {
     void GetStartPointNameFromRouteName(const char *routeName, char *dst);
     void GetEndPointNameFromRouteName(const char *routeName, char *dst);
     bool isKoopaShipAnchor();
-    u8 getZoromeTime();
+    int getZoromeTime();
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();
     bool isStartPointKinokoHouse1up();

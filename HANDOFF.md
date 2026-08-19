@@ -8615,3 +8615,59 @@ Two supports for this being the right axis:
 the differing count** — the register signature moves first. If this works it may
 unpark two other units; if it does not, it is a valuable negative on a systemic
 problem.
+
+## The return-type hypothesis was RIGHT, and the wrong type was in the shared header
+
+`int getZoromeTime()` — not `u8` — eliminated the `clrlwi.`-versus-`cmpwi`
+masking wall in **both** functions at once:
+
+```
+unk_17A760   7 -> 3 differing
+unk_17A3C0  23 -> 20, then to MATCH with one further fix
+```
+
+**`include/game/bases/d_wm_lib.hpp` has been corrected** from `u8` to `int`, five
+binaries re-verified green. I had applied the `u8` on an agent's inference; the
+mangled name `getZoromeTime__6dWmLibFv` cannot carry a return type, so it was
+never evidence.
+
+`IsSingleEntry()` was tested as `int` too — **no change**, so it was reverted to
+`bool` as the more natural type for a boolean-named function. A neutral result is
+not evidence for either type; say so rather than picking the one you tested last.
+
+**This is the seventh wrong return type on this project.** The rule stands and
+should be applied more aggressively: **a spurious mask or width-narrowing in a
+diff means suspect an inferred return type before anything else.**
+
+## WM_START 10/14 -> 11/14, `unk_17A3C0` MATCHES
+
+The second `unsigned long param` needed the same declare-before-the-call
+treatment as the first — the lever applies **per value**, not once per function.
+That took it to 9 differing, all pure symbol-name cosmetics, and `verify_anon`
+reports MATCH.
+
+### Two walls characterised rather than forced
+
+**`unk_17A760`, 3 differing — block ordering.** At three symmetric branches the
+target's `beq`/`bne` polarity matches neither phrasing available:
+
+```
+if (!X) {A} else {B}    right VALUES, wrong branch type (bne where target has beq, same label)
+if (X)  {B} else {A}    De Morgan inversion: wrong values, 6 differing -- worse
+X == 0 instead of !X    compiles identically, no change
+ternary                 reproduces the known merged-call-site regression
+```
+
+MWCC physically reorders the two blocks — putting the `!X` block first as the
+jump target rather than the fallthrough — independently of which logically
+equivalent form is written. **The version with correct values was kept over the
+version with the matching branch type**, which is the right trade: correct values
+and a wrong branch beat wrong constants.
+
+**`createModel`, 4 differing — the by-value stack-slot wall.** `resMdl` is passed
+by value to two `create()` calls and stages at `r1+0x8` then `r1+0x10` in the
+target, the reverse in the draft. **Same slots, reversed order.** Both wrapper
+forms were measured in an earlier round. The agent explicitly checked whether this
+round's new levers applied — register-binding-before-a-call, branch polarity — and
+concluded they do not reach a same-slots-reversed-order permutation, rather than
+retrying blind. That is the right way to decline a retry.

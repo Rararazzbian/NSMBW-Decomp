@@ -109,14 +109,15 @@ void daWmStart_c::unk_17A3C0() {
     }
 
     if (dWmLib::getStartPointKinokoHouseKindNum() == 0 && !IsCourseFirstClear()) {
-        u8 zoromeTime = dWmLib::getZoromeTime();
+        int zoromeTime = dWmLib::getZoromeTime();
         m_1ec = true;
 
         daWmMap_c *wmMap = daWmMap_c::m_instance;
-        unsigned long param = dWmLib::c_StartPointKinokoHouseID;
-        unsigned long paramFlag = param | 0x10000;
         int idx = *(int *) ((u8 *) wmMap + 0x338c);
         setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, false);
+
+        unsigned long param = dWmLib::c_StartPointKinokoHouseID;
+        unsigned long paramFlag = param | 0x10000;
 
         if (zoromeTime == 0) {
             if (dWmLib::IsSingleEntry()) {
@@ -148,10 +149,9 @@ void daWmStart_c::unk_17A3C0() {
         m_1ec = false;
 
         daWmMap_c *wmMap = daWmMap_c::m_instance;
+        unsigned long param = dWmLib::c_StartPointKinokoHouseID;
         int idx = *(int *) ((u8 *) wmMap + 0x338c);
         setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, true);
-
-        unsigned long param = dWmLib::c_StartPointKinokoHouseID;
 
         if (dWmLib::isStartPointKinokoHouseStar()) {
             mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_STAR, this, param, &childPos, nullptr);
@@ -182,7 +182,7 @@ void daWmStart_c::unk_17A760() {
         return;
     }
 
-    u8 zoromeTime = dWmLib::getZoromeTime();
+    int zoromeTime = dWmLib::getZoromeTime();
     if (zoromeTime == 0) {
         if (dWmLib::IsSingleEntry()) {
             dWmLib::setStartPointKinokoHouseKindNum(6);
