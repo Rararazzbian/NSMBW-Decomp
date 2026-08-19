@@ -98,7 +98,27 @@ def main():
         print("Not a two-write singleton: %d write(s) found." % len(writes))
         return 1
 
-    create, destroy = writes
+    # WHICH write is the create is NOT decided by address order. WM_KOOPASHIP has
+    # its destroy at the LOWER address, and assuming otherwise made this tool
+    # hunt for an allocation backwards from the teardown -- where it found a
+    # nearby unrelated `li r3, 0x40` and reported it as the singleton's sizeof.
+    # The destroy is the one whose stored register is fed by `li rN, 0`.
+    def stores_zero(addr):
+        source = (word(addr) >> 21) & 31
+        for back in range(addr - 4, addr - 0x18, -4):
+            instruction = word(back)
+            if (instruction >> 26) == 14 and ((instruction >> 21) & 31) == source:
+                return ((instruction >> 16) & 31) == 0 and (instruction & 0xFFFF) == 0
+        return False
+
+    zeroing = [addr for addr in writes if stores_zero(addr)]
+    if len(zeroing) == 1:
+        destroy = zeroing[0]
+        create = [addr for addr in writes if addr != destroy][0]
+    else:
+        create, destroy = writes
+        print("  (could not tell create from destroy by the stored value;")
+        print("   falling back to address order, which may be wrong)")
     print("lbl_2_bss_%X  --  create 0x%X, destroy 0x%X" % (target, create, destroy))
     print("")
 
@@ -108,8 +128,31 @@ def main():
             print("  owning profile   %s   (.text 0x%X-0x%X)" % (name, start, end))
             break
 
+    # Prove the pointer being stored is the one `operator new` returned, rather
+    # than assuming it because an allocation happens to sit nearby. The result
+    # arrives in r3 and is typically carried through one or more `mr` moves (and
+    # through a constructor, which returns `this` in r3) before the store.
+    def carries_new_result(alloc_addr, store_addr):
+        live = {3}
+        for addr in range(alloc_addr + 4, store_addr + 4, 4):
+            instruction = word(addr)
+            opcode = instruction >> 26
+            if opcode == 31 and ((instruction >> 1) & 0x3FF) == 444:   # mr rA, rS
+                source = (instruction >> 21) & 31
+                dest = (instruction >> 16) & 31
+                back = (instruction >> 11) & 31
+                if source == back:
+                    if source in live:
+                        live.add(dest)
+                    else:
+                        live.discard(dest)
+            elif opcode == 18 and (instruction & 1):                   # bl: r3 = this
+                live.add(3)
+        return ((word(store_addr) >> 21) & 31) in live
+
     alloc = None
     size = None
+    verified = False
     for addr in range(create, create - WINDOW, -4):
         if call_target(addr) in OPERATOR_NEW:
             for back in range(addr - 4, addr - 0x30, -4):
@@ -121,6 +164,7 @@ def main():
                              call_target(addr)))
                     break
             alloc = addr
+            verified = carries_new_result(addr, create)
             break
 
     if alloc is None:
@@ -129,8 +173,17 @@ def main():
         print("  PRECEDING function's callees as if they belonged to this class.")
         return 0
 
+    if verified:
+        print("  dataflow         VERIFIED -- the stored pointer is the value")
+        print("                   operator new returned (traced through mr/bl).")
+    else:
+        print("  dataflow         NOT VERIFIED -- the register stored is not the")
+        print("                   one this allocation produced. The sizeof above")
+        print("                   probably belongs to a MEMBER or a temporary,")
+        print("                   not to the singleton. Treat it as unknown.")
+
     span = create - alloc
-    if span > NEAR:
+    if span > NEAR and not verified:
         print("")
         print("  WARNING: the allocation is 0x%X bytes before the store." % span)
         print("  It may allocate a DIFFERENT object (a member, a temporary) rather")

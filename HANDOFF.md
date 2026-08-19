@@ -10676,3 +10676,49 @@ method (`dWmMapModel_c::GetEndNodePos`) needed a raw extern.
 
 **All 20 of `stepCutscene70`'s cases now have authored code** (was 18). No logic
 or missing-case gaps remain in it.
+
+## Two bugs in my own singleton resolver, and the WM_KOOPASHIP answer
+
+I shipped `resolve_singleton.py` with two defects. Both produced confident,
+wrong-looking output, and one of them was masked by a warning that fired for the
+wrong reason.
+
+**Bug 1: the create is NOT the lower-addressed write.** The tool sorted the two
+write sites and called the first one "create". **WM_KOOPASHIP's destroy sits at
+the LOWER address** (`0x16EBB0`, storing a literal zero) and its create at the
+higher (`0x16FC38`). So the tool hunted for an allocation backwards from the
+TEARDOWN, found an unrelated nearby `li r3, 0x40`, and reported it as `sizeof`.
+
+The fix is to read the stored VALUE, not the address: **the destroy is the write
+whose stored register is fed by `li rN, 0`.**
+
+**Bug 2: proximity is not proof.** Even after fixing that, the tool was still
+only assuming that an allocation near the store is the object being stored. It
+now TRACES THE REGISTER: `operator new` returns in `r3`, the value is carried
+through `mr` moves (and through a constructor, which returns `this` in `r3`), and
+the tool checks the register actually stored is in that live set. All five
+singletons now report **dataflow VERIFIED**. A result that cannot be traced says
+`NOT VERIFIED` and tells the reader the `sizeof` probably belongs to a member or
+a temporary.
+
+### The corrected table
+
+```
+lbl_2_bss_11B70  COURSE_SELECT_MANAGER              sizeof 0x570  : dBase_c
+                 + sStateMethodUsr_FI_c, + dCourseSelectGuide_c @ +0xC8
+lbl_2_bss_C778   MINI_GAME_WIRE_MESH_MGR_OBJ        sizeof 0x708  : dActor_c
+lbl_2_bss_5AE8   BGM_INTERLOCKING_DUMMY_BLOCK_MGR   sizeof 0x400  : dActor_c
+lbl_2_bss_C460   MINI_GAME_GUN_BATTERY_MGR_OBJ      sizeof 0x0F4  : dActor_c
+lbl_2_bss_FEE0   WM_KOOPASHIP                       sizeof 0x018  : dWmSpline_c
+```
+
+**`lbl_2_bss_FEE0` is a `dWmSpline_c *`** — not a manager, which is what the unit
+name led me to assume. `__ct__11dWmSpline_cFiif` is called on the allocated
+pointer and that same pointer is stored. The `dWmRouteManager_c` constructed
+later in the same function is a SEPARATE object; it was only ever in the call
+list because it fell inside the reporting window.
+
+**All five were previously reported with equal confidence, and one of the five
+was wrong.** That is the argument for the dataflow check existing at all: a tool
+that cannot distinguish what it proved from what it assumed will eventually hand
+someone a `sizeof` to build a class layout on.
