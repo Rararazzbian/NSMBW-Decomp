@@ -10366,3 +10366,42 @@ Up from 9. Three new cases, each teaching something:
 
 Remaining: cases 0, 1, 5, 10, 12, 18 untouched; 14 partial; 2, 6, 8 complete but
 using the unidentified singleton's offsets.
+
+## WM_KOOPAJR: six roles named with ZERO lines of draft written
+
+The vtable-relocation technique at its best. The class's own secondary vtable
+(`lbl_2_data_45F08`, installed at `+0x60` by the constructor) read directly via
+`dtk rel info -r`, converted with `slot = (offset - 0x08) / 4 + 2`, matched
+against the family map:
+
+```
+slot  2  +0x08  fn_2_16D3F0  create                  0x64
+slot  5  +0x14  fn_2_16D580  doDelete                0x8   <- the family's trivial 8-byte convention
+slot  8  +0x20  fn_2_16D460  execute                 0xD0
+slot 11  +0x2c  fn_2_16D530  draw                    0x4C
+slot 18  +0x48  fn_2_16D340  destructor              0xAC
+slot 24  +0x60  fn_2_16D870  processCutsceneCommand  0xB0
+```
+
+Every other family slot resolved to the same external inherited targets seen on
+every prior unit — a consistent cross-check that the class overrides nothing else.
+
+**And the negative is as valuable as the map: `fn_2_16D940` (0xA60, the unit's
+largest by far) is NONE of the six.** It is a plain non-virtual member. Ruling out
+the obvious candidates before reading a 2,656-byte function is worth a great deal.
+
+### A 2-entry function-pointer table, found by scanning for the stride
+
+Searching the same relocation dump for consecutive `0xc`-strided `Absolute`
+entries pointing into the unit's own `.text` found exactly two, at
+`0x8c18`/`0x8c24` — the `procNone`-plus-one-real-handler shape already seen on
+kinoballoon and hanachan.
+
+**A third candidate was correctly excluded**: it sits `0xdc` away and its target
+falls inside the neighbouring unit's claimed range, so it belongs to that unit's
+own trailing table. **Check a candidate entry's target against the claim before
+counting it.**
+
+**Handover state: bounds validated, `sizeof` closed by layout arithmetic, member
+layout confirmed, six of twenty functions named — and no draft code at all.**
+That is the cheapest possible position for the next round to start from.
