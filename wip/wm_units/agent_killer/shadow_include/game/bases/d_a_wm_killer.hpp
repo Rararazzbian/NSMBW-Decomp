@@ -26,6 +26,34 @@ public:
     virtual int doDelete();
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
+    // Called from #processCutsceneCommand when isFirstFrame && cutsceneCommandId==0x38, with a
+    // literal `true` second argument; return value stored into #m_208. NOT YET AUTHORED --
+    // placeholder signature (bool-returning, bool-taking) inferred from the call site only.
+    bool unk_1684A0(bool);
+
+    // #create's five sub-calls, in target address/call order. NOT YET AUTHORED -- placeholder
+    // names/signatures inferred only from call position and argument count (all take just
+    // `this`, matching a no-arg member function).
+    void unk_167D30(); ///< @unofficial fn_2_167D30, 0x1ec bytes, called first -- likely createModel.
+    void unk_167F20(); ///< @unofficial fn_2_167F20, 0x8c bytes -- a loop constructing 10
+                         ///< WM_KILLERBULLET (0x276) children into an array at this+0x214.
+    void unk_167C70(); ///< @unofficial fn_2_167C70, 0xa8 bytes -- not a vtable slot (confirmed),
+                         ///< an ordinary member function.
+    void unk_167FB0(); ///< @unofficial fn_2_167FB0, 0xb0 bytes, called last from #create.
+
+    // The remaining 8 undeclared functions, in target address order, sizes noted for the next
+    // round. NOT YET AUTHORED -- placeholder void/no-arg signatures, not measured. Positioned
+    // here purely to keep definition order correct once stubbed in the .cpp (see AGENT_CONTEXT.md
+    // "Function DEFINITION ORDER is part of the object").
+    void unk_1680F0(); ///< @unofficial fn_2_1680F0, 0xc4 bytes.
+    void unk_1681C0(); ///< @unofficial fn_2_1681C0, 0x94 bytes.
+    void unk_168260(); ///< @unofficial fn_2_168260, 0x44 bytes.
+    void unk_1682B0(); ///< @unofficial fn_2_1682B0, 0x20 bytes.
+    void unk_1682D0(); ///< @unofficial fn_2_1682D0, 0x1c bytes.
+    void unk_1682F0(); ///< @unofficial fn_2_1682F0, 0x84 bytes.
+    void unk_168380(); ///< @unofficial fn_2_168380, 0x114 bytes.
+    void unk_168590(); ///< @unofficial fn_2_168590, 0x9c bytes.
+
     u32 mUnk188; ///< @unused @unofficial offset 0x188, identical position to every other landed WM actor's mUnk188.
     dHeapAllocator_c mAllocator; ///< The allocator. @unofficial offset 0x18c.
     m3d::smdl_c mModel; ///< The model. @unofficial offset 0x1a8 -- NOTE: unlike castle/WM_START,

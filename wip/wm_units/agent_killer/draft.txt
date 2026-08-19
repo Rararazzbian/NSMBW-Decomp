@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_wm_killer.cpp"
 
-# 0x00000000..0x00000458 | size: 0x458
+# 0x00000000..0x00000608 | size: 0x608
 .text
 .balign 16
 
@@ -263,155 +263,339 @@
 /* 00000338 00000378  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000033C 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x340 | size: 0x10
+# .text:0x340 | size: 0x6C
 # daWmKiller_c::create()
 .fn create__12daWmKiller_cFv, global
-/* 00000340 00000380  38 00 00 01 */	li r0, 0x1
-/* 00000344 00000384  98 03 02 08 */	stb r0, 0x208(r3)
-/* 00000348 00000388  38 60 00 01 */	li r3, 0x1
-/* 0000034C 0000038C  4E 80 00 20 */	blr
+/* 00000340 00000380  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000344 00000384  7C 08 02 A6 */	mflr r0
+/* 00000348 00000388  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000034C 0000038C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000350 00000390  7C 7F 1B 78 */	mr r31, r3
+/* 00000354 00000394  48 00 00 01 */	bl unk_167D30__12daWmKiller_cFv
+/* 00000358 00000398  7F E3 FB 78 */	mr r3, r31
+/* 0000035C 0000039C  48 00 00 01 */	bl unk_167F20__12daWmKiller_cFv
+/* 00000360 000003A0  3C 80 00 00 */	lis r4, "@12612"@ha
+/* 00000364 000003A4  C0 7F 00 AC */	lfs f3, 0xac(r31)
+/* 00000368 000003A8  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
+/* 0000036C 000003AC  7F E3 FB 78 */	mr r3, r31
+/* 00000370 000003B0  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
+/* 00000374 000003B4  C0 04 00 00 */	lfs f0, "@12612"@l(r4)
+/* 00000378 000003B8  D0 7F 01 28 */	stfs f3, 0x128(r31)
+/* 0000037C 000003BC  D0 5F 01 2C */	stfs f2, 0x12c(r31)
+/* 00000380 000003C0  D0 3F 01 30 */	stfs f1, 0x130(r31)
+/* 00000384 000003C4  D0 1F 01 34 */	stfs f0, 0x134(r31)
+/* 00000388 000003C8  48 00 00 01 */	bl unk_167C70__12daWmKiller_cFv
+/* 0000038C 000003CC  7F E3 FB 78 */	mr r3, r31
+/* 00000390 000003D0  48 00 00 01 */	bl unk_167FB0__12daWmKiller_cFv
+/* 00000394 000003D4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000398 000003D8  38 60 00 01 */	li r3, 0x1
+/* 0000039C 000003DC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000003A0 000003E0  7C 08 03 A6 */	mtlr r0
+/* 000003A4 000003E4  38 21 00 10 */	addi r1, r1, 0x10
+/* 000003A8 000003E8  4E 80 00 20 */	blr
 .endfn create__12daWmKiller_cFv
-
-# .text:0x350 | size: 0x10
-# daWmKiller_c::execute()
-.fn execute__12daWmKiller_cFv, global
-/* 00000350 00000390  38 00 00 00 */	li r0, 0x0
-/* 00000354 00000394  98 03 02 08 */	stb r0, 0x208(r3)
-/* 00000358 00000398  38 60 00 01 */	li r3, 0x1
-/* 0000035C 0000039C  4E 80 00 20 */	blr
-.endfn execute__12daWmKiller_cFv
-
-# .text:0x360 | size: 0x30
-# daWmKiller_c::draw()
-.fn draw__12daWmKiller_cFv, global
-/* 00000360 000003A0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000364 000003A4  7C 08 02 A6 */	mflr r0
-/* 00000368 000003A8  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000036C 000003AC  85 83 01 A8 */	lwzu r12, 0x1a8(r3)
-/* 00000370 000003B0  81 8C 00 14 */	lwz r12, 0x14(r12)
-/* 00000374 000003B4  7D 89 03 A6 */	mtctr r12
-/* 00000378 000003B8  4E 80 04 21 */	bctrl
-/* 0000037C 000003BC  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000380 000003C0  38 60 00 01 */	li r3, 0x1
-/* 00000384 000003C4  7C 08 03 A6 */	mtlr r0
-/* 00000388 000003C8  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000038C 000003CC  4E 80 00 20 */	blr
-.endfn draw__12daWmKiller_cFv
-
-# .text:0x390 | size: 0x8
-# daWmKiller_c::doDelete()
-.fn doDelete__12daWmKiller_cFv, global
-/* 00000390 000003D0  38 60 00 01 */	li r3, 0x1
-/* 00000394 000003D4  4E 80 00 20 */	blr
-.endfn doDelete__12daWmKiller_cFv
-/* 00000398 000003D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000039C 000003DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x3A0 | size: 0x4
-# daWmKiller_c::processCutsceneCommand(int, bool)
-.fn processCutsceneCommand__12daWmKiller_cFib, global
-/* 000003A0 000003E0  4E 80 00 20 */	blr
-.endfn processCutsceneCommand__12daWmKiller_cFib
-/* 000003A4 000003E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003A8 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000003AC 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x3B0 | size: 0x4
-# dBaseActor_c::finalUpdate()
-.fn finalUpdate__12dBaseActor_cFv, weak
-/* 000003B0 000003F0  4E 80 00 20 */	blr
-.endfn finalUpdate__12dBaseActor_cFv
-/* 000003B4 000003F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003B8 000003F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003BC 000003FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x3B0 | size: 0x10
+# daWmKiller_c::execute()
+.fn execute__12daWmKiller_cFv, global
+/* 000003B0 000003F0  38 00 00 01 */	li r0, 0x1
+/* 000003B4 000003F4  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 000003B8 000003F8  38 60 00 01 */	li r3, 0x1
+/* 000003BC 000003FC  4E 80 00 20 */	blr
+.endfn execute__12daWmKiller_cFv
 
-# .text:0x3C0 | size: 0xC
-# dWmDemoActor_c::clearCutEnd()
-.fn clearCutEnd__14dWmDemoActor_cFv, weak
-/* 000003C0 00000400  38 00 00 00 */	li r0, 0x0
-/* 000003C4 00000404  98 03 01 39 */	stb r0, 0x139(r3)
-/* 000003C8 00000408  4E 80 00 20 */	blr
-.endfn clearCutEnd__14dWmDemoActor_cFv
-/* 000003CC 0000040C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x3C0 | size: 0x30
+# daWmKiller_c::draw()
+.fn draw__12daWmKiller_cFv, global
+/* 000003C0 00000400  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000003C4 00000404  7C 08 02 A6 */	mflr r0
+/* 000003C8 00000408  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000003CC 0000040C  85 83 01 A8 */	lwzu r12, 0x1a8(r3)
+/* 000003D0 00000410  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 000003D4 00000414  7D 89 03 A6 */	mtctr r12
+/* 000003D8 00000418  4E 80 04 21 */	bctrl
+/* 000003DC 0000041C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000003E0 00000420  38 60 00 01 */	li r3, 0x1
+/* 000003E4 00000424  7C 08 03 A6 */	mtlr r0
+/* 000003E8 00000428  38 21 00 10 */	addi r1, r1, 0x10
+/* 000003EC 0000042C  4E 80 00 20 */	blr
+.endfn draw__12daWmKiller_cFv
 
-# .text:0x3D0 | size: 0xC
-# dWmDemoActor_c::setCutEnd()
-.fn setCutEnd__14dWmDemoActor_cFv, weak
-/* 000003D0 00000410  38 00 00 01 */	li r0, 0x1
-/* 000003D4 00000414  98 03 01 39 */	stb r0, 0x139(r3)
-/* 000003D8 00000418  4E 80 00 20 */	blr
-.endfn setCutEnd__14dWmDemoActor_cFv
-/* 000003DC 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x3E0 | size: 0x8
-# dWmDemoActor_c::checkCutEnd()
-.fn checkCutEnd__14dWmDemoActor_cFv, weak
-/* 000003E0 00000420  88 63 01 39 */	lbz r3, 0x139(r3)
-/* 000003E4 00000424  4E 80 00 20 */	blr
-.endfn checkCutEnd__14dWmDemoActor_cFv
-/* 000003E8 00000428  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003EC 0000042C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x3F0 | size: 0x8
-# dWmObjActor_c::vf78()
-.fn vf78__13dWmObjActor_cFv, weak
-/* 000003F0 00000430  38 60 00 00 */	li r3, 0x0
-/* 000003F4 00000434  4E 80 00 20 */	blr
-.endfn vf78__13dWmObjActor_cFv
-/* 000003F8 00000438  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x3F0 | size: 0xC
+# daWmKiller_c::unk_167C70()
+.fn unk_167C70__12daWmKiller_cFv, global
+/* 000003F0 00000430  38 00 00 02 */	li r0, 0x2
+/* 000003F4 00000434  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 000003F8 00000438  4E 80 00 20 */	blr
+.endfn unk_167C70__12daWmKiller_cFv
 /* 000003FC 0000043C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x400 | size: 0x4
-# dWmObjActor_c::vf74()
-.fn vf74__13dWmObjActor_cFv, weak
-/* 00000400 00000440  4E 80 00 20 */	blr
-.endfn vf74__13dWmObjActor_cFv
-/* 00000404 00000444  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x400 | size: 0x8
+# daWmKiller_c::doDelete()
+.fn doDelete__12daWmKiller_cFv, global
+/* 00000400 00000440  38 60 00 01 */	li r3, 0x1
+/* 00000404 00000444  4E 80 00 20 */	blr
+.endfn doDelete__12daWmKiller_cFv
 /* 00000408 00000448  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000040C 0000044C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x410 | size: 0x8
-# dWmObjActor_c::GetActorType()
-.fn GetActorType__13dWmObjActor_cFv, weak
-/* 00000410 00000450  38 60 00 02 */	li r3, 0x2
-/* 00000414 00000454  4E 80 00 20 */	blr
-.endfn GetActorType__13dWmObjActor_cFv
-/* 00000418 00000458  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x410 | size: 0xC
+# daWmKiller_c::unk_167D30()
+.fn unk_167D30__12daWmKiller_cFv, global
+/* 00000410 00000450  38 00 00 03 */	li r0, 0x3
+/* 00000414 00000454  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000418 00000458  4E 80 00 20 */	blr
+.endfn unk_167D30__12daWmKiller_cFv
 /* 0000041C 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x420 | size: 0x8
-# dWmDemoActor_c::doDelete()
-.fn doDelete__14dWmDemoActor_cFv, weak
-/* 00000420 00000460  38 60 00 01 */	li r3, 0x1
-/* 00000424 00000464  4E 80 00 20 */	blr
-.endfn doDelete__14dWmDemoActor_cFv
-/* 00000428 00000468  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x420 | size: 0xC
+# daWmKiller_c::unk_167F20()
+.fn unk_167F20__12daWmKiller_cFv, global
+/* 00000420 00000460  38 00 00 04 */	li r0, 0x4
+/* 00000424 00000464  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000428 00000468  4E 80 00 20 */	blr
+.endfn unk_167F20__12daWmKiller_cFv
 /* 0000042C 0000046C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x430 | size: 0x8
-# dWmDemoActor_c::draw()
-.fn draw__14dWmDemoActor_cFv, weak
-/* 00000430 00000470  38 60 00 01 */	li r3, 0x1
-/* 00000434 00000474  4E 80 00 20 */	blr
-.endfn draw__14dWmDemoActor_cFv
-/* 00000438 00000478  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x430 | size: 0xC
+# daWmKiller_c::unk_167FB0()
+.fn unk_167FB0__12daWmKiller_cFv, global
+/* 00000430 00000470  38 00 00 05 */	li r0, 0x5
+/* 00000434 00000474  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000438 00000478  4E 80 00 20 */	blr
+.endfn unk_167FB0__12daWmKiller_cFv
 /* 0000043C 0000047C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x440 | size: 0x8
+# .text:0x440 | size: 0x88
+# daWmKiller_c::processCutsceneCommand(int, bool)
+.fn processCutsceneCommand__12daWmKiller_cFib, global
+/* 00000440 00000480  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000444 00000484  7C 08 02 A6 */	mflr r0
+/* 00000448 00000488  2C 04 FF FF */	cmpwi r4, -0x1
+/* 0000044C 0000048C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000450 00000490  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 00000454 00000494  7C BF 2B 78 */	mr r31, r5
+/* 00000458 00000498  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0000045C 0000049C  7C 9E 23 78 */	mr r30, r4
+/* 00000460 000004A0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 00000464 000004A4  7C 7D 1B 78 */	mr r29, r3
+/* 00000468 000004A8  41 82 00 44 */	beq .L_000004AC
+/* 0000046C 000004AC  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 00000470 000004B0  81 8C 00 64 */	lwz r12, 0x64(r12)
+/* 00000474 000004B4  7D 89 03 A6 */	mtctr r12
+/* 00000478 000004B8  4E 80 04 21 */	bctrl
+/* 0000047C 000004BC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000480 000004C0  40 82 00 2C */	bne .L_000004AC
+/* 00000484 000004C4  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000488 000004C8  41 82 00 1C */	beq .L_000004A4
+/* 0000048C 000004CC  2C 1E 00 38 */	cmpwi r30, 0x38
+/* 00000490 000004D0  40 82 00 14 */	bne .L_000004A4
+/* 00000494 000004D4  7F A3 EB 78 */	mr r3, r29
+/* 00000498 000004D8  38 80 00 01 */	li r4, 0x1
+/* 0000049C 000004DC  48 00 00 01 */	bl unk_1684A0__12daWmKiller_cFb
+/* 000004A0 000004E0  98 7D 02 08 */	stb r3, 0x208(r29)
+.L_000004A4:
+/* 000004A4 000004E4  38 00 00 01 */	li r0, 0x1
+/* 000004A8 000004E8  98 1D 01 39 */	stb r0, 0x139(r29)
+.L_000004AC:
+/* 000004AC 000004EC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000004B0 000004F0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 000004B4 000004F4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 000004B8 000004F8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 000004BC 000004FC  7C 08 03 A6 */	mtlr r0
+/* 000004C0 00000500  38 21 00 20 */	addi r1, r1, 0x20
+/* 000004C4 00000504  4E 80 00 20 */	blr
+.endfn processCutsceneCommand__12daWmKiller_cFib
+/* 000004C8 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000004CC 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x4D0 | size: 0x8
+# dWmDemoActor_c::checkCutEnd()
+.fn checkCutEnd__14dWmDemoActor_cFv, weak
+/* 000004D0 00000510  88 63 01 39 */	lbz r3, 0x139(r3)
+/* 000004D4 00000514  4E 80 00 20 */	blr
+.endfn checkCutEnd__14dWmDemoActor_cFv
+/* 000004D8 00000518  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000004DC 0000051C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x4E0 | size: 0xC
+# daWmKiller_c::unk_1680F0()
+.fn unk_1680F0__12daWmKiller_cFv, global
+/* 000004E0 00000520  38 00 00 06 */	li r0, 0x6
+/* 000004E4 00000524  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 000004E8 00000528  4E 80 00 20 */	blr
+.endfn unk_1680F0__12daWmKiller_cFv
+/* 000004EC 0000052C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x4F0 | size: 0xC
+# daWmKiller_c::unk_1681C0()
+.fn unk_1681C0__12daWmKiller_cFv, global
+/* 000004F0 00000530  38 00 00 07 */	li r0, 0x7
+/* 000004F4 00000534  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 000004F8 00000538  4E 80 00 20 */	blr
+.endfn unk_1681C0__12daWmKiller_cFv
+/* 000004FC 0000053C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x500 | size: 0xC
+# daWmKiller_c::unk_168260()
+.fn unk_168260__12daWmKiller_cFv, global
+/* 00000500 00000540  38 00 00 08 */	li r0, 0x8
+/* 00000504 00000544  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000508 00000548  4E 80 00 20 */	blr
+.endfn unk_168260__12daWmKiller_cFv
+/* 0000050C 0000054C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x510 | size: 0xC
+# daWmKiller_c::unk_1682B0()
+.fn unk_1682B0__12daWmKiller_cFv, global
+/* 00000510 00000550  38 00 00 09 */	li r0, 0x9
+/* 00000514 00000554  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000518 00000558  4E 80 00 20 */	blr
+.endfn unk_1682B0__12daWmKiller_cFv
+/* 0000051C 0000055C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x520 | size: 0xC
+# daWmKiller_c::unk_1682D0()
+.fn unk_1682D0__12daWmKiller_cFv, global
+/* 00000520 00000560  38 00 00 0A */	li r0, 0xa
+/* 00000524 00000564  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000528 00000568  4E 80 00 20 */	blr
+.endfn unk_1682D0__12daWmKiller_cFv
+/* 0000052C 0000056C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x530 | size: 0xC
+# daWmKiller_c::unk_1682F0()
+.fn unk_1682F0__12daWmKiller_cFv, global
+/* 00000530 00000570  38 00 00 0B */	li r0, 0xb
+/* 00000534 00000574  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000538 00000578  4E 80 00 20 */	blr
+.endfn unk_1682F0__12daWmKiller_cFv
+/* 0000053C 0000057C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x540 | size: 0xC
+# daWmKiller_c::unk_168380()
+.fn unk_168380__12daWmKiller_cFv, global
+/* 00000540 00000580  38 00 00 0C */	li r0, 0xc
+/* 00000544 00000584  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000548 00000588  4E 80 00 20 */	blr
+.endfn unk_168380__12daWmKiller_cFv
+/* 0000054C 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x550 | size: 0xC
+# daWmKiller_c::unk_168590()
+.fn unk_168590__12daWmKiller_cFv, global
+/* 00000550 00000590  38 00 00 0D */	li r0, 0xd
+/* 00000554 00000594  98 03 01 EC */	stb r0, 0x1ec(r3)
+/* 00000558 00000598  4E 80 00 20 */	blr
+.endfn unk_168590__12daWmKiller_cFv
+/* 0000055C 0000059C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x560 | size: 0x8
+# daWmKiller_c::unk_1684A0(bool)
+.fn unk_1684A0__12daWmKiller_cFb, global
+/* 00000560 000005A0  7C 83 23 78 */	mr r3, r4
+/* 00000564 000005A4  4E 80 00 20 */	blr
+.endfn unk_1684A0__12daWmKiller_cFb
+/* 00000568 000005A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000056C 000005AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x570 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 00000570 000005B0  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 00000574 000005B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000578 000005B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000057C 000005BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x580 | size: 0xC
+# dWmDemoActor_c::clearCutEnd()
+.fn clearCutEnd__14dWmDemoActor_cFv, weak
+/* 00000580 000005C0  38 00 00 00 */	li r0, 0x0
+/* 00000584 000005C4  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000588 000005C8  4E 80 00 20 */	blr
+.endfn clearCutEnd__14dWmDemoActor_cFv
+/* 0000058C 000005CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x590 | size: 0xC
+# dWmDemoActor_c::setCutEnd()
+.fn setCutEnd__14dWmDemoActor_cFv, weak
+/* 00000590 000005D0  38 00 00 01 */	li r0, 0x1
+/* 00000594 000005D4  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000598 000005D8  4E 80 00 20 */	blr
+.endfn setCutEnd__14dWmDemoActor_cFv
+/* 0000059C 000005DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5A0 | size: 0x8
+# dWmObjActor_c::vf78()
+.fn vf78__13dWmObjActor_cFv, weak
+/* 000005A0 000005E0  38 60 00 00 */	li r3, 0x0
+/* 000005A4 000005E4  4E 80 00 20 */	blr
+.endfn vf78__13dWmObjActor_cFv
+/* 000005A8 000005E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005AC 000005EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5B0 | size: 0x4
+# dWmObjActor_c::vf74()
+.fn vf74__13dWmObjActor_cFv, weak
+/* 000005B0 000005F0  4E 80 00 20 */	blr
+.endfn vf74__13dWmObjActor_cFv
+/* 000005B4 000005F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005B8 000005F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005BC 000005FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5C0 | size: 0x8
+# dWmObjActor_c::GetActorType()
+.fn GetActorType__13dWmObjActor_cFv, weak
+/* 000005C0 00000600  38 60 00 02 */	li r3, 0x2
+/* 000005C4 00000604  4E 80 00 20 */	blr
+.endfn GetActorType__13dWmObjActor_cFv
+/* 000005C8 00000608  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005CC 0000060C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5D0 | size: 0x8
+# dWmDemoActor_c::doDelete()
+.fn doDelete__14dWmDemoActor_cFv, weak
+/* 000005D0 00000610  38 60 00 01 */	li r3, 0x1
+/* 000005D4 00000614  4E 80 00 20 */	blr
+.endfn doDelete__14dWmDemoActor_cFv
+/* 000005D8 00000618  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005DC 0000061C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5E0 | size: 0x8
+# dWmDemoActor_c::draw()
+.fn draw__14dWmDemoActor_cFv, weak
+/* 000005E0 00000620  38 60 00 01 */	li r3, 0x1
+/* 000005E4 00000624  4E 80 00 20 */	blr
+.endfn draw__14dWmDemoActor_cFv
+/* 000005E8 00000628  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005EC 0000062C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5F0 | size: 0x8
 # dWmDemoActor_c::create()
 .fn create__14dWmDemoActor_cFv, weak
-/* 00000440 00000480  38 60 00 01 */	li r3, 0x1
-/* 00000444 00000484  4E 80 00 20 */	blr
+/* 000005F0 00000630  38 60 00 01 */	li r3, 0x1
+/* 000005F4 00000634  4E 80 00 20 */	blr
 .endfn create__14dWmDemoActor_cFv
-/* 00000448 00000488  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000044C 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005F8 00000638  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005FC 0000063C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x450 | size: 0x8
+# .text:0x600 | size: 0x8
 # m3d::anmChr_c::getType() const
 .fn getType__Q23m3d8anmChr_cCFv, weak
-/* 00000450 00000490  38 60 00 00 */	li r3, 0x0
-/* 00000454 00000494  4E 80 00 20 */	blr
+/* 00000600 00000640  38 60 00 00 */	li r3, 0x0
+/* 00000604 00000644  4E 80 00 20 */	blr
 .endfn getType__Q23m3d8anmChr_cCFv
+
+# 0x00000000..0x00000004 | size: 0x4
+.rodata
+.balign 8
+
+# .rodata:0x0 | size: 0x4
+.obj "@12612", local
+	.4byte 0x42C80000
+.endobj "@12612"
 
 # 0x00000000..0x00000118 | size: 0x118
 .data

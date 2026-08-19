@@ -8958,3 +8958,38 @@ a pool that is the right size but the wrong composition.
 are instantiated into every TU that includes `d_wm_lib.hpp`, with no source
 reference needed. **Before hand-declaring any constant, check whether a shared
 header already provides an object with those bytes.**
+
+## Distinct stub VALUES are not enough if the TYPE collapses them
+
+The rule "give every stub a distinct body" has a second-order trap, caught on
+WM_KILLER **before compiling**:
+
+```cpp
+bool m_208;
+m_208 = 0x2;  m_208 = 0x3;  m_208 = 0x4;   // twelve "distinct" stubs...
+                                            // ...all compile to  stb 1, 0x208(this)
+```
+
+**A `bool` collapses every nonzero value to `1`**, so twelve stubs written with
+different constants emit byte-identical code and poison the verifier's pairing
+exactly as if they had been copy-pasted.
+
+**Write stub distinctness into something that preserves it** — an in-bounds
+padding byte taking distinct index values works — and **verify the emitted bytes
+differ**, do not assume distinct source implies distinct output.
+
+## Two more ways to close a function without inventing anything
+
+- **`create()` closed with five of its own sub-calls still unauthored.** Each is a
+  plain `bl` with no arguments to reproduce, so the family-standard clip-sphere
+  shape matched the whole function regardless of the callees' bodies. **A function
+  whose callees take no arguments can match before those callees exist.**
+- **`processCutsceneCommand()` closed through a REAL virtual call** rather than a
+  raw offset. `checkCutEnd()` is already declared in the landed header, so the
+  compiler produced the correct vtable dispatch with no raw pointer code at all.
+  **Check the landed headers for a declared virtual before reaching for an
+  offset cast** — the cast is for classes whose headers model the wrong thing,
+  not a first resort.
+
+WM_KILLER stands at **7/23** with the vtable slot map settled, bounds plausible,
+and every unauthored function carrying a genuinely distinct stub.
