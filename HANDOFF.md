@@ -10803,3 +10803,47 @@ things it should REJECT. Two writes is necessary and not sufficient, and the onl
 reason I found out is that I went to resolve the two leftovers instead of leaving
 them in the table as "unresolved". **An unresolved row is an invitation to check;
 a confidently wrong row is not.**
+
+## WM_KOOPAJR: 0 -> 15/20 in one round, and the pool rule predicted the blocker
+
+The clean-handover bet paid. From zero draft lines: **15/20 authored, all six named
+target functions logically complete, four of them BYTE-IDENTICAL** (`doDelete`
+0/2, `draw` 0/19, destructor 0/43, and the rest differing only on own-symbol
+naming).
+
+**`create` and `execute` are blocked, and the block was PROVEN rather than
+assumed.** Several shared rodata pool slots (`0x8bc4`, `0x8bd4`, `0x8bd8`,
+`0x8be0`, `0x8bec`) appear in NO function the agent disassembled — so they belong
+to `fn_2_16D940` (0xA60) or `fn_2_16E3A0`, both unauthored. That is exactly the
+recorded rule, "a unit's pool cannot be right while any contributing function is
+unwritten", arrived at independently and correctly identified as a reason to STOP
+working those two functions rather than a residual to grind.
+
+### Two layout bugs, each caught by a DIFFERENT function's diff
+
+- `mProcState` landed at `+0x338` instead of `+0x33c` — a missing field
+  (`mUnk338`). Caught by `execute()`'s diff, **confirmed independently by the
+  destructor's own layout.**
+- `mUnk35c` landed at `+0x344` instead of `+0x35c`, an `0x18` gap. Caught by
+  `resetState()`'s diff and corroborated by the classInit trampoline's
+  `li r3, 0x360`, which had been silently emitting `0x348`.
+
+**A silently wrong `sizeof` in a trampoline is not visible in any function's
+diff.** It took a second, unrelated symptom to expose it.
+
+### Scouting note CORRECTED
+
+`+0x1a4` is **`nw4r::g3d::ResFile mResFile`, not a raw `int`.** Verified against
+landed code: `source/d_basesNP/bases/d_a_wm_kinoko_base.cpp:78` declares
+`nw4r::g3d::ResFile mResFile` at the identical `0x1a4`, with the same
+`getRes()` -> `GetResMdl()` usage shape. Landed precedent again beat inference
+from the raw disassembly.
+
+Also: `resetScaleAndProc()`'s `mScale = mVec3_c(...)` compiled a stack-temp copy;
+rewriting as three explicit field assignments closed an 8-vs-13-line size
+mismatch. **That is the stack-temp question answering "no temp at all ⇒ direct
+field stores"** — a fourth distinct answer observed for it on this project.
+
+**Caveat the agent stated plainly and which I am preserving:** its "match" figures
+are raw text diffs, not the project's link-time comparison. Byte-identity here
+means identical disassembly text, which is necessary but not the landing gate.

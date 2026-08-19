@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 10806 lines / 409 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 10850 lines / 412 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -430,3 +430,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `10715-10736` The corrected table
 - `10737-10770` WM_KILLERBULLET 17/37 -> 19/37, and the order fix that moved the tally by zero
 - `10771-10806` "Exactly two writes" is NOT sufficient for a singleton. Dereference is.
+- `10807-10821` WM_KOOPAJR: 0 -> 15/20 in one round, and the pool rule predicted the blocker
+  - `10822-10833` Two layout bugs, each caught by a DIFFERENT function's diff
+  - `10834-10850` Scouting note CORRECTED
