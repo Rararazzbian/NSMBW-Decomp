@@ -9085,3 +9085,40 @@ the access path.** At namespace scope a `const` array has internal linkage, whic
 is what lets MWCC both strip it when unreferenced (already recorded) and fold it
 when read. `extern const short[2]` should be a much weaker basis for folding. If
 changing the path cannot fix it, change the linkage.
+
+## An explicit redundant null check is SOURCE-VISIBLE — write it if the target has it
+
+WM_KINOPIO's dtor needed a logically-redundant `if (mpMdlMng)` around
+`delete mpMdlMng;` to match. **MWCC does not eliminate an explicitly written null
+check even when the very next operation performs the identical check itself.**
+
+And WM_BOARD found the same thing in the opposite direction the same day: its
+`create()` had an `if (mBgmSync != nullptr)` guard the target never performs, and
+**dropping it** was one of two fixes that took the function 18 -> 13.
+
+**So a redundant guard is not noise in either direction — it is a source
+construct you can see in the target.** Write it when the target checks; omit it
+when the target does not. Both directions are now confirmed on the same day.
+
+## WM_KINOPIO opened at 7/19, layout settled before authoring
+
+`daWmKinopio_c : public dWmDemoActor_c`, `sizeof 0x1bc` — **confirmed from
+`classInit`'s `li r3, 0x1bc` before a line was written.** That check is free and
+should always come first.
+
+**Five "mystery" offsets dissolved into inherited members** via an
+`offsetof` probe against the already-declared base: `0x13c` and `0x158` are the
+base's own allocator and model (the dtor destructs them directly), and `0x100`,
+`0x124`, `0x139` are `mAngle`, `mVisible` and `mIsCutEnd`. The class's own new
+members are exactly `[0x184, 0x1bc)` — 14 four-byte slots with no remainder.
+
+**Fourth unit today where unaccounted-for offsets turned out to be inherited.**
+Probe the base class before inventing a single field.
+
+The `.data` family heuristic **applies here** — the claim genuinely opens on the
+`"F7C0"`/`"W7C0"` pair — and the agent confirmed that from a `.data`-internal
+relocation rather than assuming it, having seen the neighbouring unit where the
+same heuristic correctly did *not* apply. **Check the precondition either way.**
+
+`fn_2_16C810` is **0x834 bytes** with a 20-state jump table — the largest single
+function met this session. Flagged and not attempted rather than rushed.
