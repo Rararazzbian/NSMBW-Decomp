@@ -8467,3 +8467,48 @@ createModel   51   parked: four source forms byte-identical, _savegpr_27 already
                    cause is a mid-function register reuse the compiler normalises toward
 markDone       5   parked: info/idx register-order swap, resisted several attempts
 ```
+
+## kinoballoon PARKED at 24/26 — both residuals characterised
+
+```
+createModel   51   four source forms byte-identical, _savegpr_27 already correct.
+                   Cause: target's r30 does double duty as the .data pool base and
+                   is reassigned mid-function to &mChrAnim[0], splitting one load
+                   into two. MWCC normalises every writable source form away from
+                   that decision at -O4.
+markDone       5   the value graph and register ROLES are identical on both sides;
+                   only the physical assignment differs. Target loads the singleton
+                   into r6, freeing r4 for the index; the draft loads it back into
+                   r4 and puts the index in r5.
+```
+
+`markDone`'s three restructurings — declaration-order swap, binding the singleton
+to a named local, and both orders of that — produced **byte-identical output**,
+including a form that mirrors an already-MATCHED sibling function's exact pattern.
+
+**The distinction that makes this a park rather than a gap:** `moveUp`'s residual
+looked similar and turned out to be a *wrong value* in the stack temp, reachable
+from source. `markDone`'s values are all correct and only the allocator's register
+choice differs. **Ask whether the values are right before concluding a register
+difference is a wall** — if a value is wrong, the source can reach it.
+
+The unit went from nothing to 24/26 and produced the session's most transferable
+lever on the way.
+
+## Standing state of the WM units
+
+```
+LANDED (13):  antlion, sandpillar, kinoko_star, sinkship, note, manta,
+              + cannon, cloud, dokan, dokan_route, ghost, grid, kinoko_1up,
+              kinoko_base, kinoko_red, peach, peach_castle, smallcloud, tower
+PARKED:       course 22/23   castle 19/20   koopa_castle 16/17
+              antlion_mng 18/22   kinoballoon 24/26   dance_pakkun 9/16
+IN PROGRESS:  start 10/14    anchor 16/22   item (round 1)   board (round 1)
+```
+
+**Every parked unit is one to four functions short, and every remaining residual
+is instruction scheduling or register allocation.** The units that LANDED all
+reached N/N within one or two rounds. That asymmetry is the single most useful
+planning fact in this file: **a unit that does not close quickly tends not to
+close at all**, so prefer opening a fresh unit over a fourth round on a
+near-miss.
