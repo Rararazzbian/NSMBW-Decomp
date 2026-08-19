@@ -26,6 +26,19 @@ public:
     virtual int doDelete();
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
+    // Offset 0, width 8 (the low byte of mParam): read by #unk_167F20, then repositioned to
+    // bits 8-15 (`<< 8`) so it does not collide with the 0-9 loop counter OR'd into the same
+    // word -- confirmed from the target's single fused `clrlslwi r0, r0, 24, 8` instruction,
+    // which is (u8)mParam << 8 in one op (clear-left-24 keeps the low byte, then shift-left-8).
+    ACTOR_PARAM_CONFIG(SpawnKind, 0, 8);
+
+    // Offset 16, width 16 (the whole upper half of mParam): selects between the two
+    // createModel() variants via a plain `mParam >> 16` with no mask (size fills to bit 31,
+    // so MWCC omits the andi). Confirmed content-wise: Kind==0 loads "cobKiller"/"cobKillerShot",
+    // Kind==1 loads "cobRotary"/"cobRotaryShot" (real strings read from this unit's own .data,
+    // lbl_2_data_45230, at file offset 0x1d0c00+addr).
+    ACTOR_PARAM_CONFIG(Kind, 16, 16);
+
     // Called from #processCutsceneCommand when isFirstFrame && cutsceneCommandId==0x38, with a
     // literal `true` second argument; return value stored into #m_208. NOT YET AUTHORED --
     // placeholder signature (bool-returning, bool-taking) inferred from the call site only.
@@ -34,7 +47,9 @@ public:
     // #create's five sub-calls, in target address/call order. NOT YET AUTHORED -- placeholder
     // names/signatures inferred only from call position and argument count (all take just
     // `this`, matching a no-arg member function).
-    void unk_167D30(); ///< @unofficial fn_2_167D30, 0x1ec bytes, called first -- likely createModel.
+    void createModel(); ///< @unofficial fn_2_167D30, 0x1ec bytes, called first. Confirmed by
+                         ///< content (shares the ghost/sandpillar createModel() shape exactly),
+                         ///< not by position.
     void unk_167F20(); ///< @unofficial fn_2_167F20, 0x8c bytes -- a loop constructing 10
                          ///< WM_KILLERBULLET (0x276) children into an array at this+0x214.
     void unk_167C70(); ///< @unofficial fn_2_167C70, 0xa8 bytes -- not a vtable slot (confirmed),
@@ -65,12 +80,19 @@ public:
                             ///< vtable patched in), matching the same base-then-derived pattern
                             ///< already established for castle/WM_START's anim members.
     // Total size 0x23c (measured, classInit's `li r3, 0x23c` operand; also cross-checked via
-    // sizeof(m3d::anmChr_c) == 0x38, probed with a `char[sizeof(X)]` compile). NOT YET FULLY
-    // LAID OUT -- this is a first-round skeleton; only the members needed for
-    // classInit/ctor/dtor to match are declared. See this task's report for what's still open.
-    u8 mPad_1ec[0x1c]; ///< @unofficial offset 0x1ec (mAnmChr's end), size 0x1c -- placeholder
-                        ///< padding up to the flag byte at 0x208, NOT individually verified.
+    // sizeof(m3d::anmChr_c) == 0x38, probed with a `char[sizeof(X)]` compile).
+    float mMotion[3]; ///< @unofficial offset 0x1ec -- read by #unk_167F20 as the spawn position
+                        ///< for its constructed children. Name copied from WM_ITEM's own
+                        ///< identically-positioned/shaped member (see agent_item/MAPPING.md).
+    u8 mPad_1f8[0x10]; ///< @unofficial offset 0x1f8, size 0x10 -- placeholder padding up to the
+                        ///< flag byte at 0x208, NOT individually verified. (Was originally
+                        ///< mis-sized 0x1c, which pushed #mChildren to 0x220 instead of 0x214 --
+                        ///< caught by unk_167F20's `stw r3, 0x214(r31)` target instruction.)
     bool m_208; ///< @unofficial offset 0x208. Zeroed by the constructor.
-    u8 mPad_209[0x33]; ///< @unofficial offset 0x209, size 0x33 -- placeholder padding out to
-                        ///< sizeof == 0x23c. NOT individually verified.
+    u8 mPad_209[0xb]; ///< @unofficial offset 0x209, size 0xb -- placeholder padding, NOT
+                        ///< individually verified.
+    dWmActor_c *mChildren[10]; ///< @unofficial offset 0x214, size 0x28. Filled by #unk_167F20's
+                                 ///< loop constructing 10 WM_KILLERBULLET (profile 0x276)
+                                 ///< children, confirmed by the loop's `stw r3, 0x214(r31)` with
+                                 ///< r31 advancing by 4 each of its 10 iterations.
 };

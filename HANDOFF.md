@@ -9244,3 +9244,45 @@ The target has `li r6, 0x40`; the draft had `0x20`. `BUFFER_RESMATMISC` is
 `1<<5 = 0x20` and `BUFFER_RESANMVIS` is `1<<6 = 0x40` — the wrong flag from an
 adjacent enumerator. 80 -> 79. **Read constants off the target's immediates and
 check them against the enum, rather than picking the plausible-sounding name.**
+
+## Decode a `.data` object WITH relocations before calling any of it unidentified
+
+WM_KILLER's `createModel` was blocked on what its agent called an unidentified
+static occupying bytes `0x00`-`0x77` of its `.data` object. **Every byte was
+accounted for**, and most of it is automatic:
+
+```
++0x00  "F7C0"  +0x08 "W7C0"                    \
++0x10  {6,->F7C0} {6,0} {4,->W7C0}              >  FREE from #include <d_wm_lib.hpp>
++0x34  "Fk00"   +0x3c -> "Fk00"                /
++0x40  -> .text:classInit                      <- g_profile_*, from ACTOR_PROFILE
++0x44  02750277                                <- two u16 profile ids
++0x4c  "cobKillerShot"   +0x5c -> pointer to it
++0x60  "cobRotaryShot"   +0x70 -> pointer to it
++0x74  0
++0x78  "g3d/model.brres"   +0x88 "cobKiller"   +0x94 "cobRotary"   <- bare literals
+```
+
+**Only two named pointers actually need declaring.** The `sc_ForceList` block and
+the profile object are emitted with no source reference at all — now confirmed on
+five units.
+
+**And the pointer/literal distinction is per string, visible in the relocations:**
+the two `*Shot` strings each have a pointer to them, the other three do not. That
+is why a `static const char *const[2]` table made it *worse* — a table is one
+object with one base, but the target has **two independent pointers, each emitted
+directly after its own string.**
+
+**Dump the object with its relocations before concluding anything is unknown.**
+Three units today have had a "mystery" region dissolve entirely on one decode.
+
+## Two more findings from the same round
+
+- **`clrlslwi rD, rS, 24, 8` is a FUSED mask-and-reposition.** It decodes as a
+  field in the LOW byte, explicitly shifted `<< 8` at the call site — not a field
+  at bit 16. Getting that wrong gives the right value from the wrong place.
+- **A layout bug found from a single target store offset.** `mPad_1f8` declared
+  `[0x1c]` instead of `[0x10]` pushed a member 12 bytes late, caught from the
+  target's own `stw r3, 0x214(r31)` rather than from any diff. **A store's offset
+  in the target is a direct assertion about your layout** — check members against
+  target store offsets, not just against `classInit`'s size.
