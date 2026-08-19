@@ -27,12 +27,35 @@ daWmDancePakkun_c::daWmDancePakkun_c() :
 
 daWmDancePakkun_c::~daWmDancePakkun_c() {}
 
+namespace {
+    // lbl_2_data_445D0, 0x50 bytes. Layout below is measured (coordinator
+    // read it from the retail .data): a lone float at +0x0, six 8-byte
+    // {float,u16,u16} records at +0x4 (three {65.0,20,2}, then three
+    // {5.0,20,2}), three words of 0x00020000 at +0x34, then the {dx,dy,dz}
+    // position delta startStep() reads at +0x40 (whose real values are
+    // still unknown -- placeholders below).
+    struct BgmRecord_t { float a; u16 b; u16 c; };
+    struct StepTable_t {
+        float scale0;
+        BgmRecord_t records[6];
+        u32 words[3];
+        float dx, dy, dz, unused3; // @unofficial dx/dy/dz values still unknown
+    };
+    const StepTable_t sStepTable = {
+        1.8f,
+        { {65.0f,20,2}, {65.0f,20,2}, {65.0f,20,2}, {5.0f,20,2}, {5.0f,20,2}, {5.0f,20,2} },
+        { 0x00020000, 0x00020000, 0x00020000 },
+        2.0f, 3.0f, 4.0f, 0.0f
+    };
+}
+
 int daWmDancePakkun_c::create() {
-    // @unofficial -- mBgmSync's field init below is simplified. The real
-    // function indexes lbl_2_data_445D0 by a byte extracted from mParam
-    // (this+0x4) and derives mBgmSync->m_18/m_04/m_08 from two s16 fields at
-    // a computed offset within that table; not reproduced -- see MAPPING.md.
     mBgmSync = new dWmBgmSync_c();
+
+    const s16 *bgmEntry = (const s16 *)&sStepTable.words[mParam & 0xff];
+    mBgmSync->m_18 = bgmEntry;
+    mBgmSync->m_04 = bgmEntry[0] - 1;
+    mBgmSync->m_08 = bgmEntry[1];
 
     createModel();
 
@@ -44,13 +67,27 @@ int daWmDancePakkun_c::create() {
     return SUCCEEDED;
 }
 
+namespace {
+    // @unofficial -- lbl_2_rodata_87F8, 0xc bytes (one CW generalised-PTMF
+    // entry). Real target function is unknown; unusedStub is a placeholder
+    // so the table's SHAPE (one member-function-pointer, stride 0xc) and
+    // the __ptmf_scall call convention are reproduced, not its target.
+    const daWmDancePakkun_c::ProcFunc_t sProcTable[1] = {
+        &daWmDancePakkun_c::unusedStub
+    };
+}
+
 int daWmDancePakkun_c::execute() {
     mBgmSync->execute();
 
+    dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
+
     if (m_2d8 == 1.0f) { // @unofficial constant (lbl_2_rodata_87F4) unknown
         if (mBgmSync->m_0c) {
-            m_2d8 = mChrAnim[0].mFrameMax / mBgmSync->getAnmRate(mChrAnim[0].mFrameMax);
-            mChrAnim[0].setRate(mBgmSync->getAnmRate(mChrAnim[0].mFrameMax));
+            float frameMax = mChrAnim[0].mFrameMax;
+            m_2d8 = frameMax / mBgmSync->getAnmRate(frameMax);
+            float frameMax2 = mChrAnim[0].mFrameMax;
+            mChrAnim[0].setRate(mBgmSync->getAnmRate(frameMax2));
         }
     }
 
@@ -58,11 +95,16 @@ int daWmDancePakkun_c::execute() {
     // processCutsceneCommand(), so this resolves to dWmDemoActor_c's own
     // implementation through the this+0x60 secondary vtable slot (see the
     // block comment above the ctor).
-    processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
+    processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
 
-    // @unofficial -- the real function also does a member-function-pointer
-    // dispatch here, indexed by m_2bc*0xc into a table at lbl_2_rodata_87F8
-    // (`__ptmf_scall`); not reproduced.
+    // lbl_2_rodata_87F8 (0xc bytes -- ONE entry) is a table of
+    // pointer-to-member-functions, matching CW's generalised-PTMF stride
+    // (0xc = 3 words) and calling convention (__ptmf_scall). m_2bc is only
+    // ever reset to 0 by resetStep() in these 16 functions, so a 1-entry
+    // table is consistent with what's referenced. @unofficial the real
+    // target function is unknown -- unusedStub is a placeholder so the
+    // call SHAPE matches.
+    (this->*sProcTable[m_2bc])();
 
     unusedStub();
     tailHelper(); // mModel.play()
@@ -123,30 +165,6 @@ void daWmDancePakkun_c::calcModelFor(m3d::mdl_c *mdl) {
     mdl->setLocalMtx(&mMatrix);
     mdl->setScale(mScale);
     mdl->calc(false);
-}
-
-namespace {
-    // lbl_2_data_445D0, 0x50 bytes. Layout below is measured (coordinator
-    // read it from the retail .data): a lone float at +0x0, six 8-byte
-    // {float,u16,u16} records at +0x4 (three {65.0,20,2}, then three
-    // {5.0,20,2}), three words of 0x00020000 at +0x34, then the {dx,dy,dz}
-    // position delta startStep() reads at +0x40 (whose real values are
-    // still unknown -- placeholders below). create()'s mBgmSync setup
-    // indexes into the record region by (mParam & 0xFF); the exact indexing
-    // arithmetic is not reproduced yet (MAPPING.md Open question 4).
-    struct BgmRecord_t { float a; u16 b; u16 c; };
-    struct StepTable_t {
-        float scale0;
-        BgmRecord_t records[6];
-        u32 words[3];
-        float dx, dy, dz, unused3; // @unofficial dx/dy/dz values still unknown
-    };
-    const StepTable_t sStepTable = {
-        1.8f,
-        { {65.0f,20,2}, {65.0f,20,2}, {65.0f,20,2}, {5.0f,20,2}, {5.0f,20,2}, {5.0f,20,2} },
-        { 0x00020000, 0x00020000, 0x00020000 },
-        2.0f, 3.0f, 4.0f, 0.0f
-    };
 }
 
 void daWmDancePakkun_c::startStep() {

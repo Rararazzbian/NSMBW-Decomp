@@ -7221,3 +7221,64 @@ compiled `__sinit`; it is the one measurement that answers this question.**
 - `pickRevivedIndices` 40 -> 39 by widening `playerPoint`'s scope above the
   early return. Splitting the condition into a separate `bool reject = ...`
   statement gives **44, worse**.
+
+## dance_pakkun 8/16 -> 9/16: `execute()` MATCHES
+
+The unit's largest function closed on three fixes, each compiled and diffed
+rather than reasoned about:
+
+- `mBgmSync->execute()` lands on vtable slot `0xc`, confirmed by isolated-compiling
+  a one-line `b->execute()` test rather than counting slots by hand.
+- **The `__ptmf_scall` really was a pointer-to-member-function call.**
+  `lbl_2_rodata_87F8` is `0xc` bytes -- one CodeWarrior generalised PTMF entry, a
+  3-word stride. Declared `typedef void (daWmDancePakkun_c::*ProcFunc_t)();` with
+  a one-entry table, called as `(this->*sProcTable[m_2bc])()`. The index is only
+  ever reset to zero across all 16 functions, which is consistent with a
+  one-entry table, so the shape is probably right even though the target function
+  is still unknown and is flagged as a placeholder.
+- Two scheduling fixes: one value's two uses needed **two separately named
+  locals** (one per occurrence -- not shared, not absent) to match the target's
+  call-preserved-register shape; and a singleton pointer needed an explicit local
+  positioned as the SECOND statement specifically. Three positions were tried and
+  only one matched.
+
+### `create()`: formula correct, parked at 49 on three instructions
+
+The `mParam`-indexed lookup was derived exactly from the shift/mask sequence:
+`(mParam & 0xFF)` indexes the `u32` region at table `+0x34` with stride 4 -- **not**
+the six 8-byte `{float, u16, u16}` records, which this code never touches. Since
+all three `u32` entries are identically `0x00020000`, the formula yields the same
+result whichever is selected, which is a useful self-check that the indexing is
+right.
+
+The residual is three instructions: our `&sStepTable` address is computed early
+and hoisted above the `new dWmBgmSync_c()` call, forcing a saved register the
+target does not need -- the target computes it fresh and late, in volatile
+registers only. Three variants (named local, no local, differently-scoped local)
+all failed to suppress the hoist. **All three varied the LOCAL. The untried axis
+is statement ORDER relative to the allocation** -- if the target computes the
+address late, the source likely reads the table after the `new`, not before.
+
+**Note the count went 38 -> 49 and this was NOT a regression.** The old 38 was
+measured against a mislabelled target; 49 is the first fair comparison. Second
+time this unit has been bitten by `verify_anon`'s nearest-neighbour labels.
+
+### Why `createModel`'s register anchoring should be solvable
+
+Its 76 differing are entirely register allocation -- every call and argument
+already matches. The target holds five values live via `_savegpr_27`; ours needs
+three, because our string references each pull a fresh anchor. The reason the
+target can share one is visible in the retail `.data` (unit base `0x44590`):
+
+```
+0x44628  (+0x98)  pointer, relocated to "cs_wait"
+0x4462c  (+0x9c)  "g3d/pakkun.brres"    (17 bytes with terminator)
+0x44640  (+0xb0)  "pakkun"              (7 bytes)
+```
+
+**All three lie within `0x18` bytes of each other**, so one anchor at `+0x98`
+reaches all of them by displacement. The sharing is a consequence of ADJACENCY in
+the emitted data, not of an addressing trick -- so the fix is a source shape that
+emits a pointer and two literals contiguously in that order. Inline literals are
+placed where the compiler chooses; named `static const char[]` arrays are placed
+at their declaration point, which is controllable.

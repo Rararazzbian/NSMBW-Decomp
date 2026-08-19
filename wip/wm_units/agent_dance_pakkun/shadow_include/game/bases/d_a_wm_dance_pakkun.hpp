@@ -34,6 +34,8 @@ public:
     void unusedStub();                  ///< @unofficial fn_2_1621B0 (empty)
     void tailHelper();                  ///< @unofficial fn_2_161F10
 
+    typedef void (daWmDancePakkun_c::*ProcFunc_t)(); ///< @unofficial -- lbl_2_rodata_87F8's element type
+
     int m_184;   ///< @unofficial, ctor sets -1
     int m_188;   ///< @unofficial, left at operator-new's zero-init
     dHeapAllocator_c mAllocator;

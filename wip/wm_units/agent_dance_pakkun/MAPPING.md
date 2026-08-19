@@ -705,3 +705,141 @@ startStep() 13 | resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
   gap and I don't have a source-level explanation for it yet.
 - `create()`'s exact table-indexing arithmetic: not derived, despite now
   having the real table values to work from.
+
+
+---
+
+## Update after coordinator's fourth round: execute() MATCHES; 8/16 -> 9/16
+
+Both targets were "blocked on +0x60 with no real attempt yet" per the
+coordinator -- true, and fixing that unblocked real progress on one of them.
+
+### execute() -- MATCH (was 64 differing)
+
+Started from `daWmGhost_c::execute()`'s exact structure as instructed.
+Three source-level fixes got it there, each measured via compile-and-diff:
+
+1. **`mBgmSync->execute()` is an ordinary virtual call** -- isolated-compiled
+   `void test(dWmBgmSync_c *b) { b->execute(); }` and confirmed it lands on
+   vtable slot `0xc`, exactly matching the target's `lwz r12,0xc(r12)`. No
+   guessing needed; the header is already right and the compiler just needed
+   asking.
+2. **The `__ptmf_scall` dispatch is a real pointer-to-member-function
+   call.** `lbl_2_rodata_87F8` is `0xc` bytes -- one CW generalised-PTMF
+   entry (function/vtable-slot word + delta + flags, the standard 3-word
+   stride). Declared `typedef void (daWmDancePakkun_c::*ProcFunc_t)();` and
+   a 1-entry `static const ProcFunc_t sProcTable[1]`, called as
+   `(this->*sProcTable[m_2bc])()`. `m_2bc` is only ever reset to 0 by
+   `resetStep()` across these 16 functions, consistent with a 1-entry table.
+   The real target function is still unknown -- pointed the one entry at
+   `unusedStub` as a placeholder so the *shape* (table, stride, call
+   convention) matches; this is flagged `@unofficial` in the source.
+3. **Register/scheduling fixes, each verified by compiling both variants
+   and diffing (the project's core method, applied literally):**
+   - `mChrAnim[0].mFrameMax` used twice (as a division numerator and as a
+     call argument) needed to be read into an explicit local
+     (`float frameMax = mChrAnim[0].mFrameMax;`) for the FIRST occurrence
+     only, matching the target's `f31`-preserved-across-a-call shape,
+     while the SECOND occurrence (a different statement, feeding
+     `setRate`) needed a *second*, separately-named local
+     (`float frameMax2 = ...`) to force a fresh memory read there instead
+     of reusing the first. Using one shared local for both, or neither,
+     both diffed worse.
+   - `dCsSeqMng_c::ms_instance` needed to be read into an explicit local
+     (`dCsSeqMng_c *csSeqMng = ...`) positioned as the SECOND statement in
+     the function (right after `mBgmSync->execute();`, not before it and
+     not left as a repeated `dCsSeqMng_c::ms_instance->` in the call
+     expression) to get the compiler to schedule its load at the exact
+     point the target does. Tried three positions (top of function, right
+     after `mBgmSync->execute()`, and no local at all/inline) -- only the
+     middle one matched.
+
+Final residual before this round's last fix was 2 raw-diff lines (an `lfs`
+now correctly load fully removed by the frameMax2 split above) -- now 0.
+`verify_anon` reports `MATCH`.
+
+### create() -- 49 differing (was 38, but that number was against a
+### misaligned comparison; this is now a fair, same-size... almost)
+
+Derived the `mParam`-indexed table lookup precisely from the disassembly's
+shift/mask sequence, per instruction 2:
+- `clrlslwi r0,r0,24,2` = `(mParam & 0xFF) << 2` -- extract the low byte of
+  `fBase_c::mParam`, multiply by 4 (a stride-4, i.e. `u32`-element, index,
+  not the record stride of 8 -- the six `{float,u16,u16}` records at `+0x4`
+  are NOT what's indexed here).
+- `table_base + index*4`, `+0x34` -- lands exactly on
+  `sStepTable.words[index]` in my now-real-valued struct (the `0x34` offset
+  is precisely where the three `0x00020000` words start, confirmed against
+  the coordinator's measured layout).
+- `mBgmSync->m_18 = &that_word` (as `const s16*`); `m_04 = word_as_s16[0] -
+  1`; `m_08 = word_as_s16[1]`.
+
+Implemented as:
+```cpp
+const s16 *bgmEntry = (const s16 *)&sStepTable.words[mParam & 0xff];
+mBgmSync->m_18 = bgmEntry;
+mBgmSync->m_04 = bgmEntry[0] - 1;
+mBgmSync->m_08 = bgmEntry[1];
+```
+This gets every FIELD and the INDEXING FORMULA right (confirmed: since all
+three `words[]` entries are identically `0x00020000`, `m_04`/`m_08` come out
+`1`/`0` regardless of which of 0/1/2 `mParam & 0xff` selects -- consistent
+with `mParam`'s low byte plausibly being a 3-valued "which piranha /
+world" selector that happens not to affect BGM sync in practice). The
+six 8-byte records at `+0x4` (`{65,20,2}`x3, `{5,20,2}`x3) are NOT touched
+by this indexing at all -- they must be read some other way, possibly by
+`dWmBgmSync_c::execute()`/`getAnmRate()` themselves (already-landed,
+outside this unit) via negative offsets from `m_18`, which would explain
+why `m_18` lands exactly at the boundary between the two regions. Did not
+chase that further.
+
+**But: this costs an extra saved register the target doesn't use.** Target
+computes the table's address (`lis r4,lbl_2_data_445D0@ha`) freshly, late,
+right where it's needed, using only volatile `r4`/`r0`/`r5`, and needs only
+ONE saved register for the whole function (`r31` = `this`). My version
+computes `&sStepTable` EARLY -- before even the `new dWmBgmSync_c()` call --
+and keeps it alive across that call, forcing a second saved register (`r30`
+for `this`, `r31` for the table address) and costing 3 extra
+prologue/epilogue instructions (60 vs. 57 total). Tried three variants to
+suppress the early hoist:
+- Named local (`const s16 *bgmEntry = ...`) computed as its own statement
+  right after `mBgmSync->m_18 = ...` -- this is the CURRENT version, 60
+  instructions.
+- No local at all, three separate `mBgmSync->m_18[N]`-style expressions
+  (recomputing `&sStepTable.words[...]` three times textually) -- WORSE,
+  62 instructions (more redundant address recomputation, not less).
+- A local `dWmBgmSync_c *bgmSync` alongside the table local, assigning to
+  `mBgmSync` last -- no change (still 60).
+
+None suppressed the hoist. My reading: since `&sStepTable.words[...]` has
+no data dependency on the `new` call's result, `-O4` is free to schedule it
+before that call for latency-hiding, and my source doesn't currently give
+the compiler a reason not to -- while whatever the real source's exact
+shape is evidently does. Didn't find that shape in the time available. This
+reads as adjacent to (but not identical to) the "MWCC scheduling isn't
+purely source-order-driven" class of residual from earlier rounds, except
+here it's costing real instruction COUNT (a register-save/restore pair),
+not just reordering -- so it may be more addressable than the pure
+permutation cases, just not found yet.
+
+### Table
+
+```
+classInit MATCH | ctor 4 | dtor 21 | create() ~49 (size 60 vs 57, real
+indexing formula correct, extra saved register) | execute() MATCH
+draw() MATCH | doDelete() MATCH | createModel() 76 (untouched this round)
+tailHelper() MATCH | calcModelFor() 97 (left alone) | startStep() 13
+resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+sinit pair 50/MATCH (unchanged, knock-on effect of create()'s size)
+
+9/16 byte-identical
+```
+
+### Negatives this round
+
+- Three `create()` variants tried to avoid the early `&sStepTable` hoist,
+  all failed to fix it (two identical, one worse). Root mechanism not
+  identified.
+- Did not attempt `createModel()` or `__sinit` this round (execute() and
+  create() were the assigned targets, and create() consumed the remaining
+  time on the register issue rather than closing it).
