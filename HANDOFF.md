@@ -9586,3 +9586,46 @@ it broke the shape.
 
 **Track the frame size and saved-register count, not the differing count** — those
 move first, and their direction tells you which lever you need.
+
+## A failed variant that PROVES the structure beats one that fails neutrally
+
+WM_KILLERBULLET's `execute()` resisted five variants. The most valuable was the
+one that failed worst: replacing the pointer-to-member table dispatch with an
+explicit `switch` on the state index went to **105 differing**, which
+**positively confirms the target really is table-dispatched** rather than merely
+being consistent with it.
+
+**When a residual is stubborn, deliberately try the structurally-wrong
+alternative.** If it gets much worse, you have converted an assumption into a
+measurement.
+
+Frame shape remains `-0x20`/5 registers against the target's `-0x10`/2, across
+re-reading the singleton, dropping `const` on the table, moving the table to an
+in-class `static const`, and the `switch`. Wall on those axes.
+
+## The shared parameter table, and the `R_<module>_<section>_` convention for `.data`
+
+`lbl_2_data_45428` is `0x180` bytes of mixed floats and packed shorts — a shared
+game-parameter block with 50 referrers across the module, sitting inside
+WM_KILLERBULLET's address neighbourhood but belonging to nobody in it:
+
+```
++0x00 2000.0  +0x04 2.5   +0x08 60.0  +0x0c 60.0
++0x10 0.8     +0x14 0.7   +0x18 200   +0x1c {400,10}
++0x20 {3000,1050}  +0x24 0x100  +0x28 0.5  +0x2c {20,2}
++0x30 200.0   +0x34 -100.0  +0x38 0.0  +0x3c 20.0  ...
+```
+
+Reference it, never duplicate it. **Section 5 is `.data`:**
+
+```cpp
+extern "C" const float R_2_5_45428[];   // @unofficial, shared parameter table
+```
+
+The `R_<module>_<section>_<offset>` convention now has confirmed uses in **three
+sections**: `.text` (section 1), `.bss` (section 6), and `.data` (section 5).
+Section numbers come from `relfile.py`'s own table.
+
+**A table sitting near your unit is not necessarily yours** — run the ownership
+check, and if it has referrers from outside your `.text` claim, declare it
+`extern` rather than defining it.

@@ -122,6 +122,7 @@ void daWmKillerBullet_c::state4() {
 void daWmKillerBullet_c::endEffectAndResetState() { m_1c0 = 2; }
 void daWmKillerBullet_c::endStateOrTransition() { m_1c0 = 3; }
 void daWmKillerBullet_c::unk_1694A0() { m_1c0 = 4; }
+bool daWmKillerBullet_c::unk_169530() { m_1c0 = 14; return false; }
 void *daWmKillerBullet_c::unk_169510() { m_1c0 = 5; return nullptr; }
 void daWmKillerBullet_c::unk_1691A0() { m_1c0 = 6; }
 void daWmKillerBullet_c::unk_1695E0() { m_1c0 = 7; }
@@ -132,6 +133,26 @@ void daWmKillerBullet_c::unk_168D50() { m_1c0 = 10; }
 // state1/state2/state3 (table entries 1/2/3) -- fully decoded from the target, NOT YET
 // AUTHORED this round (helper bodies above are still bare stubs, so authoring these three now
 // would not verify cleanly). Left as distinct placeholders.
-void daWmKillerBullet_c::state1() { m_1c0 = 11; }
+// state1 (table entry 1, fn_2_168FF0). Confirmed content: if #checkParentFlag() is false,
+// clears #m_204 and calls #endEffectAndResetState(); otherwise, a not-yet-named bool check
+// (fn_2_169530) may set #m_1f8, and if #m_1f8 is set, either decrements #m_1b8 (a cooldown-
+// shaped counter) or, once it reaches zero, calls #unk_1691A0().
+void daWmKillerBullet_c::state1() {
+    if (!checkParentFlag()) {
+        m_204 = false;
+        endEffectAndResetState();
+    } else {
+        if (unk_169530()) {
+            m_1f8 = true;
+        }
+        if (m_1f8) {
+            if (m_1b8 > 0) {
+                m_1b8 -= 1;
+            } else {
+                unk_1691A0();
+            }
+        }
+    }
+}
 void daWmKillerBullet_c::state2() { m_1c0 = 12; }
 void daWmKillerBullet_c::state3() { m_1c0 = 13; }

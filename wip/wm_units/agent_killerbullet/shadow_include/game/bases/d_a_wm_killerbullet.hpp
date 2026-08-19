@@ -53,6 +53,7 @@ public:
                               ///< cross-unit-confirmed call, not guessed.
     void endEffectAndResetState(); ///< @unofficial fn_2_168E60.
     void endStateOrTransition(); ///< @unofficial fn_2_168F50.
+    bool unk_169530(); ///< @unofficial fn_2_169530 -- called from #state1.
     void unk_1694A0(); ///< @unofficial fn_2_1694A0.
     void *unk_169510(); ///< @unofficial fn_2_169510 -- returns a pointer used as a float source.
     void unk_1691A0(); ///< @unofficial fn_2_1691A0.
