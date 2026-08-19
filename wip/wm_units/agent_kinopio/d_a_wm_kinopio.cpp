@@ -13,21 +13,21 @@ extern "C" int fn_800FCB30(int);
 // @unofficial KNOWN ISSUE, not resolved: the target's .ctors section has
 // exactly 1 entry for this unit; the real source therefore does NOT
 // include d_wm_lib.hpp (that header's own `static ForceInCourseList_t
-// sc_ForceList[] = {...}` carries a side-effecting dynamic initializer,
-// so including it would add a second .ctors entry). Tried declaring only
-// what's used instead of including the header -- `namespace dWmLib { bool
-// IsSingleEntry(); struct ForceInCourseList_t { ...same 7 fields... }; }`,
-// no include -- three variants (plain, with an explicit empty `~ForceIn
-// CourseList_t(){}`, struct at namespace scope vs nested): ALL of them
-// make MWCC stop emitting `__register_global_object` for `sForceList`
-// entirely -- it just does a bare unguarded store, no atexit/array-dtor
-// registration at all, unlike the target (and unlike this same object
-// when d_wm_lib.hpp IS included). The trigger for that codegen difference
-// was not identified this round -- it is not simply "does the compiler
-// see a non-trivial destructor" (mVec3_c's IS user-declared, present
-// either way). Reverted to the real include, which at least reproduces
-// fn_2_16D270 (the generated __arraydtor callback) exactly; fn_2_16D1E0
-// itself still carries the extra sc_ForceList work on top of its own.
+// sc_ForceList[] = {...}` carries a side-effecting dynamic initializer --
+// it initialises its mVec3_c field via a CONSTRUCTOR CALL, not brace
+// aggregate-init, so including it would add a second real .ctors entry).
+// Retried declaring only what's used (`namespace dWmLib { bool
+// IsSingleEntry(); struct ForceInCourseList_t {...}; }`, no include) with
+// the vector field ALSO constructor-called (`mVec3_c(2160.0f, -30.0f,
+// -478.0f)`, matching sc_ForceList's own shape exactly, not brace-init) --
+// still no `__register_global_object`/`fn_2_16D270` generated; identical
+// result to every earlier attempt. So the brace-vs-constructor distinction
+// was not the discriminator for this specific include-vs-no-include gap
+// (both this unit's variants already used a constructor call throughout).
+// Whatever the real trigger is remains unidentified. Parked per
+// instruction: including the header yields one MATCH
+// (fn_2_16D270) and costs one spurious extra .ctors entry on fn_2_16D1E0,
+// the better of the two imperfect states measured.
 
 ACTOR_PROFILE(WM_KINOPIO, daWmKinopio_c, 0);
 
@@ -58,10 +58,11 @@ namespace {
     // lands the same way (matches the "consolidate constants" lesson --
     // scattered anonymous literals pool in source-usage order, not target
     // memory order).
-    static const float k8B48 = -500.0f;
-    static const float k8B4C = 5.0f;
-    static const float k8B50_2 = 0.5f;
-    static const float k8B44 = 0.800000011920929f;
+    // @unofficial lbl_2_rodata_8B10+0x40 -- the one constant shared
+    // between calcModel() and resetPosition(); named so the compiler
+    // pools it once instead of twice. The other three (+0x38/0x3c/0x44)
+    // are each used by only one function and are left as plain literals.
+    static const float k8B50_shared = 0.5f;
 }
 
 daWmKinopio_c::daWmKinopio_c() {}
@@ -119,15 +120,15 @@ void daWmKinopio_c::createModel() {
 }
 
 void daWmKinopio_c::calcModel() {
-    CalcShadow(k8B50_2, k8B44);
+    CalcShadow(k8B50_shared, 0.800000011920929f);
     mpMdlMng->calc(mPos, mAngle, mScale);
     mpMdlMng->play();
 }
 
 void daWmKinopio_c::resetPosition() {
     mPos = mVec3_c::Zero;
-    mPos.x = k8B48;
-    mpMdlMng->mpMdl->setAnm(4, k8B4C, k8B4C, k8B50_2);
+    mPos.x = -500.0f;
+    mpMdlMng->mpMdl->setAnm(4, 5.0f, 5.0f, k8B50_shared);
     m_1b4 = 0;
     resetStep();
 }

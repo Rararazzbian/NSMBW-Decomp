@@ -10049,3 +10049,36 @@ The target needs only two of them that early. **This resolves as more functions
 are authored and must not be "fixed" by reordering what is already written.**
 Another unit today carried an identical warning right up to the moment it linked
 cleanly.
+
+## The constructor-call theory does NOT explain WM_KINOPIO's `.ctors` gap
+
+I proposed that a hand-mirrored `sc_ForceList` failed to emit
+`__register_global_object` because its vector field was brace-initialised rather
+than constructed. **The agent checked its existing mirror, found it already used
+`mVec3_c(2160.0f, -30.0f, -478.0f)` — a genuine constructor call — retried
+explicitly, and got the identical result: no registration, no callback.**
+
+So the brace-versus-constructor distinction, **whatever it correctly explains on
+castle**, is not the discriminator here. Something else about including the real
+header versus mirroring it drives the registration, and it is not yet identified.
+
+**Verifying that a lead's premise is already satisfied, rather than assuming an
+earlier attempt got it wrong, is the right response to a theory from above.**
+Two agents have now falsified one of my hypotheses this way today.
+
+Two further clean negatives on the same unit: named-constant positioning for a
+pool rotation, tried with all four constants named and again with only the
+genuinely shared one — **byte-identical both times**; and binding a float result
+to an explicit local to force a non-volatile-register-across-call shape — the
+instruction sequence was unchanged.
+
+## Prefer an UNWRITTEN function over a fourth variant on a known wall
+
+WM_KINOPIO stands at 13/19 with three characterised walls totalling 69
+differing instructions — and **two functions that have never been attempted at
+all**, plus the session's largest single function (`0x834`) deferred four times.
+
+**A round spent on a fourth variant against a measured wall is worth less than a
+round spent on a function nobody has read.** The walls are recorded; they will
+still be there. This is the same allocation logic that produced six landings
+today while near-misses stayed near-misses.

@@ -457,3 +457,67 @@ prologue our current phrasing does not produce) has not been matched.
 | `fn_2_16C810` stepCutscene70 (0x834) | — | left alone, per instruction |
 
 **13/19 byte-identical.**
+
+## Round 4: both coordinator-suggested mechanisms retried, both negative
+
+**Score unchanged at 13/19.** All three suggested levers were retried
+carefully rather than assumed; none reproduced this round's residuals.
+
+### `.ctors` mirror retried with the constructor-call theory -- ruled out for this unit
+
+The coordinator's hypothesis: `sc_ForceList`'s `mVec3_c` field is
+initialised via a constructor call (`mVec3_c(2160.0f, -30.0f, -478.0f)`),
+not brace-init, and that dynamic initialisation is what forces
+`__register_global_object`. Checked: **this unit's `sForceList` mirror
+already used the constructor-call form in every earlier attempt** (visible
+in the round-3 diff transcripts). Retried once more explicitly to be sure
+-- identical result: no `__register_global_object`, no `fn_2_16D270`, byte
+-for-byte the same broken `__sinit` as every prior no-include variant. So
+brace-vs-constructor-init is not the discriminator for *this* unit's
+include-vs-no-include gap specifically, even though it may be the right
+explanation for the castle case that prompted the theory. Reverted to
+including `d_wm_lib.hpp` (13/19's actual state) per the coordinator's own
+fallback instruction.
+
+### `resetPosition`'s pooling order: named-constant positioning retried, twice, no change
+
+Two variants of "pool the constants as named objects instead of anonymous
+literals" were tried:
+1. All four constants as separate named `static const float`s (this was
+   already the round-2/3 state).
+2. Only the one truly-shared constant (`0x40`/`0.5f`, used by both
+   `calcModel()` and `resetPosition()`) named; the other three (each used
+   by only one function) left as plain literals.
+
+**Both produce byte-identical output** to each other and to the
+already-measured 3-differing state: `lfs f1` lands at `0x44` (want
+`0x3c`), `lfs f0` at `0x40` (want `0x38`), `lfs f3` at `0x38` (want
+`0x40`) -- the same three-way rotation every time, regardless of which
+constants are named or how many. This means declaration-point pooling
+either does not apply the way it did for `course`/`antlion_mng`, or the
+right positioning was not found -- isolating the shared constant alone
+did not surface it. Kept the single-shared-constant version (marginally
+cleaner, functionally identical) rather than reverting.
+
+### `checkAnmLoop`'s `f31`-across-a-call shape: one attempt, no change
+
+Bound `mpMdlMng->getLastFrame()`'s result to an explicit local `float
+lastFrame` before the `==` comparison, to test whether forcing early
+evaluation would persuade the compiler to hold it in a non-volatile
+register across the `getFrame()` call the way the target does (`stfd
+f31`/`psq_st f31` in the prologue). **No change whatsoever** -- identical
+instruction sequence, same missing prologue shape. Reverted to the
+simpler expression form (no local) since it made no measured difference
+either way.
+
+## Final state, this session: 13/19
+
+No change in score from round 3. Every negative this round is a genuine,
+specific, single-variable retry of a named coordinator hypothesis, not a
+repeat of an already-ruled-out shape -- and each produced a clean,
+reproducible non-result rather than an ambiguous one. Remaining open
+functions: `fn_2_16D1E0` (32 differing, `.ctors` double-init), `fn_2_16D050`
+checkAnmLoop (34 differing, register-preservation shape), `fn_2_16C530`
+resetPosition (6 raw diff lines / 3 counted, rodata rotation),
+`fn_2_16C5E0` processCutsceneCommand and `fn_2_16D100` startJump (not
+attempted), `fn_2_16C810` stepCutscene70 (0x834, left alone throughout).
