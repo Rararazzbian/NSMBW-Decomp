@@ -8916,3 +8916,45 @@ never demonstrates it knows the symbol's placement, so it does not own it.
 
 **That is the test applied properly: not "is there a reference" but "is there a
 COMPILE-TIME DISPLACEMENT off a base this TU establishes".**
+
+## The duplicate-`beq` destructor wall: independently confirmed on a SECOND unit
+
+WM_BOARD's dtor and anchor's dtor show the identical defect, diagnosed separately:
+
+```
+cmpwi r30, 0x0
+beq .L_xxxx      <- target
+beq .L_xxxx      <- target, redundant, same label
+                 <- draft emits only one
+```
+
+Both agents read the raw `.fn`-to-`.endfn` blocks in program order and found the
+two versions otherwise **identical** — same registers, same calls, same branch
+structure. Both attribute it to the base class's own trivial destructor being
+inlined with its call-boundary null-check preserved, which is outside the derived
+class's source entirely.
+
+**Two independent confirmations. Treat it as a wall and do not spend rounds on
+it.** A derived class cannot reach a construct emitted by inlining its base's
+destructor.
+
+Note both agents also correctly refused to read the resulting count as a defect
+list: **21 differing with a one-instruction size gap is one defect.** That rule
+has now applied to four functions today.
+
+## A hand-rolled constant that duplicates a shared-header object breaks the pool
+
+WM_BOARD's `__sinit` matches in SIZE (33/33) but differs in pool composition. The
+target has `0x18` bytes of `ForceInCourseList_t`-shaped fields between the
+clip-sphere radius and the `mNodePos` floats; the draft emits a hand-declared
+`static const short sBgmSyncData[2] = {4, 0};` — **a different, smaller object in
+the wrong position** — instead of participating in the shared template.
+
+The fix is to **source the values from `dWmLib::sc_ForceList[0]` itself** rather
+than hand-declaring a local constant. Same class as kinoballoon's dead pool word:
+a pool that is the right size but the wrong composition.
+
+**Third confirmation today** that `sc_ForceList` and `c_StartPointKinokoHouseID`
+are instantiated into every TU that includes `d_wm_lib.hpp`, with no source
+reference needed. **Before hand-declaring any constant, check whether a shared
+header already provides an object with those bytes.**
