@@ -13,6 +13,28 @@
 // MAPPING.md for the full derivation. Declared in an anonymous namespace,
 // in the exact order the target's .data lays them out, since MWCC preserves
 // declaration order for static objects within one TU.
+ACTOR_PROFILE(WM_ITEM, daWmItem_c, 0);
+
+// @unofficial NEGATIVE, kept for the record: createModel()'s target
+// addresses every one of the per-item-type tables below as
+// `g_profile_WM_ITEM + literal offset` through ONE dedicated register
+// (r30), not through each table's own symbol -- proving the real source
+// reaches them via pointer arithmetic from the profile object itself, not
+// via separately-named globals like sItemArcNames[] below. Rewriting the
+// accesses through WM_ITEM_TABLE/WM_ITEM_STR macros below DID make the
+// compiler anchor r30 = &g_profile_WM_ITEM (measured: same `lis
+// r29,g_profile_WM_ITEM@ha` shape target uses), confirming the addressing
+// axis -- but it established that anchor LAZILY, at the first use partway
+// through the function, where the target hoists BOTH its persistent
+// anchors (profile AND lbl_2_rodata_8988) to the very top, ahead of
+// `createFrmHeap`, and needs 5 saved registers (`_savegpr_27`) where the
+// macro'd draft only needed 4. Net effect measured: 116 -> 165 differing,
+// i.e. worse, so this unit's createModel() keeps the named-table form
+// below. The macros are kept unused rather than deleted, since they may
+// be the right fix once the eager-hoisting trigger is understood.
+#define WM_ITEM_TABLE(off) (*(const char *const (*)[7])((const u8 *)&g_profile_WM_ITEM + (off)))
+#define WM_ITEM_STR(off) ((const char *)((const u8 *)&g_profile_WM_ITEM + (off)))
+
 namespace {
     // @unofficial lbl_2_rodata_8988 (6 floats) and lbl_2_rodata_89A0 (6 more)
     // read directly from original/d_basesNP.rel .rodata (file offset
@@ -98,7 +120,6 @@ namespace {
     static const char *const sCycleAnmNames[2] = { s_stokWait_b, s_stokWait2 };
 }
 
-ACTOR_PROFILE(WM_ITEM, daWmItem_c, 0);
 
 daWmItem_c::daWmItem_c() {
     m_208 = 0;

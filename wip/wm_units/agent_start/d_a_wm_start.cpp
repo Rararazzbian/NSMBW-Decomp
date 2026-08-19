@@ -303,14 +303,16 @@ void daWmStart_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFram
             }
             break;
         case 0x61:
-            if (mSecondChild != nullptr) {
-                *(u8 *) ((u8 *) mSecondChild + 0x124) = false;
-                *(u8 *) ((u8 *) this + 0x124) = true;
+            if (mSecondChild != nullptr && m_1ec) {
+                *(u8 *) ((u8 *) this + 0x124) = false;
+                bool flag = true;
+                *(u8 *) ((u8 *) mSecondChild + 0x124) = flag;
 
                 dWmEffectManager_c *effMgr = dWmEffectManager_c::m_pInstance;
                 playEffect__18dWmEffectManager_cFiPC7mVec3_cPC7mAng3_cPC7mVec3_c(
                     effMgr, 0x21, (const mVec3_c *) ((u8 *) mSecondChild + 0xac), nullptr, nullptr);
 
+                *(u8 *) ((u8 *) mChildActor + 0x124) = flag;
                 mUnk1fc = 0;
             }
             break;
@@ -336,9 +338,7 @@ void daWmStart_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFram
             }
             break;
         }
-        return;
-    }
-
+    } else {
     switch (cutsceneCommandId) {
     case 0x60:
         if (*(u32 *) ((u8 *) camera + 0x5f4) != 0) {
@@ -398,5 +398,6 @@ void daWmStart_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFram
     default:
         *(bool *) ((u8 *) this + 0x139) = true;
         break;
+    }
     }
 }

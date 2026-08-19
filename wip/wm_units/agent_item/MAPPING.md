@@ -229,3 +229,129 @@ certainty rather than guessed from the `check_bounds.py` heuristic alone.
 Scratch scripts: `dump_relocs.py`, `dump_text_refs.py`, `dump_ctors.py`,
 `dump_strings.py`, `dump_prefix.py`, `dump_more.py` (all in this directory).
 `probe.cpp`/`probe_build.py` hold the layout-verification compile.
+
+## Round 2: testing the "single named array anchors one register" hypothesis
+
+Coordinator's hypothesis: since separate named `.rodata`/`.data` objects
+each get their own `lis`/`addi` pair, consolidating a unit's constants into
+ONE object should force every access to share one base register by
+construction, the way it already did for dance_pakkun's string pooling.
+Tested directly on this unit's three still-open functions. Result: **the
+hypothesis is confirmed for multi-use access within one function, not yet
+sufficient for single-use access at a non-zero offset, and not sufficient
+by itself when the shared object is a different one (profile-relative
+tables) that also needs eager hoisting.**
+
+### `.rodata` layout (the one array, target order, values read directly from
+`original/d_basesNP.rel` at file offset `0x1c6600 + 0x8988`)
+
+```cpp
+static const float sConstTable[12] = {
+    -32.0f, 200.0f, 3.2f, 0.65f, 0.0f, 1000.0f,   // lbl_2_rodata_8988, 0x8988-0x89a0
+    1.0f, 0.65f, 2.0f, 3.2f, -32.0f, 200.0f,      // lbl_2_rodata_89A0, 0x89a0-0x89b8
+};
+```
+dtk splits this into two symbols; the target's own code (`create()`'s
+item-type-5 branch reads `lbl_2_rodata_8988+0x1c`, past the first object's
+declared 0x18-byte size, through the same base register as the first 6
+floats) proves the real source has one 12-float table. This single
+declaration is what let `create()` reach **MATCH** this round (see table
+above) -- confirmed working.
+
+### `calcModel()` -- hypothesis CONFIRMED for the rodata axis
+
+Before consolidation (two separate `sRodata8988`/`sRodata89A0`-style named
+objects, or `sConstTable` accessed without a local alias): every one of the
+4 constant reads (`k[9]`, `k[7]`, `k[10]`, `k[11]`) re-established its own
+`lis`/`addi` pair. After declaring `const float *k = sConstTable;` once at
+the top and indexing through `k`: **all 4 reads now share ONE `lis
+r31,sConstTable@ha; addi r31,r31,sConstTable@l` pair at the top of the
+function**, exactly matching the target's single `lis
+r31,lbl_2_rodata_8988@ha` anchor reused via `0x24(r31)`/`0x1c(r31)`/
+`0x28(r31)`/`0x2c(r31)`. Differing count dropped 68 -> 60 from this change
+alone. Register signature: target and draft both save `r30`/`r31` via
+individual `stw` (not `_savegpr_NN` -- only 2 non-volatiles needed), and
+both now hit that shape. The remaining 60-instruction gap is a *different*
+axis entirely -- stack-slot reuse/frame size (target's frame is `0x30`,
+draft's is `0x20`; target stages a `mVec3_c`-shaped temporary through
+`0x8`/`0xc`/`0x10` that the draft's version doesn't allocate separately,
+because the draft's own local `mVec3_c local` has a non-overlapping
+lifetime and gets its stack slots coalesced with the earlier scratch) --
+not addressed this round.
+
+### `createModel()` -- hypothesis PARTIALLY confirmed, net negative this round
+
+The still-open 116-differing gap here is not about `sConstTable` (already
+single-anchored, matching `calcModel()`'s fix) -- it is about the EIGHT
+per-item-type tables/strings at `g_profile_WM_ITEM+0x68` through `+0x158`.
+Measured directly: the target reaches every one of them through **one
+dedicated register, `r30 = &g_profile_WM_ITEM`**, established once near the
+top of the function (`lis r30,g_profile_WM_ITEM@ha` immediately after `lis
+r31,lbl_2_rodata_8988@ha`, both before the first real work), then reused via
+plain `addi rX,r30,offset`. That is the profile-relative-pointer-arithmetic
+shape the coordinator's hypothesis predicts -- proven by rewriting the eight
+accesses through `WM_ITEM_TABLE(off)`/`WM_ITEM_STR(off)` macros
+(`(const u8*)&g_profile_WM_ITEM + off`, in `d_a_wm_item.cpp`, currently
+unused but left in place) instead of the separate named globals
+(`sItemArcNames` etc.) they replaced. That rewrite DID make the compiler
+establish `r30 = &g_profile_WM_ITEM` -- confirming the addressing-mode part
+of the hypothesis -- but LAZILY, at the first actual use (after `memset`,
+mid-function), not hoisted to the top the way the target's `r30`/`r31` both
+are. The target hoists BOTH persistent anchors before `createFrmHeap` is
+even called and needs 5 saved registers end to end (`_savegpr_27`); the
+macro'd draft only reached 4 non-volatiles, one short of that threshold, and
+scored **worse** for it: 116 -> 165 differing, so it was reverted to the
+named-global form (worse addressing mode, but no lazy-establishment
+penalty) for this round's reported 8/12. **Register-signature finding**:
+`_savegpr_27`/`_restgpr_27` (5 registers, r27-r31) appears in the target and
+has never appeared in any draft variant tried this round -- that helper-call
+threshold, not just the differing count, is the signal to watch. Getting
+there likely needs the profile-relative addressing AND something that
+forces eager hoisting (an explicit reference near the top of the function,
+or possibly reordering which local gets its address taken first) -- neither
+alone was enough.
+
+### `cycleAnm()` -- hypothesis produced NO CHANGE (negative, single non-zero-offset access)
+
+`cycleAnm()`'s only `sConstTable` read is index 6 (`sConstTable[6]`, the
+first element of the `lbl_2_rodata_89A0` half), used once. The target
+folds this into a single `lis r4,lbl_2_rodata_89A0@ha; lfs
+f1,lbl_2_rodata_89A0@l(r4)` (2 instructions, offset folded into the
+relocation's addend since it is that symbol's own first element). The
+draft, whether written as `sConstTable[6]` or as explicit pointer
+arithmetic (`*(const float*)((const u8*)sConstTable + 0x18)` -- tried and
+reverted, byte-identical result either way), always emits `lis
+r5,sConstTable@ha; addi r5,r5,sConstTable@l; lfs f1,0x18(r5)` (3
+instructions). **This is a real MWCC folding-heuristic limit, not a
+source-modeling gap**: a single access to a non-zero, compile-time-constant
+offset within a multi-use symbol does not fold into the `lfs` immediate the
+way a same-offset access to that symbol's own dedicated (zero-offset)
+identity does, regardless of how the offset is spelled in C++. Every other
+difference in `cycleAnm()`'s 14-differing report is downstream of this one
+extra instruction (position-shifted matches) or plain symbol-name text
+(`lbl_2_data_451B0` vs the local `sCycleAnmNames`) -- confirmed by direct
+`difftool.py` diff, not `verify_anon.py` pairing.
+
+### `__sinit` (`fn_2_1678F0`) -- left alone this round per instruction
+
+Still 15 differing, all symbol-name text plus the same `lis+addi+lfs` vs
+`lis+lfs` gap as `cycleAnm()` (its 4 float reads are `sConstTable[0..3]`,
+the table's own first four elements at offset 0 -- these SHOULD fold
+per the "own first element" pattern above, but this function has 4
+separate reads at DIFFERENT offsets from one base, i.e. multi-use, which is
+exactly the shape that worked for `calcModel()`). Not re-measured after the
+`calcModel()` fix or the `.data` reorder (profile now declared before the
+table block) -- flagged for next round per the coordinator's "leave it
+until after" instruction, but worth checking first since it may already be
+closer than last measured.
+
+### Overall
+
+Score unchanged at **8/12** this round (the two structural fixes that did
+land -- `.data` declaration reordered to open on the profile, and
+`calcModel()`'s single-array anchor -- improved instruction-level
+similarity on already-non-matching functions but did not flip any of them
+to MATCH). The hypothesis is real and partially validated, but this unit's
+remaining gap is now better understood as at least two independent axes
+(rodata/table addressing-mode, and stack-frame/register-hoisting
+scheduling), not one.

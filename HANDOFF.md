@@ -8671,3 +8671,63 @@ forms were measured in an earlier round. The agent explicitly checked whether th
 round's new levers applied — register-binding-before-a-call, branch polarity — and
 concluded they do not reach a same-slots-reversed-order permutation, rather than
 retrying blind. That is the right way to decline a retry.
+
+## The single-anchor hypothesis: CONFIRMED, but it decomposes into TWO axes
+
+Tested on WM_ITEM. Consolidating a unit's scattered constants into **one named
+array in the target's byte order** does force single-register anchoring — but it
+is not sufficient on its own, and the precise conditions matter more than the
+headline.
+
+```cpp
+static const float sConstTable[12] = {
+    -32.0f, 200.0f, 3.2f, 0.65f, 0.0f, 1000.0f,
+    1.0f, 0.65f, 2.0f, 3.2f, -32.0f, 200.0f,
+};
+```
+
+**Axis 1 — multiple accesses in one function: CONFIRMED.** `calcModel` went from
+**four separate `lis`/`addi` pairs to one shared `lis r31, sConstTable@ha` reused
+via four offsets**, matching the target's single-anchor shape exactly. 68 -> 60.
+
+**Axis 2 — a single access at a NON-ZERO offset: does not work, and it is a
+compiler heuristic, not a phrasing problem.** `cycleAnm` was byte-identical under
+both array-index and explicit pointer-arithmetic phrasing. **MWCC folds an offset
+into the `lfs` immediate only when the address is an object's OWN first element,
+never for an indexed read into a shared array.** No C++ phrasing reaches it.
+
+**Axis 3 — a second shared anchor needs EAGER hoisting too.** `createModel` routes
+eight tables through the profile symbol. Pointer arithmetic off `&g_profile_WM_ITEM`
+did establish the target's addressing mode, but **lazily, mid-function**, where the
+target hoists both anchors — profile and `.rodata` — before its first real call.
+It reached 4 saved registers against the target's 5, and the count went **116 ->
+165. Reverted.**
+
+**So the correct statement is not "one array fixes it".** It is:
+- consolidate for multi-access-in-one-function — that part works;
+- a lone non-zero-offset read is unreachable;
+- multiple anchors must additionally be hoisted eagerly, and getting the
+  addressing mode right while missing the hoist is *worse* than not trying.
+
+**Check this against dance_pakkun's and kinoballoon's specific access patterns
+before assuming it transfers** — their `createModel`s may be axis 3, which is the
+one that got worse here.
+
+The register-signature reminder holds: the `_savegpr_27`/`_restgpr_27` helper-call
+shape is the convergence signal, not the differing count.
+
+## calcModel's remaining axis looks like the stack-temp lever, in reverse
+
+`calcModel`'s other 60 is a stack-frame size difference (`0x20` against the
+target's `0x30`): **the target stages a `mVec3_c`-shaped temporary separately
+where ours coalesces it.**
+
+That is the kinoballoon operator-form question running the other way. There, the
+draft materialised the *addend* and the target held the *result*, so
+constructor-plus-assignment was correct. Here the target stages an extra temp that
+ours does not — which is what **compound assignment** produces, since
+`operator+=` binds its by-reference parameter to a real stack slot.
+
+**If the target has a stack temp you do not, try the compound-assignment form;
+if you have one it does not, try constructor-plus-assignment.** The lever runs in
+both directions.

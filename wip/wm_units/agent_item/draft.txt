@@ -940,7 +940,14 @@
 .data
 .balign 8
 
-# .data:0x0 | size: 0x14
+# .data:0x0 | size: 0xC
+.obj g_profile_WM_ITEM, global
+	.4byte daWmItem_c_classInit__Fv
+	.4byte 0x029B02B1
+	.4byte 0x00000000
+.endobj g_profile_WM_ITEM
+
+# .data:0xC | size: 0x14
 # @unnamed@d_a_wm_item_cpp@::sSinitTable
 .obj "sSinitTable__25@unnamed@d_a_wm_item_cpp@", local
 	.4byte 0x00000000
@@ -949,13 +956,6 @@
 	.4byte 0x00000000
 	.4byte 0x01010000
 .endobj "sSinitTable__25@unnamed@d_a_wm_item_cpp@"
-
-# .data:0x14 | size: 0xC
-.obj g_profile_WM_ITEM, global
-	.4byte daWmItem_c_classInit__Fv
-	.4byte 0x029B02B1
-	.4byte 0x00000000
-.endobj g_profile_WM_ITEM
 
 # .data:0x20 | size: 0x60
 # daWmItem_c::__vtable
