@@ -54,13 +54,10 @@ namespace dWmLib {
     void GetStartPointNameFromRouteName(const char *routeName, char *dst);
     void GetEndPointNameFromRouteName(const char *routeName, char *dst);
     bool isKoopaShipAnchor();
-    u8 getZoromeTime();
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();
     bool isStartPointKinokoHouse1up();
     bool isStartPointKinokoHouseRed();
-
-    bool IsSingleEntry();
 
     int GetOpenStatus(int world, int course);
     int GetClearStatus(int world, int course);
@@ -88,6 +85,15 @@ namespace dWmLib {
     bool IsAllComplete();
     /// @unofficial Mangled clearZoromeTime__6dWmLibFv.
     void clearZoromeTime();
+    /// @unofficial Proposed addition, used by d_a_wm_start.cpp -- NOT part of the real header
+    /// today. Mangled getZoromeTime__6dWmLibFv. Return type u8 by analogy with
+    /// getStartPointKinokoHouseKindNum() and the "Zorome" naming family; the target's own
+    /// call result is compared directly via cmpwi (0x0/0x9/0x3/0x1), consistent with a
+    /// zero-extended byte return.
+    u8 getZoromeTime();
+    /// @unofficial Proposed addition, used by d_a_wm_start.cpp -- NOT part of the real header
+    /// today. Mangled IsSingleEntry__6dWmLibFv.
+    bool IsSingleEntry();
     /// @unofficial Mangled setStartPointKinokoHouseKindNum__6dWmLibFUc.
     void setStartPointKinokoHouseKindNum(unsigned char kind);
 

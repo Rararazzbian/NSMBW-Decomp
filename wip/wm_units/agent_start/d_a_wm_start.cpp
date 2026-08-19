@@ -1,4 +1,5 @@
 #include <game/bases/d_res_mng.hpp>
+#include <game/mLib/m_3d/global.hpp>
 #include <game/bases/d_a_wm_map.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_a_wm_start.hpp>
@@ -9,24 +10,71 @@ ACTOR_PROFILE(WM_START, daWmStart_c, 0);
 daWmStart_c::daWmStart_c() : m_200(false) {}
 daWmStart_c::~daWmStart_c() {}
 
-// NOT YET AUTHORED this round (0x24c bytes). Read but not written: spawns one of three
-// kinoko-house child actors (profile IDs 0x27b/0x27c/0x27d, gated by dWmLib::isStartPointKinokoHouse
-// Star/Red/1up) at a node position resolved via getResMdl/getNodeID/getNodeWorldMtxMultVecZero on
-// either the "s0" or "s1" named node (lbl_2_data_47490/47494), selected by a bitfield at
-// ACTOR_PARAM offset 4. Calls #createModel and #calcModel first, then dWmLib::setStartKinokoShadow,
-// then branches through IsCourseClear/IsCourseFirstClear/IsCourseFirstOmoteClear to reach either
-// #unk_17A3C0 or #unk_17A760. See this task's report.
+// dWmMapModel_c is currently pure padding (no declared members), so this reaches its
+// setStartKinokoShadow(bool) the same way the codebase reaches other undecomposed regions --
+// by the mangled symbol name, on a raw computed address matching the target's own
+// `lwz r0,0x338c(r3); mulli r0,r0,0xbf8; add r3,r3,r0; addi r3,r3,0x1a0` exactly. 0xbf8 is
+// sizeof(dWmMapModel_c) (already confirmed by dWmMapModel_c::mPad[0xbf8]).
+extern "C" void setStartKinokoShadow__13dWmMapModel_cFb(void *self, bool b);
+
 int daWmStart_c::create() {
-    // NOT YET FULLY AUTHORED -- see this task's report for the complete reverse-engineered
-    // control flow (spawns one of three WM_KINOKO_RED/1UP/STAR child actors, or calls
-    // #unk_17A3C0/#unk_17A760, depending on IsCourseClear/IsCourseFirstClear/
-    // IsCourseFirstOmoteClear and an ACTOR_PARAM bitfield). The prefix below (createModel,
-    // the mPos-derived quad at 0x128-0x134, calcModel) is confirmed from the target bytes;
-    // written mainly so this function's body is no longer byte-identical to #doDelete's
-    // trivial `return SUCCEEDED;`, which was confusing verify_anon's content-based pairing
-    // into mislabelling both.
     createModel();
+    mClipSphere.set(mPos, 50.0f);
     calcModel();
+
+    daWmMap_c *wmMap = daWmMap_c::m_instance;
+    int idx = *(int *) ((u8 *) wmMap + 0x338c);
+    setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, false);
+
+    if (IsCourseClear() && !IsCourseFirstClear()) {
+        if (dWmLib::getStartPointKinokoHouseKindNum() != 0) {
+            dWmLib::setStartPointKinokoHouseKindNum(0);
+        }
+    }
+
+    if (ACTOR_PARAM(HasChild)) {
+        if (IsCourseClear() && !IsCourseFirstClear()) {
+            if (IsCourseFirstOmoteClear()) {
+                mUnk1e8 = 0;
+                nw4r::math::VEC3 childVec;
+                if (ACTOR_PARAM(Kind) != 0) {
+                    nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+                    int nodeId = m3d::getNodeID(resMdl, "s1");
+                    mModel.getNodeWorldMtxMultVecZero(nodeId, childVec);
+                } else {
+                    nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+                    int nodeId = m3d::getNodeID(resMdl, "s0");
+                    mModel.getNodeWorldMtxMultVecZero(nodeId, childVec);
+                }
+                mVec3_c childPos(childVec);
+
+                if (dWmLib::isStartPointKinokoHouseStar()) {
+                    mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_STAR, this,
+                                                         dWmLib::c_StartPointKinokoHouseID, &childPos, nullptr);
+                } else if (dWmLib::isStartPointKinokoHouseRed()) {
+                    mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_RED, this,
+                                                         dWmLib::c_StartPointKinokoHouseID, &childPos, nullptr);
+                } else if (dWmLib::isStartPointKinokoHouse1up()) {
+                    mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_1UP, this,
+                                                         dWmLib::c_StartPointKinokoHouseID, &childPos, nullptr);
+                }
+            } else {
+                mChildActor = nullptr;
+                mUnk1e8 = 0;
+            }
+        } else {
+            unk_17A3C0();
+        }
+    } else {
+        mChildActor = nullptr;
+        mUnk1e8 = 0;
+        if (!IsCourseClear()) {
+            unk_17A760();
+        }
+        *(u8 *) ((u8 *) this + 0x124) = 0;
+    }
+
+    mUnk1fc = 0;
     return SUCCEEDED;
 }
 
@@ -35,8 +83,45 @@ int daWmStart_c::create() {
 void daWmStart_c::unk_17A3C0() {
 }
 
-// NOT YET AUTHORED this round (0x108 bytes). Called from create() when IsCourseClear() is false.
+// Called from create() when IsCourseClear() is false. Decides the kinoko-house's dance/reaction
+// "kind" (dWmLib::setStartPointKinokoHouseKindNum) from dWmLib::getZoromeTime(), split further by
+// dWmLib::IsSingleEntry(). Void return -- no path sets r3 before any exit.
 void daWmStart_c::unk_17A760() {
+    if (dWmLib::getStartPointKinokoHouseKindNum() != 0) {
+        return;
+    }
+    if (IsCourseFirstClear()) {
+        return;
+    }
+
+    u8 zoromeTime = dWmLib::getZoromeTime();
+    if (zoromeTime == 0) {
+        if (dWmLib::IsSingleEntry()) {
+            dWmLib::setStartPointKinokoHouseKindNum(6);
+            m_200 = true;
+        }
+    } else if (zoromeTime == 9) {
+        if (!dWmLib::IsSingleEntry()) {
+            dWmLib::setStartPointKinokoHouseKindNum(4);
+        } else {
+            dWmLib::setStartPointKinokoHouseKindNum(1);
+        }
+        m_200 = true;
+    } else if (zoromeTime >= 3) {
+        if (!dWmLib::IsSingleEntry()) {
+            dWmLib::setStartPointKinokoHouseKindNum(5);
+        } else {
+            dWmLib::setStartPointKinokoHouseKindNum(2);
+        }
+        m_200 = true;
+    } else if (zoromeTime >= 1) {
+        if (!dWmLib::IsSingleEntry()) {
+            dWmLib::setStartPointKinokoHouseKindNum(6);
+        } else {
+            dWmLib::setStartPointKinokoHouseKindNum(3);
+        }
+        m_200 = true;
+    }
 }
 
 int daWmStart_c::execute() {

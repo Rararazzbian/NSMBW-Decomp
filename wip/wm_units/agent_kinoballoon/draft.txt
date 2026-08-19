@@ -292,12 +292,12 @@
 /* 0000038C 000003CC  93 E1 00 0C */	stw r31, 0xc(r1)
 /* 00000390 000003D0  7C 7F 1B 78 */	mr r31, r3
 /* 00000394 000003D4  48 00 00 01 */	bl createModel__17daWmKinoBalloon_cFv
-/* 00000398 000003D8  3C 80 00 00 */	lis r4, "@13505"@ha
+/* 00000398 000003D8  3C 80 00 00 */	lis r4, "@13499"@ha
 /* 0000039C 000003DC  C0 7F 00 AC */	lfs f3, 0xac(r31)
 /* 000003A0 000003E0  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
 /* 000003A4 000003E4  7F E3 FB 78 */	mr r3, r31
 /* 000003A8 000003E8  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
-/* 000003AC 000003EC  C0 04 00 00 */	lfs f0, "@13505"@l(r4)
+/* 000003AC 000003EC  C0 04 00 00 */	lfs f0, "@13499"@l(r4)
 /* 000003B0 000003F0  D0 7F 01 28 */	stfs f3, 0x128(r31)
 /* 000003B4 000003F4  D0 5F 01 2C */	stfs f2, 0x12c(r31)
 /* 000003B8 000003F8  D0 3F 01 30 */	stfs f1, 0x130(r31)
@@ -378,8 +378,8 @@
 /* 000004C4 00000504  48 00 00 01 */	bl GetNodePos__9daWmMap_cFlR7mVec3_c
 /* 000004C8 00000508  48 00 00 10 */	b .L_000004D8
 .L_000004CC:
-/* 000004CC 0000050C  3C 60 00 00 */	lis r3, "@13519"@ha
-/* 000004D0 00000510  C0 03 00 00 */	lfs f0, "@13519"@l(r3)
+/* 000004CC 0000050C  3C 60 00 00 */	lis r3, "@13513"@ha
+/* 000004D0 00000510  C0 03 00 00 */	lfs f0, "@13513"@l(r3)
 /* 000004D4 00000514  D0 1E 00 B0 */	stfs f0, 0xb0(r30)
 .L_000004D8:
 /* 000004D8 00000518  81 9E 01 A8 */	lwz r12, 0x1a8(r30)
@@ -420,77 +420,77 @@
 .fn createModel__17daWmKinoBalloon_cFv, global
 /* 00000540 00000580  94 21 FF D0 */	stwu r1, -0x30(r1)
 /* 00000544 00000584  7C 08 02 A6 */	mflr r0
-/* 00000548 00000588  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
-/* 0000054C 0000058C  38 C0 00 00 */	li r6, 0x0
-/* 00000550 00000590  90 01 00 34 */	stw r0, 0x34(r1)
-/* 00000554 00000594  38 E0 00 20 */	li r7, 0x20
-/* 00000558 00000598  93 E1 00 2C */	stw r31, 0x2c(r1)
-/* 0000055C 0000059C  93 C1 00 28 */	stw r30, 0x28(r1)
-/* 00000560 000005A0  3F C0 00 00 */	lis r30, ...data.0@ha
+/* 00000548 00000588  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0000054C 0000058C  39 61 00 30 */	addi r11, r1, 0x30
+/* 00000550 00000590  48 00 00 01 */	bl _savegpr_27
+/* 00000554 00000594  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 00000558 00000598  3F C0 00 00 */	lis r30, ...data.0@ha
+/* 0000055C 0000059C  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 00000560 000005A0  7C 7B 1B 78 */	mr r27, r3
 /* 00000564 000005A4  3B DE 00 00 */	addi r30, r30, ...data.0@l
-/* 00000568 000005A8  93 A1 00 24 */	stw r29, 0x24(r1)
-/* 0000056C 000005AC  7C 7D 1B 78 */	mr r29, r3
-/* 00000570 000005B0  38 63 01 88 */	addi r3, r3, 0x188
-/* 00000574 000005B4  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
-/* 00000578 000005B8  38 80 FF FF */	li r4, -0x1
-/* 0000057C 000005BC  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
-/* 00000580 000005C0  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 00000584 000005C4  38 BE 00 50 */	addi r5, r30, 0x50
-/* 00000588 000005C8  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 0000058C 000005CC  38 9E 00 60 */	addi r4, r30, 0x60
-/* 00000590 000005D0  38 63 00 04 */	addi r3, r3, 0x4
-/* 00000594 000005D4  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
-/* 00000598 000005D8  90 7D 01 A4 */	stw r3, 0x1a4(r29)
-/* 0000059C 000005DC  38 7D 01 A4 */	addi r3, r29, 0x1a4
-/* 000005A0 000005E0  38 9E 00 60 */	addi r4, r30, 0x60
-/* 000005A4 000005E4  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
-/* 000005A8 000005E8  90 61 00 10 */	stw r3, 0x10(r1)
-/* 000005AC 000005EC  7C 7F 1B 78 */	mr r31, r3
-/* 000005B0 000005F0  38 7D 01 A8 */	addi r3, r29, 0x1a8
-/* 000005B4 000005F4  38 81 00 10 */	addi r4, r1, 0x10
-/* 000005B8 000005F8  38 BD 01 88 */	addi r5, r29, 0x188
-/* 000005BC 000005FC  38 C0 00 20 */	li r6, 0x20
-/* 000005C0 00000600  38 E0 00 01 */	li r7, 0x1
-/* 000005C4 00000604  39 00 00 00 */	li r8, 0x0
-/* 000005C8 00000608  48 00 00 01 */	bl create__Q23m3d6smdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
-/* 000005CC 0000060C  80 9E 00 4C */	lwz r4, 0x4c(r30)
-/* 000005D0 00000610  38 7D 01 A4 */	addi r3, r29, 0x1a4
-/* 000005D4 00000614  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
-/* 000005D8 00000618  90 61 00 08 */	stw r3, 0x8(r1)
-/* 000005DC 0000061C  38 7D 01 B4 */	addi r3, r29, 0x1b4
-/* 000005E0 00000620  38 81 00 0C */	addi r4, r1, 0xc
-/* 000005E4 00000624  38 A1 00 08 */	addi r5, r1, 0x8
-/* 000005E8 00000628  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 000005EC 0000062C  38 DD 01 88 */	addi r6, r29, 0x188
-/* 000005F0 00000630  38 E0 00 00 */	li r7, 0x0
-/* 000005F4 00000634  48 00 00 01 */	bl create__Q23m3d8anmChr_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d9ResAnmChrP12mAllocator_cPUl
-/* 000005F8 00000638  3F E0 00 00 */	lis r31, "@13546"@ha
-/* 000005FC 0000063C  38 00 00 00 */	li r0, 0x0
-/* 00000600 00000640  98 1D 01 EC */	stb r0, 0x1ec(r29)
-/* 00000604 00000644  38 7D 01 B4 */	addi r3, r29, 0x1b4
-/* 00000608 00000648  C0 3F 00 00 */	lfs f1, "@13546"@l(r31)
-/* 0000060C 0000064C  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
-/* 00000610 00000650  C0 3F 00 00 */	lfs f1, "@13546"@l(r31)
-/* 00000614 00000654  38 7D 01 B4 */	addi r3, r29, 0x1b4
-/* 00000618 00000658  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
-/* 0000061C 0000065C  3C 80 00 00 */	lis r4, "@13547"@ha
-/* 00000620 00000660  38 7D 01 B4 */	addi r3, r29, 0x1b4
-/* 00000624 00000664  C0 24 00 00 */	lfs f1, "@13547"@l(r4)
-/* 00000628 00000668  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
-/* 0000062C 0000066C  81 9D 01 A8 */	lwz r12, 0x1a8(r29)
-/* 00000630 00000670  38 7D 01 A8 */	addi r3, r29, 0x1a8
-/* 00000634 00000674  38 9D 01 B4 */	addi r4, r29, 0x1b4
-/* 00000638 00000678  81 8C 00 18 */	lwz r12, 0x18(r12)
-/* 0000063C 0000067C  7D 89 03 A6 */	mtctr r12
-/* 00000640 00000680  4E 80 04 21 */	bctrl
-/* 00000644 00000684  38 7D 01 A8 */	addi r3, r29, 0x1a8
-/* 00000648 00000688  48 00 00 01 */	bl setSoftLight_MapObj__10dWmActor_cFRQ23m3d6bmdl_c
-/* 0000064C 0000068C  38 7D 01 88 */	addi r3, r29, 0x188
-/* 00000650 00000690  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
-/* 00000654 00000694  80 01 00 34 */	lwz r0, 0x34(r1)
-/* 00000658 00000698  83 E1 00 2C */	lwz r31, 0x2c(r1)
-/* 0000065C 0000069C  83 C1 00 28 */	lwz r30, 0x28(r1)
-/* 00000660 000006A0  83 A1 00 24 */	lwz r29, 0x24(r1)
+/* 00000568 000005A8  3B A3 01 A4 */	addi r29, r3, 0x1a4
+/* 0000056C 000005AC  3B 83 01 B4 */	addi r28, r3, 0x1b4
+/* 00000570 000005B0  38 80 FF FF */	li r4, -0x1
+/* 00000574 000005B4  38 C0 00 00 */	li r6, 0x0
+/* 00000578 000005B8  38 E0 00 20 */	li r7, 0x20
+/* 0000057C 000005BC  38 63 01 88 */	addi r3, r3, 0x188
+/* 00000580 000005C0  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 00000584 000005C4  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 00000588 000005C8  38 BE 00 50 */	addi r5, r30, 0x50
+/* 0000058C 000005CC  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 00000590 000005D0  38 9E 00 60 */	addi r4, r30, 0x60
+/* 00000594 000005D4  38 63 00 04 */	addi r3, r3, 0x4
+/* 00000598 000005D8  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 0000059C 000005DC  90 7D 00 00 */	stw r3, 0x0(r29)
+/* 000005A0 000005E0  7F A3 EB 78 */	mr r3, r29
+/* 000005A4 000005E4  38 9E 00 60 */	addi r4, r30, 0x60
+/* 000005A8 000005E8  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 000005AC 000005EC  90 61 00 10 */	stw r3, 0x10(r1)
+/* 000005B0 000005F0  7C 7F 1B 78 */	mr r31, r3
+/* 000005B4 000005F4  38 7B 01 A8 */	addi r3, r27, 0x1a8
+/* 000005B8 000005F8  38 81 00 10 */	addi r4, r1, 0x10
+/* 000005BC 000005FC  38 BB 01 88 */	addi r5, r27, 0x188
+/* 000005C0 00000600  38 C0 00 20 */	li r6, 0x20
+/* 000005C4 00000604  38 E0 00 01 */	li r7, 0x1
+/* 000005C8 00000608  39 00 00 00 */	li r8, 0x0
+/* 000005CC 0000060C  48 00 00 01 */	bl create__Q23m3d6smdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 000005D0 00000610  80 9E 00 4C */	lwz r4, 0x4c(r30)
+/* 000005D4 00000614  7F A3 EB 78 */	mr r3, r29
+/* 000005D8 00000618  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 000005DC 0000061C  90 61 00 08 */	stw r3, 0x8(r1)
+/* 000005E0 00000620  7F 83 E3 78 */	mr r3, r28
+/* 000005E4 00000624  38 81 00 0C */	addi r4, r1, 0xc
+/* 000005E8 00000628  38 A1 00 08 */	addi r5, r1, 0x8
+/* 000005EC 0000062C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000005F0 00000630  38 DB 01 88 */	addi r6, r27, 0x188
+/* 000005F4 00000634  38 E0 00 00 */	li r7, 0x0
+/* 000005F8 00000638  48 00 00 01 */	bl create__Q23m3d8anmChr_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d9ResAnmChrP12mAllocator_cPUl
+/* 000005FC 0000063C  3F E0 00 00 */	lis r31, "@13538"@ha
+/* 00000600 00000640  38 00 00 00 */	li r0, 0x0
+/* 00000604 00000644  98 1B 01 EC */	stb r0, 0x1ec(r27)
+/* 00000608 00000648  7F 83 E3 78 */	mr r3, r28
+/* 0000060C 0000064C  C0 3F 00 00 */	lfs f1, "@13538"@l(r31)
+/* 00000610 00000650  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
+/* 00000614 00000654  C0 3F 00 00 */	lfs f1, "@13538"@l(r31)
+/* 00000618 00000658  7F 83 E3 78 */	mr r3, r28
+/* 0000061C 0000065C  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
+/* 00000620 00000660  3C 80 00 00 */	lis r4, "@13539"@ha
+/* 00000624 00000664  7F 83 E3 78 */	mr r3, r28
+/* 00000628 00000668  C0 24 00 00 */	lfs f1, "@13539"@l(r4)
+/* 0000062C 0000066C  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
+/* 00000630 00000670  81 9B 01 A8 */	lwz r12, 0x1a8(r27)
+/* 00000634 00000674  38 7B 01 A8 */	addi r3, r27, 0x1a8
+/* 00000638 00000678  7F 84 E3 78 */	mr r4, r28
+/* 0000063C 0000067C  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 00000640 00000680  7D 89 03 A6 */	mtctr r12
+/* 00000644 00000684  4E 80 04 21 */	bctrl
+/* 00000648 00000688  38 7B 01 A8 */	addi r3, r27, 0x1a8
+/* 0000064C 0000068C  48 00 00 01 */	bl setSoftLight_MapObj__10dWmActor_cFRQ23m3d6bmdl_c
+/* 00000650 00000690  38 7B 01 88 */	addi r3, r27, 0x188
+/* 00000654 00000694  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 00000658 00000698  39 61 00 30 */	addi r11, r1, 0x30
+/* 0000065C 0000069C  48 00 00 01 */	bl _restgpr_27
+/* 00000660 000006A0  80 01 00 34 */	lwz r0, 0x34(r1)
 /* 00000664 000006A4  7C 08 03 A6 */	mtlr r0
 /* 00000668 000006A8  38 21 00 30 */	addi r1, r1, 0x30
 /* 0000066C 000006AC  4E 80 00 20 */	blr
@@ -661,9 +661,9 @@
 /* 00000888 000008C8  90 01 00 44 */	stw r0, 0x44(r1)
 /* 0000088C 000008CC  39 61 00 40 */	addi r11, r1, 0x40
 /* 00000890 000008D0  48 00 00 01 */	bl _savegpr_27
-/* 00000894 000008D4  3C 80 00 00 */	lis r4, "@13610"@ha
+/* 00000894 000008D4  3C 80 00 00 */	lis r4, "@13602"@ha
 /* 00000898 000008D8  C0 23 01 F8 */	lfs f1, 0x1f8(r3)
-/* 0000089C 000008DC  C0 04 00 00 */	lfs f0, "@13610"@l(r4)
+/* 0000089C 000008DC  C0 04 00 00 */	lfs f0, "@13602"@l(r4)
 /* 000008A0 000008E0  3C A0 00 00 */	lis r5, m_WorldNo__9dScWMap_c@ha
 /* 000008A4 000008E4  3C 80 00 00 */	lis r4, m_instance__7dInfo_c@ha
 /* 000008A8 000008E8  3C C0 00 00 */	lis r6, m_instance__9daWmMap_c@ha
@@ -680,11 +680,11 @@
 /* 000008D4 00000914  48 00 00 01 */	bl resetState__17daWmKinoBalloon_cFv
 /* 000008D8 00000918  48 00 00 6C */	b .L_00000944
 .L_000008DC:
-/* 000008DC 0000091C  3C 80 00 00 */	lis r4, "@13547"@ha
+/* 000008DC 0000091C  3C 80 00 00 */	lis r4, "@13539"@ha
 /* 000008E0 00000920  3B E0 00 01 */	li r31, 0x1
 /* 000008E4 00000924  9B E3 01 24 */	stb r31, 0x124(r3)
 /* 000008E8 00000928  38 63 01 B4 */	addi r3, r3, 0x1b4
-/* 000008EC 0000092C  C0 24 00 00 */	lfs f1, "@13547"@l(r4)
+/* 000008EC 0000092C  C0 24 00 00 */	lfs f1, "@13539"@l(r4)
 /* 000008F0 00000930  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
 /* 000008F4 00000934  7F A3 EB 78 */	mr r3, r29
 /* 000008F8 00000938  7F 84 E3 78 */	mr r4, r28
@@ -772,7 +772,7 @@
 .fn onReachedTop__17daWmKinoBalloon_cFv, global
 /* 00000A10 00000A50  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 00000A14 00000A54  7C 08 02 A6 */	mflr r0
-/* 00000A18 00000A58  3C 80 00 00 */	lis r4, "@13610"@ha
+/* 00000A18 00000A58  3C 80 00 00 */	lis r4, "@13602"@ha
 /* 00000A1C 00000A5C  3C E0 00 00 */	lis r7, m_pInstance__14dWmSeManager_c@ha
 /* 00000A20 00000A60  90 01 00 14 */	stw r0, 0x14(r1)
 /* 00000A24 00000A64  38 00 00 02 */	li r0, 0x2
@@ -783,7 +783,7 @@
 /* 00000A38 00000A78  C0 03 01 F8 */	lfs f0, 0x1f8(r3)
 /* 00000A3C 00000A7C  90 03 01 F0 */	stw r0, 0x1f0(r3)
 /* 00000A40 00000A80  FC 20 00 50 */	fneg f1, f0
-/* 00000A44 00000A84  C0 04 00 00 */	lfs f0, "@13610"@l(r4)
+/* 00000A44 00000A84  C0 04 00 00 */	lfs f0, "@13602"@l(r4)
 /* 00000A48 00000A88  38 80 00 70 */	li r4, 0x70
 /* 00000A4C 00000A8C  EC 01 00 24 */	fdivs f0, f1, f0
 /* 00000A50 00000A90  D0 03 01 F4 */	stfs f0, 0x1f4(r3)
@@ -805,9 +805,9 @@
 .fn moveDown__17daWmKinoBalloon_cFv, global
 /* 00000A80 00000AC0  94 21 FF E0 */	stwu r1, -0x20(r1)
 /* 00000A84 00000AC4  7C 08 02 A6 */	mflr r0
-/* 00000A88 00000AC8  3C 80 00 00 */	lis r4, "@13599"@ha
+/* 00000A88 00000AC8  3C 80 00 00 */	lis r4, "@13591"@ha
 /* 00000A8C 00000ACC  90 01 00 24 */	stw r0, 0x24(r1)
-/* 00000A90 00000AD0  C0 04 00 00 */	lfs f0, "@13599"@l(r4)
+/* 00000A90 00000AD0  C0 04 00 00 */	lfs f0, "@13591"@l(r4)
 /* 00000A94 00000AD4  C0 43 00 DC */	lfs f2, 0xdc(r3)
 /* 00000A98 00000AD8  FC 02 00 40 */	fcmpo cr0, f2, f0
 /* 00000A9C 00000ADC  4C 40 13 82 */	cror eq, lt, eq
@@ -1122,8 +1122,8 @@
 .fn triggerAllReachedTop__17daWmKinoBalloon_cFv, global
 /* 00000EC0 00000F00  94 21 FF E0 */	stwu r1, -0x20(r1)
 /* 00000EC4 00000F04  7C 08 02 A6 */	mflr r0
-/* 00000EC8 00000F08  3C A0 00 00 */	lis r5, "@13091"@ha
-/* 00000ECC 00000F0C  84 85 00 00 */	lwzu r4, "@13091"@l(r5)
+/* 00000EC8 00000F08  3C A0 00 00 */	lis r5, "@13085"@ha
+/* 00000ECC 00000F0C  84 85 00 00 */	lwzu r4, "@13085"@l(r5)
 /* 00000ED0 00000F10  90 01 00 24 */	stw r0, 0x24(r1)
 /* 00000ED4 00000F14  80 65 00 04 */	lwz r3, 0x4(r5)
 /* 00000ED8 00000F18  93 E1 00 1C */	stw r31, 0x1c(r1)
@@ -1161,8 +1161,8 @@
 .fn triggerFirstStartMove__17daWmKinoBalloon_cFv, global
 /* 00000F40 00000F80  94 21 FF E0 */	stwu r1, -0x20(r1)
 /* 00000F44 00000F84  7C 08 02 A6 */	mflr r0
-/* 00000F48 00000F88  3C A0 00 00 */	lis r5, "@13105"@ha
-/* 00000F4C 00000F8C  84 85 00 00 */	lwzu r4, "@13105"@l(r5)
+/* 00000F48 00000F88  3C A0 00 00 */	lis r5, "@13099"@ha
+/* 00000F4C 00000F8C  84 85 00 00 */	lwzu r4, "@13099"@l(r5)
 /* 00000F50 00000F90  90 01 00 24 */	stw r0, 0x24(r1)
 /* 00000F54 00000F94  80 65 00 04 */	lwz r3, 0x4(r5)
 /* 00000F58 00000F98  93 E1 00 1C */	stw r31, 0x1c(r1)
@@ -1208,10 +1208,10 @@
 /* 00000FD8 00001018  2C 00 00 00 */	cmpwi r0, 0x0
 /* 00000FDC 0000101C  40 80 00 2C */	bge .L_00001008
 /* 00000FE0 00001020  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
-/* 00000FE4 00001024  3C C0 00 00 */	lis r6, "@13545"@ha
+/* 00000FE4 00001024  3C C0 00 00 */	lis r6, "@13537"@ha
 /* 00000FE8 00001028  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
 /* 00000FEC 0000102C  38 BF 01 A8 */	addi r5, r31, 0x1a8
-/* 00000FF0 00001030  38 C6 00 00 */	addi r6, r6, "@13545"@l
+/* 00000FF0 00001030  38 C6 00 00 */	addi r6, r6, "@13537"@l
 /* 00000FF4 00001034  38 80 00 22 */	li r4, 0x22
 /* 00000FF8 00001038  38 E0 00 00 */	li r7, 0x0
 /* 00000FFC 0000103C  39 00 00 00 */	li r8, 0x0
@@ -1494,63 +1494,63 @@
 .endobj sProcTable__17daWmKinoBalloon_c
 
 # .rodata:0x24 | size: 0x4
-.obj "@13505", local
+.obj "@13499", local
 	.4byte 0x42F00000
-.endobj "@13505"
+.endobj "@13499"
 
 # .rodata:0x28 | size: 0x4
-.obj "@13519", local
+.obj "@13513", local
 	.4byte 0xC61C4000
-.endobj "@13519"
+.endobj "@13513"
 
 # .rodata:0x2C | size: 0x4
-.obj "@13546", local
+.obj "@13538", local
 	.4byte 0x00000000
-.endobj "@13546"
+.endobj "@13538"
 
 # .rodata:0x30 | size: 0x4
-.obj "@13547", local
+.obj "@13539", local
 	.4byte 0x3F800000
-.endobj "@13547"
+.endobj "@13539"
 
 # .rodata:0x34 | size: 0x4
-.obj "@13599", local
+.obj "@13591", local
 	.4byte 0x3C23D70A
-.endobj "@13599"
+.endobj "@13591"
 
 # .rodata:0x38 | size: 0x4
-.obj "@13610", local
+.obj "@13602", local
 	.4byte 0x41200000
-.endobj "@13610"
+.endobj "@13602"
 
 # .rodata:0x3C | size: 0xC
-.obj "@13091", local
+.obj "@13085", local
 	.4byte 0x00000001
 	.4byte 0x00000000
 	.4byte 0x00000003
-.endobj "@13091"
+.endobj "@13085"
 
 # .rodata:0x48 | size: 0xC
-.obj "@13105", local
+.obj "@13099", local
 	.4byte 0x00000001
 	.4byte 0x00000000
 	.4byte 0x00000003
-.endobj "@13105"
+.endobj "@13099"
 
 # .rodata:0x54 | size: 0x4
-.obj "@13744", local
+.obj "@13736", local
 	.4byte 0x45070000
-.endobj "@13744"
+.endobj "@13736"
 
 # .rodata:0x58 | size: 0x4
-.obj "@13745", local
+.obj "@13737", local
 	.4byte 0xC1F00000
-.endobj "@13745"
+.endobj "@13737"
 
 # .rodata:0x5C | size: 0x4
-.obj "@13746", local
+.obj "@13738", local
 	.4byte 0xC3EF0000
-.endobj "@13746"
+.endobj "@13738"
 
 # 0x00000000..0x00000178 | size: 0x178
 .data
@@ -1594,33 +1594,33 @@
 .endobj g_profile_WM_KINOBALLOON
 
 # .data:0x40 | size: 0xB
-.obj "@12917", local
+.obj "@12919", local
 	.4byte 0x636F624B
 	.4byte 0x696E6F70
 	.byte 0x69, 0x6F, 0x00
-.endobj "@12917"
+.endobj "@12919"
 	.byte 0x00
 
 # .data:0x4C | size: 0x4
 # daWmKinoBalloon_c::createModel()::animName
 .obj "@LOCAL@createModel__17daWmKinoBalloon_cFv@animName", local
-	.4byte "@12917"
+	.4byte "@12919"
 .endobj "@LOCAL@createModel__17daWmKinoBalloon_cFv@animName"
 
 # .data:0x50 | size: 0x10
-.obj "@13544", local
+.obj "@13536", local
 	.4byte 0x6733642F
 	.4byte 0x6D6F6465
 	.4byte 0x6C2E6272
 	.4byte 0x72657300
-.endobj "@13544"
+.endobj "@13536"
 
 # .data:0x60 | size: 0xB
-.obj "@13545", local
+.obj "@13537", local
 	.4byte 0x636F624B
 	.4byte 0x696E6F70
 	.byte 0x69, 0x6F, 0x00
-.endobj "@13545"
+.endobj "@13537"
 	.4byte 0x00000000
 	.byte 0x00
 

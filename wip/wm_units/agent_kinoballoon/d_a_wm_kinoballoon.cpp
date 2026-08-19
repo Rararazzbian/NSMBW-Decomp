@@ -223,18 +223,19 @@ int daWmKinoBalloon_c::draw() {
 }
 
 void daWmKinoBalloon_c::createModel() {
+    nw4r::g3d::ResFile &resFile = mResFile;
+    m3d::anmChr_c &anim = mChrAnim[0];
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
-    mResFile = dResMng_c::m_instance->getRes("cobKinopio", "g3d/model.brres");
-    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobKinopio");
+    resFile = dResMng_c::m_instance->getRes("cobKinopio", "g3d/model.brres");
+    nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobKinopio");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
     static const char *animName = "cobKinopio";
-    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(animName);
-    mChrAnim[0].create(resMdl, resAnmChr, &mAllocator, nullptr);
+    anim.create(resMdl, resFile.GetResAnmChr(animName), &mAllocator, nullptr);
     mUnk1e8 = false;
-    mChrAnim[0].setRate(0.0f);
-    mChrAnim[0].setFrame(0.0f);
-    mChrAnim[0].setRate(1.0f);
-    mModel.setAnm(mChrAnim[0]);
+    anim.setRate(0.0f);
+    anim.setFrame(0.0f);
+    anim.setRate(1.0f);
+    mModel.setAnm(anim);
     dWmActor_c::setSoftLight_MapObj(mModel);
     mAllocator.adjustFrmHeap();
 }

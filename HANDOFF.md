@@ -8187,3 +8187,61 @@ the draft triggers no saved-register block at all, so every downstream register
 differs even though the call sequence now matches structurally.
 `modeExec` and `processCutsceneCommand` carry the **same** pool-offset shift, so
 closing `createModel` should move all three together.
+
+## NEW LEVER: a ternary MERGES two calls; explicit if/else keeps them separate
+
+WM_START's `unk_17A760` went **66 differing (stub) to 7** and one of the two
+levers is new:
+
+```cpp
+setKind(cond ? A : B);          // MWCC merges to ONE call site, r3 pre-loaded then overridden
+if (cond) setKind(A); else setKind(B);   // TWO separate li+bl blocks -- what the target has
+```
+
+The ternary form is not merely a different spelling; it produces a different
+instruction count and shape. **If the target shows two separate `li`/`bl` blocks
+for what looks like one call with a chosen argument, the source duplicates the
+call in each arm.**
+
+Alongside the already-recorded rule that a ternary *between two adjacent
+constants* becomes arithmetic rather than a branch, this gives two distinct
+ternary behaviours to watch for.
+
+The other lever was polarity: **all three** of the branch conditions were
+inverted from the first reading, and were settled from the target's own `beq`
+bytes rather than from what the function names suggest. Same lesson as manta's
+outer/inner check having opposite senses.
+
+## A 104-differing count that is ONE defect
+
+WM_START's `create()` reads as 104 differing, and it is not 104 defects. **A
+single missing prologue instruction (`stw r30, 0x28(r1)` -- the target saves a
+register up front that it does not load until much later) shifts every subsequent
+line by one position in the raw diff.**
+
+The agent applied the recorded misaligned-diff warning, re-read content-aligned,
+and confirmed the call sequence, argument registers and branch targets all match.
+**A large count immediately after a size mismatch is one defect until proven
+otherwise.** Always check alignment before reading a count as a defect list.
+
+## Two more `dWmLib` declarations applied
+
+Both confirmed present in the symbol map before applying, and both added with
+`syms.txt` entries; five binaries re-verified green.
+
+```cpp
+u8 getZoromeTime();     // getZoromeTime__6dWmLibFv  = 0x800FB440  (size 0xC)
+bool IsSingleEntry();   // IsSingleEntry__6dWmLibFv  = 0x800FCAD0  (size 0x2C)
+```
+
+Return types are the authoring agent's inference -- the mangled name cannot carry
+them -- and remain testable by the diff.
+
+## Judgement worth copying
+
+`unk_17A3C0` (231 instructions) was **read and characterised but deliberately not
+authored**: it introduces a dual-child-spawn pattern not used anywhere else in the
+unit, and the agent judged it not safely completable to the same standard in the
+time left. An honest stub beats a guessed body -- a guessed body of the right
+size is worse than none, because it looks finished and poisons `verify_anon`'s
+pairing for its neighbours.

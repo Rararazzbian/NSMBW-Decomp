@@ -15,8 +15,12 @@
 */
 class daWmStart_c : public dWmObjActor_c {
 public:
-    /// @unofficial offset 12, width 4. Read by #createModel via `extrwi. r0, r0, 4, 12`.
+    /// @unofficial offset 12, width 4. Read by #createModel via `extrwi. r0, r0, 4, 12`,
+    /// and again by #create via the same `extrwi. r0, r0, 4, 12` to pick the "s0"/"s1" node.
     ACTOR_PARAM_CONFIG(Kind, 16, 4);
+    /// @unofficial offset 8, width 4. Read by #create via `extrwi. r0, r0, 4, 20` --
+    /// gates whether a kinoko-house child actor is spawned at all.
+    ACTOR_PARAM_CONFIG(HasChild, 8, 4);
 
     daWmStart_c(); ///< @copydoc dWmObjActor_c::dWmObjActor_c
     ~daWmStart_c(); ///< @copydoc dWmObjActor_c::~dWmObjActor_c
@@ -51,10 +55,11 @@ public:
                                    ///< own vtable+mpChildren), not by any mangled name. Ends at
                                    ///< 0x1b8+sizeof(anmTexPat_c) = 0x1e4 (compiled sizeof, see
                                    ///< this task's report).
-    u8 mPad_1e4[0x1c]; ///< @unofficial offset 0x1e4, size 0x1c. Between the end of
-                         ///< #mAnimTexPat (0x1e4) and the flag byte at 0x200 the constructor
-                         ///< does not construct or zero anything -- no `bl __ct__...` and no
-                         ///< `stw`/`stb` in that range. Content and true type unrecovered;
-                         ///< @unofficial padding by elimination.
+    dWmActor_c *mChildActor; ///< @unofficial offset 0x1e4. The kinoko-house child actor
+                               ///< spawned by #create's `construct(...)` calls, or null.
+    int mUnk1e8; ///< @unofficial offset 0x1e8. Zeroed alongside #mChildActor in some paths.
+    u8 mPad_1ec[0x10]; ///< @unofficial offset 0x1ec, size 0x10. Never touched by any function
+                        ///< read so far; padding by elimination.
+    int mUnk1fc; ///< @unofficial offset 0x1fc. Zeroed unconditionally at the end of #create.
     bool m_200; ///< @unofficial offset 0x200. Zeroed by the constructor; role unconfirmed.
 };
