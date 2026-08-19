@@ -10005,3 +10005,47 @@ satisfy the pool while the functions stay in target address order, satisfies bot
 That is the mechanism behind course's pool fix and antlion_mng's, and **it is the
 only way the real source could produce an order that a purely
 anonymous-pool shape cannot.**
+
+## "1 differing, and it is the same offset 4 bytes out" = a MISSING MEMBER
+
+WM_HANACHAN's three state-setters each compiled to exactly **1 differing**:
+`stw r0, 0x478(r3)` against the target's `0x47c`. Four bytes, everywhere, in
+every function that touched the region.
+
+Root cause: the `+0x184` convention — **`dWmDemoActor_c`'s base ends at `0x184`
+and each derived class's own first member sits there** — had been skipped, so
+`mAllocator` started at `0x184` instead of `0x188`. **Adding the missing
+`int mUnk184;` fixed all four functions plus the destructor in one shot.**
+
+**A constant small offset error repeated across unrelated functions is a layout
+bug, not four bugs.** The same reasoning identified a vtable counting error on
+another unit today from two call sites being 8 bytes high. **Look for the shared
+delta before looking at any individual function.**
+
+Note the `+0x184` convention has now appeared on antlion_mng, board, killer,
+killerbullet and hanachan — **every `dWmDemoActor_c`-derived unit this session
+starts its own members at `0x184`, with an unused `int` there.** Put it in the
+skeleton before authoring anything.
+
+## Vtable slot 18 is the DESTRUCTOR
+
+Identified by reading the function rather than by elimination: full member
+teardown via `__destroy_arr` on every array member **in reverse declaration
+order**, then the base chain, then the optional `fBase_c::operator delete`. That
+is the destructor shape from every landed sibling this session.
+
+So the family's slot map is now: **2 create, 5 doDelete, 8 execute, 11 draw, 18
+destructor, 24 processCutsceneCommand.**
+
+## A partially-authored unit will report FUNCTION ORDER IS WRONG. Expect it.
+
+With 7 of 32 functions written, MWCC bunches **every** weak helper the draft could
+need — base destructors, `EGG::Vector3f`'s, `anmChr_c`'s ctor/dtor, the unit's own
+custom struct helpers — into one group immediately after the first explicit
+function, **because nothing later in the file references them yet to pull them
+toward their real positions.**
+
+The target needs only two of them that early. **This resolves as more functions
+are authored and must not be "fixed" by reordering what is already written.**
+Another unit today carried an identical warning right up to the moment it linked
+cleanly.
