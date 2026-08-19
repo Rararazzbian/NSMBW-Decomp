@@ -55,7 +55,7 @@ public:
     dPyMdlMng_c *mpMdlMng;    ///< @0x188
     u32 m_18c;                ///< @0x18c, unobserved -- role unconfirmed
     int m_190;                 ///< @0x190, step/ptmf-table index; reset to 0 by resetStep()
-    u32 m_194;                  ///< @0x194, unobserved -- role unconfirmed
+    float m_194;                ///< @0x194, `((m_19c.x - mPos.x) / 15.0f) / 15.0f` (case 0); added into mSpeedF each frame in case 1
     int m_198;                   ///< @0x198, cutscene sub-state (set to 0xe/0xf in stepCutscene70)
     mVec3_c m_19c;                 ///< @0x19c, target position (set by processCutsceneCommand)
     int m_1a8;                      ///< @0x1a8, main step-table index (0-19), the stepCutscene70 dispatch key

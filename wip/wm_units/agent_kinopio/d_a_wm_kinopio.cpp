@@ -30,6 +30,12 @@ extern "C" mVec3_c GetPos__9daWmMap_cFPCc(daWmMap_c *self, const char *nodeName)
 // target's own call sites (mangled/raw names), not guessed.
 extern "C" void fn_2_192920(dWmActor_c *);
 extern "C" int fn_2_192930(dWmActor_c *);
+// @unofficial fn_80103520 -- distinct from the already-landed fn_80103420
+// (d_a_wm_kinoko_base.cpp): this one's result IS used (stored into
+// m_1b0, the effect-ID field), so it returns int, not void. Same argument
+// shape otherwise (mgr, effect id, model, kind name, 0, 0).
+extern "C" int fn_80103520(dWmEffectManager_c *mgr, int effectId, m3d::mdl_c *model,
+                            const char *kind, int, int);
 extern "C" void fn_80105170(dWmSeManager_c *mgr, int a, int b, u8 c, float d);
 namespace dWmLib {
     void InitKinopioCourse();
@@ -77,6 +83,7 @@ namespace {
     static const StepFunc_t sStepTable[1] = {
         &daWmKinopio_c::unusedStub,
     };
+
 
     // @unofficial lbl_2_rodata_8B10+0x38/0x3c/0x40/0x44, declared in the
     // target's own memory order so the isolated compile's constant pool
@@ -195,6 +202,12 @@ void daWmKinopio_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFr
     }
 }
 
+namespace {
+    // @unofficial lbl_2_data_45D00, the "kind" node name passed to
+    // fn_80103520 in stepCutscene70() cases 0 and 10.
+    static const char sKinopioAllRoot[] = "kinopio_all_root";
+}
+
 void daWmKinopio_c::stepCutscene70() {
     calcSpeed();
     posMove();
@@ -205,10 +218,29 @@ void daWmKinopio_c::stepCutscene70() {
 
     switch (m_1a8) {
     case 0:
-        // @unofficial NOT fully decoded -- placeholder.
+        if (mPos.x > m_19c.x - 100.0f) {
+            float dist = (m_19c.x - mPos.x) * 1.0f;
+            float speed = dist / 15.0f;
+            m_194 = speed / 15.0f;
+            mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
+            m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
+            m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, sKinopioAllRoot, 0, 0);
+            m_1a8 = 1;
+        }
         break;
     case 1:
-        // @unofficial NOT fully decoded -- placeholder.
+        mSpeedF = mSpeedF + m_194;
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        } else {
+            mSpeedF = 0.0f;
+            mpMdlMng->mpMdl->setAnm(0xab, 1.0f, 5.0f, 0.0f);
+            m_198 = 0xa;
+            m_1a8 = 2;
+            m_1ac = 0;
+            dWmEffectManager_c::m_pInstance->endEffect(m_1b0);
+            dWmSeManager_c::m_pInstance->playSound(0x35, mPos, 1);
+        }
         break;
     case 2:
         if (m_1ac > 1) {
@@ -301,7 +333,18 @@ void daWmKinopio_c::stepCutscene70() {
         m_1a8 = 0xa;
         break;
     case 10:
-        // @unofficial NOT fully decoded -- placeholder.
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        } else if (!m_1b8) {
+            m_1a8 = 0x11;
+        } else {
+            setDirection(mVec3_c(-1.0f, 0.0f, 0.0f));
+            mSpeedF = 6.0f;
+            mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
+            m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
+            m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, sKinopioAllRoot, 0, 0);
+            m_1a8 = 0xb;
+        }
         break;
     case 11:
         if (mPos.x < -500.0f) {

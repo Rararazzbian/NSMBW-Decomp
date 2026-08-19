@@ -10445,3 +10445,39 @@ read the class's own vtable relocations; do not count by hand.
 
 WM_KINOPIO's largest function stands at **14 of 20 cases**, with 0 and 1 (the two
 largest remaining) unattempted, 14 partial, and 2/10/12 blocked or offset-dependent.
+
+## HEADER CORRECTED: `dPyMdlBase_c::getBodyMdl()` returns `m3d::mdl_c *`, not `void`
+
+**Applied to `include/game/bases/d_player_model_base.hpp`, five binaries re-verified
+green.** Proven, not inferred:
+
+- **Vtable byte offset `0x28` -> compiled slot 10 -> declaration index 8** (`10 - 2`
+  for the destructor pair), landing precisely on `getBodyMdl()` in the header's
+  own declaration order. **The slot arithmetic and the declaration order agree**,
+  which is what made it safe to change.
+- **The type came from a LANDED precedent, not from the method's name.** Both call
+  sites pass the return straight through as the third argument to
+  `fn_80103520(dWmEffectManager_c *, int, m3d::mdl_c *, const char *, int, int)`
+  — the identical argument shape as `fn_80103420` in the landed
+  `d_a_wm_kinoko_base.cpp`, whose corresponding parameter is `m3d::mdl_c *model`.
+- **Proof was a byte-for-byte match**, not a plausibility argument: with the
+  correction, both cases compile the dispatch exactly
+  (`lwz r12,0x0(r3); lwz r12,0x28(r12); mtctr; bctrl`) followed by `mr r5,r3`
+  passing the result onward. **Before the fix that code path could not exist at
+  all**, since the method had no usable return value.
+
+**Seventh wrong return type found on this project, and the first found through a
+vtable slot rather than a mask or width narrowing.** Return types are absent from
+the mangled name, so a call site consuming a `void` method's result is a header
+defect by definition — and two independent occurrences are what make it
+actionable rather than a misread.
+
+**The workflow that produced it is now three-for-three today:** agent proves the
+change in a shadow header, reports the exact declaration and the evidence, lead
+applies it behind a full five-binary verify. `dWmLib::getZoromeTime`,
+`dWmLib::isStartPointKinokoHouse1up`/`IsSingleEntry`, `daWmMap_c::GetPos`,
+`cLib::addCalcPos` and now this one all went in that way.
+
+WM_KINOPIO's largest function is at **18 of 20 cases**. Remaining: case 12 blocked
+on `dWCamera_c`'s real layout extending past its documented `pad[0x4f8]`, and case
+14 partial.

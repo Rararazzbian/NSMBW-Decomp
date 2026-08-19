@@ -855,3 +855,173 @@ instruction to read the diff rather than trust an improving count.
 cases 0, 1, 10, 12 untouched; case 14 partial; case 2 complete-but-typed-
 as-bytes. `resetPosition` (3), `checkAnmLoop` (34), the `.ctors` init (32),
 and `processCutsceneCommand` (136) untouched this round per instruction.
+
+## Round 9: case 1 closed, case 0 confirmed blocked on the same defect as case 10 -- stocktake
+
+**X/19 unchanged at 14/19.** Case 1 fully decoded and authored (no
+blockers). Case 0 read in full and found to hit the identical blocker as
+case 10 (see below) -- left as a documented stub rather than guessed.
+
+### Case 1 (`0x16c974`, 0x98) -- clean, no blockers
+
+```cpp
+mSpeedF = mSpeedF + m_194;
+if (m_198 > 0) {
+    m_198 = m_198 - 1;
+} else {
+    mSpeedF = 0.0f;
+    mpMdlMng->mpMdl->setAnm(0xab, 1.0f, 5.0f, 0.0f);
+    m_198 = 0xa; m_1a8 = 2; m_1ac = 0;
+    dWmEffectManager_c::m_pInstance->endEffect(m_1b0);
+    dWmSeManager_c::m_pInstance->playSound(0x35, mPos, 1);
+}
+```
+
+### Case 0 (`0x16c8a0`, 0xd4) -- read in full, blocked, not authored
+
+Read completely, including the classic PowerPC int-to-float bit-trick
+(`0x43300000`/`XOR 0x80000000` double construction, subtracted against a
+magic bias loaded from `.rodata`) used twice to convert the integer `15`
+to a float divisor. That resolved one real, previously-"unobserved"
+field: **`m_194 = ((m_19c.x - mPos.x) / 15.0f) / 15.0f`** -- consumed by
+case 1 (`mSpeedF += m_194`), confirming the two cases are a matched pair
+(case 0 computes a per-frame speed delta from the remaining distance to
+the cutscene target, case 1 applies it). Recorded in the header despite
+the case itself not being authorable.
+
+The case is otherwise blocked by the **exact same defect as case 10**:
+after a `setAnm(2, 3.0f, 5.0f, 0.0f)` call, it dispatches
+`mpMdlMng->mpMdl`'s vtable at slot `0x28` and uses the **return value** as
+an argument to `fn_80103520(dWmEffectManager_c::m_pInstance, 2, <that
+return value>, lbl_2_data_45D00, 0, 0)`, storing the overall result into
+`m_1b0` (the effect ID). `include/game/bases/d_player_model_base.hpp`
+declares the method at that slot `void`. Two independent occurrences
+(cases 0 and 10) of the identical shape confirm this is a genuine header
+defect, not a one-off misread -- left unauthored rather than hand-guess a
+return type or bypass the vtable with a raw function-pointer cast.
+
+## Final stocktake: `stepCutscene70`'s 20 cases
+
+| status | cases | count |
+|---|---|---|
+| authored, no open questions | 1, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 16, 17, 18, 19 | 15 |
+| authored, but reads/writes an unidentified `.bss` singleton via byte casts | 2 | 1 |
+| partial (one confirmed call of an estimated four-plus) | 14 | 1 |
+| blocked -- `dPyMdlBase_c` vtable slot `0x28` is `void` in `include/` but the target uses its return value | 0, 10 | 2 |
+| blocked -- `dWCamera_c`'s real layout extends past the header's documented `pad[0x4f8]` (fields at `0x5f0`-`0x71c` observed) | 12 | 1 |
+
+**16/20 cases are authored** (15 clean + case 2's caveated one); the
+remaining 4 are a partial and three genuinely blocked cases, none of them
+fixable without editing files outside this unit's own directory. This
+function cannot reach MATCH within this unit's own scope: cases 0/10/12
+need either a header correction (out of scope -- `include/` is
+off-limits) or a resolved singleton identity that a from-scratch header
+grep did not surface. That is the honest stopping point for
+`stepCutscene70` this session.
+
+## Final result, this session: 14/19
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate | — | **MATCH** (11) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16D100` startJump | 0x84 | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, untouched this round |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, untouched this round |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | walled, untouched this round |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | walled, untouched this round |
+| `fn_2_16C810` stepCutscene70 | 0x834 | 514 differing | **16/20 cases authored**, 1 partial, 3 blocked on real, documented defects outside this unit's editable scope |
+
+**14/19 byte-identical.**
+
+## Round 10: the `dPyMdlBase_c` vtable slot 0x28 defect, proven in a shadow header
+
+Per the coordinator's instruction: copied `d_player_model_base.hpp` into
+this unit's own `shadow_include/`, corrected exactly one declaration, and
+authored cases 0 and 10 against it, rather than asking for the real
+header to be trusted on a slot-offset argument alone.
+
+### The change
+
+**Method**: `dPyMdlBase_c::getBodyMdl()`.
+**Vtable byte offset**: `0x28` (compiled slot 10, 0-indexed).
+**Hand-declaration-order index**: 8 -- `10 - 2` for the two destructor
+slots (scalar + vector-deleting), per this unit's own earlier-established
+rule; index 8 in `d_player_model_base.hpp`'s declaration order lands
+exactly on `getBodyMdl()`, immediately after `draw()` and before
+`getAnmResFile()`.
+**Real declaration** (`include/`): `virtual void getBodyMdl();`
+**Shadow-header correction** (this unit's `shadow_include/game/bases/
+d_player_model_base.hpp`): `virtual m3d::mdl_c *getBodyMdl();`
+
+**What both call sites do with the value**: in `fn_2_16C810`'s cases 0 and
+10, the return value is passed straight through as the 3rd argument to an
+unnamed cross-TU call, `fn_80103520(dWmEffectManager_c *mgr, int
+effectId, m3d::mdl_c *model, const char *kind, int, int)` -- the exact
+same argument shape as the already-landed `fn_80103420` in
+`d_a_wm_kinoko_base.cpp`, whose corresponding parameter is typed
+`m3d::mdl_c *model`. That precedent is what fixed the return type, not a
+guess from the name alone. Unlike `fn_80103420`, this one's own result is
+also used (stored into `m_1b0`, the effect-ID field established in round
+6), so it returns `int`, not `void`.
+
+### Result: both cases now compile with the exact target dispatch and argument-passing shape
+
+With the shadow-header fix, `mpMdlMng->mpMdl->getBodyMdl()` compiles to
+**exactly** the target's `lwz r12,0x0(r3); lwz r12,0x28(r12); mtctr r12;
+bctrl` dispatch (previously unreachable at all, since the method didn't
+exist with a usable return type), and the immediately-following `mr
+r5,r3` (passing the return value as `fn_80103520`'s 3rd argument) matches
+target byte-for-byte in both cases. This is not a guess confirmed by
+elimination -- it's a structural MATCH on the exact instructions the
+defect was blocking.
+
+**One unrelated residual remains in both cases**: the `"kinopio_all_root"`
+string constant (`lbl_2_data_45D00`) pools differently -- target
+establishes its own dedicated base register (`lis r6,
+lbl_2_data_45D00@ha; addi r6,r6,...@l`, 2 instructions), while the draft's
+copy gets folded into an existing register already live for `.rodata`
+access (`addi r6, r31, <offset>`, 1 instruction) regardless of where the
+string is declared (tried both inside the existing anonymous namespace
+and as its own separate one -- same result both times). This is the same
+class of constant/string-pooling residual already characterized
+repeatedly this session (WM_ITEM's `cycleAnm`/`__sinit`, this unit's
+`resetPosition`) -- a real, separate, already-understood gap, not a new
+unknown and not related to the vtable fix.
+
+### Recommendation for the real header
+
+Change `include/game/bases/d_player_model_base.hpp`'s `virtual void
+getBodyMdl();` to `virtual m3d::mdl_c *getBodyMdl();` (the file already
+includes `<game/mLib/m_3d.hpp>`, so no new include is needed). Proven
+against two independent call sites in this unit; recommend the standard
+full five-binary verify before landing, per the coordinator's own
+process.
+
+## Case count after this round
+
+**18 of 20 `stepCutscene70` cases now authored** (15 clean + case 2's
+`.bss`-cast caveat + cases 0 and 10, both structurally proven against the
+corrected vtable slot). Remaining: case 12 (blocked on `dWCamera_c`'s
+real layout exceeding its header's documented padding -- a second,
+unrelated header gap, not this unit's to fix) and case 14 (partial, one
+confirmed call of an estimated four-plus, not blocked, just not finished
+in the time available).
+
+## Final result, this session: 14/19
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate | — | **MATCH** (11) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16D100` startJump | 0x84 | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, untouched |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, untouched |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | walled, untouched |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | walled, untouched |
+| `fn_2_16C810` stepCutscene70 | 0x834 | — | **18/20 cases authored**; case 12 blocked on a second header gap (`dWCamera_c`), case 14 partial |
+
+**14/19 byte-identical.** The `getBodyMdl()` return-type fix is proven and
+ready for the coordinator to apply to the real header; once landed, this
+unit's own draft would need no further change to benefit from it (the
+shadow-header override already produces the correct dispatch).

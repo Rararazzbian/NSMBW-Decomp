@@ -16,6 +16,15 @@ public:
     virtual void _calc();
     virtual void calc2();
     virtual void draw();
+    /// @unofficial WM_KINOPIO round: shadow-header fix under test. Slot
+    /// 0x28 (byte offset) -> compiled slot 10 -> hand-declaration-order
+    /// index 8 (10 minus the 2 destructor slots), i.e. this entry --
+    /// confirmed by two independent call sites (fn_2_16C810 cases 0 and
+    /// 10) that pass its return value straight into a
+    /// dWmEffectManager_c-related soft-light call
+    /// (`fn_80103520(mgr, 2, <this return>, kindName, 0, 0)`), the exact
+    /// same argument shape as the already-landed fn_80103420 in
+    /// d_a_wm_kinoko_base.cpp, whose 3rd argument is `m3d::mdl_c *model`.
     virtual m3d::mdl_c *getBodyMdl();
     virtual void getAnmResFile();
     virtual void setPlayerMode(int);
