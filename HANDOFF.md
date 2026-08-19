@@ -8026,3 +8026,54 @@ worked.**
 three-float `trans` overload give size 113 / 112 differing, worse -- the target's
 per-component stack staging is real but is not produced by separate scalar
 locals.
+
+## Two bit-numbering conventions run in OPPOSITE directions
+
+`ACTOR_PARAM_CONFIG`'s `offset` counts from the **LSB**; PowerPC's `extrwi`
+counts its bit position from the **MSB**. They convert as
+**`b = 32 - offset - size`**.
+
+```
+declared offset 8   ->  (x >> 8)  & 0xff  ->  LSB 8..15   ->  extrwi 8,16
+declared offset 16  ->  (x >> 16) & 0xff  ->  LSB 16..23  ->  extrwi 8,8
+```
+
+kinoballoon's most common residual across three functions was `extrwi ...,8,16`
+against the target's `...,8,8`, and both `(8,8)` and `(8,16)` had been tried as
+declarations. The answer is `(16, 8)`. **Right width at the wrong position means
+you have the convention backwards, not the field wrong.**
+
+## dtk's reported VTABLE SIZE can be an over-merge
+
+`(vtable size - 8) / 4` has been the standard virtual-count check. **It is wrong
+whenever dtk merges adjacent content into the vtable symbol.**
+
+kinoballoon's `lbl_2_data_456A0` reports `size:0x108`. Reading the relocations
+instead (`dtk rel info -r`) shows the real slots stop where the `Absolute`
+relocations end, at `+0x74` -- 0x78 bytes, 28 slots -- and what follows is
+`PpcRel24` `__ptmf_scall` thunk code that dtk merged in. The 28 slots then match
+`daWmSinkShip_c`'s independently-confirmed vtable slot for slot.
+
+**Read the relocation types, not the symbol size.** `Absolute` relocations are
+vtable entries; `PpcRel24` is code.
+
+## `mParam` can carry PACKED CONFIG FIELDS, not runtime state
+
+kinoballoon's apparent "state machine" in `modeExec`/`processCutsceneCommand` is
+dispatch on a **spawn-time config value** extracted from `mParam` by the
+`extrwi`/`clrlwi` bitfield idiom -- not on mutable state. Recognising that changes
+what the functions mean.
+
+Reading the base headers first also prevented two phantom members here:
+`mVisible` (`dBaseActor_c`, +0x124) and `mClipSphere` (`dWmActor_c`, +0x128) had
+both been mistaken for new fields. **A field you cannot account for is an
+inherited member before it is a new one** -- the same lesson as `+0x60` being a
+secondary vtable pointer.
+
+## Session note
+
+Two agents were terminated mid-round by a usage limit, not by any defect. Their
+work was verified and banked: **WM_MANTA 15/16** (only `countModelVariants` open
+at 19 differing) and **WM_START 8/14**. Both resumed from their committed state.
+**Bank in-flight work when an agent stops unexpectedly** -- both drafts were
+intact and re-verifiable, and nothing needed redoing.
