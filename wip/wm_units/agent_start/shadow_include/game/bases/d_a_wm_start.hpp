@@ -56,9 +56,14 @@ public:
                                    ///< 0x1b8+sizeof(anmTexPat_c) = 0x1e4 (compiled sizeof, see
                                    ///< this task's report).
     dWmActor_c *mChildActor; ///< @unofficial offset 0x1e4. The kinoko-house child actor
-                               ///< spawned by #create's `construct(...)` calls, or null.
-    int mUnk1e8; ///< @unofficial offset 0x1e8. Zeroed alongside #mChildActor in some paths.
-    u8 mPad_1ec[0x10]; ///< @unofficial offset 0x1ec, size 0x10. Never touched by any function
+                               ///< spawned by #create's/#unk_17A3C0's `construct(...)` calls, or null.
+    dWmActor_c *mSecondChild; ///< @unofficial offset 0x1e8. A second (WM_COURSE, 0x27e) child
+                                ///< actor #unk_17A3C0 spawns alongside #mChildActor; retyped from
+                                ///< the earlier `int mUnk1e8` once #unk_17A3C0 showed it holds a
+                                ///< `construct(...)` return value, not a scalar.
+    bool m_1ec; ///< @unofficial offset 0x1ec. Set true/false by #unk_17A3C0 depending on which
+                 ///< of its two top-level branches runs.
+    u8 mPad_1ed[0xf]; ///< @unofficial offset 0x1ed, size 0xf. Never touched by any function
                         ///< read so far; padding by elimination.
     int mUnk1fc; ///< @unofficial offset 0x1fc. Zeroed unconditionally at the end of #create.
     bool m_200; ///< @unofficial offset 0x200. Zeroed by the constructor; role unconfirmed.

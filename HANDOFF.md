@@ -8296,3 +8296,68 @@ with the reassignment landing between an address computation and its dereference
 which splits one load into two instructions. At `-O4` MWCC normalises all four
 source forms to the same internal representation before scheduling, so no
 source-level restructuring reaches the decision.
+
+## NEW LEVER: De Morgan inversions are NOT equivalent to this compiler
+
+```cpp
+if (A && !B) { X } else { Y }        // logically identical...
+if (!A || B) { Y } else { X }        // ...different bytes
+```
+
+WM_START's `create()` matched only the second form; the target's `beq`/`bne`
+pattern at that branch point distinguished them. We had branch *polarity*
+recorded; this is different -- **restructuring a compound condition through De
+Morgan changes the emitted code even though the logic is unchanged.** Read the
+branch pattern and try both arrangements.
+
+## The remedy for a missing prologue register save
+
+Two functions in WM_START showed the same symptom: a very large differing count
+caused by **one absent `stw rN, off(r1)` in the prologue**, cascading a one-line
+shift through the entire function. `create()`'s was 104 differing; the fix took
+it to MATCH.
+
+**Bind the value to a local declared BEFORE the intervening call.** The string
+address had to survive a `getResMdl()` call; declaring `const char *nodeName =
+"s1";` ahead of that call -- rather than passing the literal directly afterwards
+-- produced the target's staged `lis`/`addi` and forced the register to be saved.
+
+So the full pattern for this symptom is:
+1. A large count immediately after a size mismatch is **one defect** until proven
+   otherwise -- check content-aligned before reading it as a defect list.
+2. If the missing instruction is a prologue save, the cause is a value the target
+   keeps live across a call that your version recomputes.
+3. Declare it as a local **before** the call.
+
+## Parameter types ARE in the mangled name -- use them instead of guessing
+
+WM_START's agent held off authoring a function partly because
+`dWmEffectManager_c::playEffect`'s signature was "not yet confirmed". It is fully
+determined, and was already in `syms.txt`:
+
+```
+playEffect__18dWmEffectManager_cFiPC7mVec3_cPC7mAng3_cPC7mVec3_c
+  ->  playEffect(int, const mVec3_c *, const mAng3_c *, const mVec3_c *)
+```
+
+**Only RETURN types are absent from a CFront mangled name.** Parameters are fully
+encoded. Before treating a callee's signature as unknown, decode its symbol --
+and when declaring it, spell the parameter types so the mangled name reproduces
+exactly, since a same-width alias with a different spelling mangles differently
+and fails to link silently.
+
+## The established way to use a class whose header models the wrong thing
+
+`dWCamera_c` is `char pad[0x4f8]` plus an empty view-clip member, and three landed
+units reference it. Units needing its real fields **do not change the header** --
+they use a local `u8 *` offset cast confined to their own `.cpp`, with the
+evidence in a comment.
+
+Landed precedent: `source/d_basesNP/bases/d_a_wm_note.cpp` writes five fields at
+`0x5f0`-`0x624` this way and shipped today. anchor used the same approach for
+`dWmMapModel_c`, whose header models the wrong object entirely (`0xbf8` is the
+size of a containing struct, not of the class).
+
+**This is not a compromise, it is the correct division:** the shared header stays
+safe for everything already landed, the unit progresses, and the next person to
+model the class properly inherits the offsets and the reasoning.

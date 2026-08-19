@@ -33,20 +33,23 @@ int daWmStart_c::create() {
     }
 
     if (ACTOR_PARAM(HasChild)) {
-        if (IsCourseClear() && !IsCourseFirstClear()) {
+        if (!IsCourseClear() || IsCourseFirstClear()) {
+            unk_17A3C0();
+        } else {
             if (IsCourseFirstOmoteClear()) {
-                mUnk1e8 = 0;
-                nw4r::math::VEC3 childVec;
+                mSecondChild = nullptr;
+                mVec3_c childPos;
                 if (ACTOR_PARAM(Kind) != 0) {
+                    const char *nodeName = "s1";
                     nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
-                    int nodeId = m3d::getNodeID(resMdl, "s1");
-                    mModel.getNodeWorldMtxMultVecZero(nodeId, childVec);
+                    int nodeId = m3d::getNodeID(resMdl, nodeName);
+                    mModel.getNodeWorldMtxMultVecZero(nodeId, *(nw4r::math::VEC3 *) &childPos);
                 } else {
+                    const char *nodeName = "s0";
                     nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
-                    int nodeId = m3d::getNodeID(resMdl, "s0");
-                    mModel.getNodeWorldMtxMultVecZero(nodeId, childVec);
+                    int nodeId = m3d::getNodeID(resMdl, nodeName);
+                    mModel.getNodeWorldMtxMultVecZero(nodeId, *(nw4r::math::VEC3 *) &childPos);
                 }
-                mVec3_c childPos(childVec);
 
                 if (dWmLib::isStartPointKinokoHouseStar()) {
                     mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_STAR, this,
@@ -60,14 +63,12 @@ int daWmStart_c::create() {
                 }
             } else {
                 mChildActor = nullptr;
-                mUnk1e8 = 0;
+                mSecondChild = nullptr;
             }
-        } else {
-            unk_17A3C0();
         }
     } else {
         mChildActor = nullptr;
-        mUnk1e8 = 0;
+        mSecondChild = nullptr;
         if (!IsCourseClear()) {
             unk_17A760();
         }
@@ -78,9 +79,86 @@ int daWmStart_c::create() {
     return SUCCEEDED;
 }
 
-// NOT YET AUTHORED this round (0x39c bytes). Called from create() when
-// IsCourseClear() && IsCourseFirstClear() are both true.
+// Called from create() when !IsCourseClear() || IsCourseFirstClear(). Repeats create()'s
+// "s0"/"s1" node lookup, then either spawns a kinoko-house child (by dWmLib::getStartPointKinokoHouseKindNum/
+// IsCourseFirstClear/getZoromeTime) or a Star/Red/1up child (by dWmLib::isStartPointKinokoHouseStar/Red/1up),
+// each paired with a second WM_COURSE (0x27e) child at #mPos. Ends by calling #unk_17A760.
 void daWmStart_c::unk_17A3C0() {
+    mVec3_c childPos;
+    if (ACTOR_PARAM(Kind) != 0) {
+        const char *nodeName = "s1";
+        nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+        int nodeId = m3d::getNodeID(resMdl, nodeName);
+        mModel.getNodeWorldMtxMultVecZero(nodeId, *(nw4r::math::VEC3 *) &childPos);
+    } else {
+        const char *nodeName = "s0";
+        nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+        int nodeId = m3d::getNodeID(resMdl, nodeName);
+        mModel.getNodeWorldMtxMultVecZero(nodeId, *(nw4r::math::VEC3 *) &childPos);
+    }
+
+    if (dWmLib::getStartPointKinokoHouseKindNum() == 0 && !IsCourseFirstClear()) {
+        u8 zoromeTime = dWmLib::getZoromeTime();
+        m_1ec = true;
+
+        daWmMap_c *wmMap = daWmMap_c::m_instance;
+        int idx = *(int *) ((u8 *) wmMap + 0x338c);
+        setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, false);
+
+        unsigned long param = dWmLib::c_StartPointKinokoHouseID;
+        unsigned long paramFlag = param | 0x10000;
+
+        if (zoromeTime == 0) {
+            if (dWmLib::IsSingleEntry()) {
+                mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_1UP, this, paramFlag, &childPos, nullptr);
+                mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+                *(u8 *) ((u8 *) mChildActor + 0x124) = 0;
+                *(u8 *) ((u8 *) mSecondChild + 0x124) = 0;
+            } else {
+                mChildActor = nullptr;
+                mSecondChild = nullptr;
+            }
+        } else if (zoromeTime == 9) {
+            mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_STAR, this, paramFlag, &childPos, nullptr);
+            mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+            *(u8 *) ((u8 *) mChildActor + 0x124) = 0;
+            *(u8 *) ((u8 *) mSecondChild + 0x124) = 0;
+        } else if (zoromeTime >= 3) {
+            mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_RED, this, paramFlag, &childPos, nullptr);
+            mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+            *(u8 *) ((u8 *) mChildActor + 0x124) = 0;
+            *(u8 *) ((u8 *) mSecondChild + 0x124) = 0;
+        } else if (zoromeTime >= 1) {
+            mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_1UP, this, paramFlag, &childPos, nullptr);
+            mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+            *(u8 *) ((u8 *) mChildActor + 0x124) = 0;
+            *(u8 *) ((u8 *) mSecondChild + 0x124) = 0;
+        }
+    } else {
+        m_1ec = false;
+
+        daWmMap_c *wmMap = daWmMap_c::m_instance;
+        int idx = *(int *) ((u8 *) wmMap + 0x338c);
+        setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, true);
+
+        unsigned long param = dWmLib::c_StartPointKinokoHouseID;
+
+        if (dWmLib::isStartPointKinokoHouseStar()) {
+            mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_STAR, this, param, &childPos, nullptr);
+            mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+            *(u8 *) ((u8 *) this + 0x124) = 0;
+        } else if (dWmLib::isStartPointKinokoHouseRed()) {
+            mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_RED, this, param, &childPos, nullptr);
+            mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+            *(u8 *) ((u8 *) this + 0x124) = 0;
+        } else if (dWmLib::isStartPointKinokoHouse1up()) {
+            mChildActor = dWmActor_c::construct(fProfile::WM_KINOKO_1UP, this, param, &childPos, nullptr);
+            mSecondChild = dWmActor_c::construct(fProfile::WM_COURSE, this, param, &mPos, nullptr);
+            *(u8 *) ((u8 *) this + 0x124) = 0;
+        }
+    }
+
+    unk_17A760();
 }
 
 // Called from create() when IsCourseClear() is false. Decides the kinoko-house's dance/reaction
