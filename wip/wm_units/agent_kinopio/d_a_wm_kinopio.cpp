@@ -10,6 +10,9 @@
 #include <game/bases/d_game_key.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <game/bases/d_wm_effect_manager.hpp>
+#include <game/framework/f_manager.hpp>
+#include <game/framework/f_base.hpp>
+#include <game/bases/d_a_wm_player.hpp>
 #include <constants/game_constants.h>
 
 // @unofficial lbl_2_bss_11B70 -- a shared .bss singleton pointer, real
@@ -26,6 +29,19 @@ extern "C" int fn_800FCB30(int);
 // project's other raw cross-TU externs.
 extern "C" mVec3_c GetPos__9daWmMap_cFPCc(daWmMap_c *self, const char *nodeName);
 
+// @unofficial dWmMapModel_c::GetEndNodePos(mVec3_c&) -- not in the real
+// header (dWmMapModel_c is currently opaque padding only). Mangled name
+// confirmed directly from the target
+// (GetEndNodePos__13dWmMapModel_cFR7mVec3_c). daWmMap_c's own mModels[4]
+// array and currIdx field are ALREADY correctly declared in the real
+// header (game/bases/d_a_wm_map.hpp) -- independently confirmed here:
+// offsetof(daWmMap_c, mModels) == 0x1a0 and the observed field read at
+// map+0x338c matches offsetof(currIdx) == 0x1a0 + 4*sizeof(dWmMapModel_c)
+// == 0x1a0 + 4*0xbf8 == 0x338c exactly, so `map->mModels[map->currIdx]`
+// needs no raw-offset arithmetic at all -- only this one method is
+// missing.
+extern "C" void GetEndNodePos__13dWmMapModel_cFR7mVec3_c(dWmMapModel_c *self, mVec3_c &out);
+
 // @unofficial stepCutscene70() externs -- all read directly off the
 // target's own call sites (mangled/raw names), not guessed.
 extern "C" void fn_2_192920(dWmActor_c *);
@@ -40,6 +56,27 @@ extern "C" void fn_80105170(dWmSeManager_c *mgr, int a, int b, u8 c, float d);
 namespace dWmLib {
     void InitKinopioCourse();
 }
+
+// @unofficial fn_80100640 -- cross-module DOL call, unnamed in both symbol
+// tables. Same signature already established and used with this exact
+// argument shape (daWmMap_c*, node name, 0) in wip/wm_units/agent_anchor's
+// d_a_wm_anchor.cpp and multiple other WM units; returns a node/model
+// pointer, null on lookup failure.
+extern "C" void *fn_80100640(daWmMap_c *map, const char *name, int unused);
+
+// @unofficial stepCutscene70() case 14 externs -- read directly off the
+// target's own call sites, not guessed.
+// fn_2_16AE70 == daWmKinoballoon_c::triggerFirstStartMove() (confirmed:
+// identical address 0x0016AE70 in wip/wm_units/agent_kinoballoon's own
+// draft, a static method of the sibling class living in this same REL) --
+// a genuine cross-class call, no arguments, no explicit `this` setup in
+// the target at either of the two paths reaching this call.
+extern "C" void fn_2_16AE70();
+// fn_2_1998E0 -- not identified by name; called with
+// daWmPlayer_c::ms_instance as its sole argument (no vtable indirection,
+// a direct bl), same raw-extern technique as fn_2_192920/fn_2_192930
+// above.
+extern "C" void fn_2_1998E0(daWmPlayer_c *player);
 
 // @unofficial KNOWN ISSUE, not resolved: the target's .ctors section has
 // exactly 1 entry for this unit; the real source therefore does NOT
@@ -206,6 +243,16 @@ namespace {
     // @unofficial lbl_2_data_45D00, the "kind" node name passed to
     // fn_80103520 in stepCutscene70() cases 0 and 10.
     static const char sKinopioAllRoot[] = "kinopio_all_root";
+    // @unofficial lbl_2_data_45CBC, a world-map node name shared by
+    // stepCutscene70() cases 12 and 14.
+    static const char sW101[] = "W101";
+    // @unofficial lbl_2_rodata_8B20 -- a 4-float table pointer stored into
+    // dWCamera_c's own +0x71c field in case 12. First 3 floats (0.1f,
+    // 12.0f, 1.0f) match wip/wm_units/agent_start's own sc_CamParams table
+    // exactly; the 4th differs per call site (agent_start uses 0.0f, this
+    // unit's case 12 uses 100.0f) -- same "camera ease-curve parameter
+    // block" family, case-specific last entry.
+    static const float sCamParams[4] = {0.1f, 12.0f, 1.0f, 100.0f};
 }
 
 void daWmKinopio_c::stepCutscene70() {
@@ -358,9 +405,34 @@ void daWmKinopio_c::stepCutscene70() {
             }
         }
         break;
-    case 12:
-        // @unofficial NOT fully decoded -- placeholder.
+    case 12: {
+        // @unofficial dWCamera_c's real layout still isn't in the shared
+        // header (only `char pad[0x4f8]` before mViewClip) -- but this is
+        // NOT a header-fix situation like getBodyMdl: the accepted, LANDED
+        // technique for these exact same six fields
+        // (source/d_basesNP/bases/d_a_wm_note.cpp's own processCutsceneCommand,
+        // case 0x20) is a local raw u8* cast confined to this .cpp, not a
+        // header change. wip/wm_units/agent_start independently hit the
+        // identical six offsets with the same apparent types. Reusing that
+        // established, already-landed technique here.
+        daWmMap_c *map = daWmMap_c::m_instance;
+        dWCamera_c *camera = dWCamera_c::m_instance;
+        mVec3_c endPos;
+        GetEndNodePos__13dWmMapModel_cFR7mVec3_c(&map->mModels[map->currIdx], endPos);
+        m_19c = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
+        m_19c.y = endPos.y;
+        m_19c.z = endPos.z;
+        u8 *cam = (u8 *) camera;
+        *(u32 *) (cam + 0x604) = 2;
+        *(mVec3_c **) (cam + 0x5f4) = &m_19c;
+        *(u32 *) (cam + 0x5f0) = 0;
+        *(bool *) (cam + 0x624) = false;
+        *(u32 *) (cam + 0x608) = 0;
+        *(const float **) (cam + 0x71c) = sCamParams;
+        m_198 = 0x3c;
+        m_1a8 = 0xd;
         break;
+    }
     case 13:
         if (*(int *) ((u8 *) dWCamera_c::m_instance + 0x5f4) == 0) {
             if (m_198 > 0) {
@@ -370,10 +442,37 @@ void daWmKinopio_c::stepCutscene70() {
             }
         }
         break;
-    case 14:
-        // @unofficial NOT fully decoded (starts with dWmLib::InitKinopioCourse()) -- placeholder.
+    case 14: {
         dWmLib::InitKinopioCourse();
+        // @unofficial fManager_c::searchBaseByProfName(fProfile::WM_KINOBALLOON,
+        // nullptr) -- profile id read directly off the target (0x2a7 ==
+        // 679). NOT fProfile::WM_BUBBLE (0x2a6, confirmed by compiling
+        // against the real enum and comparing the resulting `li r3,...`
+        // immediate against the target's 0x2a7) -- ties together with the
+        // fn_2_16AE70 call below (daWmKinoballoon_c::triggerFirstStartMove()):
+        // this finds a kinoballoon actor and arms it as part of starting
+        // this cutscene course. Mangled name matches fManager_c's own
+        // static (not dBase_c's convenience wrapper), same call shape
+        // already used elsewhere in this project (d_a_en_door.cpp etc).
+        fBase_c *balloon = fManager_c::searchBaseByProfName(fProfile::WM_KINOBALLOON, nullptr);
+        if (balloon) {
+            // @unofficial fn_80100640's returned node's field at +0xc (real
+            // type unidentified) is stored at balloon+0x184 (the
+            // kinoballoon's own real type, daWmKinoballoon_c, is declared
+            // in wip/wm_units/agent_kinoballoon but not in include/, so
+            // accessed via raw offset cast here, same idiom as
+            // lbl_2_bss_11B70 elsewhere in this function).
+            void *node = fn_80100640(daWmMap_c::m_instance, sW101, 0);
+            *(u32 *) ((u8 *) balloon + 0x184) = node ? *(u32 *) ((u8 *) node + 0xc) : 0;
+            mVec3_c pos = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
+            *(mVec3_c *) ((u8 *) balloon + 0xac) = pos;
+        }
+        fn_2_16AE70();
+        fn_2_1998E0(daWmPlayer_c::ms_instance);
+        m_198 = 0x3c;
+        m_1a8 = 0xf;
         break;
+    }
     case 15:
         if (m_198 > 0) {
             m_198 = m_198 - 1;

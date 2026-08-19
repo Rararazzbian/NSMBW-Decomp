@@ -1025,3 +1025,224 @@ in the time available).
 ready for the coordinator to apply to the real header; once landed, this
 unit's own draft would need no further change to benefit from it (the
 shadow-header override already produces the correct dispatch).
+
+## Round 11: clean rebuild against the landed getBodyMdl fix; cases 14 and 12 both closed out (20/20 cases now have authored code)
+
+**X/19 unchanged at 14/19** (stepCutscene70 still needs every last byte to
+flip to MATCH), but this is real, verified progress: both of the two
+remaining open `stepCutscene70` cases from round 10 (case 14's partial,
+case 12's "blocked") are now fully authored. `stepCutscene70` moved from
+493 differing... (see below for the actual before/after: 517 -> 493).
+
+### Step 0: shadow header dropped, rebuild confirmed clean
+
+`dPyMdlBase_c::getBodyMdl()`'s return-type fix landed for real in
+`include/game/bases/d_player_model_base.hpp` (commit `c02cc69`). Diffed
+this unit's shadow copy against the real header first -- only a comment
+block differed, no code. Deleted
+`wip/wm_units/agent_kinopio/shadow_include/game/bases/d_player_model_base.hpp`
+and rebuilt. **Verified**: compile succeeds, score is unchanged at 14/19,
+and the two `getBodyMdl()` call sites (cases 0 and 10) still produce the
+exact same `lwz r12,0x0(r3); lwz r12,0x28(r12); mtctr r12; bctrl; ...; mr
+r5,r3` dispatch byte-for-byte against target at both `0x0016C928-0x0016C950`
+and `0x0016CCBC-0x0016CCE4` (checked instruction-by-instruction, not just
+"it compiled").
+
+### Case 14 fully authored -- and a wrong profile-ID guess caught by the compiler itself
+
+Finished reading the case from `fn_16C810_full.txt` (target
+`0x16ce5c`-`0x16cf08`, 0xac bytes) before writing anything, per
+instruction. Full body:
+
+```cpp
+case 14: {
+    dWmLib::InitKinopioCourse();
+    fBase_c *balloon = fManager_c::searchBaseByProfName(fProfile::WM_KINOBALLOON, nullptr);
+    if (balloon) {
+        void *node = fn_80100640(daWmMap_c::m_instance, sW101, 0);
+        *(u32 *) ((u8 *) balloon + 0x184) = node ? *(u32 *) ((u8 *) node + 0xc) : 0;
+        mVec3_c pos = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
+        *(mVec3_c *) ((u8 *) balloon + 0xac) = pos;
+    }
+    fn_2_16AE70();
+    fn_2_1998E0(daWmPlayer_c::ms_instance);
+    m_198 = 0x3c;
+    m_1a8 = 0xf;
+    break;
+}
+```
+
+**A genuine bug caught before it shipped**: first attempt guessed the
+searched profile was `fProfile::WM_BUBBLE` from the raw immediate
+(`li r3, 0x2a7`) using a manual enum count. Compiling against the REAL
+enum showed `fProfile::WM_BUBBLE` actually compiles to `0x2a6`, one off --
+my manual count was wrong by one somewhere in a ~680-entry list, exactly
+the kind of error the "let the compiler check your literal" technique
+exists to catch. `fProfile::WM_KINOBALLOON` compiles to the wanted `0x2a7`
+and, better, makes narrative sense: `fn_2_16AE70` (called right after) is
+independently confirmed to be `daWmKinoballoon_c::triggerFirstStartMove()`
+(identical address `0x0016AE70` in `wip/wm_units/agent_kinoballoon`'s own
+draft, a static method of the sibling class in this same REL, called with
+no arguments in either code path here) -- so case 14 is "find a kinoballoon
+actor, arm its node/position fields, then kick off its start-move state
+machine." This ties the whole case together and is the kind of
+cross-check that should have been done before the first guess, not after.
+
+`fManager_c::searchBaseByProfName(ProfileName, const fBase_c*)` (the
+static overload, matching the target's exact mangled name, not
+`dBase_c`'s convenience wrapper) needed `<game/framework/f_manager.hpp>`
+and `<game/framework/f_base.hpp>` added to the includes; `daWmPlayer_c`
+already existed in `include/game/bases/d_a_wm_player.hpp` with
+`ms_instance` declared. `fn_80100640` reuses the exact signature already
+established in `wip/wm_units/agent_anchor/d_a_wm_anchor.cpp`
+(`daWmMap_c*, const char*, int`). `fn_2_1998E0` has no name or precedent
+anywhere in the tree; declared as a raw `extern "C"` taking
+`daWmPlayer_c*`, same technique as `fn_2_192920`/`fn_2_192930` already in
+this file.
+
+**Two residuals remain in case 14, both the SAME already-characterized
+class as elsewhere in this unit (constant/string-pool positioning)**: the
+shared `"W101"` node name (now hoisted to a file-scope `sW101[]`, used by
+both cases 12 and 14) compiles to `addi rN, r31, 0x64` (folded into the
+existing rodata-base register) instead of the target's own dedicated
+`lis/lwz` pair for `lbl_2_data_45CBC`; and the balloon's target-position
+struct-copy shape differs (target keeps a genuine stack round-trip through
+a second temp at `r1+0x8` that the draft's single-use local optimizes
+away -- 3 fewer store instructions, not a logic difference). Not chased
+further, consistent with this unit's repeated, reproducible finding that
+MWCC's constant/temp placement in this specific pooling class does not
+respond to declaration reordering.
+
+### Case 12 -- reframed from "blocked" to "solved," no header change needed
+
+Read the case fully (target `0x16cd80`-`0x16ce24`, 0xa4 bytes) before
+writing anything. The previous round's "blocked" verdict assumed fixing
+`dWCamera_c`'s layout would need the same kind of header correction as
+`getBodyMdl()`. Checking for a landed precedent first (per the
+coordinator's own standard) found something different and better:
+**`source/d_basesNP/bases/d_a_wm_note.cpp`** (already landed, not `wip/`)
+already writes the exact same six `dWCamera_c` offsets
+(`0x5f0/0x5f4/0x604/0x608/0x624/0x71c`) in its own `processCutsceneCommand`,
+using a **local raw `u8*` cast confined to that one `.cpp`** -- not a
+header fix. `wip/wm_units/agent_start/d_a_wm_start.cpp` independently hit
+the identical six offsets with matching types
+(`u32/mVec3_c*/u32/bool/u32/const float*`). Three independent units,
+including one already-landed, agreeing on the same six fields is a
+materially stronger cross-check than this unit's own reading alone could
+give -- and it points at a DIFFERENT accepted fix than a header edit:
+**this project's standing policy for `dWCamera_c` past its documented
+padding is local raw casts, not extending the shared header.** Adopted
+that technique directly rather than writing a new header proposal.
+
+The map/model indexing half of the case needed **no new header work at
+all**: `daWmMap_c::mModels[4]` and `daWmMap_c::currIdx` are ALREADY
+correctly declared in `include/game/bases/d_a_wm_map.hpp`, and
+`dWmMapModel_c` is already `u8 mPad[0xbf8]` (matching the observed
+`0xbf8` stride exactly). Verified independently:
+`offsetof(daWmMap_c, mModels) == 0x1a0`, and `offsetof(daWmMap_c, currIdx)
+== 0x1a0 + 4*sizeof(dWmMapModel_c) == 0x1a0 + 4*0xbf8 == 0x338c`, which is
+exactly the raw offset (`lwz r0, 0x338c(r5)`) the target reads -- so
+`map->mModels[map->currIdx]` needed zero raw-offset arithmetic on the
+`daWmMap_c` side. The only missing piece was one method,
+`dWmMapModel_c::GetEndNodePos(mVec3_c&)`, declared as a raw `extern "C"`
+free function from its confirmed mangled name
+(`GetEndNodePos__13dWmMapModel_cFR7mVec3_c`), same technique as
+`GetPos__9daWmMap_cFPCc` already in this file.
+
+Authored body:
+
+```cpp
+case 12: {
+    daWmMap_c *map = daWmMap_c::m_instance;
+    dWCamera_c *camera = dWCamera_c::m_instance;
+    mVec3_c endPos;
+    GetEndNodePos__13dWmMapModel_cFR7mVec3_c(&map->mModels[map->currIdx], endPos);
+    m_19c = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
+    m_19c.y = endPos.y;
+    m_19c.z = endPos.z;
+    u8 *cam = (u8 *) camera;
+    *(u32 *) (cam + 0x604) = 2;
+    *(mVec3_c **) (cam + 0x5f4) = &m_19c;
+    *(u32 *) (cam + 0x5f0) = 0;
+    *(bool *) (cam + 0x624) = false;
+    *(u32 *) (cam + 0x608) = 0;
+    *(const float **) (cam + 0x71c) = sCamParams;
+    m_198 = 0x3c;
+    m_1a8 = 0xd;
+    break;
+}
+```
+
+The `m_19c = pos; m_19c.y = endPos.y; m_19c.z = endPos.z;` shape (full
+3-float assign, then two of the three components immediately overwritten)
+is read directly off the instruction order, not inferred: target calls
+`GetEndNodePos` FIRST (into a stack temp), then `GetPos` SECOND, then
+stores all three of `GetPos`'s components into `m_19c`, then re-stores
+`GetEndNodePos`'s already-computed `.y`/`.z` (never its `.x`) over the top
+-- matching exactly.
+
+`sCamParams[4] = {0.1f, 12.0f, 1.0f, 100.0f}` -- the first three floats
+match `wip/wm_units/agent_start`'s own `sc_CamParams` table
+(`{0.1f, 12.0f, 1.0f, 0.0f}`) exactly; only the last entry differs (a
+per-call-site parameter), reinforcing this is the same "camera ease-curve
+parameter block" family, not a coincidence.
+
+**Result: every instruction in case 12 matches the target's shape,
+register allocation, and operand order exactly**, checked line-by-line
+against the disassembly, with the SAME two already-characterized residual
+classes as case 14: the shared `sW101` string and the new `sCamParams`
+table both fold into the existing rodata-base register (`addi rN, r31,
+0x64` / `addi rN, r31, 0x70`) instead of getting the target's own
+dedicated `lis`/`addi` pair. No logic, register-allocation, or
+control-flow difference found anywhere else in the case.
+
+### Net result: `stepCutscene70` now has all 20 cases authored (up from 18)
+
+| status | cases | count |
+|---|---|---|
+| authored, no open questions | 1, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19 | 17 |
+| authored, but reads/writes an unidentified `.bss` singleton via byte casts | 2 | 1 |
+| authored, structurally exact except the known constant-pool-folding residual | 0, 10 | (subset of the 17 above) |
+
+**0 cases remain unauthored or blocked.** Whole-function diff count moved
+from 517 (start of this round, after just dropping the shadow header) to
+493 differing after both cases -- real, measured improvement, though the
+function overall needs a 0-diff match on every remaining case's residual
+class (constant pooling + one function-wide register-allocation gap,
+likely stemming from register pressure that will only resolve once the
+last stack-temp/pooling residuals are solved, which none of this round's
+attempts moved) before it can flip to MATCH.
+
+### Task-queue item 3: no genuinely unwritten function remains
+
+Checked the full 19-function table before picking a "smallest unwritten
+function" per instruction: every one of the 5 non-MATCH functions
+(`resetPosition` 3 differing, `checkAnmLoop` 34 differing, `fn_2_16D1E0`
+`.ctors` init 32 differing, `processCutsceneCommand` 136 differing,
+`stepCutscene70` now 493 differing) already has real authored code from
+earlier rounds -- none is blank. Re-ran `resetPosition` and `checkAnmLoop`
+after this round's other changes (new file-scope constants added
+elsewhere in the TU) in case of a ripple effect on constant-pool ordering,
+per the "re-test after a genuine change" rule -- **both unchanged** (3 and
+34 respectively), confirming no ripple. Did not re-attempt any of the
+three previously-exhausted variants for these without a new hypothesis,
+per instruction not to repeat already-ruled-out shapes.
+
+## Final state, this round: 14/19 byte-identical (unchanged count, but stepCutscene70 now 100% case-covered)
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate | — | **MATCH** (11) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16D100` startJump | 0x84 | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, re-verified unchanged this round |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, re-verified unchanged this round |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | walled, untouched this round |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | untouched this round |
+| `fn_2_16C810` stepCutscene70 | 0x834 | 493 differing (down from 517) | **20/20 cases now authored** (up from 18/20); remaining gap is the constant-pooling residual class plus one function-wide register-allocation difference, not a logic/case gap |
+
+**14/19 byte-identical.** Next round's highest-value target is almost
+certainly the constant-pooling/register-allocation residual class itself
+(now shared across cases 0, 10, 12, 14 AND `resetPosition`) -- a genuine
+fix there would likely move several functions at once rather than one at
+a time.

@@ -10639,3 +10639,40 @@ unchecked file by name and points at the unit's own `build.py`, whose
 
 **A sweep that cannot see most of its targets must say which ones**, or its
 summary line is a lie by omission.
+
+## RETRACTION: `dWCamera_c`'s layout gap is NOT a header defect. It is already solved.
+
+I recorded case 12 of WM_KINOPIO's `stepCutscene70` as "blocked on a second,
+unrelated header gap — `dWCamera_c`'s real layout extends past its documented
+`pad[0x4f8]` — not this unit's to fix." That framing was wrong, and it would have
+cost a round: the next agent would have gone off to prove a header change that
+nobody needs.
+
+**The project already has an accepted technique for this gap, in LANDED code.**
+`source/d_basesNP/bases/d_a_wm_note.cpp:164` writes past the documented padding
+with a local raw cast confined to its own `.cpp`:
+
+```cpp
+dWCamera_c *camera = dWCamera_c::m_instance;
+u8 *cam = (u8 *) camera;
+```
+
+`wip/wm_units/agent_start` uses the same shape. So the correct fix for case 12
+was **no header change at all** — re-derive the offsets from the unit's own
+disassembly, confirm they agree with the landed precedent, and write the same
+local cast.
+
+**The lesson is the ordering of two checks.** "Is this a header defect?" is the
+SECOND question. The first is **"has a landed unit already hit this, and what did
+it do?"** `getBodyMdl` was a genuine header defect and the shadow-header workflow
+was right for it. This looked identical — same class, same kind of gap — and was
+not. What separated them was one grep of `source/` for landed precedent, which
+costs a few seconds and was skipped on the strength of the resemblance.
+
+A related over-claim corrected in the same round: `daWmMap_c::mModels`/`currIdx`
+were assumed missing from the real header. They are correctly declared;
+`offsetof(currIdx) == 0x338c` was verified directly. Only one genuinely absent
+method (`dWmMapModel_c::GetEndNodePos`) needed a raw extern.
+
+**All 20 of `stepCutscene70`'s cases now have authored code** (was 18). No logic
+or missing-case gaps remain in it.
