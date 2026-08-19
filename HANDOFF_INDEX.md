@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 10991 lines / 417 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11038 lines / 420 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -438,3 +438,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `10890-10922` FIXED: the order check no longer invents violations out of a tie
 - `10923-10954` The redundant-guard lever has an EXCEPTION: automatic base-subobject destruction
 - `10955-10991` WM_KINOPIO's pool: BOTH short and misordered, for two separate reasons
+- `10992-11007` HEADER ADDED: `daWmMap_c::GetPos(const char *)` — the name overload of `GetPos(int)`
+- `11008-11023` WM_HANACHAN 13/32 -> 16/32, and a DOL vtable read that closed a function outright
+  - `11024-11038` A CROSS-UNIT residual class: paired-single vectorisation, now on TWO units

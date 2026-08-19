@@ -7,6 +7,8 @@
 #include <game/mLib/m_3d/fanm.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_a_wm_player.hpp>
+#include <game/bases/d_a_wm_map.hpp>
+#include <revolution/MTX.h>
 
 extern "C" int R_2_1_1994D0(daWmPlayer_c *player);
 extern "C" int R_2_1_1994B0(daWmPlayer_c *player);
@@ -117,6 +119,33 @@ public:
     /// @unofficial fn_2_165AB0 (0x70 B). NOT yet authored -- placeholder, referenced by draw().
     void unkFn165AB0();
 
+    /// @unofficial fn_2_1657E0 (0x90 B). Returns `daWmMap_c::m_instance->GetPos("W502") +
+    /// kOffsetA` (kOffsetA read as (0,0,0) from lbl_2_data_44D60+0x4 in the retail .data --
+    /// confirmed by direct file read of original/d_basesNP.rel, not inferred). Computed via
+    /// PSVECAdd (psq_l/ps_add/psq_st in the target), not mVec3_c::operator+. Does not read
+    /// `this` at all (the incoming this-pointer register is loaded then never touched) --
+    /// still an ordinary non-static member in the source, just one whose body happens not to
+    /// touch object state.
+    mVec3_c getBasePos();
+    /// @unofficial fn_2_165770 (0x68 B). getBasePos() + kOffsetB (also (0,0,0) in retail data,
+    /// at lbl_2_data_44D60+0x10 -- a DIFFERENT data object from kOffsetA/kOffsetC even though
+    /// all three currently hold the same value, evidenced by the three call sites needing
+    /// three separate 0xc-byte slots in the target's .data).
+    mVec3_c getPosVariant2();
+    /// @unofficial fn_2_165700 (0x68 B). getBasePos() + kOffsetC ((0,0,0), lbl_2_data_44D60+0x1c).
+    mVec3_c getPosVariant3();
+    /// @unofficial fn_2_1655C0 (0xB8 B). Recomputes mPos (+0xac, confirmed against create()'s
+    /// own already-matching `lfs f3, 0xac(r31)` read of mPos) from getBasePos(), then mUnk460
+    /// from getPosVariant2(), then mUnk46c from
+    /// getPosVariant3(), then mUnk454 from a second getBasePos() call (the target really does
+    /// call the 1657E0 helper twice from here). Referenced by nothing authored yet this
+    /// round -- likely called from resetState() or state0(), not yet confirmed.
+    void resetTargetPositions();
+    /// @unofficial fn_2_165680 (0x74 B). `for (i = 0; i < 200; i++) mTrail[i] = getPosVariant3();`
+    /// -- floods the whole 200-entry trail buffer with the same computed position. Referenced
+    /// by nothing authored yet this round.
+    void resetTrail();
+
     /// @unofficial fn_2_164EB0 (0x1D4 B). sStateTable[0]. NOT yet authored -- placeholder.
     void state0();
     /// @unofficial fn_2_1650A0 (0x6C B). sStateTable[1]. NOT yet authored -- placeholder.
@@ -144,16 +173,21 @@ public:
     m3d::mdl_c mModel2;
     m3d::anmChr_c mAnimChr2;
     m3d::smdl_c mSmdls[5];
-    /// @unofficial +0x440-0x47c. Gap between mSmdls[5]'s end (0x404+0xc*5=0x440) and mState
-    /// (+0x47c, confirmed by fn_2_165090/165110/1651A0's `stw rX, 0x47c(r3)`) and mTrail's start
-    /// (+0x484). Not yet identified field-by-field.
+    /// @unofficial +0x440-0x454. Gap between mSmdls[5]'s end (0x404+0xc*5=0x440) and mUnk454
+    /// (+0x454). Not yet identified field-by-field.
     u8 mPad440[0x454 - 0x440];
-    /// @unofficial +0x454. Compared against mPos.x in state2() as a boundary/fence check.
-    float mUnk454;
-    u8 mPad458[0x46c - 0x458];
-    /// @unofficial +0x46c. Compared against mPos.x in state2() as a boundary/fence check.
-    float mUnk46c;
-    u8 mPad470[0x47c - 0x470];
+    /// @unofficial +0x454. THREE consecutive Vec3-shaped fields (0x454, 0x460, 0x46c), read off
+    /// fn_2_1655C0's own stores this round -- corrects the previous round's single-float guess
+    /// for +0x454/+0x46c (still byte-compatible: `.x` sits at the same offset a bare float did).
+    /// state2() only ever reads the `.x` component of the first and third (as a boundary/fence
+    /// check), which is why the single-float guess still matched there.
+    mVec3_c mUnk454;
+    /// @unofficial +0x460. Written by resetTargetPositions() from getPosVariant2().
+    mVec3_c mUnk460;
+    /// @unofficial +0x46c. Written by resetTargetPositions() from getPosVariant3(). `.x` is the
+    /// field state2() compares against mUnk454.x.
+    mVec3_c mUnk46c;
+    u8 mPad478[0x47c - 0x478];
     /// @unofficial +0x47c. Written by fn_2_165090 (=1, then clearSpeedAll()), fn_2_165110 (=2),
     /// fn_2_1651A0 (=3). A small state machine, name inferred from usage not confirmed.
     int mState;
@@ -215,6 +249,10 @@ void daWmHanachan_c::createModel() {
 }
 
 void daWmHanachan_c::unkFn164B10() {
+    for (int i = 0; i < 4; i++) {
+        mModels[i].play();
+    }
+    mModel2.play();
 }
 
 void daWmHanachan_c::resetState() {
@@ -248,16 +286,16 @@ void daWmHanachan_c::setState2() {
 void daWmHanachan_c::state2() {
     calcSpeed();
     posMove();
-    if (!(mUnk454 >= mUnk46c)) {
-        if (mPos.x > mUnk454) {
+    if (!(mUnk454.x >= mUnk46c.x)) {
+        if (mPos.x > mUnk454.x) {
             setState1();
             return;
         }
     }
-    if (mUnk454 >= mUnk46c) {
+    if (mUnk454.x >= mUnk46c.x) {
         return;
     }
-    if (mPos.x >= mUnk454) {
+    if (mPos.x >= mUnk454.x) {
         return;
     }
     setState1();
@@ -268,6 +306,53 @@ void daWmHanachan_c::setState3() {
 }
 
 void daWmHanachan_c::state3() {
+}
+
+/// @unofficial Three separate named zero-vectors, not one shared constant -- the target's
+/// .data has three distinct 0xc-byte slots (lbl_2_data_44D60+0x4/+0x10/+0x1c, confirmed by a
+/// direct byte read of original/d_basesNP.rel), even though all three currently hold
+/// (0.0f, 0.0f, 0.0f). Declared here, ahead of the whole group, so they pool in this ascending
+/// order independent of which of the three functions below is defined first.
+static const Vec kOffsetA = {0.0f, 0.0f, 0.0f};
+static const Vec kOffsetB = {0.0f, 0.0f, 0.0f};
+static const Vec kOffsetC = {0.0f, 0.0f, 0.0f};
+
+void daWmHanachan_c::resetTargetPositions() {
+    mVec3_c pos1 = getBasePos();
+    mPos = pos1;
+    mVec3_c pos2 = getPosVariant2();
+    mUnk460 = pos2;
+    mVec3_c pos3 = getPosVariant3();
+    mUnk46c = pos3;
+    mVec3_c pos4 = getBasePos();
+    mUnk454 = pos4;
+}
+
+void daWmHanachan_c::resetTrail() {
+    for (int i = 0; i < 200; i++) {
+        mTrail[i] = getPosVariant3();
+    }
+}
+
+mVec3_c daWmHanachan_c::getPosVariant3() {
+    mVec3_c base = getBasePos();
+    mVec3_c result;
+    PSVECAdd((const Vec *) &base, &kOffsetC, (Vec *) &result);
+    return result;
+}
+
+mVec3_c daWmHanachan_c::getPosVariant2() {
+    mVec3_c base = getBasePos();
+    mVec3_c result;
+    PSVECAdd((const Vec *) &base, &kOffsetB, (Vec *) &result);
+    return result;
+}
+
+mVec3_c daWmHanachan_c::getBasePos() {
+    mVec3_c pos = daWmMap_c::m_instance->GetPos("W502");
+    mVec3_c result;
+    PSVECAdd((const Vec *) &pos, &kOffsetA, (Vec *) &result);
+    return result;
 }
 
 void daWmHanachan_c::resetPosFromState0() {

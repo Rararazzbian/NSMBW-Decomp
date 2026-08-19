@@ -10988,3 +10988,50 @@ poor progress signal while the draft's total instruction count differs from the
 target's.** The prologue's frame size alone (`-0x70` target vs `-0x50` draft)
 explained most of the apparent flatness after an earlier, verified-correct fix.
 A verified fix that does not move the count is not evidence the fix was wrong.
+
+## HEADER ADDED: `daWmMap_c::GetPos(const char *)` — the name overload of `GetPos(int)`
+
+Applied to `include/game/bases/d_a_wm_map.hpp` plus a `syms.txt` entry, **five
+binaries re-verified green**. Evidence, all checked before applying:
+
+- **`GetPos__9daWmMap_cFPCc = 0x80100380`** exists in `bin/dtk/wiimj2d_symbols.txt`,
+  sitting **immediately after** the already-landed `GetPos__9daWmMap_cFi = 0x80100310`
+  (size `0x64`, so the previous function ends at `0x374`).
+- **The header already contains the identical overload pattern** one method up:
+  `GetNodePos(long, mVec3_c &)` and `GetNodePos(const char *, mVec3_c &)`, both
+  landed. An index/name pair is this class's established shape, not a guess.
+- Return type taken from the sibling `GetPos(int)`, already documented as
+  returned by value via a hidden pointer.
+
+Fifth shared-header change to go in through the shadow-header workflow today.
+
+## WM_HANACHAN 13/32 -> 16/32, and a DOL vtable read that closed a function outright
+
+`unkFn164B10` closed because the agent **dumped the real `m3d::mdl_c` vtable out
+of `original/wiimj2d.dol`** (`__vt__Q23m3d5mdl_c` at `0x80329980`, size `0x20`, so
+8 slots) and resolved each slot against the DOL symbol map — slot `0x1c` is
+`play()`. Reading the actual vtable beats inferring a method from call shape, and
+the DOL is right there to read.
+
+Two more closed: `resetTrail` and `resetTargetPositions`.
+
+**Layout correction:** the prior round's `mUnk454`/`mUnk46c` were guessed as single
+floats. Right offset, **wrong width — both are `mVec3_c`**, with a new `mUnk460`
+between them. Also confirmed `mPos` (not `mTargetPos`) at `+0xac`, from
+`create()`'s own already-matching bytes — i.e. from code already known correct
+rather than from the function under investigation.
+
+### A CROSS-UNIT residual class: paired-single vectorisation, now on TWO units
+
+`getBasePos`/`getPosVariant2`/`getPosVariant3` have the correct call graph and
+correct values (confirmed by reading retail `.data` bytes out of the REL), but
+**the target inlines its Vec3 addition as raw paired-single (`psq_l`/`ps_add`/
+`psq_st`) while calling the SDK's `PSVECAdd` compiles to a real `bl`** — verified
+against a landed caller in `source/dol/cLib/c_m3d.cpp`, whose retail bytes really
+do call out.
+
+**This is the same residual class already flagged on WM_KINOPIO.** Two independent
+units now, which promotes it from a unit quirk to a project-level gap: the likely
+requirement is CodeWarrior's `v2f` / `__vec2x32float__` intrinsic type rather than
+any source-level rearrangement. Worth solving once, centrally — it is currently
+costing functions on two units and will cost more.
