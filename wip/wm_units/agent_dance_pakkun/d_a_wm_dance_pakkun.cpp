@@ -32,21 +32,60 @@ namespace {
     // read it from the retail .data): a lone float at +0x0, six 8-byte
     // {float,u16,u16} records at +0x4 (three {65.0,20,2}, then three
     // {5.0,20,2}), three words of 0x00020000 at +0x34, then the {dx,dy,dz}
-    // position delta startStep() reads at +0x40 (whose real values are
-    // still unknown -- placeholders below).
+    // position delta at +0x40 -- patched at load by a guarded __sinit
+    // block (see sStepDeltaTrigger below), following the shape found on
+    // the castle unit (KoopaShipStopTrigger_t / PROBE F, read from
+    // wip/wm_units/agent_castle/d_a_wm_dance_pakkun.cpp read-only): an s8
+    // guard (not bool -- the target's own guard test is `extsb.`, matching
+    // castle's finding that `bool` compiles one instruction longer via
+    // `lbz`+`cmpwi`), and the staged local built FIELD BY FIELD rather than
+    // brace-initialised (castle found brace-init pools as a `.rodata`
+    // constant and perturbs unrelated functions' pool ordering; field
+    // assignment reproduces the target's stage-through-stack-then-store
+    // shape without that side effect). NOT const any more -- it gets
+    // written at runtime.
+    struct Vec3Pod_t { float x, y, z; };
     struct BgmRecord_t { float a; u16 b; u16 c; };
     struct StepTable_t {
         float scale0;
         BgmRecord_t records[6];
         u32 words[3];
-        float dx, dy, dz, unused3; // @unofficial dx/dy/dz values still unknown
+        Vec3Pod_t delta;  // dx,dy,dz -- patched by the guarded block below
+        float unused3;
     };
-    const StepTable_t sStepTable = {
+    StepTable_t sStepTable = {
         1.8f,
         { {65.0f,20,2}, {65.0f,20,2}, {65.0f,20,2}, {5.0f,20,2}, {5.0f,20,2}, {5.0f,20,2} },
         { 0x00020000, 0x00020000, 0x00020000 },
-        2.0f, 3.0f, 4.0f, 0.0f
+        { 0.0f, 0.0f, 0.0f },
+        0.0f
     };
+
+    // @unofficial -- lbl_2_rodata_87F0+0x4 and +0x38, the two source
+    // values for the patch (dx=dz=+0x4's value, dy=+0x38's value, matching
+    // the target's `stfs f1,0x40(r3); stfs f0,0x44(r3); stfs f1,0x48(r3)`
+    // where f1 is loaded once from +0x4 and reused for both dx and dz).
+    // Real values unknown.
+    const float sStepDeltaK1 = 1.0f;
+    const float sStepDeltaK2 = 2.0f;
+
+    struct StepDeltaTrigger_t {
+        s8 mDone;              ///< @unofficial guard byte, lbl_2_bss_FD80+0x10
+        u8 pad_unofficial[7];  ///< @unofficial trailing bss bytes, unclaimed
+
+        StepDeltaTrigger_t() {
+            if (!mDone) {
+                Vec3Pod_t offset;
+                offset.x = sStepDeltaK1;
+                offset.y = sStepDeltaK2;
+                offset.z = sStepDeltaK1;
+                sStepTable.delta = offset;
+                mDone = true;
+            }
+        }
+    };
+
+    static StepDeltaTrigger_t sStepDeltaTrigger;
 }
 
 int daWmDancePakkun_c::create() {
@@ -215,9 +254,9 @@ void daWmDancePakkun_c::calcModelFor(m3d::mdl_c *mdl) {
 }
 
 void daWmDancePakkun_c::startStep() {
-    mPos.x += sStepTable.dx;
-    mPos.y += sStepTable.dy;
-    mPos.z += sStepTable.dz;
+    mPos.x += sStepTable.delta.x;
+    mPos.y += sStepTable.delta.y;
+    mPos.z += sStepTable.delta.z;
     mAngle.y = 0x4000;
     unusedStub();
     mScale.x = sStepTable.scale0;

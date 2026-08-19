@@ -7671,3 +7671,67 @@ not worth destabilising for one block.
   and **stopped mattering once the four real defects were fixed.** Worth
   remembering before spending a round on a scheduling residual: fix the semantic
   defects first and re-measure.
+
+## The castle guard shape TRANSFERRED. dance_pakkun `__sinit` 51 -> 14, size now exact.
+
+Castle solved the guard construct; dance_pakkun's agent read castle's file and
+applied it, with one adaptation for a real structural difference: its guard
+patches three fields of a **pre-existing global** rather than one field of the
+trigger's own array, so the three fields were grouped into a `Vec3Pod_t` member
+and written with a single struct assignment, reproducing the target's 3-`stfs`
+store the way castle's `mOffset = offset;` does. `const` had to come off the
+patched global since it is now written at runtime.
+
+Everything else was copied verbatim and worked: `s8 mDone`, `u8
+pad_unofficial[7]`, `if (!mDone) { ...; mDone = true; }`, and the staged local
+built **field by field, never brace-init**.
+
+**Cross-unit transfer is worth looking for explicitly.** Two units were parked on
+the same construct; one round on one of them unblocked both.
+
+### NEW TRAP: placeholder constants that are accidentally EQUAL
+
+The first attempt used `0.0f` for both new constants and stopped at 30 differing,
+**one `lfs` short** -- MWCC folded the two identical literals into one shared
+register. That reads exactly like a structural defect. Giving them distinct
+placeholder values (`1.0f`/`2.0f`) took it to size-exact immediately.
+
+**While a shape is still being established, always make placeholder constants
+DISTINCT.** Equal placeholders silently change codegen and send you looking for a
+missing instruction that was never missing.
+
+### Cost, reported rather than buried
+
+`startStep` regressed 13 -> 15: accessing the patched fields through the new
+nested struct compiles slightly differently from the old flat fields. Two
+instructions to close 51 on a 52-instruction function is a good trade, but it is
+a real measured cost and was reported as one.
+
+### Remaining: a 28-byte pool drift, and the fix is to stop guessing constants
+
+`__sinit`'s residual is a pool-offset drift (`0x38` vs `0x54`) from several rounds
+of independent placeholder structs all competing for the whole-TU float pool. The
+unit's real `.rodata` `0x87f0-0x8830`:
+
+```
+0x87f0  250.0f      0x87f4  0.0f
+0x87f8  { 0, -1, <reloc> }   <- the 0xc-byte PTMF entry (sProcTable)
+0x8804  1 (integer)
+0x8808  1.0f        0x880c  0.0f
+0x8810  2.0f        0x8814  0.0f
+0x8818  180.0f
+0x881c  2160.0f  0x8820  -30.0f  0x8824  -478.0f   <- sc_ForceList mNodePos
+0x8828  -68.0f      0x882c  0.0f
+```
+
+**Use the pool's ORDER as a specification for declaration order**, since placement
+follows declaration order with `__sinit` last. Replacing each placeholder with its
+real value should resolve the drift as a consequence rather than by attacking it.
+
+### The PTMF idiom is a family pattern, found independently twice
+
+`{0x0, -1, <function>}`, `0xc` bytes, dispatched through `__ptmf_scall` -- the
+CodeWarrior non-virtual pointer-to-member encoding. dance_pakkun and anchor's
+agents each found it in their own unit without knowing of the other. Model it as
+`typedef void (Class_c::*Fn_t)(); static const Fn_t scTable[N];` called as
+`(this->*scTable[idx])()`. On anchor it unblocked three functions at once.
