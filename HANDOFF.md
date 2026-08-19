@@ -7125,3 +7125,42 @@ be re-measured now:
 - **koopa_castle** 16/17
 - **course** 22/23 -- its residual is a register allocation inside a function,
   so this does NOT apply to it
+
+## KINOKO_STAR LANDED — 9/9 on its first authored round. Tenth unit.
+
+**11.400% -> 11.407%.** `.text 0x16bf70-0x16c150`, 9 functions, no shadow header
+changes needed, no round two.
+
+The method is the whole story: **the agent read the immediately-preceding landed
+sibling AND its compiled object before writing a line.** All nine target
+functions mapped 1:1 onto `d_a_wm_kinoko_red.cpp`'s nine by shape and vtable slot,
+so the draft is red's file with the strings and class name swapped plus one new
+member. That is the sibling-mapping stage doing exactly what it is supposed to do.
+
+Two things it got right that were NOT guessable:
+
+- **`vf7C`/`vf80` ordering.** Both are trivial `blr` bodies, so the disassembly
+  cannot distinguish them -- this is the same ambiguity recorded as
+  `d_a_wm_kinoko_1up.cpp`'s known defect in `check_vtable.py`'s docstring.
+  Resolved by reading the TARGET VTABLE's slot order out of
+  `auto_04_00044A68_data.txt`: slot 29 is `fn_2_16C060`, slot 30 is `fn_2_16C050`.
+  The lower address must be defined first, giving `vf7C` then `vf80`, mirroring
+  red. **When two functions have identical bodies, the vtable is the tiebreak.**
+- **A new 4-byte member.** The ctor allocates `0x294` against red's `0x290` and
+  explicitly zeroes `0x290`. Declared `int mUnk290` with `mUnk290(0)`. Nothing in
+  the unit reads it back, so its purpose is left open rather than invented.
+
+Also re-confirmed rather than re-derived: the `+0x60` store is the secondary
+vtable pointer (see the correction above) and falls out of ordinary construction;
+and the 4-byte `.rodata` shortfall is the same family-wide quirk red has, where
+the linker zero-fills from the original.
+
+### One bound was inferred, not measured
+
+`.ctors 0x408-0x40c`. dtk does not split `.ctors` into per-unit objects, so there
+are no symbols to check against. It was inferred from unbroken sequential
+adjacency: kinoko_1up `0x3fc-0x400`, kinoko_base `0x400-0x404`, kinoko_red
+`0x404-0x408`, then star. The agent flagged this as its one unmeasured bound
+rather than presenting it as verified, which was the right call -- and the full
+five-binary verify then confirmed it. **Flagging an inferred bound is worth more
+than quietly asserting it; the build is what settles it.**
