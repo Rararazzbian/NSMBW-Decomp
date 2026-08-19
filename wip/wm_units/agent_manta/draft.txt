@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_wm_manta.cpp"
 
-# 0x00000000..0x00000748 | size: 0x748
+# 0x00000000..0x00000758 | size: 0x758
 .text
 .balign 16
 
@@ -253,12 +253,12 @@
 /* 0000030C 0000034C  93 E1 00 0C */	stw r31, 0xc(r1)
 /* 00000310 00000350  7C 7F 1B 78 */	mr r31, r3
 /* 00000314 00000354  48 00 00 01 */	bl createModel__11daWmManta_cFv
-/* 00000318 00000358  3C 80 00 00 */	lis r4, "@12917"@ha
+/* 00000318 00000358  3C 80 00 00 */	lis r4, "@12916"@ha
 /* 0000031C 0000035C  C0 7F 00 AC */	lfs f3, 0xac(r31)
 /* 00000320 00000360  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
 /* 00000324 00000364  7F E3 FB 78 */	mr r3, r31
 /* 00000328 00000368  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
-/* 0000032C 0000036C  C0 04 00 00 */	lfs f0, "@12917"@l(r4)
+/* 0000032C 0000036C  C0 04 00 00 */	lfs f0, "@12916"@l(r4)
 /* 00000330 00000370  D0 7F 01 28 */	stfs f3, 0x128(r31)
 /* 00000334 00000374  D0 5F 01 2C */	stfs f2, 0x12c(r31)
 /* 00000338 00000378  D0 3F 01 30 */	stfs f1, 0x130(r31)
@@ -361,16 +361,16 @@
 /* 0000046C 000004AC  38 80 FF FF */	li r4, -0x1
 /* 00000470 000004B0  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
 /* 00000474 000004B4  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 00000478 000004B8  3C A0 00 00 */	lis r5, "@12945"@ha
+/* 00000478 000004B8  3C A0 00 00 */	lis r5, "@12944"@ha
 /* 0000047C 000004BC  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000480 000004C0  3F E0 00 00 */	lis r31, "@12946"@ha
-/* 00000484 000004C4  38 A5 00 00 */	addi r5, r5, "@12945"@l
-/* 00000488 000004C8  38 9F 00 00 */	addi r4, r31, "@12946"@l
+/* 00000480 000004C0  3F E0 00 00 */	lis r31, "@12945"@ha
+/* 00000484 000004C4  38 A5 00 00 */	addi r5, r5, "@12944"@l
+/* 00000488 000004C8  38 9F 00 00 */	addi r4, r31, "@12945"@l
 /* 0000048C 000004CC  38 63 00 04 */	addi r3, r3, 0x4
 /* 00000490 000004D0  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
 /* 00000494 000004D4  90 7E 01 A4 */	stw r3, 0x1a4(r30)
 /* 00000498 000004D8  38 7E 01 A4 */	addi r3, r30, 0x1a4
-/* 0000049C 000004DC  38 9F 00 00 */	addi r4, r31, "@12946"@l
+/* 0000049C 000004DC  38 9F 00 00 */	addi r4, r31, "@12945"@l
 /* 000004A0 000004E0  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
 /* 000004A4 000004E4  90 61 00 08 */	stw r3, 0x8(r1)
 /* 000004A8 000004E8  38 7E 01 A8 */	addi r3, r30, 0x1a8
@@ -449,8 +449,8 @@
 # .text:0x5B0 | size: 0x18
 # daWmManta_c::startStep()
 .fn startStep__11daWmManta_cFv, global
-/* 000005B0 000005F0  3C 80 00 00 */	lis r4, "@12974"@ha
-/* 000005B4 000005F4  C0 04 00 00 */	lfs f0, "@12974"@l(r4)
+/* 000005B0 000005F0  3C 80 00 00 */	lis r4, "@12973"@ha
+/* 000005B4 000005F4  C0 04 00 00 */	lfs f0, "@12973"@l(r4)
 /* 000005B8 000005F8  D0 03 00 DC */	stfs f0, 0xdc(r3)
 /* 000005BC 000005FC  D0 03 00 E0 */	stfs f0, 0xe0(r3)
 /* 000005C0 00000600  D0 03 00 E4 */	stfs f0, 0xe4(r3)
@@ -499,7 +499,7 @@
 .endfn setCutEnd__14dWmDemoActor_cFv
 /* 0000061C 0000065C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x620 | size: 0xCC
+# .text:0x620 | size: 0xDC
 # daWmManta_c::countModelVariants()
 .fn countModelVariants__11daWmManta_cFv, global
 /* 00000620 00000660  94 21 FF C0 */	stwu r1, -0x40(r1)
@@ -510,23 +510,23 @@
 /* 00000634 00000674  93 E1 00 3C */	stw r31, 0x3c(r1)
 /* 00000638 00000678  3F E0 00 00 */	lis r31, m_WorldNo__9dScWMap_c@ha
 /* 0000063C 0000067C  93 C1 00 38 */	stw r30, 0x38(r1)
-/* 00000640 00000680  3F C0 00 00 */	lis r30, "@13009"@ha
-/* 00000644 00000684  38 BE 00 00 */	addi r5, r30, "@13009"@l
+/* 00000640 00000680  3F C0 00 00 */	lis r30, "@13004"@ha
+/* 00000644 00000684  38 BE 00 00 */	addi r5, r30, "@13004"@l
 /* 00000648 00000688  88 DF 00 00 */	lbz r6, m_WorldNo__9dScWMap_c@l(r31)
 /* 0000064C 0000068C  38 C6 00 01 */	addi r6, r6, 0x1
 /* 00000650 00000690  4C C6 31 82 */	crclr cr1eq
 /* 00000654 00000694  48 00 00 01 */	bl snprintf
 /* 00000658 00000698  88 DF 00 00 */	lbz r6, m_WorldNo__9dScWMap_c@l(r31)
 /* 0000065C 0000069C  38 61 00 10 */	addi r3, r1, 0x10
-/* 00000660 000006A0  38 BE 00 00 */	addi r5, r30, "@13009"@l
+/* 00000660 000006A0  38 BE 00 00 */	addi r5, r30, "@13004"@l
 /* 00000664 000006A4  38 80 00 10 */	li r4, 0x10
 /* 00000668 000006A8  38 C6 00 01 */	addi r6, r6, 0x1
 /* 0000066C 000006AC  4C C6 31 82 */	crclr cr1eq
 /* 00000670 000006B0  48 00 00 01 */	bl snprintf
 /* 00000674 000006B4  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 00000678 000006B8  3C A0 00 00 */	lis r5, "@13010"@ha
+/* 00000678 000006B8  3C A0 00 00 */	lis r5, "@13005"@ha
 /* 0000067C 000006BC  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000680 000006C0  38 A5 00 00 */	addi r5, r5, "@13010"@l
+/* 00000680 000006C0  38 A5 00 00 */	addi r5, r5, "@13005"@l
 /* 00000684 000006C4  38 81 00 20 */	addi r4, r1, 0x20
 /* 00000688 000006C8  38 63 00 04 */	addi r3, r3, 0x4
 /* 0000068C 000006CC  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
@@ -535,81 +535,85 @@
 /* 00000698 000006D8  38 81 00 10 */	addi r4, r1, 0x10
 /* 0000069C 000006DC  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
 /* 000006A0 000006E0  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000006A4 000006E4  40 82 00 0C */	bne .L_000006B0
+/* 000006A4 000006E4  41 82 00 0C */	beq .L_000006B0
 /* 000006A8 000006E8  38 60 00 01 */	li r3, 0x1
-/* 000006AC 000006EC  48 00 00 28 */	b .L_000006D4
+/* 000006AC 000006EC  48 00 00 38 */	b .L_000006E4
 .L_000006B0:
 /* 000006B0 000006F0  3B C0 00 00 */	li r30, 0x0
-.L_000006B4:
-/* 000006B4 000006F4  38 61 00 08 */	addi r3, r1, 0x8
-/* 000006B8 000006F8  38 81 00 10 */	addi r4, r1, 0x10
-/* 000006BC 000006FC  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
-/* 000006C0 00000700  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000006C4 00000704  41 82 00 0C */	beq .L_000006D0
-/* 000006C8 00000708  3B DE 00 01 */	addi r30, r30, 0x1
-/* 000006CC 0000070C  4B FF FF E8 */	b .L_000006B4
-.L_000006D0:
-/* 000006D0 00000710  7F C3 F3 78 */	mr r3, r30
-.L_000006D4:
-/* 000006D4 00000714  80 01 00 44 */	lwz r0, 0x44(r1)
-/* 000006D8 00000718  83 E1 00 3C */	lwz r31, 0x3c(r1)
-/* 000006DC 0000071C  83 C1 00 38 */	lwz r30, 0x38(r1)
-/* 000006E0 00000720  7C 08 03 A6 */	mtlr r0
-/* 000006E4 00000724  38 21 00 40 */	addi r1, r1, 0x40
-/* 000006E8 00000728  4E 80 00 20 */	blr
-.endfn countModelVariants__11daWmManta_cFv
-/* 000006EC 0000072C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6F0 | size: 0xC
-# daWmManta_c::getWorldNo()
-.fn getWorldNo__11daWmManta_cFv, global
-/* 000006F0 00000730  3C 60 00 00 */	lis r3, m_WorldNo__9dScWMap_c@ha
-/* 000006F4 00000734  88 63 00 00 */	lbz r3, m_WorldNo__9dScWMap_c@l(r3)
+/* 000006B4 000006F4  3B E0 00 00 */	li r31, 0x0
+.L_000006B8:
+/* 000006B8 000006F8  38 1E 00 61 */	addi r0, r30, 0x61
+/* 000006BC 000006FC  98 01 00 15 */	stb r0, 0x15(r1)
+/* 000006C0 00000700  38 61 00 08 */	addi r3, r1, 0x8
+/* 000006C4 00000704  38 81 00 10 */	addi r4, r1, 0x10
+/* 000006C8 00000708  9B E1 00 16 */	stb r31, 0x16(r1)
+/* 000006CC 0000070C  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 000006D0 00000710  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000006D4 00000714  41 82 00 0C */	beq .L_000006E0
+/* 000006D8 00000718  3B DE 00 01 */	addi r30, r30, 0x1
+/* 000006DC 0000071C  4B FF FF DC */	b .L_000006B8
+.L_000006E0:
+/* 000006E0 00000720  7F C3 F3 78 */	mr r3, r30
+.L_000006E4:
+/* 000006E4 00000724  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 000006E8 00000728  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 000006EC 0000072C  83 C1 00 38 */	lwz r30, 0x38(r1)
+/* 000006F0 00000730  7C 08 03 A6 */	mtlr r0
+/* 000006F4 00000734  38 21 00 40 */	addi r1, r1, 0x40
 /* 000006F8 00000738  4E 80 00 20 */	blr
-.endfn getWorldNo__11daWmManta_cFv
+.endfn countModelVariants__11daWmManta_cFv
 /* 000006FC 0000073C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x700 | size: 0x4
-# dBaseActor_c::finalUpdate()
-.fn finalUpdate__12dBaseActor_cFv, weak
-/* 00000700 00000740  4E 80 00 20 */	blr
-.endfn finalUpdate__12dBaseActor_cFv
-/* 00000704 00000744  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000708 00000748  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x700 | size: 0xC
+# daWmManta_c::getWorldNo()
+.fn getWorldNo__11daWmManta_cFv, global
+/* 00000700 00000740  3C 60 00 00 */	lis r3, m_WorldNo__9dScWMap_c@ha
+/* 00000704 00000744  88 63 00 00 */	lbz r3, m_WorldNo__9dScWMap_c@l(r3)
+/* 00000708 00000748  4E 80 00 20 */	blr
+.endfn getWorldNo__11daWmManta_cFv
 /* 0000070C 0000074C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x710 | size: 0xC
-# dWmDemoActor_c::clearCutEnd()
-.fn clearCutEnd__14dWmDemoActor_cFv, weak
-/* 00000710 00000750  38 00 00 00 */	li r0, 0x0
-/* 00000714 00000754  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000718 00000758  4E 80 00 20 */	blr
-.endfn clearCutEnd__14dWmDemoActor_cFv
+# .text:0x710 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 00000710 00000750  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 00000714 00000754  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000718 00000758  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000071C 0000075C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x720 | size: 0x8
-# dWmDemoActor_c::checkCutEnd()
-.fn checkCutEnd__14dWmDemoActor_cFv, weak
-/* 00000720 00000760  88 63 01 39 */	lbz r3, 0x139(r3)
-/* 00000724 00000764  4E 80 00 20 */	blr
-.endfn checkCutEnd__14dWmDemoActor_cFv
-/* 00000728 00000768  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x720 | size: 0xC
+# dWmDemoActor_c::clearCutEnd()
+.fn clearCutEnd__14dWmDemoActor_cFv, weak
+/* 00000720 00000760  38 00 00 00 */	li r0, 0x0
+/* 00000724 00000764  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000728 00000768  4E 80 00 20 */	blr
+.endfn clearCutEnd__14dWmDemoActor_cFv
 /* 0000072C 0000076C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x730 | size: 0x8
-# dWmDemoActor_c::GetActorType()
-.fn GetActorType__14dWmDemoActor_cFv, weak
-/* 00000730 00000770  38 60 00 01 */	li r3, 0x1
+# dWmDemoActor_c::checkCutEnd()
+.fn checkCutEnd__14dWmDemoActor_cFv, weak
+/* 00000730 00000770  88 63 01 39 */	lbz r3, 0x139(r3)
 /* 00000734 00000774  4E 80 00 20 */	blr
-.endfn GetActorType__14dWmDemoActor_cFv
+.endfn checkCutEnd__14dWmDemoActor_cFv
 /* 00000738 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000073C 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x740 | size: 0x8
+# dWmDemoActor_c::GetActorType()
+.fn GetActorType__14dWmDemoActor_cFv, weak
+/* 00000740 00000780  38 60 00 01 */	li r3, 0x1
+/* 00000744 00000784  4E 80 00 20 */	blr
+.endfn GetActorType__14dWmDemoActor_cFv
+/* 00000748 00000788  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000074C 0000078C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x750 | size: 0x8
 # m3d::anmChr_c::getType() const
 .fn getType__Q23m3d8anmChr_cCFv, weak
-/* 00000740 00000780  38 60 00 00 */	li r3, 0x0
-/* 00000744 00000784  4E 80 00 20 */	blr
+/* 00000750 00000790  38 60 00 00 */	li r3, 0x0
+/* 00000754 00000794  4E 80 00 20 */	blr
 .endfn getType__Q23m3d8anmChr_cCFv
 
 # 0x00000000..0x00000014 | size: 0x14
@@ -625,14 +629,14 @@
 .endobj "sProcTable__26@unnamed@d_a_wm_manta_cpp@"
 
 # .rodata:0xC | size: 0x4
-.obj "@12917", local
+.obj "@12916", local
 	.4byte 0x437A0000
-.endobj "@12917"
+.endobj "@12916"
 
 # .rodata:0x10 | size: 0x4
-.obj "@12974", local
+.obj "@12973", local
 	.4byte 0x3FE66666
-.endobj "@12974"
+.endobj "@12973"
 
 # 0x00000000..0x000000C8 | size: 0xC8
 .data
@@ -646,36 +650,36 @@
 .endobj g_profile_WM_MANTA
 
 # .data:0xC | size: 0x11
-.obj "@12945", local
+.obj "@12944", local
 	.4byte 0x6733642F
 	.4byte 0x746F6765
 	.4byte 0x7A6F2E62
 	.4byte 0x72726573
 	.byte 0x00
-.endobj "@12945"
+.endobj "@12944"
 	.byte 0x00, 0x00, 0x00
 
 # .data:0x20 | size: 0x7
-.obj "@12946", local
+.obj "@12945", local
 	.4byte 0x746F6765
 	.byte 0x7A, 0x6F, 0x00
-.endobj "@12946"
+.endobj "@12945"
 	.byte 0x00
 
 # .data:0x28 | size: 0x7
-.obj "@13009", local
+.obj "@13004", local
 	.4byte 0x43535F57
 	.byte 0x25, 0x58, 0x00
-.endobj "@13009"
+.endobj "@13004"
 	.byte 0x00
 
 # .data:0x30 | size: 0x10
-.obj "@13010", local
+.obj "@13005", local
 	.4byte 0x6733642F
 	.4byte 0x6D6F6465
 	.4byte 0x6C2E6272
 	.4byte 0x72657300
-.endobj "@13010"
+.endobj "@13005"
 
 # .data:0x40 | size: 0x70
 # daWmManta_c::__vtable

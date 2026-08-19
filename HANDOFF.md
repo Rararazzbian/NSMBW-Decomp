@@ -8077,3 +8077,59 @@ work was verified and banked: **WM_MANTA 15/16** (only `countModelVariants` open
 at 19 differing) and **WM_START 8/14**. Both resumed from their committed state.
 **Bank in-flight work when an agent stops unexpectedly** -- both drafts were
 intact and re-verifiable, and nothing needed redoing.
+
+## WM_MANTA LANDED — 16/16. Thirteenth unit. And the FUNCTION ORDER warning is a FALSE ALARM.
+
+**11.450% -> 11.471%.** `.text 0x170eb0-0x17140c`, 16 functions, two rounds.
+`daWmManta_c : public dWmDemoActor_c`.
+
+### `verify_anon`'s FUNCTION ORDER check can be a false alarm, and now we know why
+
+The unit reported **FUNCTION ORDER IS WRONG right up to the moment it landed**,
+flagging two functions as "defined too late" with the warning that it "will not
+link even at 16/16". **It linked, and all five binaries verify.**
+
+The agent diagnosed this before the landing rather than after, and the experiment
+was the right one: temporarily removing the two trailing functions made the
+warning vanish. Cause: **four inherited weak virtuals that an ISOLATED compile
+must emit locally, while the real link resolves them from another already-linked
+TU.** The isolated object therefore has extra functions the target's own object
+does not, and every position after them shifts.
+
+**So: an order warning caused by weak inherited virtuals is not a blocker.** It
+is still worth checking by hand -- kinoballoon caught a *real* order bug the same
+day by tracing address-versus-definition order rather than dismissing the warning
+-- but "the draft defines these out of order" is not decisive on its own. **The
+real link is the only authority, and it is cheap: land it and find out.**
+
+### The two real bugs in the last function
+
+Both found by re-reading the target bytes instruction by instruction rather than
+trusting an earlier summary:
+
+- **An inverted branch sense on the outer validity check.** The target branches
+  INTO the loop when the base lookup is invalid and falls through to `return 1`
+  when valid; the draft had it backwards. The loop's own internal check had the
+  correct polarity, and the agent had copied that polarity onto the outer check
+  without re-verifying that specific branch target. **Two checks of the same
+  predicate in one function can have opposite senses -- verify each branch
+  target separately.**
+- **One buffer, one byte per iteration -- not two `snprintf` calls.** The target
+  formats the name once, then each iteration does a raw store at a fixed offset
+  (`name[5] = 'a' + count; name[6] = 0;`). A re-format per iteration is a
+  different instruction sequence entirely.
+
+The expected signedness fix turned out to be unnecessary once those two were
+right. **Fix the semantic defects before the scheduling ones** -- the same lesson
+WM_NOTE recorded when a load-order residual stopped mattering.
+
+### No `.ctors`, no `.bss`
+
+Confirmed rather than assumed: nothing in the 16 functions needs either. This
+unit does not reference `dWmLib::sc_ForceList` at all, which is also why the
+`.data` family rule about the two anonymous 5-byte strings does not apply to it.
+
+One open item, flagged rather than hidden: `countModelVariants` references two
+`.data` objects (`0x46474`/`0x46480`) on the far side of a confirmed-foreign
+`WM_MAP` chunk from the main claim. The slice claims only the contiguous range
+and the module still verifies.

@@ -95,7 +95,7 @@ plainly rather than picking one range and hiding the other reference.
 No .ctors/.bss claim needed -- unlike dance_pakkun, nothing in these 16
 functions shows a guard-byte/static-local pattern.
 
-## Build result
+## Build result -- FINAL: 16/16
 
 wip/wm_units/agent_manta/build.py, verify_anon against
 bin/dtkspl/d_basesNP/obj/auto_00_00170E8C_text.o:
@@ -105,11 +105,42 @@ classInit MATCH | ctor MATCH | dtor MATCH | create() MATCH | execute() MATCH
 draw() MATCH | doDelete() MATCH | createModel() MATCH | calcModel() MATCH
 startStep() MATCH | resetStep() MATCH | unusedStub() MATCH
 processCutsceneCommand() MATCH | finalUpdate() MATCH (inherited, unauthored)
-countModelVariants() 19 differing (size 51 vs target 55)
+countModelVariants() MATCH
 getWorldNo() MATCH
 
-15/16 byte-identical
+16/16 byte-identical
 ```
+
+### countModelVariants() closed -- the two fixes, both confirmed against the re-read target bytes
+
+Re-read fn_2_171320 instruction-by-instruction one more time rather than
+trusting my first pass's summary. Two real bugs, both now fixed:
+
+1. Inverted IsValid() branch sense on the FIRST check. The target's
+   cmpwi r3,0x0; beq <loop-setup> means: branch to the letter-loop setup
+   when the base "CS_W%X" lookup is NULL/invalid; FALL THROUGH to
+   li r3,1; return when it's valid. My first draft had
+   if (!resMdl.IsValid()) return 1; -- backwards. Fixed to
+   if (resMdl.IsValid()) return 1;. The loop's OWN internal check
+   (if (!resMdl.IsValid()) break;) already had the correct sense --
+   the bug was only in the outer, pre-loop check, and I'd apparently
+   copied its polarity from the inner one without re-reading the actual
+   branch target for THAT specific comparison.
+2. Single buffer, letter written into a fixed byte position, not two
+   snprintf calls per iteration. The target builds the "CS_W%X" name
+   ONCE into a second buffer (separate from the arcName buffer used for
+   getRes), then each loop iteration writes exactly one byte ('a'+count)
+   at buffer offset +5 and a fresh NUL at +6, re-checking
+   GetResMdl on the SAME mutated buffer. Rewrote from two per-iteration
+   snprintf calls (my first draft) to nameB[5] = 'a' + count; nameB[6]
+   = 0; directly. This is the "raw store, not an accessor" lever named
+   for this round, applied to a buffer position rather than a class
+   field.
+
+Both fixes together closed it from 19 differing (size 51 vs target 55) to
+an exact MATCH (size 55 = 55). Did not end up needing a signedness change
+on the loop counter -- int count already matched; the two bugs above
+accounted for the entire residual.
 
 ## What worked immediately (reusing dance_pakkun's proven levers)
 
@@ -138,37 +169,56 @@ getWorldNo() MATCH
 
 ## Negatives
 
-- countModelVariants() (19 differing, size 51 vs target 55) -- my least
-  confident reconstruction. Confirmed one real bug (the IsValid()
-  branch sense is inverted relative to target -- target's first check
-  branches on equality where mine branches on inequality) but did not
-  chase it further given this function's semantics are still genuinely
-  uncertain (the loop's real buffer-reuse-plus-single-byte-suffix shape
-  differs from my two-separate-snprintf-calls reconstruction -- target
-  writes ONE letter byte into a fixed offset of an already-built buffer
-  per iteration rather than re-running snprintf).
+- (Resolved this round, see above) countModelVariants() previously stood
+  at 19 differing with an inverted IsValid() branch and a
+  two-snprintf-per-iteration reconstruction where the target reuses one
+  buffer and writes a single byte. Both fixed; now MATCH.
 - The disjoint .data reference from countModelVariants()
   (0x46474/0x46480, separated from the main 0x46378-0x46410 claim by
   a confirmed-foreign WM_MAP chunk) is reported, not resolved. The slice
   JSON format doesn't appear to support a non-contiguous claim.
-- Did not chase the FUNCTION ORDER IS WRONG warning verify_anon
-  raises for getWorldNo(). Diagnosed it precisely: it's an artifact of
-  compiling this TU in isolation. dBaseActor_c::clearCutEnd(),
-  checkCutEnd(), GetActorType(), and m3d::anmChr_c::getType() are
-  all inherited weak virtuals my class doesn't override; the REAL,
-  fully-linked binary evidently resolves them from some OTHER,
-  already-linked TU (this unit apparently isn't the first one in link
-  order to need them), so the target's own copy of THIS TU only contains
-  local weak copies of setCutEnd() and finalUpdate() -- the two it's
-  first to need. My isolated compile can't know about other TUs' weak
-  copies and must emit local copies of everything my class's vtables
-  need, which pushes those four extra weak symbols to the very end of my
-  object, past countModelVariants()/getWorldNo(), breaking definition
-  order relative to the target. Confirmed by experiment: temporarily
-  removing countModelVariants()/getWorldNo() made the warning
-  disappear entirely (the weak block relocates immediately after
-  processCutsceneCommand(), landing finalUpdate() at the exact right
-  address) -- proving the extra weak pulls, not my own two functions'
-  positions, are the cause. This is a real fact about isolated-draft
-  compilation, but I don't know whether it would still block a real
-  link alongside the rest of the (mostly not-yet-landed) project.
+- Per instruction, did NOT spend this round chasing the
+  FUNCTION ORDER IS WRONG warning verify_anon still raises (now against
+  countModelVariants() and getWorldNo() both, unchanged mechanism from
+  last round: four inherited weak virtuals -- clearCutEnd, checkCutEnd,
+  GetActorType, anmChr_c::getType -- that an ISOLATED compile of this TU
+  must emit locally, which the real fully-linked binary evidently
+  resolves from some other, already-linked TU instead). That diagnosis
+  is unconfirmed by design -- only a real link settles it -- and is left
+  for the lead's landing attempt as agreed, at zero additional cost to
+  this round.
+- The disjoint .data reference from countModelVariants()
+  (0x46474/0x46480, separated from the main 0x46378-0x46410 claim
+  by a confirmed-foreign WM_MAP chunk) remains unresolved -- still
+  compiles and matches byte-for-byte as an independent draft object
+  (verify_anon doesn't check .data placement), but the proposed slice
+  below only claims the contiguous 0x46378-0x46410 range. See "Proposed
+  slice JSON" below for how I'm presenting this to the lead.
+
+
+## Proposed slice JSON (all five sections)
+
+```json
+{
+  "source": "d_basesNP/bases/d_a_wm_manta.cpp",
+  "memoryRanges": {
+    ".text": "0x170eb0-0x17140c",
+    ".data": "0x46378-0x46410",
+    ".rodata": "0x8d70-0x8d88"
+  }
+}
+```
+
+No .ctors or .bss claim -- confirmed nothing in these 16 functions
+needs either (no guard-byte/static-local pattern, no __register_global_object
+call anywhere in the target disassembly). Matches the shape of the two
+existing non-wm-family slices that also omit both (d_s_autoselect.cpp,
+d_s_select.cpp).
+
+Known gap in this proposal, restated for visibility: countModelVariants()
+genuinely reads 0x46474/0x46480, both outside the .data range above,
+with a confirmed-foreign WM_MAP chunk in between. I do not have a resolution
+for this -- flagging it explicitly rather than either silently widening the
+claim to swallow foreign data or silently narrowing scope to hide the
+reference. This is a decision for the lead, not something I resolved by
+guessing.
