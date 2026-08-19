@@ -9424,3 +9424,42 @@ The target had an extra unconditional branch into a loop body that a
 already proves the list non-empty. Writing **both** the guard and a plain
 `while (x != nullptr)` reproduced it exactly — **the compiler treats the outer
 guard and the loop condition as unrelated** and does not elide the entry jump.
+
+## WM_KILLER 18/23 -> 22/23. My pool diagnosis was right for one function and WRONG for the other.
+
+I told the agent `createModel`'s 76 differing was caused by its constants being
+absent from the pool. **The pool converged to an exact match and the function
+stayed at 76.**
+
+The real cause was a **missing statement**: `mAnmChr.mPlayMode = m3d::FORWARD_ONCE;`
+before `setRate()` in both branches. The field's offset (`0x1e8`) was computed
+from `mAnmChr`'s own known layout — vtable + `mpObj` + `mpHeap` + `mAllocator_c`
+(`0x1c`) + three floats — landing on a real public `u8` field, so **no offset cast
+was needed once it was identified.**
+
+My reasoning was correct for `execute`: the two constants unaccounted for
+anywhere else (`50.0f`, `70.0f`) really were its arguments to a far function.
+
+**So: a short pool explains a residual only for the function whose constants are
+missing. Check that every STATEMENT is present before blaming data layout** —
+sibling of the missing-call finding, and the second time today a large residual
+turned out to be one absent line.
+
+### The `R_<module>_<section>_<offset>` convention extends beyond `.text`
+
+```cpp
+extern "C" float R_2_6_FE40[6];   // module 2, section 6 = .bss
+```
+
+Section numbers come from `relfile.py`'s own table. We had only ever used section
+1. A far `.bss` symbol in an un-landed region is reachable the same way a far
+function is.
+
+### And two more "it was already declared" wins
+
+`bmdl_c::play()` is a real declared virtual at slot `0x1c`, and `fanm_c::mPlayMode`
+is a real public field — **both needed no offset cast once identified.** Together
+with `SetScnObjOption` earlier on the same unit, that is three times on one unit
+where walking the existing headers beat writing a cast.
+
+**Reach for a cast only after checking the headers and walking the vtable chain.**

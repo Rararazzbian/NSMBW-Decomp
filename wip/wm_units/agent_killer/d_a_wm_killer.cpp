@@ -28,7 +28,14 @@ extern "C" int R_2_1_1994B0(daWmPlayer_c *player);
 // named array and indexing it reproduces that `addi` instead of each literal claiming its own
 // dedicated slot. Values/order read directly off the real .rodata bytes at file offset
 // 0x1c6600+addr, index i <-> address 0x89b8+4*i.
-static const float sConsts[] = { 1.0f, 300.0f };
+// This unit's shared float-constant array. Confirmed 6 elements (not the originally-assumed
+// 10 -- the other 4 nearby pool values are each their own standalone scalar object, proven by
+// their direct symbol+lfs codegen with no addi). Grown to include #execute's own two
+// contributions (idx 3/4, its fn_800FC6D0 args) and idx 0 (its mScale reset, which shares
+// THIS array's base symbol per the target's own direct-base-address read with zero offset --
+// not a separate 1.0f literal). idx 2/5 (0.0f/500.0f) are not read by any function authored so
+// far but are still part of the same array object, per dump_obj_section.py's own retail dump.
+static const float sConsts[] = { 1.0f, 300.0f, 0.0f, 50.0f, 70.0f, 500.0f };
 
 // #unk_1681C0's node-name template. The target .data emits this string's own pointer
 // (lbl_2_data_4526C, at data+0x3c) BEFORE ACTOR_PROFILE's own g_profile object -- confirmed
@@ -70,6 +77,26 @@ static const char *smc_rotaryShot = "cobRotaryShot";
 // project's established convention for unowned/undeclared cross-module calls.
 extern "C" int fn_80103420(dWmEffectManager_c *self, int effectId, m3d::smdl_c *model, const char *name, int, int);
 
+// #execute's two remaining far calls.
+//
+// fn_800FC6D0 (DOL-absolute address, 0x800FC6D0): takes a 6-float out-buffer and two float
+// parameters, no `this` -- an ordinary free function, not a method (confirmed: only the buffer
+// pointer and two floats are set up before the call, nothing resembling an object pointer).
+// Semantics unconfirmed beyond its call shape -- @unofficial, not guessed.
+extern "C" void fn_800FC6D0(float *out, float a, float b);
+
+// lbl_2_bss_FE40: a far, extern-only .bss symbol (see this unit's earlier bounds report --
+// a relocated address-of reference, not a displacement off an owned base, so genuinely not
+// ours). module 2 (d_basesNP), section 6 (.bss) -- module/section numbers confirmed via
+// tools/relfile.py's own section table, matching the R_2_1_ convention already used for
+// same-module .text calls, extended here to a same-module .bss object.
+extern "C" float R_2_6_FE40[6];
+
+// fn_2_169550: same-module (d_basesNP), un-landed TU, well outside this unit's own .text
+// range -- the R_2_1_ convention (see R_2_1_1994D0/R_2_1_1994B0 above). Takes one pointer arg
+// (#mChildren[0]); return value, if any, is unused at this call site.
+extern "C" void R_2_1_169550(dWmActor_c *child);
+
 daWmKiller_c::daWmKiller_c() : m_208(false) {}
 daWmKiller_c::~daWmKiller_c() {}
 
@@ -94,9 +121,39 @@ int daWmKiller_c::create() {
 // structure that gets stored into a far .bss symbol, a conditional call into another far
 // function `fn_2_169550` gated on m_210/#unk_1684A0, then calls into #unk_168380 and
 // #unk_167FB0) is NOT yet authored -- content unconfirmed, not guessed.
+// execute(). Fully authored this round. Opening processCutsceneCommand call as before; then a
+// far fn_800FC6D0 call filling 6 floats (copied verbatim into the far .bss symbol R_2_6_FE40 --
+// see its own note above), a second unk_1684A0(false) call site (distinct from
+// processCutsceneCommand's unk_1684A0(true)) gating a one-shot R_2_1_169550(mChildren[0]) call
+// via #m_210, then #unk_168380, a #mScale reset to 1.0f (sharing #sConsts's own base symbol,
+// not a fresh literal -- confirmed from the target's zero-offset direct read), mModel.play()
+// (bmdl_c's own virtual, vtable slot 0x1c, distinct from entry()@0x14 and setAnm()@0x18), and
+// finally #unk_167FB0.
 int daWmKiller_c::execute() {
     processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
-    m_204 = 1;
+
+    float buf[6];
+    fn_800FC6D0(buf, sConsts[3], sConsts[4]);
+    for (int i = 0; i < 6; i++) {
+        R_2_6_FE40[i] = buf[i];
+    }
+
+    bool result = unk_1684A0(false);
+    if (!result) {
+        m_210 = false;
+    } else if (!m_210) {
+        m_210 = true;
+        R_2_1_169550(mChildren[0]);
+    }
+
+    unk_168380();
+
+    mScale.x = sConsts[0];
+    mScale.y = sConsts[0];
+    mScale.z = sConsts[0];
+    mModel.play();
+
+    unk_167FB0();
     return SUCCEEDED;
 }
 
@@ -148,15 +205,17 @@ void daWmKiller_c::createModel() {
         mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
         nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr(smc_killerShot);
         mAnmChr.create(resMdl, resAnmChr, &mAllocator, nullptr);
+        mAnmChr.mPlayMode = m3d::FORWARD_ONCE;
         mAnmChr.setRate(0.0f);
         mAnmChr.setFrame(0.0f);
         mModel.setAnm(mAnmChr);
-    } else if (ACTOR_PARAM(Kind) == 1) {
+    } else if ((int) ACTOR_PARAM(Kind) == 1) {
         nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("cobRotary", "g3d/model.brres");
         nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobRotary");
         mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
         nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr(smc_rotaryShot);
         mAnmChr.create(resMdl, resAnmChr, &mAllocator, nullptr);
+        mAnmChr.mPlayMode = m3d::FORWARD_ONCE;
         mAnmChr.setRate(0.0f);
         mAnmChr.setFrame(0.0f);
         mModel.setAnm(mAnmChr);
