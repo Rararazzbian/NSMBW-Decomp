@@ -7783,3 +7783,39 @@ carrying its own body** -- the same lever that landed the whole kinoko family vi
 `getModelName()`. Being tested now, along with declaring `clearCutEnd`/`vf74` as
 in-class inline overrides to see whether a *declared* weak function's relative
 order within the cluster is controllable at all.
+
+## castle 19/20: `getKoopaShipStopPos` is a SCHEDULING wall, measured exhaustively
+
+Not closed, and now properly evidenced as a wall rather than an unexplored gap.
+Castle stays 19/20, all four checks clean.
+
+**All six component permutations are now measured**: `zyx` 6 (best, baseline),
+`xyz`/`zxy` 8, `xzy`/`yxz`/`yzx` 10, plus 13 and 7 already on record. The sweep is
+complete, not sampled.
+
+**The by-value return is confirmed correct from the ABI, not from the mangled
+name.** An output-reference form (`void getKoopaShipStopPos(mVec3_c &out) const`)
+is **worse at 8**, and it contradicts the target's own register roles: the target
+writes `r3` (result) and reads `r4` (`this`), which is CodeWarrior's
+hidden-return-pointer-first convention for a class returned by value. An output
+reference puts `this` back in `r3`. That is a positive confirmation of the
+declaration, not merely a failed variant -- and it is how a return type should be
+settled, since return types are absent from the mangled name.
+
+Also measured: `offset` as a plain pointer instead of a reference is
+byte-identical at 6; as a value copy it is **14** (the copy costs real
+instructions); flipping x's addend order stays 6 and only swaps which of `f0`/`f1`
+holds which operand.
+
+**The residual is two instructions and the same two in every shape**: x's operand
+load order, and the z-store being scheduled immediately after y's add while the
+target defers it past x's add. Both candidate instructions are ready at that
+point in both versions -- zero dependency difference -- and MWCC's list scheduler
+simply picks differently. Same class as the saved-register-assignment residual
+already recorded as not source-addressable, manifesting as schedule order.
+
+**One axis left untested by that sweep**, being tried now: the six permutations
+varied the order the components are COMPUTED; the residual is about the order
+they are STORED. The recorded "decouple declaration order from usage order" lever
+separates exactly those two. If varying store order independently of compute
+order changes nothing, the wall is confirmed on both axes.
