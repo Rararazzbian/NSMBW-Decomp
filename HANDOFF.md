@@ -8133,3 +8133,57 @@ One open item, flagged rather than hidden: `countModelVariants` references two
 `.data` objects (`0x46474`/`0x46480`) on the far side of a confirmed-foreign
 `WM_MAP` chunk from the main claim. The slice claims only the contiguous range
 and the module still verifies.
+
+## DIAGNOSTIC: how to tell `switch` from `if`/`else if` in the disassembly
+
+We have long recorded "use `switch`, not `if`/`else if`" as a lever. kinoballoon
+found the **signature that tells you which one the target used**, which turns it
+from a thing to try into a thing to read:
+
+```
+if / else if chain :  cmpwi rX, A ; bne <skip to the next check>      <- one compare, one branch,
+                                                                        the else folded into a skip
+switch             :  cmpwi rX, A ; beq <case A>
+                      cmpwi rX, B ; beq <case B>
+                      b <default>                                     <- each case independent,
+                                                                         explicit final branch
+```
+
+`processCutsceneCommand`'s second dispatch went **100 -> 34 differing and from a
+size mismatch to exactly 185/185** on this one change. **Read the branch shape
+before choosing the construct.** This is the fourth unit the `switch` lever has
+fixed, and the first time we can identify it from the target rather than guessing.
+
+## The bitfield conversion, confirmed in use
+
+`ACTOR_PARAM_CONFIG(BalloonType, 16, 8)` applied as derived:
+`findBySubIndex` straight to MATCH, `markDone` 6 -> 5, `modeExec` 15 -> 11, all
+three `extrwi` mismatches gone at once. **One convention error was producing the
+single most common residual across an entire unit.**
+
+## Named pointer versus bare literal, confirmed per-string
+
+The rule that a string reached via `lwz` through a `.data` slot is a named
+pointer variable, while `lis`/`addi` means a bare literal, was tested **per
+string** rather than applied wholesale -- and the target does both in one
+function:
+
+```
+GetResAnmChr's string  ->  lwz  ->  static const char *animName = "cobKinopio";
+getRes / GetResMdl     ->  lis/addi  ->  bare literals
+```
+
+Two measured negatives confirm it: declaring a `static const char names[2][16]`
+table for the other two strings creates a **new separate `.data` object with its
+own base** rather than landing in the target's existing block (67 differing,
+worse), and mirroring the pointer pattern onto all three gives 75, clearly worse.
+**Check each string's addressing mode individually.**
+
+## Where kinoballoon stands: 19/26
+
+`createModel` is the keystone. The target caches **three** address bases via
+`_savegpr_27` (5 registers) -- `.rodata`, `.data`, and the `animName` slot -- and
+the draft triggers no saved-register block at all, so every downstream register
+differs even though the call sequence now matches structurally.
+`modeExec` and `processCutsceneCommand` carry the **same** pool-offset shift, so
+closing `createModel` should move all three together.

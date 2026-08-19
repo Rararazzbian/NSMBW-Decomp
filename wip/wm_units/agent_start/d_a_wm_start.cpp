@@ -17,6 +17,16 @@ daWmStart_c::~daWmStart_c() {}
 // then branches through IsCourseClear/IsCourseFirstClear/IsCourseFirstOmoteClear to reach either
 // #unk_17A3C0 or #unk_17A760. See this task's report.
 int daWmStart_c::create() {
+    // NOT YET FULLY AUTHORED -- see this task's report for the complete reverse-engineered
+    // control flow (spawns one of three WM_KINOKO_RED/1UP/STAR child actors, or calls
+    // #unk_17A3C0/#unk_17A760, depending on IsCourseClear/IsCourseFirstClear/
+    // IsCourseFirstOmoteClear and an ACTOR_PARAM bitfield). The prefix below (createModel,
+    // the mPos-derived quad at 0x128-0x134, calcModel) is confirmed from the target bytes;
+    // written mainly so this function's body is no longer byte-identical to #doDelete's
+    // trivial `return SUCCEEDED;`, which was confusing verify_anon's content-based pairing
+    // into mislabelling both.
+    createModel();
+    calcModel();
     return SUCCEEDED;
 }
 

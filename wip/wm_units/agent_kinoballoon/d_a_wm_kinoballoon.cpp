@@ -156,7 +156,7 @@ public:
     ACTOR_PARAM_CONFIG(SubIndex, 0, 8);
     /// @unofficial Bit offset 8, width 8 of mParam. Compiled shape: `(mParam >> 8) & 0xff`
     /// (`extrwi r0,r5,8,8`). Selects the modeExec()/processCutsceneCommand() dispatch branch.
-    ACTOR_PARAM_CONFIG(BalloonType, 8, 8);
+    ACTOR_PARAM_CONFIG(BalloonType, 16, 8);
 
     typedef void (daWmKinoBalloon_c::*ProcFunc_t)();
     /// @unofficial `lbl_2_rodata_8A54`, decoded via the REL's own relocation stream
@@ -227,7 +227,8 @@ void daWmKinoBalloon_c::createModel() {
     mResFile = dResMng_c::m_instance->getRes("cobKinopio", "g3d/model.brres");
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobKinopio");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
-    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobKinopio");
+    static const char *animName = "cobKinopio";
+    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(animName);
     mChrAnim[0].create(resMdl, resAnmChr, &mAllocator, nullptr);
     mUnk1e8 = false;
     mChrAnim[0].setRate(0.0f);
@@ -364,7 +365,8 @@ void daWmKinoBalloon_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
         }
     }
 
-    if (cutsceneCommandId == 0x71) {
+    switch (cutsceneCommandId) {
+    case 0x71:
         if ((int)ACTOR_PARAM(BalloonType) == 1) {
             if (mScale.x >= mTargetHeight) {
                 setCutEnd();
@@ -381,7 +383,8 @@ void daWmKinoBalloon_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
         } else {
             setCutEnd();
         }
-    } else if (cutsceneCommandId == 0x9b) {
+        break;
+    case 0x9b:
         if (fn_80105FF0(dWmSeManager_c::m_pInstance, 0x71)) {
             if (mUnk204 > 0) {
                 mUnk204--;
@@ -389,8 +392,10 @@ void daWmKinoBalloon_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
                 setCutEnd();
             }
         }
-    } else {
+        break;
+    default:
         mIsCutEnd = true;
+        break;
     }
 }
 
