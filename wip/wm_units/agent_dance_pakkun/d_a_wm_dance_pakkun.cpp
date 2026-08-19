@@ -126,16 +126,27 @@ void daWmDancePakkun_c::calcModelFor(m3d::mdl_c *mdl) {
 }
 
 namespace {
-    // @unofficial -- lbl_2_data_445D0, 0x50 bytes. Real layout/values are
-    // unknown; this stands in for the *shape* only: startStep() reads a
-    // {dx,dy,dz} delta at +0x40 and a single "reset scale" float at +0x0,
-    // while calcModelFor() indexes the leading region by frame*8 (unused
-    // here). See MAPPING.md Open question 4.
+    // lbl_2_data_445D0, 0x50 bytes. Layout below is measured (coordinator
+    // read it from the retail .data): a lone float at +0x0, six 8-byte
+    // {float,u16,u16} records at +0x4 (three {65.0,20,2}, then three
+    // {5.0,20,2}), three words of 0x00020000 at +0x34, then the {dx,dy,dz}
+    // position delta startStep() reads at +0x40 (whose real values are
+    // still unknown -- placeholders below). create()'s mBgmSync setup
+    // indexes into the record region by (mParam & 0xFF); the exact indexing
+    // arithmetic is not reproduced yet (MAPPING.md Open question 4).
+    struct BgmRecord_t { float a; u16 b; u16 c; };
     struct StepTable_t {
-        float pairs[16];
-        float dx, dy, dz, unused3;
+        float scale0;
+        BgmRecord_t records[6];
+        u32 words[3];
+        float dx, dy, dz, unused3; // @unofficial dx/dy/dz values still unknown
     };
-    const StepTable_t sStepTable = { { 1.0f }, 2.0f, 3.0f, 4.0f, 0.0f };
+    const StepTable_t sStepTable = {
+        1.8f,
+        { {65.0f,20,2}, {65.0f,20,2}, {65.0f,20,2}, {5.0f,20,2}, {5.0f,20,2}, {5.0f,20,2} },
+        { 0x00020000, 0x00020000, 0x00020000 },
+        2.0f, 3.0f, 4.0f, 0.0f
+    };
 }
 
 void daWmDancePakkun_c::startStep() {
@@ -144,9 +155,9 @@ void daWmDancePakkun_c::startStep() {
     mPos.z += sStepTable.dz;
     mAngle.y = 0x4000;
     unusedStub();
-    mScale.x = sStepTable.pairs[0];
-    mScale.y = sStepTable.pairs[0];
-    mScale.z = sStepTable.pairs[0];
+    mScale.x = sStepTable.scale0;
+    mScale.y = sStepTable.scale0;
+    mScale.z = sStepTable.scale0;
     resetStep();
 }
 

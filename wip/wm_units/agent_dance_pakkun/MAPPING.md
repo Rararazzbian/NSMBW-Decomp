@@ -594,3 +594,114 @@ anything, outside this unit) uses it.
   reproduced.
 - `pad_2c0[0x10]`/`pad_2d1[0x7]` (what used to be `pad_2c0[0x18]`) remain
   unexplained past the one field (`m_2d0`) pulled out of it this round.
+
+---
+
+## Update after coordinator's third round: register-permutation ceiling confirmed, real data plugged in, still 8/16
+
+Coordinator corrected the record on `+0x60` (no header change needed, ever
+was needed) and gave concrete data for `create()`'s table and the
+`createModel()` anchoring. Result: still 8/16 by count, but two more
+negatives are now solidly measured rather than guessed, and the real
+`lbl_2_data_445D0` layout is now known.
+
+### 1. Ctor (4 differing) -- tried two more axes, both negative
+
+- Explicit `: dWmDemoActor_c(), m_184(-1)` base-initialiser: **no change**
+  (still 4 differing, byte-identical to the plain `: m_184(-1)` form).
+- Re-confirmed the body-assignment form (`{ m_184 = -1; }`) is **worse, not
+  equivalent** -- re-diffed it this round: with no initialiser list, `m_184`'s
+  store gets pushed all the way to the END of the constructor (after
+  constructing `mChrAnim`/`mBlend`/`mTexSrt`), not just reordered against the
+  vtable store. So the two forms aren't "same content, different order" --
+  they're genuinely different codegen paths, and only the initialiser-list
+  form is even close.
+- New data point on the register question: compared against `daWmGhost_c`'s
+  own landed ctor, which sets `mResNodeIdx=-1` (dWmObjActor_c's inherited
+  field, semantically identical situation to our `m_184`) using **r4** for
+  the vtable address and storing `m_184`-equivalent (r0) BEFORE the vtable
+  (r4) -- i.e. ghost's compiled order matches what OUR target wants. My
+  draft's compiler picks **r3** for the vtable address and stores it BEFORE
+  `m_184`. Both ghost's source and mine are `: member(-1) {}` with an
+  otherwise-empty body, so the difference isn't visible at the source level
+  I can control -- this is the same "MWCC's saved-register assignment isn't
+  source-order-driven" class of residual AGENT_CONTEXT.md already documents,
+  now confirmed by a second data point (ghost) rather than just asserted.
+  **Negative, not fixed**, register choice (r3 vs r4) and store order both
+  move together and I could not find the lever that flips them.
+
+### 2. `startStep()` (13 differing) -- tried two more axes, both negative (worse)
+
+- `mPos += mVec3_c(dx,dy,dz)` (single vector op instead of three scalar
+  `+=`): compiles to a **different-sized function** (35 -> mismatched, tool
+  re-labelled it against `~dWmDemoActor_c`'s dtor), 32 differing. Worse.
+- `mVec3_c oldPos = mPos; mPos.x = oldPos.x + dx; ...` (force a local copy
+  read before any arithmetic, to try to reproduce the target's
+  load-all-three-first scheduling): also 32 differing, also worse, same
+  wrong size.
+- Reverted to the original three-separate-`+=`-statements form (13
+  differing, unchanged). The residual is the load/fadds register
+  permutation across the three components plus symbol-name normalisation;
+  neither "widen the scope" experiment above got closer. **Negative.**
+
+### 3. `createModel()` (76 differing) -- shape confirmed right, anchoring still not reproduced
+
+Already had `static const char *sAnmNames[1] = {"cs_wait"};` (one named
+pointer object) versus the two direct literals for `"g3d/pakkun.brres"` and
+`"pakkun"` -- which is exactly the shape the coordinator confirmed from the
+retail `.data` (`0x44628` holds a relocated pointer to `"cs_wait"` at
+`0x44620`; the other two strings have no such indirection). So the
+per-string *addressing mechanism* was already correct going into this round.
+What's still wrong is which BASE REGISTER the compiler anchors each of these
+to -- the target holds one shared anchor (`r31 = &lbl_2_data_44590`) across
+`getRes`'s two args, `GetResMdl`'s arg, and the `cs_wait` pointer read, all
+in one function; my draft computes the `sAnmNames` pointer through a fresh,
+separate base register instead of reusing `r31`. I did not find a source
+change that makes MWCC's anchor-sharing pick up my `sAnmNames` array as
+"close enough" to the other pooled objects to share the register -- this
+looks like it may be a fundamentally linker/pool-layout-driven decision
+(how far apart the anonymous `.data` objects end up, which I don't have
+direct control over from a single TU's source) rather than something a
+source reordering fixes. Every operation and argument still matches
+byte-for-byte; only register numbers differ. **Not fixed this round.**
+
+### 4. `create()`'s table -- real values now in the source, indexing math still not derived
+
+`lbl_2_data_445D0`'s real layout (measured by the coordinator from retail
+`.data`) is: `float scale0` (`1.8`) at `+0x0`, six `{float,u16,u16}` records
+at `+0x4` (`{65.0,20,2}` x3, then `{5.0,20,2}` x3, ending at `+0x34`), three
+words of `0x00020000` at `+0x34` (ending `+0x40`), then the `{dx,dy,dz}`
+position delta `startStep()` uses at `+0x40` (whose values are still
+unknown). Total `0x50` bytes, matching the object's measured size exactly.
+Replaced the placeholder `float pairs[16]` with this real, typed structure
+and its real values; `startStep()`'s `mScale` reset now reads
+`sStepTable.scale0` (`1.8f`) instead of a guessed `1.0f`. **Did not** work
+out the exact `(mParam & 0xFF)`-indexed arithmetic that picks a record and
+derives `mBgmSync->m_18`/`m_04`/`m_08` from it in the time available --
+`create()`'s `mBgmSync` setup is still the simplified placeholder from last
+round. No regressions from the table-content change (rebuilt clean, 8/16
+unchanged, `startStep()` still 13 differing -- confirms the struct's shape
+was already right, only its content was previously wrong).
+
+### Table (unchanged from last round; no function crossed into MATCH this round)
+
+```
+classInit MATCH | ctor 4 | dtor 21 | create() 38 | execute() 64 | draw() MATCH
+doDelete() MATCH | createModel() 76 | tailHelper() MATCH | calcModelFor() 97 (left alone)
+startStep() 13 | resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH | sinit pair 50/MATCH
+
+8/16 byte-identical
+```
+
+### Summary of this round's negatives (as requested, valued equally to positives)
+
+- Ctor: two more variants tried (explicit base-initialiser, cross-checked
+  against ghost's identical situation), both confirm the residual is
+  register-allocation, not source-shape. No lever found.
+- `startStep()`: two more variants tried (vector `+=`, forced local copy),
+  both **worse** than the current baseline. No lever found.
+- `createModel()`: the addressing *mechanism* (pointer-object vs direct
+  literal) was already right; the anchor-register-sharing is the remaining
+  gap and I don't have a source-level explanation for it yet.
+- `create()`'s exact table-indexing arithmetic: not derived, despite now
+  having the real table values to work from.
