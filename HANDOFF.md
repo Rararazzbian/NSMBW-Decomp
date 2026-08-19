@@ -8555,3 +8555,63 @@ applied as `bool` on the same kind of inference.
 **Any declaration whose return type we inferred is a suspect whenever a spurious
 mask or width-narrowing shows up in the diff.** Compile it both ways and let the
 diff decide.
+
+## WM_ITEM opened at 8/12, and a SYSTEMIC residual is now confirmed across three units
+
+`daWmItem_c : public dBaseActor_c`, `sizeof 0x210`, `.text 0x167120-0x16793c`.
+MATCH on the first round: `classInit`, ctor, dtor, `create`, three step functions,
+`doDelete`.
+
+### Walk the REL's own relocation stream for hard evidence
+
+The agent loaded `tools/relfile.py`'s `Rel` class and walked
+`original/d_basesNP.rel`'s self-relocations directly, settling the class layout,
+six per-item-type data tables and the `.data` bounds from evidence rather than
+inference.
+
+That let it **correctly override `check_bounds.py`'s family heuristic**. The rule
+"a `wm` unit's `.data` opens on the two anonymous `sc_ForceList` strings" flagged
+the claim — but `g_profile_WM_ITEM`'s `classInit` field relocates straight to this
+unit's first function, so `.data` really does start at the profile here. **Knowing
+when a rule's precondition fails, and proving it, beats obeying the rule.**
+
+### Two new levers
+
+- **Signed versus unsigned members change the compare.** `mItemType` and two
+  others had to be `int`, not `u32`, because the target uses signed compares.
+- **Chained vector assignment `a = b = c = v` stores in `z, y, x` order**, not
+  `x, y, z`. Three separate statements were needed to get the target's order.
+
+Also re-confirmed: **never call the base destructor explicitly** — it doubles the
+`bl __dt__...` and adds an unwanted vtable-pointer reset.
+
+### The systemic residual: one dedicated base register versus per-site recomputation
+
+**Third unit with this exact defect class**, and it is what parked the other two:
+
+```
+dance_pakkun  createModel   parked at 70   target holds 5 registers, draft 3
+kinoballoon   createModel   parked at 51   _savegpr_27 matched, one register does double duty
+item          createModel / calcModel / cycleAnm   116 / 60 / 14
+```
+
+**The target caches a `.rodata` constant-table base in one dedicated register for
+the whole function; the draft recomputes it at each access site.**
+
+**Untested hypothesis, now being measured on item:** declare the constants as
+**ONE named array** and index it, rather than as separate named objects. One
+object has one base, so every access shares an anchor by construction; separate
+objects each get their own `lis`/`addi`, which is exactly the symptom. Neither of
+the parked units tried consolidating — both had separate scalars in the pool.
+
+Two supports for this being the right axis:
+- It is the same reasoning that fixed dance_pakkun's string anchoring — three
+  strings shared one base **because they were adjacent in one region**, not
+  because of any addressing trick.
+- Integers in `.rodata` are named objects, so their placement is
+  declaration-controlled and the bytes can be kept identical while consolidating.
+
+**Track the saved-register level and whether a single base register appears, not
+the differing count** — the register signature moves first. If this works it may
+unpark two other units; if it does not, it is a valuable negative on a systemic
+problem.
