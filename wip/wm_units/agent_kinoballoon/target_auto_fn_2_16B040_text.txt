@@ -1,0 +1,48 @@
+.include "macros.inc"
+.file "auto_fn_2_16B040_text"
+
+# 0x0016B040..0x0016B0C4 | size: 0x84
+.text
+.balign 4
+
+# .text:0x0 | 0x16B040 | size: 0x84
+.fn fn_2_16B040, global
+/* 0016B040 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0016B044 00000044  7C 08 02 A6 */	mflr r0
+/* 0016B048 00000048  3C A0 00 00 */	lis r5, lbl_2_rodata_8A50@ha
+/* 0016B04C 0000004C  3C C0 00 00 */	lis r6, lbl_2_data_45640@ha
+/* 0016B050 00000050  38 A5 00 00 */	addi r5, r5, lbl_2_rodata_8A50@l
+/* 0016B054 00000054  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0016B058 00000058  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 0016B05C 0000005C  C0 45 00 58 */	lfs f2, 0x58(r5)
+/* 0016B060 00000060  38 C6 00 00 */	addi r6, r6, lbl_2_data_45640@l
+/* 0016B064 00000064  C0 25 00 5C */	lfs f1, 0x5c(r5)
+/* 0016B068 00000068  C0 05 00 60 */	lfs f0, 0x60(r5)
+/* 0016B06C 0000006C  3C 80 00 00 */	lis r4, fn_2_16B0D0@ha
+/* 0016B070 00000070  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 0016B074 00000074  3C A0 00 00 */	lis r5, lbl_2_bss_FE60@ha
+/* 0016B078 00000078  90 06 00 0C */	stw r0, 0xc(r6)
+/* 0016B07C 0000007C  38 84 00 00 */	addi r4, r4, fn_2_16B0D0@l
+/* 0016B080 00000080  38 A5 00 00 */	addi r5, r5, lbl_2_bss_FE60@l
+/* 0016B084 00000084  38 60 00 00 */	li r3, 0x0
+/* 0016B088 00000088  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 0016B08C 0000008C  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 0016B090 00000090  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 0016B094 00000094  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 0016B098 00000098  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 0016B09C 0000009C  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 0016B0A0 000000A0  48 00 00 01 */	bl __register_global_object
+/* 0016B0A4 000000A4  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 0016B0A8 000000A8  3C 60 00 00 */	lis r3, lbl_2_bss_FE6C@ha
+/* 0016B0AC 000000AC  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 0016B0B0 000000B0  90 03 00 00 */	stw r0, lbl_2_bss_FE6C@l(r3)
+/* 0016B0B4 000000B4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0016B0B8 000000B8  7C 08 03 A6 */	mtlr r0
+/* 0016B0BC 000000BC  38 21 00 20 */	addi r1, r1, 0x20
+/* 0016B0C0 000000C0  4E 80 00 20 */	blr
+.endfn fn_2_16B040
+
+# 0x000003F8..0x000003FC | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte fn_2_16B040
