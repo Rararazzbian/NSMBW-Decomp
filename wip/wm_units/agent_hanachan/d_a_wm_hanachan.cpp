@@ -5,6 +5,7 @@
 #include <game/mLib/m_3d/anm_chr.hpp>
 #include <game/mLib/m_3d/smdl.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
+#include <game/bases/d_cs_seq_manager.hpp>
 
 /// @unofficial DRAFT, first-authoring round for WM_HANACHAN (.text 0x164430-0x165c70, 32
 /// functions). Base class confirmed from the constructor (bl __ct__14dWmDemoActor_cFv):
@@ -68,12 +69,18 @@ public:
     daWmHanachan_c();
     ~daWmHanachan_c();
 
-    /// @unofficial fn_2_164700 (0x64 B). Vtable slot 2 (create). NOT yet authored -- left for a
-    /// later round, size/shape not yet read.
+    /// @unofficial fn_2_164700 (0x64 B). Vtable slot 2 (create). createModel(); mClipSphere.set
+    /// (mPos, 250.0f); calcModel(); resetState(); return SUCCEEDED; -- the family's standard
+    /// create() shape.
     virtual int create();
-    /// @unofficial fn_2_164770 (0xB0 B). Vtable slot 8 (execute). NOT yet authored.
+    /// @unofficial fn_2_164770 (0xB0 B). Vtable slot 8 (execute). processCutsceneCommand via the
+    /// +0x60 double-indirection idiom, then (this->*sStateTable[mState])(), then
+    /// resetPosFromState0(), fn_2_164B10(), resetState(), then fn_2_1659A0(f1,f2) with two floats
+    /// read from lbl_2_data_44D60+0x54/+0x58 (an already-landed shared constant table, not yet
+    /// looked up by name).
     virtual int execute();
-    /// @unofficial fn_2_164820 (0x84 B). Vtable slot 11 (draw). NOT yet authored.
+    /// @unofficial fn_2_164820 (0x84 B). Vtable slot 11 (draw). mModel2.entry(); then
+    /// mModels[i].entry() for i in 0..4; then fn_2_165AB0().
     virtual int draw();
     /// @unofficial fn_2_1648B0 (0x8 B). Vtable slot 5 (doDelete). `li r3,1;blr` -- the family's
     /// trivial default body, declared out-of-line per every landed sibling's own convention.
@@ -88,6 +95,37 @@ public:
     /// @unofficial fn_2_165870 (0x1C B). mPos = mStates[0].mSomePos (the one confirmed field of
     /// the custom 0x38-byte struct, at struct-offset +0x10).
     void resetPosFromState0();
+
+    /// @unofficial fn_2_1648C0 (0x244 B). createModel(). NOT yet authored -- placeholder body
+    /// only, referenced by create().
+    void createModel();
+    /// @unofficial fn_2_164D10 (0xFC B). calcModel(). NOT yet authored -- placeholder.
+    void calcModel();
+    /// @unofficial fn_2_164B90 (0x17C B). resetState(). NOT yet authored -- placeholder,
+    /// referenced by both create() and execute().
+    void resetState();
+    /// @unofficial fn_2_164B10 (0x78 B). NOT yet authored -- placeholder, referenced by execute().
+    void unkFn164B10();
+    /// @unofficial fn_2_1659A0 (0x10C B). NOT yet authored -- placeholder, takes two floats.
+    void unkFn1659A0(float a, float b);
+    /// @unofficial fn_2_165AB0 (0x70 B). NOT yet authored -- placeholder, referenced by draw().
+    void unkFn165AB0();
+
+    /// @unofficial fn_2_164EB0 (0x1D4 B). sStateTable[0]. NOT yet authored -- placeholder.
+    void state0();
+    /// @unofficial fn_2_1650A0 (0x6C B). sStateTable[1]. NOT yet authored -- placeholder.
+    void state1();
+    /// @unofficial fn_2_165120 (0x78 B). sStateTable[2]. NOT yet authored -- placeholder.
+    void state2();
+    /// @unofficial fn_2_1651B0 (0x404 B, largest in the unit). sStateTable[3]. Deliberately left
+    /// for last -- placeholder only.
+    void state3();
+
+    typedef void (daWmHanachan_c::*StateFunc_t)();
+    /// @unofficial lbl_2_rodata_88CC, decoded via the REL's own relocation stream: 4 entries
+    /// (0x88CC/0x88D8/0x88E4/0x88F0, each 0xC bytes) resolving to fn_2_164EB0/0x1650A0/
+    /// 0x165120/0x1651B0 -- indexed by mState (0..3) in execute().
+    static const StateFunc_t sStateTable[4];
 
     /// @unofficial +0x184. dWmDemoActor_c's own base ends at 0x184 (established fact from
     /// every landed sibling this session); this class's own first member sits there.
@@ -125,12 +163,55 @@ public:
     HanachanState_t mStates[5];
 };
 
-daWmHanachan_c::daWmHanachan_c() : mUnk184(0), mUnk1a4(0), mUnk388(0), mUnk1e4(0) {}
+daWmHanachan_c::daWmHanachan_c() : mUnk1a4(0), mUnk388(0), mUnk1e4(0) {}
 
 daWmHanachan_c::~daWmHanachan_c() {}
 
+int daWmHanachan_c::create() {
+    createModel();
+    mClipSphere.set(mPos, 250.0f);
+    calcModel();
+    resetState();
+    return SUCCEEDED;
+}
+
+int daWmHanachan_c::execute() {
+    dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
+    processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
+    (this->*sStateTable[mState])();
+    resetPosFromState0();
+    unkFn164B10();
+    resetState();
+    unkFn1659A0(1.0f, 1.25f);
+    return SUCCEEDED;
+}
+
+int daWmHanachan_c::draw() {
+    mModel2.entry();
+    for (int i = 0; i < 4; i++) {
+        mModels[i].entry();
+    }
+    unkFn165AB0();
+    return SUCCEEDED;
+}
+
 int daWmHanachan_c::doDelete() {
     return SUCCEEDED;
+}
+
+void daWmHanachan_c::createModel() {
+}
+
+void daWmHanachan_c::unkFn164B10() {
+}
+
+void daWmHanachan_c::resetState() {
+}
+
+void daWmHanachan_c::calcModel() {
+}
+
+void daWmHanachan_c::state0() {
 }
 
 void daWmHanachan_c::setState1() {
@@ -138,16 +219,38 @@ void daWmHanachan_c::setState1() {
     clearSpeedAll();
 }
 
+void daWmHanachan_c::state1() {
+}
+
 void daWmHanachan_c::setState2() {
     mState = 2;
+}
+
+void daWmHanachan_c::state2() {
 }
 
 void daWmHanachan_c::setState3() {
     mState = 3;
 }
 
+void daWmHanachan_c::state3() {
+}
+
 void daWmHanachan_c::resetPosFromState0() {
     mPos = mStates[0].mSomePos;
 }
+
+void daWmHanachan_c::unkFn1659A0(float a, float b) {
+}
+
+void daWmHanachan_c::unkFn165AB0() {
+}
+
+const daWmHanachan_c::StateFunc_t daWmHanachan_c::sStateTable[4] = {
+    &daWmHanachan_c::state0,
+    &daWmHanachan_c::state1,
+    &daWmHanachan_c::state2,
+    &daWmHanachan_c::state3,
+};
 
 ACTOR_PROFILE(WM_HANACHAN, daWmHanachan_c, 0);

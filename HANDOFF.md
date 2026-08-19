@@ -10082,3 +10082,42 @@ all**, plus the session's largest single function (`0x834`) deferred four times.
 round spent on a function nobody has read.** The walls are recorded; they will
 still be there. This is the same allocation logic that produced six landings
 today while near-misses stayed near-misses.
+
+## `+0x184` is DECLARED on every unit, but whether the ctor WRITES it varies
+
+WM_HANACHAN's constructor regressed 11 -> 66 after the correct `mUnk184` layout
+fix, and the cause was the initialiser rather than the member: the draft had
+`mUnk184(0)`, emitting `stw r31, 0x184(r29)`, while **the target's constructor
+never touches that offset at all** — it is zero purely from
+`fBase_c::operator new`'s blanket zero-initialisation.
+
+Removing the initialiser while keeping the bare `int mUnk184;` declaration closed
+the constructor to MATCH.
+
+**So the convention has two halves and only one is universal:**
+- **Declare** the `int` at `+0x184` — five units this session, no exceptions.
+- **Initialise it only if the target's constructor writes it.** antlion_mng and
+  hanachan do not; board does.
+
+**Check the target's constructor for a store to `+0x184` before adding an
+initialiser.** And note the general form, which the lead predicted correctly here:
+**a regression caused by a correct change usually means a second error the first
+one was masking.**
+
+## The state-dispatch table, decoded the same way as the vtable
+
+`lbl_2_rodata_88CC`, **4 entries of `0xc`** resolved from relocations —
+`fn_2_164EB0`, `0x1650A0`, `0x165120`, `0x1651B0` — matching `mState`'s observed
+range of 0..3 from the three `setState` functions.
+
+**Entry 3 is the `0x404` function** that had been deferred as "largest, leave for
+last"; it is the `mState == 3` handler. Knowing that gives it a shape before
+anyone reads it.
+
+**Direct relocation reading now covers class vtables, pointer-to-member tables and
+state tables alike** — no draft and no dtk-split object required, which is what
+makes it work on unlanded units.
+
+WM_HANACHAN stands at **12/32**, with `create`, `draw`, the constructor and the
+destructor all matching, and `execute` size-matched at 5 differing (two constants
+sourced from separate anonymous pool slots instead of one named table).
