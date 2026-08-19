@@ -396,13 +396,14 @@ void daWmAntlionMng_c::rebuildAllModels(bool param0, bool param1) {
 /// the "decouple declaration order from usage order" family of levers applied to a loop instead
 /// of a constructor argument list.
 void daWmAntlionMng_c::clearAllModels() {
+    int idx;
+    int base = 0;
     daWmMap_c *map = daWmMap_c::m_instance;
     dInfo_c *info = dInfo_c::m_instance;
 
-    int base = 0;
     for (int slot = 0; slot < 2; slot++) {
         for (int sub = 0; sub < 2; sub++) {
-            int idx = sub + base;
+            idx = sub + base;
             dInfo_c::enemy_s enemy;
             info->GetMapEnemyInfo(*(int *)((char *)map + 0x3388), idx, enemy);
             if (enemy.mPathIndex >= 0) {

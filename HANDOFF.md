@@ -6539,3 +6539,76 @@ WM_HANACHAN      .text 0x164430-0x165c70  (0x1840)  open
 WM_DANCE_PAKKUN is the gap immediately after course and is the natural next
 unit: landing course and then it makes `0x15fbe0-0x163620` contiguous except
 for castle.
+
+## MEASURED CORRECTION: `.rodata` placement follows DECLARATION ORDER. The "passes" rule is false.
+
+Two rules were written down here and they contradicted each other:
+
+- "MWCC emits constant data in PASSES: named objects first, then per-function
+  anonymous literal pools, then vtables."
+- "A named `static const` pools EAGERLY AT ITS DECLARATION POINT."
+
+Every piece of evidence we had was consistent with both, because the one
+experiment that seemed to settle it changed two variables at once: course's
+`sOpenFullRateSeed` was both NAMED and DECLARED FIRST, and it landed first.
+"Named objects go first" and "declaration point wins" predict that equally.
+
+A probe agent built discriminating files and read the raw `.rodata` bytes out of
+the compiled objects (`wip/wm_units/agent_pool_order/`). **The passes rule is
+falsified.**
+
+```
+Probe 1  fnA, fnB, then named sTail declared LAST
+         .rodata: fnA-pool(0x00) fnB-pool(0x0c) sTail(0x18)      <- sTail LAST
+
+Probe 2  named sTail declared FIRST (control)
+         .rodata: sTail(0x00) fnA-pool(0x0c) fnB-pool(0x18)      <- sTail FIRST
+
+Probe 4  fnA, fnB, named sMid, fnC
+         .rodata: fnA-pool fnB-pool sMid fnC-pool                <- interleaved
+```
+
+Probe 4 is the one that closes it. A named object declared in the MIDDLE lands in
+the middle, between two function pools. There is no "named first" pass and no
+hybrid; **placement tracks source declaration order, full stop.**
+
+### The corollaries, all measured in the same round
+
+- **Unreferenced `static const` declared last: STRIPPED** by `-O4` (internal
+  linkage at namespace scope). Already recorded; re-confirmed.
+- **Unreferenced `extern const` declared last: SURVIVES, and still lands LAST.**
+  This is the useful one. `extern` defeats stripping without needing a reference,
+  and the surviving object still obeys declaration-point placement.
+- **A composite `static const` array reproduces a trailing integer.**
+  `struct R { float a, b, c; unsigned int flag; };` with records
+  `{2160.0f, -30.0f, -478.0f, 0}` and `{2160.0f, -30.0f, -478.0f, 1}` declared
+  last emits both records after the function pools, integer flags and all.
+
+### Why this matters: it un-parks antlion
+
+Antlion was parked with an impossibility argument built on the passes rule:
+MWCC never pools integer literals (**still true**), so its missing trailing `1`
+had to be a named object; the passes rule said a named object can never land
+after the function pools; therefore unreachable from source. **The second step
+is now known to be wrong.** An `extern const` array declared after every function
+definition is exactly the shape that produces a trailing integer word.
+
+And the target's own bytes read like the composite probe: `.rodata` has
+`{2160.0f, -30.0f, -478.0f, 0}` at `0x8588` and `{2160.0f, -30.0f, -478.0f, 1}`
+at `0x85a8` -- a repeated record, the second of which is what antlion is short of.
+
+**Do not treat "MWCC emits in passes" as a rule again.** It is deleted, not
+qualified. The weak-versus-strong deferral rule from kinoko_base is separate and
+still stands: a WEAK (in-class inline) function's ANONYMOUS pool defers past the
+vtable pool even when called by name. That is about linkage, not declaration
+order, and the two compose.
+
+### Methodology note for whoever probes next
+
+With `wiimj2d`'s flag set a lone 4-byte float literal is small-data eligible and
+lands in `.sdata2`, not `.rodata`, so a naive probe produces no competing
+anonymous data at all and both arms look identical. The fix was to give each
+function a 3-float local array, which exceeds the threshold and forces a real
+per-function pool entry. `d_basesNP` compiles with `-sdata 0 -sdata2 0` and does
+not have this problem -- but a probe run under the wrong module's flags can
+silently answer a different question than the one asked.

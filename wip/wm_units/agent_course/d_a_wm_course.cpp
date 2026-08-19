@@ -38,7 +38,7 @@ ACTOR_PROFILE(WM_COURSE, daWmCourse_c, 0);
 // fn_800XXXXX convention (see source/dol/bases/d_a_player_demo_manager.cpp).
 extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &model, const char *name, int, int);
 
-// @unofficial Unnamed in the symbol map (fn_2_191BF0, .text:0x191BF0, 0x3C B),
+// @unofficial Unnamed in the symbol map (R_2_1_191BF0, .text:0x191BF0, 0x3C B),
 // owned by a TU inside d_basesNP that is not yet landed. syms.txt only carries
 // DOL (0x8xxxxxxx) addresses -- there is no mechanism there for a REL-internal
 // symbol, so this cannot resolve at link time until that TU lands (same class
@@ -46,24 +46,24 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &mode
 // leftover address from an unrelated preceding load (not `this`, not a search
 // result) right before the call, so the real signature is very likely
 // argument-less; declared that way, but unverifiable while blocked.
-extern "C" bool fn_2_191BF0();
+extern "C" bool R_2_1_191BF0();
 
-// @unofficial Unnamed in the symbol map (fn_2_189A20, .text:0x189A20, 0x64 B;
-// fn_2_189990, .text:0x189990, 0x88 B), both owned by a different not-yet-
-// landed TU inside d_basesNP -- fn_2_189990 shows up as the destination of a
+// @unofficial Unnamed in the symbol map (R_2_1_189A20, .text:0x189A20, 0x64 B;
+// R_2_1_189990, .text:0x189990, 0x88 B), both owned by a different not-yet-
+// landed TU inside d_basesNP -- R_2_1_189990 shows up as the destination of a
 // switch jump table in two other wip units' `.data` (`agent_koopa_castle` and
-// `agent_sandpillar`'s `fn_2_189990+0x20 .. +0x74` entries), which is the
+// `agent_sandpillar`'s `R_2_1_189990+0x20 .. +0x74` entries), which is the
 // function's OWN internal dispatch, not a class vtable; it tells us nothing
 // about this call site's argument types. Same class of blocker as
-// fn_2_191BF0/fn_80103420: syms.txt only carries DOL addresses, so a
+// R_2_1_191BF0/fn_80103420: syms.txt only carries DOL addresses, so a
 // REL-internal symbol from an unlanded TU cannot resolve here. At the one
-// call site below, `fn_2_189A20(world)` is called with no `this` setup and
-// its return sits untouched in r3 right up to the `bl fn_2_189990`, which is
-// only possible if that return value IS fn_2_189990's first argument -- the
+// call site below, `R_2_1_189A20(world)` is called with no `this` setup and
+// its return sits untouched in r3 right up to the `bl R_2_1_189990`, which is
+// only possible if that return value IS R_2_1_189990's first argument -- the
 // two calls chain. Declared as a plain int-in/pointer-out pair on that
 // evidence; unverifiable further while blocked.
-extern "C" void *fn_2_189A20(int world);
-extern "C" void fn_2_189990(void *obj, int, int);
+extern "C" void *R_2_1_189A20(int world);
+extern "C" void R_2_1_189990(void *obj, int, int);
 
 static const char *sResAnmNames[daWmCourse_c::ANIM_COUNT] = {
     "cobCourseClear",
@@ -109,7 +109,7 @@ int daWmCourse_c::create() {
                     }
                 } else {
                     if (IsCourseFirstOmoteClear()) {
-                        fn_2_189990(fn_2_189A20(world), 0, 4);
+                        R_2_1_189990(R_2_1_189A20(world), 0, 4);
                         daWmPlayer_c::ms_instance->mPos = ship->mPos;
                         dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_KOOPACASTLEAPPEAR, nullptr, nullptr, 200);
                     }
@@ -415,7 +415,7 @@ void daWmCourse_c::setMatClrAnm(int index, float rate, float frame) {
     mCurrentIndex = index;
 }
 
-// TODO: fn_2_191BF0 is an unnamed function INSIDE d_basesNP itself
+// TODO: R_2_1_191BF0 is an unnamed function INSIDE d_basesNP itself
 // (.text:0x191BF0), owned by a TU that is not yet landed. syms.txt only
 // carries DOL (0x8xxxxxxx) addresses, so this REL-internal symbol cannot
 // resolve at link time until that TU lands -- same class of blocker as
@@ -428,14 +428,14 @@ void daWmCourse_c::setMatClrAnm(int index, float rate, float frame) {
 // 0. This function is not called anywhere visible in this TU; the true
 // caller (a state-function-pointer table elsewhere) is out of view, but the
 // target's own bytes are unambiguous about the return value existing.
-// The world==7/courseNo==0x17/fn_2_191BF0() gate is NOT a side-effect-only
+// The world==7/courseNo==0x17/R_2_1_191BF0() gate is NOT a side-effect-only
 // call as previously assumed -- when GetOpenStatus() != 1 the target skips
 // the switch entirely and returns true unless ALL three gate conditions
 // hold, in which case it falls into the switch below.
 bool daWmCourse_c::updateOpenAnim() {
     bool result = false;
     if (GetOpenStatus() == 1
-        || (dScWMap_c::m_WorldNo == 7 && (int)ACTOR_PARAM(CourseNo) == 0x17 && fn_2_191BF0())) {
+        || (dScWMap_c::m_WorldNo == 7 && (int)ACTOR_PARAM(CourseNo) == 0x17 && R_2_1_191BF0())) {
         switch (mOpenState) {
             case 0:
                 mOpenState = 1;
@@ -488,7 +488,7 @@ daWmCourse_c *daWmCourse_c::searchOpenNeighbor() {
     return nullptr;
 }
 
-// TODO: one branch (world==7 && kind==0x17) calls fn_2_191BF0, an unnamed,
+// TODO: one branch (world==7 && kind==0x17) calls R_2_1_191BF0, an unnamed,
 // unlanded external function outside course's own .text -- cannot be called
 // by name yet. Everything else matched against the raw target bytes.
 void daWmCourse_c::openNeighbors(bool fastRate) {
@@ -502,7 +502,7 @@ void daWmCourse_c::openNeighbors(bool fastRate) {
             continue;
         }
         if (obj->GetOpenStatus() == 1
-            || (dScWMap_c::m_WorldNo == 7 && (int)ACTOR_PARAM_LOCAL(obj->mParam, CourseNo) == 0x17 && fn_2_191BF0())) {
+            || (dScWMap_c::m_WorldNo == 7 && (int)ACTOR_PARAM_LOCAL(obj->mParam, CourseNo) == 0x17 && R_2_1_191BF0())) {
             any = true;
         }
     }
