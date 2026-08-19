@@ -5,7 +5,13 @@
 #include <game/bases/d_wm_csv_data.hpp>
 #include <game/bases/d_a_wm_map.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
+#include <game/bases/d_w_camera.hpp>
+#include <game/bases/d_wm_se_manager.hpp>
 #include <constants/game_constants.h>
+
+// @unofficial lbl_2_bss_11B70 -- a shared .bss singleton pointer, real
+// type not yet identified (accessed via raw offsets in stepCutscene70()).
+extern void *lbl_2_bss_11B70;
 
 // @unofficial cross-module DOL call, unnamed in both symbol tables.
 extern "C" int fn_800FCB30(int);
@@ -16,6 +22,14 @@ extern "C" int fn_800FCB30(int);
 // free function taking an explicit `this`, same technique as the
 // project's other raw cross-TU externs.
 extern "C" mVec3_c GetPos__9daWmMap_cFPCc(daWmMap_c *self, const char *nodeName);
+
+// @unofficial stepCutscene70() externs -- all read directly off the
+// target's own call sites (mangled/raw names), not guessed.
+extern "C" void fn_2_192920(dWmActor_c *);
+extern "C" void fn_80105170(dWmSeManager_c *mgr, int a, int b, u8 c, float d);
+namespace dWmLib {
+    void InitKinopioCourse();
+}
 
 // @unofficial KNOWN ISSUE, not resolved: the target's .ctors section has
 // exactly 1 entry for this unit; the real source therefore does NOT
@@ -174,6 +188,114 @@ void daWmKinopio_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFr
         stepCutscene70();
     } else {
         mIsCutEnd = true;
+    }
+}
+
+void daWmKinopio_c::stepCutscene70() {
+    calcSpeed();
+    posMove();
+
+    if (mpMdlMng->mpMdl->isFootStepTiming()) {
+        fn_80105170(dWmSeManager_c::m_pInstance, 0x10, 2, mpMdlMng->mpMdl->m_152, mSpeedF);
+    }
+
+    switch (m_1a8) {
+    case 0:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 1:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 2:
+        if (m_1ac > 1) {
+            m_198 = 0xb4;
+            // @unofficial lbl_2_bss_11B70 -- a shared, not-yet-typed
+            // singleton pointer read from .bss; fields at +0x544/+0x546/
+            // +0x55c accessed via raw offset since its real type isn't
+            // identified. NOT fully decoded otherwise.
+            u8 *mgr = *(u8 **) &lbl_2_bss_11B70;
+            *(bool *) (mgr + 0x544) = true;
+            *(bool *) (mgr + 0x546) = true;
+            *(u32 *) (mgr + 0x55c) = 0xd;
+            m_1a8 = 4;
+        }
+        break;
+    case 3:
+        break;
+    case 4:
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        } else {
+            m_198 = 0x78;
+            m_1a8 = 5;
+        }
+        break;
+    case 5:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 6:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 7:
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        } else {
+            m_198 = 0x78;
+            m_1a8 = 8;
+            m_1ac = 0;
+        }
+        break;
+    case 8:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 9:
+        m_198 = 0x1e;
+        m_1a8 = 0xa;
+        break;
+    case 10:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 11:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 12:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 13:
+        if (*(int *) ((u8 *) dWCamera_c::m_instance + 0x5f4) == 0) {
+            if (m_198 > 0) {
+                m_198 = m_198 - 1;
+            } else {
+                m_1a8 = 0xe;
+            }
+        }
+        break;
+    case 14:
+        // @unofficial NOT fully decoded (starts with dWmLib::InitKinopioCourse()) -- placeholder.
+        dWmLib::InitKinopioCourse();
+        break;
+    case 15:
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        } else {
+            m_1a8 = 0x13;
+        }
+        break;
+    case 16:
+        if (*(int *) ((u8 *) dWCamera_c::m_instance + 0x5f4) == 0) {
+            m_1a8 = 0x13;
+        }
+        break;
+    case 17:
+        fn_2_192920(m_1b8);
+        m_1a8 = 0x12;
+        break;
+    case 18:
+        // @unofficial NOT fully decoded -- placeholder.
+        break;
+    case 19:
+        setCutEnd();
+        break;
     }
 }
 

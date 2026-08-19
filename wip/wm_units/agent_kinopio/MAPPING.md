@@ -616,3 +616,73 @@ retry on the three known walls.
 | `fn_2_16C810` stepCutscene70 | 0x834 | not attempted | jump table counted (20 entries), case addresses catalogued, not authored |
 
 **14/19 byte-identical.**
+
+## Round 6: fn_2_16C810, authored in pieces (9 of 20 cases fully decoded)
+
+**X/19 unchanged at 14/19** (the giant function needs all 20 cases right
+to reach MATCH, and 11 remain placeholders), but `fn_2_16C810` is now a
+real, compiling, correctly-dispatching `switch` rather than an unattempted
+0x834-byte block. Preamble (`calcSpeed()`, `posMove()`, the footstep-sound
+check, the `cmplwi 0x13`/`bgt`-guarded jump-table dispatch) matches the
+target's shape closely, with only a minor register-allocation difference
+in the footstep-sound call's argument evaluation order left unresolved.
+
+### 9 of 20 cases fully decoded and authored
+
+| case | target addr | size | body |
+|---|---|---|---|
+| 3 | 0x16d024 | 0 (shares the function's own epilogue) | `break;` -- the jump table entry points straight at the shared exit, no unique code exists |
+| 9 | 0x16cc28 | 0x14 | `m_198 = 0x1e; m_1a8 = 0xa;` |
+| 19 | 0x16d010 | 0x14 | `setCutEnd();` -- dispatched through the class's own vtable at slot `0x68`, 2 slots after `processCutsceneCommand`'s confirmed slot `0x60`; a plain call reproduced it exactly the same way `execute()`'s `processCutsceneCommand(...)` call already had (no special vtable-pointer code needed) |
+| 17 | 0x16cf4c | 0x14 | `fn_2_192920(m_1b8); m_1a8 = 0x12;` |
+| 16 | 0x16cf2c | 0x20 | `if (*(int*)((u8*)dWCamera_c::m_instance + 0x5f4) == 0) m_1a8 = 0x13;` |
+| 15 | 0x16cf08 | 0x24 | countdown-timer pattern: `if (m_198>0) m_198--; else m_1a8=0x13;` |
+| 4 | 0x16ca48 | 0x2c | same countdown pattern, transitions to state 5 |
+| 7 | 0x16cb90 | 0x34 | same countdown pattern, transitions to state 8, also resets `m_1ac` |
+| 13 | 0x16ce24 | 0x38 | camera check wrapping the countdown pattern, transitions to state 0xe |
+
+The countdown-timer shape (`if (m_198 > 0) m_198--; else { ...transition... }`)
+recurs across at least 4 of the 9 decoded cases -- clearly the dominant
+per-state idiom in this machine, which should make the remaining 11 cases
+faster to read next round now that the pattern is established.
+
+### 11 of 20 cases NOT decoded -- placeholder `break;` bodies (one exception)
+
+Cases 0, 1, 2, 5, 6, 8, 10, 11, 12, 18 are `break;` stubs (case 2 got a
+partial read -- see below); case 14 got a one-line partial (its first
+call only). None of these were fully transcribed, so none should be read
+as verified. Two negatives worth recording precisely:
+
+- **Case 2** was partially read: `if (m_1ac <= 1) break;` then writes
+  `true`/`true`/`0xd` into fields `+0x544`/`+0x546`/`+0x55c` of a pointer
+  loaded from `lbl_2_bss_11B70` (a shared `.bss` slot, not one of this
+  unit's own fields), then sets `m_198 = 0xb4`, `m_1a8 = 4`. The pointed-to
+  object's real type was not identified in the time available -- accessed
+  via raw byte-offset casts (`*(bool*)(mgr+0x544)` etc.) rather than a
+  named type, which is a real gap: those fields are almost certainly a
+  `daWmMap_c`-family or effects-manager object with real accessors this
+  unit should be using by name.
+- **Case 14** begins with `bl InitKinopioCourse__6dWmLibFv` --
+  `dWmLib::InitKinopioCourse()`, declared via a bare forward declaration
+  (not in the real header) -- but the rest of the case body (its actual
+  size, 0x38 bytes, suggests more happens after that call) was not read.
+
+### New reusable technique confirmed: a plain virtual call reproduces a "this+0x60"-shaped dispatch automatically
+
+Case 19's `setCutEnd()` call compiled to the exact same
+`lwz r12,0x60(this); lwz r12,0x68(r12); mtctr; bctrl`-shaped dispatch the
+target uses, from an ordinary (non-special) virtual method call -- no
+manual vtable-pointer code needed, confirming (a second time, after
+`execute()`'s `processCutsceneCommand(...)` call) that what looked like a
+"secondary vtable" convention is simply this class hierarchy's own
+regular vtable layout at a non-zero base offset, handled entirely by the
+compiler for any ordinary virtual call written normally in C++.
+
+## Final state, this session: 14/19
+
+`fn_2_16C810` moved from "not attempted" to "9/20 cases decoded and
+authored, structurally correct switch/dispatch, 11 cases stubbed" -- real,
+measured progress on the unit's last function, even though it does not
+close this round. `resetPosition` (3), `checkAnmLoop` (34), the `.ctors`
+init (32), and `processCutsceneCommand` (136) were left untouched this
+round per instruction.

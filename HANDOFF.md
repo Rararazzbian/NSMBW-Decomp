@@ -10203,3 +10203,40 @@ state3        --   fn_2_1651B0, 0x404, known to be the mState==3 handler
 
 **Declining to rush `createModel` was right** — this project has already misread
 that exact bit-pattern idiom once, taking a single double for two floats.
+
+## The `+0x60` "secondary vtable" needs NO special handling — third confirmation
+
+WM_KINOPIO's case 19 calls `setCutEnd()` — an ordinary virtual — and it compiled
+to the exact `this+0x60`-based dispatch shape **automatically, with no
+vtable-pointer code written at all.** Same as `execute()`'s
+`processCutsceneCommand(...)` call in the same unit, and the same as anchor's
+finding that `+0x60` is the secondary vtable pointer written by ordinary
+construction.
+
+**What looked like a special "secondary vtable" is just this hierarchy's own
+vtable at a non-zero base offset, and the compiler handles it for any normal
+virtual call.** Three independent confirmations. **Write the ordinary call; never
+hand-roll the dispatch.**
+
+## A jump-table case can have ZERO bytes
+
+WM_KINOPIO's case 3 has **no unique code at all** — its jump-table entry points
+straight at the function's shared epilogue. In source that is an empty `case 3:`
+falling to the common exit.
+
+**A case address that equals the epilogue is an empty case, not a missing read.**
+Worth recognising before hunting for a body that does not exist.
+
+## WM_KINOPIO's largest function: 9 of 20 cases authored
+
+`fn_2_16C810` (`0x834`) went from untouched to a real compiling `switch` with 9
+cases decoded and authored in ascending size, 11 still placeholders.
+
+**A countdown-timer idiom recurs in 4 of the 9** —
+`if (m_198 > 0) m_198--; else { transition }` — which is the dominant per-state
+pattern and should make the remaining 11 substantially faster to read. **Finding
+the repeated idiom early is what makes a 20-case dispatch tractable.**
+
+Open on it: case 2 writes into a shared `.bss` singleton (`lbl_2_bss_11B70`) at
+raw offsets via byte casts because its real type was not identified — a real gap
+worth closing rather than leaving as casts. Case 14 has only its first call read.
