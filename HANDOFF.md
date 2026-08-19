@@ -10624,3 +10624,18 @@ checked by eye. An honest "candidate" is worth more than a confident wrong
   `sStateID_c` — the callees of the PRECEDING function — as if they were members
   of three different classes. Scope the window to the allocation, or print
   nothing.
+
+### The order check covers 3 drafts out of 56 — and now SAYS so
+
+`check_fn_order.py` recovers the target address from the function's own name
+(`unk_1684A0`, `fn_2_16D940`). **Drafts that use real names carry no address in
+the source text, so the check cannot see them at all** — 53 of 56 files.
+
+Its first version returned silently on those and printed only a findings count.
+That reads as a clean bill of health for the whole tree, which is worse than not
+running it: it converts "not checked" into "checked and fine". It now lists every
+unchecked file by name and points at the unit's own `build.py`, whose
+`verify_anon` step catches the same defect after compiling.
+
+**A sweep that cannot see most of its targets must say which ones**, or its
+summary line is a lie by omission.

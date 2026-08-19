@@ -56,7 +56,7 @@ def definitions(path):
 def check(path):
     found = definitions(path)
     if not found:
-        return None
+        return "skipped"
 
     inversions = []
     for i in range(1, len(found)):
@@ -83,19 +83,38 @@ def main():
         targets = sorted(glob.glob(os.path.join(ROOT, "wip", "wm_units", "*", "*.cpp")))
 
     print("Function definition order vs target .text order")
-    print("(the linker places .text in definition order; names carry the address)\n")
+    print("(the linker places .text in definition order; names carry the address)")
+    print("")
 
     bad = 0
+    skipped = []
     for path in targets:
         base = os.path.basename(path)
         if base.startswith("probe") or "_backup" in base or "test" in base:
             continue
         result = check(path)
-        if result:
+        if result == "skipped":
+            skipped.append(os.path.relpath(path, ROOT))
+        elif result:
             bad += 1
 
-    print("\n%d file(s) with ordering inversions." % bad)
+    print("")
+    print("%d file(s) with ordering inversions." % bad)
+
+    # Never let a silent skip read as a clean bill of health. A draft whose
+    # functions carry REAL names has no address in the symbol, so this check
+    # cannot see it at all -- and printing nothing would imply it passed.
+    if skipped:
+        print("")
+        print("%d file(s) NOT CHECKED. Their functions use real names, so no target"
+              % len(skipped))
+        print("address is recoverable from the source text and this tool CANNOT see")
+        print("their order. Use the unit's own build.py -- its verify_anon step")
+        print("reports FUNCTION ORDER IS WRONG once the object is compiled.")
+        for path in skipped:
+            print("    %s" % path)
     return 0
+
 
 
 if __name__ == "__main__":
