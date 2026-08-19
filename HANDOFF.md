@@ -8993,3 +8993,51 @@ differ**, do not assume distinct source implies distinct output.
 
 WM_KILLER stands at **7/23** with the vtable slot map settled, bounds plausible,
 and every unauthored function carrying a genuinely distinct stub.
+
+## A RELOCATED word reads as ZERO in the file — that is what a live pointer looks like
+
+WM_BOARD's agent rejected a region as a function-pointer table because "a real
+function-pointer slot should never show as `0`". **In a REL it always does.** The
+address is supplied by the relocation; the file stores zero (or an addend).
+
+Decoded with relocations, the region is unambiguous:
+
+```
++0x00  00040000   two u16 {4, 0}  -- a real local constant, first in the pool
++0x04  43160000   150.0f
++0x08  00000000  \
++0x0c  ffffffff   >  ONE pointer-to-member entry {0, -1, <reloc>}
++0x10  00000000  /   reloc -> .text:0x15c960 == procNone
++0x14  00000000
++0x18  00000000
++0x1c  3f800000   1.0f
++0x20  2160, -30, -478   sc_ForceList's mNodePos
+```
+
+**Count the RELOCATIONS to count the entries.** One relocation, one entry. The
+draft had a two-entry table with a placeholder duplicate — `0xc` bytes too many,
+shifting everything after it, which is the `__sinit` residual.
+
+**Always dump a pool WITH its relocations**, not as raw words. The decoding script
+is three lines against `wip/wm_units/profile_map.py`'s `relocations()`.
+
+### Mirror image of kinoballoon
+
+kinoballoon's draft had **one** entry where the target had **three**; WM_BOARD's
+has **two** where the target has **one**. Correcting kinoballoon's took two
+functions straight to MATCH and a third to exactly the right size.
+
+**A pool of the wrong size or wrong composition is the single most common cause of
+a shared offset residual**, and it is invisible from the functions themselves.
+
+### Two process points from the same round
+
+- My suggested fix — source the values from `dWmLib::sc_ForceList[0]` rather than
+  a local array — was **wrong**. The agent implemented it exactly, measured a
+  clean negative (`__sinit` unchanged, `create` worse), tried two further
+  variations, and **reverted rather than keeping a change that was neither
+  correct nor better**.
+- It also **retracted its own previous diagnosis** when four variants all left
+  `__sinit` at exactly 3, proving the residual was not caused by the object it
+  had blamed. **A residual that does not move across four independent changes to
+  the thing you blamed is evidence you blamed the wrong thing.**

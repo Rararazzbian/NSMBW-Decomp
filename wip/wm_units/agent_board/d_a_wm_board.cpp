@@ -114,7 +114,7 @@ public:
     /// in this unit's own 15 is left unassigned to pair with it) -- left UNRESOLVED, table
     /// declared with only entry 0 filled and entry 1 a raw guess pointing at procNone() again as
     /// a placeholder, flagged for correction next round.
-    static const ProcFunc_t sProcTable[2];
+    static const ProcFunc_t sProcTable[1];
 
     int mUnk184;
     int mUnk188;
@@ -132,8 +132,7 @@ public:
     ACTOR_PARAM_CONFIG(CourseIndex, 0, 4);
 };
 
-const daWmBoard_c::ProcFunc_t daWmBoard_c::sProcTable[2] = {
-    &daWmBoard_c::procNone,
+const daWmBoard_c::ProcFunc_t daWmBoard_c::sProcTable[1] = {
     &daWmBoard_c::procNone,
 };
 
