@@ -10273,3 +10273,60 @@ coverage, not just of this function.
 
 **course stays parked at 22/23**, now with 21 measured variants and an explicit
 account of which levers cannot apply.
+
+## WM_KOOPAJR scouted — clean handover position, no functions authored
+
+`daWmKoopajr_c : public dWmDemoActor_c`, **`sizeof 0x360`** read from
+`classInit`'s own allocation before anything else. Layout closes exactly:
+
+```
++0x184  int mUnk184        -- NOT written by this ctor, so declare without an initialiser
++0x188  dHeapAllocator_c mAllocator
++0x1a4  int (= 0)
++0x1a8  m3d::mdl_c mModel
++0x1e8  m3d::anmChr_c mAnimChrs[6]        0x1e8 + 6 * 0x38 = 0x360
+```
+
+Slice validated BOUNDS PLAUSIBLE:
+
+```json
+{".text": "0x16d290-0x16e540", ".ctors": "0x410-0x414", ".data": "0x45dd8-0x45f90",
+ ".rodata": "0x8ba0-0x8c90", ".bss": "0xfec0-0xfed0"}
+```
+
+**The `+0x184` refinement was applied correctly on its first use** — the member
+declared, the initialiser omitted because this constructor does not store there.
+
+**And the ownership-warning rule paid off again**: the first `.data` guess made a
+function look like a neighbour's, purely because the claim did not yet reach the
+vtable object referencing it. Same pattern as board — **an ownership warning on a
+function means the neighbouring-section bounds are wrong, not the `.text` claim.**
+
+`fn_2_16D940` is `0xA60` — 2,656 bytes, larger than most entire units this
+session, and unexamined.
+
+## Session summary — where the WM region of `d_basesNP` stands
+
+```
+LANDED this session (6):  antlion, sandpillar, kinoko_star, sinkship, note, manta
+LANDED previously (13 total incl. above): + cannon, cloud, dokan, dokan_route,
+                          ghost, grid, kinoko_1up, kinoko_base, kinoko_red,
+                          peach, peach_castle, smallcloud, tower
+
+PARKED, one function short:   course 22/23   castle 19/20   koopa_castle 16/17
+                              killer 22/23
+PARKED, further out:          kinoballoon 24/26   antlion_mng 18/22
+                              start 11/14   board 11/15   anchor 16/22
+                              item 8/12     dance_pakkun 9/16
+IN PROGRESS:                  kinopio 14/19 (9 of 20 jump-table cases authored)
+                              killerbullet 17/37   hanachan 13/32
+SCOUTED ONLY:                 koopajr (bounds + layout confirmed, 0 functions)
+```
+
+**Progress 11.250% -> 11.471%**; `d_basesNP` 1.704% -> 2.354%.
+
+**The planning fact this session established:** every unit that landed reached
+N/N within one or two rounds. Every parked unit is one to four functions short on
+scheduling or register-allocation residuals. **A unit that does not close quickly
+tends not to close at all** — so prefer opening a fresh unit, or authoring an
+unwritten function, over a fourth variant against a measured wall.
