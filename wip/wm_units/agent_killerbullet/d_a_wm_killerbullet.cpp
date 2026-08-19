@@ -2,6 +2,9 @@
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_wm_effect_manager.hpp>
 #include <game/bases/d_wm_se_manager.hpp>
+#include <game/bases/d_a_wm_player.hpp>
+#include <game/bases/d_res_mng.hpp>
+#include <game/bases/d_wm_lib.hpp>
 #include <cmath>
 
 ACTOR_PROFILE(WM_KILLERBULLET, daWmKillerBullet_c, 0);
@@ -40,24 +43,19 @@ static const float sc_0_001 = 0.001f; // lbl_2_rodata_8A38
 
 daWmKillerBullet_c::daWmKillerBullet_c() : m_1d4(false) {}
 
-// PARTIALLY AUTHORED (0x104 bytes). #mBgmSync is a real, polymorphic, landed class (see its
-// own note), so its release is an ordinary `delete`. #m_1fc's own release call is NOT yet
-// authored: #create's own construction of that object writes no `__vt__`-named vtable pointer
-// at its offset 0 (just a plain data-table address, lbl_2_data_43E34), yet the target's
-// destructor dispatches through that same offset as if it *were* a vtable -- a real
-// architectural question about that still-unlanded class I don't have an answer to yet, so
-// left unauthored rather than guessed.
+// #m_1fc's own vtable object (lbl_2_data_43E34) is genuinely a vtable -- dtk reports 0xc bytes
+// but the relocations inside it run to at least +0x28 (two null words, offset-to-top and RTTI,
+// followed by function pointers), and dtk's own reported object size is unreliable in both
+// directions; the relocations are the authority. #dWmRotater_c is modelled as polymorphic with
+// a virtual destructor, so both releases below are ordinary `delete`.
 daWmKillerBullet_c::~daWmKillerBullet_c() {
     if (m_1fc != nullptr) {
-        ((void (*)(void *, int)) (*(void ***) m_1fc)[2])(m_1fc, 1);
+        delete m_1fc;
     }
     if (mBgmSync != nullptr) {
         delete mBgmSync;
     }
 }
-
-// create(). Vtable slot 2, confirmed via check_vtable.py. NOT YET AUTHORED (0x128 bytes) --
-// content not yet read.
 // create(). Vtable slot 2, confirmed via check_vtable.py. Confirmed content: allocates
 // #mBgmSync (a real, already-landed dWmBgmSync_c -- found by grepping include/ before
 // shadow-declaring anything, per the coordinator's own precedent on agent_board), reads its
@@ -224,8 +222,31 @@ void daWmKillerBullet_c::unk_1694A0() {
     unk_169430();
 }
 
-void daWmKillerBullet_c::unk_169430() { m_1c0 = 20; }
-void daWmKillerBullet_c::unk_168C80() { m_1c0 = 21; }
+// #unk_169430. Confirmed content: faces this bullet toward the player along X only (Y/Z
+// forced to 0), based on the X difference between the player's own position and
+// #mParentKiller's.
+void daWmKillerBullet_c::unk_169430() {
+    mVec3_c playerPos = daWmPlayer_c::ms_instance->mPos;
+    const float *parentPos = (const float *) ((const u8 *) mParentKiller + 0xac);
+    mVec3_c dir(playerPos.x - parentPos[0], sc_0, sc_0);
+    setDirection(dir);
+}
+// #unk_168C80. Confirmed content: the same createModel()-shaped sequence already established
+// on WM_KILLER/WM_ITEM, using real strings read from this unit's own .data (lbl_2_data_453E8,
+// file offset 0x1d0c00+addr) -- "killer"/"g3d/killer.brres" for the main model,
+// "character_SV"/"g3d/model.brres" for the shadow model (CreateShadowModel's own arc/mdlName
+// args reuse the SAME string, confirmed from the target's own register reuse).
+void daWmKillerBullet_c::unk_168C80() {
+    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
+
+    nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("killer", "g3d/killer.brres");
+    nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("killer");
+    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
+    dWmActor_c::setSoftLight_Enemy(mModel);
+    mAllocator.adjustFrmHeap();
+
+    CreateShadowModel("character_SV", "g3d/model.brres", "character_SV", true);
+}
 void daWmKillerBullet_c::unk_168990() { m_1c0 = 22; }
 // #unk_169530. Confirmed content: a tail call into WM_KILLER's own unk_168260(int) (another
 // real, cross-unit-confirmed call, same landing-order dependency as #checkParentFlag) on

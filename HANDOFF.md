@@ -9723,3 +9723,33 @@ class that is not landed has no `__vt__` symbol, so its vtable looks like an
 anonymous data blob — but it is still a vtable, and the class should be modelled
 with the virtuals it implies rather than with a raw pointer cast that matches
 bytes.
+
+## WM_KILLERBULLET 15/37 -> 17/37: the vtable read closed the destructor outright
+
+Modelling `dWmRotater_c` as polymorphic — on the strength of `lbl_2_data_43E34`'s
+relocations rather than dtk's wrong `size:0xC` — closed the destructor to 59/59
+with both residual lines symbol-name only. **The doubled-`beq` question resolved
+on its own**; the recorded wall never had to be invoked.
+
+**And the agent scoped the change correctly.** It added the virtual destructor for
+the *release* side only, and left `create()`'s construction exactly as it was —
+raw `operator new` plus a manual field write of the external vtable-shaped table
+— because **`create()` never calls `dWmRotater_c`'s own constructor.** Modelling a
+class as polymorphic does not mean every site becomes a constructor call; match
+what each site actually does.
+
+## "A unit's pool cannot be right while any contributing function is unwritten" — second unit
+
+`unk_168C80` is this unit's `createModel`-shaped function. Its content is complete
+and confirmed — real strings read from the unit's own `.data`, including one
+string reused for two arguments, established from the target's own register reuse
+rather than assumed. Adding the shared-header include moved its string offsets
+from `0xc` to `0x40` against a target of `0x184`.
+
+**The pool is still short by roughly `0x144` bytes belonging to functions nobody
+has written yet**, so the function cannot close in isolation regardless of how
+correct it is.
+
+WM_KILLER hit exactly this and it resolved as its remaining functions were
+authored. **When a function's content is confirmed correct but its pool offsets
+are short, stop working on that function and write the others.**

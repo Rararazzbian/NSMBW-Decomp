@@ -20,8 +20,18 @@
 /// @unofficial Not yet landed anywhere in the project (no header exists) -- forward-declared
 /// here, shadow-only, just enough to call the one confirmed member (#calcRotate, confirmed by
 /// name from the target's own mangled `calcRotate__12dWmRotater_cFv`).
+/// @unofficial Not yet landed anywhere in the project (no header exists -- confirmed by
+/// grepping include/) -- forward-declared here, shadow-only. Genuinely polymorphic: dtk
+/// reports its vtable object (lbl_2_data_43E34) as 0xc bytes, but the relocations inside it
+/// run to at least +0x28 (two null words -- offset-to-top and RTTI -- followed by function
+/// pointers is a real vtable; dtk's own reported size is unreliable and the relocations are
+/// the authority). Only the one confirmed virtual (the destructor, from the identical
+/// slot-2/offset-8 release shape shared with #daWmKillerBullet_c::mBgmSync) is modelled;
+/// #calcRotate is called directly (`bl calcRotate__12dWmRotater_cFv`, not a vtable dispatch),
+/// so it is NOT virtual.
 class dWmRotater_c {
 public:
+    virtual ~dWmRotater_c();
     void calcRotate();
 };
 

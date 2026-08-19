@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_wm_killerbullet.cpp"
 
-# 0x00000000..0x00000BA8 | size: 0xBA8
+# 0x00000000..0x00000DC0 | size: 0xDC0
 .text
 .balign 16
 
@@ -134,7 +134,7 @@
 /* 0000018C 000001CC  4E 80 00 20 */	blr
 .endfn __dt__Q23EGG8Vector3fFv
 
-# .text:0x190 | size: 0xE8
+# .text:0x190 | size: 0xEC
 # daWmKillerBullet_c::~daWmKillerBullet_c()
 .fn __dt__18daWmKillerBullet_cFv, global
 /* 00000190 000001D0  94 21 FF F0 */	stwu r1, -0x10(r1)
@@ -145,62 +145,62 @@
 /* 000001A4 000001E4  7C 9F 23 78 */	mr r31, r4
 /* 000001A8 000001E8  93 C1 00 08 */	stw r30, 0x8(r1)
 /* 000001AC 000001EC  7C 7E 1B 78 */	mr r30, r3
-/* 000001B0 000001F0  41 82 00 AC */	beq .L_0000025C
-/* 000001B4 000001F4  80 C3 01 FC */	lwz r6, 0x1fc(r3)
+/* 000001B0 000001F0  41 82 00 B0 */	beq .L_00000260
+/* 000001B4 000001F4  80 03 01 FC */	lwz r0, 0x1fc(r3)
 /* 000001B8 000001F8  3C 80 00 00 */	lis r4, __vt__18daWmKillerBullet_c@ha
 /* 000001BC 000001FC  38 84 00 00 */	addi r4, r4, __vt__18daWmKillerBullet_c@l
 /* 000001C0 00000200  90 83 00 60 */	stw r4, 0x60(r3)
-/* 000001C4 00000204  2C 06 00 00 */	cmpwi r6, 0x0
-/* 000001C8 00000208  41 82 00 1C */	beq .L_000001E4
-/* 000001CC 0000020C  80 A6 00 00 */	lwz r5, 0x0(r6)
-/* 000001D0 00000210  7C C3 33 78 */	mr r3, r6
+/* 000001C4 00000204  2C 00 00 00 */	cmpwi r0, 0x0
+/* 000001C8 00000208  41 82 00 20 */	beq .L_000001E8
+/* 000001CC 0000020C  41 82 00 1C */	beq .L_000001E8
+/* 000001D0 00000210  7C 03 03 78 */	mr r3, r0
 /* 000001D4 00000214  38 80 00 01 */	li r4, 0x1
-/* 000001D8 00000218  81 85 00 08 */	lwz r12, 0x8(r5)
-/* 000001DC 0000021C  7D 89 03 A6 */	mtctr r12
-/* 000001E0 00000220  4E 80 04 21 */	bctrl
-.L_000001E4:
-/* 000001E4 00000224  80 7E 02 00 */	lwz r3, 0x200(r30)
-/* 000001E8 00000228  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000001EC 0000022C  41 82 00 1C */	beq .L_00000208
-/* 000001F0 00000230  41 82 00 18 */	beq .L_00000208
-/* 000001F4 00000234  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000001F8 00000238  38 80 00 01 */	li r4, 0x1
-/* 000001FC 0000023C  81 8C 00 08 */	lwz r12, 0x8(r12)
-/* 00000200 00000240  7D 89 03 A6 */	mtctr r12
-/* 00000204 00000244  4E 80 04 21 */	bctrl
-.L_00000208:
-/* 00000208 00000248  38 7E 01 A4 */	addi r3, r30, 0x1a4
-/* 0000020C 0000024C  38 80 FF FF */	li r4, -0x1
-/* 00000210 00000250  48 00 00 01 */	bl __dt__Q23m3d6smdl_cFv
-/* 00000214 00000254  38 7E 01 88 */	addi r3, r30, 0x188
-/* 00000218 00000258  38 80 FF FF */	li r4, -0x1
-/* 0000021C 0000025C  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
-/* 00000220 00000260  2C 1E 00 00 */	cmpwi r30, 0x0
-/* 00000224 00000264  41 82 00 28 */	beq .L_0000024C
-/* 00000228 00000268  38 7E 01 58 */	addi r3, r30, 0x158
-/* 0000022C 0000026C  38 80 FF FF */	li r4, -0x1
-/* 00000230 00000270  48 00 00 01 */	bl __dt__Q23m3d6smdl_cFv
-/* 00000234 00000274  38 7E 01 3C */	addi r3, r30, 0x13c
-/* 00000238 00000278  38 80 FF FF */	li r4, -0x1
-/* 0000023C 0000027C  48 00 00 01 */	bl __dt__16mHeapAllocator_cFv
-/* 00000240 00000280  7F C3 F3 78 */	mr r3, r30
-/* 00000244 00000284  38 80 00 00 */	li r4, 0x0
-/* 00000248 00000288  48 00 00 01 */	bl __dt__10dWmActor_cFv
-.L_0000024C:
-/* 0000024C 0000028C  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000250 00000290  40 81 00 0C */	ble .L_0000025C
-/* 00000254 00000294  7F C3 F3 78 */	mr r3, r30
-/* 00000258 00000298  48 00 00 01 */	bl __dl__7fBase_cFPv
-.L_0000025C:
-/* 0000025C 0000029C  7F C3 F3 78 */	mr r3, r30
-/* 00000260 000002A0  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000264 000002A4  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000268 000002A8  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 0000026C 000002AC  7C 08 03 A6 */	mtlr r0
-/* 00000270 000002B0  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000274 000002B4  4E 80 00 20 */	blr
+/* 000001D8 00000218  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000001DC 0000021C  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 000001E0 00000220  7D 89 03 A6 */	mtctr r12
+/* 000001E4 00000224  4E 80 04 21 */	bctrl
+.L_000001E8:
+/* 000001E8 00000228  80 7E 02 00 */	lwz r3, 0x200(r30)
+/* 000001EC 0000022C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001F0 00000230  41 82 00 1C */	beq .L_0000020C
+/* 000001F4 00000234  41 82 00 18 */	beq .L_0000020C
+/* 000001F8 00000238  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000001FC 0000023C  38 80 00 01 */	li r4, 0x1
+/* 00000200 00000240  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 00000204 00000244  7D 89 03 A6 */	mtctr r12
+/* 00000208 00000248  4E 80 04 21 */	bctrl
+.L_0000020C:
+/* 0000020C 0000024C  38 7E 01 A4 */	addi r3, r30, 0x1a4
+/* 00000210 00000250  38 80 FF FF */	li r4, -0x1
+/* 00000214 00000254  48 00 00 01 */	bl __dt__Q23m3d6smdl_cFv
+/* 00000218 00000258  38 7E 01 88 */	addi r3, r30, 0x188
+/* 0000021C 0000025C  38 80 FF FF */	li r4, -0x1
+/* 00000220 00000260  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
+/* 00000224 00000264  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 00000228 00000268  41 82 00 28 */	beq .L_00000250
+/* 0000022C 0000026C  38 7E 01 58 */	addi r3, r30, 0x158
+/* 00000230 00000270  38 80 FF FF */	li r4, -0x1
+/* 00000234 00000274  48 00 00 01 */	bl __dt__Q23m3d6smdl_cFv
+/* 00000238 00000278  38 7E 01 3C */	addi r3, r30, 0x13c
+/* 0000023C 0000027C  38 80 FF FF */	li r4, -0x1
+/* 00000240 00000280  48 00 00 01 */	bl __dt__16mHeapAllocator_cFv
+/* 00000244 00000284  7F C3 F3 78 */	mr r3, r30
+/* 00000248 00000288  38 80 00 00 */	li r4, 0x0
+/* 0000024C 0000028C  48 00 00 01 */	bl __dt__10dWmActor_cFv
+.L_00000250:
+/* 00000250 00000290  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000254 00000294  40 81 00 0C */	ble .L_00000260
+/* 00000258 00000298  7F C3 F3 78 */	mr r3, r30
+/* 0000025C 0000029C  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_00000260:
+/* 00000260 000002A0  7F C3 F3 78 */	mr r3, r30
+/* 00000264 000002A4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000268 000002A8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0000026C 000002AC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000270 000002B0  7C 08 03 A6 */	mtlr r0
+/* 00000274 000002B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000278 000002B8  4E 80 00 20 */	blr
 .endfn __dt__18daWmKillerBullet_cFv
-/* 00000278 000002B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000027C 000002BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x280 | size: 0x128
@@ -242,12 +242,12 @@
 /* 00000300 00000340  48 00 00 01 */	bl unk_168C80__18daWmKillerBullet_cFv
 /* 00000304 00000344  7F E3 FB 78 */	mr r3, r31
 /* 00000308 00000348  48 00 00 01 */	bl unk_168990__18daWmKillerBullet_cFv
-/* 0000030C 0000034C  3C 80 00 00 */	lis r4, "@12878"@ha
+/* 0000030C 0000034C  3C 80 00 00 */	lis r4, "@13246"@ha
 /* 00000310 00000350  C0 7F 00 AC */	lfs f3, 0xac(r31)
 /* 00000314 00000354  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
 /* 00000318 00000358  38 60 00 40 */	li r3, 0x40
 /* 0000031C 0000035C  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
-/* 00000320 00000360  C0 04 00 00 */	lfs f0, "@12878"@l(r4)
+/* 00000320 00000360  C0 04 00 00 */	lfs f0, "@13246"@l(r4)
 /* 00000324 00000364  D0 7F 01 28 */	stfs f3, 0x128(r31)
 /* 00000328 00000368  D0 5F 01 2C */	stfs f2, 0x12c(r31)
 /* 0000032C 0000036C  D0 3F 01 30 */	stfs f1, 0x130(r31)
@@ -256,10 +256,10 @@
 /* 00000338 00000378  2C 03 00 00 */	cmpwi r3, 0x0
 /* 0000033C 0000037C  41 82 00 28 */	beq .L_00000364
 /* 00000340 00000380  3C A0 00 00 */	lis r5, R_2_5_43E34@ha
-/* 00000344 00000384  3C 80 00 00 */	lis r4, "@12879"@ha
+/* 00000344 00000384  3C 80 00 00 */	lis r4, "@13247"@ha
 /* 00000348 00000388  38 A5 00 00 */	addi r5, r5, R_2_5_43E34@l
 /* 0000034C 0000038C  90 A3 00 00 */	stw r5, 0x0(r3)
-/* 00000350 00000390  C0 04 00 00 */	lfs f0, "@12879"@l(r4)
+/* 00000350 00000390  C0 04 00 00 */	lfs f0, "@13247"@l(r4)
 /* 00000354 00000394  38 00 00 00 */	li r0, 0x0
 /* 00000358 00000398  D0 03 00 0C */	stfs f0, 0xc(r3)
 /* 0000035C 0000039C  90 03 00 20 */	stw r0, 0x20(r3)
@@ -569,9 +569,9 @@
 .fn unk_1694A0__18daWmKillerBullet_cFv, global
 /* 00000730 00000770  94 21 FF E0 */	stwu r1, -0x20(r1)
 /* 00000734 00000774  7C 08 02 A6 */	mflr r0
-/* 00000738 00000778  3C 80 00 00 */	lis r4, "@12930"@ha
+/* 00000738 00000778  3C 80 00 00 */	lis r4, "@13298"@ha
 /* 0000073C 0000077C  90 01 00 24 */	stw r0, 0x24(r1)
-/* 00000740 00000780  C0 04 00 00 */	lfs f0, "@12930"@l(r4)
+/* 00000740 00000780  C0 04 00 00 */	lfs f0, "@13298"@l(r4)
 /* 00000744 00000784  80 A3 01 B4 */	lwz r5, 0x1b4(r3)
 /* 00000748 00000788  C0 65 01 F4 */	lfs f3, 0x1f4(r5)
 /* 0000074C 0000078C  C0 45 01 F0 */	lfs f2, 0x1f0(r5)
@@ -593,387 +593,542 @@
 .endfn unk_1694A0__18daWmKillerBullet_cFv
 /* 0000078C 000007CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x790 | size: 0xC
+# .text:0x790 | size: 0x64
 # daWmKillerBullet_c::unk_169430()
 .fn unk_169430__18daWmKillerBullet_cFv, global
-/* 00000790 000007D0  38 00 00 14 */	li r0, 0x14
-/* 00000794 000007D4  90 03 01 C0 */	stw r0, 0x1c0(r3)
-/* 00000798 000007D8  4E 80 00 20 */	blr
+/* 00000790 000007D0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000794 000007D4  7C 08 02 A6 */	mflr r0
+/* 00000798 000007D8  3C A0 00 00 */	lis r5, ms_instance__12daWmPlayer_c@ha
+/* 0000079C 000007DC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 000007A0 000007E0  80 C5 00 00 */	lwz r6, ms_instance__12daWmPlayer_c@l(r5)
+/* 000007A4 000007E4  3C A0 00 00 */	lis r5, "@13247"@ha
+/* 000007A8 000007E8  80 83 01 B4 */	lwz r4, 0x1b4(r3)
+/* 000007AC 000007EC  C0 66 00 AC */	lfs f3, 0xac(r6)
+/* 000007B0 000007F0  C0 04 00 AC */	lfs f0, 0xac(r4)
+/* 000007B4 000007F4  38 81 00 08 */	addi r4, r1, 0x8
+/* 000007B8 000007F8  C0 26 00 B4 */	lfs f1, 0xb4(r6)
+/* 000007BC 000007FC  C0 46 00 B0 */	lfs f2, 0xb0(r6)
+/* 000007C0 00000800  EC 83 00 28 */	fsubs f4, f3, f0
+/* 000007C4 00000804  C0 05 00 00 */	lfs f0, "@13247"@l(r5)
+/* 000007C8 00000808  D0 61 00 14 */	stfs f3, 0x14(r1)
+/* 000007CC 0000080C  D0 41 00 18 */	stfs f2, 0x18(r1)
+/* 000007D0 00000810  D0 21 00 1C */	stfs f1, 0x1c(r1)
+/* 000007D4 00000814  D0 81 00 08 */	stfs f4, 0x8(r1)
+/* 000007D8 00000818  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 000007DC 0000081C  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 000007E0 00000820  48 00 00 01 */	bl setDirection__14dWmDemoActor_cFRC7mVec3_c
+/* 000007E4 00000824  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000007E8 00000828  7C 08 03 A6 */	mtlr r0
+/* 000007EC 0000082C  38 21 00 20 */	addi r1, r1, 0x20
+/* 000007F0 00000830  4E 80 00 20 */	blr
 .endfn unk_169430__18daWmKillerBullet_cFv
-/* 0000079C 000007DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007F4 00000834  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007F8 00000838  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007FC 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x7A0 | size: 0xC
+# .text:0x800 | size: 0xC4
 # daWmKillerBullet_c::unk_168C80()
 .fn unk_168C80__18daWmKillerBullet_cFv, global
-/* 000007A0 000007E0  38 00 00 15 */	li r0, 0x15
-/* 000007A4 000007E4  90 03 01 C0 */	stw r0, 0x1c0(r3)
-/* 000007A8 000007E8  4E 80 00 20 */	blr
+/* 00000800 00000840  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000804 00000844  7C 08 02 A6 */	mflr r0
+/* 00000808 00000848  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 0000080C 0000084C  38 C0 00 00 */	li r6, 0x0
+/* 00000810 00000850  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000814 00000854  38 E0 00 20 */	li r7, 0x20
+/* 00000818 00000858  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0000081C 0000085C  3F E0 00 00 */	lis r31, ...data.0@ha
+/* 00000820 00000860  3B FF 00 00 */	addi r31, r31, ...data.0@l
+/* 00000824 00000864  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 00000828 00000868  7C 7E 1B 78 */	mr r30, r3
+/* 0000082C 0000086C  38 63 01 88 */	addi r3, r3, 0x188
+/* 00000830 00000870  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 00000834 00000874  38 80 FF FF */	li r4, -0x1
+/* 00000838 00000878  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 0000083C 0000087C  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 00000840 00000880  38 BF 00 40 */	addi r5, r31, 0x40
+/* 00000844 00000884  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 00000848 00000888  38 9F 00 54 */	addi r4, r31, 0x54
+/* 0000084C 0000088C  38 63 00 04 */	addi r3, r3, 0x4
+/* 00000850 00000890  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 00000854 00000894  90 61 00 0C */	stw r3, 0xc(r1)
+/* 00000858 00000898  38 61 00 0C */	addi r3, r1, 0xc
+/* 0000085C 0000089C  38 9F 00 54 */	addi r4, r31, 0x54
+/* 00000860 000008A0  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 00000864 000008A4  90 61 00 08 */	stw r3, 0x8(r1)
+/* 00000868 000008A8  38 7E 01 A4 */	addi r3, r30, 0x1a4
+/* 0000086C 000008AC  38 81 00 08 */	addi r4, r1, 0x8
+/* 00000870 000008B0  38 BE 01 88 */	addi r5, r30, 0x188
+/* 00000874 000008B4  38 C0 00 20 */	li r6, 0x20
+/* 00000878 000008B8  38 E0 00 01 */	li r7, 0x1
+/* 0000087C 000008BC  39 00 00 00 */	li r8, 0x0
+/* 00000880 000008C0  48 00 00 01 */	bl create__Q23m3d6smdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 00000884 000008C4  38 7E 01 A4 */	addi r3, r30, 0x1a4
+/* 00000888 000008C8  48 00 00 01 */	bl setSoftLight_Enemy__10dWmActor_cFRQ23m3d6bmdl_c
+/* 0000088C 000008CC  38 7E 01 88 */	addi r3, r30, 0x188
+/* 00000890 000008D0  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 00000894 000008D4  38 9F 00 5C */	addi r4, r31, 0x5c
+/* 00000898 000008D8  7F C3 F3 78 */	mr r3, r30
+/* 0000089C 000008DC  7C 86 23 78 */	mr r6, r4
+/* 000008A0 000008E0  38 BF 00 70 */	addi r5, r31, 0x70
+/* 000008A4 000008E4  38 E0 00 01 */	li r7, 0x1
+/* 000008A8 000008E8  48 00 00 01 */	bl CreateShadowModel__14dWmDemoActor_cFPCcPCcPCcb
+/* 000008AC 000008EC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000008B0 000008F0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 000008B4 000008F4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 000008B8 000008F8  7C 08 03 A6 */	mtlr r0
+/* 000008BC 000008FC  38 21 00 20 */	addi r1, r1, 0x20
+/* 000008C0 00000900  4E 80 00 20 */	blr
 .endfn unk_168C80__18daWmKillerBullet_cFv
-/* 000007AC 000007EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x7B0 | size: 0xC
-# daWmKillerBullet_c::unk_168990()
-.fn unk_168990__18daWmKillerBullet_cFv, global
-/* 000007B0 000007F0  38 00 00 16 */	li r0, 0x16
-/* 000007B4 000007F4  90 03 01 C0 */	stw r0, 0x1c0(r3)
-/* 000007B8 000007F8  4E 80 00 20 */	blr
-.endfn unk_168990__18daWmKillerBullet_cFv
-/* 000007BC 000007FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x7C0 | size: 0x1C
-# daWmKillerBullet_c::unk_169530()
-.fn unk_169530__18daWmKillerBullet_cFv, global
-/* 000007C0 00000800  80 03 00 04 */	lwz r0, 0x4(r3)
-/* 000007C4 00000804  38 80 00 09 */	li r4, 0x9
-/* 000007C8 00000808  80 63 01 B4 */	lwz r3, 0x1b4(r3)
-/* 000007CC 0000080C  54 05 06 3F */	clrlwi. r5, r0, 24
-/* 000007D0 00000810  41 82 00 08 */	beq .L_000007D8
-/* 000007D4 00000814  38 85 FF FF */	subi r4, r5, 0x1
-.L_000007D8:
-/* 000007D8 00000818  48 00 00 00 */	b unk_168260__12daWmKiller_cFi
-.endfn unk_169530__18daWmKillerBullet_cFv
-/* 000007DC 0000081C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x7E0 | size: 0x20
-# daWmKillerBullet_c::unk_169510()
-.fn unk_169510__18daWmKillerBullet_cFv, global
-/* 000007E0 00000820  80 03 00 04 */	lwz r0, 0x4(r3)
-/* 000007E4 00000824  3C 60 00 00 */	lis r3, R_2_5_45428@ha
-/* 000007E8 00000828  38 63 00 00 */	addi r3, r3, R_2_5_45428@l
-/* 000007EC 0000082C  54 00 06 3E */	clrlwi r0, r0, 24
-/* 000007F0 00000830  1C 00 00 18 */	mulli r0, r0, 0x18
-/* 000007F4 00000834  7C 63 02 14 */	add r3, r3, r0
-/* 000007F8 00000838  38 63 00 54 */	addi r3, r3, 0x54
-/* 000007FC 0000083C  4E 80 00 20 */	blr
-.endfn unk_169510__18daWmKillerBullet_cFv
-
-# .text:0x800 | size: 0xC
-# daWmKillerBullet_c::unk_1691A0()
-.fn unk_1691A0__18daWmKillerBullet_cFv, global
-/* 00000800 00000840  38 00 00 06 */	li r0, 0x6
-/* 00000804 00000844  90 03 01 C0 */	stw r0, 0x1c0(r3)
-/* 00000808 00000848  4E 80 00 20 */	blr
-.endfn unk_1691A0__18daWmKillerBullet_cFv
-/* 0000080C 0000084C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x810 | size: 0xC
-# daWmKillerBullet_c::unk_1695E0()
-.fn unk_1695E0__18daWmKillerBullet_cFv, global
-/* 00000810 00000850  38 00 00 07 */	li r0, 0x7
-/* 00000814 00000854  90 03 01 C0 */	stw r0, 0x1c0(r3)
-/* 00000818 00000858  4E 80 00 20 */	blr
-.endfn unk_1695E0__18daWmKillerBullet_cFv
-/* 0000081C 0000085C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x820 | size: 0xC
-# daWmKillerBullet_c::unk_1698E0()
-.fn unk_1698E0__18daWmKillerBullet_cFv, global
-/* 00000820 00000860  38 00 00 08 */	li r0, 0x8
-/* 00000824 00000864  90 03 01 C0 */	stw r0, 0x1c0(r3)
-/* 00000828 00000868  4E 80 00 20 */	blr
-.endfn unk_1698E0__18daWmKillerBullet_cFv
-/* 0000082C 0000086C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x830 | size: 0x9C
-# daWmKillerBullet_c::unk_169F00()
-.fn unk_169F00__18daWmKillerBullet_cFv, global
-/* 00000830 00000870  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000834 00000874  7C 08 02 A6 */	mflr r0
-/* 00000838 00000878  3C 80 00 00 */	lis r4, R_2_5_45428@ha
-/* 0000083C 0000087C  38 A0 00 01 */	li r5, 0x1
-/* 00000840 00000880  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000844 00000884  38 84 00 00 */	addi r4, r4, R_2_5_45428@l
-/* 00000848 00000888  A8 84 00 4C */	lha r4, 0x4c(r4)
-/* 0000084C 0000088C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000850 00000890  7C 7F 1B 78 */	mr r31, r3
-/* 00000854 00000894  48 00 00 01 */	bl rotDirectionX__14dWmDemoActor_cFsb
-/* 00000858 00000898  7F E3 FB 78 */	mr r3, r31
-/* 0000085C 0000089C  48 00 00 01 */	bl _procDemoJumpBase__14dWmDemoActor_cFv
-/* 00000860 000008A0  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000864 000008A4  40 82 00 0C */	bne .L_00000870
-/* 00000868 000008A8  38 60 00 00 */	li r3, 0x0
-/* 0000086C 000008AC  48 00 00 4C */	b .L_000008B8
-.L_00000870:
-/* 00000870 000008B0  38 00 00 00 */	li r0, 0x0
-/* 00000874 000008B4  98 1F 01 D4 */	stb r0, 0x1d4(r31)
-/* 00000878 000008B8  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
-/* 0000087C 000008BC  38 BF 00 AC */	addi r5, r31, 0xac
-/* 00000880 000008C0  B0 1F 01 00 */	sth r0, 0x100(r31)
-/* 00000884 000008C4  38 80 00 0E */	li r4, 0xe
-/* 00000888 000008C8  38 C0 00 00 */	li r6, 0x0
-/* 0000088C 000008CC  38 E0 00 00 */	li r7, 0x0
-/* 00000890 000008D0  B0 1F 01 06 */	sth r0, 0x106(r31)
-/* 00000894 000008D4  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
-/* 00000898 000008D8  48 00 00 01 */	bl playEffect__18dWmEffectManager_cFiPC7mVec3_cPC7mAng3_cPC7mVec3_c
-/* 0000089C 000008DC  3C 60 00 00 */	lis r3, m_pInstance__14dWmSeManager_c@ha
-/* 000008A0 000008E0  38 BF 00 AC */	addi r5, r31, 0xac
-/* 000008A4 000008E4  80 63 00 00 */	lwz r3, m_pInstance__14dWmSeManager_c@l(r3)
-/* 000008A8 000008E8  38 80 00 56 */	li r4, 0x56
-/* 000008AC 000008EC  38 C0 00 01 */	li r6, 0x1
-/* 000008B0 000008F0  48 00 00 01 */	bl playSound__14dWmSeManager_cFiRC7mVec3_ci
-/* 000008B4 000008F4  38 60 00 01 */	li r3, 0x1
-.L_000008B8:
-/* 000008B8 000008F8  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000008BC 000008FC  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 000008C0 00000900  7C 08 03 A6 */	mtlr r0
-/* 000008C4 00000904  38 21 00 10 */	addi r1, r1, 0x10
-/* 000008C8 00000908  4E 80 00 20 */	blr
-.endfn unk_169F00__18daWmKillerBullet_cFv
+/* 000008C4 00000904  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008C8 00000908  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000008CC 0000090C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x8D0 | size: 0xC
-# daWmKillerBullet_c::unk_168D50()
-.fn unk_168D50__18daWmKillerBullet_cFv, global
-/* 000008D0 00000910  38 00 00 0A */	li r0, 0xa
+# daWmKillerBullet_c::unk_168990()
+.fn unk_168990__18daWmKillerBullet_cFv, global
+/* 000008D0 00000910  38 00 00 16 */	li r0, 0x16
 /* 000008D4 00000914  90 03 01 C0 */	stw r0, 0x1c0(r3)
 /* 000008D8 00000918  4E 80 00 20 */	blr
-.endfn unk_168D50__18daWmKillerBullet_cFv
+.endfn unk_168990__18daWmKillerBullet_cFv
 /* 000008DC 0000091C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x8E0 | size: 0x8C
+# .text:0x8E0 | size: 0x1C
+# daWmKillerBullet_c::unk_169530()
+.fn unk_169530__18daWmKillerBullet_cFv, global
+/* 000008E0 00000920  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 000008E4 00000924  38 80 00 09 */	li r4, 0x9
+/* 000008E8 00000928  80 63 01 B4 */	lwz r3, 0x1b4(r3)
+/* 000008EC 0000092C  54 05 06 3F */	clrlwi. r5, r0, 24
+/* 000008F0 00000930  41 82 00 08 */	beq .L_000008F8
+/* 000008F4 00000934  38 85 FF FF */	subi r4, r5, 0x1
+.L_000008F8:
+/* 000008F8 00000938  48 00 00 00 */	b unk_168260__12daWmKiller_cFi
+.endfn unk_169530__18daWmKillerBullet_cFv
+/* 000008FC 0000093C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x900 | size: 0x20
+# daWmKillerBullet_c::unk_169510()
+.fn unk_169510__18daWmKillerBullet_cFv, global
+/* 00000900 00000940  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 00000904 00000944  3C 60 00 00 */	lis r3, R_2_5_45428@ha
+/* 00000908 00000948  38 63 00 00 */	addi r3, r3, R_2_5_45428@l
+/* 0000090C 0000094C  54 00 06 3E */	clrlwi r0, r0, 24
+/* 00000910 00000950  1C 00 00 18 */	mulli r0, r0, 0x18
+/* 00000914 00000954  7C 63 02 14 */	add r3, r3, r0
+/* 00000918 00000958  38 63 00 54 */	addi r3, r3, 0x54
+/* 0000091C 0000095C  4E 80 00 20 */	blr
+.endfn unk_169510__18daWmKillerBullet_cFv
+
+# .text:0x920 | size: 0xC
+# daWmKillerBullet_c::unk_1691A0()
+.fn unk_1691A0__18daWmKillerBullet_cFv, global
+/* 00000920 00000960  38 00 00 06 */	li r0, 0x6
+/* 00000924 00000964  90 03 01 C0 */	stw r0, 0x1c0(r3)
+/* 00000928 00000968  4E 80 00 20 */	blr
+.endfn unk_1691A0__18daWmKillerBullet_cFv
+/* 0000092C 0000096C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x930 | size: 0xC
+# daWmKillerBullet_c::unk_1695E0()
+.fn unk_1695E0__18daWmKillerBullet_cFv, global
+/* 00000930 00000970  38 00 00 07 */	li r0, 0x7
+/* 00000934 00000974  90 03 01 C0 */	stw r0, 0x1c0(r3)
+/* 00000938 00000978  4E 80 00 20 */	blr
+.endfn unk_1695E0__18daWmKillerBullet_cFv
+/* 0000093C 0000097C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x940 | size: 0xC
+# daWmKillerBullet_c::unk_1698E0()
+.fn unk_1698E0__18daWmKillerBullet_cFv, global
+/* 00000940 00000980  38 00 00 08 */	li r0, 0x8
+/* 00000944 00000984  90 03 01 C0 */	stw r0, 0x1c0(r3)
+/* 00000948 00000988  4E 80 00 20 */	blr
+.endfn unk_1698E0__18daWmKillerBullet_cFv
+/* 0000094C 0000098C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x950 | size: 0x9C
+# daWmKillerBullet_c::unk_169F00()
+.fn unk_169F00__18daWmKillerBullet_cFv, global
+/* 00000950 00000990  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000954 00000994  7C 08 02 A6 */	mflr r0
+/* 00000958 00000998  3C 80 00 00 */	lis r4, R_2_5_45428@ha
+/* 0000095C 0000099C  38 A0 00 01 */	li r5, 0x1
+/* 00000960 000009A0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000964 000009A4  38 84 00 00 */	addi r4, r4, R_2_5_45428@l
+/* 00000968 000009A8  A8 84 00 4C */	lha r4, 0x4c(r4)
+/* 0000096C 000009AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000970 000009B0  7C 7F 1B 78 */	mr r31, r3
+/* 00000974 000009B4  48 00 00 01 */	bl rotDirectionX__14dWmDemoActor_cFsb
+/* 00000978 000009B8  7F E3 FB 78 */	mr r3, r31
+/* 0000097C 000009BC  48 00 00 01 */	bl _procDemoJumpBase__14dWmDemoActor_cFv
+/* 00000980 000009C0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000984 000009C4  40 82 00 0C */	bne .L_00000990
+/* 00000988 000009C8  38 60 00 00 */	li r3, 0x0
+/* 0000098C 000009CC  48 00 00 4C */	b .L_000009D8
+.L_00000990:
+/* 00000990 000009D0  38 00 00 00 */	li r0, 0x0
+/* 00000994 000009D4  98 1F 01 D4 */	stb r0, 0x1d4(r31)
+/* 00000998 000009D8  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
+/* 0000099C 000009DC  38 BF 00 AC */	addi r5, r31, 0xac
+/* 000009A0 000009E0  B0 1F 01 00 */	sth r0, 0x100(r31)
+/* 000009A4 000009E4  38 80 00 0E */	li r4, 0xe
+/* 000009A8 000009E8  38 C0 00 00 */	li r6, 0x0
+/* 000009AC 000009EC  38 E0 00 00 */	li r7, 0x0
+/* 000009B0 000009F0  B0 1F 01 06 */	sth r0, 0x106(r31)
+/* 000009B4 000009F4  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
+/* 000009B8 000009F8  48 00 00 01 */	bl playEffect__18dWmEffectManager_cFiPC7mVec3_cPC7mAng3_cPC7mVec3_c
+/* 000009BC 000009FC  3C 60 00 00 */	lis r3, m_pInstance__14dWmSeManager_c@ha
+/* 000009C0 00000A00  38 BF 00 AC */	addi r5, r31, 0xac
+/* 000009C4 00000A04  80 63 00 00 */	lwz r3, m_pInstance__14dWmSeManager_c@l(r3)
+/* 000009C8 00000A08  38 80 00 56 */	li r4, 0x56
+/* 000009CC 00000A0C  38 C0 00 01 */	li r6, 0x1
+/* 000009D0 00000A10  48 00 00 01 */	bl playSound__14dWmSeManager_cFiRC7mVec3_ci
+/* 000009D4 00000A14  38 60 00 01 */	li r3, 0x1
+.L_000009D8:
+/* 000009D8 00000A18  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000009DC 00000A1C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000009E0 00000A20  7C 08 03 A6 */	mtlr r0
+/* 000009E4 00000A24  38 21 00 10 */	addi r1, r1, 0x10
+/* 000009E8 00000A28  4E 80 00 20 */	blr
+.endfn unk_169F00__18daWmKillerBullet_cFv
+/* 000009EC 00000A2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9F0 | size: 0xC
+# daWmKillerBullet_c::unk_168D50()
+.fn unk_168D50__18daWmKillerBullet_cFv, global
+/* 000009F0 00000A30  38 00 00 0A */	li r0, 0xa
+/* 000009F4 00000A34  90 03 01 C0 */	stw r0, 0x1c0(r3)
+/* 000009F8 00000A38  4E 80 00 20 */	blr
+.endfn unk_168D50__18daWmKillerBullet_cFv
+/* 000009FC 00000A3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA00 | size: 0x8C
 # daWmKillerBullet_c::state1()
 .fn state1__18daWmKillerBullet_cFv, global
-/* 000008E0 00000920  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000008E4 00000924  7C 08 02 A6 */	mflr r0
-/* 000008E8 00000928  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000008EC 0000092C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 000008F0 00000930  7C 7F 1B 78 */	mr r31, r3
-/* 000008F4 00000934  48 00 00 01 */	bl checkParentFlag__18daWmKillerBullet_cFv
-/* 000008F8 00000938  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000008FC 0000093C  40 82 00 18 */	bne .L_00000914
-/* 00000900 00000940  38 00 00 00 */	li r0, 0x0
-/* 00000904 00000944  98 1F 02 04 */	stb r0, 0x204(r31)
-/* 00000908 00000948  7F E3 FB 78 */	mr r3, r31
-/* 0000090C 0000094C  48 00 00 01 */	bl endEffectAndResetState__18daWmKillerBullet_cFv
-/* 00000910 00000950  48 00 00 48 */	b .L_00000958
-.L_00000914:
-/* 00000914 00000954  7F E3 FB 78 */	mr r3, r31
-/* 00000918 00000958  48 00 00 01 */	bl unk_169530__18daWmKillerBullet_cFv
-/* 0000091C 0000095C  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000920 00000960  41 82 00 0C */	beq .L_0000092C
-/* 00000924 00000964  38 00 00 01 */	li r0, 0x1
-/* 00000928 00000968  98 1F 01 F8 */	stb r0, 0x1f8(r31)
-.L_0000092C:
-/* 0000092C 0000096C  88 1F 01 F8 */	lbz r0, 0x1f8(r31)
-/* 00000930 00000970  2C 00 00 00 */	cmpwi r0, 0x0
-/* 00000934 00000974  41 82 00 24 */	beq .L_00000958
-/* 00000938 00000978  80 7F 01 B8 */	lwz r3, 0x1b8(r31)
-/* 0000093C 0000097C  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000940 00000980  40 81 00 10 */	ble .L_00000950
-/* 00000944 00000984  38 03 FF FF */	subi r0, r3, 0x1
-/* 00000948 00000988  90 1F 01 B8 */	stw r0, 0x1b8(r31)
-/* 0000094C 0000098C  48 00 00 0C */	b .L_00000958
-.L_00000950:
-/* 00000950 00000990  7F E3 FB 78 */	mr r3, r31
-/* 00000954 00000994  48 00 00 01 */	bl unk_1691A0__18daWmKillerBullet_cFv
-.L_00000958:
-/* 00000958 00000998  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 0000095C 0000099C  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000960 000009A0  7C 08 03 A6 */	mtlr r0
-/* 00000964 000009A4  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000968 000009A8  4E 80 00 20 */	blr
+/* 00000A00 00000A40  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000A04 00000A44  7C 08 02 A6 */	mflr r0
+/* 00000A08 00000A48  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000A0C 00000A4C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000A10 00000A50  7C 7F 1B 78 */	mr r31, r3
+/* 00000A14 00000A54  48 00 00 01 */	bl checkParentFlag__18daWmKillerBullet_cFv
+/* 00000A18 00000A58  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000A1C 00000A5C  40 82 00 18 */	bne .L_00000A34
+/* 00000A20 00000A60  38 00 00 00 */	li r0, 0x0
+/* 00000A24 00000A64  98 1F 02 04 */	stb r0, 0x204(r31)
+/* 00000A28 00000A68  7F E3 FB 78 */	mr r3, r31
+/* 00000A2C 00000A6C  48 00 00 01 */	bl endEffectAndResetState__18daWmKillerBullet_cFv
+/* 00000A30 00000A70  48 00 00 48 */	b .L_00000A78
+.L_00000A34:
+/* 00000A34 00000A74  7F E3 FB 78 */	mr r3, r31
+/* 00000A38 00000A78  48 00 00 01 */	bl unk_169530__18daWmKillerBullet_cFv
+/* 00000A3C 00000A7C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000A40 00000A80  41 82 00 0C */	beq .L_00000A4C
+/* 00000A44 00000A84  38 00 00 01 */	li r0, 0x1
+/* 00000A48 00000A88  98 1F 01 F8 */	stb r0, 0x1f8(r31)
+.L_00000A4C:
+/* 00000A4C 00000A8C  88 1F 01 F8 */	lbz r0, 0x1f8(r31)
+/* 00000A50 00000A90  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000A54 00000A94  41 82 00 24 */	beq .L_00000A78
+/* 00000A58 00000A98  80 7F 01 B8 */	lwz r3, 0x1b8(r31)
+/* 00000A5C 00000A9C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000A60 00000AA0  40 81 00 10 */	ble .L_00000A70
+/* 00000A64 00000AA4  38 03 FF FF */	subi r0, r3, 0x1
+/* 00000A68 00000AA8  90 1F 01 B8 */	stw r0, 0x1b8(r31)
+/* 00000A6C 00000AAC  48 00 00 0C */	b .L_00000A78
+.L_00000A70:
+/* 00000A70 00000AB0  7F E3 FB 78 */	mr r3, r31
+/* 00000A74 00000AB4  48 00 00 01 */	bl unk_1691A0__18daWmKillerBullet_cFv
+.L_00000A78:
+/* 00000A78 00000AB8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000A7C 00000ABC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000A80 00000AC0  7C 08 03 A6 */	mtlr r0
+/* 00000A84 00000AC4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000A88 00000AC8  4E 80 00 20 */	blr
 .endfn state1__18daWmKillerBullet_cFv
-/* 0000096C 000009AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A8C 00000ACC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x970 | size: 0x140
+# .text:0xA90 | size: 0x140
 # daWmKillerBullet_c::state2()
 .fn state2__18daWmKillerBullet_cFv, global
-/* 00000970 000009B0  94 21 FF E0 */	stwu r1, -0x20(r1)
-/* 00000974 000009B4  7C 08 02 A6 */	mflr r0
-/* 00000978 000009B8  90 01 00 24 */	stw r0, 0x24(r1)
-/* 0000097C 000009BC  38 00 00 00 */	li r0, 0x0
-/* 00000980 000009C0  DB E1 00 10 */	stfd f31, 0x10(r1)
-/* 00000984 000009C4  F3 E1 00 18 */	psq_st f31, 0x18(r1), 0, qr0
-/* 00000988 000009C8  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 0000098C 000009CC  7C 7F 1B 78 */	mr r31, r3
-/* 00000990 000009D0  98 03 01 F9 */	stb r0, 0x1f9(r3)
-/* 00000994 000009D4  48 00 00 01 */	bl calcSpeed__12dBaseActor_cFv
-/* 00000998 000009D8  7F E3 FB 78 */	mr r3, r31
-/* 0000099C 000009DC  48 00 00 01 */	bl posMove__12dBaseActor_cFv
-/* 000009A0 000009E0  C3 FF 01 0C */	lfs f31, 0x10c(r31)
-/* 000009A4 000009E4  7F E3 FB 78 */	mr r3, r31
-/* 000009A8 000009E8  48 00 00 01 */	bl unk_169510__18daWmKillerBullet_cFv
-/* 000009AC 000009EC  C0 03 00 10 */	lfs f0, 0x10(r3)
-/* 000009B0 000009F0  80 7F 01 E8 */	lwz r3, 0x1e8(r31)
-/* 000009B4 000009F4  EC 1F 00 2A */	fadds f0, f31, f0
-/* 000009B8 000009F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000009BC 000009FC  D0 1F 01 0C */	stfs f0, 0x10c(r31)
-/* 000009C0 00000A00  40 81 00 10 */	ble .L_000009D0
-/* 000009C4 00000A04  38 03 FF FF */	subi r0, r3, 0x1
-/* 000009C8 00000A08  90 1F 01 E8 */	stw r0, 0x1e8(r31)
-/* 000009CC 00000A0C  48 00 00 38 */	b .L_00000A04
-.L_000009D0:
-/* 000009D0 00000A10  80 1F 01 E4 */	lwz r0, 0x1e4(r31)
-/* 000009D4 00000A14  2C 00 00 00 */	cmpwi r0, 0x0
-/* 000009D8 00000A18  40 80 00 2C */	bge .L_00000A04
-/* 000009DC 00000A1C  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
-/* 000009E0 00000A20  3C C0 00 00 */	lis r6, "@12985"@ha
-/* 000009E4 00000A24  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
-/* 000009E8 00000A28  38 BF 01 A4 */	addi r5, r31, 0x1a4
-/* 000009EC 00000A2C  38 C6 00 00 */	addi r6, r6, "@12985"@l
-/* 000009F0 00000A30  38 FF 01 00 */	addi r7, r31, 0x100
-/* 000009F4 00000A34  39 1F 00 DC */	addi r8, r31, 0xdc
-/* 000009F8 00000A38  38 80 00 14 */	li r4, 0x14
-/* 000009FC 00000A3C  48 00 00 01 */	bl fn_80103520
-/* 00000A00 00000A40  90 7F 01 E4 */	stw r3, 0x1e4(r31)
-.L_00000A04:
-/* 00000A04 00000A44  7F E3 FB 78 */	mr r3, r31
-/* 00000A08 00000A48  48 00 00 01 */	bl unk_1695E0__18daWmKillerBullet_cFv
-/* 00000A0C 00000A4C  80 9F 01 B4 */	lwz r4, 0x1b4(r31)
-/* 00000A10 00000A50  38 7F 00 AC */	addi r3, r31, 0xac
-/* 00000A14 00000A54  38 84 00 AC */	addi r4, r4, 0xac
-/* 00000A18 00000A58  48 00 00 01 */	bl PSVECSquareDistance
-/* 00000A1C 00000A5C  48 00 00 01 */	bl "sqrt__Q23EGG7Math<f>Ff"
-/* 00000A20 00000A60  FC 20 0A 10 */	fabs f1, f1
-/* 00000A24 00000A64  3C 60 00 00 */	lis r3, R_2_5_45428@ha
-/* 00000A28 00000A68  C0 03 00 00 */	lfs f0, R_2_5_45428@l(r3)
-/* 00000A2C 00000A6C  FC 20 08 18 */	frsp f1, f1
-/* 00000A30 00000A70  FC 01 00 40 */	fcmpo cr0, f1, f0
-/* 00000A34 00000A74  40 81 00 28 */	ble .L_00000A5C
-/* 00000A38 00000A78  7F E3 FB 78 */	mr r3, r31
-/* 00000A3C 00000A7C  48 00 00 01 */	bl checkParentFlag__18daWmKillerBullet_cFv
-/* 00000A40 00000A80  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000A44 00000A84  40 82 00 10 */	bne .L_00000A54
-/* 00000A48 00000A88  7F E3 FB 78 */	mr r3, r31
-/* 00000A4C 00000A8C  48 00 00 01 */	bl endEffectAndResetState__18daWmKillerBullet_cFv
-/* 00000A50 00000A90  48 00 00 0C */	b .L_00000A5C
-.L_00000A54:
-/* 00000A54 00000A94  7F E3 FB 78 */	mr r3, r31
-/* 00000A58 00000A98  48 00 00 01 */	bl endStateOrTransition__18daWmKillerBullet_cFv
-.L_00000A5C:
-/* 00000A5C 00000A9C  80 7F 02 00 */	lwz r3, 0x200(r31)
-/* 00000A60 00000AA0  88 03 00 0D */	lbz r0, 0xd(r3)
-/* 00000A64 00000AA4  2C 00 00 00 */	cmpwi r0, 0x0
-/* 00000A68 00000AA8  41 82 00 24 */	beq .L_00000A8C
-/* 00000A6C 00000AAC  3C C0 00 00 */	lis r6, "@12879"@ha
-/* 00000A70 00000AB0  38 00 00 00 */	li r0, 0x0
-/* 00000A74 00000AB4  90 1F 01 C0 */	stw r0, 0x1c0(r31)
-/* 00000A78 00000AB8  38 80 00 01 */	li r4, 0x1
-/* 00000A7C 00000ABC  80 7F 01 FC */	lwz r3, 0x1fc(r31)
-/* 00000A80 00000AC0  38 A0 FF FF */	li r5, -0x1
-/* 00000A84 00000AC4  C0 26 00 00 */	lfs f1, "@12879"@l(r6)
-/* 00000A88 00000AC8  48 00 00 01 */	bl fn_80103A00
-.L_00000A8C:
-/* 00000A8C 00000ACC  7F E3 FB 78 */	mr r3, r31
-/* 00000A90 00000AD0  48 00 00 01 */	bl unk_1698E0__18daWmKillerBullet_cFv
-/* 00000A94 00000AD4  80 01 00 24 */	lwz r0, 0x24(r1)
-/* 00000A98 00000AD8  E3 E1 00 18 */	psq_l f31, 0x18(r1), 0, qr0
-/* 00000A9C 00000ADC  CB E1 00 10 */	lfd f31, 0x10(r1)
-/* 00000AA0 00000AE0  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000AA4 00000AE4  7C 08 03 A6 */	mtlr r0
-/* 00000AA8 00000AE8  38 21 00 20 */	addi r1, r1, 0x20
-/* 00000AAC 00000AEC  4E 80 00 20 */	blr
+/* 00000A90 00000AD0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000A94 00000AD4  7C 08 02 A6 */	mflr r0
+/* 00000A98 00000AD8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000A9C 00000ADC  38 00 00 00 */	li r0, 0x0
+/* 00000AA0 00000AE0  DB E1 00 10 */	stfd f31, 0x10(r1)
+/* 00000AA4 00000AE4  F3 E1 00 18 */	psq_st f31, 0x18(r1), 0, qr0
+/* 00000AA8 00000AE8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000AAC 00000AEC  7C 7F 1B 78 */	mr r31, r3
+/* 00000AB0 00000AF0  98 03 01 F9 */	stb r0, 0x1f9(r3)
+/* 00000AB4 00000AF4  48 00 00 01 */	bl calcSpeed__12dBaseActor_cFv
+/* 00000AB8 00000AF8  7F E3 FB 78 */	mr r3, r31
+/* 00000ABC 00000AFC  48 00 00 01 */	bl posMove__12dBaseActor_cFv
+/* 00000AC0 00000B00  C3 FF 01 0C */	lfs f31, 0x10c(r31)
+/* 00000AC4 00000B04  7F E3 FB 78 */	mr r3, r31
+/* 00000AC8 00000B08  48 00 00 01 */	bl unk_169510__18daWmKillerBullet_cFv
+/* 00000ACC 00000B0C  C0 03 00 10 */	lfs f0, 0x10(r3)
+/* 00000AD0 00000B10  80 7F 01 E8 */	lwz r3, 0x1e8(r31)
+/* 00000AD4 00000B14  EC 1F 00 2A */	fadds f0, f31, f0
+/* 00000AD8 00000B18  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000ADC 00000B1C  D0 1F 01 0C */	stfs f0, 0x10c(r31)
+/* 00000AE0 00000B20  40 81 00 10 */	ble .L_00000AF0
+/* 00000AE4 00000B24  38 03 FF FF */	subi r0, r3, 0x1
+/* 00000AE8 00000B28  90 1F 01 E8 */	stw r0, 0x1e8(r31)
+/* 00000AEC 00000B2C  48 00 00 38 */	b .L_00000B24
+.L_00000AF0:
+/* 00000AF0 00000B30  80 1F 01 E4 */	lwz r0, 0x1e4(r31)
+/* 00000AF4 00000B34  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000AF8 00000B38  40 80 00 2C */	bge .L_00000B24
+/* 00000AFC 00000B3C  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
+/* 00000B00 00000B40  3C C0 00 00 */	lis r6, "@13379"@ha
+/* 00000B04 00000B44  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
+/* 00000B08 00000B48  38 BF 01 A4 */	addi r5, r31, 0x1a4
+/* 00000B0C 00000B4C  38 C6 00 00 */	addi r6, r6, "@13379"@l
+/* 00000B10 00000B50  38 FF 01 00 */	addi r7, r31, 0x100
+/* 00000B14 00000B54  39 1F 00 DC */	addi r8, r31, 0xdc
+/* 00000B18 00000B58  38 80 00 14 */	li r4, 0x14
+/* 00000B1C 00000B5C  48 00 00 01 */	bl fn_80103520
+/* 00000B20 00000B60  90 7F 01 E4 */	stw r3, 0x1e4(r31)
+.L_00000B24:
+/* 00000B24 00000B64  7F E3 FB 78 */	mr r3, r31
+/* 00000B28 00000B68  48 00 00 01 */	bl unk_1695E0__18daWmKillerBullet_cFv
+/* 00000B2C 00000B6C  80 9F 01 B4 */	lwz r4, 0x1b4(r31)
+/* 00000B30 00000B70  38 7F 00 AC */	addi r3, r31, 0xac
+/* 00000B34 00000B74  38 84 00 AC */	addi r4, r4, 0xac
+/* 00000B38 00000B78  48 00 00 01 */	bl PSVECSquareDistance
+/* 00000B3C 00000B7C  48 00 00 01 */	bl "sqrt__Q23EGG7Math<f>Ff"
+/* 00000B40 00000B80  FC 20 0A 10 */	fabs f1, f1
+/* 00000B44 00000B84  3C 60 00 00 */	lis r3, R_2_5_45428@ha
+/* 00000B48 00000B88  C0 03 00 00 */	lfs f0, R_2_5_45428@l(r3)
+/* 00000B4C 00000B8C  FC 20 08 18 */	frsp f1, f1
+/* 00000B50 00000B90  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 00000B54 00000B94  40 81 00 28 */	ble .L_00000B7C
+/* 00000B58 00000B98  7F E3 FB 78 */	mr r3, r31
+/* 00000B5C 00000B9C  48 00 00 01 */	bl checkParentFlag__18daWmKillerBullet_cFv
+/* 00000B60 00000BA0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000B64 00000BA4  40 82 00 10 */	bne .L_00000B74
+/* 00000B68 00000BA8  7F E3 FB 78 */	mr r3, r31
+/* 00000B6C 00000BAC  48 00 00 01 */	bl endEffectAndResetState__18daWmKillerBullet_cFv
+/* 00000B70 00000BB0  48 00 00 0C */	b .L_00000B7C
+.L_00000B74:
+/* 00000B74 00000BB4  7F E3 FB 78 */	mr r3, r31
+/* 00000B78 00000BB8  48 00 00 01 */	bl endStateOrTransition__18daWmKillerBullet_cFv
+.L_00000B7C:
+/* 00000B7C 00000BBC  80 7F 02 00 */	lwz r3, 0x200(r31)
+/* 00000B80 00000BC0  88 03 00 0D */	lbz r0, 0xd(r3)
+/* 00000B84 00000BC4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 00000B88 00000BC8  41 82 00 24 */	beq .L_00000BAC
+/* 00000B8C 00000BCC  3C C0 00 00 */	lis r6, "@13247"@ha
+/* 00000B90 00000BD0  38 00 00 00 */	li r0, 0x0
+/* 00000B94 00000BD4  90 1F 01 C0 */	stw r0, 0x1c0(r31)
+/* 00000B98 00000BD8  38 80 00 01 */	li r4, 0x1
+/* 00000B9C 00000BDC  80 7F 01 FC */	lwz r3, 0x1fc(r31)
+/* 00000BA0 00000BE0  38 A0 FF FF */	li r5, -0x1
+/* 00000BA4 00000BE4  C0 26 00 00 */	lfs f1, "@13247"@l(r6)
+/* 00000BA8 00000BE8  48 00 00 01 */	bl fn_80103A00
+.L_00000BAC:
+/* 00000BAC 00000BEC  7F E3 FB 78 */	mr r3, r31
+/* 00000BB0 00000BF0  48 00 00 01 */	bl unk_1698E0__18daWmKillerBullet_cFv
+/* 00000BB4 00000BF4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000BB8 00000BF8  E3 E1 00 18 */	psq_l f31, 0x18(r1), 0, qr0
+/* 00000BBC 00000BFC  CB E1 00 10 */	lfd f31, 0x10(r1)
+/* 00000BC0 00000C00  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000BC4 00000C04  7C 08 03 A6 */	mtlr r0
+/* 00000BC8 00000C08  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000BCC 00000C0C  4E 80 00 20 */	blr
 .endfn state2__18daWmKillerBullet_cFv
 
-# .text:0xAB0 | size: 0xA4
+# .text:0xBD0 | size: 0xA4
 # daWmKillerBullet_c::state3()
 .fn state3__18daWmKillerBullet_cFv, global
-/* 00000AB0 00000AF0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000AB4 00000AF4  7C 08 02 A6 */	mflr r0
-/* 00000AB8 00000AF8  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000ABC 00000AFC  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000AC0 00000B00  7C 7F 1B 78 */	mr r31, r3
-/* 00000AC4 00000B04  80 83 01 B8 */	lwz r4, 0x1b8(r3)
-/* 00000AC8 00000B08  2C 04 00 00 */	cmpwi r4, 0x0
-/* 00000ACC 00000B0C  40 81 00 10 */	ble .L_00000ADC
-/* 00000AD0 00000B10  38 04 FF FF */	subi r0, r4, 0x1
-/* 00000AD4 00000B14  90 03 01 B8 */	stw r0, 0x1b8(r3)
-/* 00000AD8 00000B18  48 00 00 68 */	b .L_00000B40
-.L_00000ADC:
-/* 00000ADC 00000B1C  48 00 00 01 */	bl calcSpeed__12dBaseActor_cFv
-/* 00000AE0 00000B20  7F E3 FB 78 */	mr r3, r31
-/* 00000AE4 00000B24  48 00 00 01 */	bl posMove__12dBaseActor_cFv
-/* 00000AE8 00000B28  38 7F 00 AC */	addi r3, r31, 0xac
-/* 00000AEC 00000B2C  38 9F 01 EC */	addi r4, r31, 0x1ec
-/* 00000AF0 00000B30  48 00 00 01 */	bl PSVECSquareDistance
-/* 00000AF4 00000B34  48 00 00 01 */	bl "sqrt__Q23EGG7Math<f>Ff"
-/* 00000AF8 00000B38  FC 20 0A 10 */	fabs f1, f1
-/* 00000AFC 00000B3C  3C 60 00 00 */	lis r3, R_2_5_45428@ha
-/* 00000B00 00000B40  C0 03 00 00 */	lfs f0, R_2_5_45428@l(r3)
-/* 00000B04 00000B44  FC 20 08 18 */	frsp f1, f1
-/* 00000B08 00000B48  FC 01 00 40 */	fcmpo cr0, f1, f0
-/* 00000B0C 00000B4C  40 81 00 2C */	ble .L_00000B38
-/* 00000B10 00000B50  80 9F 01 E4 */	lwz r4, 0x1e4(r31)
-/* 00000B14 00000B54  2C 04 00 00 */	cmpwi r4, 0x0
-/* 00000B18 00000B58  41 80 00 18 */	blt .L_00000B30
-/* 00000B1C 00000B5C  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
-/* 00000B20 00000B60  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
-/* 00000B24 00000B64  48 00 00 01 */	bl endEffect__18dWmEffectManager_cFi
-/* 00000B28 00000B68  38 00 FF FF */	li r0, -0x1
-/* 00000B2C 00000B6C  90 1F 01 E4 */	stw r0, 0x1e4(r31)
-.L_00000B30:
-/* 00000B30 00000B70  38 00 00 00 */	li r0, 0x0
-/* 00000B34 00000B74  98 1F 01 24 */	stb r0, 0x124(r31)
-.L_00000B38:
-/* 00000B38 00000B78  7F E3 FB 78 */	mr r3, r31
-/* 00000B3C 00000B7C  48 00 00 01 */	bl unk_1698E0__18daWmKillerBullet_cFv
-.L_00000B40:
-/* 00000B40 00000B80  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000B44 00000B84  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000B48 00000B88  7C 08 03 A6 */	mtlr r0
-/* 00000B4C 00000B8C  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000B50 00000B90  4E 80 00 20 */	blr
+/* 00000BD0 00000C10  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000BD4 00000C14  7C 08 02 A6 */	mflr r0
+/* 00000BD8 00000C18  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000BDC 00000C1C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000BE0 00000C20  7C 7F 1B 78 */	mr r31, r3
+/* 00000BE4 00000C24  80 83 01 B8 */	lwz r4, 0x1b8(r3)
+/* 00000BE8 00000C28  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000BEC 00000C2C  40 81 00 10 */	ble .L_00000BFC
+/* 00000BF0 00000C30  38 04 FF FF */	subi r0, r4, 0x1
+/* 00000BF4 00000C34  90 03 01 B8 */	stw r0, 0x1b8(r3)
+/* 00000BF8 00000C38  48 00 00 68 */	b .L_00000C60
+.L_00000BFC:
+/* 00000BFC 00000C3C  48 00 00 01 */	bl calcSpeed__12dBaseActor_cFv
+/* 00000C00 00000C40  7F E3 FB 78 */	mr r3, r31
+/* 00000C04 00000C44  48 00 00 01 */	bl posMove__12dBaseActor_cFv
+/* 00000C08 00000C48  38 7F 00 AC */	addi r3, r31, 0xac
+/* 00000C0C 00000C4C  38 9F 01 EC */	addi r4, r31, 0x1ec
+/* 00000C10 00000C50  48 00 00 01 */	bl PSVECSquareDistance
+/* 00000C14 00000C54  48 00 00 01 */	bl "sqrt__Q23EGG7Math<f>Ff"
+/* 00000C18 00000C58  FC 20 0A 10 */	fabs f1, f1
+/* 00000C1C 00000C5C  3C 60 00 00 */	lis r3, R_2_5_45428@ha
+/* 00000C20 00000C60  C0 03 00 00 */	lfs f0, R_2_5_45428@l(r3)
+/* 00000C24 00000C64  FC 20 08 18 */	frsp f1, f1
+/* 00000C28 00000C68  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 00000C2C 00000C6C  40 81 00 2C */	ble .L_00000C58
+/* 00000C30 00000C70  80 9F 01 E4 */	lwz r4, 0x1e4(r31)
+/* 00000C34 00000C74  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000C38 00000C78  41 80 00 18 */	blt .L_00000C50
+/* 00000C3C 00000C7C  3C 60 00 00 */	lis r3, m_pInstance__18dWmEffectManager_c@ha
+/* 00000C40 00000C80  80 63 00 00 */	lwz r3, m_pInstance__18dWmEffectManager_c@l(r3)
+/* 00000C44 00000C84  48 00 00 01 */	bl endEffect__18dWmEffectManager_cFi
+/* 00000C48 00000C88  38 00 FF FF */	li r0, -0x1
+/* 00000C4C 00000C8C  90 1F 01 E4 */	stw r0, 0x1e4(r31)
+.L_00000C50:
+/* 00000C50 00000C90  38 00 00 00 */	li r0, 0x0
+/* 00000C54 00000C94  98 1F 01 24 */	stb r0, 0x124(r31)
+.L_00000C58:
+/* 00000C58 00000C98  7F E3 FB 78 */	mr r3, r31
+/* 00000C5C 00000C9C  48 00 00 01 */	bl unk_1698E0__18daWmKillerBullet_cFv
+.L_00000C60:
+/* 00000C60 00000CA0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C64 00000CA4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000C68 00000CA8  7C 08 03 A6 */	mtlr r0
+/* 00000C6C 00000CAC  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000C70 00000CB0  4E 80 00 20 */	blr
 .endfn state3__18daWmKillerBullet_cFv
-/* 00000B54 00000B94  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000B58 00000B98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000B5C 00000B9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C74 00000CB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C78 00000CB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C7C 00000CBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xB60 | size: 0x4
+# .text:0xC80 | size: 0x4
 # dBaseActor_c::finalUpdate()
 .fn finalUpdate__12dBaseActor_cFv, weak
-/* 00000B60 00000BA0  4E 80 00 20 */	blr
+/* 00000C80 00000CC0  4E 80 00 20 */	blr
 .endfn finalUpdate__12dBaseActor_cFv
-/* 00000B64 00000BA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000B68 00000BA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000B6C 00000BAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C84 00000CC4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C88 00000CC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C8C 00000CCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xB70 | size: 0xC
+# .text:0xC90 | size: 0xC
 # dWmDemoActor_c::clearCutEnd()
 .fn clearCutEnd__14dWmDemoActor_cFv, weak
-/* 00000B70 00000BB0  38 00 00 00 */	li r0, 0x0
-/* 00000B74 00000BB4  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000B78 00000BB8  4E 80 00 20 */	blr
+/* 00000C90 00000CD0  38 00 00 00 */	li r0, 0x0
+/* 00000C94 00000CD4  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000C98 00000CD8  4E 80 00 20 */	blr
 .endfn clearCutEnd__14dWmDemoActor_cFv
-/* 00000B7C 00000BBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C9C 00000CDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xB80 | size: 0xC
+# .text:0xCA0 | size: 0xC
 # dWmDemoActor_c::setCutEnd()
 .fn setCutEnd__14dWmDemoActor_cFv, weak
-/* 00000B80 00000BC0  38 00 00 01 */	li r0, 0x1
-/* 00000B84 00000BC4  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000B88 00000BC8  4E 80 00 20 */	blr
+/* 00000CA0 00000CE0  38 00 00 01 */	li r0, 0x1
+/* 00000CA4 00000CE4  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000CA8 00000CE8  4E 80 00 20 */	blr
 .endfn setCutEnd__14dWmDemoActor_cFv
-/* 00000B8C 00000BCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CAC 00000CEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xB90 | size: 0x8
+# .text:0xCB0 | size: 0x8
 # dWmDemoActor_c::checkCutEnd()
 .fn checkCutEnd__14dWmDemoActor_cFv, weak
-/* 00000B90 00000BD0  88 63 01 39 */	lbz r3, 0x139(r3)
-/* 00000B94 00000BD4  4E 80 00 20 */	blr
+/* 00000CB0 00000CF0  88 63 01 39 */	lbz r3, 0x139(r3)
+/* 00000CB4 00000CF4  4E 80 00 20 */	blr
 .endfn checkCutEnd__14dWmDemoActor_cFv
-/* 00000B98 00000BD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000B9C 00000BDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CB8 00000CF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CBC 00000CFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xBA0 | size: 0x8
+# .text:0xCC0 | size: 0x8
 # dWmDemoActor_c::GetActorType()
 .fn GetActorType__14dWmDemoActor_cFv, weak
-/* 00000BA0 00000BE0  38 60 00 01 */	li r3, 0x1
-/* 00000BA4 00000BE4  4E 80 00 20 */	blr
+/* 00000CC0 00000D00  38 60 00 01 */	li r3, 0x1
+/* 00000CC4 00000D04  4E 80 00 20 */	blr
 .endfn GetActorType__14dWmDemoActor_cFv
+/* 00000CC8 00000D08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CCC 00000D0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# 0x00000000..0x00000048 | size: 0x48
+# .text:0xCD0 | size: 0x84
+.fn "__sinit_\d_a_wm_killerbullet_cpp", local
+/* 00000CD0 00000D10  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000CD4 00000D14  7C 08 02 A6 */	mflr r0
+/* 00000CD8 00000D18  3C A0 00 00 */	lis r5, ...rodata.0@ha
+/* 00000CDC 00000D1C  3C C0 00 00 */	lis r6, sc_ForceList__6dWmLib@ha
+/* 00000CE0 00000D20  38 A5 00 00 */	addi r5, r5, ...rodata.0@l
+/* 00000CE4 00000D24  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000CE8 00000D28  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 00000CEC 00000D2C  C0 45 00 48 */	lfs f2, 0x48(r5)
+/* 00000CF0 00000D30  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib@l
+/* 00000CF4 00000D34  C0 25 00 4C */	lfs f1, 0x4c(r5)
+/* 00000CF8 00000D38  C0 05 00 50 */	lfs f0, 0x50(r5)
+/* 00000CFC 00000D3C  3C 80 00 00 */	lis r4, __arraydtor$12781@ha
+/* 00000D00 00000D40  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 00000D04 00000D44  3C A0 00 00 */	lis r5, "@12782"@ha
+/* 00000D08 00000D48  90 06 00 0C */	stw r0, 0xc(r6)
+/* 00000D0C 00000D4C  38 84 00 00 */	addi r4, r4, __arraydtor$12781@l
+/* 00000D10 00000D50  38 A5 00 00 */	addi r5, r5, "@12782"@l
+/* 00000D14 00000D54  38 60 00 00 */	li r3, 0x0
+/* 00000D18 00000D58  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 00000D1C 00000D5C  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 00000D20 00000D60  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 00000D24 00000D64  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 00000D28 00000D68  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 00000D2C 00000D6C  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 00000D30 00000D70  48 00 00 01 */	bl __register_global_object
+/* 00000D34 00000D74  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 00000D38 00000D78  3C 60 00 00 */	lis r3, c_StartPointKinokoHouseID__6dWmLib@ha
+/* 00000D3C 00000D7C  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 00000D40 00000D80  90 03 00 00 */	stw r0, c_StartPointKinokoHouseID__6dWmLib@l(r3)
+/* 00000D44 00000D84  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000D48 00000D88  7C 08 03 A6 */	mtlr r0
+/* 00000D4C 00000D8C  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000D50 00000D90  4E 80 00 20 */	blr
+.endfn "__sinit_\d_a_wm_killerbullet_cpp"
+/* 00000D54 00000D94  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D58 00000D98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D5C 00000D9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD60 | size: 0x1C
+.fn __arraydtor$12781, local
+/* 00000D60 00000DA0  3C 60 00 00 */	lis r3, sc_ForceList__6dWmLib@ha
+/* 00000D64 00000DA4  3C 80 00 00 */	lis r4, __dt__Q26dWmLib19ForceInCourseList_tFv@ha
+/* 00000D68 00000DA8  38 63 00 00 */	addi r3, r3, sc_ForceList__6dWmLib@l
+/* 00000D6C 00000DAC  38 A0 00 24 */	li r5, 0x24
+/* 00000D70 00000DB0  38 84 00 00 */	addi r4, r4, __dt__Q26dWmLib19ForceInCourseList_tFv@l
+/* 00000D74 00000DB4  38 C0 00 01 */	li r6, 0x1
+/* 00000D78 00000DB8  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$12781
+/* 00000D7C 00000DBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD80 | size: 0x40
+# dWmLib::ForceInCourseList_t::~ForceInCourseList_t()
+.fn __dt__Q26dWmLib19ForceInCourseList_tFv, weak
+/* 00000D80 00000DC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000D84 00000DC4  7C 08 02 A6 */	mflr r0
+/* 00000D88 00000DC8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000D8C 00000DCC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000D90 00000DD0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000D94 00000DD4  7C 7F 1B 78 */	mr r31, r3
+/* 00000D98 00000DD8  41 82 00 10 */	beq .L_00000DA8
+/* 00000D9C 00000DDC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000DA0 00000DE0  40 81 00 08 */	ble .L_00000DA8
+/* 00000DA4 00000DE4  48 00 00 01 */	bl __dl__FPv
+.L_00000DA8:
+/* 00000DA8 00000DE8  7F E3 FB 78 */	mr r3, r31
+/* 00000DAC 00000DEC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000DB0 00000DF0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000DB4 00000DF4  7C 08 03 A6 */	mtlr r0
+/* 00000DB8 00000DF8  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000DBC 00000DFC  4E 80 00 20 */	blr
+.endfn __dt__Q26dWmLib19ForceInCourseList_tFv
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_a_wm_killerbullet_cpp"
+
+# 0x00000000..0x00000054 | size: 0x54
 .rodata
 .balign 8
 
 # .rodata:0x0 | size: 0x4
-.obj "@12878", local
+.obj "@13246", local
+# .rodata:0x0 | size: 0x0
+.sym ...rodata.0, local
 	.4byte 0x42700000
-.endobj "@12878"
+.endobj "@13246"
 
 # .rodata:0x4 | size: 0x4
-.obj "@12879", local
+.obj "@13247", local
 	.4byte 0x00000000
-.endobj "@12879"
+.endobj "@13247"
 
 # .rodata:0x8 | size: 0x3C
 .obj sc_StateTable, local
@@ -995,30 +1150,111 @@
 .endobj sc_StateTable
 
 # .rodata:0x44 | size: 0x4
-.obj "@12930", local
+.obj "@13298", local
 	.4byte 0x3A83126F
-.endobj "@12930"
+.endobj "@13298"
 
-# 0x00000000..0x00000088 | size: 0x88
+# .rodata:0x48 | size: 0x4
+.obj "@13416", local
+	.4byte 0x45070000
+.endobj "@13416"
+
+# .rodata:0x4C | size: 0x4
+.obj "@13417", local
+	.4byte 0xC1F00000
+.endobj "@13417"
+
+# .rodata:0x50 | size: 0x4
+.obj "@13418", local
+	.4byte 0xC3EF0000
+.endobj "@13418"
+
+# 0x00000000..0x00000100 | size: 0x100
 .data
 .balign 8
 
-# .data:0x0 | size: 0xC
+# .data:0x0 | size: 0x5
+.obj "@12779", local
+# .data:0x0 | size: 0x0
+.sym ...data.0, local
+	.4byte 0x46374330
+	.byte 0x00
+.endobj "@12779"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x8 | size: 0x5
+.obj "@12780", local
+	.4byte 0x57374330
+	.byte 0x00
+.endobj "@12780"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x10 | size: 0x24
+# dWmLib::sc_ForceList
+.obj sc_ForceList__6dWmLib, local
+	.4byte 0x00000006
+	.4byte "@12779"
+	.4byte 0x00000006
+	.4byte 0x00000000
+	.4byte 0x00000004
+	.4byte "@12780"
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj sc_ForceList__6dWmLib
+
+# .data:0x34 | size: 0xC
 .obj g_profile_WM_KILLERBULLET, global
 	.4byte daWmKillerBullet_c_classInit__Fv
 	.4byte 0x02760278
 	.4byte 0x00000000
 .endobj g_profile_WM_KILLERBULLET
 
-# .data:0xC | size: 0x9
-.obj "@12985", local
+# .data:0x40 | size: 0x11
+.obj "@13325", local
+	.4byte 0x6733642F
+	.4byte 0x6B696C6C
+	.4byte 0x65722E62
+	.4byte 0x72726573
+	.byte 0x00
+.endobj "@13325"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x54 | size: 0x7
+.obj "@13326", local
+	.4byte 0x6B696C6C
+	.byte 0x65, 0x72, 0x00
+.endobj "@13326"
+	.byte 0x00
+
+# .data:0x5C | size: 0xD
+.obj "@13327", local
+	.4byte 0x63686172
+	.4byte 0x61637465
+	.4byte 0x725F5356
+	.byte 0x00
+.endobj "@13327"
+	.4byte 0x00000000
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x70 | size: 0x10
+.obj "@13328", local
+	.4byte 0x6733642F
+	.4byte 0x6D6F6465
+	.4byte 0x6C2E6272
+	.4byte 0x72657300
+.endobj "@13328"
+
+# .data:0x80 | size: 0x9
+.obj "@13379", local
 	.4byte 0x736B6C5F
 	.4byte 0x726F6F74
 	.byte 0x00
-.endobj "@12985"
+.endobj "@13379"
+	.4byte 0x00000000
 	.byte 0x00, 0x00, 0x00
 
-# .data:0x18 | size: 0x70
+# .data:0x90 | size: 0x70
 # daWmKillerBullet_c::__vtable
 .obj __vt__18daWmKillerBullet_c, global
 	.4byte 0x00000000
@@ -1050,3 +1286,18 @@
 	.4byte setCutEnd__14dWmDemoActor_cFv
 	.4byte clearCutEnd__14dWmDemoActor_cFv
 .endobj __vt__18daWmKillerBullet_c
+
+# 0x00000000..0x00000010 | size: 0x10
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0xC
+.obj "@12782", local
+	.skip 0xC
+.endobj "@12782"
+
+# .bss:0xC | size: 0x4
+# dWmLib::c_StartPointKinokoHouseID
+.obj c_StartPointKinokoHouseID__6dWmLib, local
+	.skip 0x4
+.endobj c_StartPointKinokoHouseID__6dWmLib
