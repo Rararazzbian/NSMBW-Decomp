@@ -72,6 +72,39 @@ def opcode_at(blob, addr):
     return word >> 26, word
 
 
+def is_dereferenced(blob, site):
+    """Is the value LOADED from this label then used as a base register?
+
+    This is what separates a singleton instance pointer from a plain int that
+    merely happens to have two writers. A pointer's loaded value shows up as the
+    rA of a following load/store (`stb r4, 0x544(r5)`); a counter's loaded value
+    is only compared or arithmetic'd (`addi r0, r3, -1`).
+
+    Two writes alone is NOT sufficient -- it produced false positives on a
+    BIGHANA_MGR counter (decrement) and an OBJ_WENDY state variable (compare and
+    assign), both of which would otherwise have sent someone hunting for a class
+    that does not exist.
+    """
+    addr = site & ~3
+    instruction = struct.unpack(">I", blob[TEXT_FILE_OFFSET + addr:TEXT_FILE_OFFSET + addr + 4])[0]
+    if (instruction >> 26) not in LOAD_OPS:
+        return False
+    loaded = (instruction >> 21) & 31
+    for offset in range(4, 0x40, 4):
+        following = struct.unpack(
+            ">I",
+            blob[TEXT_FILE_OFFSET + addr + offset:TEXT_FILE_OFFSET + addr + offset + 4],
+        )[0]
+        opcode = following >> 26
+        if opcode in LOAD_OPS or opcode in STORE_OPS:
+            if ((following >> 16) & 31) == loaded:
+                return True
+        # The register was overwritten; stop following it.
+        if opcode in LOAD_OPS and ((following >> 21) & 31) == loaded:
+            return False
+    return False
+
+
 def classify(module, target=None):
     rel = relocations(module)
     blob = text_words(module)
@@ -104,17 +137,26 @@ def classify(module, target=None):
 
         loads = sum(v for k, v in census.items() if k.startswith("load"))
         writes = sum(v for k, v in census.items() if k.startswith("store"))
+        dereferenced = any(is_dereferenced(blob, site) for site in sorted(sites))
 
         print("lbl_%s_bss_%X  --  %d relocations" % (module.split("_")[0][-1] or "2", addend, len(sites)))
         for kind, count in census.most_common():
             print("    %-18s %d" % (kind, count))
 
-        if writes == 2 and loads:
+        if writes == 2 and loads and dereferenced:
             verdict = ("SINGLETON INSTANCE POINTER -- exactly two writes is the "
                        "create/destroy pair.\n    Disassemble the write sites: the "
                        "creator's `li rN, SIZE; bl __nw__7fBase_cFUl` gives sizeof,\n"
                        "    and its `bl` targets (resolve via bin/dtk/wiimj2d_symbols.txt)\n"
                        "    give the base class and the member types.")
+        elif writes == 2 and loads:
+            verdict = (
+                "PLAIN VALUE (int / counter / state), NOT a singleton pointer."
+                "\n    Two writes alone does NOT mean a singleton. The value loaded"
+                "\n    from this label is never used as a BASE REGISTER, only compared"
+                "\n    or arithmetic'd -- so nothing is being pointed at, and there is"
+                "\n    no class behind it to find."
+            )
         elif writes > 2:
             verdict = "MUTABLE GLOBAL STATE -- many writers; the label likely IS the object."
         elif writes == 0 and loads:

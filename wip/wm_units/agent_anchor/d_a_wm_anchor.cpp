@@ -150,6 +150,18 @@ public:
     void calcModel();
     void setNodePos(); ///< @unofficial fn_2_15AA10, best-effort, NOT verified.
 
+    /// @unofficial fn_2_15AAF0 (0xC B: `li r0,0; stw r0,0x1f0(r3); blr`).
+    /// A genuinely SEPARATE out-of-line function in the target -- called via
+    /// `bl fn_2_15AAF0` from the tail of setNodePos(), NOT inlined as a
+    /// direct `stw` there. Confirmed directly: setNodePos()'s own target
+    /// disassembly (0x15AA10-0x15AAE8) ends with `bl fn_2_15AAF0` immediately
+    /// before the epilogue, and 0x15AAF0 is its own distinct `.fn` entry
+    /// (target address order places it between setNodePos and state_0).
+    /// Splitting this out of setNodePos()'s body (rather than a direct
+    /// `mUnk1f0 = 0;` store there) is what reproduces both the extra `bl`
+    /// and this function's own separate byte range.
+    void resetProcessState();
+
     /// @unofficial fn_2_15AB00. Empty body (`blr`, no `li r3`), reached ONLY
     /// through the pointer-to-member table below -- confirmed directly:
     /// `lbl_2_rodata_8574` (bin/dtkspl/d_basesNP/obj/auto_03_00006D00_rodata.o,
@@ -196,20 +208,35 @@ int daWmAnchor_c::create() {
 }
 
 int daWmAnchor_c::execute() {
-    if (dCsSeqMng_c::ms_instance->FUN_80915600()) {
-        processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
+    /// @unofficial `dCsSeqMng_c::ms_instance` cached into a local, matching
+    /// the landed `daWmAntlionMng_c::execute()` idiom exactly -- confirmed
+    /// directly: the target loads `ms_instance` ONCE (into r31) and reuses
+    /// it for `FUN_80915600()`'s receiver AND for `GetCutName()`/`m_164`,
+    /// rather than reloading the static global a second time.
+    dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
+    if (csSeqMng->FUN_80915600()) {
+        processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
     } else {
         (this->*scStateTable[mUnk1f0])();
     }
 
     /// @unofficial Same "cobKoopaShip" node-name lookup as setNodePos()
-    /// below (fn_80100640 + GetNodePos(const char*, mVec3_c&)), but with no
-    /// fallback-to-constant branch here. Best-effort, NOT verified byte-exact.
-    {
-        void *found = fn_80100640(daWmMap_c::m_instance, smc_koopaShipNodeName, 0);
-        int off = found ? *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8) : 0;
+    /// below (fn_80100640 + GetNodePos(const char*, mVec3_c&)). REAL FIX
+    /// found by reading the target directly: `GetNodePos` is called ONLY
+    /// when `fn_80100640` returns non-null -- the target's `beq` on a null
+    /// result branches straight past the whole off/name/GetNodePos sequence
+    /// to `mModel.play()`, it does NOT fall through and call
+    /// `GetNodePos(nullptr, mPos)` unconditionally the way an earlier draft
+    /// of this function did. `daWmMap_c::m_instance` is also cached into a
+    /// local (`map`), reused for both `fn_80100640`'s first argument and
+    /// `GetNodePos`'s receiver -- the target loads it once (into r31) rather
+    /// than twice.
+    daWmMap_c *map = daWmMap_c::m_instance;
+    void *found = fn_80100640(map, smc_koopaShipNodeName, 0);
+    if (found) {
+        int off = *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8);
         const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;
-        daWmMap_c::m_instance->GetNodePos(name, mPos);
+        map->GetNodePos(name, mPos);
     }
 
     mModel.play();
@@ -264,7 +291,17 @@ void daWmAnchor_c::setNodePos() {
         const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;
         map->GetNodePos(name, mPos);
     } else {
-        mPos.x = mPos.y = mPos.z = 0.0f;
+        /// @unofficial REAL FIX: a temporary-construct-then-assign, not a
+        /// chained field assignment. Confirmed directly from the target's
+        /// stack frame: this function's frame is `0x20`, not the `0x10` a
+        /// plain `mPos.x = mPos.y = mPos.z = 0.0f;` needs -- the extra 0xC
+        /// bytes hold a stack-built `mVec3_c(0,0,0)` temp (3 `stfs` to
+        /// 0x8/0xc/0x10(r1)) that then gets copied field-by-field into
+        /// `mPos` (3 more `stfs`, to 0xac/0xb0/0xb4(r30)) -- six stores
+        /// total, both halves in ASCENDING x/y/z order. A chained
+        /// assignment evaluates right-to-left (z first) and needs no temp,
+        /// which is the opposite of both observations.
+        mPos = mVec3_c(0.0f, 0.0f, 0.0f);
     }
 
     /// @unofficial dWmMapModel_c::setAnchorShadow(true) on the resolved map
@@ -281,12 +318,27 @@ void daWmAnchor_c::setNodePos() {
     /// cast confined to this .cpp instead, per the coordinator's direction
     /// (matching what WM_NOTE's agent did in the same situation).
     {
-        u8 *node = reinterpret_cast<u8 *>(daWmMap_c::m_instance)
-                 + daWmMap_c::m_instance->currIdx * 0xbf8 + 0x1a0;
+        daWmMap_c *m = daWmMap_c::m_instance;
+        u8 *node = reinterpret_cast<u8 *>(m) + m->currIdx * 0xbf8 + 0x1a0;
         setAnchorShadow__13dWmMapModel_cFb(node, true);
     }
 
-    mScale.x = mScale.y = mScale.z = 1.0f;
+    /// @unofficial REAL FIX: three independent statements, not a chained
+    /// assignment. The target stores mScale.x/y/z directly (no stack temp,
+    /// unlike the mPos fallback above) and in ASCENDING order (0xdc, 0xe0,
+    /// 0xe4) -- a chained `mScale.x = mScale.y = mScale.z = 1.0f;` evaluates
+    /// right-to-left (z, then y, then x), which is the wrong order here.
+    mScale.x = 1.0f;
+    mScale.y = 1.0f;
+    mScale.z = 1.0f;
+
+    resetProcessState();
+}
+
+/// @unofficial fn_2_15AAF0. See the class declaration's doc comment: a
+/// genuinely separate out-of-line function, called via `bl` from the tail
+/// of setNodePos(), not inlined there.
+void daWmAnchor_c::resetProcessState() {
     mUnk1f0 = 0;
 }
 

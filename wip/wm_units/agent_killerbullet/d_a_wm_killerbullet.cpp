@@ -15,6 +15,12 @@ ACTOR_PROFILE(WM_KILLERBULLET, daWmKillerBullet_c, 0);
 // order dependency the coordinator has recorded, not something authored here.
 extern "C" bool unk_1684A0__12daWmKiller_cFb(void *self, bool arg);
 extern "C" bool unk_168260__12daWmKiller_cFi(void *self, int index);
+// #unk_169550's target -- WM_KILLER's own unk_1682B0(int)/unk_1682D0(int,u8), two more
+// real, already-landed-in-draft daWmKiller_c members (wip/wm_units/agent_killer/, read-only:
+// its own draft.txt has both under their real mangled names). Same landing-order dependency
+// convention as #checkParentFlag/#unk_169530's own externs above.
+extern "C" void unk_1682B0__12daWmKiller_cFi(void *self, int index);
+extern "C" void unk_1682D0__12daWmKiller_cFiUc(void *self, int index, u8 value);
 
 // Shared game-parameter table (lbl_2_data_45428, 0x180 bytes, mixed floats/packed shorts,
 // 50 referrers across the module) -- confirmed NOT this unit's own data via check_bounds.py's
@@ -431,6 +437,26 @@ bool daWmKillerBullet_c::unk_169530() {
     u8 low = (u8) mParam;
     int index = (low == 0) ? 9 : (low - 1);
     return unk_168260__12daWmKiller_cFi(mParentKiller, index);
+}
+
+// #unk_169550 (fn_2_169550). Confirmed content: this is the CROSS-UNIT function WM_KILLER's own
+// execute() already calls as a free function on a raw `dWmActor_c*` (recorded in HANDOFF as a
+// landing-order dependency, `R_2_1_169550`) -- it is actually an ordinary member here, reached
+// entirely through #mParentKiller. Clears (#unk_1682D0 with value 0) and re-flags
+// (#unk_1682B0) EVERY one of WM_KILLER's own 10 pre-allocated bullet children by index, then
+// activates the NEXT one in round-robin order (#mParentKiller's own `m_20c`, confirmed `int` in
+// agent_killer's own shadow header, wraps 9->0) via one more #unk_1682D0 call with value 1.
+void daWmKillerBullet_c::unk_169550() {
+    for (int i = 0; i < 10; i++) {
+        unk_1682D0__12daWmKiller_cFiUc(mParentKiller, i, 0);
+        unk_1682B0__12daWmKiller_cFi(mParentKiller, i);
+    }
+    int next = *(const int *) ((const u8 *) mParentKiller + 0x20c);
+    if (next == 9) {
+        unk_1682D0__12daWmKiller_cFiUc(mParentKiller, 0, true);
+    } else {
+        unk_1682D0__12daWmKiller_cFiUc(mParentKiller, next + 1, true);
+    }
 }
 
 // #unk_1695E0 (fn_2_1695E0). NOT YET AUTHORED -- bare stub (see #unk_168990's own note on the

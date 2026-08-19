@@ -49,18 +49,33 @@ WM_KOOPASHIP owns **two adjacent singletons**, `0xFEE0` and `0xFEE4`. The name
 suggests a manager; the first one is a spline. Do not infer a type from the
 profile name.
 
-## Not resolved, and why
+## NOT singletons — and why "two writes" was not enough
 
-| label | owning profile | status |
+| label | owning profile | what it actually is |
 |---|---|---|
-| `lbl_2_bss_5B30` | `BIGHANA_MGR` | allocation not found within `0x300` of the store |
-| `lbl_2_bss_D6EC` | `OBJ_WENDY` | allocation not found within `0x300` of the store |
+| `lbl_2_bss_5B30` | `BIGHANA_MGR` | a plain `int` COUNTER — the "create" write is a decrement (`addi r0, r3, -1`) |
+| `lbl_2_bss_D6EC` | `OBJ_WENDY` | a plain `int` STATE value — loaded, compared against 1, assigned 2 |
 
-Both are genuine two-write labels, but the pointer stored does not come from a
-nearby `operator new` — so it may be a pointer to a static object, or a `this`
-handed in from elsewhere. **They are listed as unresolved rather than given a
-guessed size**, because a wrong `sizeof` is worse than none: someone will build a
-class layout on it.
+Both have exactly two write sites, so the create/destroy heuristic flagged both
+as singleton pointers. **They are not pointers at all**, and hunting for a class
+behind either would have found nothing — the same dead end that `0x11B70`
+originally caused, arrived at from the opposite direction.
+
+**The discriminator is dereference, not write count.** After the value is loaded
+from the label, ask whether it is used as a BASE REGISTER:
+
+```
+lwz  r5, lbl@l(r3)
+stb  r4, 0x544(r5)     <- r5 used as a base  => a POINTER, something is pointed at
+```
+```
+lwz  r3, lbl@l(r10)
+addi r0, r3, -1        <- r3 only arithmetic'd => a VALUE, nothing is pointed at
+```
+
+`bss_classify.py` now applies this test, so a two-write label only reports as a
+singleton if its loaded value is actually dereferenced. All seven singletons
+above still classify correctly; these two now report as plain values.
 
 `lbl_2_bss_0` is `__global_destructor_chain`, not a singleton.
 

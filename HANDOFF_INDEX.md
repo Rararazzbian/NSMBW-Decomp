@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 10770 lines / 408 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 10806 lines / 409 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -429,3 +429,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `10691-10714` Two bugs in my own singleton resolver, and the WM_KOOPASHIP answer
   - `10715-10736` The corrected table
 - `10737-10770` WM_KILLERBULLET 17/37 -> 19/37, and the order fix that moved the tally by zero
+- `10771-10806` "Exactly two writes" is NOT sufficient for a singleton. Dereference is.

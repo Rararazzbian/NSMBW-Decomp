@@ -10767,3 +10767,39 @@ pool-offset-short residual is expected to **self-resolve as sibling stubs are
 replaced with real code**. If it does, that is a reusable rule about pool
 residuals in partially-authored units. If it does not, it is a measured negative.
 Either answer is worth having; the hypothesis alone is not.
+
+## "Exactly two writes" is NOT sufficient for a singleton. Dereference is.
+
+I wrote the two-write rule up as the singleton signature and it produced two
+false positives immediately:
+
+- **`lbl_2_bss_5B30` (BIGHANA_MGR)** — a plain `int` counter. What the tool called
+  the "create" is a DECREMENT: `lwz r3, lbl; addi r0, r3, -1; stw r0, lbl`.
+- **`lbl_2_bss_D6EC` (OBJ_WENDY)** — a plain `int` state value: loaded, compared
+  against 1, assigned 2.
+
+Both have exactly two write sites. Neither points at anything. Hunting for a
+class behind either would have dead-ended exactly the way `lbl_2_bss_11B70` did,
+arrived at from the opposite direction — and the write-up would have been just as
+confident.
+
+**The real test is whether the LOADED value is used as a BASE REGISTER:**
+
+```
+lwz  r5, lbl@l(r3)
+stb  r4, 0x544(r5)     <- base register  => POINTER; there is an object
+```
+```
+lwz  r3, lbl@l(r10)
+addi r0, r3, -1        <- arithmetic only => VALUE; there is nothing to find
+```
+
+`bss_classify.py` now requires dereference before reporting a singleton. All
+seven real singletons still classify correctly; the two counters no longer do.
+
+**The general shape of the mistake is worth more than the fix.** A signature that
+matched every example I had was promoted to a rule without being tested against
+things it should REJECT. Two writes is necessary and not sufficient, and the only
+reason I found out is that I went to resolve the two leftovers instead of leaving
+them in the table as "unresolved". **An unresolved row is an invitation to check;
+a confidently wrong row is not.**

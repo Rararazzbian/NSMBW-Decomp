@@ -278,9 +278,15 @@ void daWmKinopio_c::stepCutscene70() {
     switch (m_1a8) {
     case 0:
         if (mPos.x > m_19c.x - 100.0f) {
+            // @unofficial the divisor is a genuine `int 15`, not a float
+            // literal -- confirmed by the target's runtime int-to-float
+            // bit-trick conversion (li r3,0xf; lis r0,0x4330; xoris;
+            // stw/stw; lfd; fsubs) appearing TWICE, which the compiler
+            // would never emit for a compile-time float constant (that
+            // pools as a plain `lfs` immediate instead).
             float dist = (m_19c.x - mPos.x) * 1.0f;
-            float speed = dist / 15.0f;
-            m_194 = speed / 15.0f;
+            float speed = dist / (int) 15;
+            m_194 = speed / (int) 15;
             mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
             m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
             m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, "kinopio_all_root", 0, 0);

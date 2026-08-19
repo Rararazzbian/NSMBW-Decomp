@@ -65,6 +65,9 @@ public:
     void endEffectAndResetState(); ///< @unofficial fn_2_168E60.
     void endStateOrTransition(); ///< @unofficial fn_2_168F50.
     bool unk_169530(); ///< @unofficial fn_2_169530 -- called from #state1.
+    void unk_169550(); ///< @unofficial fn_2_169550 -- the WM_KILLER cross-unit dependency
+                         ///< (HANDOFF's `R_2_1_169550`). Cycles all 10 of #mParentKiller's
+                         ///< own bullet children then activates the next one round-robin.
     void unk_169430(); ///< @unofficial fn_2_169430, called from #unk_1694A0.
     void unk_168C80(); ///< @unofficial fn_2_168C80, called from #create.
     void unk_168990(); ///< @unofficial fn_2_168990, called from #create.

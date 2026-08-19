@@ -90,9 +90,14 @@ public:
     m3d::mdl_c mModel;             ///< @unofficial +0x1a8
     m3d::anmChr_c mAnimChrs[6];    ///< @unofficial +0x1e8
 
+    int mUnk338;      ///< @unofficial +0x338. Not touched by ctor/dtor; role unknown. Confirmed to
+                       ///< exist (not padding folded into mProcState) because execute()'s target
+                       ///< reads mProcState from +0x33c, not +0x338.
     int mProcState;   ///< @unofficial +0x33c. Index into sc_procTable, consumed by execute().
     int mUnk340;      ///< @unofficial +0x340. Set by lookupAction() from sc_actionTable.
-    int mUnk35c;       ///< @unofficial +0x35c. Set to -1 by resetState(); role otherwise unknown.
+    u8 pad344[0x18];   ///< @unofficial +0x344. Confirmed present (not a hand-count): resetState()'s
+                        ///< target stores to +0x35c, 0x18 bytes after mUnk340. Role/subfields unknown.
+    int mUnk35c;        ///< @unofficial +0x35c. Set to -1 by resetState(); role otherwise unknown.
 };
 // sizeof(daWmKoopaJr_c) == 0x360, matching fn_2_16D290's `li r3, 0x360`.
 
@@ -124,7 +129,9 @@ void daWmKoopaJr_c::calcModel() {
 
 void daWmKoopaJr_c::resetScaleAndProc() {
     mProcState = 0;
-    mScale = mVec3_c(0.01f, 0.01f, 0.01f);
+    mScale.x = 0.01f;
+    mScale.y = 0.01f;
+    mScale.z = 0.01f;
 }
 
 void daWmKoopaJr_c::resetState() {
@@ -222,20 +229,28 @@ void daWmKoopaJr_c::startAction(int type) {
 }
 
 void daWmKoopaJr_c::createModel() {
-    /// @unofficial NOT verified byte-exact -- this is a best-effort
-    /// reconstruction of fn_2_16D590 so that create() has something callable.
-    /// The resource archive/model/animation name strings (read through
-    /// lbl_2_data_45DD8 in the target) have not been recovered. See
-    /// MAPPING.md.
+    /// @unofficial NOT verified byte-exact. Logic and every string/constant
+    /// below are read directly out of the REL: the resource table at
+    /// lbl_2_data_45DD8 (.data file offset 0x1D0C00+0x45DD8) and the shared
+    /// float pool at lbl_2_rodata_8BA0 (.rodata file offset
+    /// 0x1C6600+0x8BA0). What remains unverified is ORDER: the shared rodata
+    /// pool (0x8ba0-0x8c90) holds constants used not just here but by
+    /// execute(), create(), AND several values that belong to NEITHER --
+    /// e.g. 0x8bc4/0x8bd4/0x8bd8/0x8be0/0x8bec, which never appear in this
+    /// function's own disassembly and must belong to fn_2_16D940 or
+    /// fn_2_16E3A0 (both unauthored). Until those are written, this
+    /// function's rodata objects cannot land at the retail addresses, which
+    /// is why create()/execute() still show `SYM0`-vs-`lbl_2_rodata_8C0C`
+    /// style diffs even though their own logic matches. See MAPPING.md.
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
-    mResFile = dResMng_c::m_instance->getRes("cobKoopaJr", "g3d/model.brres");
-    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobKoopaJr");
+    mResFile = dResMng_c::m_instance->getRes("koopaJr", "g3d/koopaJr.brres");
+    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("koopaJr");
 
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
 
     static const char *const sc_animNames[6] = {
-        "wait", "wait", "walk", "walk", "walk", "walk"
+        "wait", "run", "jump_st", "jumpA", "jump_ed", "shock_wmap"
     };
     static const m3d::playMode_e sc_playModes[6] = {
         m3d::FORWARD_LOOP, m3d::FORWARD_LOOP,
@@ -250,8 +265,14 @@ void daWmKoopaJr_c::createModel() {
         mAnimChrs[i].setFrame(0.0f);
     }
 
+    /// @unofficial `GetResNode("mask")`'s result has bit 0x200 cleared out of
+    /// its flags word (`rlwinm r0,r0,0,24,22` in the target) when the node
+    /// exists. Not modelled here -- the exact API for mutating a ResNode's
+    /// flags in-place hasn't been located in include/, so this is left as a
+    /// gap rather than guessed.
+
     dWmActor_c::setSoftLight_Boss(mModel);
     mAllocator.adjustFrmHeap();
 
-    CreateShadowModel("g3d/shadow.brres", "cobKoopaJrShadow", "shadow", true);
+    CreateShadowModel("character_SV", "g3d/model.brres", "character_SV", true);
 }
