@@ -66,8 +66,8 @@ namespace {
     // the target's `stfs f1,0x40(r3); stfs f0,0x44(r3); stfs f1,0x48(r3)`
     // where f1 is loaded once from +0x4 and reused for both dx and dz).
     // Real values unknown.
-    const float sStepDeltaK1 = 1.0f;
-    const float sStepDeltaK2 = 2.0f;
+    const float sStepDeltaK1 = 0.0f;  // measured: lbl_2_rodata_87F0+0x4
+    const float sStepDeltaK2 = -68.0f; // measured: lbl_2_rodata_87F0+0x38
 
     struct StepDeltaTrigger_t {
         s8 mDone;              ///< @unofficial guard byte, lbl_2_bss_FD80+0x10
@@ -98,11 +98,11 @@ int daWmDancePakkun_c::create() {
 
     createModel();
 
-    mClipSphere.set(mPos, 0.0f); // @unofficial radius (lbl_2_rodata_87F0) unknown
+    mClipSphere.set(mPos, 250.0f); // measured: lbl_2_rodata_87F0+0x0
 
     startStep();
     calcModelFor(&mModel);
-    m_2d8 = 1.0f; // @unofficial constant (lbl_2_rodata_87F4) unknown
+    m_2d8 = 0.0f; // measured: lbl_2_rodata_87F0+0x4
     return SUCCEEDED;
 }
 
@@ -121,7 +121,7 @@ int daWmDancePakkun_c::execute() {
 
     dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
 
-    if (m_2d8 == 1.0f) { // @unofficial constant (lbl_2_rodata_87F4) unknown
+    if (m_2d8 == 0.0f) { // measured: lbl_2_rodata_87F0+0x4
         if (mBgmSync->m_0c) {
             float frameMax = mChrAnim[0].mFrameMax;
             m_2d8 = frameMax / mBgmSync->getAnmRate(frameMax);
@@ -176,7 +176,7 @@ namespace {
         char modelName[7];
     };
     ModelNames_t sModelNames = { "cs_wait", "g3d/pakkun.brres", "pakkun" };
-    const m3d::playMode_e sPlayModes[1] = { m3d::FORWARD_LOOP }; // @unofficial guessed
+    const m3d::playMode_e sPlayModes[1] = { m3d::FORWARD_ONCE }; // measured: lbl_2_rodata_87F0+0x14 = integer 1
 }
 
 void daWmDancePakkun_c::createModel() {
@@ -193,8 +193,8 @@ void daWmDancePakkun_c::createModel() {
     anim.create(resMdl, resAnmChr, &mAllocator, nullptr);
 
     anim.mPlayMode = sPlayModes[0];
-    anim.setRate(1.0f);  // @unofficial constant (lbl_2_rodata_87F4) unknown
-    anim.setFrame(1.0f); // @unofficial constant (lbl_2_rodata_87F4) unknown
+    anim.setRate(0.0f);  // measured: lbl_2_rodata_87F0+0x4
+    anim.setFrame(0.0f); // measured: lbl_2_rodata_87F0+0x4
 
     mModel.setAnm(anim);
 
@@ -217,7 +217,7 @@ namespace {
         double f20;               // +0x20     (K4, read as a double)
         float f28;                 // +0x28    (K3)
     };
-    const CalcConsts_t sCalcConsts = { 0.0f, 2.0f, {0}, 1.0f, 3.0, 4.0f };
+    const CalcConsts_t sCalcConsts = { 250.0f, 0.0f, {0}, 1.0f, 2.0, 180.0f }; // measured: +0x0,+0x4,+0x18,+0x20(double),+0x28
 }
 
 void daWmDancePakkun_c::calcModelFor(m3d::mdl_c *mdl) {

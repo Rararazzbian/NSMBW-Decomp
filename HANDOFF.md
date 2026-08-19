@@ -7819,3 +7819,62 @@ varied the order the components are COMPUTED; the residual is about the order
 they are STORED. The recorded "decouple declaration order from usage order" lever
 separates exactly those two. If varying store order independently of compute
 order changes nothing, the wall is confirmed on both axes.
+
+## The in-class inline lever generalises beyond the kinoko family
+
+anchor's `GetActorType` needed a NON-DEFAULT body (`ACTOR_MAP_OBJECT`, not the
+inherited `ACTOR_MAP_DEMO`) **and** a position at the very end of the weak
+cluster. Those look contradictory: a strong out-of-line override carries your body
+but joins the definition-order batch and lands early.
+
+```cpp
+virtual int GetActorType() { return ACTOR_MAP_OBJECT; }   // in-class inline
+```
+
+**An in-class inline virtual is WEAK -- it defers to the end-of-TU block -- while
+still carrying its own body.** Content and position both correct. This is the same
+lever that landed the whole kinoko family via `getModelName()`, and it is now
+confirmed to be general rather than a quirk of that family.
+
+**Reach for it whenever a function needs a non-inherited body AND a late
+position.** The out-of-line form can only ever give you one of the two.
+
+### And a declared weak function's POSITION is influenced by source
+
+A second, weaker result from the same round, worth recording because it
+contradicts the natural assumption: declaring `clearCutEnd`/`vf74` in-class inline
+**moved them** within the weak cluster. A purely inherited virtual is inert -- you
+have nothing to order -- but a *declared* in-class inline is not.
+
+Declaring only three of the cluster's six did not reproduce the target's sequence:
+
+```
+draft:   setCutEnd, checkCutEnd, vf74,        clearCutEnd, GetActorType, vf78
+target:  setCutEnd, clearCutEnd, checkCutEnd, vf78,        vf74,         GetActorType
+```
+
+The three declared ones moved; the two left purely inherited are exactly the ones
+still out of place. **Declaring the COMPLETE cluster in the target's address
+order** is the outstanding test. If a declared subset moves but the full set still
+comes out wrong, cluster-internal ordering is not source-addressable and should be
+recorded as such.
+
+**Measure order from the draft's own function sequence, not from `verify_anon`** --
+its pairing mislabels one-instruction bodies against each other by content.
+
+### Modelling an unlanded callee without touching a shared header
+
+anchor needed `setAnchorShadow__13dWmMapModel_cFb` on a class whose header models
+the wrong object (`0xbf8` is the outer struct's size, not `dWmMapModel_c`'s). The
+call is modelled with a cast confined to the unit's own `.cpp`:
+
+```cpp
+u8 *node = reinterpret_cast<u8 *>(daWmMap_c::m_instance)
+         + daWmMap_c::m_instance->currIdx * 0xbf8 + 0x1a0;
+setAnchorShadow__13dWmMapModel_cFb(node, true);
+```
+
+with the evidence recorded in a comment. **That is how a finding survives a unit**
+-- the header stays untouched, three landed units stay safe, and the next person
+to correct it inherits the reasoning instead of re-deriving it. WM_NOTE used the
+same approach for a camera-field block and landed 13/13.

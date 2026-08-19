@@ -78,6 +78,15 @@
 /// shared call) is NOT settled below -- see the agent report.
 extern "C" void *fn_80100640(daWmMap_c *map, const char *name, int unused);
 
+/// @unofficial dWmMapModel_c::setAnchorShadow(bool). REL-internal (not a DOL
+/// cross-module call like fn_80100640), so this is NOT the extern "C"
+/// FUN-address convention -- it is a plain forward declaration matching the
+/// real mangled name, used because the receiver this call computes is NOT
+/// `&daWmMap_c::m_instance->mModels[idx]` (dWmMapModel_c has the wrong
+/// size for that -- see setNodePos() below for the arithmetic and the
+/// evidence). Confined to this .cpp; no shared header is touched.
+extern "C" void setAnchorShadow__13dWmMapModel_cFb(void *thisPtr, bool anchor);
+
 class daWmAnchor_c : public dWmDemoActor_c {
 public:
     daWmAnchor_c();
@@ -97,19 +106,35 @@ public:
     /// exists ONLY to pin its position, not to change behaviour.
     virtual int doDelete();
     /// @unofficial Explicit override, NOT identical to what it would
-    /// inherit. dWmDemoActor_c's own default returns ACTOR_MAP_DEMO (1);
+    /// inherit -- dWmDemoActor_c's own default returns ACTOR_MAP_DEMO (1);
     /// the target's own body at 0x15abb0 is `li r3,0x2; blr` --
     /// ACTOR_MAP_OBJECT (2). dtk's symbol map labels this occurrence
     /// `GetActorType__13dWmObjActor_cFv` purely because dWmObjActor_c's own
     /// (unrelated) override happens to return the same value 2 -- same
-    /// bytes, wrong attribution, per the coordinator's write-up. Placed at
-    /// the very end of this file's definitions (see below) to land in the
-    /// target's own late position, address-adjacent to the purely-inherited
-    /// cluster (setCutEnd/clearCutEnd/checkCutEnd/vf74/vf78) rather than
-    /// the early doDelete-only group.
-    virtual int GetActorType();
+    /// bytes, wrong attribution.
+    ///
+    /// Declared IN-CLASS INLINE, not out-of-line: the target places this at
+    /// 0x15abb0, at the very END, after the whole purely-inherited weak
+    /// cluster (setCutEnd/clearCutEnd/checkCutEnd/vf74/vf78) -- the same
+    /// deferred-to-end-of-TU placement the kinoko family's getModelName()
+    /// needed in-class inline for. An out-of-line override (tried first)
+    /// joins the STRONG definition-order batch and lands early, which is
+    /// wrong here despite having the right body.
+    virtual int GetActorType() { return ACTOR_MAP_OBJECT; }
 
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
+
+    /// @unofficial In-class inline overrides, bodies IDENTICAL to what they
+    /// would inherit from dWmDemoActor_c::clearCutEnd() and
+    /// dWmObjActor_c::vf74() respectively. Hypothesis from the coordinator:
+    /// a purely-inherited virtual gives nothing to order, but a DECLARED
+    /// in-class inline override is still weak (defers to the end-of-TU
+    /// block, same as GetActorType() above) while still being a distinct
+    /// declaration that might let source control its position WITHIN that
+    /// weak cluster. Measuring this, not assuming it -- see agent report
+    /// for the result either way.
+    virtual void clearCutEnd() { mIsCutEnd = false; }
+    virtual void vf74() {}
 
     void createModel();
     void calcModel();
@@ -232,8 +257,24 @@ void daWmAnchor_c::setNodePos() {
         mPos.x = mPos.y = mPos.z = 0.0f;
     }
 
-    // setAnchorShadow(true) on the resolved dWmMapModel_c node -- NOT
-    // modelled, see above.
+    /// @unofficial dWmMapModel_c::setAnchorShadow(true) on the resolved map
+    /// node. The target computes
+    /// `daWmMap_c::m_instance + currIdx*0xbf8 + 0x1a0` and calls
+    /// `setAnchorShadow__13dWmMapModel_cFb` on THAT address. The mangled
+    /// name says the receiver IS a `dWmMapModel_c*` -- which means `0xbf8`
+    /// is the size of some LARGER struct that CONTAINS a `dWmMapModel_c` at
+    /// +0x1a0, not the size of `dWmMapModel_c` itself. Our shared header's
+    /// `dWmMapModel_c { u8 mPad[0xbf8]; }` is therefore modelling the WRONG
+    /// object -- flagged to the coordinator, declined for a header change
+    /// (3 landed units already reference it; not worth the risk for one
+    /// function in a unit with other blockers). Modelled here with a local
+    /// cast confined to this .cpp instead, per the coordinator's direction
+    /// (matching what WM_NOTE's agent did in the same situation).
+    {
+        u8 *node = reinterpret_cast<u8 *>(daWmMap_c::m_instance)
+                 + daWmMap_c::m_instance->currIdx * 0xbf8 + 0x1a0;
+        setAnchorShadow__13dWmMapModel_cFb(node, true);
+    }
 
     mScale.x = mScale.y = mScale.z = 1.0f;
     mUnk1f0 = 0;
@@ -249,17 +290,4 @@ void daWmAnchor_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFra
     if (!isStaff()) {
         mIsCutEnd = true;
     }
-}
-
-/// @unofficial Defined LAST, after every other strong function in this TU,
-/// on the working theory (see the class-level comment) that a STRONG
-/// function's own .text placement follows its textual definition order
-/// among strong functions, and the target has this one landing immediately
-/// before the purely-inherited cluster (setCutEnd/clearCutEnd/checkCutEnd/
-/// vf74/vf78) that this draft never declares. NOT independently confirmed
-/// against a second data point -- if this placement theory is wrong, the
-/// content (ACTOR_MAP_OBJECT, matching the target's own `li r3,0x2`) is
-/// still right; only the address would still be off.
-int daWmAnchor_c::GetActorType() {
-    return ACTOR_MAP_OBJECT;
 }

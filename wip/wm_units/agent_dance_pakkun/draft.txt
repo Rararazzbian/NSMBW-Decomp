@@ -498,7 +498,7 @@
 /* 00000678 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000067C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x680 | size: 0x148
+# .text:0x680 | size: 0x144
 # daWmDancePakkun_c::createModel()
 .fn createModel__17daWmDancePakkun_cFv, global
 /* 00000680 000006C0  94 21 FF D0 */	stwu r1, -0x30(r1)
@@ -556,34 +556,34 @@
 /* 00000750 00000790  38 DD 01 8C */	addi r6, r29, 0x18c
 /* 00000754 00000794  38 E0 00 00 */	li r7, 0x0
 /* 00000758 00000798  48 00 00 01 */	bl create__Q23m3d8anmChr_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d9ResAnmChrP12mAllocator_cPUl
-/* 0000075C 0000079C  3C 60 00 00 */	lis r3, "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@"@ha
-/* 00000760 000007A0  3F E0 00 00 */	lis r31, "@13108"@ha
-/* 00000764 000007A4  80 03 00 00 */	lwz r0, "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@"@l(r3)
+/* 0000075C 0000079C  3F E0 00 00 */	lis r31, "@13108"@ha
+/* 00000760 000007A0  38 00 00 01 */	li r0, 0x1
+/* 00000764 000007A4  98 1E 00 34 */	stb r0, 0x34(r30)
 /* 00000768 000007A8  7F C3 F3 78 */	mr r3, r30
-/* 0000076C 000007AC  98 1E 00 34 */	stb r0, 0x34(r30)
-/* 00000770 000007B0  C0 3F 00 00 */	lfs f1, "@13108"@l(r31)
-/* 00000774 000007B4  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
-/* 00000778 000007B8  C0 3F 00 00 */	lfs f1, "@13108"@l(r31)
-/* 0000077C 000007BC  7F C3 F3 78 */	mr r3, r30
-/* 00000780 000007C0  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
-/* 00000784 000007C4  81 9D 01 AC */	lwz r12, 0x1ac(r29)
-/* 00000788 000007C8  38 7D 01 AC */	addi r3, r29, 0x1ac
-/* 0000078C 000007CC  7F C4 F3 78 */	mr r4, r30
-/* 00000790 000007D0  81 8C 00 18 */	lwz r12, 0x18(r12)
-/* 00000794 000007D4  7D 89 03 A6 */	mtctr r12
-/* 00000798 000007D8  4E 80 04 21 */	bctrl
-/* 0000079C 000007DC  38 7D 01 AC */	addi r3, r29, 0x1ac
-/* 000007A0 000007E0  48 00 00 01 */	bl setSoftLight_Enemy__10dWmActor_cFRQ23m3d6bmdl_c
-/* 000007A4 000007E4  38 7D 01 8C */	addi r3, r29, 0x18c
-/* 000007A8 000007E8  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
-/* 000007AC 000007EC  80 01 00 34 */	lwz r0, 0x34(r1)
-/* 000007B0 000007F0  83 E1 00 2C */	lwz r31, 0x2c(r1)
-/* 000007B4 000007F4  83 C1 00 28 */	lwz r30, 0x28(r1)
-/* 000007B8 000007F8  83 A1 00 24 */	lwz r29, 0x24(r1)
-/* 000007BC 000007FC  7C 08 03 A6 */	mtlr r0
-/* 000007C0 00000800  38 21 00 30 */	addi r1, r1, 0x30
-/* 000007C4 00000804  4E 80 00 20 */	blr
+/* 0000076C 000007AC  C0 3F 00 00 */	lfs f1, "@13108"@l(r31)
+/* 00000770 000007B0  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
+/* 00000774 000007B4  C0 3F 00 00 */	lfs f1, "@13108"@l(r31)
+/* 00000778 000007B8  7F C3 F3 78 */	mr r3, r30
+/* 0000077C 000007BC  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
+/* 00000780 000007C0  81 9D 01 AC */	lwz r12, 0x1ac(r29)
+/* 00000784 000007C4  38 7D 01 AC */	addi r3, r29, 0x1ac
+/* 00000788 000007C8  7F C4 F3 78 */	mr r4, r30
+/* 0000078C 000007CC  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 00000790 000007D0  7D 89 03 A6 */	mtctr r12
+/* 00000794 000007D4  4E 80 04 21 */	bctrl
+/* 00000798 000007D8  38 7D 01 AC */	addi r3, r29, 0x1ac
+/* 0000079C 000007DC  48 00 00 01 */	bl setSoftLight_Enemy__10dWmActor_cFRQ23m3d6bmdl_c
+/* 000007A0 000007E0  38 7D 01 8C */	addi r3, r29, 0x18c
+/* 000007A4 000007E4  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 000007A8 000007E8  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 000007AC 000007EC  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 000007B0 000007F0  83 C1 00 28 */	lwz r30, 0x28(r1)
+/* 000007B4 000007F4  83 A1 00 24 */	lwz r29, 0x24(r1)
+/* 000007B8 000007F8  7C 08 03 A6 */	mtlr r0
+/* 000007BC 000007FC  38 21 00 30 */	addi r1, r1, 0x30
+/* 000007C0 00000800  4E 80 00 20 */	blr
 .endfn createModel__17daWmDancePakkun_cFv
+/* 000007C4 00000804  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000007C8 00000808  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000007CC 0000080C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
@@ -975,12 +975,12 @@
 .obj "@13107", local
 # .rodata:0x0 | size: 0x0
 .sym ...rodata.0, local
-	.4byte 0x00000000
+	.4byte 0x437A0000
 .endobj "@13107"
 
 # .rodata:0x4 | size: 0x4
 .obj "@13108", local
-	.4byte 0x3F800000
+	.4byte 0x00000000
 .endobj "@13108"
 
 # .rodata:0x8 | size: 0xC
@@ -994,23 +994,23 @@
 # .rodata:0x14 | size: 0x4
 # @unnamed@d_a_wm_dance_pakkun_cpp@::sPlayModes
 .obj "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@", local
-	.4byte 0x00000000
+	.4byte 0x00000001
 .endobj "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@"
 
 # .rodata:0x18 | size: 0x30
 # @unnamed@d_a_wm_dance_pakkun_cpp@::sCalcConsts
 .obj "sCalcConsts__33@unnamed@d_a_wm_dance_pakkun_cpp@", local
+	.4byte 0x437A0000
 	.4byte 0x00000000
-	.4byte 0x40000000
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x3F800000
-	.4byte 0x40080000
+	.4byte 0x40000000
 	.4byte 0x00000000
-	.4byte 0x40800000
+	.4byte 0x43340000
 	.4byte 0x00000000
 .endobj "sCalcConsts__33@unnamed@d_a_wm_dance_pakkun_cpp@"
 
@@ -1031,7 +1031,7 @@
 
 # .rodata:0x54 | size: 0x4
 .obj "@13221", local
-	.4byte 0x40000000
+	.4byte 0xC2880000
 .endobj "@13221"
 
 # 0x00000000..0x00000158 | size: 0x158

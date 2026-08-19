@@ -1336,3 +1336,102 @@ __sinit 14 differing via difftool.py (verify_anon: 4), size 52/52 exact match (w
   round's whole approach is castle's PROBE F shape applied directly, not
   independently re-derived -- credit and mechanism both belong to
   whichever agent solved it there.
+
+
+---
+
+## Update after coordinator's ninth round: real .rodata values plugged in from the retail binary
+
+Coordinator supplied the actual byte contents of lbl_2_rodata_87F0
+(0x87f0-0x8830, read from the retail binary) and asked me to replace every
+placeholder with the real value, using declaration order as the
+specification. Mapped each offset to its known use site and fixed all of
+them:
+
+```
++0x00  250.0f   -> create()'s mClipSphere.set(mPos, <radius>)     (was 0.0f)
++0x04  0.0f     -> shared by: create()'s m_2d8 init and execute()'s
+                    m_2d8 comparison, createModel()'s setRate()/setFrame(),
+                    and calcModelFor()'s getRate() threshold (K2)  (was 1.0f/2.0f in various places)
++0x08-0x13      PTMF entry {0, -1, <reloc>} -- sProcTable, unchanged
+                    (target function still unknown, still a flagged
+                    placeholder -- not something a value fix resolves)
++0x14  1        -> createModel()'s mPlayMode = m3d::FORWARD_ONCE  (was FORWARD_LOOP/0)
++0x18  1.0f     -> calcModelFor()'s K1 (frame-max denominator subtrahend) (already correct by luck)
++0x1c  0.0f     -> unclaimed by any instruction I've read (lfs, not lfd, confirms +0x18
+                    is read alone, not as a pair with +0x1c)
++0x20  2.0 (double) -> calcModelFor()'s K4, confirmed by the target's `lfd`
+                    (load-DOUBLE) instruction at this exact offset          (was 3.0)
++0x28  180.0f   -> calcModelFor()'s K3 multiplier                          (was 4.0f)
++0x2c-0x37      2160.0f, -30.0f, -478.0f -- dWmLib::sc_ForceList's mNodePos,
+                    already automatic via the shared header, untouched
++0x38  -68.0f   -> __sinit's guard block, dy (was 2.0f placeholder)
++0x3c  0.0f     -> unclaimed
+```
+
+Also checked the coordinator's "pairs, not scalars" hint directly against
+the disassembly: the +0x20 read genuinely is `lfd f0, 0x20(r31)` (a
+double-precision load spanning +0x20..+0x28), so treating {2.0f, 0.0f} as
+one double is correct and already how `sCalcConsts.f20` was declared. The
++0x18/+0x1c pair is NOT read as a pair -- the target's own instruction is
+`lfs f0, 0x18(r31)` (single-precision, 4 bytes only), so +0x1c is
+unclaimed by anything I've read, not a second half of a pair.
+
+### Result: __sinit's size now EXACT (52/52) with the real values; the pool-offset drift persists (still 0x38 vs 0x54)
+
+`difftool.py` after the fix: **14 differing, size 52/52 exact** (was also
+14 differing before this round, but at that point several of the matching
+lines were coincidental -- e.g. K1=1.0f happened to be right, but K2/K4/K3
+were wrong values that still produced the right INSTRUCTION shape). The
+coordinator was right to flag "verify the coincidence rather than assuming
+it" -- K1 (offset +0x18) was genuinely right by luck from an earlier
+round's arbitrary placeholder choice; K2, K4's exact double value, and K3
+were not, and are now corrected to their measured values.
+
+**The one real residual is unchanged**: `lfs f0, 0x38(r31)` in the target
+reads as `lfs f0, 0x54(r31)` in mine -- the same 0x1c/28-byte pool-offset
+drift as last round, persisting even with every individual VALUE now
+correct. This confirms the coordinator's framing precisely: the drift is
+about POOL ORDERING/CONSOLIDATION, not wrong constants. My code declares
+the conceptually-shared constants (`250.0f`, the `0.0f` used five separate
+places, `180.0f`, the `2.0` double) as MULTIPLE INDEPENDENT objects across
+different functions and namespace blocks (`sCalcConsts` in calcModelFor's
+scope, bare literals in `create()`/`createModel()`/`execute()`, plus
+`sStepDeltaK1`/`K2` for the guard) rather than ONE single shared pool
+object referenced from everywhere, the way the target's single contiguous
+`lbl_2_rodata_87F0` blob is. Getting the exact byte-for-byte pool layout
+would need consolidating all of these into one declaration threaded
+through every consumer, which is a real restructuring, not a value swap --
+did not attempt it this round given time; flagging it precisely rather
+than declaring it fixed.
+
+No regressions elsewhere: `calcModelFor` (101 differing, size 105/101),
+`create()` (36 differing), `startStep()` (15 differing) are all unchanged
+by this round's value corrections, confirming they don't (yet) touch the
+same pool region in a way that moves those functions' own content.
+
+### Table
+
+```
+classInit MATCH | ctor 4 (untouched) | dtor 21 (untouched) | create() 36 (unchanged this round)
+execute() MATCH | draw() MATCH | doDelete() MATCH | createModel() 70-75ish (untouched this round)
+tailHelper() MATCH | calcModelFor() 101, size 105/101 (untouched this round)
+startStep() 15 (unchanged this round) | resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+__sinit 14 differing via difftool.py (verify_anon: 4), size 52/52 exact -- values now measured-correct, one pool-offset residual remains
+
+9/16 byte-identical
+```
+
+### Negatives this round
+
+- The `+0x1c` and `+0x3c` pool slots (both `0.0f`) are unclaimed by any
+  instruction read so far in this unit's 16 functions -- flagged, not
+  guessed at.
+- The pool-offset drift (`0x38` vs `0x54`) survived a full pass of
+  correcting every individual constant value, confirming it's a
+  structural/consolidation issue (multiple independent pool objects vs.
+  the target's one), not a value error. Did not attempt the consolidation
+  this round.
+- `calcModelFor`'s content (101/105 differing) was the stated next
+  priority after the pool fix but was not reached this round -- the value
+  corrections and the pool-offset investigation consumed the round.
