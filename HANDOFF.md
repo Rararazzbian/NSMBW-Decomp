@@ -6752,3 +6752,79 @@ The related failure is stopping at "I could not identify X" when X is *lookupabl
 on `d_wm_demo_actor.hpp` and `f_base.hpp`. "Do not look the field up" is not the
 same instruction. The offset technique above exists precisely so that this class
 of unknown gets measured instead of guessed or abandoned.
+
+## RETRACTION: antlion's `.rodata` ownership is NOT settled. I closed it with an invalid test.
+
+Last session I recorded the question of who owns `0x85b4-0x85c0` as settled, on
+the grounds that `0x85b4` has **no relocation anywhere in the module** and the
+only neighbouring reference comes from a far earlier TU.
+
+**That test is invalid, by a rule written down in this very file.** Relocations
+target a constant pool's BASE, never its entries -- MWCC materialises the base
+once and loads with displacements, so a pool entry reached by displacement
+generates no relocation of its own. "No relocation at this address" is therefore
+the EXPECTED observation for a live pool entry, and proves nothing about
+ownership. I used the exact search I had documented as structurally blind, and
+the section immediately below this one in the file says so.
+
+The rest of that note stands: `lbl_2_rodata_85A0` really is one indivisible
+`0x20` object with no boundary at `0x85b4`, and that part was checked properly.
+But the ownership conclusion drawn from the relocation search is withdrawn.
+
+**Ownership is open again**, and the live hypothesis is the one I dismissed: that
+`0x85b4-0x85c0` belongs to the NEXT TU. If so, the 8-byte quantisation that made
+a `.rodata 0x8598-0x85b4` claim come out large is an artefact of a DANGLING claim
+end -- nothing claimed immediately after it -- rather than evidence that antlion
+owes the content. WM_ANTLION_MNG is in active development at 16/22, and its own
+pool has been traced to start with a `0x18` unidentified run; if that run begins
+at `0x85c0` the three words at `0x85b4` belong to neither and the question is
+still open, so this needs settling by layout, not by relocation search.
+
+## antlion: the trailing word is unreachable from its own source. Measured, not argued.
+
+The `extern const` idea from today's placement probe was tried and **fails, for a
+reason that composes with the probe rather than contradicting it.**
+
+`extern const u32 sAntlionTrailing[1] = {1};` declared at the very end of the
+file gives the right `.rodata` SIZE (`0x20`) and the wrong layout: it lands at
+unit offset `0x10`, ahead of `sc_ForceList`'s triple, pushing the triple to
+`0x14-0x1c`. Declared at the top instead it lands at `0x00`. Position within the
+file does not move it past the pool at all.
+
+**The governing rule is one we already had: `__sinit` is compiled LAST.** Its
+pooled constants are therefore always the final entries in the TU, and an object
+declared at the "very end" of the source is still declared before `__sinit`
+exists. Today's probe result (declaration order governs placement) is not wrong
+-- its TU simply had no `__sinit` competing for last place. **Do not record these
+as two rules.** It is declaration order, with `__sinit` always last in line.
+
+Confirmed at the relocation level, which is what makes this measured rather than
+inferred: `__sinit`'s three `lfs` instructions hardcode displacements
+`0x10/0x14/0x18` off a section-relative base (addend 0, read from `.rela.text`),
+**byte-for-byte identical in every variant.** Inserting a named object anywhere
+does not move them, so the triple is read from the wrong place and `sc_ForceList`
+would be constructed with corrupted coordinates. Since antlion's `.text` is
+already byte-identical to the target, the target's `__sinit` uses those same
+fixed displacements -- so the `0x00-0x1c` layout is already exactly right and
+cannot be disturbed. The trailing word has to appear at `0x1c` **without moving
+anything before it.**
+
+**The one shape that does reach the position:** a second genuine `__sinit`
+consumer declared AFTER `sc_ForceList`. A probe object
+(`static ExpProbeRec_t sExpProbe = {mVec3_c(11,22,33), 1}`) sequenced its floats
+correctly after the triple. It is disqualified as written because it adds real
+instructions to `__sinit`, growing `.text` from `0xb00` to `0xb40` -- and `.text`
+is currently byte-identical, so that is a regression, not a fix. Its trailing
+`u32` also did not pool (stored via `li`/`stw`), re-confirming that MWCC never
+pools scalar integers, even inside `__sinit`.
+
+**Currently being tested:** the same shape with the initialising code stripped --
+`DECL_WEAK` or internal-linkage on a dynamically-initialised object declared
+after `sc_ForceList`, exploiting the recorded rule that a deadstripped function's
+pooled literals survive. This is grid's `DUMMY_ORDERING` idiom moved to the far
+side of `sc_ForceList`. It is the first candidate that is on the correct side of
+the `__sinit`-compiles-last boundary.
+
+**Success criterion for any variant: `.rodata` gains the word AND `.text` stays
+`0xb00` at 37/37 with `.ctors`/`.data`/`.bss` untouched.** Measure `.text`'s size
+every time; that is what disqualified the probe.
