@@ -7606,3 +7606,68 @@ koopa_castle is parked at 16/17 with only its `__sinit` open at 13 differing, on
 what was recorded as the same construct. **The brace-init lever and the
 "`c_StartPointKinokoHouseID` is the header's own initialiser, not your field"
 correction both apply directly.**
+
+## WM_NOTE LANDED — 13/13 on its first authored round. Twelfth unit.
+
+**11.424% -> 11.450%.** `.text 0x175f90-0x176630`, 13 functions, no stubs, all four
+checks clean, function definition order correct on the first try.
+`daWmNote_c : public dWmDemoActor_c` **directly** -- no `dWmObjActor_c` in
+between, unlike sinkship. Settled from the vtable before authoring: `GetActorType`
+resolves to `dWmDemoActor_c`'s, and the vtable is 26 slots against sinkship's 28
+(no `vf74`/`vf78`).
+
+Its `processCutsceneCommand` is `0x224` bytes -- the largest single function
+matched on a first round in this module.
+
+### Two shared-header additions, applied by the lead behind a full verify
+
+Both purely additive declarations. `include/game/cLib/c_lib.hpp`:
+
+```cpp
+float addCalcPos(mVec3_c *pos, const mVec3_c &target, float speed, float accel, float max);
+```
+
+`include/game/bases/d_a_wm_map.hpp`:
+
+```cpp
+mVec3_c GetPos(int nodeIdx);
+```
+
+Both needed `syms.txt` entries, since a REL calling into the DOL resolves through
+it and neither symbol was present:
+
+```
+GetPos__9daWmMap_cFi=0x80100310
+addCalcPos__4cLibFP7mVec3_cRC7mVec3_cfff=0x80160C20
+```
+
+The agent proposed both in shadow copies with the mangled names and the evidence,
+and did NOT touch the real headers. That is the correct division and it is what
+made them safe to apply.
+
+**It also declined to propose a third one.** A camera-setup block writes five
+fields at offsets past the current header's padding in a class three landed TUs
+already reference. Rather than restructure that header, it used a local `u8 *`
+offset cast confined to the `.cpp`. Right call -- a header used by landed units is
+not worth destabilising for one block.
+
+### Levers confirmed or newly recorded
+
+- **`switch`, not `if`/`else if`**, for the dispatch -- **third independent
+  confirmation** of this lever.
+- **Do not reach for an accessor when the target shows a raw store.**
+  `mIsCutEnd = true;` is a direct field write; routing it through `setCutEnd()`
+  added ~15 spurious instructions per call site across three sites.
+- **An unnamed temporary and a named local land on DIFFERENT stack slots.**
+  `cLib::addCalcPos`'s target-position argument needed `mVec3_c(mTargetPos)` as an
+  unnamed temporary; a named local matched the target's implicit temp's slot
+  incorrectly.
+- **An undecompiled callee's argument count is easy to under-read.**
+  `fn_2_172AE0` takes THREE arguments, not one -- `r4=1, r5=-1` are set well before
+  the call and stay live, which reads like dead immediate loads. Declared
+  `extern "C" int R_2_1_172AE0(daWmMap_c *, int, int)`; the two ints' meaning is
+  unresolved.
+- A ~2-instruction load-order swap resisted every declaration-order permutation
+  and **stopped mattering once the four real defects were fixed.** Worth
+  remembering before spending a round on a scheduling residual: fix the semantic
+  defects first and re-measure.

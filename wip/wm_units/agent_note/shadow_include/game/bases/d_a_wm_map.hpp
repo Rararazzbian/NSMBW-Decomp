@@ -19,6 +19,7 @@ public:
     /// (WM_NOTE round): mangled GetPos__9daWmMap_cFi, returned by value via hidden pointer
     /// (confirmed by the target passing a stack address in r3 ahead of `this`/nodeIdx).
     mVec3_c GetPos(int nodeIdx);
+
     dHeapAllocator_c mAllocator;
     dWmMapModel_c mModels[4];
     u8 mPad1[0x20c];

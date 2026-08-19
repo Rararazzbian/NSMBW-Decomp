@@ -17,4 +17,5 @@ namespace cLib {
     /// non-void; callers test fabsf() of the result against a small epsilon), likely the
     /// remaining/delta magnitude after the step.
     float addCalcPos(mVec3_c *pos, const mVec3_c &target, float speed, float accel, float max);
+
 } // namespace cLib
