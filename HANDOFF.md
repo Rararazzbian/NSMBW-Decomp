@@ -10240,3 +10240,36 @@ the repeated idiom early is what makes a 20-case dispatch tractable.**
 Open on it: case 2 writes into a shared `.bss` singleton (`lbl_2_bss_11B70`) at
 raw offsets via byte casts because its real type was not identified — a real gap
 worth closing rather than leaving as casts. Case 14 has only its first call read.
+
+## Triage a lever by APPLICABILITY before trying it
+
+course's agent was handed six levers discovered since the unit was parked. It
+**checked each against the actual residual before spending a compile on it**, and
+reported why four of them cannot apply:
+
+```
+declaration order controls stack slots  -> no stack temp here; the store is to a MEMBER (this+0x238)
+"what is in the stack temp"             -> there is no stack temp in the 6-instruction window at all
+ternary merges calls / De Morgan        -> no ternary, and no if/else pair to invert -- a single
+                                           unconditional store then a single-branch if with no else
+"do not cache what the target re-reads" -> already measured; the surrounding code reads mParam twice
+                                           and caching it is on record as worse
+```
+
+It then tried the **two that were genuinely untried** — moving the specific local
+across the store (**8, worse**) and naming the comparison's boolean result
+(**byte-identical, the lever produced literally no change here**) — and stopped.
+
+**A lever is a reading of the target, not a preference to apply blindly.** That
+was established when the same "one shared call site" lever closed one function and
+broke its sibling, and this is the discipline generalised: **check that the
+construct the lever addresses is actually present before measuring it.**
+
+Note *why* the toolkit does not reach this residual: **this session's levers are
+overwhelmingly about control-flow shape and stack-temporary identity, and course's
+`createModel` residual has neither.** It is a pure register-assignment preference
+on a direct member store. That is a useful characterisation of the toolkit's own
+coverage, not just of this function.
+
+**course stays parked at 22/23**, now with 21 measured variants and an explicit
+account of which levers cannot apply.
