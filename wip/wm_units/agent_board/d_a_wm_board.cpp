@@ -7,6 +7,10 @@
 #include <game/bases/d_wm_bgm_sync.hpp>
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_a_wm_map.hpp>
+
+extern "C" void *fn_80100640(daWmMap_c *map, const char *name, int unused);
+
+static const char *smc_koopaShipNodeName = "cobKoopaShip";
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/mLib/m_3d/smdl.hpp>
 #include <game/mLib/m_3d/anm_tex_srt.hpp>
@@ -119,7 +123,7 @@ public:
     int mUnk184;
     int mUnk188;
     dHeapAllocator_c mAllocator;
-    int mUnk1a8;
+    nw4r::g3d::ResFile mResFile;
     m3d::smdl_c mModel;
     m3d::anmTexSrt_c mAnim;
     int mUnk1e4;
@@ -140,7 +144,7 @@ ACTOR_PROFILE(WM_BOARD, daWmBoard_c, 0);
 
 extern const float g_unofficial_board_zero = 0.0f;
 
-daWmBoard_c::daWmBoard_c() : mUnk184(-1), mUnk1a8(0) {}
+daWmBoard_c::daWmBoard_c() : mUnk184(-1) {}
 
 daWmBoard_c::~daWmBoard_c() {
     if (mBgmSync != nullptr) {
@@ -164,6 +168,7 @@ int daWmBoard_c::create() {
 }
 
 int daWmBoard_c::execute() {
+    mBgmSync->execute();
     if (mBgmSync->m_0c) {
         mAnim.setRate(mBgmSync->getAnmRate(mAnim.getFrameMax(0)), 0);
     }
@@ -176,9 +181,13 @@ int daWmBoard_c::execute() {
     }
 
     daWmMap_c *map = daWmMap_c::m_instance;
-    map->GetNodePos(0L, mPos);
+    void *found = fn_80100640(map, smc_koopaShipNodeName, 0);
+    int off = found ? *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8) : 0;
+    const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;
+    map->GetNodePos(name, mPos);
 
-    mModel.calc(false);
+    mModel.play();
+    mAnim.play(0);
     calcModel();
     return SUCCEEDED;
 }
@@ -194,14 +203,18 @@ int daWmBoard_c::doDelete() {
 
 void daWmBoard_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
-    nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("cobBoard", "g3d/model.brres");
-    nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobBoard");
+    mResFile = dResMng_c::m_instance->getRes("cobBoard", "g3d/model.brres");
+    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobBoard");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
 
     nw4r::g3d::ScnMdl *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mModel.getScn());
+    typedef void (*ScnMdlVFn20_t)(nw4r::g3d::ScnMdl *, unsigned long, int);
+    void **scnMdlVtable = *reinterpret_cast<void ***>(scnMdl);
+    ScnMdlVFn20_t vfn20 = reinterpret_cast<ScnMdlVFn20_t>(scnMdlVtable[8]);
+    vfn20(scnMdl, 0x30001, 0);
 
     static const char *animName = "cobBoard";
-    nw4r::g3d::ResAnmTexSrt resAnmTexSrt = resFile.GetResAnmTexSrt(animName);
+    nw4r::g3d::ResAnmTexSrt resAnmTexSrt = mResFile.GetResAnmTexSrt(animName);
     mAnim.create(resMdl, resAnmTexSrt, &mAllocator, nullptr, 1);
     mAnim.setPlayMode(m3d::FORWARD_LOOP, 0);
     mAnim.setRate(0.0f, 0);

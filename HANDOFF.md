@@ -9164,3 +9164,42 @@ mAng3_c ang = mAngle;    // both captured before the calls, both reused after
 **Reloading from a stack copy rather than re-reading a member is the tell for a
 captured local.** Third distinct answer the stack-temp question has produced
 today — constructor form, no temp at all, and now two captured locals.
+
+## A MISSING CALL cascades — check for one before chasing register differences
+
+WM_BOARD's `execute` went **76 differing -> 18 on a single added line.** The
+target's very first action is an unconditional virtual call — `mBgmSync->execute()`,
+declared `virtual void execute();` on `dWmBgmSync_c` — and the draft never called
+it at all, having gone straight to the `if (mBgmSync->m_0c)` check that follows.
+
+A missing call shifts everything after it and reads as dozens of register and
+scheduling differences. **Before attributing a large residual to allocation,
+check that every call the target makes is present, in order.** The
+`.fn`-to-`.endfn` block read in program order shows this immediately; a
+line-by-line diff hides it.
+
+## Cross-unit notes finally paid, and a member recovered from a sibling class
+
+Reading `wip/wm_units/agent_anchor/`'s notes gave the shared extern's exact
+signature and call pattern without re-deriving it:
+
+```cpp
+extern "C" void *fn_80100640(daWmMap_c *map, const char *name, int unused);
+// returned pointer's +8 field is an offset (0 if invalid), added back to the
+// pointer to produce a node-name string, then passed to GetNodePos
+```
+
+Board's own `lbl_2_data_439E8` proved to be a **named pointer variable holding the
+address of `"cobKoopaShip"` — the same string anchor uses** — confirmed from the
+REL's relocation table rather than assumed.
+
+And `+0x1a8` turned out to be **`nw4r::g3d::ResFile mResFile`, a real member**,
+not the guessed `int mUnk1a8` and not a stack local: the target stores `getRes()`'s
+result directly to `this+0x1a8`, exactly as anchor's own class does. **When a
+sibling class has a member at the same offset, take its type before inventing
+one.** That plus the missing RTTI-cast follow-up call took `createModel`
+112 -> 88.
+
+**Read the neighbouring unit's notes before deriving anything.** This agent noted
+three rounds running that it would and did not; the round it finally did, two
+functions moved substantially.
