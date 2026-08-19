@@ -9463,3 +9463,35 @@ with `SetScnObjOption` earlier on the same unit, that is three times on one unit
 where walking the existing headers beat writing a cast.
 
 **Reach for a cast only after checking the headers and walking the vtable chain.**
+
+## WM_KILLER PARKED at 22/23 — a genuine CROSS-AXIS wall
+
+Five axes tried on one five-instruction residual, every variant measured with its
+register assignment reported:
+
+```
+operand order        reversed addition            7 real, worse
+cast spelling        fused, and cast-at-declaration   12 and 7, worse
+declaration order    value before the buffer copy     ~33, much worse
+signature            hidden-return vs out-pointer vs out-reference
+                     -> ALL THREE byte-identical to each other, 5 real
+```
+
+**The signature result is the notable one.** A by-value class return, a `void`
+function with an `mVec3_c *` first argument, and one with an `mVec3_c &` first
+argument produced **byte-identical output through the entire function body** —
+same size, same register roles, same residual. Usually a genuine hidden-return
+pointer is observable because `r3` stays reserved; **here it is not observable at
+all.**
+
+So the return-type axis — which has caught seven wrong types on this project,
+including one this session that fixed two functions at once — **does not apply to
+every function.** Test it, but do not assume it must be the answer.
+
+The unit is 23 functions with `.rodata` matching the retail bytes exactly through
+the whole constant run, parked one register-pair from shipping. Trajectory across
+the session: **4 -> 7 -> 8 -> 13 -> 17 -> 18 -> 22 of 23.**
+
+Residual: the target assigns `r4` to `mParam`'s extracted byte and `r5` to
+`name[3]`'s pre-add value; the draft has them swapped, and no source-level
+phrasing across five axes flips the allocator's choice.
