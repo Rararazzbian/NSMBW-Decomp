@@ -156,7 +156,7 @@ int daWmBoard_c::create() {
 
     dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
     mBgmSync = bgmSync;
-    extern const short sBgmSyncData[2] = {4, 0};
+    static const short sBgmSyncData[2] = {4, 0};
     bgmSync->m_18 = sBgmSyncData;
     bgmSync->m_04 = sBgmSyncData[0] - 1;
     bgmSync->m_08 = sBgmSyncData[1];
@@ -221,10 +221,11 @@ void daWmBoard_c::createModel() {
 }
 
 void daWmBoard_c::calcModel() {
-    mMtx_c mtx;
-    mtx.trans(mPos);
-    mtx.ZXYrotM(mAngle);
-    mModel.setLocalMtx(&mtx);
+    mVec3_c pos = mPos;
+    mAng3_c ang = mAngle;
+    mMatrix.trans(pos);
+    mMatrix.ZXYrotM(ang);
+    mModel.setLocalMtx(&mMatrix);
     mModel.setScale(mScale);
     mModel.calc(false);
 }

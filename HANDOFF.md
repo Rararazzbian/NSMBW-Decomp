@@ -9122,3 +9122,45 @@ same heuristic correctly did *not* apply. **Check the precondition either way.**
 
 `fn_2_16C810` is **0x834 bytes** with a 20-state jump table — the largest single
 function met this session. Flagged and not attempted rather than rushed.
+
+## NEGATIVE: external linkage does NOT stop MWCC's constant folding
+
+My hypothesis was that a `const` array's **linkage** licenses the folding, since
+internal linkage is what lets MWCC strip an unreferenced one. Tested properly:
+
+```cpp
+extern const short sBgmSyncData[2] = {4, 0};   // file scope -- block scope is a hard error
+```
+
+The linkage change **took effect** — the symbol now appears by its real name
+instead of an `@LOCAL@` label — and MWCC **still folded** `sBgmSyncData[0]-1` and
+`[1]` into `li r4,0x3` / `li r0,0x0`, identical to the file-local version.
+
+**The definition is visible in the same translation unit either way, and that is
+what licenses constant propagation — not the linkage.** Reverted, since the
+extern version added a namespace-level object for no benefit.
+
+Three access-path variants and one linkage variant have now failed on this. Note
+`extern` with an initialiser at block scope does not compile: `(10123)`.
+
+## WM_BOARD 9/15 -> 10/15: `calcModel` MATCH, on two bugs found in sequence
+
+1. **The draft computed into a throwaway local `mMtx_c mtx;` instead of the
+   inherited `mMatrix` member** (`+0x7c`, from `dBaseActor_c`), silently
+   discarding the result into a stack temp that never persisted. 41 -> 34.
+   **A local that shadows what should be a member write is a correctness bug the
+   diff shows as a register difference.**
+2. The stack-temp question again, and the answer was **two** captures: the target
+   stores `mPos` as floats **and** `mAngle` as shorts into stack slots before the
+   first call, then reloads `mAngle` from that stack copy for the second call
+   rather than re-reading the member. That is the signature of two locals captured
+   up front:
+
+```cpp
+mVec3_c pos = mPos;
+mAng3_c ang = mAngle;    // both captured before the calls, both reused after
+```
+
+**Reloading from a stack copy rather than re-reading a member is the tell for a
+captured local.** Third distinct answer the stack-temp question has produced
+today — constructor form, no temp at all, and now two captured locals.
