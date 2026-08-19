@@ -1246,3 +1246,173 @@ certainly the constant-pooling/register-allocation residual class itself
 (now shared across cases 0, 10, 12, 14 AND `resetPosition`) -- a genuine
 fix there would likely move several functions at once rather than one at
 a time.
+
+## Round 12: the pool-residual investigation, per the coordinator's declaration-order hypothesis
+
+**X/19 unchanged at 14/19**, but `stepCutscene70` moved from 493 to
+**485** differing lines with three real, evidenced fixes, and the
+coordinator's specific question -- is the pool SHORT, MISORDERED, or
+CORRECT -- now has a precise, byte-level answer instead of a guess.
+
+### The verdict, as requested: BOTH short AND misordered, for two separate reasons -- not "unwritten functions" (that cause is ruled out)
+
+Used `wip/wm_units/dump_obj_section.py` against `draft.o` and a fresh
+direct read of the target REL's raw bytes (not the old `dump_data.py`
+convenience script, which turned out to have exactly the kind of subtle
+off-by-N bug this method exists to catch -- see below) to compare
+`.rodata`/`.data` byte-for-byte, not just "does it compile."
+
+- **`.rodata` was SHORT (0x84 vs target 0x90, -0xc bytes) for a genuine,
+  identified content reason, NOT a declaration-order problem**: case 0's
+  `dist = (m_19c.x - mPos.x) * 1.0f` was WRONG. Re-reading the full
+  disassembly with a freshly-completed rodata table (0x8b10-0x8bac, an
+  earlier partial dump silently cut off before this constant) showed the
+  real multiply is `fmuls f2, C[0x58], f2` where `C[0x58]` (rodata @
+  `r31+0x58`) is `-2.0f`, a constant this draft never referenced at all.
+  Fixed: `dist = (m_19c.x - mPos.x) * -2.0f;`. This alone recovered 4 of
+  the missing 12 bytes (0x84 -> 0x88) and dropped the function's overall
+  differing count from 493 to 485. This is the "unwritten function"
+  failure mode's sibling, not its instance: not a missing SIBLING
+  FUNCTION (all 19 are written), but missing CONTENT inside an already-
+  "authored" case that had gone unverified against the real constant
+  table.
+- **The remaining 8-byte `.rodata` shortfall is IDENTIFIED, not a
+  mystery**: it is exactly the size of the int-to-double magic-bias
+  constant (`0x4330000080000000`, the standard sign/exponent-bias trick
+  for converting a runtime int to double) that the target's case 0 uses
+  TWICE to convert the divisor `15` to a float divisor via genuine
+  runtime instructions (`li r3,0xf; lis r0,0x4330; xoris; stw/stw; lfd;
+  fsubs`), rather than a pooled float immediate. Tried `15.0f` and
+  `(int)15` as the divisor -- **both get constant-folded by this same
+  compiler into a plain `lfs` immediate**, which does not reproduce the
+  target's shape and does not pull in the bias double. The real source's
+  divisor expression is therefore something this compiler's front end
+  cannot see as a compile-time constant -- an unidentified field,
+  parameter, or macro that evaluates to 15 here, not a plain numeric
+  literal. Left as a literal rather than inventing a fake non-constant
+  source for it; recorded as a genuine, specific open question, not
+  swept into the general "residual" bucket.
+- **`.data` is now EXACTLY the target's SIZE (0x158 == 0x158) but
+  MISORDERED** -- this IS the coordinator's declaration-order mechanism,
+  confirmed directly. Moving `sW101`'s declaration from its original spot
+  (bottom of file, next to `sCamParams`) to immediately after
+  `sForceList` (top of file) moved the compiled `W101` string/pointer
+  pair from `.data+0x74` to `.data+0x64` -- earlier, matching the
+  direction target wants (target has it at `.data+0x34`, right after
+  `sForceList`'s own fields and before `g_profile_WM_KINOPIO`'s bytes/
+  `character_SV`/`W103`/`W102`/`kinopio_all_root`). It did not reach the
+  target's exact offset because of the ALREADY-KNOWN, already-exhausted
+  `sc_ForceList` double-init issue (round 3's finding: including
+  `d_wm_lib.hpp` pulls in that header's own separate `sc_ForceList[]`
+  static, which compiles a second ~0x30-byte `ForceInCourseList_t`-shaped
+  block into this TU's `.data` between `sForceList` and everything
+  declared after it) -- confirmed directly this round by SEEING that
+  duplicate block sitting exactly between `sForceList` and `sW101` in the
+  draft's own `.data` dump. Not re-attempted (three variants already
+  measured worse in round 3, per standing instruction not to repeat
+  exhausted shapes without a new angle) -- but now DIRECTLY IMPLICATED as
+  the reason `.data` cannot reach the target's exact order/offsets
+  anywhere past `sForceList`, not just for `fn_2_16D1E0` alone as
+  previously scoped. This connects two previously-separate open items
+  (the `.ctors` double-init and the cross-function string-pooling
+  residual) into one shared root cause.
+
+### A real bug caught in the process: the "lbl_2_data_45CBC == the W101 string" claim (inherited from an earlier round) was WRONG
+
+Chasing the coordinator's instruction to read bytes directly rather than
+trust a prior note, a direct `.rela.data` relocation lookup against
+`bin/dtkspl/d_basesNP/obj/auto_04_00044A68_data.o` (parsed by hand --
+Elf32_Rela entries at file offset `0x1e10`, `.data` chunk based at REL
+address `0x44A68`) showed address `0x45cbc` carries a relocation to
+symbol `lbl_2_data_45CB4` -- **`lbl_2_data_45CBC` is a POINTER VARIABLE
+holding the STRING's address, not the string's own bytes** (which live 8
+bytes earlier, at `0x45cb4`, immediately after `sForceList`'s own 0x24-
+byte object). This is one level of indirection more than a plain
+`const char[]`/inline-literal argument. The target's own instructions
+prove it directly: `lis rN, lbl_2_data_45CBC@ha; lwz rN,
+lbl_2_data_45CBC@l(rN)` (a DEREFERENCE, loading a stored pointer VALUE)
+at all three call sites, not `lis+addi` (computing a literal's own
+address) the way `W102`/`W103`/`kinopio_all_root` do. Re-modelled as
+`static const char *sW101 = "W101";` (a real pointer variable, NOT
+`const`-qualified at the top level, which turned out to matter -- see
+next item) instead of an array or bare literal. All three call sites
+(`GetPos` in case 12, `fn_80100640` and `GetPos` in case 14) now compile
+to the exact target dispatch shape (`lis+lwz` at every use site, checked
+instruction-by-instruction against the target), where before they either
+computed a direct string address (wrong shape entirely) or, once fixed to
+read a pointer, initially got over-optimized.
+
+**A second, smaller finding riding on this one**: declaring `sW101` as
+`static const char *const sW101` (top-level const, provably immutable)
+let the compiler CACHE its loaded value in a register (`r31`) across the
+`fn_80100640` call and reuse it at the second `GetPos` call instead of
+reloading -- one fewer instruction than the target, which reloads
+independently both times. Dropping the top-level `const` (`static const
+char *sW101`, a mutable pointer variable merely initialised once) made
+the compiler reload at both sites, matching target exactly. Recorded
+because it is a second, independent confirmation of the general "MWCC
+will not cache a load across a call unless it can prove nothing could
+have invalidated it" rule already seen elsewhere on this project, now
+tied specifically to top-level `const` on a pointer variable.
+
+### The positional-diff-count caveat, recorded so the next round does not get misled by a flat number
+
+`wip/wm_units/verify_anon.py`'s per-instruction diff is a STRICT
+POSITIONAL comparison (`a[j] != b[j]` by raw index, no alignment/LCS).
+Confirmed by direct experiment: after the `getBodyMdl` shadow-header
+removal, moving `"kinopio_all_root"`/`"W101"` to `.data` (correct
+`lis+addi`/`lis+lwz` shape verified instruction-by-instruction against
+the target at all 4-5 call sites) left the overall count completely
+FLAT at 493, because the draft's function is still a different total
+LENGTH than the target's (504 vs 525 instructions going into this round),
+so any local insertion/deletion shifts every subsequent line's index and
+can cancel out a real local fix in the raw count. **The prologue itself
+proved this concretely**: target's frame is `stwu r1,-0x70(r1)` (0x70
+bytes), the draft's was `-0x50(r1)` (0x50 bytes) -- a fixed 0x20-byte gap
+that alone explains why literally the first instruction of the function
+already mismatches and every subsequent stack-relative instruction
+differs by a constant offset. Stripping `0xNN(r1)` operands out of the
+comparison entirely (a throwaway local script, not a permanent tool
+change) dropped the count only from 493 to 487 -- most of the "493" was
+never about stack offsets specifically, it is dominated by this genuine
+frame-size/content gap. **Lesson for whoever works this function next**:
+judge progress by re-reading the actual disassembly at specific known
+call sites (as done here for every fix), not by the raw differing-count
+delta alone, until the function's total instruction count converges on
+525.
+
+### `.rodata`/`.data` pool comparison method, for reuse next round
+
+```
+python wip/wm_units/dump_obj_section.py wip/wm_units/agent_kinopio/draft.o .rodata
+python wip/wm_units/dump_obj_section.py wip/wm_units/agent_kinopio/draft.o .data
+```
+against the target's raw bytes, read directly (NOT through the old
+`dump_data.py`'s convenience wrapper, which was the source of the
+`lbl_2_data_45CBC` misread above -- prefer reading `original/d_basesNP.rel`
+directly with an explicit offset/length, always double-checking a known-
+good anchor symbol like `lbl_2_data_45D00` first to confirm the base
+offset is right before trusting a new one).
+
+## Final result, this round: 14/19 byte-identical (unchanged count; stepCutscene70 485 differing, down from 493)
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate, startJump | — | **MATCH** (12) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, untouched this round |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, untouched this round |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | root cause now directly tied to the `.data` misordering above, not just its own isolated question |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | untouched this round |
+| `fn_2_16C810` stepCutscene70 | 0x834 | 485 differing (down from 493) | case 0's multiply bug fixed, `sW101` remodelled as a pointer + moved for pool order, `.rodata` 0x84->0x88 (target 0x90), `.data` now exactly target's size (0x158) |
+
+**14/19 byte-identical.** Highest-value open items for next round, in
+order: (1) the `sc_ForceList` double-init issue, now confirmed to be
+blocking `.data` pool order for EVERYTHING declared after `sForceList`,
+not just `fn_2_16D1E0` in isolation -- worth a genuinely new angle, not a
+4th repeat of round 3's three variants; (2) case 0's still-open "15"
+divisor, which needs the true (non-literal) source expression identified
+before the last 8 `.rodata` bytes can appear; (3) re-reading the REST of
+`stepCutscene70`'s already-"authored" cases against a complete rodata
+table the way case 0 just was, in case the same "authored against a
+truncated constant dump" mistake recurs elsewhere.

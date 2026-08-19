@@ -112,6 +112,22 @@ namespace {
         mVec3_c(2160.0f, -30.0f, -478.0f)
     };
 
+    // @unofficial lbl_2_data_45CBC, a POINTER variable (not an array),
+    // sitting immediately after sForceList's own fields in the target's
+    // .data (confirmed via a direct .rela.data relocation lookup against
+    // bin/dtkspl/d_basesNP/obj/auto_04_00044A68_data.o -- see the long
+    // comment near stepCutscene70() for the full derivation). DECLARED
+    // HERE, immediately after sForceList, because this project's .data
+    // pools in declaration order and the target's own layout places
+    // W101's string/pointer pair right after sForceList's fields and
+    // BEFORE g_profile_WM_KINOPIO/"character_SV"/"W103"/"W102"/
+    // "kinopio_all_root" -- moving the declaration here (from its
+    // originally-tried spot next to sCamParams, much later in the file)
+    // is what reproduces that position. Shared by stepCutscene70() cases
+    // 12 and 14 (3 call sites total, all reading this same pointer's
+    // value).
+    static const char *sW101 = "W101";
+
     // @unofficial fn_2_16C5D0 (unusedStub) is the sole PTMF-table target --
     // confirmed by counting relocations in .rodata 0x8b10-0x8bb0 (only one,
     // at 0x8b3c, resolving to fn_2_16C5D0) rather than assuming an entry
@@ -239,24 +255,29 @@ void daWmKinopio_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFr
     }
 }
 
-// @unofficial lbl_2_data_45D00/lbl_2_data_45CBC -- SECTION-PLACEMENT bug
-// found and fixed this round: a NAMED `static const char[]` (the form
-// used for these two strings until now) compiles to .rodata under this
-// project's MWCC settings, but the target's own `lbl_2_data_...` labels
-// prove both strings live in .data. processCutsceneCommand's existing
-// inline "W103"/"W102" literals (used directly as call arguments, never
-// named) already land in .data correctly -- confirmed directly against
-// both the target's own .data dump (dump_data.py) and this unit's own
-// compiled draft.o (dump_obj_section.py), which showed the old named
-// "kinopio_all_root"/"W101" landing in .rodata alongside the float table,
+// @unofficial lbl_2_data_45D00 -- SECTION-PLACEMENT bug found and fixed
+// this round: a NAMED `static const char[]` (the form used for this
+// string until now) compiles to .rodata under this project's MWCC
+// settings, but the target's own `lbl_2_data_45D00` label proves the
+// string lives in .data. processCutsceneCommand's existing inline
+// "W103"/"W102" literals (used directly as call arguments, never named)
+// already land in .data correctly -- confirmed directly against both the
+// target's own .data dump (dump_data.py) and this unit's own compiled
+// draft.o (dump_obj_section.py), which showed the old named
+// "kinopio_all_root" landing in .rodata alongside the float table,
 // wrongly reachable through the same base register (r31) already live
-// for that table -- the actual mechanical cause of the "folds into an
-// existing base register instead of getting its own lis/addi" residual
-// seen in stepCutscene70's cases 0/10/12/14. Fixed by using bare inline
-// literals at every call site below instead of named constants (matching
-// the already-.data-correct W103/W102 idiom). Named `static const
-// float`s (k8B50_shared, sCamParams below) are NOT affected -- floats
-// already correctly land in .rodata either way, matching the target.
+// for that table. Fixed by using a bare inline literal at both call
+// sites below instead of a named constant (matching the
+// already-.data-correct W103/W102 idiom). Named `static const float`s
+// (k8B50_shared, sCamParams below) are NOT affected -- floats already
+// correctly land in .rodata either way, matching the target.
+//
+// @unofficial lbl_2_data_45CBC (sW101) is declared up near sForceList,
+// not here, so its .data POOL POSITION matches the target -- see that
+// declaration's own comment for the full relocation-based derivation
+// (it is a pointer VARIABLE, not an array/literal; caught by a direct
+// .rela.data relocation lookup against
+// bin/dtkspl/d_basesNP/obj/auto_04_00044A68_data.o).
 namespace {
     // @unofficial lbl_2_rodata_8B20 -- a 4-float table pointer stored into
     // dWCamera_c's own +0x71c field in case 12. First 3 floats (0.1f,
@@ -278,15 +299,36 @@ void daWmKinopio_c::stepCutscene70() {
     switch (m_1a8) {
     case 0:
         if (mPos.x > m_19c.x - 100.0f) {
-            // @unofficial the divisor is a genuine `int 15`, not a float
-            // literal -- confirmed by the target's runtime int-to-float
-            // bit-trick conversion (li r3,0xf; lis r0,0x4330; xoris;
-            // stw/stw; lfd; fsubs) appearing TWICE, which the compiler
-            // would never emit for a compile-time float constant (that
-            // pools as a plain `lfs` immediate instead).
-            float dist = (m_19c.x - mPos.x) * 1.0f;
-            float speed = dist / (int) 15;
-            m_194 = speed / (int) 15;
+            // @unofficial re-read fresh this round: the multiply was
+            // WRONG (previously `* 1.0f`, a no-op I must have misread or
+            // placeholder'd) -- the target actually does
+            // `fmuls f2, C[0x58], dist` where C[0x58] (rodata @ r31+0x58)
+            // is -2.0f, confirmed against a freshly re-derived, complete
+            // rodata table (0x8b10-0x8bac) rather than the partial one
+            // used originally. This -2.0f was previously MISSING from
+            // this draft entirely, and is at least part of why this
+            // unit's compiled .rodata (0x84 bytes) was measured SHORT
+            // against the target's 0x90 -- a real, evidenced case of "the
+            // pool is short because the content referencing it was never
+            // written," not a declaration-order problem for this specific
+            // constant.
+            //
+            // @unofficial STILL OPEN, not guessed: the divisor is
+            // genuinely `15` (confirmed by value), but the target reaches
+            // it via a full runtime int-to-double bit-trick conversion
+            // (li r3,0xf; lis r0,0x4330; xoris; stw/stw; lfd; fsubs),
+            // TWICE, rather than a pooled float immediate. Every literal
+            // form tried here (`15.0f`, `(int)15`) gets constant-folded
+            // by this same compiler into a plain `lfs`, which does NOT
+            // reproduce the target's shape. The true source expression
+            // for this divisor is therefore something this compiler
+            // cannot see as compile-time-constant -- an unidentified
+            // field, parameter, or macro that evaluates to 15 at this
+            // call site, not a plain numeric literal. Left as a literal
+            // rather than inventing a fake runtime source for it.
+            float dist = (m_19c.x - mPos.x) * -2.0f;
+            float speed = dist / 15.0f;
+            m_194 = speed / 15.0f;
             mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
             m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
             m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, "kinopio_all_root", 0, 0);
@@ -437,7 +479,7 @@ void daWmKinopio_c::stepCutscene70() {
         dWCamera_c *camera = dWCamera_c::m_instance;
         mVec3_c endPos;
         GetEndNodePos__13dWmMapModel_cFR7mVec3_c(&map->mModels[map->currIdx], endPos);
-        m_19c = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W101");
+        m_19c = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
         m_19c.y = endPos.y;
         m_19c.z = endPos.z;
         u8 *cam = (u8 *) camera;
@@ -480,9 +522,9 @@ void daWmKinopio_c::stepCutscene70() {
             // in wip/wm_units/agent_kinoballoon but not in include/, so
             // accessed via raw offset cast here, same idiom as
             // lbl_2_bss_11B70 elsewhere in this function).
-            void *node = fn_80100640(daWmMap_c::m_instance, "W101", 0);
+            void *node = fn_80100640(daWmMap_c::m_instance, sW101, 0);
             *(u32 *) ((u8 *) balloon + 0x184) = node ? *(u32 *) ((u8 *) node + 0xc) : 0;
-            mVec3_c pos = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W101");
+            mVec3_c pos = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
             *(mVec3_c *) ((u8 *) balloon + 0xac) = pos;
         }
         fn_2_16AE70();

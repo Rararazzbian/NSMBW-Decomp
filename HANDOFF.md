@@ -10919,3 +10919,72 @@ This does NOT fix the other half of the pairing trap, documented in the tool's
 own header: a draft function paired to a target that is genuinely a different
 function of the same shape (the sandpillar deleting-destructor case). Confirming
 the target at the reported address is still required.
+
+## The redundant-guard lever has an EXCEPTION: automatic base-subobject destruction
+
+I pointed WM_ANCHOR's destructor at the recorded lever "an explicit redundant
+null guard is source-visible in BOTH directions" — its whole 21-line gap is one
+extra `beq` the target has. **The lever does not apply, and the agent proved it
+rather than assuming either way.** Two shapes tried, both rebuilt, both
+**zero-effect** — byte-identical to a plain `{}` destructor:
+
+```cpp
+daWmAnchor_c::~daWmAnchor_c() { if (this) {} }
+daWmAnchor_c::~daWmAnchor_c() { if (this) { (void) this; } }
+```
+
+**The mechanism, which is the part worth keeping.** In the WM_KINOPIO precedent
+where the lever DID work, the guarded statement was `delete mpMdlMng;` — a real
+operation with an external effect, so MWCC cannot eliminate the guard. Here the
+only thing that would belong inside the guard is destruction of the base's own
+inlined members plus the base destructor call, and **that is not reachable as an
+independent, once-only statement from the derived class's source.** It already
+runs automatically as the implicit tail of the derived destructor. Writing it
+again explicitly duplicates the whole block of real calls, which is not what the
+target shows.
+
+So the rule refines to: **a redundant guard is source-visible only when the
+guarded code is something the source can STATE. It is not, when the guarded code
+is automatic base-subobject destruction.** This independently reconfirms the
+earlier "duplicate-`beq` destructor wall" finding (~line 8949, "a derived class
+cannot reach a construct emitted by inlining its base's destructor") — by fresh
+experiment rather than by restatement, which is worth strictly more.
+
+WM_ANCHOR closes at **19/22**, WM_ANTLION_MNG unchanged at 18/22.
+
+## WM_KINOPIO's pool: BOTH short and misordered, for two separate reasons
+
+The three-way question — short, misordered, or neither — answered as **both**, and
+neither cause was the WM_KILLER "unwritten sibling" precedent (ruled out: all 19
+functions have code).
+
+**A TRUNCATED DUMP caused a wrong constant, and that is the transferable lesson.**
+Case 0's multiply was written as `(m_19c.x - mPos.x) * 1.0f` — a no-op. A freshly
+completed `.rodata` table showed the target multiplies by `-2.0f`, a constant the
+draft never referenced. **An earlier partial dump had silently cut off before that
+entry.** A dump that ends early does not announce itself; it presents as a
+complete table with the answer absent. Re-dump before trusting a table you did
+not generate in the current round.
+
+**A `.data` label that is a POINTER, not the thing.** An inherited note claimed
+`lbl_2_data_45CBC` was the `"W101"` string. It is not: the string lives at
+`lbl_2_data_45CB4`, and `0x45CBC` holds a RELOCATION pointing at it. Verified
+directly — `0x45CB4` contains the bytes `W101\0`, and `0x45CBC` reads as zero in
+the file with a relocation addend of `0x45CB4`. **That is this project's own
+recorded signature: a relocated word reads as ZERO.** Modelled correctly as
+`static const char *sW101 = "W101";` — and the **non-const-qualified pointer
+matters**: a top-level `const` let the compiler cache the value across a call,
+one instruction short of the target's independent reloads.
+
+**Scope promotion, which changes what to do next.** The remaining `.data`
+misorder traces to the known `sc_ForceList` double-init issue — and it is now
+confirmed to block `.data` order for **everything declared after `sForceList`**,
+not just one function in isolation. It was parked as a local residual; it is a
+unit-wide blocker.
+
+**A methodological trap worth more than the round's numbers:** `verify_anon.py`'s
+diff is strictly positional and unaligned, so **the raw differing-line count is a
+poor progress signal while the draft's total instruction count differs from the
+target's.** The prologue's frame size alone (`-0x70` target vs `-0x50` draft)
+explained most of the apparent flatness after an earlier, verified-correct fix.
+A verified fix that does not move the count is not evidence the fix was wrong.

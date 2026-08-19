@@ -8,10 +8,21 @@ here.
 
 ## Tally history
 
-- **Session start (measured, not taken on faith): 16/22.** Order check
-  (`check_fn_order.py`) reported 0 inversions, but `build.py`'s own
-  `verify_anon` step reported `FUNCTION ORDER IS WRONG` regardless -- see
-  "Order-check finding" below; it is a false positive, not a real blocker.
+- **Session start (measured, not taken on faith): 16/22.** `build.py`'s own
+  `verify_anon` step reported `FUNCTION ORDER IS WRONG` -- see "Order-check
+  finding" below; it is a false positive, not a real blocker.
+  **CORRECTION (from the coordinator):** the "`check_fn_order.py` reported 0
+  inversions" claim in an earlier version of this file was wrong in a way
+  that matters generally, not just here. `check_fn_order.py` recovers a
+  target address from a function's own NAME (`fn_2_ADDR`); this unit's
+  functions already carry real mangled names, so the tool examined NOTHING
+  for this file and silently printed "0 inversions" for an empty check -- it
+  was never able to see WM_ANCHOR at all. The coordinator has since patched
+  the tool to list unchecked files explicitly (confirmed: re-running it now
+  prints WM_ANCHOR under "1 file(s) NOT CHECKED"). The only real order
+  evidence for this unit has always been `build.py`'s own `verify_anon`
+  step -- use that, not `check_fn_order.py`, for any file whose functions
+  already have real names.
 - **Session end (measured): 19/22.** Three functions fixed this round:
   `execute()`, `setNodePos()`, and a newly-split-out `resetProcessState()`
   (target `fn_2_15AAF0`, previously not written as its own function at all).
@@ -135,6 +146,64 @@ NOT a universal per-base-class artifact, it is specific to something about
 dHeapAllocator_c, vs. antlion's 1: dHeapAllocator_c alone) that was not
 isolated in the time available. **Recorded as a real, precisely-bounded
 negative** for the next agent rather than guessed at.
+
+### Round 2: HANDOFF's "explicit redundant null check is source-visible" lever, TESTED and it does NOT close this one
+
+The coordinator pointed at HANDOFF ~line 9100 ("An explicit redundant null
+check is SOURCE-VISIBLE - write it if the target has it", the WM_KINOPIO
+`if (mpMdlMng) delete mpMdlMng;` case) and asked for a direct test: write the
+same condition, checked again, in the destructor body. Two variants tried,
+both rebuilt, **both measured as zero-effect**:
+
+```cpp
+daWmAnchor_c::~daWmAnchor_c() {
+    if (this) {
+    }
+}
+```
+and
+```cpp
+daWmAnchor_c::~daWmAnchor_c() {
+    if (this) {
+        (void)this;
+    }
+}
+```
+
+Both compiled to the EXACT SAME bytes as the plain `{}` destructor - verified
+by rebuild both times (`21 differing`, unchanged; `draft.txt`'s `__dt__` body
+byte-for-byte identical to the pre-experiment version, single `beq` only, zero
+extra instructions). MWCC eliminates the whole conditional as dead code in
+both forms, empty-body or not.
+
+**This is NOT the same situation as the WM_KINOPIO precedent**, and the
+difference matters: in WM_KINOPIO the guarded statement is `delete mpMdlMng;`
+- a REAL operation with an externally-visible effect (a call to
+`operator delete`), so MWCC cannot eliminate the guard even though `delete`
+is independently null-safe. Here, the only thing that WOULD belong inside the
+guard - destruction of `dWmDemoActor_c`'s own inlined members
+(`smdl_c@0x158`, `mHeapAllocator_c@0x13c`) and the call to
+`dWmActor_c::~dWmActor_c()` - is not reachable as an independent, once-only
+statement from `daWmAnchor_c`'s own source: it already happens automatically,
+exactly once, as the implicit tail of the derived destructor. Writing it a
+SECOND time explicitly (e.g. `dWmDemoActor_c::~dWmDemoActor_c();` as an
+explicit statement) would not add one redundant branch - it would duplicate
+the entire base-destruction block (real calls, real instructions), which is
+not what the target shows (only ONE instance of that block exists, just with
+an extra dead branch guarding it). There is no C++ construct available from
+the DERIVED class that produces "guard present, guarded code runs once."
+
+**Conclusion: the lever, tested directly rather than assumed, does not
+transfer to this specific shape (a redundant check wrapping automatic
+base-subobject destruction rather than wrapping an explicit call).** This
+CONFIRMS, with a fresh empirical test rather than a re-statement, HANDOFF's
+earlier "duplicate-`beq` destructor wall" finding (~line 8931, independently
+found on this same unit and on WM_BOARD, "a derived class cannot reach a
+construct emitted by inlining its base's destructor"). Reverted both
+experiments; the destructor is back to the plain
+`daWmAnchor_c::~daWmAnchor_c() {}` it started this session with. **Do not
+retry either of the two shapes above** - both are now measured, not just
+reasoned about.
 
 **`fn_2_15ABC0`** (`li r3,0x1; blr`, 2 instructions, "1 differing" in the
 table): this is a documented, INTENTIONAL exclusion carried over from a prior
