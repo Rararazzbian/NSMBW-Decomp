@@ -89,6 +89,31 @@ class SliceFile:
         return Path(self.meta.fileName).stem
 
 
+def natural_alignment(start: int, max_align: int) -> int:
+    """The largest power of two up to `max_align` that divides `start`.
+
+    A filler is raw bytes lifted out of the original binary at a known address.
+    It has no alignment requirement of its own -- it simply has to land exactly
+    where it came from. Giving it the section's nominal alignment instead makes
+    the linker round its start UP, which silently moves every byte after it.
+
+    That is invisible while every claim ends on a section-aligned boundary, and
+    it is why `.rodata` claims in this project have all had to end 8-aligned. A
+    unit whose real content ends at a 4-aligned address could not be expressed:
+    ending the claim there pushed the following filler 4 bytes forward and threw
+    the module out by 8.
+
+    For a filler that already starts section-aligned this returns the section
+    alignment unchanged, so existing modules are unaffected.
+    """
+    if start == 0:
+        return max_align
+    align = 1
+    while align < max_align and start % (align * 2) == 0:
+        align *= 2
+    return align
+
+
 def make_filler_slice(slice_name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Optional[Slice]:
     slice_sections: list[SliceSection] = []
     for section_name, section in sec_range.items():
@@ -97,7 +122,8 @@ def make_filler_slice(slice_name: str, sec_range: dict[str, tuple[int, int]], sl
             continue
 
         section_info = slice_meta.sections[section_name]
-        slice_sections.append(SliceSection(section_name, section_info.index, start, end, section_info.align))
+        align = natural_alignment(start, section_info.align)
+        slice_sections.append(SliceSection(section_name, section_info.index, start, end, align))
 
     if len(slice_sections) > 0:
         return Slice(slice_name, '', slice_sections)

@@ -7014,3 +7014,73 @@ Two lessons, and the second is the one that cost the time:
 The `sizeof`/`offsetof`-via-template-error technique and the upcast-adjustment
 trick are still good and stay recorded. They answered exactly what they were
 asked; the questions were the problem.
+
+## ANTLION IS LANDED. The blocker was our own tooling, not the source.
+
+**`d_a_wm_antlion.cpp` is in `source/`, five binaries verify, progress
+11.250% -> 11.286%.** Eighth unit. It had been parked for several rounds one word
+short, and the missing word was never antlion's to emit.
+
+### What was actually wrong
+
+`make_filler_slice` gave every filler its section's NOMINAL alignment. A filler
+is raw bytes lifted out of the original binary at a known address -- it has no
+alignment requirement of its own, it just has to land where it came from. Giving
+it `.rodata`'s nominal `8` made the linker round its start UP, silently moving
+every byte after it.
+
+That is invisible as long as every claim ends on an 8-aligned boundary, **and
+every landed `.rodata` claim in this module does** -- all sixteen of them. So the
+defect never showed up as a bug. It showed up as a rule: "a slice's `.rodata`
+claim end must be 8-byte aligned, or the module comes out 8 bytes wrong through
+quantisation." That rule was measured correctly and believed for good reason. It
+was a description of our own tooling's limitation.
+
+Antlion's real content ends at `0x85b4`, which is 4-aligned. The claim could not
+be expressed, so the end was rounded to `0x85b8` and the linker zero-filled the
+gap -- but the target has `00000001` there, not zero. Hence "one word short", and
+hence seven measured attempts to make antlion emit a word it never owned.
+
+The fix, in `tools/slicelib.py`:
+
+```python
+def natural_alignment(start: int, max_align: int) -> int:
+    """The largest power of two up to max_align that divides start."""
+```
+
+applied to filler sections only. **For a filler already starting section-aligned
+it returns the section alignment unchanged, so every existing module is
+unaffected** -- confirmed by verifying 5/5 green with the change in and no slice
+edits. Then antlion with `.rodata 0x8598-0x85b4` links exactly and the filler
+supplies `0x85b4-0x85c0` from the original.
+
+### Delete the 8-alignment rule
+
+It is not a fact about the compiler or the game. Section claims may now end
+wherever the unit's real content ends. Any other unit parked on a "section is a
+few bytes wrong" symptom is worth re-measuring against this.
+
+### What actually settled the ownership question
+
+Not argument -- the TARGET's own compiled objects. `auto_fn_2_15B4E0_text.o` is
+antlion's real `__sinit`, and disassembling it directly shows:
+
+```
+lis r5, lbl_2_rodata_8598@ha
+lfs f2, 0x10(r5)   ; 0x85A8
+lfs f1, 0x14(r5)   ; 0x85AC
+lfs f0, 0x18(r5)   ; 0x85B0
+```
+
+It anchors at `0x8598` and never addresses past `0x85b4`. antlion_mng's own
+`__sinit` anchors at `0x85c0`. Two relocations from shipped code, plus
+`ForceInCourseList_t` being 0x24 bytes with `mNodePos` last, all put the cut at
+`0x85b4`/`0x85c0` with twelve bytes belonging to neither unit.
+
+**Read the target's own split objects.** Three rounds of source-shape probes and
+a retracted relocation search were all trying to infer what two `lis`
+instructions in `bin/dtkspl/` state outright.
+
+### Next
+
+**Sandpillar (66/66) was blocked behind antlion** and should now be attemptable.
