@@ -413,3 +413,78 @@ effect here instead of an all-or-nothing one.
 easily the strongest position of the three still-open functions.**
 `createModel` (116) and `cycleAnm` (14) are unchanged, left alone per
 instruction.
+
+## Round 4: the swapped slots, closed
+
+**Wrapper check done first, as instructed.** Grepped the compiled draft
+(`draft.txt`) for every `bl` inside `calcModel()`: only `setScale`,
+`PSMTXTrans`, `setLocalMtx`, and `calc` are called out-of-line. Neither
+`mVec3_c tmp(...)` nor `mVec3_c local` generates any `bl` to a constructor
+at all -- both are fully inlined field-by-field stores. **No wrapper is in
+play here**, so the inline-wrapper rule does not apply to this residual;
+confirmed before touching anything, not assumed.
+
+Two untried directions, both tested:
+
+- **`local`'s own block scope** (`{ ... }` around its declaration through
+  its last use, `mMatrix.trans(local)`): **no change**, still the same
+  swapped 0x8-0x10/0x14-0x1c pair, 15 differing. Reverted the scoping
+  (kept for one measurement, not load-bearing).
+- **Declare `local` before the `if (mItemType==5)` block** (default-
+  constructed, no-op, at the very top of the function; its fields are
+  still *assigned* in their original later position, after `setScale`):
+  **15 -> 7, and the slot swap is gone** -- `tmp` (conditional, first-used)
+  now lands on `0x8-0x10` and `local` (unconditional, second-used) on
+  `0x14-0x1c`, matching the target exactly. This is the fix; source
+  declaration order controls stack slot order, not use order or scope
+  nesting.
+
+With the swap fixed, the remaining gap was pure field-assignment order
+inside `local`'s three stores. Tried all 6 permutations of
+`local.x/y/z = ...` (measured by `verify_anon`'s differing count, x,z,y
+best):
+
+| order | differing |
+|---|---|
+| x, y, z | 7 |
+| **x, z, y** | **6** |
+| y, x, z | 7 |
+| y, z, x | 8 |
+| z, x, y | 7 |
+| z, y, x | 8 |
+
+`x, z, y` kept. **`calcModel()` final state: 6 differing (`verify_anon`),
+size and frame both exact (70 instructions, `0x30`), both temporaries on
+the correct slots.** What remains, read directly from `difftool.py`: 2
+lines are symbol-name text (`sConstTable` vs `lbl_2_rodata_8988`); the rest
+is register-number/load-scheduling choice for `mPos.y`/`mPos.z`/`mPos.x`
+feeding the bounce-Y `fadds` (target loads y, z, x in that order into
+f2/f1/f3; every field order tried loads a different permutation of the
+same three values into different registers, never quite matching target's
+specific y,z,x load sequence while still storing to the right offsets in
+x,z,y order) -- an evaluation-order detail decoupled from which offset
+each field lands at, not explored further this round.
+
+**`calcModel()` moved from 60 (start of Round 3) to 15 (end of Round 3) to
+6 (end of Round 4) -- effectively closed but not a MATCH.**
+
+## Final state, this session
+
+**8/12 byte-identical.** `createModel` (116, axis 3, profile+rodata dual
+anchor with eager hoisting -- understood, not resolved, regressed when
+half-applied) and `cycleAnm` (14, the offset-0-only-folds compiler limit --
+understood, not resolved) are unchanged and were left alone per
+instruction. `__sinit` (15, the same offset-0 limit, partial form) was
+re-measured after the `calcModel` fix and did not move, confirming it does
+not share pool benefits across function boundaries. `calcModel` (6, down
+from 68 at the start of this session) is the closest of the three
+still-open functions by a wide margin and is very likely one or two more
+targeted measurements away from MATCH, but is not required to park here.
+
+Parking WM_ITEM at **8/12** for this session, per the fallback instruction:
+`.data` is reordered to the real layout (profile first, matching the
+`classInit` self-relocation), the single-array/single-anchor shape landed
+on `create()` and `calcModel()`, the swapped-stack-slot mechanism (source
+declaration order controls slot order) is now demonstrated and reusable,
+and all three remaining gaps are characterized with a specific, measured
+cause rather than left as open questions.

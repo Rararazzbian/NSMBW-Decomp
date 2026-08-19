@@ -235,6 +235,7 @@ void daWmItem_c::cycleAnm() {
 
 void daWmItem_c::calcModel() {
     const float *k = sConstTable;
+    mVec3_c local;
 
     mScale.x = k[9];
     mScale.y = k[9];
@@ -253,10 +254,9 @@ void daWmItem_c::calcModel() {
     mScale.z *= mMotion[2];
     mModel.setScale(mScale);
 
-    mVec3_c local;
     local.x = mPos.x;
-    local.y = mPos.y + k[10] * mMotion[1];
     local.z = mPos.z;
+    local.y = mPos.y + k[10] * mMotion[1];
 
     if (m_20b) {
         local.z = k[11];

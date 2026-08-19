@@ -8825,3 +8825,50 @@ size, so a wrong class size shows up there immediately.
 
 `(10123) ';' expected`. Not supported by this compiler; use the constructor's
 initialiser list. Worth knowing before designing a header around them.
+
+## NEW RULE: source DECLARATION order controls stack slot order
+
+Independent of use order and of scope nesting.
+
+WM_ITEM's `calcModel` had two by-value temporaries on **swapped** stack slots: the
+target put the conditional, first-used one low (`0x8-0x10`) and the unconditional,
+second-used one high (`0x14-0x1c`); the draft had it reversed.
+
+```
+give the unconditional local its own block scope   ->  no change, swap persists
+declare it BEFORE the `if`, assign its fields later ->  15 -> 7, swap GONE, slots exact
+```
+
+**Declaring the second temporary earlier — while still using it later — put both
+on the target's slots.** So the allocator orders slots by declaration, not by
+first use and not by lexical nesting.
+
+**The wrapper check was done FIRST, and correctly ruled the other lever out.**
+Grepping for `bl` inside the function showed neither temporary generates a
+constructor call at all — both inline to field stores — so no inline wrapper was
+in play and the six-unit wrapper rule could not have applied. **Confirm the
+precondition before restructuring**; this is the second time today that check
+prevented a misapplication.
+
+Residual then reduced to field-assignment order, swept exhaustively:
+
+```
+x,y,z 7   y,x,z 7   z,x,y 7   x,z,y 6   y,z,x 8   z,y,x 8
+```
+
+`calcModel` trajectory across the session: **68 -> 60 -> 15 -> 6**, with
+instruction count and frame size exact and both temporaries on correct slots.
+
+## WM_ITEM PARKED at 8/12
+
+`.data` reordered to the real layout, the single-array/single-anchor shape landed
+on two functions, and the slot-order mechanism demonstrated and reusable. All
+three remaining gaps have a specific measured cause:
+
+```
+createModel  116   axis 3 -- two anchors needing eager hoisting; half-applied made it WORSE
+cycleAnm      14   a lone non-zero-offset read; a compiler heuristic no phrasing reaches
+calcModel      6   register-number/load-scheduling on one triple, decoupled from slot placement
+__sinit       15   same offset-folding rule; re-measured after calcModel's fix and did not move,
+                   confirming no cross-function pool sharing here
+```
