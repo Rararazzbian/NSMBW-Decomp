@@ -150,13 +150,21 @@ public:
     /// `d_wm_lib.hpp` (proposed shadow addition, see the task report).
     void primeRevivalCount();
 
-    /// @unofficial `sizeof(dWmDemoActor_c)` currently probes to 0x184 (`li r3,0x184; blr`), but the
-    /// target constructs `mAllocator` at +0x188 -- a 4-byte shortfall in the ALREADY-LANDED,
-    /// shared `d_wm_demo_actor.hpp` (not edited here per the hard rule; this is a local
-    /// compensating pad, reported as a proposed upstream fix in the task report). Every other
-    /// `dWmDemoActor_c`-derived class with an added member (`daWmMap_c`, `daWmPlayer_c`, ...)
-    /// likely carries the same +4 shift on its own first member.
-    u8 mPad184[4];
+    /// @unofficial +0x184. NOT base-class padding -- the coordinator independently probed
+    /// `sizeof(dWmObjActor_c) == 0x188` (dWmObjActor_c : public dWmDemoActor_c, `sizeof
+    /// (dWmDemoActor_c) == 0x184` unchanged) and dWmObjActor_c's own added member sits at
+    /// exactly this offset, so the base is NOT short: every `dWmDemoActor_c`-derived class that
+    /// adds a member of its own gets ONE at +0x184 first. Confirmed this is a genuine POD member
+    /// of THIS class (not shared tail padding) by checking every one of this unit's own 22
+    /// functions for a `0x184(rX)` access: there is exactly one such access in the whole
+    /// `0x15b590-0x15c200` span's covering objects, and it belongs to `fn_2_15C230` --
+    /// WM_BOARD's OWN constructor (`stw r0, 0x184(r30)` with `r0 = -1`), not to this class. So
+    /// antlion_mng's own +0x184 is a plain POD field (no constructor call for it appears between
+    /// `__ct__14dWmDemoActor_cFv` and `__ct__16dHeapAllocator_cFv`), always zero via
+    /// `fBase_c::operator new`'s documented zero-init, and never read or written by any function
+    /// in this unit -- its concrete meaning is UNRESOLVED, left as a raw-byte placeholder rather
+    /// than guessed at (same policy as antlion's own +0x6c4-0x6e8 POD gap).
+    int mUnk184;
     dHeapAllocator_c mAllocator;
     /// @unofficial +0x1a4. Attack-sequence state (0 = idle; 1..7 driven by checkAttackSequenceDone).
     int mState;
@@ -352,48 +360,70 @@ void daWmAntlionMng_c::reviveOnRoute() {
 }
 
 /// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BDA0's control flow.
+/// @unofficial Same two fixes as clearAllModels (see its own doc comment): the unnamed
+/// `daWmMap_c` +0x3388 field as GetMapEnemyInfo's first argument, and an outer-loop accumulator
+/// for `idx` instead of `sub + slot * 2`. Also: `setAntlion`'s two bool arguments are this
+/// function's own two parameters, passed straight through (`param0`, `param1`), not hardcoded
+/// `true`/`false` as the first draft guessed.
 void daWmAntlionMng_c::rebuildAllModels(bool param0, bool param1) {
     daWmMap_c *map = daWmMap_c::m_instance;
     dInfo_c *info = dInfo_c::m_instance;
 
+    int base = 0;
     for (int slot = 0; slot < 2; slot++) {
         for (int sub = 0; sub < 2; sub++) {
+            int idx = sub + base;
             dInfo_c::enemy_s enemy;
-            info->GetMapEnemyInfo(slot, sub + slot * 2, enemy);
+            info->GetMapEnemyInfo(*(int *)((char *)map + 0x3388), idx, enemy);
             if (enemy.mPathIndex >= 0) {
                 const char *pointName = map->mCsvData[map->currIdx].GetPointName(enemy.mPathIndex);
                 int world = pointName[3] - '0';
-                map->mModels[map->currIdx].setAntlion(true, world, false);
+                map->mModels[map->currIdx].setAntlion(param0, world, param1);
             }
         }
+        base += 2;
     }
 }
 
 /// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BE80's control flow.
+/// @unofficial Two fixes this round, both found by direct comparison against the target's
+/// register allocation: (1) the outer/inner loop var is NOT the first argument to
+/// GetMapEnemyInfo/SetMapEnemyInfo -- the target reads an UNNAMED field at `daWmMap_c` +0x3388
+/// (the last 4 bytes of the still-opaque `mPad1[0x20c]`, immediately before `currIdx` at
+/// +0x338c) fresh on every inner iteration and passes THAT. (2) `idx` is an outer-loop
+/// ACCUMULATOR incremented by 2 per outer pass, not `sub + slot * 2` recomputed by
+/// multiplication -- matches rebuildAllModels' own target shape (fn_2_15BDA0) exactly, and is
+/// the "decouple declaration order from usage order" family of levers applied to a loop instead
+/// of a constructor argument list.
 void daWmAntlionMng_c::clearAllModels() {
     daWmMap_c *map = daWmMap_c::m_instance;
     dInfo_c *info = dInfo_c::m_instance;
 
+    int base = 0;
     for (int slot = 0; slot < 2; slot++) {
         for (int sub = 0; sub < 2; sub++) {
-            int idx = sub + slot * 2;
+            int idx = sub + base;
             dInfo_c::enemy_s enemy;
-            info->GetMapEnemyInfo(slot, idx, enemy);
+            info->GetMapEnemyInfo(*(int *)((char *)map + 0x3388), idx, enemy);
             if (enemy.mPathIndex >= 0) {
-                info->SetMapEnemyInfo(slot, idx, map->currIdx, -1);
+                info->SetMapEnemyInfo(*(int *)((char *)map + 0x3388), idx, map->currIdx, -1);
             }
         }
+        base += 2;
     }
 }
 
-/// @unofficial fn_2_15BF20. True iff getEnemyRevivalCount is 0 for both world slots.
+/// @unofficial fn_2_15BF20. Signedness/branch-polarity fix this round: the target's `beq`/`bne`
+/// shape (`cmpwi r3,0; bne loop_continue; li r3,1; b end`) is `== 0 -> return true`, an ANY not
+/// an ALL -- the opposite of the first draft's `!= 0 -> return false`, which inverted which
+/// branch lays out first even though both are logically equivalent as a loop predicate.
 bool daWmAntlionMng_c::checkAllRevivalCountsZero() {
     for (int i = 0; i < 2; i++) {
-        if (dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, i) != 0) {
-            return false;
+        if (dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, i) == 0) {
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 /// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BF80's control flow.

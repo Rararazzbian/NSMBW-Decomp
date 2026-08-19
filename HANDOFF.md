@@ -2284,6 +2284,67 @@ Two readings worth testing:
    `getModelName` referencing it across units. Note `check_bounds.py` reports
    the current claim plausible, so this needs the neighbour's layout to settle.
 
+## antlion's `.rodata` gap: ownership SETTLED, and it does not dissolve
+
+I hoped the 12 unclaimed bytes at `0x85b4-0x85c0` were WM_ANTLION_MNG's, which
+would have unblocked three units at once. **They are not.** Decoded word by word
+from the relocation stream:
+
+```
+0x8598  100.0   -> referenced from antlion's own .text (0x15ae1a .. 0x15b4f2)
+0x859c  0.0     -> referenced from antlion's own .text (0x15b00e .. 0x15b4b6)
+0x85a0  1.0     -> referenced from antlion's own .text (0x15b3f2/0x15b3f6)
+0x85a4  -1.0    -> no relocation (reached by displacement)
+0x85a8  2160.0  -> no relocation
+0x85ac  -30.0   -> no relocation
+0x85b0  -478.0  -> referenced ONLY from 0x8f5f6 / 0x8f606
+0x85b4  1       -> NO RELOCATION ANYWHERE IN THE MODULE
+0x85b8  0       -> none
+0x85bc  0       -> none
+```
+
+`0x8f5f6`/`0x8f606` are inside `fn_2_8F4C0`, a function in a completely
+different and much earlier TU. And **`dtk` has no symbol boundary at `0x85b4`
+for any claim to land on**: `lbl_2_rodata_85A0` is a single indivisible `0x20`
+object spanning `0x85a0-0x85c0`, confirmed in the symbol map
+(`size:0x20 align:4 data:float`).
+
+So WM_ANTLION_MNG cannot start its `.rodata` there -- no boundary, and no
+reference from its own `.text`. Its claim correctly begins at `0x85c0`, exactly
+where antlion's validated claim ends. **Antlion's remaining byte is a same-TU
+dead-pool-literal problem, now confirmed rather than assumed** -- the same shape
+kinoko_red independently documented.
+
+Note this also explains `check_bounds`'s "END cuts `lbl_2_rodata_85A0` short"
+warning on antlion's 8-aligned claim: the claim genuinely does bisect a labelled
+object, and that is unavoidable given the object spans the boundary.
+
+## WM_ANTLION_MNG 15/22
+
+`+0x184` is settled and the header stands: exactly ONE access to `0x184(rX)`
+exists in the whole covering range and it belongs to `fn_2_15C230` --
+**WM_BOARD's constructor, not this unit's**. So within `daWmAntlionMng_c` it is a
+genuine always-zero POD member that none of the unit's own code touches. Recorded
+as `int mUnk184` with that evidence.
+
+Two more functions moved with today's levers:
+- A predicate closed to MATCH once read correctly as `== 0 -> return true` (an
+  ANY test) rather than `!= 0 -> return false` (an ALL test) -- branch polarity
+  read off the target rather than inferred from the name.
+- `rebuildAllModels` 49 -> 30 and `clearAllModels` to structurally identical,
+  after a direct register-map comparison showed the first argument to
+  `GetMapEnemyInfo`/`SetMapEnemyInfo` is an unnamed `daWmMap_c+0x3388` field
+  re-read fresh at each call, NOT the loop variable, and that the index is an
+  outer-loop accumulator (`+= 2`) rather than `sub + slot*2`.
+
+`clearAllModels` is now byte-for-byte structurally identical -- same size, same
+instructions -- and stuck purely on register NUMBERING (`r31/r30/r29` against the
+target's differently-assigned `r26-r31`). Logic right, allocation wrong; parked
+rather than chased.
+
+VTABLE CLEAN, order clean, bounds unchanged. `processCutsceneCommand` is the
+largest remaining target.
+
 ## WM_ANTLION_MNG is 22 functions, not 79 — and the landed header is NOT wrong
 
 **Scope correction, mine again.** I briefed this unit as "roughly 79 functions,
