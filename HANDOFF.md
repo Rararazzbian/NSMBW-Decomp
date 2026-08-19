@@ -9797,3 +9797,30 @@ instructive:
 
 **Second time on this unit that a lower count concealed a string-offset
 regression.** Read the diff, not the number.
+
+## WM_BOARD PARKED at 11/15 — and both retests HELD, which sharpens the rule
+
+Applying the context-dependence finding to this unit's own two walls:
+
+```
+ctor  (4)   the initializer-list-versus-body-statement variant, retried post-fix:  4 -> 21, worse
+create (13) extern linkage, retried post-fix:                                     13 -> 13, no change
+create (13) reading back through the member pointer, retried post-fix:            13 -> 15, worse
+```
+
+**Both held identically before and after the surrounding bugs were fixed.** That
+is a much stronger basis for calling them genuine walls than a single measurement
+— and it draws the line the discovery needed:
+
+- **A negative measured alongside a known-wrong neighbour is weak** — `execute`'s
+  `mAnim.play()` regressed in that state and was correct once the neighbour was
+  fixed.
+- **A negative that survives a retest after real bugs are fixed is strong.**
+
+**So the rule is: re-test after fixing a genuine bug, and treat what survives as a
+wall.** That costs one recompile per variant and converts an assumption into
+evidence in both directions.
+
+Final state: **11/15**, `.rodata` exact, four characterised residuals — `ctor` 4,
+`create` 13, `dtor` 21 (twice-confirmed across two units), `createModel` 79 (four
+negatives across three mechanisms). Working tree clean.
