@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11273 lines / 427 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11318 lines / 428 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -448,3 +448,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11179-11210` `.ctors` resolves "which function is `__sinit`" EXACTLY — and the count is a test
 - `11211-11241` MY ERROR: a tally gap is NOT a measure of unwritten work
 - `11242-11273` THERE ARE UNLANDED UNITS OF 0x30 BYTES, and we have been grinding walls
+- `11274-11318` `sc_ForceList` double-init SOLVED: it was our own duplicate declaration

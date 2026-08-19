@@ -1416,3 +1416,159 @@ before the last 8 `.rodata` bytes can appear; (3) re-reading the REST of
 `stepCutscene70`'s already-"authored" cases against a complete rodata
 table the way case 0 just was, in case the same "authored against a
 truncated constant dump" mistake recurs elsewhere.
+
+## Round 13: sc_ForceList's double-init -- solved. fn_2_16D1E0 32 -> 3 differing
+
+**X/19 unchanged at 14/19**, but this is the round's real result: the
+`.data`-order blocker the coordinator flagged as unit-wide (not just
+`fn_2_16D1E0`'s own problem) is fixed, and the function it was scoped to
+went from 32 differing to 3.
+
+### The actual bug: a redundant, unreferenced, hand-authored duplicate -- not a header defect, not two include paths
+
+Re-read `fn_2_16D1E0`'s own target disassembly completely fresh, not
+trusting the inherited "kinopio declares its own separate
+`ForceInCourseList_t` entry with the same values as `dWmLib::sc_ForceList`
+by coincidence" framing from earlier rounds. The function constructs
+exactly ONE `ForceInCourseList_t` object, at address `lbl_2_data_45C90`
+-- the same address, same field layout, same literal values (`WORLD_7,
+"F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0",
+mVec3_c(2160.0f, -30.0f, -478.0f)`) every earlier round had attributed to
+"our own" `sForceList`. There was never a second object in the target.
+Checked directly: `grep -n sForceList d_a_wm_kinopio.cpp` showed our own
+hand-authored `static dWmLib::ForceInCourseList_t sForceList = {...}` was
+declared and NEVER referenced anywhere else in the file -- a pure,
+unused duplicate of the header's own `dWmLib::sc_ForceList` static (which
+this TU needs regardless, for `ForceInCourseList_t`/`IsSingleEntry()`/
+`InitKinopioCourse()`). Declaring it a second time under a different name
+with identical values is exactly what compiled a second registration and
+a second ~0x30-byte object into this TU's `.data`/`.ctors` -- not a
+defect in `d_wm_lib.hpp`, and not a second `#include` path (this file
+only includes the header once). **Deleted our own `sForceList`
+declaration entirely.**
+
+**Verified against the coordinator's own falsifiable test after the
+fact, not just by feel**: `python wip/wm_units/ctors_map.py d_basesNP
+WM_KINOPIO` confirms the target has exactly one `.ctors` entry
+(`0x40c -> 0x16d1e0`). `python wip/wm_units/dump_obj_section.py
+draft.o .ctors` on the current draft shows `.ctors` is exactly 4 bytes --
+one relocated word, one entry. Counts now match exactly (1 == 1), and the
+single entry is confirmed (via `verify_anon.py`'s own best-match search)
+to correspond to the same function, `__sinit`/`fn_2_16D1E0`. This settles
+the coordinator's two-way branch cleanly: not "two `.ctors` entries" (that
+WAS the bug, now fixed) and not "one entry double-initialising inside
+itself" either -- the single surviving entry constructs exactly one
+object, matching target's one construction.
+
+### Result
+
+`fn_2_16D1E0` (the `.ctors` init / `__sinit`): **32 differing -> 3
+differing.** Read the remaining 3-line diff instruction-by-instruction:
+all three are the SAME rodata constant
+(`mVec3_c(2160.0f, -30.0f, -478.0f)`) read from a displacement 4 bytes
+later than target (target `+0x78/+0x7c/+0x80` off `r31`, draft
+`+0x7c/+0x80/+0x84`) -- a pure pool-position shift, not a logic or value
+error. Traced this shift to case 0's still-open divisor question (see
+below): target never pools a plain `15.0f` constant at all (it recovers
+`15` via the runtime int-to-double bit-trick instead), so target's pool
+is missing a word draft's pool has, and target's pool has an 8-byte
+bias-double draft's doesn't need -- these two differences don't cancel,
+leaving a net 4-byte offset that lands exactly on the `2160/-30/-478`
+triple. This is now understood as the SAME open question as case 0's,
+not a new one -- solving case 0's divisor would very likely also close
+`fn_2_16D1E0` to a clean MATCH.
+
+`stepCutscene70`'s own count: unaffected by this fix in the raw number
+(still 485 -- `sForceList` isn't referenced there at all), but the whole
+`.data` pool for everything declared after `sForceList` is now governed
+by the header's own static rather than a phantom duplicate.
+
+### Item 2: re-checked already-"authored" cases against the complete rodata table
+
+Per instruction ("assume other constants are wrong until checked" after
+case 0's `-2.0f` miss), re-derived every `setAnm(...)` call site in
+`stepCutscene70` -- the highest-risk category, being exactly where round
+8 already caught one real bug -- fresh from `fn_16C810_full.txt`, cross-
+checked against the complete `0x8b10-0x8bac` table, and compared
+instruction-by-instruction (not just value-by-value) against the current
+draft:
+
+- **Case 0** (`setAnm(2, 3.0f, 5.0f, 0.0f)`): re-verified correct. The
+  three float loads (`C[0x5c]=3.0`, `C[0x3c]=5.0`, `C[0x40]=0.0`) are
+  interleaved with the `m_194` bit-trick computation and are easy to miss
+  on a fast read -- confirmed present and correctly matched in the source
+  already.
+- **Case 1** (`setAnm(0xab, 1.0f, 5.0f, 0.0f)`): re-verified correct,
+  including the register-reuse detail (target's 4th arg, `0.0f`, is never
+  reloaded -- it reuses the value already sitting in `f3` from the
+  preceding `mSpeedF = 0.0f;` store, rather than a fresh `lfs`). Matches
+  the draft's compiled shape exactly modulo pool-position digits.
+- **Case 6** (`setAnm(0, 1.0f, 20.0f, 0.0f)`): re-verified correct against
+  the complete table (`C[0x48]=1.0, C[0x60]=20.0, C[0x40]=0.0`).
+- **Case 11** (`setAnm(0, 1.0f, 0.0f, 0.0f)`, guarded by
+  `mPos.x < -500.0f`): re-verified correct, including the `fmr f3,f2`
+  register-copy MWCC uses instead of a second `0.0f` load since two of
+  the three float args are the identical value -- draft already produces
+  the same `fmr` shape (checked in the compiled `draft.txt`, not just
+  reasoned about).
+- **Case 18** (`setAnm(0x54, 5.0f, 5.0f, 0.0f)`): re-verified correct,
+  including the SAME `fmr f2,f1` register-copy trick (both the 2nd and
+  3rd float args are `5.0f` here) -- confirmed the draft's own compiled
+  output already reproduces `lfs f1 / fmr f2,f1 / lfs f3` in that exact
+  order, matching target instruction-for-instruction (only the rodata
+  displacement digits differ, the same pool-position class as everywhere
+  else).
+
+**No new content bugs found** beyond the one already fixed this round
+(case 0's multiplier). The five `setAnm` call sites are the highest-risk
+category (proven by round 8's own catch there) and all check out clean
+against the complete table. Did not exhaustively re-derive every
+countdown-timer case's plain-integer comparisons (cases 4/7/9/13/15/16 use
+no float rodata constants at all, only `m_198`/`m_1a8` integer state and
+`dWCamera_c`/`dGameKey_c` field reads already characterized in earlier
+rounds) -- lower risk category, not touched this round given time
+remaining.
+
+### Item 3 (case 0's divisor): one more cheap negative recorded, still open
+
+Tried a bare, uncast `15` (not `15.0f`, not `(int)15`) as the divisor --
+the absolute simplest possible spelling of "divide by the integer literal
+fifteen." Identical result: this compiler still folds it to a plain
+pooled `15.0f` immediate, not the runtime bit-trick. This was the one
+remaining untried literal spelling; all three (`15.0f`, `(int)15`, `15`)
+now confirmed to fold identically. The real source's divisor is
+conclusively NOT expressible as a plain numeric literal of any spelling
+-- left open and documented per instruction, now with all three cheap
+variants exhausted rather than assumed.
+
+### The paired-single note (not pursued)
+
+Checked whether `stepCutscene70` itself (as opposed to
+`processCutsceneCommand`, which already carries the documented `ps_`/
+`psq_` vectorised-`mVec3_c`-arithmetic residual) has any un-vectorised
+`mVec3_c`/`VEC3` addition that the coordinator's `nw4r::math::VEC3Add`
+finding could apply to. It does not -- every `mVec3_c` write in
+`stepCutscene70` is either a full-struct copy (case 12/14's `GetPos`
+assignments) or individual per-component float arithmetic, not a vector
+`+`. Nothing to test here this round; the finding is more directly
+relevant to `processCutsceneCommand`'s own residual, which was not
+touched this round per the coordinator's priority order.
+
+## Final result, this round: 14/19 byte-identical
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate, startJump | -- | **MATCH** (13) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, untouched this round |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, untouched this round |
+| `fn_2_16D1E0` `.ctors`/`__sinit` | 0x84 | **3 differing (down from 32)** | `sForceList` duplicate deleted; `.ctors` entry count now matches target exactly (1==1, confirmed via `ctors_map.py`); remaining 3 lines are case 0's open divisor's pool-shift, not a new bug |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | untouched this round; paired-single `VEC3Add` lead applies here, not to stepCutscene70 |
+| `fn_2_16C810` stepCutscene70 | 0x834 | 485 differing | 5 `setAnm` call sites re-verified clean against the complete rodata table; no new bugs found |
+
+**14/19 byte-identical.** Highest-value open item for next round: case 0's
+divisor is now PROVEN to gate both `fn_2_16D1E0` (3 -> 0) and part of
+`stepCutscene70`'s own pool alignment at once -- its priority should be
+reconsidered now that its blast radius is known to be two functions, not
+one, even though the divisor's true source expression is still
+unidentified and must not be guessed.

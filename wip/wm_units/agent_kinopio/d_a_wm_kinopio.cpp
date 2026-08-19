@@ -100,32 +100,32 @@ extern "C" void fn_2_1998E0(daWmPlayer_c *player);
 ACTOR_PROFILE(WM_KINOPIO, daWmKinopio_c, 0);
 
 namespace {
-    // @unofficial file-local dWmLib::ForceInCourseList_t entry, registered
-    // dynamically because mLevel is patched at load from the runtime
-    // global dCsvData_c::c_CASTLE_ID (not a compile-time constant, which is
-    // why this needs a guarded/dynamic .ctors init instead of pure .data).
-    // Same world/node-name/entrance/position as dWmLib::sc_ForceList's own
-    // castle entry (d_wm_lib.hpp) -- kinopio evidently sits at the same
-    // course-entry point.
-    static dWmLib::ForceInCourseList_t sForceList = {
-        WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0",
-        mVec3_c(2160.0f, -30.0f, -478.0f)
-    };
+    // @unofficial ROUND 13 CORRECTION: this used to be a hand-authored
+    // duplicate `static dWmLib::ForceInCourseList_t sForceList = {...}`
+    // with the SAME literal values as dWmLib::sc_ForceList's own castle
+    // entry (d_wm_lib.hpp). That was never a coincidence-worth-a-comment,
+    // it was the ANSWER: re-reading fn_2_16D1E0's target disassembly
+    // fresh (not trusting the inherited "kinopio has its own separate
+    // sc_ForceList-shaped entry" framing) shows the function constructs
+    // EXACTLY ONE ForceInCourseList_t object, at address lbl_2_data_45C90
+    // -- the same address, same fields, same values previously attributed
+    // to "our own" sForceList. There was never a second object. This
+    // TU's own code never referenced `sForceList` anywhere outside its
+    // own declaration (confirmed by grep), so it was a pure, unused
+    // duplicate of the header's own static, and duplicating it is exactly
+    // what produced the extra .ctors entry every round-3/4 variant kept
+    // measuring. Deleted. `dWmLib::sc_ForceList` (pulled in by the
+    // already-required `#include <game/bases/d_wm_lib.hpp>`, needed
+    // regardless for `ForceInCourseList_t`/`IsSingleEntry()`/
+    // `InitKinopioCourse()`) is the ONE object the target actually
+    // constructs, and this TU is simply the (or a) translation unit where
+    // that internal-linkage header static happens to be emitted.
 
-    // @unofficial lbl_2_data_45CBC, a POINTER variable (not an array),
-    // sitting immediately after sForceList's own fields in the target's
-    // .data (confirmed via a direct .rela.data relocation lookup against
-    // bin/dtkspl/d_basesNP/obj/auto_04_00044A68_data.o -- see the long
-    // comment near stepCutscene70() for the full derivation). DECLARED
-    // HERE, immediately after sForceList, because this project's .data
-    // pools in declaration order and the target's own layout places
-    // W101's string/pointer pair right after sForceList's fields and
-    // BEFORE g_profile_WM_KINOPIO/"character_SV"/"W103"/"W102"/
-    // "kinopio_all_root" -- moving the declaration here (from its
-    // originally-tried spot next to sCamParams, much later in the file)
-    // is what reproduces that position. Shared by stepCutscene70() cases
-    // 12 and 14 (3 call sites total, all reading this same pointer's
-    // value).
+    // @unofficial lbl_2_data_45CBC, a POINTER variable (not an array) --
+    // see the long comment near stepCutscene70() for the full
+    // `.rela.data`-relocation-based derivation. Shared by
+    // stepCutscene70() cases 12 and 14 (3 call sites total, all reading
+    // this same pointer's value).
     static const char *sW101 = "W101";
 
     // @unofficial fn_2_16C5D0 (unusedStub) is the sole PTMF-table target --

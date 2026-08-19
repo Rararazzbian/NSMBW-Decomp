@@ -11270,3 +11270,48 @@ Some come with a head start already in hand: `BSS_SINGLETONS.md` gives
 `PEACH_CASTLE_SEQUENCE_MGR_OBJ` as `sizeof 0xB8 : dActor_c`, and
 `MINI_GAME_WIRE_MESH_MGR_OBJ` as `sizeof 0x708 : dActor_c` — size, base class and
 singleton pointer already resolved before anyone opens the disassembly.
+
+## `sc_ForceList` double-init SOLVED: it was our own duplicate declaration
+
+`fn_2_16D1E0` went **32 differing -> 3**. The cause was in the draft all along: a
+hand-authored `static dWmLib::ForceInCourseList_t sForceList = {...}` carrying
+**the exact same literal values as the header's own `dWmLib::sc_ForceList`**, and
+referenced nowhere in the file. A pure unused duplicate, paying for a second
+static initialisation.
+
+Reading the target disassembly fresh — rather than trusting the inherited framing
+— showed the target constructs **exactly one** `ForceInCourseList_t`, at the same
+address with the same values. **There was never a second object to reconcile.**
+The whole "double-init" framing was an artefact of our own draft.
+
+**The chain that solved it is worth noting, because no single step would have.**
+WM_KILLERBULLET identified its `fn_2_169FA0` as the `.ctors` static-init for the
+same shared static. That made it look like a header defect, which `grep -l
+d_wm_lib.hpp source/d_basesNP/bases/*.cpp` refuted immediately — ten-plus LANDED
+units include it and are byte-perfect. That put the fault TU-side and produced a
+two-way branch: an extra `.ctors` entry (spurious include) versus one entry
+initialising twice internally. `ctors_map.py` then made the branch decidable by
+counting, and the answer was neither — it was a third case, a local re-declaration.
+
+**Verified both ways, with numbers:** the target has exactly one `.ctors` entry
+(`0x40c -> 0x16d1e0`); the draft's `.ctors` is now exactly `0x4` bytes, one entry,
+for the same function. Confirmed independently here.
+
+The remaining 3-line diff is a pure pool-POSITION shift — the same
+`2160.0f/-30.0f/-478.0f` constants sitting 4 bytes later than the target — traced
+to case 0's still-open divisor.
+
+**Case 0's divisor: three spellings now exhausted.** `15.0f`, `(int)15` and bare
+`15` all constant-fold to an immediate, where the target genuinely converts at
+runtime (`li r3,0xf; lis r0,0x4330; xoris; stw/stw; lfd; fsubs`). Note what that
+implies: **the compiler DID know the value is 15** — it is an immediate in `r3` —
+**and still emitted the conversion**, which is what happens converting an `int`
+that has been constant-propagated rather than a literal. So the source divides by
+something the compiler treats as an `int` OBJECT, not a literal. It now gates two
+functions, which promotes it.
+
+Also re-verified this round: all five `setAnm(...)` call sites in `stepCutscene70`
+against the complete `.rodata` table, after the truncated-dump incident. **No
+further bugs found** — the one wrong multiplier was the only casualty. A clean
+re-check after a known-bad input is worth recording precisely because it came back
+empty.
