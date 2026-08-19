@@ -9824,3 +9824,51 @@ evidence in both directions.
 Final state: **11/15**, `.rodata` exact, four characterised residuals — `ctor` 4,
 `create` 13, `dtor` 21 (twice-confirmed across two units), `createModel` 79 (four
 negatives across three mechanisms). Working tree clean.
+
+## A base vtable written then overwritten is ORDINARY DERIVED-CLASS CONSTRUCTION
+
+WM_HANACHAN's scout flagged an unexplained pattern: a `m3d::fanm_c` constructed
+at `+0x3cc`, whose vtable is then **overwritten** with `__vt__Q23m3d8anmChr_c`
+immediately afterwards.
+
+That is not an anomaly. The headers give the chain:
+
+```
+m3d::anmChr_c : public fanm_c : public banm_c
+```
+
+Constructing an `anmChr_c` runs `fanm_c`'s constructor first — which installs
+`fanm_c`'s vtable — and then `anmChr_c`'s own constructor installs the derived
+vtable over it. **So the member is an `m3d::anmChr_c`, not a `fanm_c`.**
+
+**A vtable written and then replaced during construction identifies the DERIVED
+type, and the sequence of vtables names the whole inheritance chain.** Read it as
+information rather than as a puzzle.
+
+Sixth case today where checking `include/` dissolved something reported as
+unexplained or unowned.
+
+## WM_HANACHAN scouted: the largest class of the session
+
+`daWmHanachan_c : public dWmDemoActor_c`, **`sizeof 0xf00`** — read off
+`classInit`'s `li r3, 0xf00` before a line was written, and confirmed by the
+layout arithmetic closing exactly: the last member is a 5-element array of a
+custom `0x38`-byte struct at `+0xde8`, and `0xde8 + 5 * 0x38 = 0xf00`.
+
+**When the final member's offset plus its size equals `sizeof`, the layout is
+closed** — that is a complete check, not a plausible one.
+
+Dominated by embedded arrays: `m3d::mdl_c[4]`, `m3d::anmChr_c[4]`, a single
+`mdl_c`, the `anmChr_c` above, `m3d::smdl_c[5]`, a **200-element** `0xc`-byte
+array at `+0x484` (a position-history buffer, `mVec3_c`-shaped by its real
+destructor), and the custom 5-element array whose constructor and destructor are
+**both functions inside this unit's own 32** — so the element type is declared by
+this class itself.
+
+### The ownership check caught an over-wide claim
+
+Two rounds of bound iteration: several upper bounds were too short (`check_bounds`
+reporting "END cuts short" against a real symbol — one object alone is `0xc8`
+bytes), and **one over-wide `.data` guess swallowed the NEXT unit's
+`g_profile_WM_ITEM`, caught by the ownership check rather than by size.** A
+same-size wrong-owner claim is exactly what that check exists for.
