@@ -9538,3 +9538,51 @@ order, not the layout order — do not infer one from the other.
 **Counting relocations to get the entry count is now the standard opener for any
 table.** Two units today lost rounds to a wrong count — one too few, one too many
 — and in both cases every constant after the table shifted.
+
+## WM_KILLERBULLET 4/37 -> 9/37, bounds pinned on all five sections
+
+```json
+{".text": "0x1686e0-0x16a150", ".data": "0x453e8-0x45630",
+ ".rodata": "0x89f0-0x8a3c", ".bss": "0xfe10-0xfe3c", ".ctors": "0x3f4-0x3f8"}
+```
+
+The five-entry table, declared as a real
+`mVec3_c (daWmKillerBullet_c::*)[5]` pointer-to-member array, **closed two state
+handlers immediately** — confirming the relocation-count method for table sizing.
+
+### Name what the symbol names, and no more
+
+Two undeclared members, handled differently and correctly:
+
+- `m_1fc`'s call has a **real mangled name** (`calcRotate__12dWmRotater_cFv`), so
+  the class was named `dWmRotater_c` and forward-declared minimally.
+- `m_200`'s call has **no name at all** — just a raw vtable index — so it was left
+  as raw vtable dispatch rather than inventing a class.
+
+**A mangled name is a licence to name a type; a bare vtable index is not.**
+
+### The ownership check caught a SHARED EXTERNAL table
+
+`lbl_2_data_45428` sits inside the unit's address neighbourhood but has **50
+references from outside its `.text` claim** — it is a shared external constant
+table reached by `extern`, not this unit's data to declare or duplicate. The
+placeholder using its values was flagged as known-wrong rather than left looking
+finished.
+
+**Run the ownership check on any data object before declaring it**; a table near
+your unit is not necessarily yours.
+
+## TOO MANY saved registers means the INVERSE lever
+
+`execute()`'s target uses **2 registers and a `-0x10` frame**; the draft uses **5
+and `-0x20`**. Every other register problem this session has been a shortfall —
+this is the first over-preservation.
+
+**When you have MORE saved registers than the target, you are caching something
+the target re-materialises.** That is the inverse of the bind-a-repeatedly-
+accessed-value lever, and WM_KILLER established it in the other direction: a
+four-call chain there re-read a static pointer fresh before each call, and caching
+it broke the shape.
+
+**Track the frame size and saved-register count, not the differing count** — those
+move first, and their direction tells you which lever you need.
