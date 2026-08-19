@@ -10722,3 +10722,37 @@ list because it fell inside the reporting window.
 was wrong.** That is the argument for the dataflow check existing at all: a tool
 that cannot distinguish what it proved from what it assumed will eventually hand
 someone a `sizeof` to build a class layout on.
+
+## WM_KILLERBULLET 17/37 -> 19/37, and the order fix that moved the tally by zero
+
+The most valuable change in the round did not move the count at all: **six
+function-definition-order inversions cleared**, verified green by
+`check_fn_order.py` (17 addressed definitions, ascending). The unit could not
+have linked at any tally with those present. This is the second unit in one day
+found unlinkable while sitting on a respectable-looking match count — see the
+WM_KILLER entry above.
+
+Matched: `unk_168F00` (0xC, a tail-call setting `m_1b0=4` then falling into
+`unk_169E10`) and `unk_169B80` (0x40, a wrapping 16-bit counter, exact).
+
+**A layout fact proven the right way:** `int m_1c8` at offset `0x1c8` was
+previously unverified padding. `unk_169B80`'s own **word-width `stw`/`lwz`**
+proves the width and the offset together. Access width is evidence about type,
+and it is stronger than any inference from surrounding fields.
+
+Four functions parked after three genuine attempts each — `unk_1693C0`,
+`unk_169080`, `unk_169DA0`, `unk_169E10` — all size-exact or near, with content
+and structure confirmed and only register-allocation residuals left.
+
+**Also worth recording, as a discipline rather than a finding:** the agent
+counted a residual as closed only when every differing line was a
+symbol-naming artifact (a real mangled name against the target's address-only
+placeholder), **checked line by line for all 37 functions rather than inferred
+from a low diff count.** A tally built any other way is not comparable across
+rounds, and this project has had tallies drift for exactly that reason.
+
+An open, falsifiable prediction to settle next round: `unk_168C80`'s 7-diff
+pool-offset-short residual is expected to **self-resolve as sibling stubs are
+replaced with real code**. If it does, that is a reusable rule about pool
+residuals in partially-authored units. If it does not, it is a measured negative.
+Either answer is worth having; the hypothesis alone is not.

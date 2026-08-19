@@ -493,6 +493,11 @@ bool daWmKillerBullet_c::unk_169DA0() {
 // arg is #s_bssDir10 (this unit's own `.bss` cache, NOT `mVec3_c::Ey` -- that's
 // `_initDemoJumpBase`'s own dir arg instead), and finally clears any active effect (#m_1e4).
 void daWmKillerBullet_c::unk_169E10() {
+    // PARKED at 19/58 differing (target 58 lines, SAME size). Content is fully confirmed --
+    // every residual is which shared-table float gets loaded in which order relative to
+    // #mPos's own loads (a pure scheduling/evaluation-order artifact of the 3-arg constructor);
+    // a field-by-field `y;z;x` rewrite (matching the target's own STORE order) tried as a second
+    // attempt regressed to 21. #s_bssDir10's own two lines are naming-only (MATCH-equivalent).
     mVec3_c pos(mPos.x + R_2_5_45428[0xc], mPos.y + R_2_5_45428[0xd], mPos.z);
     short frames = *(const short *) ((const u8 *) R_2_5_45428 + 0x40);
     float startScale = mScale.x * R_2_5_45428[0x11];
