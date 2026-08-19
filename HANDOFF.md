@@ -7084,3 +7084,44 @@ instructions in `bin/dtkspl/` state outright.
 ### Next
 
 **Sandpillar (66/66) was blocked behind antlion** and should now be attemptable.
+
+## SANDPILLAR LANDED, on the first attempt, with no source change at all.
+
+**Ninth unit. 11.286% -> 11.400%**, `d_basesNP` 1.704% -> 2.103%. 66 functions,
+~7,400 code bytes -- the largest unit landed in this module so far.
+
+It went in **immediately after antlion**, with its source untouched from the
+state it had been parked in. Nothing about sandpillar was ever wrong.
+
+### The dependency was real and is now discharged
+
+Sandpillar's recorded blocker was `.text` growing by `0x150`: the object came out
+`0x648` over its claim, which is normally benign weak symbols, except some were
+being PLACED. Sandpillar is a heavy template user
+(`sFStateID_c<daWmSandPillar_c>`, `sFStateFct_c<...>`, `sStateMgr_c<...>`) and was
+the only landed provider of those instantiations, so there was nothing to
+deduplicate against and its own copies had to be placed.
+
+**A weak symbol defined only in an un-landed region gets placed.** Antlion
+instantiates the same templates. The moment antlion landed, sandpillar's weak
+copies had a target to dedupe against and the `0x150` disappeared on its own.
+
+### Two units for one fix
+
+The whole chain traces back to `make_filler_slice`'s alignment, one line of our
+own tooling. Antlion was parked seven measured attempts deep trying to emit a
+word it did not own, and sandpillar -- already 66/66 and byte-exact -- was parked
+behind antlion. Neither unit had a defect.
+
+**When a unit is parked on a symptom in a section rather than in a function, and
+especially when its own functions all match, suspect the tooling and the claim
+before suspecting the source.** Both of these were sitting finished.
+
+### The parked-unit list is worth re-reading against this
+
+Any unit parked on "section is N bytes wrong", or on placed weak symbols, should
+be re-measured now:
+- **castle** 18/20 -- parked on `.bss` +4 and a `__sinit` residual
+- **koopa_castle** 16/17
+- **course** 22/23 -- its residual is a register allocation inside a function,
+  so this does NOT apply to it
