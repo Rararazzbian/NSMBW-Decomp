@@ -7988,3 +7988,41 @@ variable, not a literal.** A literal's address is materialised directly with
 enclosing functions** for any `r6`/`r7`/`r8` touch -- none anywhere. That is the
 right way to rule out the under-read-arity trap WM_NOTE hit, rather than
 inspecting only the instructions immediately before the call.
+
+## dance_pakkun PARKED at 9/16 — an allocation call, not a verdict on the unit
+
+Nothing to nothing-but-9/16 including both of its largest functions, the
+pointer-to-member-function idiom identified, castle's guard shape transferred and
+adapted, and every constant corrected from guessed to measured. What remains is
+compiler-behaviour residual rather than reconstruction, and fresh units in this
+module have been landing 9/9, 11/11 and 13/13 in a single round each. That is the
+whole reason for the park.
+
+```
+classInit MATCH | ctor 4 | dtor 21 | create() ~36 | execute() MATCH | draw() MATCH
+doDelete() MATCH | createModel() ~70-75 | tailHelper() MATCH | calcModelFor() 101 (size 105/101)
+startStep() ~15 | resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+__sinit 14 (size 52/52 exact), pool drift 0x38 vs 0x54 unresolved
+```
+
+### Two process points from its last round, both worth keeping
+
+**A contradiction between the disassembly and the measurement was documented
+in-source rather than silently reverted.** `calcModelFor`'s `getRate()` comparison
+reads as `<=` from the branch instructions (`fcmpo` + `ble`), but `>` measures
+closer (103 versus 101 differing). Rather than quietly keeping the better number,
+both readings are recorded in the source with the disagreement stated. **A future
+attempt inherits the conflict instead of re-deriving it and landing in the same
+confusion.**
+
+**And a correction of mine worth repeating.** I told the agent to fix the function
+and then re-measure the pool drift. It pointed out that two *failed* attempts not
+moving the drift says nothing about whether a correct reconstruction would, so
+the check I asked for was never actually performed. I would have over-read that.
+**"The variable did not move" is only evidence if the thing you changed actually
+worked.**
+
+`calcModelFor` negatives, measured: separate scalar locals to force the
+three-float `trans` overload give size 113 / 112 differing, worse -- the target's
+per-component stack staging is real but is not produced by separate scalar
+locals.

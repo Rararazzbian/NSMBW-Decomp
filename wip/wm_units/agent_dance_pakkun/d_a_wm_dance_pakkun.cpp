@@ -239,6 +239,12 @@ void daWmDancePakkun_c::calcModelFor(m3d::mdl_c *mdl) {
     float frame2 = mChrAnim[0].getFrame();
     float denom2 = frameMax - sCalcConsts.f18;
     float ratio = frame2 / denom2;
+    // NB: measured this round that `getRate() <= K2` (matching the
+    // target's `fcmpo`+`ble` branch sense literally) compiles WORSE
+    // (103 differing, size 106) than the `>` form kept below (101
+    // differing, size 105) -- despite `<=` being the semantically
+    // faithful reading of the branch. Kept as `>` because it measures
+    // closer; flagged rather than silently "corrected". See MAPPING.md.
     if (mChrAnim[0].getRate() > sCalcConsts.f04) {
         ratio = (float)(sCalcConsts.f20 - ratio);
     }

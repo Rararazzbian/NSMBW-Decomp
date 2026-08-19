@@ -1435,3 +1435,36 @@ __sinit 14 differing via difftool.py (verify_anon: 4), size 52/52 exact -- value
 - `calcModelFor`'s content (101/105 differing) was the stated next
   priority after the pool fix but was not reached this round -- the value
   corrections and the pool-offset investigation consumed the round.
+
+---
+
+## Update after coordinator's tenth round: calcModelFor content attempted, two negatives measured, reverted to prior best; drift confirmed unmoved
+
+Per instruction, worked calcModelFor's content exclusively this round, using difftool.py throughout (verify_anon's pairing is unreliable while this function is size-mismatched).
+
+**Two variants tried, both measured WORSE than the prior 101-differing/size-105 baseline:**
+
+1. Separate scalar locals (`float posX,posY,posZ` instead of `mVec3_c pos`), to match the target's per-component stack staging and force the `mMtx_c::trans(float,float,float)` overload instead of `trans(const mVec3_c&)`. Result: size 113 (was 105), 112 differing (was 101). Reverted.
+2. Fixed the `getRate()` comparison direction to `<=` to literally match the target's `fcmpo`+`ble` branch sense (re-derived carefully: `ble` branches -- does the flip -- when `f1<=f0`, i.e. `getRate()<=K2`; my existing code had `>`). Result: size 106 (was 105), 103 differing (was 101) -- worse despite being the semantically faithful reading of the branch. Reverted, but documented explicitly in-source (not silently changed back) since the semantic reading and the byte-measurement now disagree and a future round should know that rather than re-deriving it.
+
+Reverted both; current state is the same 101-differing/size-105 draft as last round. **calcModelFor's number is unchanged: 101 differing via difftool.py, size 105 vs target 101.**
+
+**Confirmed the pool drift is untouched by this round's (reverted) attempts**: still `lfs f0,0x38(r31)` (target) vs `lfs f0,0x54(r31)` (mine), the same 0x1c/28-byte offset as the last two rounds. Since neither calcModelFor variant this round was kept, this isn't yet the test the coordinator asked for ("get the function right, then re-measure the drift") -- it's a confirmation that reverted/failed attempts don't move it, which is expected and not informative about whether a correct reconstruction would.
+
+### Table
+
+```
+classInit MATCH | ctor 4 (untouched) | dtor 21 (untouched) | create() 34-36ish (untouched)
+execute() MATCH | draw() MATCH | doDelete() MATCH | createModel() ~75 (untouched)
+tailHelper() MATCH | calcModelFor() 101 differing, size 105/101 (attempted, both variants reverted)
+startStep() ~11-15 (untouched) | resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+__sinit 14 differing via difftool.py (verify_anon: 4), size 52/52 exact; pool-offset drift (0x38 vs 0x54) unchanged
+
+9/16 byte-identical
+```
+
+### Negatives this round
+
+- Scalar-locals variant for the `trans()` call: worse (105->113 size, 101->112 differing). The target's per-component stack staging does NOT mean the source used separate scalar locals -- whatever produces that staging, it isn't this.
+- `getRate() <=` (matching the branch mnemonic literally): worse (105->106 size, 101->103 differing), despite being the more defensible reading of `fcmpo`+`ble`. This is now a flagged, in-source-documented disagreement between "what the branch instruction literally says" and "what measures closer" -- neither resolved, both recorded so the next attempt doesn't have to re-derive either one from scratch.
+- Did not find a variant that improved on the existing 101/105 baseline this round. The function's core arithmetic shape (two `getFrame()` calls, the table lookup, the conditional ratio flip, the angle computation, the `trans`/`ZXYrotM`/`setLocalMtx`/`setScale`/`calc` tail) was already right from two rounds ago; what's not yet right is finer-grained register/temporary handling this round's two attempts did not crack.
