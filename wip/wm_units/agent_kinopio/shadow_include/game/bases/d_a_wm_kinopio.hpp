@@ -60,7 +60,7 @@ public:
     mVec3_c m_19c;                 ///< @0x19c, target position (set by processCutsceneCommand)
     int m_1a8;                      ///< @0x1a8, main step-table index (0-19), the stepCutscene70 dispatch key
     int m_1ac;                       ///< @0x1ac, loop counter, wraps at 1000
-    u32 m_1b0;                        ///< @0x1b0, unobserved -- role unconfirmed
+    int m_1b0;                        ///< @0x1b0, an effect ID passed to dWmEffectManager_c::endEffect() (case 11)
     u8 m_1b4;                          ///< @0x1b4, byte flag
     u8 pad_1b5[3];                      ///< @unofficial alignment
     dWmActor_c *m_1b8;                   ///< @0x1b8, result of dWmActor_c::construct(0x28f, ...) -- a spawned child actor

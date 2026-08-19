@@ -7,6 +7,9 @@
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_w_camera.hpp>
 #include <game/bases/d_wm_se_manager.hpp>
+#include <game/bases/d_game_key.hpp>
+#include <game/mLib/m_pad.hpp>
+#include <game/bases/d_wm_effect_manager.hpp>
 #include <constants/game_constants.h>
 
 // @unofficial lbl_2_bss_11B70 -- a shared .bss singleton pointer, real
@@ -234,7 +237,20 @@ void daWmKinopio_c::stepCutscene70() {
         // @unofficial NOT fully decoded -- placeholder.
         break;
     case 6:
-        // @unofficial NOT fully decoded -- placeholder.
+        // @unofficial lbl_2_bss_11B70's real type not identified (see
+        // MAPPING.md) -- ownership check shows it referenced from nearly
+        // every corner of this module, ruled out dCsSeqMng_c/
+        // dWmEffectManager_c/dGameKey_c by field-range mismatch. Kept as
+        // raw offset casts per the established two-landed-units handling.
+        if (*(u8 *) (*(u8 **) &lbl_2_bss_11B70 + 0x54d) == 0) {
+            m_198 = 0xb4;
+            mpMdlMng->mpMdl->setAnm(0, -500.0f, 0.25f, 0.5f);
+            u8 *mgr = *(u8 **) &lbl_2_bss_11B70;
+            *(bool *) (mgr + 0x544) = true;
+            *(bool *) (mgr + 0x546) = true;
+            *(u32 *) (mgr + 0x55c) = 0xe;
+            m_1a8 = 7;
+        }
         break;
     case 7:
         if (m_198 > 0) {
@@ -246,7 +262,15 @@ void daWmKinopio_c::stepCutscene70() {
         }
         break;
     case 8:
-        // @unofficial NOT fully decoded -- placeholder.
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        }
+        if (m_198 == 0) {
+            if (dGameKey_c::m_instance->mRemocon[mPad::g_currentCoreID]->mDownButtons & 0x900) {
+                *(bool *) (*(u8 **) &lbl_2_bss_11B70 + 0x545) = true;
+                m_1a8 = 9;
+            }
+        }
         break;
     case 9:
         m_198 = 0x1e;
@@ -256,7 +280,16 @@ void daWmKinopio_c::stepCutscene70() {
         // @unofficial NOT fully decoded -- placeholder.
         break;
     case 11:
-        // @unofficial NOT fully decoded -- placeholder.
+        if (mPos.x < -500.0f) {
+            clearSpeedAll();
+            dWmEffectManager_c::m_pInstance->endEffect(m_1b0);
+            mpMdlMng->mpMdl->setAnm(0, -500.0f, 0.5f, 0.5f);
+            if (checkSpawnGate()) {
+                m_1a8 = 0xe;
+            } else {
+                m_1a8 = 0x13;
+            }
+        }
         break;
     case 12:
         // @unofficial NOT fully decoded -- placeholder.

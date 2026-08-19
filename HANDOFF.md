@@ -10330,3 +10330,39 @@ N/N within one or two rounds. Every parked unit is one to four functions short o
 scheduling or register-allocation residuals. **A unit that does not close quickly
 tends not to close at all** — so prefer opening a fresh unit, or authoring an
 unwritten function, over a fourth variant against a measured wall.
+
+## `lbl_2_bss_11B70` — a shared singleton whose type is genuinely UNIDENTIFIED
+
+WM_KINOPIO's `stepCutscene70` writes into it, and the search was exhaustive
+rather than skipped:
+
+- **Ownership check: 130+ relocation references spanning nearly the whole
+  module** — confirming a widely-shared singleton, not a unit-local object.
+- **Three candidates checked against the confirmed field offsets**
+  (`+0x544`/`+0x545`/`+0x546`/`+0x54d` booleans, `+0x55c` an int):
+  `dCsSeqMng_c` (documented fields stop at `0x1b4`, far short),
+  `dWmEffectManager_c` (no data members at all), `dGameKey_c` (wrong shape).
+- **Grepped all of `include/` for the literal offsets** — five hits, every one an
+  unrelated enemy-actor class.
+
+**No match. The raw offset-cast form is kept with every offset documented**, which
+is the established handling used by two landed units. Recorded as a real negative
+so the next person does not repeat the search — and as a genuine gap: a singleton
+this widely referenced is worth identifying properly at some point.
+
+## WM_KINOPIO's largest function: 12 of 20 cases
+
+Up from 9. Three new cases, each teaching something:
+
+- **Case 8 reads live controller input** —
+  `dGameKey_c::m_instance->mRemocon[mPad::g_currentCoreID]->mDownButtons & 0x900`
+  — with both types already declared in `include/`.
+- **Case 11 identified `m_1b0`**, previously recorded as "unobserved", as an
+  **effect ID passed to `dWmEffectManager_c::endEffect()`.** A field's meaning can
+  fall out of a single case body.
+- Case 14 is explicitly labelled **incomplete** — one confirmed call out of an
+  estimated four or five — rather than left looking finished. **Labelling a
+  partial case as partial is what keeps the pairing honest** on a 20-case switch.
+
+Remaining: cases 0, 1, 5, 10, 12, 18 untouched; 14 partial; 2, 6, 8 complete but
+using the unidentified singleton's offsets.

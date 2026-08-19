@@ -686,3 +686,79 @@ measured progress on the unit's last function, even though it does not
 close this round. `resetPosition` (3), `checkAnmLoop` (34), the `.ctors`
 init (32), and `processCutsceneCommand` (136) were left untouched this
 round per instruction.
+
+## Round 7: 3 more cases closed (12/20 total), lbl_2_bss_11B70 investigated and unresolved
+
+**X/19 unchanged at 14/19** (the giant function still needs every case
+right). Cases decoded and authored this round: **6, 8, 11** -- bringing
+the total to **12 of 20 cases fully authored** (3, 4, 6, 7, 8, 9, 11, 13,
+15, 16, 17, 19). Cases 0, 1, 5, 10, 12, 18 remain untouched stubs; case 2
+is a complete byte-cast implementation (not a stub, but not resolved to a
+named type); case 14 is a genuine partial (one confirmed call, explicitly
+labeled, not claiming completeness).
+
+### `lbl_2_bss_11B70`: identification attempted, not resolved -- genuine negative
+
+Ran the ownership check per instruction: **over 130 relocation references**
+to this `.bss` slot, spanning almost the entire module (`0x18d000` through
+`0x1c1000` in `.text`) -- confirming it's a widely-shared singleton
+pointer, not something local to this unit. Checked three specific
+candidates by grepping `include/` and comparing field layouts against the
+confirmed offsets (`+0x544`, `+0x545`, `+0x546`, `+0x54d` -- four
+booleans -- and `+0x55c`, an int/enum):
+- `dCsSeqMng_c` (already used elsewhere in this same unit) -- its
+  documented fields end at `0x1b4`, far short of `0x544`.
+- `dWmEffectManager_c` -- no data members at all beyond the static
+  instance pointer.
+- `dGameKey_c` -- wrong shape (a 4-element pointer array, not a flags
+  struct).
+
+Also grepped all of `include/` for literal `0x544`/`0x545`/`0x546`/`0x55c`
+in comments -- the five hits are all unrelated enemy-actor base classes.
+**No match found.** Per the established handling (confirmed by the
+coordinator as used by two already-landed units), kept the raw
+`u8*`/offset-cast form, documented with every offset found across cases 2,
+6, and 8 (`+0x544`, `+0x545`, `+0x546`, `+0x54d` all booleans; `+0x55c` an
+int, values `4`/`7`/`0xd`/`0xe` observed). This is a real, not a lazy,
+negative -- the type search was run before falling back to casts, not
+instead of it.
+
+### 3 newly decoded cases
+
+- **Case 6** (`0x16cb28`, 0x68): guarded by `lbl_2_bss_11B70+0x54d == 0`;
+  sets `m_198 = 0xb4`, calls `mpMdlMng->mpMdl->setAnm(0, -500.0f, 0.25f,
+  0.5f)` (vtable slot `0x5c`, confirmed the same slot as `resetPosition`'s
+  `setAnm` call from round 2's `dPyMdlBase_c` +2-slot rule), sets three
+  more `lbl_2_bss_11B70` fields, transitions to state 7.
+- **Case 8** (`0x16cbc4`, 0x64): another countdown-to-zero, then on
+  expiry checks **live controller input** --
+  `dGameKey_c::m_instance->mRemocon[mPad::g_currentCoreID]->mDownButtons
+  & 0x900` -- both `dGameKey_c` and `mPad::g_currentCoreID` were already
+  declared in `include/`, including a `checkButtonsDown()` helper whose
+  body proved `mRemocon[i]->mDownButtons` was the right access shape (the
+  raw offset `+0x1c` in the disassembly matches `Remocon::mDownButtons`'s
+  documented offset exactly). Sets one `lbl_2_bss_11B70` flag,
+  transitions to state 9.
+- **Case 11** (`0x16cd08`, 0x78): guarded by `mPos.x < -500.0f`; calls
+  `dWmDemoActor_c::clearSpeedAll()` (already declared) and
+  `dWmEffectManager_c::m_pInstance->endEffect(m_1b0)` -- which
+  **identifies `m_1b0`** (previously "unobserved") as an effect-ID `int`,
+  updated in the header. Then the same `setAnm(0, -500.0f, 0.5f, 0.5f)`
+  shape, then branches on `checkSpawnGate()` to state `0xe` or `0x13`.
+
+### Progress this round
+
+12/20 cases now authored (up from 9/20). `m_1b0`'s role resolved (effect
+ID for `dWmEffectManager_c::endEffect`). `lbl_2_bss_11B70`'s type search
+was genuine and exhaustive within the time available but did not
+converge -- recorded as a real negative per instruction, not silently
+left as an unexamined assumption.
+
+## Final state, this session: 14/19
+
+12 of 20 `stepCutscene70` cases closed; `resetPosition` (3), `checkAnmLoop`
+(34), the `.ctors` init (32), and `processCutsceneCommand` (136) untouched
+this round per instruction. Remaining `stepCutscene70` work: cases 0, 1,
+5, 10, 12, 18 (untouched), case 14 (partial, one confirmed call out of an
+estimated 4-5 needed), case 2 (complete but using unidentified-type byte
+casts).
