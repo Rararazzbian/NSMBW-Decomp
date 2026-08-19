@@ -111,28 +111,46 @@ public:
     /// (1..7), driving mTimer as a countdown and calling into fn_2_15BDA0 (rebuild),
     /// `dWmMapModel_c::endAntlionEffect()` and this class's own vtable slot 0x68 (setCutEnd).
     /// Returns true only when state 7 is reached with mTimer's countdown exhausted.
-    /// UNVERIFIED against target bytes this round.
+    /// MATCHED this round: the fix was a local `bool result` accumulator set once (case 7) and
+    /// returned once at the bottom, instead of `return true;`/`return false;` at two separate
+    /// exit points -- MWCC only pre-reserves a persistent return-value register (target: r31,
+    /// initialised 0 at entry, all cases funnel to one `mr r3,r31` epilogue) when the source has
+    /// a single accumulate-then-return shape.
     bool checkAttackSequenceDone();
 
     /// @unofficial fn_2_15BDA0 (0xD4 B). Nested 2x2 loop over `dInfo_c::GetMapEnemyInfo`; for every
     /// slot with a valid path index, resolves `dCsvData_c::GetPointName` and calls
     /// `dWmMapModel_c::setAntlion(...)` on `daWmMap_c::m_instance->mModels[currIdx]`.
-    /// UNVERIFIED against target bytes this round.
+    /// 8/53 differing this round (down from 30), pure register numbering -- see the definition.
     void rebuildAllModels(bool param0, bool param1);
 
     /// @unofficial fn_2_15BE80 (0xA0 B). Nested 2x2 loop clearing every antlion enemy-info slot
     /// (`dInfo_c::SetMapEnemyInfo(..., -1)`) whose GetMapEnemyInfo result is valid.
-    /// UNVERIFIED against target bytes this round.
+    /// 8 differing this round (down from 18), pure register numbering -- see the definition.
     void clearAllModels();
 
     /// @unofficial fn_2_15BC30 (0x170 B). For each of 2 "route" slots: waits for
-    /// fn_2_15BA70 to pick a revived index, then for each picked index resolves the point name,
-    /// calls `dInfo_c::SetMapEnemyInfo`, `dWmMapModel_c::setAntlion(...)` and
+    /// pickRevivedIndices to pick a revived index, then for each picked index resolves the point
+    /// name, calls `dInfo_c::SetMapEnemyInfo`, `dWmMapModel_c::setAntlion(...)` and
     /// `dWmSeManager_c::playSound(...)` at the antlion's world position.
-    /// UNVERIFIED against target bytes this round.
+    /// 46 differing this round (down from 89) -- see the definition for the three logic fixes
+    /// found and the register-numbering residual.
     void reviveOnRoute();
 
-    /// @unofficial fn_2_15BA70 (0x1C0 B). Complex: scans `dCsvData_c::GetRouteFlag` for the
+    /// @unofficial CORRECTION this round: this is `fn_2_15BA70`, NOT the function the verifier's
+    /// nearest-neighbour heuristic keeps pairing it with (`~clearAllModels`/`~reviveOnRoute`,
+    /// depending on what else is unmatched at the time) -- confirmed by reading fn_2_15BA70's own
+    /// disassembly directly: it scans `dCsvData_c::GetRouteFlag` for two bitmasks (0x400/0x800)
+    /// selected by route, and its final block calls `getEnemyRevivalCount__6dWmLibFii` twice more
+    /// against a 2-entry output array, matching THIS function's own doc text (below), not
+    /// clearAllModels'/rebuildAllModels' shape (both of which are independently confirmed
+    /// elsewhere in this file as fn_2_15BE80/fn_2_15BDA0). Still a stub this round (112 instrs,
+    /// 107 differing against the stub) -- the real body is a weighted-random selection with a
+    /// rejection loop over `dGameCom::getRandom`, not yet attempted. Flagged OPEN, high priority
+    /// for next round: everything else in the unit is now either MATCHED or down to pure
+    /// register-numbering residuals.
+    ///
+    /// fn_2_15BA70 (0x1C0 B). Complex: scans `dCsvData_c::GetRouteFlag` for the
     /// current world's 0xc0 points against two flag masks (0x400/0x800) selected by the route
     /// index, builds a local candidate list, weighted-randomly picks `count` of them via
     /// `dGameCom::getRandom`, and finally re-checks `dWmLib::getEnemyRevivalCount` on each of 2
@@ -322,10 +340,16 @@ bool daWmAntlionMng_c::pickRevivedIndices(int *out, int count, int worldIndex, b
     return false;
 }
 
-/// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BC30's control flow.
+/// @unofficial fn_2_15BC30: down to 46 differing this round (from 89), all of it register
+/// numbering -- structure now confirmed correct against the target disassembly. Two real logic
+/// fixes found by reading the target directly: (1) `SetMapEnemyInfo`'s first argument is the
+/// same unnamed `daWmMap_c` +0x3388 field as clearAllModels/rebuildAllModels use, NOT `route`.
+/// (2) the second argument is an outer-loop accumulator (+2 per route, matching the established
+/// "accumulator not multiply" family), not `i + route * 2`. See `worldIndexTable`'s own comment
+/// below for the third fix (confirmed independently via the retail REL's raw rodata bytes).
 void daWmAntlionMng_c::reviveOnRoute() {
-    daWmMap_c *map = daWmMap_c::m_instance;
     dInfo_c *info = dInfo_c::m_instance;
+    daWmMap_c *map = daWmMap_c::m_instance;
 
     /// @unofficial `lbl_2_data_43960` (8 B, right before this unit's own vtable in `.data`,
     /// initial raw bytes `01 00 00 00 00 00 00 00`) -- a persistent flag, NOT a function-local
@@ -335,9 +359,16 @@ void daWmAntlionMng_c::reviveOnRoute() {
     /// 1) is still open -- this is a `bool` stand-in, not a verified reconstruction.
     static bool sToggle = true;
 
-    for (int route = 0; route < 2; route++) {
+    /// @unofficial `lbl_2_rodata_85F0` (8 B: `{0, 1}`), copied onto the stack at function entry --
+    /// the target reads `pickRevivedIndices`'s worldIndex argument through a pointer that walks
+    /// this stack copy (+4 per outer iteration), not the raw `route` loop counter directly. Values
+    /// are numerically identical to `route` (0, 1) but the codegen shape (aggregate-initialised
+    /// local array, not a bare loop variable) is what the target's stack layout requires.
+    const int worldIndexTable[2] = {0, 1};
+
+    for (int route = 0, accum = 0; route < 2; route++, accum += 2) {
         int picked[2];
-        if (!pickRevivedIndices(picked, 2, route, sToggle)) {
+        if (!pickRevivedIndices(picked, 2, worldIndexTable[route], sToggle)) {
             continue;
         }
         sToggle = false;
@@ -350,7 +381,7 @@ void daWmAntlionMng_c::reviveOnRoute() {
 
             const char *pointName = map->mCsvData[map->currIdx].GetPointName(picked[i]);
             int world = pointName[3] - '0';
-            info->SetMapEnemyInfo(route, i + route * 2, map->currIdx, picked[i]);
+            info->SetMapEnemyInfo(*(int *)((char *)map + 0x3388), i + accum, map->currIdx, picked[i]);
             map->mModels[map->currIdx].setAntlion(true, world, true);
 
             mVec3_c pos = map->GetPos(picked[i]);
@@ -359,7 +390,12 @@ void daWmAntlionMng_c::reviveOnRoute() {
     }
 }
 
-/// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BDA0's control flow.
+/// @unofficial fn_2_15BDA0: down to 8 differing this round (from 30), pure register numbering
+/// (a 3-way rotation among map/base/slot that several declaration-order permutations did not
+/// fully resolve -- see the task report). Real fix found: `setAntlion`'s receiver
+/// (`daWmMap_c::m_instance->mModels[...]`) is a FRESH `m_instance` read, not the cached `map`
+/// local reused from the `GetPointName` access earlier in the same function -- the target
+/// reloads `daWmMap_c::m_instance` a second time even though `map` is still live.
 /// @unofficial Same two fixes as clearAllModels (see its own doc comment): the unnamed
 /// `daWmMap_c` +0x3388 field as GetMapEnemyInfo's first argument, and an outer-loop accumulator
 /// for `idx` instead of `sub + slot * 2`. Also: `setAntlion`'s two bool arguments are this
@@ -367,9 +403,9 @@ void daWmAntlionMng_c::reviveOnRoute() {
 /// `true`/`false` as the first draft guessed.
 void daWmAntlionMng_c::rebuildAllModels(bool param0, bool param1) {
     daWmMap_c *map = daWmMap_c::m_instance;
+    int base = 0;
     dInfo_c *info = dInfo_c::m_instance;
 
-    int base = 0;
     for (int slot = 0; slot < 2; slot++) {
         for (int sub = 0; sub < 2; sub++) {
             int idx = sub + base;
@@ -378,14 +414,18 @@ void daWmAntlionMng_c::rebuildAllModels(bool param0, bool param1) {
             if (enemy.mPathIndex >= 0) {
                 const char *pointName = map->mCsvData[map->currIdx].GetPointName(enemy.mPathIndex);
                 int world = pointName[3] - '0';
-                map->mModels[map->currIdx].setAntlion(param0, world, param1);
+                daWmMap_c::m_instance->mModels[daWmMap_c::m_instance->currIdx].setAntlion(param0, world, param1);
             }
         }
         base += 2;
     }
 }
 
-/// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BE80's control flow.
+/// @unofficial fn_2_15BE80: down to 8 differing this round (from 18), pure register numbering
+/// (control flow confirmed structurally identical to the target by direct disassembly
+/// comparison). Fixed by hoisting `idx` out of the inner loop (widen-scope lever) and declaring
+/// it before `base`; the residual 3-way rotation among map/base/idx did not yield to further
+/// declaration-order permutations this round -- see the task report for what was tried.
 /// @unofficial Two fixes this round, both found by direct comparison against the target's
 /// register allocation: (1) the outer/inner loop var is NOT the first argument to
 /// GetMapEnemyInfo/SetMapEnemyInfo -- the target reads an UNNAMED field at `daWmMap_c` +0x3388
@@ -427,8 +467,9 @@ bool daWmAntlionMng_c::checkAllRevivalCountsZero() {
     return false;
 }
 
-/// @unofficial UNVERIFIED. Best-effort translation of fn_2_15BF80's control flow.
+/// @unofficial MATCHED against fn_2_15BF80 this round (byte-identical modulo symbol names).
 bool daWmAntlionMng_c::checkAttackSequenceDone() {
+    bool result = false;
     switch (mState) {
     case 1:
         mTimer = 0x3c;
@@ -465,9 +506,10 @@ bool daWmAntlionMng_c::checkAttackSequenceDone() {
         }
         break;
     case 7:
-        return true;
+        result = true;
+        break;
     }
-    return false;
+    return result;
 }
 
 /// @unofficial UNVERIFIED. Best-effort translation of fn_2_15C0D0's control flow.

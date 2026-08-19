@@ -6699,3 +6699,56 @@ left them claiming the map uses the linker's spelling, which it does not.
 different mechanism entirely.
 
 **Checked repo-wide: course was the only draft with this defect.**
+
+## TECHNIQUE: make the compiler tell you any offset or size
+
+`offsetof`/`sizeof` are compile-time constants, so you can extract one without a
+symbol map, a debugger or an inference from disassembly: instantiate an
+INCOMPLETE template with it and read the value out of the error message.
+
+```cpp
+#include <game/bases/d_base_actor.hpp>
+template<int N> struct S;
+struct P : public dBaseActor_c {      // derive, so protected members are reachable
+    S<offsetof(P, mMng)> a;           // one per line, at CLASS scope
+    S<sizeof(fBase_c)> b;
+};
+```
+
+```
+(10136) illegal use of incomplete struct/union/class 'S<100>'
+```
+
+The value is DECIMAL. Two practical notes, both learned by getting them wrong:
+
+- **Put the probes at class scope, not inside a function body.** Inside a
+  function MWCC aborts after the first error and you get one value per compile.
+  At class scope it reports them all in one pass.
+- **Check the values come out monotonically increasing in declaration order.**
+  If they do not, the errors are not being reported in source order and the
+  mapping from name to value is guesswork -- fall back to one member per compile.
+  A quick pass of mine produced offsets that could not be reconciled with the
+  header's own declaration order, which is how this note exists.
+
+This is strictly better than the STATIC_ASSERT sweep for *finding* a layout
+(STATIC_ASSERT confirms a value you already guessed; this one tells you the
+value). Use STATIC_ASSERT afterwards to lock the answer in.
+
+## PROCESS: a blocked function is not a blocked unit
+
+The dance_pakkun scout produced a compiler-verified class layout and a full
+16-function map, and then wrote **no source at all**, because two of the sixteen
+functions depend on one unidentified field.
+
+That is the wrong trade and it is worth naming, because it is a tempting one. A
+draft with 14 functions authored and 2 stubbed is worth much more than a mapping
+document: the next round starts from a measured per-function MATCH table instead
+of from prose, and the 14 either match or they do not -- which is information
+nobody has until someone compiles. **Author everything that is not blocked,
+stub what is, and report the count.**
+
+The related failure is stopping at "I could not identify X" when X is *lookupable*.
+"Do not invent a field on a shared header" is right -- seven landed units depend
+on `d_wm_demo_actor.hpp` and `f_base.hpp`. "Do not look the field up" is not the
+same instruction. The offset technique above exists precisely so that this class
+of unknown gets measured instead of guessed or abandoned.
