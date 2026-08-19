@@ -7489,3 +7489,53 @@ draft instructions against the target's 101, **it is the function corrupting
 `verify_anon`'s greedy pairing for the whole unit**, which is what made `__sinit`
 report a meaningless 50. It is simultaneously the largest function still open and
 the obstacle to trustworthy measurement everywhere else.
+
+## antlion_mng PARKED at 18/22 — four walls, each with converging independent rewrites
+
+Final state: 18/22, `__sinit` and `processCutsceneCommand` both MATCH. Four open:
+`pickRevivedIndices` 39, `reviveOnRoute` 29, `rebuildAllModels` 8,
+`clearAllModels` 8.
+
+### The register defect was mis-described for several rounds
+
+It is **not a three-way rotation.** It is a clean **two-element swap**: `slot`
+already matches in both functions, and only `map` and `base` have their register
+numbers exactly exchanged -- identically in both functions. Everyone including me
+had been repeating "3-way rotation" and attacking the wrong description.
+**Re-characterise before attacking; it is worth more than another attempt.**
+
+The likely mechanism, stated as a hypothesis: MWCC's allocator prefers `base` (a
+plain int accumulator) over `map` (a two-instruction `lis`/`lwz` pointer load) for
+the higher-numbered callee-saved register, and no declaration-order or
+expression-shape lever reaches that preference.
+
+Measured this round on `clearAllModels`, none carried to `rebuildAllModels`
+because none helped: reordering declarations to `idx; map; base; info` (no
+change, byte-identical); folding `base` into the `for`-increment, the lever that
+worked for `reviveOnRoute`'s accumulator (**13, worse**); dropping the cached
+`map` local and reading `daWmMap_c::m_instance` fresh at both sites (**29, much
+worse**); hoisting `map` to the top of the function (no change).
+
+### `pickRevivedIndices`: FIVE spellings, byte-identical output
+
+`||`, nested `if`, `goto`, a separate `bool`, and an explicit two-`continue` form
+with genuinely separate tests -- **all normalise to the same 2-branch shape under
+`-O4`.** A ternary gives 43, worse.
+
+That is a complete result about the optimiser rather than a failure: **the
+target's four-branch merge shape is unreachable from the condition's spelling.**
+Whatever produces it is not a way of writing the condition.
+
+### `reviveOnRoute`: the stack anchor did not move
+
+An unrelated `mVec3_c` local declared before `pos` was dead-code-eliminated
+entirely (confirmed by identical instruction count); copying `pos` into a second
+named local before passing it gives **47, worse**; reordering `pos` against
+`antlion` changes nothing.
+
+### Why this is a park and not a failure
+
+All four items now have **multiple independently-shaped source rewrites
+converging on identical compiled output.** That is much stronger evidence of a
+real wall than one failed attempt per item, and it is the standard this file
+should hold before recording anything as parked.
