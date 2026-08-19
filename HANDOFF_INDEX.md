@@ -1,0 +1,431 @@
+# HANDOFF.md — index
+
+HANDOFF.md is ~570KB / 10770 lines / 408 sections. **Do not read it whole,
+and do not rely on `tail`** — the tail shows only the newest entries, and the
+finding you need is usually older than that.
+
+**Read this index, find the section, then read only that section:**
+
+```
+sed -n '<start>,<end>p' HANDOFF.md
+grep -an "<term>" HANDOFF.md      # -a: parts of the file read as binary to grep
+```
+
+**Grep this index before designing any experiment.** Two rounds were spent in one
+day re-deriving results already recorded here — once on a rule whose worked
+example was the very function being looked at. The file is this size so that
+nobody pays twice for the same answer.
+
+Regenerate with `python wip/wm_units/make_handoff_index.py`.
+
+---
+
+
+- `   28-41   ` What parallelises, and what does not
+  - `   42-75   ` How an agent iterates without the shared build
+- `   76-125  ` Read this first if you are picking the project up
+- `  126-180  ` The method that works: map the siblings BEFORE authoring
+  - `  181-196  ` The order that worked
+  - `  197-222  ` Prove the class before anyone writes against it
+- `  223-236  ` Running the parallel pipeline
+  - `  237-303  ` The front stage
+  - `  304-353  ` Briefing the batches
+  - `  354-395  ` Mid-flight
+  - `  396-408  ` Landing a change to a header that already-matching TUs use
+  - `  409-581  ` Assembly
+  - `  582-591  ` What this predicts for the next unit
+- `  592-621  ` Infrastructure state (as of the 2026-08-12/13 session)
+- `  622-672  ` `tools/auto_decomp/` — the unattended harness, and what it is good for
+- `  673-742  ` Where the work now stands
+  - `  743-747  ` Earlier session, for context
+  - `  748-778  ` THE lesson: authoring is cheap, section bounds are not
+  - `  779-792  ` Whole-TU or nothing
+- `  793-813  ` Next target — and what is known about the rest
+  - `  814-854  ` `d_a_wm_grid.cpp` IS LANDED — 5/5 green. It is the project's first REL unit.
+  - `  855-862  ` The rule this establishes: `.text` byte-identity does not mean a unit is correct
+  - `  863-876  ` How to find the defect when `--verify-bin` fails
+  - `  877-892  ` Seeding the `.rodata` constant pool: use `DECL_WEAK`
+  - `  893-916  ` Tooling: `progress.py --verify-obj` already did half of this
+  - `  917-938  ` `d_a_wm_tower.cpp` is also LANDED
+  - `  939-951  ` Corrections to what I wrote about tower an hour ago
+  - `  952-968  ` Weak symbols in `.data`, not just `.text`
+  - `  969-990  ` The `wm` bounds error is systematic — assume it on every unit in this family
+  - `  991-1048 ` `d_a_wm_smallcloud.cpp` and `d_a_wm_kinoko_1up.cpp` — bounds now derived, both still short
+  - ` 1049-1095 ` smallcloud update: `.data` is now exact, and a bounds figure of mine was circular
+  - ` 1096-1145 ` smallcloud is 15/16 — and `createModel` was already solved yesterday, in a directory I did not check
+  - ` 1146-1228 ` smallcloud is 16/16 in `.text` and STILL DOES NOT LINK — the pool words are `mData`
+  - ` 1229-1290 ` `d_a_wm_ghost.cpp` is 12/13 with clean sections — and its `.data` bound was the RIGHT SIZE and the WRONG SPAN
+  - ` 1291-1347 ` The mechanism, confirmed against landed retail bytes
+  - ` 1348-1384 ` `d_a_wm_kinoko_1up.cpp` is COMPLETE and NOT LANDABLE — it depends on an un-decompiled TU
+  - ` 1385-1400 ` A real MWCC finding from this unit: file-scope vs function-local statics change scheduling
+  - ` 1401-1449 ` Verified bounds kits — three units ready to author
+  - ` 1450-1518 ` `d_a_wm_course.cpp` — 12/23 first pass, in `wip/wm_units/agent_course/`
+  - ` 1519-1562 ` `d_a_wm_kinoko_base.cpp` — 15/17, and `daWmKinokoBase_c` sizeof is 0x290
+  - ` 1563-1669 ` The refined rule: the reversal is scoped to the LOOP
+  - ` 1670-1750 ` `d_a_wm_castle.cpp` — 13/20 first pass, and a probable SECOND header static
+  - ` 1751-1860 ` The two "unauthorable" functions were castle's own — a profile ID one digit off
+  - ` 1861-1884 ` `syms.txt` holds DOL addresses ONLY — REL-internal calls are a hard blocker
+  - ` 1885-1917 ` course, round 3: structural fixes that the MATCH count did not show
+  - ` 1918-1945 ` The blocker is `daWmKoopaCastle_c`, it is bounded, and it is NOT itself blocked
+  - ` 1946-2252 ` `d_a_wm_sandpillar.cpp` — NOT a leaf actor; budget accordingly
+  - ` 2253-2265 ` castle is PARKED at 16/20
+  - ` 2266-2297 ` kinoko_base's last defect, diagnosed precisely
+- ` 2298-2332 ` antlion's `.rodata` gap: ownership SETTLED, and it does not dissolve
+- ` 2333-2358 ` WM_ANTLION_MNG 15/22
+- ` 2359-2383 ` WM_ANTLION_MNG is 22 functions, not 79 — and the landed header is NOT wrong
+  - ` 2384-2412 ` The `dWmDemoActor_c` "4-byte shortfall" is NOT a header bug
+- ` 2413-2436 ` course 18/23 -> 22/23, SECTIONS CLEAN. The DUMMY_ORDERING hack was WRONG.
+  - ` 2437-2464 ` And the inline-wrapper rule closed half of what remained
+- ` 2465-2492 ` castle PARKED at 18/20 — the registration/guard entanglement, mechanism found
+- ` 2493-2538 ` koopa_castle PARKED at 16/17 — 19 measured shapes on one construct
+- ` 2539-2576 ` castle 18/20 — NEW LEVER: decouple DECLARATION order from USAGE order
+  - ` 2577-2588 ` castle's `.bss` +4 is REAL, and the alignment rule does not apply
+- ` 2589-2627 ` antlion: PARKED one byte short. The mechanism is understood and closed.
+- ` 2628-2674 ` antlion is ONE BYTE from landing
+- ` 2675-2711 ` course 18/23, SECTIONS CLEAN — and the LEADING vs TRAILING pool distinction
+  - ` 2712-2724 ` antlion: the 0x20 "object" is a mirage
+- ` 2725-2763 ` antlion needs ONE integer word, and the claim end must be 8-ALIGNED
+- ` 2764-2764 ` Relocations target a pool's BASE, never its entries. Do not search for
+- ` 2765-2793 ` "who references this constant".
+  - ` 2794-2810 ` The two pools, dumped, for whoever picks these up
+- ` 2811-2849 ` antlion is 37/37, VTABLE CLEAN, BOUNDS PLAUSIBLE — 0xc of `.rodata` from landing
+  - ` 2850-2875 ` The remaining `0xc`, and what the build says about it
+- ` 2876-2933 ` antlion 36/37 on the corrected range; course 17/23 with `create` byte-exact
+- ` 2934-2976 ` CORRECTION: WM_ANTLION is `0x15AC80-0x15B590`. I gave the wrong bounds.
+- ` 2977-3010 ` course: `create` is NOT blocked on the mystery static. Only `createModel` is.
+- ` 3011-3062 ` sandpillar's real blocker, finally identified: WM_ANTLION owns its state code
+- ` 3063-3097 ` sandpillar is 66/66. The "extra trailing blr" was a TOOL ARTEFACT.
+  - ` 3098-3116 ` Landing sandpillar: one convention learned, one blocker left
+- ` 3117-3147 ` castle `__sinit`: a clean negative, and my triangulation premise was wrong
+- ` 3148-3183 ` LANDED: kinoko_1up, seventh REL unit. The whole kinoko family is in.
+- ` 3184-3219 ` check_bounds.py now checks OWNERSHIP, from the REL's relocation stream
+- ` 3220-3246 ` course 15/23 -> 16/23, and `processCutsceneCommand` is byte-exact
+- ` 3247-3264 ` LANDED: kinoko_red, sixth REL unit — and a SECOND check_sections false alarm
+  - ` 3265-3288 ` The 4-byte `.rodata` "defect" never existed
+- ` 3289-3332 ` SOLVED + LANDED: kinoko_base. The post-vtable emission rule is LINKAGE.
+- ` 3333-3381 ` sandpillar 61/66 -> 64/66, and a signedness lever worth knowing
+- ` 3382-3411 ` A `__sinit` pool-offset difference is a SYMPTOM, not a defect
+- ` 3412-3446 ` castle 16/20 -> 17/20, and a new lever: WIDEN the scope, do not narrow it
+  - ` 3447-3457 ` Two units now share the SAME `__sinit` shape
+- ` 3458-3542 ` koopa_castle `__sinit`: 19 -> 13, with a 12-shape measured sweep
+- ` 3543-3561 ` kinoko_base's 8 bytes are the CRITICAL PATH for three units
+  - ` 3562-3587 ` And `.rodata` has a two-pass emission rule, measured
+- ` 3588-3616 ` CORRECTION: sandpillar is NOT blocked on WM_MAP. It is 5 small functions out.
+- ` 3617-3642 ` Run `text_objects.py` BEFORE quoting any per-function count
+  - ` 3643-3648 ` kinoko_base is 17/17
+- ` 3649-3689 ` LANDED: `d_a_wm_ghost.cpp` — the fourth REL unit. 11.145% -> 11.193%
+- ` 3690-3751 ` THE TEMPORARY-MATERIALISATION WALL IS BROKEN
+  - ` 3752-3776 ` `check_sections.py` had a FALSE-ALARM defect, affecting six landed units
+  - ` 3777-3788 ` …and the fix REFUTES the generalisation that prompted it
+  - ` 3789-3814 ` The post-vtable-pool wall: data CAN follow it, under one narrow condition
+  - ` 3815-3857 ` koopa_castle 15/17 — and how to add padding under `-ipa file`
+  - ` 3858-3858 ` kinoko_red's 4-byte `.rodata`: dedup CONFIRMED for the leading pad, and the
+  - ` 3859-3910 ` trailing pad is a different phenomenon with no candidate in this TU
+  - ` 3911-3984 ` koopa_castle: `execute` MATCHES, but the unit is 14/16, not 15/16
+  - ` 3985-4011 ` CORRECTION: kinoko_base's 8-byte tail IS its own. I got this wrong.
+  - ` 4012-4063 ` `d_a_wm_kinoko_red.cpp` — 8/8, exact layout, one 4-byte residual
+  - ` 4064-4118 ` koopa_castle 14/16 — and three new MWCC levers, all verified
+  - ` 4119-4194 ` kinoko_base: 16/16, layout exact to `0x88`, and the tail is 8 bytes
+  - ` 4195-4236 ` `fn_2_171400`'s owner is `WM_MAP` / `dScWMap_c` — do NOT chase it
+- ` 4237-4280 ` MWCC aligns a `.bss` object to 8 when its SIZE is a multiple of 8
+- ` 4281-4355 ` The actor-TU playbook
+- ` 4356-4410 ` Briefing authoring agents
+  - ` 4411-4424 ` Splitting a TU between agents
+- ` 4425-4449 ` Monitoring agents — what actually works
+- ` 4450-4487 ` Verify your verification tool — six defects so far, and the checklist that catches them
+  - ` 4488-4622 ` How to verify a function is really matching
+  - ` 4623-4702 ` The six defects, and where each one now stands
+  - ` 4703-4735 ` Residual blind spots — read before relying on the fixes
+  - ` 4736-4753 ` Adding a check, or a tool
+- ` 4754-4785 ` Relay findings between running agents
+- ` 4786-4806 ` Check `syms.txt` before inferring a name
+- ` 4807-4848 ` Current state
+- ` 4849-4869 ` Local setup
+  - ` 4870-4879 ` Windows tool locations
+- ` 4880-4897 ` The working loop
+  - ` 4898-4919 ` Rules the build imposes
+  - ` 4920-4928 ` Diagnosing failures
+- ` 4929-4935 ` Techniques established
+  - ` 4936-4959 ` A one-word difference in a destructor is the last member's OFFSET, not `sizeof`
+  - ` 4960-4988 ` An inline destructor can misorder the whole trailing flush block
+  - ` 4989-5009 ` Weak destructors of embedded effect members need `keepWeak`
+  - ` 5010-5021 ` Data-section slicing
+  - ` 5022-5036 ` Paired singles
+  - ` 5037-5056 ` Declaration order controls register assignment
+  - ` 5057-5066 ` The GPR block rule (verified over ~140 recompiles on `getScissor`)
+  - ` 5067-5088 ` Adding a variable fixes register allocation — three independent proofs
+  - ` 5089-5114 ` `getScissor`: offset vs pointer — why a pointer local always failed
+  - ` 5115-5148 ` `.sdata2` ordering within a TU — creation order, not three buckets
+  - ` 5149-5157 ` Before sweeping, check whether a sibling TU already solved the shape
+  - ` 5158-5175 ` Narrowing to 16 bits is a reassociation barrier
+  - ` 5176-5222 ` The lazy-flush rule: called inline virtuals and template instantiations
+  - ` 5223-5231 ` `.text` too long? Look for weak symbols you are the only one defining
+  - ` 5232-5256 ` New lever: all words identical, only the `0xNN(r1)` slots wrong
+  - ` 5257-5280 ` `const` on a source table changes the whole copy strategy
+  - ` 5281-5291 ` A non-zero constant in a brace initialiser can become a static template
+  - ` 5292-5334 ` A shadowed state ID compiles, diffs clean, and is wrong
+  - ` 5335-5378 ` Levers found while decompiling the rot/fireball/cursor batch
+  - ` 5379-5393 ` `.sdata2` literal pooling — the per-function rules
+  - ` 5394-5403 ` The 4-byte-gap boundary signal needs a referencing check
+  - ` 5404-5415 ` A constant appearing twice is evidence, not redundancy
+  - ` 5416-5422 ` A function-scope `static const int` allocates storage
+  - ` 5423-5435 ` `va_list` must be an array of one
+  - ` 5436-5445 ` Size-delta heuristic
+  - ` 5446-5460 ` CodeWarrior gotchas found
+  - ` 5461-5492 ` What eight parallel batches cost, and what only assembly can catch
+  - ` 5493-5657 ` Levers from d_a_en_hatena_balloon (81 functions, eight batches)
+  - ` 5658-5888 ` Code-generation levers from the bros/blockmain pair
+- ` 5889-5940 ` The register-allocation wall
+- ` 5941-5946 ` Open blockers
+  - ` 5947-5956 ` 1. Register allocation
+  - ` 5957-5994 ` 2. `GXGetViewportv` (32 B)
+  - ` 5995-6085 ` 3. `GXSetTevColor` / `GXSetTevColorS10` (196 B)
+- ` 6086-6095 ` SDK targets (deprioritised — see the register-allocation wall)
+  - ` 6096-6261 ` Why game code in `wiimj2d.dol` is the better pool
+  - ` 6262-6340 ` The SDK list, ranked by expected cost
+  - ` 6341-6376 ` The `find_targets.py` tool and its limits
+- ` 6377-6417 ` Original-game bugs found — reproduce, do not fix
+- ` 6418-6427 ` What not to repeat
+- ` 6428-6433 ` STATE: `d_a_player_manager.cpp` — assembled, trial-linked, parked in `wip/`
+  - ` 6434-6454 ` Trial-link result — the numbers that matter
+  - ` 6455-6463 ` What the trial link found that nothing else could
+  - ` 6464-6473 ` Six wrong return types in one class
+- ` 6474-6509 ` Levers and traps learned this session
+- ` 6510-6534 ` New tool: `wip/wm_units/profile_map.py` — resolve a profile to its classInit
+  - ` 6535-6553 ` The map for the WM region of `d_basesNP`
+- ` 6554-6585 ` MEASURED CORRECTION: `.rodata` placement follows DECLARATION ORDER. The "passes" rule is false.
+  - ` 6586-6597 ` The corollaries, all measured in the same round
+  - ` 6598-6616 ` Why this matters: it un-parks antlion
+  - ` 6617-6626 ` Methodology note for whoever probes next
+- ` 6627-6686 ` course PARKED at 22/23. The `createModel` residual is a 2-attractor wall, measured 19 ways.
+  - ` 6687-6713 ` The LINK blocker course actually had, and the spelling rule
+- ` 6714-6747 ` TECHNIQUE: make the compiler tell you any offset or size
+- ` 6748-6766 ` PROCESS: a blocked function is not a blocked unit
+- ` 6767-6793 ` RETRACTION: antlion's `.rodata` ownership is NOT settled. I closed it with an invalid test.
+- ` 6794-6842 ` antlion: the trailing word is unreachable from its own source. Measured, not argued.
+- ` 6843-6865 ` WM_DANCE_PAKKUN opened: 8/16 on its first authored round
+  - ` 6866-6883 ` The unit's real strings, read out of the retail binary
+  - ` 6884-6908 ` `+0x60` is the SECONDARY VTABLE POINTER. (Corrected -- see below.)
+  - ` 6909-6917 ` Reminder that cost a round elsewhere today
+- ` 6918-6950 ` antlion_mng 16/22 -> 17/22. `processCutsceneCommand` MATCHES, and `R_2_1_*` is proven twice.
+  - ` 6951-6969 ` `dGameCom::getRandom` -- and a mangling trap worth the space
+  - ` 6970-6982 ` Measured negatives, so nobody re-runs them
+- ` 6983-7028 ` CORRECTION: `+0x60` is a secondary vtable pointer. No header change is needed.
+- ` 7029-7034 ` ANTLION IS LANDED. The blocker was our own tooling, not the source.
+  - ` 7035-7067 ` What was actually wrong
+  - ` 7068-7073 ` Delete the 8-alignment rule
+  - ` 7074-7094 ` What actually settled the ownership question
+  - ` 7095-7098 ` Next
+- ` 7099-7106 ` SANDPILLAR LANDED, on the first attempt, with no source change at all.
+  - ` 7107-7119 ` The dependency was real and is now discharged
+  - ` 7120-7130 ` Two units for one fix
+  - ` 7131-7139 ` The parked-unit list is worth re-reading against this
+- ` 7140-7168 ` KINOKO_STAR LANDED — 9/9 on its first authored round. Tenth unit.
+  - ` 7169-7178 ` One bound was inferred, not measured
+- ` 7179-7209 ` A relocation proves a READ, not OWNERSHIP. And the displacement is what settles it.
+  - ` 7210-7222 ` The rule, stated generally
+  - ` 7223-7235 ` Also measured this round
+- ` 7236-7255 ` dance_pakkun 8/16 -> 9/16: `execute()` MATCHES
+  - ` 7256-7276 ` `create()`: formula correct, parked at 49 on three instructions
+  - ` 7277-7296 ` Why `createModel`'s register anchoring should be solvable
+- ` 7297-7301 ` SINKSHIP LANDED — 11/11 on its first authored round. Eleventh unit.
+  - ` 7302-7311 ` The bounds were self-checking, which is the standard to aim for
+  - ` 7312-7321 ` The base class was settled from the vtable, not from the disassembly
+  - ` 7322-7336 ` The one real fix: dead stores that are correct
+  - ` 7337-7353 ` Confirmations worth having in writing
+- ` 7354-7381 ` antlion_mng 17/22 -> 18/22: `__sinit` MATCHES, and the ownership argument is confirmed empirically
+  - ` 7382-7393 ` The rule this validates, now with a positive case
+  - ` 7394-7400 ` Still open on this unit
+- ` 7401-7416 ` `verify_anon`'s pairing is GREEDY and CONSUMING. One bad function poisons the rest.
+  - ` 7417-7426 ` Consequences to internalise
+  - ` 7427-7441 ` The fix: diff by explicit name
+- ` 7442-7443 ` dance_pakkun: `createModel` 76 -> 70, and a guard block found that may unblock castle
+  - ` 7444-7466 ` The register mechanism, confirmed by measurement rather than by count
+  - ` 7467-7475 ` A suggestion of mine that was correctly refused
+  - ` 7476-7494 ` `__sinit`: a guard block, and it may be worth more than this unit
+  - ` 7495-7503 ` `calcModelFor`: instruction reversed, author it
+- ` 7504-7509 ` antlion_mng PARKED at 18/22 — four walls, each with converging independent rewrites
+  - ` 7510-7529 ` The register defect was mis-described for several rounds
+  - ` 7530-7539 ` `pickRevivedIndices`: FIVE spellings, byte-identical output
+  - ` 7540-7546 ` `reviveOnRoute`: the stack anchor did not move
+  - ` 7547-7553 ` Why this is a park and not a failure
+- ` 7554-7557 ` castle 18/20 -> 19/20: `__sinit` MATCHES. The 26-shape wall is BROKEN.
+  - ` 7558-7574 ` NEW LEVER: brace-init pools an aggregate constant; field-by-field assignment does not
+  - ` 7575-7583 ` My hypothesis was wrong, and it was killed with ground truth
+  - ` 7584-7606 ` What the wall actually was
+  - ` 7607-7613 ` State
+  - ` 7614-7620 ` Try this on koopa_castle immediately
+- ` 7621-7632 ` WM_NOTE LANDED — 13/13 on its first authored round. Twelfth unit.
+  - ` 7633-7664 ` Two shared-header additions, applied by the lead behind a full verify
+  - ` 7665-7685 ` Levers confirmed or newly recorded
+- ` 7686-7702 ` The castle guard shape TRANSFERRED. dance_pakkun `__sinit` 51 -> 14, size now exact.
+  - ` 7703-7713 ` NEW TRAP: placeholder constants that are accidentally EQUAL
+  - ` 7714-7720 ` Cost, reported rather than buried
+  - ` 7721-7741 ` Remaining: a 28-byte pool drift, and the fix is to stop guessing constants
+  - ` 7742-7749 ` The PTMF idiom is a family pattern, found independently twice
+- ` 7750-7757 ` anchor: the definition-order lever works, and dtk's symbol names hid a real override
+  - ` 7758-7772 ` dtk mislabels weak base-class symbols by BYTE CONTENT
+  - ` 7773-7787 ` `0xbf8` is not `sizeof(dWmMapModel_c)`
+  - ` 7788-7797 ` Open hypothesis for the last 3 order violations
+- ` 7798-7833 ` castle 19/20: `getKoopaShipStopPos` is a SCHEDULING wall, measured exhaustively
+- ` 7834-7852 ` The in-class inline lever generalises beyond the kinoko family
+  - ` 7853-7875 ` And a declared weak function's POSITION is influenced by source
+  - ` 7876-7892 ` Modelling an unlanded callee without touching a shared header
+- ` 7893-7894 ` castle PARKED 19/20 and koopa_castle PARKED 16/17 — both walls now exhaustively measured
+  - ` 7895-7910 ` castle `getKoopaShipStopPos`: both axes closed
+  - ` 7911-7930 ` koopa_castle: 22 measured shapes, and no free win from castle
+  - ` 7931-7941 ` Where these two stand
+- ` 7942-7970 ` NEW RULE: weak-cluster emission is LIFO — last declared, first emitted
+  - ` 7971-7995 ` And a real content fix: a string reached through a named pointer
+  - ` 7996-8002 ` Arity ruled out properly
+- ` 8003-8018 ` dance_pakkun PARKED at 9/16 — an allocation call, not a verdict on the unit
+  - ` 8019-8040 ` Two process points from its last round, both worth keeping
+- ` 8041-8056 ` Two bit-numbering conventions run in OPPOSITE directions
+- ` 8057-8070 ` dtk's reported VTABLE SIZE can be an over-merge
+- ` 8071-8083 ` `mParam` can carry PACKED CONFIG FIELDS, not runtime state
+- ` 8084-8091 ` Session note
+- ` 8092-8096 ` WM_MANTA LANDED — 16/16. Thirteenth unit. And the FUNCTION ORDER warning is a FALSE ALARM.
+  - ` 8097-8115 ` `verify_anon`'s FUNCTION ORDER check can be a false alarm, and now we know why
+  - ` 8116-8136 ` The two real bugs in the last function
+  - ` 8137-8147 ` No `.ctors`, no `.bss`
+- ` 8148-8167 ` DIAGNOSTIC: how to tell `switch` from `if`/`else if` in the disassembly
+- ` 8168-8174 ` The bitfield conversion, confirmed in use
+- ` 8175-8192 ` Named pointer versus bare literal, confirmed per-string
+- ` 8193-8201 ` Where kinoballoon stands: 19/26
+- ` 8202-8225 ` NEW LEVER: a ternary MERGES two calls; explicit if/else keeps them separate
+- ` 8226-8237 ` A 104-differing count that is ONE defect
+- ` 8238-8250 ` Two more `dWmLib` declarations applied
+- ` 8251-8259 ` Judgement worth copying
+- ` 8260-8295 ` Reading a `.rodata` pool dump is the fastest way to find a SIZE error
+  - ` 8296-8310 ` `createModel`'s register gap: parked, and complete
+- ` 8311-8323 ` NEW LEVER: De Morgan inversions are NOT equivalent to this compiler
+- ` 8324-8342 ` The remedy for a missing prologue register save
+- ` 8343-8359 ` Parameter types ARE in the mangled name -- use them instead of guessing
+- ` 8360-8375 ` The established way to use a class whose header models the wrong thing
+- ` 8376-8408 ` kinoballoon 19/26 -> 21/26 on ONE missing named zero word
+  - ` 8409-8419 ` Two bounds on the declaration-order rule
+  - ` 8420-8433 ` What remains, and why it is one problem
+- ` 8434-8462 ` NEW LEVER: read WHAT IS IN the stack temp to identify the operator form
+  - ` 8463-8473 ` Method note: read the raw block, not the diff, once order diverges
+  - ` 8474-8481 ` kinoballoon stands at 24/26
+- ` 8482-8508 ` kinoballoon PARKED at 24/26 — both residuals characterised
+- ` 8509-8526 ` Standing state of the WM units
+- ` 8527-8541 ` WM_START: the prologue-save lever confirmed by REVERSION, and an informative anti-lever
+  - ` 8542-8553 ` An anti-lever that explained the target's structure
+  - ` 8554-8569 ` Open hypothesis: the `clrlwi.` masking wall is a RETURN TYPE
+- ` 8570-8575 ` WM_ITEM opened at 8/12, and a SYSTEMIC residual is now confirmed across three units
+  - ` 8576-8588 ` Walk the REL's own relocation stream for hard evidence
+  - ` 8589-8598 ` Two new levers
+  - ` 8599-8629 ` The systemic residual: one dedicated base register versus per-site recomputation
+- ` 8630-8652 ` The return-type hypothesis was RIGHT, and the wrong type was in the shared header
+- ` 8653-8659 ` WM_START 10/14 -> 11/14, `unk_17A3C0` MATCHES
+  - ` 8660-8685 ` Two walls characterised rather than forced
+- ` 8686-8729 ` The single-anchor hypothesis: CONFIRMED, but it decomposes into TWO axes
+- ` 8730-8760 ` calcModel's remaining axis looks like the stack-temp lever, in reverse
+- ` 8761-8785 ` A single object's `.bss` contribution is CONTIGUOUS — so "non-contiguous ownership" is impossible
+  - ` 8786-8798 ` The ownership test that IS valid, restated
+- ` 8799-8816 ` The ownership check's false positives on virtual-only methods mean WRONG NEIGHBOURING BOUNDS
+- ` 8817-8834 ` THIRD occurrence: a constructor call you cannot account for is an EMBEDDED MEMBER
+- ` 8835-8839 ` MWCC rejects in-class default member initialisers
+- ` 8840-8872 ` NEW RULE: source DECLARATION order controls stack slot order
+- ` 8873-8886 ` WM_ITEM PARKED at 8/12
+- ` 8887-8912 ` Read the VTABLE to identify which target address is which function
+- ` 8913-8930 ` The `.bss` ownership test applied correctly
+- ` 8931-8955 ` The duplicate-`beq` destructor wall: independently confirmed on a SECOND unit
+- ` 8956-8972 ` A hand-rolled constant that duplicates a shared-header object breaks the pool
+- ` 8973-8991 ` Distinct stub VALUES are not enough if the TYPE collapses them
+- ` 8992-9007 ` Two more ways to close a function without inventing anything
+- ` 9008-9034 ` A RELOCATED word reads as ZERO in the file — that is what a live pointer looks like
+  - ` 9035-9043 ` Mirror image of kinoballoon
+  - ` 9044-9055 ` Two process points from the same round
+- ` 9056-9082 ` WM_BOARD 7/15 -> 9/15: the proc-table fix, and the MIRROR of the stack-temp rule
+  - ` 9083-9099 ` `create` 18 -> 13, and a folding residual with a linkage hypothesis
+- ` 9100-9113 ` An explicit redundant null check is SOURCE-VISIBLE — write it if the target has it
+- ` 9114-9136 ` WM_KINOPIO opened at 7/19, layout settled before authoring
+- ` 9137-9156 ` NEGATIVE: external linkage does NOT stop MWCC's constant folding
+- ` 9157-9178 ` WM_BOARD 9/15 -> 10/15: `calcModel` MATCH, on two bugs found in sequence
+- ` 9179-9191 ` A MISSING CALL cascades — check for one before chasing register differences
+- ` 9192-9217 ` Cross-unit notes finally paid, and a member recovered from a sibling class
+- ` 9218-9240 ` Enumerate the real vtable CHAIN before writing a shadow header — the method may already exist
+- ` 9241-9251 ` A LOWER differing count can hide a NEW regression — read the diff, not the number
+- ` 9252-9258 ` And a wrong enum constant, caught by reading the raw block
+- ` 9259-9289 ` Decode a `.data` object WITH relocations before calling any of it unidentified
+- ` 9290-9300 ` Two more findings from the same round
+- ` 9301-9315 ` WM_KILLER 8/23 -> 13/23, and a correction to my byte map
+  - ` 9316-9337 ` The findings from that round
+- ` 9338-9365 ` WM_KILLER 13/23 -> 17/23: eight transferable findings in one round
+- ` 9366-9381 ` The offset-folding rule, and its MIRROR
+- ` 9382-9398 ` New tool: `wip/wm_units/dump_obj_section.py` — dump a compiled object's section bytes
+  - ` 9399-9413 ` It answered WM_KILLER's open question immediately
+- ` 9414-9430 ` Adjacency in the byte layout does NOT imply one shared C++ array
+- ` 9431-9438 ` An outer guard plus `while` reproduces a redundant jump that `do/while` does not
+- ` 9439-9458 ` WM_KILLER 18/23 -> 22/23. My pool diagnosis was right for one function and WRONG for the other.
+  - ` 9459-9468 ` The `R_<module>_<section>_<offset>` convention extends beyond `.text`
+  - ` 9469-9477 ` And two more "it was already declared" wins
+- ` 9478-9509 ` WM_KILLER PARKED at 22/23 — a genuine CROSS-AXIS wall
+- ` 9510-9520 ` WM_KILLERBULLET opened at 4/37, and a LANDING-ORDER DEPENDENCY on WM_KILLER
+  - ` 9521-9532 ` The cross-unit dependency
+  - ` 9533-9552 ` Its state table has FIVE entries, counted from the relocations
+- ` 9553-9563 ` WM_KILLERBULLET 4/37 -> 9/37, bounds pinned on all five sections
+  - ` 9564-9574 ` Name what the symbol names, and no more
+  - ` 9575-9585 ` The ownership check caught a SHARED EXTERNAL table
+- ` 9586-9600 ` TOO MANY saved registers means the INVERSE lever
+- ` 9601-9616 ` A failed variant that PROVES the structure beats one that fails neutrally
+- ` 9617-9643 ` The shared parameter table, and the `R_<module>_<section>_` convention for `.data`
+- ` 9644-9658 ` WM_KILLERBULLET 10/37 -> 15/37: one `extern` unblocked five functions
+- ` 9659-9677 ` FIFTH time today: check `include/` before calling a class unowned
+- ` 9678-9689 ` Branch polarity that no phrasing reaches
+- ` 9690-9716 ` dtk UNDER-sizes objects as well as over-sizing them. Relocations are the authority.
+  - ` 9717-9728 ` The general caveat
+- ` 9729-9737 ` An unnamed vtable does not mean a non-polymorphic class
+- ` 9738-9751 ` WM_KILLERBULLET 15/37 -> 17/37: the vtable read closed the destructor outright
+- ` 9752-9767 ` "A unit's pool cannot be right while any contributing function is unwritten" — second unit
+- ` 9768-9793 ` A MEASURED NEGATIVE CAN BE CONTEXT-DEPENDENT. Re-test after fixing a real bug.
+- ` 9794-9811 ` Two more clean negatives, and the limit of the declaration-order rule
+- ` 9812-9838 ` WM_BOARD PARKED at 11/15 — and both retests HELD, which sharpens the rule
+- ` 9839-9861 ` A base vtable written then overwritten is ORDINARY DERIVED-CLASS CONSTRUCTION
+- ` 9862-9878 ` WM_HANACHAN scouted: the largest class of the session
+  - ` 9879-9886 ` The ownership check caught an over-wide claim
+- ` 9887-9900 ` A VIRTUAL DESTRUCTOR CONSUMES TWO VTABLE SLOTS, not one
+- ` 9901-9926 ` Including `d_wm_lib.hpp` costs a `.ctors` entry — and some units' targets do NOT include it
+- ` 9927-9955 ` Converting vtable BYTE OFFSETS to SLOT NUMBERS resolves overrides without a draft
+- ` 9956-9970 ` Reading a trivial constructor/destructor pair identifies a struct as POD
+- ` 9971-10002` The registration trigger is DYNAMIC INITIALISATION, not a non-trivial destructor
+- `10003-10019` Two ordering constraints that CONFLICT mean a NAMED constant
+- `10020-10040` "1 differing, and it is the same offset 4 bytes out" = a MISSING MEMBER
+- `10041-10050` Vtable slot 18 is the DESTRUCTOR
+- `10051-10063` A partially-authored unit will report FUNCTION ORDER IS WRONG. Expect it.
+- `10064-10085` The constructor-call theory does NOT explain WM_KINOPIO's `.ctors` gap
+- `10086-10096` Prefer an UNWRITTEN function over a fourth variant on a known wall
+- `10097-10117` `+0x184` is DECLARED on every unit, but whether the ctor WRITES it varies
+- `10118-10135` The state-dispatch table, decoded the same way as the vtable
+- `10136-10159` WM_KINOPIO 13/19 -> 14/19, and a NEW residual class: paired-single vectorisation
+- `10160-10174` A jump table with every case address known is twenty small problems
+- `10175-10191` The same lever can close one function and BREAK its sibling
+  - `10192-10199` A live operator-spelling sensitivity, characterised not solved
+- `10200-10217` WM_HANACHAN paused at 13/32 — a responsible stop, not a wall
+- `10218-10231` The `+0x60` "secondary vtable" needs NO special handling — third confirmation
+- `10232-10240` A jump-table case can have ZERO bytes
+- `10241-10254` WM_KINOPIO's largest function: 9 of 20 cases authored
+- `10255-10287` Triage a lever by APPLICABILITY before trying it
+- `10288-10318` WM_KOOPAJR scouted — clean handover position, no functions authored
+- `10319-10344` Session summary — where the WM region of `d_basesNP` stands
+- `10345-10363` `lbl_2_bss_11B70` — a shared singleton whose type is genuinely UNIDENTIFIED
+- `10364-10380` WM_KINOPIO's largest function: 12 of 20 cases
+- `10381-10403` WM_KOOPAJR: six roles named with ZERO lines of draft written
+  - `10404-10419` A 2-entry function-pointer table, found by scanning for the stride
+- `10420-10440` TRAP: a load's DISPLACEMENT is not an address suffix
+- `10441-10459` Two cases stopped on real header gaps, correctly
+- `10460-10495` HEADER CORRECTED: `dPyMdlBase_c::getBodyMdl()` returns `m3d::mdl_c *`, not `void`
+- `10496-10519` `lbl_2_bss_11B70` IDENTIFIED — and the earlier search failed on a FALSE PREMISE
+  - `10520-10551` What it actually is
+  - `10552-10559` The reusable method
+- `10560-10589` A unit reported "one function short" WAS NOT LINKABLE — check function ORDER early
+- `10590-10610` The singleton method GENERALISES — four more resolved, and one that self-flags
+  - `10611-10626` The one that self-flags is the important one
+  - `10627-10638` Two rules worth carrying
+  - `10639-10653` The order check covers 3 drafts out of 56 — and now SAYS so
+- `10654-10690` RETRACTION: `dWCamera_c`'s layout gap is NOT a header defect. It is already solved.
+- `10691-10714` Two bugs in my own singleton resolver, and the WM_KOOPASHIP answer
+  - `10715-10736` The corrected table
+- `10737-10770` WM_KILLERBULLET 17/37 -> 19/37, and the order fix that moved the tally by zero

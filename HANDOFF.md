@@ -3,6 +3,17 @@
 Working notes for continuing the decompilation work on branch
 `claude/game-decompilation-setup-bw30s7`.
 
+> **This file is ~570KB across 400+ sections. Do not read it whole, and do not
+> rely on `tail` — the finding you need is usually older than the tail shows.**
+> Read [`HANDOFF_INDEX.md`](HANDOFF_INDEX.md) instead: every section with its
+> line range, so you can `sed -n '<start>,<end>p' HANDOFF.md` for just the one
+> you need. Grep it (`grep -an "<term>" HANDOFF.md`, `-a` because parts of this
+> file read as binary to grep) BEFORE designing any experiment. Two rounds were
+> spent in one day re-deriving results already recorded here, once on a rule
+> whose worked example was the very function being looked at. This file is this
+> size so nobody pays twice for the same answer.
+> Regenerate the index with `python wip/wm_units/make_handoff_index.py`.
+
 ---
 
 # START HERE: the parallel work plan
