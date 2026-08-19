@@ -22,7 +22,8 @@ public:
     virtual int execute();           ///< @unofficial fn_2_16C2F0
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame); ///< @unofficial fn_2_16C5E0
 
-    void resetInit();       ///< @unofficial fn_2_16C270, called from create()-equivalent
+    virtual int create();  ///< @unofficial fn_2_16C270 -- confirmed by the target's mid-function
+                            ///< `li r3,SUCCEEDED` (scheduled early, held across later stores)
     void createModel();     ///< @unofficial fn_2_16C3F0
     void calcModel();        ///< @unofficial fn_2_16C490
     void resetPosition();    ///< @unofficial fn_2_16C530

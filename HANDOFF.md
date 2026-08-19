@@ -9872,3 +9872,43 @@ reporting "END cuts short" against a real symbol — one object alone is `0xc8`
 bytes), and **one over-wide `.data` guess swallowed the NEXT unit's
 `g_profile_WM_ITEM`, caught by the ownership check rather than by size.** A
 same-size wrong-owner claim is exactly what that check exists for.
+
+## A VIRTUAL DESTRUCTOR CONSUMES TWO VTABLE SLOTS, not one
+
+WM_KINOPIO found `dPyMdlBase_c`'s real vtable offset **+2 slots** from a naive
+declaration-order count off its header: the **scalar and vector deleting
+destructor pair** occupies two slots, not one.
+
+**Two independent virtual-dispatch call sites were both 8 bytes high**, and that
+identical error is what made it diagnosable — **a systematic offset shared by two
+call sites is a counting error, not two separate bugs.**
+
+Add this to the vtable-walking procedure already recorded: a derived class's
+vtable is its base's slots overridden in place then new slots appended, **and a
+virtual destructor in that chain costs two slots.**
+
+## Including `d_wm_lib.hpp` costs a `.ctors` entry — and some units' targets do NOT include it
+
+`sc_ForceList` is a namespace-scope `static` array *with an initialiser* in
+`d_wm_lib.hpp`, so **every TU that includes the header gets its own copy and its
+own dynamic initialiser**, adding a `.ctors` entry. Five units today matched
+*with* that — their targets do include it.
+
+**WM_KINOPIO's target does not.** Its `.ctors` has one entry where the draft has
+two, purely because the draft included the header to reach `dWmLib::IsSingleEntry()`.
+
+**The fix is to declare, not include:**
+
+```cpp
+namespace dWmLib { bool IsSingleEntry(); }   // in the .cpp, no include
+```
+
+A declaration with no definition pulls in nothing — the same technique this
+project already uses for `fn_80103420` and the `R_2_1_*` externs. Hand-mirroring
+`sc_ForceList` locally was tried and made things *worse*; the point is to declare
+only the **function you call**, not to reproduce the header's data.
+
+**So the `.ctors` entry count tells you whether the target's TU included a header
+with a self-initialising static.** That is a cheap, decisive signal about the
+original source's include list, and it is worth checking before assuming a unit
+should include what its siblings include.

@@ -255,3 +255,129 @@ the entire class layout question in two short probe files
 (`probe.cpp`/`probe2.cpp`/`probe3.cpp` in this directory) before any
 function body was written, per "classInit's `li r3,<size>` is a free
 `sizeof` check -- use it before authoring anything else."
+
+## Round 2: authoring the twelve characterized functions
+
+**Result: 13/19 byte-identical**, up from 7/19. `create`, `execute`,
+`createModel`, `calcModel` all reached MATCH this round in addition to the
+7 already landed. `resetPosition` and `checkAnmLoop` are very close (3 and
+34 differing respectively, the latter's count inflated by a `verify_anon`
+mispairing -- see below). `fn_2_16D1E0`/`fn_2_16D270` (the `.ctors` pair)
+remain open, `fn_2_16C5E0` (processCutsceneCommand) and `fn_2_16D100`
+(startJump) were not attempted, and `fn_2_16C810` was correctly left
+alone per instruction.
+
+### Both flagged inconsistencies resolved -- and they were the SAME bug
+
+1. **`0x128-0x134` is `mClipSphere.set(mPos, 100.0f)`, not a new member.**
+   `dWmActor_c::mClipSphere` (already declared in `d_wm_actor.hpp`) sits at
+   exactly `0x128`, confirmed by the earlier `Probe` compile. The four
+   stores (`mPos.x/y/z` into `mClipSphere`'s embedded `mCenter`, then a
+   rodata constant into `mRadius`) are exactly `mSphere_c::set(const
+   mVec3_c&, float)`'s shape -- matches
+   `d_a_wm_kinoko_base.cpp`'s own `mClipSphere.set(mPos, 120.0f);`
+   precedent line for line, just a different radius (`100.0f`).
+2. **The "unconditional per-frame `resetInit()` call" was a genuine
+   misread**, exactly as suspected: re-reading the raw bytes at
+   `0x0016C374` showed `bl fn_2_16C490` (`calcModel`), not `fn_2_16C270`.
+   `execute()` is `checkAnmLoop(); calcModel();` at its tail, not
+   `checkAnmLoop(); resetInit();` -- which also resolves the "why does
+   `execute` re-run full init every frame" oddity, because it doesn't.
+
+Both turned out to trace back to one earlier mistake: the `0x128` reading
+was made before the layout-probe work, and the mis-transcribed call
+target was never re-checked against it. Re-reading target bytes directly,
+rather than trusting an earlier note, fixed both.
+
+### `create()` -- the odd `li r3,0x1` was a real, structural clue
+
+`fn_2_16C270` sets `r3 = SUCCEEDED` mid-function (scheduled early, held
+across the `mScale` stores, never re-loaded before `blr`) -- the same
+"free information in a return value that never gets an explicit `return`
+near the end" shape seen elsewhere this session. This settled its real
+identity: it is not a bespoke `resetInit()` helper, it **is** the actual
+`virtual int create()` override (`dWmDemoActor_c::create()` is itself
+already declared, `return SUCCEEDED;`). Renamed accordingly.
+
+### A new, reusable finding: dPyMdlBase_c's real vtable is offset by +2 from a naive declaration-order count
+
+Two virtual dispatches through `mpMdlMng->mpMdl` (`resetPosition`'s
+`setBodyAnm`-shaped call at target slot `0x5c`, `checkAnmLoop`'s
+`setRate`-shaped call at target slot `0x84`) both compiled, on the first
+attempt (hand-counting `include/game/bases/d_player_model_base.hpp`'s
+declaration order from the destructor at slot 0), to a slot **exactly 8
+bytes (2 slots) higher** than the target. The discrepancy was identical
+in both cases, which is what made it diagnosable rather than two
+unrelated bugs: `dPyMdlBase_c`'s compiled vtable reserves 2 slots for the
+destructor (the usual scalar/vector-deleting-destructor pair on this
+ABI), not the 1 a naive count assumes. Correcting for the +2 offset
+pointed at the right methods by name (`setAnm(int,float,float,float)` for
+slot `0x5c`, `setFrame(float)` for slot `0x84`) rather than at a
+raw-offset function-pointer call -- both compiled to the target's exact
+slot number once identified. Recorded because this is a general property
+of `dPyMdlBase_c`'s vtable, not specific to either call site, and will
+recur for any future virtual dispatch through `mpMdl`.
+
+### A new negative: including a shared header can pull in an unrelated unit's static initializer
+
+`dWmLib::ForceInCourseList_t` and `dWmLib::IsSingleEntry()` both live in
+`include/game/bases/d_wm_lib.hpp` -- but that header ALSO declares, at
+namespace scope, `static ForceInCourseList_t sc_ForceList[] = {...}`
+(castle's own entry) with a dynamic initializer
+(`dCsvData_c::c_CASTLE_ID` is not a compile-time constant). Because that
+initializer has side effects (`__register_global_object`), the compiler
+cannot prove it dead even when this TU never references it, and it gets
+silently included in the draft's own `__sinit`. Confirmed directly:
+compiling with the real header produces an `__sinit` that does BOTH
+`sc_ForceList`'s registration and this unit's own, back to back, doubling
+the function's size versus target. **Tried the fix (hand-declaring a
+local mirror of `ForceInCourseList_t` and `IsSingleEntry()` instead of
+including the header) and it made the specific function WORSE, not
+better**: without the real header present, MWCC did not generate the
+`__register_global_object` call at ALL for this unit's own object --
+apparently something else in the header (not yet identified) is needed
+for the compiler to recognize `daWmKinopio_c`'s own `sForceList` as
+needing dynamic registration, not just its non-constant initializer.
+Reverted to the real include, which at least gets `fn_2_16D270` (the
+generated `__arraydtor` callback) to MATCH, and left `fn_2_16D1E0` open
+rather than guess further. This needs a proper investigation next round,
+not a repeat of either tried variant.
+
+### `resetPosition`'s remaining 3 differing: a rodata constant-pooling order question, not yet solved
+
+Four `.rodata` constants (`-500.0f`, `5.0f`, `0.5f`, `0.8f`, at target
+addresses `0x8b48/0x8b4c/0x8b50/0x8b54` -- wait, confirmed via direct
+read as `0x8b10+0x38/0x3c/0x40/0x44`) are shared between `resetPosition`
+and `calcModel`. Declaring them as named `static const float` constants
+in the target's own memory order did not reproduce the target's pooling
+order (the compiler still placed them by first-use-across-the-TU order,
+not declaration order) -- the same open question flagged on WM_ITEM's
+`__sinit`/`cycleAnm`, now seen a second time on a different unit,
+reinforcing that it is a genuine `-O4`-family MWCC constant-pool
+scheduling behavior rather than a per-unit fluke.
+
+## Updated result table
+
+| target | size | draft | note |
+|---|---|---|---|
+| `fn_2_16C150` classInit | 0x30 | **MATCH** | |
+| `fn_2_16C180` ctor | 0x3C | **MATCH** | |
+| `fn_2_16C1C0` dtor | 0xB0 | **MATCH** | |
+| `fn_2_16C270` create | 0x78 | **MATCH** | renamed from `resetInit`; real `virtual int create()` override |
+| `fn_2_16C2F0` execute | 0xA4 | **MATCH** | tail calls `checkAnmLoop(); calcModel();`, not `resetInit()` |
+| `fn_2_16C3A0` draw | 0x40 | **MATCH** | |
+| `fn_2_16C3E0` doDelete | 0x8 | **MATCH** | |
+| `fn_2_16C3F0` createModel | 0xA0 | **MATCH** | |
+| `fn_2_16C490` calcModel | 0xA0 | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | rodata pooling order only |
+| `fn_2_16C5C0` resetStep | 0xC | **MATCH** | |
+| `fn_2_16C5D0` unusedStub | 0x4 | **MATCH** | |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | not attempted | |
+| `fn_2_16C810` stepCutscene70 | 0x834 | **left alone** | per instruction |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing (self-paired) | evaluation-order/register-holding shape not yet matched; vtable slot now correct |
+| `fn_2_16D100` startJump | 0x84 | not attempted | uncertain struct-typed 2nd parameter, needs the (unauthored) caller in `fn_2_16C810` to pin down |
+| `fn_2_16D190` checkSpawnGate | 0x4C | **MATCH** | |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | see negative above |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | auto-generated `__arraydtor` from the `sForceList` static |
+
+**13/19 byte-identical this round (up from 7/19).**
