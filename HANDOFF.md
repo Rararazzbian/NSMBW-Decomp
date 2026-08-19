@@ -11315,3 +11315,44 @@ against the complete `.rodata` table, after the truncated-dump incident. **No
 further bugs found** — the one wrong multiplier was the only casualty. A clean
 re-check after a known-bad input is worth recording precisely because it came back
 empty.
+
+## Scoping a fresh unit: `scout_unit.py`, and the singleton exception to the ownership check
+
+`bin/dtk/dtk_splits_*.txt` is generated from the slices already LANDED, so it
+lists only solved units and is no help scoping a new one. Bounds have to be
+derived, and deriving them from a profile boundary has mis-scoped units twice
+(WM_ANTLION with both ends wrong; WM_ANTLION_MNG at ~79 functions when it is 22).
+
+`wip/wm_units/scout_unit.py` walks the relocation stream for a `.text` range and
+reports every section it reaches plus its `.ctors` ownership. Worked example, the
+`PEACH_CASTLE_SEQUENCE_MGR` pair:
+
+```
+0x1204E0-0x120510 (0x30)   MGR      -> reaches ONE external address: operator new
+0x120510-0x120F00 (0x9F0)  MGR_OBJ  -> own .rodata/.data/.bss, .ctors 0x2E4 -> __sinit 0x120D00
+```
+
+**One `.ctors` entry across both profiles is evidence of ONE translation unit** —
+a manager whose whole body is "allocate the object", plus the object itself.
+
+### The refinement, which the ownership check needs
+
+Running the standard check — does any code OUTSIDE the claim read pools the claim
+owns? — returned two hits, and **both are false alarms for opposite reasons**:
+
+- **`.data 0x418`** is read from all over the module (`0x7d6`, `0x1cc6`, `0x5346`
+  …). That is a SHARED object, not unit-owned. Exclude anything with module-wide
+  readers before treating it as evidence.
+- **`.bss 0xD8F8` is this unit's SINGLETON INSTANCE POINTER.** Of course other
+  code reads it — that is what a singleton is for. **A singleton pointer being
+  read from outside the claim is expected and proves nothing about the bounds.**
+
+**So the ownership check must exclude singleton pointers and module-wide shared
+objects before its result means anything.** Run `bss_classify.py` on a `.bss`
+label before counting its external readers as evidence that a claim is short. The
+check that caught WM_ANTLION's short claim is still right; it just needs those two
+exclusions or it produces a false positive on every unit that owns a singleton.
+
+With both excluded, **no unit-owned pool is read from outside** — the claim
+`0x1204E0-0x120F00` is NOT short, and the unit is scoped and ready to author with
+`sizeof 0xB8`, base `dActor_c`, and its singleton already resolved.

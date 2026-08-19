@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11318 lines / 428 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11359 lines / 430 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -449,3 +449,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11211-11241` MY ERROR: a tally gap is NOT a measure of unwritten work
 - `11242-11273` THERE ARE UNLANDED UNITS OF 0x30 BYTES, and we have been grinding walls
 - `11274-11318` `sc_ForceList` double-init SOLVED: it was our own duplicate declaration
+- `11319-11337` Scoping a fresh unit: `scout_unit.py`, and the singleton exception to the ownership check
+  - `11338-11359` The refinement, which the ownership check needs
