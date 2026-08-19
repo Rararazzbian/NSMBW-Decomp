@@ -9203,3 +9203,44 @@ one.** That plus the missing RTTI-cast follow-up call took `createModel`
 **Read the neighbouring unit's notes before deriving anything.** This agent noted
 three rounds running that it would and did not; the round it finally did, two
 functions moved substantially.
+
+## Enumerate the real vtable CHAIN before writing a shadow header — the method may already exist
+
+I told WM_BOARD to declare an undeclared method in a shadow header to test a
+natural virtual call. **It did not need to.** Enumerating the actual chain from
+the headers already in `include/` placed slot `+0x20` exactly:
+
+```
+G3dObj :  IsDerivedFrom@0x8  G3dProc@0xc  ~G3dObj@0x10  GetTypeObj@0x14  GetTypeName@0x18
+ScnObj :  overrides those four IN PLACE, then APPENDS from 0x1c --
+          ForEach@0x1c   SetScnObjOption(ulong,ulong)@0x20   GetScnObjOption@0x24
+          GetValueForSortOpa@0x28   GetValueForSortXlu@0x2c   CalcWorldMtx@0x30
+```
+
+`SetScnObjOption(ulong, ulong)` matches both the slot and the observed
+two-argument shape, and is **already declared** in `g3d_scnobj.h` and inherited
+unchanged. The manual vtable dereference was replaced with a real call and that
+section became byte-exact. 88 -> 80.
+
+**A derived class's vtable is its base's slots overridden in place, then new
+slots appended.** Walking that chain from the existing headers identifies a slot
+without guessing a name, without a shadow header, and without a header change.
+**Do it before proposing any new declaration.**
+
+## A LOWER differing count can hide a NEW regression — read the diff, not the number
+
+Making a string pointer `const` took `createModel` **79 -> 71**, and the agent
+inspected the diff instead of banking it: the `const` had shifted the surrounding
+**string layout**, moving two strings off their correct `+0x68`/`+0x78` offsets.
+**It traded one gap for a different, worse one and was reverted.**
+
+Second instance of this shape today — WM_START's member hoist also improved a
+count while restructuring a dispatch. **A change that improves the count while
+breaking structure is a regression.** Always look at what moved.
+
+## And a wrong enum constant, caught by reading the raw block
+
+The target has `li r6, 0x40`; the draft had `0x20`. `BUFFER_RESMATMISC` is
+`1<<5 = 0x20` and `BUFFER_RESANMVIS` is `1<<6 = 0x40` — the wrong flag from an
+adjacent enumerator. 80 -> 79. **Read constants off the target's immediates and
+check them against the enum, rather than picking the plausible-sounding name.**

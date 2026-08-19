@@ -205,13 +205,10 @@ void daWmBoard_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
     mResFile = dResMng_c::m_instance->getRes("cobBoard", "g3d/model.brres");
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobBoard");
-    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
+    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESANMVIS, 1, nullptr);
 
     nw4r::g3d::ScnMdl *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mModel.getScn());
-    typedef void (*ScnMdlVFn20_t)(nw4r::g3d::ScnMdl *, unsigned long, int);
-    void **scnMdlVtable = *reinterpret_cast<void ***>(scnMdl);
-    ScnMdlVFn20_t vfn20 = reinterpret_cast<ScnMdlVFn20_t>(scnMdlVtable[8]);
-    vfn20(scnMdl, 0x30001, 0);
+    scnMdl->SetScnObjOption(0x30001, 0);
 
     static const char *animName = "cobBoard";
     nw4r::g3d::ResAnmTexSrt resAnmTexSrt = mResFile.GetResAnmTexSrt(animName);
