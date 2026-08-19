@@ -10847,3 +10847,42 @@ field stores"** — a fourth distinct answer observed for it on this project.
 **Caveat the agent stated plainly and which I am preserving:** its "match" figures
 are raw text diffs, not the project's link-time comparison. Byte-identity here
 means identical disassembly text, which is necessary but not the landing gate.
+
+## "FUNCTION ORDER IS WRONG" can be a TOOLING artifact. Here is how to tell.
+
+Both of these are true and they were established hours apart:
+
+- **WM_KILLER's was REAL.** `unk_168590` was defined before `unk_1684A0`; the
+  addresses are in the names and they were inverted. That unit could not link.
+- **WM_ANCHOR's is a FALSE POSITIVE.** Its draft emits **two separate weak symbols
+  with byte-identical one-instruction bodies** — `finalUpdate__12dBaseActor_cFv`
+  at `0x760` and `vf74__12daWmAnchor_cFv` at `0x7B0`, each a lone `blr`
+  (`4E 80 00 20`). `verify_anon.py` pairs symbols by CONTENT, greedily, so it
+  consumed the wrong one of two indistinguishable candidates. Verified directly in
+  `draft.txt`. The positions are correct: the auto-emitted one early, our own
+  declaration late, per the documented LIFO rule for weak in-class inlines.
+
+**This closes the "Open hypothesis for the last 3 order violations" thread**
+(~line 7788): it is a COMDAT/tooling artifact, not a source defect.
+
+**The discriminator is cheap: check the ADDRESSES, not the tool's verdict.**
+Definition order must be ascending by target address. Where the address is in the
+symbol name that is a text comparison. Where it is not, read the two symbols'
+bodies — **if they are byte-identical, content-based pairing cannot distinguish
+them and the warning carries no information.**
+
+## A tool that cannot see its target must not be read as a pass
+
+`check_fn_order.py` recovers the target address from the function's own name, so
+it cannot see drafts that use real names. An agent ran it on WM_ANCHOR — which
+uses real names — and reported **"check_fn_order.py showed 0 inversions"** as
+evidence the order was fine. The tool had checked nothing at all.
+
+I had already fixed exactly this an hour earlier, making it list every unchecked
+file by name; the agent was running the older build. The fix caught a real reader
+within the hour, which is the argument for it.
+
+**"No findings" and "nothing was examined" must never render identically.** Any
+sweep that can silently skip its targets has to name what it skipped, or its
+summary line converts absence of evidence into evidence of absence — and someone
+downstream will cite it as a clean bill of health, exactly as happened here.
