@@ -7878,3 +7878,52 @@ with the evidence recorded in a comment. **That is how a finding survives a unit
 -- the header stays untouched, three landed units stay safe, and the next person
 to correct it inherits the reasoning instead of re-deriving it. WM_NOTE used the
 same approach for a camera-field block and landed 13/13.
+
+## castle PARKED 19/20 and koopa_castle PARKED 16/17 — both walls now exhaustively measured
+
+### castle `getKoopaShipStopPos`: both axes closed
+
+The outstanding test was whether the earlier sweep had varied the wrong thing.
+It had not. With compute order held fixed at the known best (`zyx`), **all six
+STORE-order permutations were swept independently and all six give the identical
+6 differing.** Store order has zero effect when compute order is fixed.
+
+Combined with the exhaustive compute-order sweep, **both axes are fully measured
+and neither moves the residual.** Twelve permutations plus the signature and
+access-pattern variants. The residual really is MWCC choosing between two
+simultaneously-ready instructions with no dependency difference on either side.
+
+**Permuting the right thing correctly and getting nothing is a much stronger
+result than permuting the wrong thing.** This is a park with the axis my
+instruction distinguished explicitly closed.
+
+### koopa_castle: 22 measured shapes, and no free win from castle
+
+Both castle findings -- `s8 mDone` rather than `bool`, and the
+`c_StartPointKinokoHouseID`-is-the-header's-own-initialiser correction -- were
+**already present in koopa_castle's draft**, independently discovered by an
+earlier round on the same evidence. The agent read the unit's section before
+touching anything and reported that rather than re-deriving it.
+
+Two genuinely new shapes were then tried, both regressing to 33 with the frame
+collapsing `-0x40 -> -0x30` and length `58 -> 55`: an explicit local pointer
+declared after the first field write with the remaining five writes through it,
+and a mixed form splitting the first vector into scalar stores while leaving the
+second as a constructor call. Both **break the register sharing across the two
+vectors** (they stop sharing `f2`=0.0 and `f0`=-100.0), which is the failure
+class already on record. New shapes, known failure mode -- a reconfirmation, not
+a lever, and reported as such.
+
+Both files were restored cleanly to baseline. **That matters as much as the
+results** -- a parked unit left in an experimental state costs the next round.
+
+### Where these two stand
+
+```
+castle        19/20   getKoopaShipStopPos, 6 differing, 12 permutations + variants
+koopa_castle  16/17   __sinit, 13 differing, 22 measured shapes
+```
+
+Both are one function from landing and both residuals are instruction-scheduling
+or register-preference decisions with no known source-level lever. Do not spend
+further rounds without a genuinely new axis.

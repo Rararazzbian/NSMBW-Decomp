@@ -552,42 +552,6 @@ bool daWmCastle_c::getKoopaPos(mVec3_c &out) const {
 // direct-mVec3_c-construction forms above, without effect -- this function returns through a
 // hidden result pointer (r3) rather than storing into a stack temporary later passed by address,
 // and that ABI difference may be why the lever does not transfer.
-
-// SECOND ROUND (coordinator-directed, after __sinit closed): still 6 differing, and now
-// characterised as a genuine SCHEDULING wall rather than an unexplored gap. All three
-// coordinator-suggested angles were tried and measured, plus the remaining declaration-order
-// permutations:
-//   - by-value return vs. output-reference signature (`void getKoopaShipStopPos(mVec3_c &out)
-//     const`): WORSE, 8 differing. Consistent with the ABI already observed -- target's r3 is
-//     written-to (result) and r4 is read-from (this/mPos), which is CodeWarrior's
-//     hidden-return-pointer-first convention for a class returned BY VALUE. An output-reference
-//     form puts `this` back in r3, contradicting the target's own register roles, so the
-//     existing by-value declaration is correct; this is a negative result, not a fix.
-//   - the remaining 5 of 6 declaration-order permutations for the z/y/x locals (xyz, xzy, yxz,
-//     yzx, zxy) -- all WORSE (8, 10, 10, 10, 8 respectively). Combined with the two already
-//     recorded above (13, 7) and the current baseline (zyx, 6), ALL SIX permutations are now
-//     measured and zyx is confirmedly best.
-//   - `offset` as a plain pointer (`const Vec3Pod_t *offset = &sc_KoopaShipStopConfig[0].mOffset;
-//     ...offset->x...`) instead of a reference -- byte-identical, 6 differing.
-//   - `offset` as a VALUE COPY (`Vec3Pod_t offset = sc_KoopaShipStopConfig[0].mOffset;`) --
-//     WORSE, 14 differing (the copy costs real instructions; reverted).
-//   - re-verified independently (not just trusting the prior round's note) that the collapsed
-//     `return mVec3_c(mPos.x + offset.x, ...)` form and the x-addend-flip are exactly what was
-//     recorded: byte-identical 6, and 6-with-different-registers, respectively.
-// Every source-level lever tried transfers the IDENTICAL two-instruction residual through
-// unchanged: (1) x's operand LOAD order (mPos.x/offset.x) swaps which register holds which value
-// but never matches target's mPos.x-first order in combination with the rest of the sequence
-// staying aligned, and (2) the z-store is scheduled by MWCC as soon as z's value AND destination
-// are both ready (right after y's add) in every shape tried, where the target defers it until
-// after x's add too. Both sides of this residual involve zero dependency difference between draft
-// and target at the instruction level -- the two candidate next-instructions (x's add vs. z's
-// store) are simultaneously ready in both, and MWCC's list-scheduler picks a different one first.
-// This is the same class of residual AGENT_CONTEXT.md documents for saved-register assignment
-// ("Declaration order does NOT drive MWCC's... assignment... treat a pure
-// register-permutation residual as not source-addressable") -- here it is instruction-schedule
-// order rather than register assignment, but the diagnostic is the same: nothing at the C++
-// level reached it. Recording this as a well-characterised wall rather than continuing to
-// permute; every reasonable rewrite of this function's four-line body has now been tried.
 mVec3_c daWmCastle_c::getKoopaShipStopPos() const {
     const Vec3Pod_t &offset = sc_KoopaShipStopConfig[0].mOffset;
     float z = mPos.z + offset.z;
