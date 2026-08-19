@@ -250,3 +250,16 @@ void daWmAnchor_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFra
         mIsCutEnd = true;
     }
 }
+
+/// @unofficial Defined LAST, after every other strong function in this TU,
+/// on the working theory (see the class-level comment) that a STRONG
+/// function's own .text placement follows its textual definition order
+/// among strong functions, and the target has this one landing immediately
+/// before the purely-inherited cluster (setCutEnd/clearCutEnd/checkCutEnd/
+/// vf74/vf78) that this draft never declares. NOT independently confirmed
+/// against a second data point -- if this placement theory is wrong, the
+/// content (ACTOR_MAP_OBJECT, matching the target's own `li r3,0x2`) is
+/// still right; only the address would still be off.
+int daWmAnchor_c::GetActorType() {
+    return ACTOR_MAP_OBJECT;
+}

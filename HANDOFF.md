@@ -7735,3 +7735,51 @@ CodeWarrior non-virtual pointer-to-member encoding. dance_pakkun and anchor's
 agents each found it in their own unit without knowing of the other. Model it as
 `typedef void (Class_c::*Fn_t)(); static const Fn_t scTable[N];` called as
 `(this->*scTable[idx])()`. On anchor it unblocked three functions at once.
+
+## anchor: the definition-order lever works, and dtk's symbol names hid a real override
+
+Order violations **13 -> 3** by applying the recorded rule: an explicit
+out-of-line override joins the definition-order batch even with a body identical
+to the inherited default, while a purely inherited virtual defers to a block at
+the end. `doDelete()` declared as a strong override right after `draw()` moved to
+its correct slot immediately.
+
+### dtk mislabels weak base-class symbols by BYTE CONTENT
+
+`vf74`/`vf78`/`GetActorType` in anchor's range are labelled
+`__13dWmObjActor_c` in the symbol map. **They are `dWmActor_c`'s, inherited
+through `dWmDemoActor_c`.** dtk matched them by byte content against
+already-landed units of the `dWmObjActor_c` family -- same bytes, wrong
+attribution. Anchor's base is `dWmDemoActor_c`, proved from its constructor
+calling `__ct__14dWmDemoActor_cFv` directly.
+
+**And the mislabel hid a real defect.** `GetActorType`'s target body is
+`li r3, 0x2; blr` -- `ACTOR_MAP_OBJECT`, not the inherited `ACTOR_MAP_DEMO` (1).
+It is a genuine behavioural override, and checking only the symbol name would
+have left it as a permanent "1 differing". **Read the target's BYTES, not dtk's
+name for them.**
+
+### `0xbf8` is not `sizeof(dWmMapModel_c)`
+
+`setNodePos` computes `base + idx*0xbf8 + 0x1a0` and calls
+`setAnchorShadow__13dWmMapModel_cFb`. The mangled name makes `this` a
+`dWmMapModel_c *`, so **the `dWmMapModel_c` is the thing at `+0x1a0`, and `0xbf8`
+is the size of a LARGER containing struct.** Our header models
+`dWmMapModel_c { u8 mPad[0xbf8]; }`, which is the wrong object.
+
+**The header change was proposed correctly and declined deliberately.**
+`dWmMapModel_c` is referenced by three landed units and changing its size risks
+binaries that currently verify -- not worth it for one function in a unit with
+other blockers. The call is to be modelled with a cast confined to the unit's own
+`.cpp`, the same way WM_NOTE handled its camera-field block and landed cleanly.
+Recorded here so whoever eventually corrects that header has the evidence.
+
+### Open hypothesis for the last 3 order violations
+
+The target puts `GetActorType` at `0x15abb0`, at the very END of the weak cluster,
+*with* a non-default body. A strong out-of-line override cannot land there. **An
+in-class inline virtual is weak and defers to the end-of-TU block while still
+carrying its own body** -- the same lever that landed the whole kinoko family via
+`getModelName()`. Being tested now, along with declaring `clearCutEnd`/`vf74` as
+in-class inline overrides to see whether a *declared* weak function's relative
+order within the cluster is controllable at all.
