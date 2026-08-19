@@ -7386,3 +7386,44 @@ to know what the data is for.
 `excludeCurrent` four-branch merge-point quirk remains unexplained after three
 rounds; both compare instructions are confirmed against the same parameter
 register, so "the two tests compare different things" is now ruled out too.
+
+## `verify_anon`'s pairing is GREEDY and CONSUMING. One bad function poisons the rest.
+
+Worth stating on its own, because it has now misled three separate rounds.
+
+The tool pairs each target against the **closest remaining draft function by
+instruction content**, consuming drafts as it goes. So a draft function that is
+badly size-mismatched does not merely report a bad number for itself -- **it can
+consume the draft that belonged to a different target**, and every target after
+it is then paired against leftovers.
+
+dance_pakkun hit this cleanly: `calcModelFor` is 47 instructions in the draft
+against the target's 101 (deliberately left unwritten), and `__sinit` was
+consequently reported as "50 differing vs ~calcModelFor" -- a meaningless number.
+The agent refused to read content off that comparison, which was correct. **A
+number you cannot trust is worse than no number.**
+
+### Consequences to internalise
+
+- **Only `MATCH` lines are trustworthy without cross-checking.** Those are exact
+  by construction. Every `differing vs ~` figure is a heuristic pairing and can
+  be attached to the wrong target.
+- **A count can move without the code changing**, if a neighbouring function's
+  size changed. dance_pakkun's `createModel` went 76 -> 75 and `create` went
+  38 -> 49 across rounds partly for this reason; both were re-baselined as "first
+  fair number" rather than treated as regressions.
+
+### The fix: diff by explicit name
+
+```
+python wip/wm_units/agent_course/difftool.py <target.txt> <draft.txt> <target-fn> <draft-fn>
+```
+
+Explicit target name, explicit draft name, no heuristic, no consumption, no
+cascade. **Use it for any function whose `~name` looks wrong**, and always when
+another function in the unit is a stub or is unwritten.
+
+The tool's own docstring already warned that pairing is greedy and that two
+functions with identical bodies can be paired to each other's targets. The part
+that was not obvious, and is now: the damage is not confined to the mis-paired
+function.

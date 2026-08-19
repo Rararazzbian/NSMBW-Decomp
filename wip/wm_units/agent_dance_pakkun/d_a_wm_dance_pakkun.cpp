@@ -125,20 +125,33 @@ int daWmDancePakkun_c::doDelete() {
     return SUCCEEDED;
 }
 
+namespace {
+    // @unofficial -- coordinator-measured retail layout: a pointer
+    // (relocated to "cs_wait") at unit-base+0x98, then "g3d/pakkun.brres"
+    // (17 bytes incl. null) at +0x9c, then "pakkun" (7 bytes incl. null)
+    // at +0xb0, all contiguous with no padding. Modelled as one aggregate
+    // so the compiler anchors all three off one base register.
+    struct ModelNames_t {
+        const char *anmName;
+        char brresPath[20]; // measured: retail pads this field to a 4-byte boundary (17 bytes of string + 3 padding)
+        char modelName[7];
+    };
+    ModelNames_t sModelNames = { "cs_wait", "g3d/pakkun.brres", "pakkun" };
+    const m3d::playMode_e sPlayModes[1] = { m3d::FORWARD_LOOP }; // @unofficial guessed
+}
+
 void daWmDancePakkun_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
-    mResFile = dResMng_c::m_instance->getRes("pakkun", "g3d/pakkun.brres");
-    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("pakkun");
+    mResFile = dResMng_c::m_instance->getRes(sModelNames.modelName, sModelNames.brresPath);
+    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl(sModelNames.modelName);
 
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::ANM_TEXSRT | nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
     mModel2.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
 
-    static const char *sAnmNames[1] = { "cs_wait" };
-    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sAnmNames[0]);
+    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sModelNames.anmName);
     mChrAnim[0].create(resMdl, resAnmChr, &mAllocator, nullptr);
 
-    static const m3d::playMode_e sPlayModes[1] = { m3d::FORWARD_LOOP }; // @unofficial guessed
     mChrAnim[0].mPlayMode = sPlayModes[0];
     mChrAnim[0].setRate(1.0f);  // @unofficial constant (lbl_2_rodata_87F4) unknown
     mChrAnim[0].setFrame(1.0f); // @unofficial constant (lbl_2_rodata_87F4) unknown

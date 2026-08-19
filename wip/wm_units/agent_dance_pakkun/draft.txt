@@ -393,9 +393,9 @@
 /* 00000508 00000548  81 8C 00 0C */	lwz r12, 0xc(r12)
 /* 0000050C 0000054C  7D 89 03 A6 */	mtctr r12
 /* 00000510 00000550  4E 80 04 21 */	bctrl
-/* 00000514 00000554  3C 60 00 00 */	lis r3, "@13077"@ha
+/* 00000514 00000554  3C 60 00 00 */	lis r3, "@13075"@ha
 /* 00000518 00000558  3C 80 00 00 */	lis r4, ms_instance__11dCsSeqMng_c@ha
-/* 0000051C 0000055C  C0 23 00 00 */	lfs f1, "@13077"@l(r3)
+/* 0000051C 0000055C  C0 23 00 00 */	lfs f1, "@13075"@l(r3)
 /* 00000520 00000560  C0 1E 02 D8 */	lfs f0, 0x2d8(r30)
 /* 00000524 00000564  83 E4 00 00 */	lwz r31, ms_instance__11dCsSeqMng_c@l(r4)
 /* 00000528 00000568  FC 01 00 00 */	fcmpu cr0, f1, f0
@@ -509,23 +509,23 @@
 /* 00000694 000006D4  38 E0 00 20 */	li r7, 0x20
 /* 00000698 000006D8  93 E1 00 2C */	stw r31, 0x2c(r1)
 /* 0000069C 000006DC  93 C1 00 28 */	stw r30, 0x28(r1)
-/* 000006A0 000006E0  3F C0 00 00 */	lis r30, ...data.0@ha
-/* 000006A4 000006E4  3B DE 00 00 */	addi r30, r30, ...data.0@l
-/* 000006A8 000006E8  93 A1 00 24 */	stw r29, 0x24(r1)
-/* 000006AC 000006EC  7C 7D 1B 78 */	mr r29, r3
-/* 000006B0 000006F0  38 63 01 8C */	addi r3, r3, 0x18c
-/* 000006B4 000006F4  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
-/* 000006B8 000006F8  38 80 FF FF */	li r4, -0x1
-/* 000006BC 000006FC  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
-/* 000006C0 00000700  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 000006C4 00000704  38 BE 00 4C */	addi r5, r30, 0x4c
-/* 000006C8 00000708  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 000006CC 0000070C  38 9E 00 60 */	addi r4, r30, 0x60
-/* 000006D0 00000710  38 63 00 04 */	addi r3, r3, 0x4
+/* 000006A0 000006E0  93 A1 00 24 */	stw r29, 0x24(r1)
+/* 000006A4 000006E4  7C 7D 1B 78 */	mr r29, r3
+/* 000006A8 000006E8  38 63 01 8C */	addi r3, r3, 0x18c
+/* 000006AC 000006EC  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 000006B0 000006F0  38 80 FF FF */	li r4, -0x1
+/* 000006B4 000006F4  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 000006B8 000006F8  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 000006BC 000006FC  3F C0 00 00 */	lis r30, "sModelNames__33@unnamed@d_a_wm_dance_pakkun_cpp@"@ha
+/* 000006C0 00000700  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 000006C4 00000704  3B FE 00 00 */	addi r31, r30, "sModelNames__33@unnamed@d_a_wm_dance_pakkun_cpp@"@l
+/* 000006C8 00000708  38 9F 00 18 */	addi r4, r31, 0x18
+/* 000006CC 0000070C  38 63 00 04 */	addi r3, r3, 0x4
+/* 000006D0 00000710  38 BF 00 04 */	addi r5, r31, 0x4
 /* 000006D4 00000714  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
 /* 000006D8 00000718  90 7D 01 A8 */	stw r3, 0x1a8(r29)
 /* 000006DC 0000071C  38 7D 01 A8 */	addi r3, r29, 0x1a8
-/* 000006E0 00000720  38 9E 00 60 */	addi r4, r30, 0x60
+/* 000006E0 00000720  38 9F 00 18 */	addi r4, r31, 0x18
 /* 000006E4 00000724  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
 /* 000006E8 00000728  90 61 00 0C */	stw r3, 0xc(r1)
 /* 000006EC 0000072C  7C 7F 1B 78 */	mr r31, r3
@@ -544,7 +544,7 @@
 /* 00000720 00000760  38 E0 00 01 */	li r7, 0x1
 /* 00000724 00000764  39 00 00 00 */	li r8, 0x0
 /* 00000728 00000768  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
-/* 0000072C 0000076C  80 9E 00 48 */	lwz r4, 0x48(r30)
+/* 0000072C 0000076C  80 9E 00 00 */	lwz r4, "sModelNames__33@unnamed@d_a_wm_dance_pakkun_cpp@"@l(r30)
 /* 00000730 00000770  38 7D 01 A8 */	addi r3, r29, 0x1a8
 /* 00000734 00000774  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
 /* 00000738 00000778  90 61 00 10 */	stw r3, 0x10(r1)
@@ -555,14 +555,14 @@
 /* 0000074C 0000078C  38 DD 01 8C */	addi r6, r29, 0x18c
 /* 00000750 00000790  38 E0 00 00 */	li r7, 0x0
 /* 00000754 00000794  48 00 00 01 */	bl create__Q23m3d8anmChr_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d9ResAnmChrP12mAllocator_cPUl
-/* 00000758 00000798  3C 60 00 00 */	lis r3, "@LOCAL@createModel__17daWmDancePakkun_cFv@sPlayModes@0"@ha
-/* 0000075C 0000079C  3F E0 00 00 */	lis r31, "@13077"@ha
-/* 00000760 000007A0  80 03 00 00 */	lwz r0, "@LOCAL@createModel__17daWmDancePakkun_cFv@sPlayModes@0"@l(r3)
+/* 00000758 00000798  3C 60 00 00 */	lis r3, "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@"@ha
+/* 0000075C 0000079C  3F E0 00 00 */	lis r31, "@13075"@ha
+/* 00000760 000007A0  80 03 00 00 */	lwz r0, "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@"@l(r3)
 /* 00000764 000007A4  38 7D 02 2C */	addi r3, r29, 0x22c
 /* 00000768 000007A8  98 1D 02 60 */	stb r0, 0x260(r29)
-/* 0000076C 000007AC  C0 3F 00 00 */	lfs f1, "@13077"@l(r31)
+/* 0000076C 000007AC  C0 3F 00 00 */	lfs f1, "@13075"@l(r31)
 /* 00000770 000007B0  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
-/* 00000774 000007B4  C0 3F 00 00 */	lfs f1, "@13077"@l(r31)
+/* 00000774 000007B4  C0 3F 00 00 */	lfs f1, "@13075"@l(r31)
 /* 00000778 000007B8  38 7D 02 2C */	addi r3, r29, 0x22c
 /* 0000077C 000007BC  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
 /* 00000780 000007C0  81 9D 01 AC */	lwz r12, 0x1ac(r29)
@@ -917,14 +917,14 @@
 .endobj "sStepTable__33@unnamed@d_a_wm_dance_pakkun_cpp@"
 
 # .rodata:0x50 | size: 0x4
-.obj "@13076", local
+.obj "@13074", local
 	.4byte 0x00000000
-.endobj "@13076"
+.endobj "@13074"
 
 # .rodata:0x54 | size: 0x4
-.obj "@13077", local
+.obj "@13075", local
 	.4byte 0x3F800000
-.endobj "@13077"
+.endobj "@13075"
 
 # .rodata:0x58 | size: 0xC
 # @unnamed@d_a_wm_dance_pakkun_cpp@::sProcTable
@@ -935,24 +935,25 @@
 .endobj "sProcTable__33@unnamed@d_a_wm_dance_pakkun_cpp@"
 
 # .rodata:0x64 | size: 0x4
-.obj "@LOCAL@createModel__17daWmDancePakkun_cFv@sPlayModes@0", local
+# @unnamed@d_a_wm_dance_pakkun_cpp@::sPlayModes
+.obj "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@", local
 	.4byte 0x00000000
-.endobj "@LOCAL@createModel__17daWmDancePakkun_cFv@sPlayModes@0"
+.endobj "sPlayModes__33@unnamed@d_a_wm_dance_pakkun_cpp@"
 
 # .rodata:0x68 | size: 0x4
-.obj "@13184", local
+.obj "@13178", local
 	.4byte 0x45070000
-.endobj "@13184"
+.endobj "@13178"
 
 # .rodata:0x6C | size: 0x4
-.obj "@13185", local
+.obj "@13179", local
 	.4byte 0xC1F00000
-.endobj "@13185"
+.endobj "@13179"
 
 # .rodata:0x70 | size: 0x4
-.obj "@13186", local
+.obj "@13180", local
 	.4byte 0xC3EF0000
-.endobj "@13186"
+.endobj "@13180"
 
 # 0x00000000..0x00000108 | size: 0x108
 .data
@@ -960,8 +961,6 @@
 
 # .data:0x0 | size: 0x5
 .obj "@12775", local
-# .data:0x0 | size: 0x0
-.sym ...data.0, local
 	.4byte 0x46374330
 	.byte 0x00
 .endobj "@12775"
@@ -996,33 +995,23 @@
 .endobj g_profile_WM_DANCE_PAKKUN
 
 # .data:0x40 | size: 0x8
-.obj "@12845", local
+.obj "@12836", local
 	.4byte 0x63735F77
 	.4byte 0x61697400
-.endobj "@12845"
+.endobj "@12836"
 
-# .data:0x48 | size: 0x4
-# daWmDancePakkun_c::createModel()::sAnmNames
-.obj "@LOCAL@createModel__17daWmDancePakkun_cFv@sAnmNames", local
-	.4byte "@12845"
-.endobj "@LOCAL@createModel__17daWmDancePakkun_cFv@sAnmNames"
-
-# .data:0x4C | size: 0x11
-.obj "@13122", local
+# .data:0x48 | size: 0x20
+# @unnamed@d_a_wm_dance_pakkun_cpp@::sModelNames
+.obj "sModelNames__33@unnamed@d_a_wm_dance_pakkun_cpp@", local
+	.4byte "@12836"
 	.4byte 0x6733642F
 	.4byte 0x70616B6B
 	.4byte 0x756E2E62
 	.4byte 0x72726573
-	.byte 0x00
-.endobj "@13122"
-	.byte 0x00, 0x00, 0x00
-
-# .data:0x60 | size: 0x7
-.obj "@13123", local
+	.4byte 0x00000000
 	.4byte 0x70616B6B
-	.byte 0x75, 0x6E, 0x00
-.endobj "@13123"
-	.byte 0x00
+	.4byte 0x756E0000
+.endobj "sModelNames__33@unnamed@d_a_wm_dance_pakkun_cpp@"
 
 # .data:0x68 | size: 0x70
 # daWmDancePakkun_c::__vtable

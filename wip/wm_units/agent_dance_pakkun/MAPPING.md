@@ -843,3 +843,108 @@ sinit pair 50/MATCH (unchanged, knock-on effect of create()'s size)
 - Did not attempt `createModel()` or `__sinit` this round (execute() and
   create() were the assigned targets, and create() consumed the remaining
   time on the register issue rather than closing it).
+
+---
+
+## Update after coordinator's fifth round: createModel() narrowed, __sinit blocked by a cascading size mismatch
+
+### createModel() -- data layout now matches structurally, register count still short
+
+Tried the suggested "single named aggregate" approach. Measured the emitted
+`.data` layout after each variant with `dtk elf info`:
+
+**Variant 1 -- `const` aggregate:**
+```cpp
+struct ModelNames_t { const char *anmName; char brresPath[17]; char modelName[7]; };
+const ModelNames_t sModelNames = { "cs_wait", "g3d/pakkun.brres", "pakkun" };
+```
+Landed in **`.rodata`** (0x64, size 0x1C), not `.data` -- wrong section
+entirely (the retail strings are confirmed `.data`). 79 differing, still
+labelled against the wrong neighbour function (size still off).
+
+**Variant 2 -- dropped `const`:**
+```cpp
+ModelNames_t sModelNames = { "cs_wait", "g3d/pakkun.brres", "pakkun" };
+```
+Landed in **`.data`** at `0x48`, size `0x1C` (`28` bytes: `4 + 17 + 7`,
+contiguous, no padding) -- correct section. The "cs_wait" string itself
+sits right before it at `.data:0x40` (8 bytes), matching the retail
+pointer-precedes-string adjacency exactly. **Size now matches the target
+exactly (81 == 81 instructions)** and the register anchoring measurably
+improved: `r31` now anchors the whole `sModelNames` struct for
+`getRes`/`GetResMdl`/`GetResAnmChr` AND gets correctly reused afterward for
+the `setRate`/`setFrame` constant (`lbl_2_rodata_87F4`-equivalent) --
+matching the target's own `r31`-reuse pattern instruction-for-instruction.
+75 differing (down from 76 last round, though most of that round's 76 was
+against a still-misaligned comparison, so this is the first fair
+before/after on this exact function).
+
+**Variant 3 -- moved `sPlayModes` to file scope** (matching `daWmGhost_c`'s
+own `sGhostPlayModes` precedent) instead of function-local `static`: no
+change, still 75 differing. Reverted the *reasoning* but kept the change
+since it's at least as correct and closer to ghost's precedent.
+
+**Variant 4 -- padded `brresPath` from `17` to `20` bytes**, since the
+coordinator's measured retail offsets (`+0x9c` to `+0xb0` = `0x14` = 20
+bytes, not the string's own `17`) show the retail struct 4-byte-aligns this
+field before the next one. No change to the differing count, but this is a
+straight *fidelity* improvement to the `.data` content regardless -- kept
+it.
+
+**What's still short:** the target uses `_savegpr_27`/`_restgpr_27` (a
+5-register block save, `r27`-`r31`) and holds FOUR simultaneous
+cross-call anchors: `this` (`r27`), the `sModelNames`-equivalent string
+struct (`r31`, reused later for the `87F4` constant), `resMdl` kept across
+both `mdl_c::create()` calls (`r30`), and a **separate** anchor for
+`lbl_2_rodata_8804` (`r28`) -- the play-mode lookup table, which lives in
+`.rodata`, a DIFFERENT section from the `.data` string struct, so it can
+never share `r31`'s anchor no matter how the strings are grouped. My draft
+only reaches 3 saved registers (`r29`-`r31`, individual push/pop, no
+`_savegpr_27`) -- it's missing a live, cross-call anchor for the play-mode
+table equivalent (mine reloads `@LOCAL@...sPlayModes` fresh with its own
+`lis`/`addi` right where it's used, rather than holding it in a
+register from earlier). This is the same class of issue as the strings
+were, just for a second, `.rodata`-section object -- did not solve it this
+round; ran out of time after closing the section-and-adjacency piece.
+
+### __sinit -- could not get a fair reading this round
+
+`fn_2_1621c0` (the `.ctors`-registered static initialiser, still not
+directly authored -- it's a side effect of `#include`-ing `d_wm_lib.hpp`,
+per the second round's finding) is reported as "50 differing vs
+~calcModelFor" by `verify_anon` -- **mislabelled, not a real comparison.**
+`calcModelFor()` is `0xBC` bytes (`47` instructions) in my draft against the
+target's `0x194` bytes (`101` instructions) -- a `54`-instruction shortfall,
+left deliberately unauthored per the coordinator's explicit "leave
+calcModelFor alone." Every function's address after `calcModelFor()` in the
+compiled object is offset by that gap, so `verify_anon`'s address-based
+function-boundary matching cannot locate `__sinit` at its true position and
+compares it against whatever text happens to fall in that byte range
+instead (`~calcModelFor`, per the label). **I could not get a real
+`__sinit` diff this round without touching `calcModelFor()`,** which was
+explicitly out of scope. Reporting this as the blocking negative rather
+than guessing at `__sinit`'s content from a comparison I know is invalid.
+
+### Table
+
+```
+classInit MATCH | ctor 4 (untouched) | dtor 21 (untouched) | create() 49 (untouched)
+execute() MATCH | draw() MATCH | doDelete() MATCH | createModel() 75 (was 76, now a fair number)
+tailHelper() MATCH | calcModelFor() ~188 (untouched, left alone) | startStep() 13 (untouched)
+resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+sinit pair -- comparison invalid this round (see above), unchanged content
+
+9/16 byte-identical
+```
+
+### Negatives this round
+
+- Three more `createModel()` variants tried; got the section, adjacency,
+  padding, and one register-reuse pattern (`r31`) right, but the
+  `.rodata`-based play-mode table still needs its own persistent anchor
+  (target's `r28`) that my draft doesn't hold -- not found this round.
+- `__sinit` genuinely could not be evaluated this round; the only way to
+  get a fair comparison is to close (or much more closely size-match)
+  `calcModelFor()` first, which is explicitly out of scope. Flagging this
+  as a structural dependency for whoever picks `__sinit` up next, not
+  attempting a workaround.
