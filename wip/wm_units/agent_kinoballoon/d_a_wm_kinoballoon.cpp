@@ -168,16 +168,18 @@ public:
 
 ACTOR_PROFILE(WM_KINOBALLOON, daWmKinoBalloon_c, 0);
 
+extern "C" int fn_80103520(dWmEffectManager_c *mgr, int effectId, m3d::bmdl_c *model,
+                            const char *kind, int, int);
+extern "C" void fn_80105480(dWmSeManager_c *, int);
+extern "C" bool fn_80105FF0(dWmSeManager_c *, int);
+
 const daWmKinoBalloon_c::ProcFunc_t daWmKinoBalloon_c::sProcTable[3] = {
     &daWmKinoBalloon_c::procNone,
     &daWmKinoBalloon_c::moveUp,
     &daWmKinoBalloon_c::moveDown,
 };
 
-extern "C" int fn_80103520(dWmEffectManager_c *mgr, int effectId, m3d::bmdl_c *model,
-                            const char *kind, int, int);
-extern "C" void fn_80105480(dWmSeManager_c *, int);
-extern "C" bool fn_80105FF0(dWmSeManager_c *, int);
+extern const float g_unofficial_kino_zero = 0.0f;
 
 daWmKinoBalloon_c::daWmKinoBalloon_c() {}
 daWmKinoBalloon_c::~daWmKinoBalloon_c() {}

@@ -8361,3 +8361,61 @@ size of a containing struct, not of the class).
 **This is not a compromise, it is the correct division:** the shared header stays
 safe for everything already landed, the unit progresses, and the next person to
 model the class properly inherits the offsets and the reasoning.
+
+## kinoballoon 19/26 -> 21/26 on ONE missing named zero word
+
+My table-size hypothesis was **wrong** -- the proc table already had three entries
+and had done for rounds. The agent verified that against both its own emitted
+`.rodata` and the target disassembly before rejecting it, which is the correct
+response to a confident instruction from the lead.
+
+**The pool-dump method was still right, and it found the real cause.** Diffing the
+emitted pool byte-for-byte against the retail dump showed the target has an extra
+`0.0f` word between `-10000.0f` and the shared constant cluster. Confirmed
+exhaustively unreferenced -- every `lfs`/`lwz` against every pool base across all
+three target `.text` dumps, cross-checked against the relocation table -- so it is
+a genuinely dead pool slot, not something reachable by restructuring logic.
+
+```cpp
+extern const float g_unofficial_kino_zero = 0.0f;   // file scope, before the ctor
+```
+
+Same idiom as antlion_mng's `g_unofficial_85C0`. The payoff was disproportionate
+to the change:
+
+```
+modeExec                10 differing -> MATCH
+__sinit                  3 differing -> MATCH
+processCutsceneCommand  34 -> 28, and size now exact at 185/185
+createModel             unchanged at 51 (confirms its residual is independent)
+```
+
+**A single missing pool word can hold three functions open.** When several
+functions share a pool-offset shift, diff the emitted pool against the retail
+bytes *word by word* -- the cause may be one dead slot, and a size error is far
+easier to find that way than through the functions.
+
+### Two bounds on the declaration-order rule
+
+- **Pool ordering for an out-of-class table definition is NOT driven by lexical
+  source position.** Moving `sProcTable`'s definition had zero effect. The
+  declaration-order rule governs ordinary named constants; it does not reach this.
+- A second orphaned zero word sits after `mNodePos` at the very end of the
+  section, also unreferenced. Left alone deliberately: nothing indexes past
+  `mNodePos`, so it cannot affect any remaining diff, **and it may belong to a
+  neighbouring TU's pool that the linker placed adjacently** rather than to this
+  unit at all.
+
+### What remains, and why it is one problem
+
+```
+moveUp                  14   \
+moveDown                14    >  the same mScale += mVec3_c(mRate,mRate,mRate) float reshuffle
+processCutsceneCommand  28   /   (two of its lines are naming artifacts only)
+markDone                 5       register swap
+createModel             51       parked: register-reuse scheduling, four forms byte-identical
+```
+
+Three of the five carry **one** shared pattern. Being attacked together, on the
+precedent that three units sharing a stack-materialisation defect resisted twelve
+individual attempts and all fell in a single round once addressed as one problem.
