@@ -9753,3 +9753,47 @@ correct it is.
 WM_KILLER hit exactly this and it resolved as its remaining functions were
 authored. **When a function's content is confirmed correct but its pool offsets
 are short, stop working on that function and write the others.**
+
+## A MEASURED NEGATIVE CAN BE CONTEXT-DEPENDENT. Re-test after fixing a real bug.
+
+WM_BOARD's `execute` closed **18 -> MATCH** on two fixes, and the second one had
+already been measured as a failure:
+
+1. A real control-flow bug: when the lookup returns null the target branches past
+   the **entire** call, while the draft always called it with a null argument.
+   Wrapping the call in the guard rather than defaulting its argument: 18 -> 14.
+2. **Retrying the no-arg virtual `mAnim.play()` — previously measured as a
+   regression (size 85 -> 87) and recorded as a dead end.** After the null-check
+   fix changed the surrounding register pressure, **the identical source compiled
+   to the exact target shape.** 14 -> 0.
+
+**So a negative measured while another defect is present may not hold once that
+defect is fixed.** This qualifies the measured-negative discipline that the rest
+of this file depends on — negatives are still worth recording, but they are
+recorded *in a context*.
+
+**Practical rule: after fixing a genuine bug in a function, re-test the variants
+you had already ruled out for that same function.** The cost is one recompile and
+it recovered a MATCH here.
+
+Note the distinction from the walls in this file: those were measured across
+*many* variants on functions with no outstanding real bugs. A negative measured
+alongside a known-wrong neighbour is much weaker evidence.
+
+## Two more clean negatives, and the limit of the declaration-order rule
+
+`createModel` (79) resisted both suggested levers, and both failures are
+instructive:
+
+- **Declaration-order hoist: 79 -> 124.** Default-constructing
+  `nw4r::g3d::ResMdl`/`ResAnmTexSrt` at the top and assigning later is **not
+  semantically free** the way it is for a POD int or pointer. **The
+  declaration-order rule was drawn from trivial temporaries and does not
+  transfer to types with real constructors.**
+- **Indexed-array-read form: 79 -> 71 by count, reverted.** Same failure mode as
+  the earlier `const`-pointer attempt: the new object's storage shifted two
+  strings off their correct `+0x68`/`+0x78` offsets, and the access still did not
+  reach the real symbol (it stayed an anonymous `@LOCAL@` label).
+
+**Second time on this unit that a lower count concealed a string-offset
+regression.** Read the diff, not the number.

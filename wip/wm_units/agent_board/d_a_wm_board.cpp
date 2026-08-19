@@ -182,12 +182,14 @@ int daWmBoard_c::execute() {
 
     daWmMap_c *map = daWmMap_c::m_instance;
     void *found = fn_80100640(map, smc_koopaShipNodeName, 0);
-    int off = found ? *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8) : 0;
-    const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;
-    map->GetNodePos(name, mPos);
+    if (found) {
+        int off = *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8);
+        const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;
+        map->GetNodePos(name, mPos);
+    }
 
     mModel.play();
-    mAnim.play(0);
+    mAnim.play();
     calcModel();
     return SUCCEEDED;
 }
