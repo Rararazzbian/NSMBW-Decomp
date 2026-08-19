@@ -6495,3 +6495,47 @@ MWCC reserves `r3` and pushes a temp to `r4`; declared `void`, the temp lands in
   Loading and re-dumping the JSON reformatted 1500 lines; a remove-and-restore
   cycle churned 32 `syms.txt` lines out of position. Insert as text.
 
+
+## New tool: `wip/wm_units/profile_map.py` — resolve a profile to its classInit
+
+**A unit's `.text` starts AT its classInit, and that address exists only as a
+relocation in the first word of the profile OBJECT.** It is not in the symbol
+map, and the `profile - 0x34` folklore is a heuristic that does not hold across
+the family. Reading a profile's own `.data` address instead has mis-scoped a
+unit twice, both times expensively (WM_ANTLION dispatched with BOTH ends wrong;
+WM_ANTLION_MNG scoped at ~79 functions when it is 22 — that 79 was the combined
+span running on through WM_BOARD).
+
+The tool walks the REL relocation stream, looks up the relocation patching each
+`g_profile_*` address, and reports the addend. Sorted by classInit, consecutive
+rows give each unit's range directly — a unit runs from its own classInit to the
+next one.
+
+```
+python wip/wm_units/profile_map.py d_basesNP 0x15e000 0x165000
+```
+
+**It reproduces the exact landed ranges of six shipped units** — WM_CANNON,
+WM_CLOUD, WM_DOKAN, WM_DOKANROUTE, WM_GHOST, WM_GRID — so it is validated
+against ground truth, not just self-consistent. Run it before scoping any new
+unit in a REL. Deriving a range any other way is the mistake this file has now
+recorded three times.
+
+### The map for the WM region of `d_basesNP`
+
+```
+WM_CANNON        .text 0x15e7e0-0x15ecc0  (0x4e0)   LANDED
+WM_CASTLE        .text 0x15ecc0-0x15fbe0  (0xf20)   parked 18/20
+WM_CLOUD         .text 0x15fbe0-0x1604a0  (0x8c0)   LANDED
+WM_COURSE        .text 0x1604a0-0x161940  (0x14a0)  22/23
+WM_DANCE_PAKKUN  .text 0x161940-0x1622b0  (0x970)   16 functions, OPEN
+WM_DOKAN         .text 0x1622b0-0x162580  (0x2d0)   LANDED
+WM_DOKANROUTE    .text 0x162580-0x163620  (0x10a0)  LANDED
+WM_GHOST         .text 0x163620-0x164230  (0xc10)   LANDED
+WM_GRID          .text 0x164230-0x164430  (0x200)   LANDED
+WM_HANACHAN      .text 0x164430-0x165c70  (0x1840)  open
+```
+
+WM_DANCE_PAKKUN is the gap immediately after course and is the natural next
+unit: landing course and then it makes `0x15fbe0-0x163620` contiguous except
+for castle.
