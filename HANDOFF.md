@@ -11175,3 +11175,35 @@ an extra `.ctors` entry — which presents exactly as a "double init" and shifts
 count the landed units that include it.** If any land byte-perfect, the header is
 right and the defect is in your own TU — most often an include the original did
 not have. That check is one `grep -l` and it inverts the whole search.
+
+## `.ctors` resolves "which function is `__sinit`" EXACTLY — and the count is a test
+
+`.ctors` is a table of one-word entries, each a relocation into `.text` pointing
+at a static-initialiser function. Resolving those against the profile ranges
+answers two questions that are otherwise guessed at: **which function IS a unit's
+`__sinit`, and how many static initialisers the unit has.**
+
+Three agents independently guessed a function was "probably this unit's `__sinit`"
+on the same day. `ctors_map.py` confirmed **all three in one run**:
+
+```
+.ctors   __sinit .text   unit
+0x3e8    0x165b20        WM_HANACHAN        <- agent: "looks like a static object's __sinit"
+0x3f4    0x169fa0        WM_KILLERBULLET    <- agent: ".ctors static-init for sc_ForceList"
+0x40c    0x16d1e0        WM_KINOPIO
+0x410    0x16e490        WM_KOOPAJR         <- agent: "the file's __sinit"
+```
+
+**And the COUNT is the diagnostic.** `WM_KINOPIO's target has exactly ONE `.ctors`
+entry.** A draft emitting two has an extra static initialiser — which is precisely
+what a spurious `#include <game/bases/d_wm_lib.hpp>` produces, since that header's
+`sc_ForceList` is a `static` array with an `mVec3_c(...)` initialiser and every
+including TU pays a dynamically-initialised copy.
+
+So the whole "sc_ForceList double-init" question reduces to **comparing two
+numbers**, which replaces a round of source-order experiments. A unit with NO
+matching entry is equally informative: its TU includes no header that costs one.
+
+**318 `.ctors` entries across the module, one per unit that has static state.**
+The table is small, exact, and was sitting in the binary the whole time — three
+separate agents spent effort inferring what one relocation walk states outright.

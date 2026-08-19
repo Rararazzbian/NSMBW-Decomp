@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11178 lines / 424 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11210 lines / 425 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -445,3 +445,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11072-11096` Why both agents missed it, which is the reusable part
 - `11097-11139` The pool mechanism, MEASURED rather than asserted (WM_KOOPAJR)
 - `11140-11178` `sc_ForceList` is NOT a shared-header defect. Ten landed units prove it.
+- `11179-11210` `.ctors` resolves "which function is `__sinit`" EXACTLY — and the count is a test
