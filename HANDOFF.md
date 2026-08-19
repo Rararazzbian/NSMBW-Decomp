@@ -11035,3 +11035,61 @@ units now, which promotes it from a unit quirk to a project-level gap: the likel
 requirement is CodeWarrior's `v2f` / `__vec2x32float__` intrinsic type rather than
 any source-level rearrangement. Worth solving once, centrally — it is currently
 costing functions on two units and will cost more.
+
+## SOLVED (the construct, at least): the paired-single Vec3 add is `nw4r::math::VEC3Add`
+
+Two units independently stalled on the same residual — WM_KINOPIO and WM_HANACHAN
+both found the target inlining a Vec3 addition as `psq_l`/`ps_add`/`psq_st` while
+their source compiled to a real `bl`. It was promoted to a project-level gap and
+guessed to need CodeWarrior's `v2f`/`__vec2x32float__` intrinsic.
+
+**It needs no intrinsic and no header change. The construct is already in the
+tree, fully implemented**, at `include/lib/nw4r/math/math_types.h:315`:
+
+```cpp
+inline VEC3* VEC3Add(register VEC3* pOut, register const VEC3* pA,
+                     register const VEC3* pB) {
+    register f32 work0, work1, work2;
+    asm {
+        psq_l  work0, VEC3.x(pA),   0, 0     // XY as a pair
+        psq_l  work1, VEC3.x(pB),   0, 0
+        ps_add work2, work0, work1
+        psq_st work2, VEC3.x(pOut), 0, 0
+        psq_l  work0, VEC3.z(pA),   1, 0     // then Z alone
+        psq_l  work1, VEC3.z(pB),   1, 0
+        ps_add work2, work0, work1
+        psq_st work2, VEC3.z(pOut), 1, 0
+    }
+    return pOut;
+}
+```
+
+**That is the reported shape exactly**, including the two-step structure both
+agents described: the XY pair first, then Z with the single-element scale. There
+is also `nw4r::math::VEC3::operator+` at line 119 which simply wraps it, so
+`VEC3 + VEC3` inlines to paired singles on its own.
+
+### Why both agents missed it, which is the reusable part
+
+They were looking at the two vector types their units already used:
+
+- **`PSVECAdd`** — declared in `include/lib/revolution/MTX/vec.h` as a plain
+  extern. It compiles to a `bl` and it is CORRECT that it does: landed code in
+  `source/dol/cLib/c_m3d.cpp` calls it out-of-line and matches the retail bytes.
+  So "make PSVECAdd inline" would have been exactly the wrong fix, and one agent
+  had already proven the call is genuine.
+- **`mVec3_c::operator+`** (`include/game/mLib/m_vec.hpp:190`) — three scalar
+  float adds, `lfs`/`fadds`/`stfs`. Never going to vectorise.
+
+**Three vector families coexist in this codebase — `mVec3_c` (EGG-derived),
+`Vec`/`PSVEC*` (revolution MTX), and `nw4r::math::VEC3` — and only the third has
+an inlined paired-single add.** When a target's arithmetic does not match, ask
+which FAMILY the original used before concluding the compiler is doing something
+you cannot reproduce. The shape of the emitted code identifies the family.
+
+**What is verified and what is not.** I have verified the inline exists and emits
+precisely those instructions in that order. I have NOT verified that switching
+either unit's call site to it closes those functions — the surrounding register
+allocation still has to agree, and both units also need the right operand types
+at the call. That measurement belongs to the agents; the construct question is
+settled.
