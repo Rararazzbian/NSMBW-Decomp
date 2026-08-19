@@ -53,18 +53,24 @@ public:
     void unk_167F20(); ///< @unofficial fn_2_167F20, 0x8c bytes -- a loop constructing 10
                          ///< WM_KILLERBULLET (0x276) children into an array at this+0x214.
     void unk_167C70(); ///< @unofficial fn_2_167C70, 0xa8 bytes -- not a vtable slot (confirmed),
-                         ///< an ordinary member function.
-    void unk_167FB0(); ///< @unofficial fn_2_167FB0, 0xb0 bytes, called last from #create.
+                         ///< an ordinary member function. Authored this round: zeroes #m_20c/
+                         ///< #m_210, calls #unk_167FB0/#unk_1680F0/#unk_1681C0 (both results
+                         ///< discarded), then on Kind==1 sets the direction from
+                         ///< mVec3_c(#mTargetPos) - mPos via the landed dWmDemoActor_c::setDirection.
+    void unk_167FB0(); ///< @unofficial fn_2_167FB0, 0xb0 bytes, called last from #create AND from
+                         ///< #unk_167C70 (two call sites, not one).
 
-    // The remaining 8 undeclared functions, in target address order, sizes noted for the next
-    // round. NOT YET AUTHORED -- placeholder void/no-arg signatures, not measured. Positioned
-    // here purely to keep definition order correct once stubbed in the .cpp (see AGENT_CONTEXT.md
-    // "Function DEFINITION ORDER is part of the object").
-    void unk_1680F0(); ///< @unofficial fn_2_1680F0, 0xc4 bytes.
-    void unk_1681C0(); ///< @unofficial fn_2_1681C0, 0x94 bytes.
-    void unk_168260(); ///< @unofficial fn_2_168260, 0x44 bytes.
-    void unk_1682B0(); ///< @unofficial fn_2_1682B0, 0x20 bytes.
-    void unk_1682D0(); ///< @unofficial fn_2_1682D0, 0x1c bytes.
+    // fn_2_1680F0/fn_2_1681C0's call sites (inside #unk_167C70) put the object pointer in r4 and
+    // an out-buffer address in r3 -- the classic hidden-return-pointer ABI shape for a
+    // >8-byte-by-value return, NOT an ordinary `this->fn(buf)` member call (which would put
+    // `this` in r3). Declared `static`, taking the object explicitly, returning by value; both
+    // results are discarded at their only known call site so the real return type is unconfirmed
+    // beyond "some 12-byte (3-float) struct". NOT YET AUTHORED -- bodies still stubbed.
+    static mVec3_c unk_1680F0(daWmKiller_c *self); ///< @unofficial fn_2_1680F0, 0xc4 bytes.
+    static mVec3_c unk_1681C0(daWmKiller_c *self); ///< @unofficial fn_2_1681C0, 0x94 bytes.
+    bool unk_168260(int index); ///< @unofficial fn_2_168260, 0x44 bytes. Authored this round.
+    void unk_1682B0(int index); ///< @unofficial fn_2_1682B0, 0x20 bytes. Authored this round.
+    void unk_1682D0(int index, u8 value); ///< @unofficial fn_2_1682D0, 0x1c bytes. Authored this round.
     void unk_1682F0(); ///< @unofficial fn_2_1682F0, 0x84 bytes.
     void unk_168380(); ///< @unofficial fn_2_168380, 0x114 bytes.
     void unk_168590(); ///< @unofficial fn_2_168590, 0x9c bytes.
@@ -84,12 +90,20 @@ public:
     float mMotion[3]; ///< @unofficial offset 0x1ec -- read by #unk_167F20 as the spawn position
                         ///< for its constructed children. Name copied from WM_ITEM's own
                         ///< identically-positioned/shaped member (see agent_item/MAPPING.md).
-    u8 mPad_1f8[0x10]; ///< @unofficial offset 0x1f8, size 0x10 -- placeholder padding up to the
-                        ///< flag byte at 0x208, NOT individually verified. (Was originally
-                        ///< mis-sized 0x1c, which pushed #mChildren to 0x220 instead of 0x214 --
-                        ///< caught by unk_167F20's `stw r3, 0x214(r31)` target instruction.)
+    // @unofficial offset 0x1f8, size 0xc. Read by #unk_167C70's Kind==1 branch as the far end of
+    // a direction vector (`this field - mPos`, passed to dWmDemoActor_c::setDirection()) --
+    // was mis-classified as padding when this offset range was first sized (see the
+    // mChildren-offset fix note above); this is where the real member actually lives.
+    float mTargetPos[3];
+    u8 mPad_204[0x4]; ///< @unofficial offset 0x204, size 0x4 -- placeholder padding up to the
+                        ///< flag byte at 0x208, NOT individually verified.
     bool m_208; ///< @unofficial offset 0x208. Zeroed by the constructor.
-    u8 mPad_209[0xb]; ///< @unofficial offset 0x209, size 0xb -- placeholder padding, NOT
+    u8 mPad_209[0x3]; ///< @unofficial offset 0x209, size 0x3 -- placeholder padding, NOT
+                        ///< individually verified.
+    int m_20c; ///< @unofficial offset 0x20c. Zeroed unconditionally by #unk_167C70.
+    bool m_210; ///< @unofficial offset 0x210. Zeroed unconditionally by #unk_167C70; also read
+                 ///< in #execute's still-unauthored portion (`lbz r0, 0x210(r30)`).
+    u8 mPad_211[0x3]; ///< @unofficial offset 0x211, size 0x3 -- placeholder padding, NOT
                         ///< individually verified.
     dWmActor_c *mChildren[10]; ///< @unofficial offset 0x214, size 0x28. Filled by #unk_167F20's
                                  ///< loop constructing 10 WM_KILLERBULLET (profile 0x276)

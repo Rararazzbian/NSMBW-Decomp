@@ -9286,3 +9286,40 @@ Three units today have had a "mystery" region dissolve entirely on one decode.
   target's own `stw r3, 0x214(r31)` rather than from any diff. **A store's offset
   in the target is a direct assertion about your layout** — check members against
   target store offsets, not just against `classInit`'s size.
+
+## WM_KILLER 8/23 -> 13/23, and a correction to my byte map
+
+I decoded the unit's `.data` object and attributed everything up to `+0x40` to the
+shared header include. **That was wrong.** `"Fk00"` at `+0x34`, with its own
+pointer at `+0x3c`, is **unit-specific** — it is in no header in `include/`, and
+it needs declaring:
+
+```cpp
+static const char *smc_nodeNameTemplate = "Fk00";   // before ACTOR_PROFILE(...)
+```
+
+**Check each object in a decode against the headers rather than assuming a whole
+region is automatic.** The block genuinely is automatic up to `+0x34`; the mistake
+was extending that to the next object because it sat inside the same run.
+
+### The findings from that round
+
+- **A hidden-return-pointer function with RVO through an out-parameter.**
+  `unk_1681C0` is `mVec3_c f(daWmKiller_c *)` — `r3` is the out-buffer and `r4` is
+  `self` — and `daWmMap_c::GetNodePos`'s **reference out-param IS the hidden-return
+  slot**. The result is written to a member and returned through the same buffer.
+  Sizes match exactly; the residual is a register-pair swap.
+- **`this+0xac` was already `mPos`**, inherited from `dBaseActor_c` — confirmed
+  from the landed `d_base_actor.o` corpus rather than a header read. **Fifth unit
+  today where an unaccounted-for offset turned out to be inherited.**
+- **Naming the left-hand operand as its own local fixed a stack-slot swap** in a
+  binary operator's two-temporaries pattern:
+  `mVec3_c targetPos(...); mVec3_c dir = targetPos - mPos;` rather than an
+  anonymous temporary on the left. Consistent with the declaration-order rule.
+- **`(int)ACTOR_PARAM(Kind) == 1`** — the signed cast turns `cmplwi` into `cmpwi`.
+  The bitfield macro yields an unsigned value; cast it when the target compares
+  signed.
+- **A "closed" function can carry residual lines that are purely symbol naming.**
+  `unk_1682F0` reports 6 differing, all `lbl_2_*` versus real mangled names, zero
+  real bytes. Check what the differing lines *are* before treating a small count
+  as an open defect.

@@ -1,8 +1,41 @@
 #include <game/bases/d_a_wm_killer.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_res_mng.hpp>
+#include <game/bases/d_wm_lib.hpp>
+#include <game/bases/d_wm_effect_manager.hpp>
+#include <game/bases/d_wm_se_manager.hpp>
+#include <game/bases/d_a_wm_map.hpp>
+#include <string.h>
+
+// #unk_1681C0's node-name template. The target .data emits this string's own pointer
+// (lbl_2_data_4526C, at data+0x3c) BEFORE ACTOR_PROFILE's own g_profile object -- confirmed
+// from the target's own byte layout (data+0x34 "Fk00", data+0x3c -> pointer to it, data+0x40
+// -> g_profile, data+0x44 the two u16 profile ids). #unk_1681C0 memcpy's these 4 bytes into a
+// local buffer, nulls a 5th byte, then adds `(char)mParam` to the last character to select one
+// of several per-instance world-map nodes ("Fk00", "Fk01", ...).
+static const char *smc_nodeNameTemplate = "Fk00";
 
 ACTOR_PROFILE(WM_KILLER, daWmKiller_c, 0);
+
+// #createModel's two anim resource names. Each is followed in the target .data by its OWN
+// named pointer (a genuine `lwz` load, not an embedded `addi` literal) -- confirmed via
+// relocation dump: data+0x4528c -> data+0x4527c ("cobKillerShot"), data+0x452a0 ->
+// data+0x45290 ("cobRotaryShot"). The other three strings used there (the shared
+// "g3d/model.brres" path and the two arcNames "cobKiller"/"cobRotary") are bare embedded
+// literals with no pointer, so they stay as plain string literal arguments. Declared in this
+// exact order (matching the target's own .data layout, which is otherwise entirely accounted
+// for by <game/bases/d_wm_lib.hpp>'s sc_ForceList block and ACTOR_PROFILE's own g_profile
+// object -- no other unidentified structure).
+static const char *smc_killerShot = "cobKillerShot";
+static const char *smc_rotaryShot = "cobRotaryShot";
+
+// #unk_1682F0's smoke-effect call. dWmEffectManager_c::m_pInstance-> at a raw DOL address
+// (unnamed target, NOT the header's own playEffect() overload -- argument count/types differ:
+// this call takes (effectId, m3d::smdl_c*, const char*, int, int), not playEffect's
+// (int, mVec3_c*, mAng3_c*, mVec3_c*)), so it must be a third, undocumented method on the
+// same instance. Declared as a raw free function taking the instance explicitly, per the
+// project's established convention for unowned/undeclared cross-module calls.
+extern "C" int fn_80103420(dWmEffectManager_c *self, int effectId, m3d::smdl_c *model, const char *name, int, int);
 
 daWmKiller_c::daWmKiller_c() : m_208(false) {}
 daWmKiller_c::~daWmKiller_c() {}
@@ -30,7 +63,7 @@ int daWmKiller_c::create() {
 // #unk_167FB0) is NOT yet authored -- content unconfirmed, not guessed.
 int daWmKiller_c::execute() {
     processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
-    mPad_1f8[0] = 0x1;
+    mPad_204[0] = 0x1;
     return SUCCEEDED;
 }
 
@@ -39,10 +72,24 @@ int daWmKiller_c::draw() {
     return SUCCEEDED;
 }
 
-// NOT YET AUTHORED (0xa8 bytes). Confirmed NOT a vtable slot (check_vtable.py) -- an ordinary
-// member function, called once from #create.
+// unk_167C70(). Confirmed NOT a vtable slot (check_vtable.py) -- an ordinary member function,
+// called from #create AND (per its own body) a second time via #unk_167FB0's own call site --
+// no, rather #unk_167C70 itself calls #unk_167FB0 first, then two static getters whose results
+// are discarded, then zeroes #m_20c/#m_210, then on Kind==1 turns the killer to face
+// mVec3_c(#mTargetPos) - mPos via the landed dWmDemoActor_c::setDirection. The two-temp shape
+// (mTargetPos materialised into its own mVec3_c stack temp, THEN the subtraction into a second
+// temp) is the project's own "two temps -> binary operator" rule.
 void daWmKiller_c::unk_167C70() {
-    mPad_1f8[0] = 0x2;
+    unk_167FB0();
+    mVec3_c tmp0 = unk_1680F0(this);
+    mVec3_c tmp1 = unk_1681C0(this);
+    m_20c = 0;
+    m_210 = false;
+    if ((int) ACTOR_PARAM(Kind) == 1) {
+        mVec3_c targetPos(mTargetPos[0], mTargetPos[1], mTargetPos[2]);
+        mVec3_c dir = targetPos - mPos;
+        setDirection(dir);
+    }
 }
 
 int daWmKiller_c::doDelete() {
@@ -66,7 +113,7 @@ void daWmKiller_c::createModel() {
         nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("cobKiller", "g3d/model.brres");
         nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobKiller");
         mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
-        nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr("cobKillerShot");
+        nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr(smc_killerShot);
         mAnmChr.create(resMdl, resAnmChr, &mAllocator, nullptr);
         mAnmChr.setRate(0.0f);
         mAnmChr.setFrame(0.0f);
@@ -75,7 +122,7 @@ void daWmKiller_c::createModel() {
         nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("cobRotary", "g3d/model.brres");
         nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobRotary");
         mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
-        nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr("cobRotaryShot");
+        nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr(smc_rotaryShot);
         mAnmChr.create(resMdl, resAnmChr, &mAllocator, nullptr);
         mAnmChr.setRate(0.0f);
         mAnmChr.setFrame(0.0f);
@@ -96,7 +143,7 @@ void daWmKiller_c::unk_167F20() {
 
 // NOT YET AUTHORED (0xb0 bytes). Called last from #create.
 void daWmKiller_c::unk_167FB0() {
-    mPad_1f8[0] = 0x5;
+    mPad_204[0] = 0x5;
 }
 
 // processCutsceneCommand. Structurally confirmed: early-return on cutsceneCommandId==-1, then
@@ -116,36 +163,89 @@ void daWmKiller_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFra
     }
 }
 
-void daWmKiller_c::unk_1680F0() {
-    mPad_1f8[0] = 0x6;
+// NOT YET AUTHORED (0xc4 bytes). Called from #unk_167C70 as unk_1680F0(this), result discarded
+// there -- real body/return value still unconfirmed.
+mVec3_c daWmKiller_c::unk_1680F0(daWmKiller_c *self) {
+    self->mPad_204[0] = 0x6;
+    return self->mPos;
 }
 
-void daWmKiller_c::unk_1681C0() {
-    mPad_1f8[0] = 0x7;
+// unk_1681C0(daWmKiller_c *self). Confirmed content: builds a per-instance world-map node name
+// ("Fk00", "Fk01", ... -- see #smc_nodeNameTemplate's own note) by adding `(char)self->mParam`
+// to the template's last character, looks it up via daWmMap_c::GetNodePos(), writes the result
+// into self->mTargetPos AND returns it (the hidden-return-pointer buffer IS the GetNodePos
+// out-param, an RVO-style match, not a separate copy).
+mVec3_c daWmKiller_c::unk_1681C0(daWmKiller_c *self) {
+    char name[5];
+    memcpy(name, smc_nodeNameTemplate, 4);
+    u8 lowByte = (u8) self->mParam;
+    name[4] = 0;
+    name[3] += (s8) lowByte;
+
+    mVec3_c pos;
+    daWmMap_c::m_instance->GetNodePos(name, pos);
+
+    self->mTargetPos[0] = pos.x;
+    self->mTargetPos[1] = pos.y;
+    self->mTargetPos[2] = pos.z;
+    return pos;
 }
 
-void daWmKiller_c::unk_168260() {
-    mPad_1f8[0] = 0x8;
+// unk_168260(int index). Confirmed content: index<0 short-circuits to true; otherwise reaches
+// into mChildren[index] (the unowned WM_KILLERBULLET sibling class, see #unk_1682B0's note) at
+// raw offset 0x1b0 (a 4-byte state-ish field, checked == 2) and 0x1f9 (a byte immediately after
+// this unit's own #mTargetPos range, checked != 0) -- both conditions must hold for a true result.
+bool daWmKiller_c::unk_168260(int index) {
+    if (index < 0) {
+        return true;
+    }
+    bool result = false;
+    dWmActor_c *child = mChildren[index];
+    if (*(int *) ((u8 *) child + 0x1b0) == 2 && *(u8 *) ((u8 *) child + 0x1f9) != 0) {
+        result = true;
+    }
+    return result;
 }
 
-void daWmKiller_c::unk_1682B0() {
-    mPad_1f8[0] = 0x9;
+// unk_1682B0(int index). Confirmed content: guards index<0, then reaches into
+// mChildren[index] (a WM_KILLERBULLET child, an unowned/undeclared sibling class) at raw
+// offset 0x1f8+0xc=0x204 and writes a literal 1 -- the same raw-offset-cast technique already
+// established for reaching into an unowned class's field (see WM_START's `this+0x139` and
+// `daWmPlayer_c+0x29c` precedent). Coincidentally the SAME offset this unit's own #mPad_204
+// occupies, suggesting the sibling class shares this unit's layout up to that point, but its
+// real identity/layout is not owned here.
+void daWmKiller_c::unk_1682B0(int index) {
+    if (index < 0) {
+        return;
+    }
+    *(u8 *) ((u8 *) mChildren[index] + 0x204) = 1;
 }
 
-void daWmKiller_c::unk_1682D0() {
-    mPad_1f8[0] = 0xa;
+// unk_1682D0(int index, u8 value). Same shape as #unk_1682B0 but writes a caller-supplied byte
+// to offset 0x1f8 of mChildren[index] instead of a literal to 0x204.
+void daWmKiller_c::unk_1682D0(int index, u8 value) {
+    if (index < 0) {
+        return;
+    }
+    *(u8 *) ((u8 *) mChildren[index] + 0x1f8) = value;
 }
 
+// unk_1682F0(). Confirmed content: sets #mAnmChr's rate/frame (real constants read from
+// .rodata: 1.0f/0.0f), fires a "smoke" effect via the raw fn_80103420 call (see its own note
+// above) attached to #mModel, then plays sound 0x63 at #mPos via dWmSeManager_c::m_pInstance.
 void daWmKiller_c::unk_1682F0() {
-    mPad_1f8[0] = 0xb;
+    mAnmChr.setRate(1.0f);
+    mAnmChr.setFrame(0.0f);
+    fn_80103420(dWmEffectManager_c::m_pInstance, 0x13, &mModel, "smoke", 0, 0);
+    dWmSeManager_c::m_pInstance->playSound(0x63, mPos, 1);
 }
 
 void daWmKiller_c::unk_168380() {
-    mPad_1f8[0] = 0xc;
+    mPad_204[0] = 0xc;
 }
 
 void daWmKiller_c::unk_168590() {
-    mPad_1f8[0] = 0xd;
+    mPad_204[0] = 0xd;
 }
 
 // NOT YET AUTHORED (0xe4 bytes). Called from #processCutsceneCommand with (this, true) --
