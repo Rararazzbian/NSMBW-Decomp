@@ -38,7 +38,7 @@ ACTOR_PROFILE(WM_COURSE, daWmCourse_c, 0);
 // fn_800XXXXX convention (see source/dol/bases/d_a_player_demo_manager.cpp).
 extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &model, const char *name, int, int);
 
-// @unofficial Unnamed in the symbol map (R_2_1_191BF0, .text:0x191BF0, 0x3C B),
+// @unofficial Unnamed in the symbol map (fn_2_191BF0, .text:0x191BF0, 0x3C B),
 // owned by a TU inside d_basesNP that is not yet landed. syms.txt only carries
 // DOL (0x8xxxxxxx) addresses -- there is no mechanism there for a REL-internal
 // symbol, so this cannot resolve at link time until that TU lands (same class
@@ -46,20 +46,28 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &mode
 // leftover address from an unrelated preceding load (not `this`, not a search
 // result) right before the call, so the real signature is very likely
 // argument-less; declared that way, but unverifiable while blocked.
+// NOTE ON THE SPELLING: the symbol map calls these `fn_2_<ADDR>`, and that is
+// what the comments here use, because it is what you search the map for. The
+// DECLARATIONS below deliberately use `R_<module>_<section>_<offset>` instead
+// (module 2 = d_basesNP, section 1 = .text). That is the only form the linker
+// resolves for a call into a still-un-landed region of the same REL -- the
+// `fn_2_*` spelling compiles and verifies BYTE-IDENTICALLY and then fails to
+// link, so this unit could reach 23/23 and still not land. Correct for
+// codegen, wrong for linking; see HANDOFF.md.
 extern "C" bool R_2_1_191BF0();
 
-// @unofficial Unnamed in the symbol map (R_2_1_189A20, .text:0x189A20, 0x64 B;
-// R_2_1_189990, .text:0x189990, 0x88 B), both owned by a different not-yet-
-// landed TU inside d_basesNP -- R_2_1_189990 shows up as the destination of a
+// @unofficial Unnamed in the symbol map (fn_2_189A20, .text:0x189A20, 0x64 B;
+// fn_2_189990, .text:0x189990, 0x88 B), both owned by a different not-yet-
+// landed TU inside d_basesNP -- fn_2_189990 shows up as the destination of a
 // switch jump table in two other wip units' `.data` (`agent_koopa_castle` and
-// `agent_sandpillar`'s `R_2_1_189990+0x20 .. +0x74` entries), which is the
+// `agent_sandpillar`'s `fn_2_189990+0x20 .. +0x74` entries), which is the
 // function's OWN internal dispatch, not a class vtable; it tells us nothing
 // about this call site's argument types. Same class of blocker as
-// R_2_1_191BF0/fn_80103420: syms.txt only carries DOL addresses, so a
+// fn_2_191BF0/fn_80103420: syms.txt only carries DOL addresses, so a
 // REL-internal symbol from an unlanded TU cannot resolve here. At the one
-// call site below, `R_2_1_189A20(world)` is called with no `this` setup and
-// its return sits untouched in r3 right up to the `bl R_2_1_189990`, which is
-// only possible if that return value IS R_2_1_189990's first argument -- the
+// call site below, `fn_2_189A20(world)` is called with no `this` setup and
+// its return sits untouched in r3 right up to the `bl fn_2_189990`, which is
+// only possible if that return value IS fn_2_189990's first argument -- the
 // two calls chain. Declared as a plain int-in/pointer-out pair on that
 // evidence; unverifiable further while blocked.
 extern "C" void *R_2_1_189A20(int world);
@@ -415,7 +423,7 @@ void daWmCourse_c::setMatClrAnm(int index, float rate, float frame) {
     mCurrentIndex = index;
 }
 
-// TODO: R_2_1_191BF0 is an unnamed function INSIDE d_basesNP itself
+// TODO: fn_2_191BF0 is an unnamed function INSIDE d_basesNP itself
 // (.text:0x191BF0), owned by a TU that is not yet landed. syms.txt only
 // carries DOL (0x8xxxxxxx) addresses, so this REL-internal symbol cannot
 // resolve at link time until that TU lands -- same class of blocker as
@@ -428,7 +436,7 @@ void daWmCourse_c::setMatClrAnm(int index, float rate, float frame) {
 // 0. This function is not called anywhere visible in this TU; the true
 // caller (a state-function-pointer table elsewhere) is out of view, but the
 // target's own bytes are unambiguous about the return value existing.
-// The world==7/courseNo==0x17/R_2_1_191BF0() gate is NOT a side-effect-only
+// The world==7/courseNo==0x17/fn_2_191BF0() gate is NOT a side-effect-only
 // call as previously assumed -- when GetOpenStatus() != 1 the target skips
 // the switch entirely and returns true unless ALL three gate conditions
 // hold, in which case it falls into the switch below.
@@ -488,7 +496,7 @@ daWmCourse_c *daWmCourse_c::searchOpenNeighbor() {
     return nullptr;
 }
 
-// TODO: one branch (world==7 && kind==0x17) calls R_2_1_191BF0, an unnamed,
+// TODO: one branch (world==7 && kind==0x17) calls fn_2_191BF0, an unnamed,
 // unlanded external function outside course's own .text -- cannot be called
 // by name yet. Everything else matched against the raw target bytes.
 void daWmCourse_c::openNeighbors(bool fastRate) {

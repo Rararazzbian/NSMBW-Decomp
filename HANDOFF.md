@@ -6612,3 +6612,90 @@ function a 3-float local array, which exceeds the threshold and forces a real
 per-function pool entry. `d_basesNP` compiles with `-sdata 0 -sdata2 0` and does
 not have this problem -- but a probe run under the wrong module's flags can
 silently answer a different question than the one asked.
+
+## course PARKED at 22/23. The `createModel` residual is a 2-attractor wall, measured 19 ways.
+
+The unit is **22/23, SECTIONS CLEAN, BOUNDS PLAUSIBLE, VTABLE CLEAN**, and its
+LINK blocker is fixed (see below). Only `createModel` remains, at 6 differing.
+
+The whole defect is *which register holds the constant `0xff`*. The two
+instruction multisets are otherwise identical:
+
+```
+     target                              draft
+75   lis  r4, c_StartPointKinokoHouseID@ha    li   r0, 0xff
+76   li   r5, 0xff                            stw  r0, 0x238(r30)
+77   lwz  r4, ...@l(r4)                       lis  r4, ...@ha
+78   mr   r29, r3                             lwz  r0, 0x4(r30)
+79   lwz  r0, 0x4(r30)                        lwz  r4, ...@l(r4)
+80   stw  r5, 0x238(r30)                      mr   r29, r3
+```
+
+With `0xff` in a non-r0 register the post-pass scheduler is free to sink the
+`stw` into the load-use delay slots, which is the target's shape. Pinned in r0,
+it must complete before the `lwz r0` that reuses the register. Everything else
+follows from that one allocation.
+
+**There are exactly two reachable attractors, and neither is the target:**
+
+| shape | 0xff | address value | differing |
+|---|---|---|---|
+| baseline (`0xff` a bare literal) | **r0** | r4 | 6 |
+| any variant caching the static in a local | **r4** | r5 | 6 |
+| TARGET | **r5** | **r4** | 0 |
+
+The second attractor is the target's pair *exactly swapped*, which looked like
+one bit of information. **It is not.** The declaration-order lever -- MWCC
+assigning registers by declaration order even where evaluation order differs --
+does NOT apply here, and that was tested properly rather than assumed:
+
+- `idx` declared before `kinokoId`, and after it: **byte-identical output**,
+  verified instruction-by-instruction, not just by differing count.
+- `idx` as `int` / `u8` / `s32` / `u32`: byte-identical to each other.
+- both locals hoisted to the top of the function, in BOTH orders: 76 differing,
+  and identical to each other -- so that axis is order-independent too, and is a
+  dead end regardless because it disrupts the loop's own allocation.
+
+Full list of measured negatives, so nobody re-runs them: bare local for `idx`
+(6, baseline shape); `idx` declared at top (6, baseline); `mCurrentIndex` retyped
+`u32` (6, baseline); 1-arg inline setter `setCurrentIndex(0xff)` (fully inlined
+to the baseline shape); caching the static (6, swapped shape); caching it after
+the store (6, reverts to baseline); setter + cached static (swapped shape);
+extra `idx` on top of cached static (swapped shape); `kinokoId` as `int` not
+`u32` (swapped shape); `const u32 kinokoId` (swapped shape); caching `mParam`
+INSTEAD (**7 -- worse**); collapsing the condition to a `bool` (**153 -- much
+worse**); flipping the comparison operand order (6, also flips `cmplw`'s
+operands); swapping the `mCurrentIndex`/`courseType` statements (**8 -- worse**).
+
+The only untried idea is perturbing register pressure with an unrelated dead
+store to move the allocator's free list. **Do not.** It is a shape we could not
+justify in landed source, and this project does not ship hacks that produce the
+right bytes for the wrong reason -- course itself lost four functions to exactly
+that mistake (the `DUMMY_ORDERING` mis-diagnosis).
+
+### The LINK blocker course actually had, and the spelling rule
+
+Independent of the 6 instructions, course **could have reached 23/23 and still
+not landed.** It declared three functions living in un-landed regions of
+`d_basesNP` using the `fn_2_*` spelling. That spelling compiles and verifies
+byte-identically and then FAILS TO LINK -- nothing defines those names.
+
+```
+fn_2_191BF0 -> R_2_1_191BF0     fn_2_189A20 -> R_2_1_189A20
+fn_2_189990 -> R_2_1_189990
+```
+
+Renamed, and the count **held at 22/23** across the rename with every previously
+matching function still matching -- including the two that call these -- so the
+form is invisible to codegen and `verify_anon` normalises `bl R_2_1_*` against
+the target's `bl fn_2_*` correctly. No tooling gap.
+
+**Keep the two spellings separate in source.** Comments should say `fn_2_*`,
+because that is what you search the symbol map for; only the declarations and
+call sites take the `R_2_1_*` form. A blanket rename swept the comments too and
+left them claiming the map uses the linker's spelling, which it does not.
+
+`fn_80103420` is unaffected -- a DOL address resolved through `syms.txt`, a
+different mechanism entirely.
+
+**Checked repo-wide: course was the only draft with this defect.**
