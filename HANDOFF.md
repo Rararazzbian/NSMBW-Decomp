@@ -8512,3 +8512,46 @@ reached N/N within one or two rounds. That asymmetry is the single most useful
 planning fact in this file: **a unit that does not close quickly tends not to
 close at all**, so prefer opening a fresh unit over a fourth round on a
 near-miss.
+
+## WM_START: the prologue-save lever confirmed by REVERSION, and an informative anti-lever
+
+`unk_17A3C0` went **222 differing -> 23**, size exact, saved-register level now
+matching the target (`r28`-`r31`). The cause was the recorded one: two values used
+across all four branches had to survive an intervening call, and declaring them
+*before* it produced the missing `stw r28, 0x20(r1)`.
+
+**Causation was proved, not assumed:** reverting the declaration to after the call
+— which is where the target's own instruction order puts it — made the save
+disappear and the count return to ~222. **A fix that survives being reverted and
+re-applied is a mechanism; one that is only ever applied is a correlation.**
+
+Note the declaration sits one line *earlier* than the target's own instruction
+order. Source order and emitted order are not the same thing.
+
+### An anti-lever that explained the target's structure
+
+Hoisting a member read into a shared local before the dispatch **added** a
+register save and **still made things worse**: it moved the null check ahead of
+the compare chain, restructuring the dispatch itself. That revealed something
+positive — **the target reads that field fresh inside each case body rather than
+sharing one read across the switch.**
+
+Two lessons: a change that improves a count while breaking the structure is a
+regression, and **a negative that explains the target's shape is worth more than
+a neutral one.**
+
+### Open hypothesis: the `clrlwi.` masking wall is a RETURN TYPE
+
+The same residual appears in two functions — draft emits `clrlwi. rD, rS, 24`
+(a comparison on a **byte**) where the target has plain `cmpwi r3, 0` (the **full
+word**). Shared residual, so look upstream.
+
+The likely cause is the declaration `u8 getZoromeTime();`. Its mangled name
+`getZoromeTime__6dWmLibFv` **cannot carry a return type** — the `u8` was an
+inference, and this project has been caught by exactly that six times.
+**`int` is being tested now.** The same caution applies to `IsSingleEntry()`,
+applied as `bool` on the same kind of inference.
+
+**Any declaration whose return type we inferred is a suspect whenever a spurious
+mask or width-narrowing shows up in the diff.** Compile it both ways and let the
+diff decide.

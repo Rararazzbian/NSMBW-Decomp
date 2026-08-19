@@ -63,8 +63,12 @@ public:
                                 ///< `construct(...)` return value, not a scalar.
     bool m_1ec; ///< @unofficial offset 0x1ec. Set true/false by #unk_17A3C0 depending on which
                  ///< of its two top-level branches runs.
-    u8 mPad_1ed[0xf]; ///< @unofficial offset 0x1ed, size 0xf. Never touched by any function
+    u8 mPad_1ed[0x3]; ///< @unofficial offset 0x1ed, size 0x3. Never touched by any function
                         ///< read so far; padding by elimination.
-    int mUnk1fc; ///< @unofficial offset 0x1fc. Zeroed unconditionally at the end of #create.
+    mVec3_c mCamTarget; ///< @unofficial offset 0x1f0. Filled by #processCutsceneCommand's case
+                          ///< 0x60 (from a player-derived position) and pointed at by
+                          ///< dWCamera_c's own +0x5f4 field.
+    int mUnk1fc; ///< @unofficial offset 0x1fc. Zeroed unconditionally at the end of #create;
+                  ///< also used by #processCutsceneCommand as a countdown-timer field.
     bool m_200; ///< @unofficial offset 0x200. Zeroed by the constructor; role unconfirmed.
 };

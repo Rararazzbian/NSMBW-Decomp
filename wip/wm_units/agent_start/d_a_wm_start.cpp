@@ -1,11 +1,22 @@
 #include <game/bases/d_res_mng.hpp>
 #include <game/mLib/m_3d/global.hpp>
 #include <game/bases/d_a_wm_map.hpp>
+#include <game/bases/d_a_wm_player.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_a_wm_start.hpp>
 #include <game/bases/d_wm_lib.hpp>
+#include <game/bases/d_w_camera.hpp>
+#include <game/bases/d_wm_effect_manager.hpp>
 
 ACTOR_PROFILE(WM_START, daWmStart_c, 0);
+
+// @unofficial Referenced only by ITS ADDRESS (never an individual element load) from
+// processCutsceneCommand's case 0x60/0x62 -- `lis/addi lbl_2_rodata_8FD8` materialising a
+// pointer, stored into dWCamera_c's own +0x71c field, matching AGENT_CONTEXT.md's "a literal's
+// address is materialised with lis/addi" rule. Exact meaning (a camera ease-curve parameter
+// block, going by its use site) is inferred, not confirmed.
+static const float sc_CamParams[4] = {0.1f, 12.0f, 1.0f, 0.0f};
+
 
 daWmStart_c::daWmStart_c() : m_200(false) {}
 daWmStart_c::~daWmStart_c() {}
@@ -102,11 +113,10 @@ void daWmStart_c::unk_17A3C0() {
         m_1ec = true;
 
         daWmMap_c *wmMap = daWmMap_c::m_instance;
-        int idx = *(int *) ((u8 *) wmMap + 0x338c);
-        setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, false);
-
         unsigned long param = dWmLib::c_StartPointKinokoHouseID;
         unsigned long paramFlag = param | 0x10000;
+        int idx = *(int *) ((u8 *) wmMap + 0x338c);
+        setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, false);
 
         if (zoromeTime == 0) {
             if (dWmLib::IsSingleEntry()) {
@@ -254,5 +264,139 @@ void daWmStart_c::calcModel() {
 }
 
 // NOT YET AUTHORED this round (0x3f4 bytes, the largest function in the unit).
+// dWCamera_c's header still models the wrong thing (see source/d_basesNP/bases/d_a_wm_note.cpp,
+// which shipped today and uses the same technique: a local u8* cast confined to this .cpp,
+// touching no shared header). Offsets confirmed against these target bytes directly.
+extern "C" void playEffect__18dWmEffectManager_cFiPC7mVec3_cPC7mAng3_cPC7mVec3_c(
+    void *self, int id, const mVec3_c *pos, const mAng3_c *angle, const mVec3_c *scale);
+
 void daWmStart_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
+    if (cutsceneCommandId == -1) {
+        return;
+    }
+
+    dWCamera_c *camera = dWCamera_c::m_instance;
+    daWmMap_c *wmMap = daWmMap_c::m_instance;
+
+    if (isFirstFrame) {
+        switch (cutsceneCommandId) {
+        case 0x60:
+            if (mSecondChild != nullptr && m_1ec) {
+                // Player-derived world position, fetched through an undeclared daWmPlayer_c
+                // member (ms_instance+0x29c is itself a pointer, dereferenced twice more before
+                // the call -- replicated mechanically, not modelled by name).
+                u8 *playerObj = *(u8 **) ((u8 *) daWmPlayer_c::ms_instance + 0x29c);
+                u8 *table = *(u8 **) (playerObj + 4);
+                typedef void (*GetPosFn)(mVec3_c *out, void *self);
+                GetPosFn fn = *(GetPosFn *) (table + 0x30);
+                fn(&mCamTarget, playerObj);
+
+                *(u32 *) ((u8 *) camera + 0x604) = 2;
+                *(mVec3_c **) ((u8 *) camera + 0x5f4) = &mCamTarget;
+                *(u32 *) ((u8 *) camera + 0x5f0) = 0;
+                *(bool *) ((u8 *) camera + 0x624) = false;
+                *(u32 *) ((u8 *) camera + 0x608) = 0;
+                *(const float **) ((u8 *) camera + 0x71c) = sc_CamParams;
+                mUnk1fc = 0x1e;
+            } else {
+                setCutEnd();
+            }
+            break;
+        case 0x61:
+            if (mSecondChild != nullptr) {
+                *(u8 *) ((u8 *) mSecondChild + 0x124) = false;
+                *(u8 *) ((u8 *) this + 0x124) = true;
+
+                dWmEffectManager_c *effMgr = dWmEffectManager_c::m_pInstance;
+                playEffect__18dWmEffectManager_cFiPC7mVec3_cPC7mAng3_cPC7mVec3_c(
+                    effMgr, 0x21, (const mVec3_c *) ((u8 *) mSecondChild + 0xac), nullptr, nullptr);
+
+                mUnk1fc = 0;
+            }
+            break;
+        case 0x3c:
+            if (mSecondChild != nullptr && !m_1ec && IsCourseFirstClear()) {
+                *(u8 *) ((u8 *) this + 0x124) = true;
+                *(u8 *) ((u8 *) mSecondChild + 0x124) = false;
+                mUnk1fc = 0;
+            }
+            break;
+        case 0x62:
+            if (mSecondChild != nullptr && m_1ec) {
+                mVec3_c localTemp; // uninitialised in the target -- no store before its address is taken
+                *(u32 *) ((u8 *) camera + 0x604) = 7;
+                *(mVec3_c **) ((u8 *) camera + 0x5f4) = &localTemp;
+                *(u32 *) ((u8 *) camera + 0x5f0) = 0;
+                *(bool *) ((u8 *) camera + 0x624) = false;
+                *(u32 *) ((u8 *) camera + 0x608) = 0;
+                *(const float **) ((u8 *) camera + 0x71c) = sc_CamParams;
+                mUnk1fc = 0x1e;
+            } else {
+                setCutEnd();
+            }
+            break;
+        }
+        return;
+    }
+
+    switch (cutsceneCommandId) {
+    case 0x60:
+        if (*(u32 *) ((u8 *) camera + 0x5f4) != 0) {
+            return;
+        }
+        if (mUnk1fc > 0) {
+            mUnk1fc--;
+        } else {
+            setCutEnd();
+        }
+        break;
+    case 0x61:
+        if (mSecondChild != nullptr && m_1ec) {
+            if (mUnk1fc > 0) {
+                mUnk1fc--;
+            } else {
+                int idx = *(int *) ((u8 *) wmMap + 0x338c);
+                setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, true);
+                setCutEnd();
+            }
+        } else {
+            setCutEnd();
+        }
+        break;
+    case 0x3c:
+        if (mSecondChild != nullptr && IsCourseFirstClear()) {
+            if (mUnk1fc > 0) {
+                mUnk1fc--;
+            } else {
+                int idx = *(int *) ((u8 *) wmMap + 0x338c);
+                setStartKinokoShadow__13dWmMapModel_cFb((u8 *) wmMap + idx * 0xbf8 + 0x1a0, false);
+                setCutEnd();
+            }
+        } else {
+            setCutEnd();
+        }
+        break;
+    case 0x62: {
+        bool arrived = false;
+        if (*(u32 *) ((u8 *) camera + 0x5f4) == 0) {
+            if (*(float *) ((u8 *) camera + 0x4ec) == *(float *) ((u8 *) camera + 0x4e0) &&
+                *(float *) ((u8 *) camera + 0x4f0) == *(float *) ((u8 *) camera + 0x4e4) &&
+                *(float *) ((u8 *) camera + 0x4f4) == *(float *) ((u8 *) camera + 0x4e8)) {
+                arrived = true;
+            }
+        }
+        if (!arrived) {
+            return;
+        }
+        if (mUnk1fc > 0) {
+            mUnk1fc--;
+        } else {
+            setCutEnd();
+        }
+        break;
+    }
+    default:
+        *(bool *) ((u8 *) this + 0x139) = true;
+        break;
+    }
 }
