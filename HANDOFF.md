@@ -7427,3 +7427,65 @@ The tool's own docstring already warned that pairing is greedy and that two
 functions with identical bodies can be paired to each other's targets. The part
 that was not obvious, and is now: the damage is not confined to the mis-paired
 function.
+
+## dance_pakkun: `createModel` 76 -> 70, and a guard block found that may unblock castle
+
+### The register mechanism, confirmed by measurement rather than by count
+
+`createModel`'s residual was diagnosed as missing persistent anchors. Making
+`mChrAnim[0]` a persistent `m3d::anmChr_c &anim` reference, instead of
+recomputing it at each of its five use sites, gave it a dedicated register reused
+across all five calls -- matching the target's `addi r29, r27, 0x22c` followed by
+repeated `mr r3, r29`, instruction for instruction.
+
+```
+target                        bl _savegpr_27   -> 5 registers (27-31)
+struct anchor only            individual stw   -> 2 registers
++ persistent anim reference   individual stw   -> 3 registers   (76 -> 70)
+```
+
+**Track the saved-register level, not just the differing count.** It moves first
+and it tells you the mechanism is working before the count follows.
+
+Still short one anchor: the target keeps a `.rodata` play-mode table live across
+calls, and a `.rodata` table can never share the `.data` struct's register. An
+early named pointer to it changed nothing -- **source position of a
+side-effect-free address computation does not control this compiler's scheduling**,
+now confirmed via a named local as well as via statement order. Parked at 70.
+
+### A suggestion of mine that was correctly refused
+
+I proposed reading the play-mode table inside a loop so its base would have to
+survive the calls. **The target has no loop at all** -- no back-branch anywhere in
+the function. Fabricating one to exercise the mechanism would have been an
+unverified claim about source shape presented as a test. The agent used a
+persistent reference instead: same "value must survive a call" lever, no invented
+structure. **Test the mechanism, not the guess.**
+
+### `__sinit`: a guard block, and it may be worth more than this unit
+
+Measured directly with `difftool.py` (bypassing the poisoned pairing): target 52
+instructions, draft 33, **51 differing**. The unconditional half matches
+call-for-call -- `sc_ForceList` construction, `__register_global_object`,
+`c_StartPointKinokoHouseID` assignment. What is missing is an entire conditional
+block: a guard-byte test at `lbl_2_bss_FD80+0x10` that, **on first execution
+only**, patches `sStepTable`'s `{dx, dy, dz}` fields from `lbl_2_rodata_87F0`.
+
+**A guard byte plus once-only initialisation is the signature of a function-local
+`static`.** The guard living in this unit's own `.bss` says the owner is in this
+TU.
+
+**This matters beyond dance_pakkun.** `castle` is parked at 18/20 needing exactly
+"guard present, registration absent", and 26 measured shapes across two units
+have failed to produce a guard. dance_pakkun's target **contains a working
+example of one.** Whatever source shape produces this block is the answer castle
+has been looking for.
+
+### `calcModelFor`: instruction reversed, author it
+
+It was left alone as the worst ratio in the unit -- reproducing unknown rotation
+maths. That was right when it was one function among many and is wrong now: at 47
+draft instructions against the target's 101, **it is the function corrupting
+`verify_anon`'s greedy pairing for the whole unit**, which is what made `__sinit`
+report a meaningless 50. It is simultaneously the largest function still open and
+the obstacle to trustworthy measurement everywhere else.

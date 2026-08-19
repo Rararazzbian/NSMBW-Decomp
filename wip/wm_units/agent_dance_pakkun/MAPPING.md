@@ -948,3 +948,138 @@ sinit pair -- comparison invalid this round (see above), unchanged content
   `calcModelFor()` first, which is explicitly out of scope. Flagging this
   as a structural dependency for whoever picks `__sinit` up next, not
   attempting a workaround.
+
+---
+
+## Update after coordinator's sixth round: __sinit's real number via difftool.py, createModel() narrowed further
+
+### __sinit -- real number obtained via difftool.py, bypassing verify_anon's greedy pairing
+
+```
+python wip/wm_units/agent_course/difftool.py \
+  wip/wm_units/agent_dance_pakkun/target_auto_fn_2_1621C0_text.txt \
+  wip/wm_units/agent_dance_pakkun/draft.txt \
+  fn_2_1621C0 "__sinit_\d_a_wm_dance_pakkun_cpp"
+```
+**Size: target 52 instructions, mine 33. 51 differing.** Confirms
+`verify_anon`'s "50 differing vs ~calcModelFor" from last round was exactly
+the invalid, consumed-pairing comparison it looked like -- the real number
+is close (51 vs 50) but the *comparison target* was wrong, so trusting it
+would have been luck, not verification.
+
+What the direct diff shows: my auto-generated `__sinit` reproduces the
+**unconditional** half exactly (constructing `dWmLib::sc_ForceList` from
+`dCsvData_c::c_CASTLE_ID`, calling `__register_global_object`, and
+assigning `dWmLib::c_StartPointKinokoHouseID` from `c_START_ID`) -- lines
+0-32 in the diff line up call-for-call. What's **entirely missing** is the
+**guarded conditional block** (target's lines 33-45): a
+`lbz`/`extsb.`/`bne` guard-byte check at `lbl_2_bss_FD80+0x10`, and, only
+the first time through, three `stfs` writes patching
+`lbl_2_data_445D0+0x40/0x44/0x48` (our own `sStepTable`'s `{dx,dy,dz}`
+fields!) from `lbl_2_rodata_87F0+0x4` and `+0x38`, then setting the guard
+byte. This is a genuine, not-yet-authored piece of behaviour -- not
+something `#include`-ing `d_wm_lib.hpp` produces automatically like the
+unconditional half was. It looks like a function-local `static` with a
+real one-time guard (the classic magic-static pattern), patching our own
+table's position-delta fields the first time some function runs. I have
+not identified which function's local this is, nor its trigger condition
+(the guard is checked/set independently of the `sc_ForceList`/
+`c_StartPointKinokoHouseID` unconditional part, so it's a separate
+static, not just the same object over again). Did not attempt to author
+this -- reporting the real number and the shape of what's missing rather
+than guessing.
+
+### createModel() -- 76 (round start) -> 75 -> 70, saved-register level measured directly
+
+Per instruction, tried making `mChrAnim[0]` accessed through a persistent
+reference rather than recomputed at each of its five use sites (`create`,
+`mPlayMode=`, `setRate`, `setFrame`, `setAnm`):
+
+```cpp
+m3d::anmChr_c &anim = mChrAnim[0];
+anim.create(resMdl, resAnmChr, &mAllocator, nullptr);
+anim.mPlayMode = sPlayModes[0];
+anim.setRate(1.0f);
+anim.setFrame(1.0f);
+mModel.setAnm(anim);
+```
+**This worked as intended for `mChrAnim[0]` itself**: `&anim` now gets its
+own dedicated register (mine: `r30`; target's equivalent: `r29`), reused
+across all five call sites exactly like the target reuses `r29` -- matching
+the target's `addi r29,r27,0x22c` / `mr r3,r29` / `mr r4,r29` repeated-use
+pattern instruction-for-instruction. 75 -> 70 differing.
+
+**Measured saved-register level directly (not inferred from the diff
+count), per the coordinator's request** -- searched the emitted `.text` for
+`_savegpr_NN` / individual `stw rXX,...(r1)` prologues:
+
+| Variant | Prologue shape | Registers |
+|---|---|---|
+| Target | `bl _savegpr_27` / `bl _restgpr_27` | 27, 28, 29, 30, 31 (5, block) |
+| Last round (struct anchor only) | `stw r31,0x2c(r1); stw r30,0x28(r1)` | 30, 31 (2, individual) |
+| This round (+ `anim` reference) | `stw r31,0x2c(r1); stw r30,0x28(r1); stw r29,0x24(r1)` | 29, 30, 31 (3, individual) |
+| Tried: early `const m3d::playMode_e *pPlayModes = sPlayModes;` (declared before `GetResAnmChr`/`anim.create()`, to try to force the play-mode table's address to survive across those two calls, matching the target's read-address-early-value-late shape) | same as above | 29, 30, 31 (3, individual) -- **no change** |
+
+**Went from 2 to 3 saved registers this round (still short of the target's
+5), and the differing count dropped from 75 to 70 on the back of it** --
+directly confirming the coordinator's framing: growing the register count
+is the lever, and it's moving the number.
+
+The `pPlayModes` experiment was a negative: writing the address computation
+earlier in *source* did not make the compiler materialise it earlier or
+keep it live across the two intervening calls -- it's still read fresh,
+immediately before use, with no persistent anchor of its own. This is the
+same "-O4 scheduling is not source-order-driven for side-effect-free
+computations" finding from earlier rounds, now confirmed a second way (a
+positioned local variable, not just statement order, failed to move it).
+
+**Did not try the suggested loop variant.** The target has no loop at all
+-- `mChrAnim` is declared `[1]` and accessed as a single element throughout
+these 16 functions (confirmed: no `bne`/`blt` back-branch anywhere in
+`createModel()`'s disassembly). A loop over one element would be a
+different, unverifiable claim about the source shape, not a measured
+finding, so I did not fabricate one just to test the mechanism. The `anim`
+persistent-reference approach achieves the same underlying effect (a value
+whose live range crosses multiple calls, forcing a saved register) without
+requiring an unevidenced loop.
+
+**What's still missing:** `lbl_2_rodata_8804` (the play-mode table)
+specifically. It's read exactly ONCE in the target (`lwz r0,0x0(r28)`), yet
+still gets a dedicated saved register, positioned early (right after the
+second `mdl_c::create()` call, well before its one read). My version reads
+`sPlayModes[0]` fresh, immediately before use, with no persistent register
+-- correct in isolation (nothing forces persistence for a single read) but
+not matching the target's apparently-gratuitous early materialisation. My
+best guess, not measured: once MWCC commits to a 5-register block save for
+the other four values, folding a fifth "free" address computation into the
+same window costs nothing, so it may get scheduled early opportunistically
+-- meaning the fix might be reaching 4 *genuinely* overlapping live ranges
+elsewhere in the function (not this table specifically) rather than doing
+anything to the play-mode table's own access. Did not find the fourth
+overlapping value this round.
+
+### Table
+
+```
+classInit MATCH | ctor 4 (untouched) | dtor 21 (untouched) | create() 49 (untouched)
+execute() MATCH | draw() MATCH | doDelete() MATCH | createModel() 70 (was 75)
+tailHelper() MATCH | calcModelFor() untouched, left alone | startStep() 13 (untouched)
+resetStep() MATCH | updateStepAnim() MATCH | unusedStub() MATCH
+__sinit 51 differing (measured directly via difftool.py, bypassing verify_anon's pairing)
+
+9/16 byte-identical
+```
+
+### Negatives this round
+
+- `pPlayModes` early-declared pointer: no effect (3 saved registers either
+  way). Confirms source POSITION of a pure address computation doesn't
+  control MWCC's scheduling, matching earlier rounds' findings via a new
+  mechanism (a named local, not just statement order).
+- Did not find what forces the play-mode table specifically into a
+  persistent register; best-guess hypothesis (a "free ride" on an
+  already-committed 5-register block save) stated as a hypothesis, not a
+  finding.
+- `__sinit`'s missing guarded block (patching `sStepTable`'s `dx/dy/dz`
+  fields, magic-static-shaped) identified but not authored -- don't know
+  which function's local it is or its trigger condition.

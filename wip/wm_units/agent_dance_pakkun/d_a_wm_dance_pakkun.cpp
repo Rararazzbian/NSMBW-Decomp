@@ -150,13 +150,14 @@ void daWmDancePakkun_c::createModel() {
     mModel2.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
 
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sModelNames.anmName);
-    mChrAnim[0].create(resMdl, resAnmChr, &mAllocator, nullptr);
+    m3d::anmChr_c &anim = mChrAnim[0];
+    anim.create(resMdl, resAnmChr, &mAllocator, nullptr);
 
-    mChrAnim[0].mPlayMode = sPlayModes[0];
-    mChrAnim[0].setRate(1.0f);  // @unofficial constant (lbl_2_rodata_87F4) unknown
-    mChrAnim[0].setFrame(1.0f); // @unofficial constant (lbl_2_rodata_87F4) unknown
+    anim.mPlayMode = sPlayModes[0];
+    anim.setRate(1.0f);  // @unofficial constant (lbl_2_rodata_87F4) unknown
+    anim.setFrame(1.0f); // @unofficial constant (lbl_2_rodata_87F4) unknown
 
-    mModel.setAnm(mChrAnim[0]);
+    mModel.setAnm(anim);
 
     dWmActor_c::setSoftLight_Enemy(mModel);
     mAllocator.adjustFrmHeap();
