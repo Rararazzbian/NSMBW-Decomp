@@ -29,6 +29,7 @@ extern "C" mVec3_c GetPos__9daWmMap_cFPCc(daWmMap_c *self, const char *nodeName)
 // @unofficial stepCutscene70() externs -- all read directly off the
 // target's own call sites (mangled/raw names), not guessed.
 extern "C" void fn_2_192920(dWmActor_c *);
+extern "C" int fn_2_192930(dWmActor_c *);
 extern "C" void fn_80105170(dWmSeManager_c *mgr, int a, int b, u8 c, float d);
 namespace dWmLib {
     void InitKinopioCourse();
@@ -234,7 +235,30 @@ void daWmKinopio_c::stepCutscene70() {
         }
         break;
     case 5:
-        // @unofficial NOT fully decoded -- placeholder.
+        if (m_198 > 0) {
+            m_198 = m_198 - 1;
+        }
+        if (m_198 == 0) {
+            if (dGameKey_c::m_instance->mRemocon[mPad::g_currentCoreID]->mDownButtons & 0x900) {
+                u8 *mgr = *(u8 **) &lbl_2_bss_11B70;
+                *(bool *) (mgr + 0x545) = true;
+                if (dWmLib::IsSingleEntry()) {
+                    u8 *obj = *(u8 **) (mgr + 0x538);
+                    if (obj) {
+                        *(bool *) (obj + 0x251) = true;
+                        *(u32 *) (obj + 0x254) = 1;
+                    }
+                } else {
+                    u8 *obj = *(u8 **) (mgr + 0x538);
+                    if (obj) {
+                        *(bool *) (obj + 0x251) = true;
+                        *(u32 *) (obj + 0x254) = 1;
+                    }
+                }
+                *(bool *) (mgr + 0x54d) = true;
+                m_1a8 = 6;
+            }
+        }
         break;
     case 6:
         // @unofficial lbl_2_bss_11B70's real type not identified (see
@@ -244,7 +268,7 @@ void daWmKinopio_c::stepCutscene70() {
         // raw offset casts per the established two-landed-units handling.
         if (*(u8 *) (*(u8 **) &lbl_2_bss_11B70 + 0x54d) == 0) {
             m_198 = 0xb4;
-            mpMdlMng->mpMdl->setAnm(0, -500.0f, 0.25f, 0.5f);
+            mpMdlMng->mpMdl->setAnm(0, 1.0f, 20.0f, 0.0f);
             u8 *mgr = *(u8 **) &lbl_2_bss_11B70;
             *(bool *) (mgr + 0x544) = true;
             *(bool *) (mgr + 0x546) = true;
@@ -283,7 +307,7 @@ void daWmKinopio_c::stepCutscene70() {
         if (mPos.x < -500.0f) {
             clearSpeedAll();
             dWmEffectManager_c::m_pInstance->endEffect(m_1b0);
-            mpMdlMng->mpMdl->setAnm(0, -500.0f, 0.5f, 0.5f);
+            mpMdlMng->mpMdl->setAnm(0, 1.0f, 0.0f, 0.0f);
             if (checkSpawnGate()) {
                 m_1a8 = 0xe;
             } else {
@@ -324,7 +348,20 @@ void daWmKinopio_c::stepCutscene70() {
         m_1a8 = 0x12;
         break;
     case 18:
-        // @unofficial NOT fully decoded -- placeholder.
+        if (!m_1b4) {
+            if (m_1b8->mPos.x <= mPos.x) {
+                dWmSeManager_c::m_pInstance->playSound(0x67, mPos, 1);
+                m_1b4 = 1;
+            }
+        }
+        if (m_1b4) {
+            mpMdlMng->mpMdl->setAnm(0x54, 5.0f, 5.0f, 0.0f);
+            mPos.x = m_1b8->mPos.x - 20.0f;
+        }
+        if (fn_2_192930(m_1b8)) {
+            mVisible = false;
+            m_1a8 = 0xe;
+        }
         break;
     case 19:
         setCutEnd();

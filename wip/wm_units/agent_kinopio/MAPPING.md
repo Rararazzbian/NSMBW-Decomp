@@ -762,3 +762,96 @@ this round per instruction. Remaining `stepCutscene70` work: cases 0, 1,
 5, 10, 12, 18 (untouched), case 14 (partial, one confirmed call out of an
 estimated 4-5 needed), case 2 (complete but using unidentified-type byte
 casts).
+
+## Round 8: critical constant-addressing bug caught and fixed, 2 more cases closed (14/20 total)
+
+**X/19 unchanged at 14/19.** Cases decoded and authored this round: **5,
+18**. Total now **14 of 20 cases authored** (3, 4, 5, 6, 7, 8, 9, 11, 13,
+15, 16, 17, 18, 19). Cases 0, 1, 10, 12 remain untouched; case 14 is still
+the same one-call partial from round 7; case 2 unchanged.
+
+### A real regression caught before it shipped: displacement-vs-absolute-address bug in cases 6 and 11
+
+Per the coordinator's caution ("a variant that improves the count while
+shifting data offsets is a regression"), re-derived every `.rodata`
+constant used this round from first principles instead of reusing a
+mental shortcut, and caught a genuine bug in the round-7 code: `r31`
+(and `r29`/`r30` in other functions) holds `lbl_2_rodata_8B10`'s address
+(`0x8b10`) for the whole function, so `lfs fN, 0xNN(r31)` reads absolute
+address `0x8b10 + 0xNN` -- **not** the literal bytes `0x8bNN`. Round 7's
+`setAnm(...)` calls in cases 6 and 11 had used the raw displacement digits
+as if they were the absolute address directly (e.g. displacement `0x48`
+read as address `0x8b48` instead of the correct `0x8b10+0x48=0x8b58`),
+giving completely wrong constants in both calls. Caught by rebuilding a
+full displacement-indexed table (`0x0` through `0x8c`) and cross-checking
+every earlier use against it -- found the two `setAnm` calls did not match
+any consistent pattern with the guard-check constants in the same cases
+(which *were* right, by coincidence of an earlier correctly-computed
+value being reused). Fixed:
+- Case 6: `setAnm(0, -500.0f, 0.25f, 0.5f)` (wrong) -> `setAnm(0, 1.0f,
+  20.0f, 0.0f)` (correct: displacements `0x48`/`0x60`/`0x40` ->
+  addresses `0x8b58`/`0x8b70`/`0x8b50`).
+- Case 11: `setAnm(0, -500.0f, 0.5f, 0.5f)` (wrong) -> `setAnm(0, 1.0f,
+  0.0f, 0.0f)` (correct: displacements `0x48`/`0x40`/`0x40`).
+
+Neither case was reported as matching before or after the fix (both were
+already counted as "authored, not verified" negatives), so this was not
+a case of a false positive shipping -- but it would have become one had
+these cases' surrounding code ever gotten close enough to expose the
+wrong data via a differing-count comparison instead of an outright logic
+read. Recorded as a real, caught negative per the coordinator's standing
+instruction to read the diff rather than trust an improving count.
+
+### 2 more cases decoded and authored
+
+- **Case 5** (`0x16ca74`, 0xb4): countdown-to-zero, then on expiry checks
+  live controller input (same `dGameKey_c`/`mPad::g_currentCoreID` shape
+  as case 8), then -- win or lose an apparent redundant `if
+  (dWmLib::IsSingleEntry())` check whose two branches compile to
+  **identical** code (both read `lbl_2_bss_11B70+0x538` as another
+  pointer, and if non-null set fields `+0x251`/`+0x254` on it) -- written
+  as literal duplicate `if`/`else` bodies to match the target's own
+  un-merged duplication, then sets one more `lbl_2_bss_11B70` flag and
+  transitions to state 6.
+- **Case 18** (`0x16cf60`, 0xb0): a "wait for the child actor to catch up,
+  then play a sound and follow it" case -- `if (m_1b8->mPos.x <=
+  mPos.x)`, `dWmSeManager_c::m_pInstance->playSound(0x67, mPos, 1)`
+  (already declared, its 3-arg overload matched the mangled name
+  exactly), a `setAnm` call and a position update once triggered, then
+  a `fn_2_192930(m_1b8)` check that hides/transitions on success --
+  confirming `mVisible` (established inherited field) is written here
+  too.
+
+### Untouched / partial cases -- genuine stops, not silent gaps
+
+- **Case 12** (`0x16cd80`, 0xa4): read in full. Involves indexing
+  `daWmMap_c`'s internal `dWmMapModel_c` array via a computed stride
+  (`idx * 0xbf8 + 0x1a0`), `dWmMapModel_c::GetEndNodePos`, and writes to
+  **six** `dWCamera_c` fields at offsets `0x5f0`-`0x71c` -- offsets far
+  beyond the header's documented `char pad[0x4f8]` placeholder, confirming
+  (again) that `dWCamera_c`'s real layout is much larger than currently
+  captured in `include/`. Not authored: too many simultaneously-uncertain
+  pieces (the map-model stride, `GetEndNodePos`'s exact signature, and six
+  undocumented camera fields) to write correctly under the time available.
+- **Case 10** (`0x16cc3c`, 0xcc): read in full up to one blocking unknown
+  -- a virtual dispatch through `mpMdlMng->mpMdl` at vtable slot `0x28`
+  whose return value is used as an argument to a further call
+  (`fn_80103520`), meaning it returns something despite the header listing
+  the slot's likely name (`getBodyMdl()`) as `void`. Rather than guess a
+  vtable slot number by hand (the exact failure mode the `+2`-offset
+  lesson exists to prevent), left unauthored.
+- **Case 1, Case 0**: not read this round -- time ran out after the
+  bug-fix pass and the two closed cases; both are the two largest
+  remaining (0x98 and 0xd4 bytes).
+- **Case 14**: unchanged from round 7 (one confirmed call,
+  `dWmLib::InitKinopioCourse()`, explicitly labeled incomplete).
+- **Case 2**: unchanged, complete but still using the unidentified-type
+  `lbl_2_bss_11B70` byte casts (see round 7 for the exhausted type
+  search).
+
+## Final state, this session: 14/19
+
+**14 of 20 `stepCutscene70` cases now closed** (up from 12). Remaining:
+cases 0, 1, 10, 12 untouched; case 14 partial; case 2 complete-but-typed-
+as-bytes. `resetPosition` (3), `checkAnmLoop` (34), the `.ctors` init (32),
+and `processCutsceneCommand` (136) untouched this round per instruction.

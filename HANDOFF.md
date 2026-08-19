@@ -10405,3 +10405,43 @@ counting it.**
 **Handover state: bounds validated, `sizeof` closed by layout arithmetic, member
 layout confirmed, six of twenty functions named — and no draft code at all.**
 That is the cheapest possible position for the next round to start from.
+
+## TRAP: a load's DISPLACEMENT is not an address suffix
+
+WM_KINOPIO's agent rebuilt its `.rodata` table from first principles rather than
+reusing shortcuts, and caught a real error in its own earlier work: **displacement
+digits had been read as absolute addresses.**
+
+```
+lfs f1, 0x48(rN)   where rN = lbl_2_rodata_8B10
+  WRONG:  0x8b48        <- the displacement pasted onto the base's leading digits
+  RIGHT:  0x8b10 + 0x48 = 0x8b58
+```
+
+Two cases had wrong constants from this — `setAnm(0, -500, 0.25, 0.5)` where the
+target has `setAnm(0, 1.0, 20.0, 0.0)`. **The trap is that the base and the wrong
+answer share leading digits**, so the result looks plausible.
+
+**Always add the displacement to the base register's actual value.** Neither case
+had been showing as matched, so nothing false was masked — but this is exactly
+what the "read the diff, do not trust an improving count" caution exists to catch,
+and the agent found it by rebuilding rather than by being told.
+
+## Two cases stopped on real header gaps, correctly
+
+- **Case 12** indexes `daWmMap_c`'s internal model array by a computed stride and
+  touches six `dWCamera_c` fields at `0x5f0`-`0x71c` — **far beyond that header's
+  documented `pad[0x4f8]`**, confirming again that `dWCamera_c`'s real layout is
+  much larger than `include/` captures. Two landed units already write that region
+  through a local cast.
+- **Case 10** hit a vtable dispatch **whose return value is used by a later call,
+  while the header declares that slot `void`.** So the header is wrong at that
+  slot. The agent left it unauthored rather than hand-count a slot number —
+  **exactly the failure mode the "+2 slots for a virtual destructor" lesson warns
+  against.**
+
+**Declining to guess a slot is right.** Walk the vtable chain from the headers, or
+read the class's own vtable relocations; do not count by hand.
+
+WM_KINOPIO's largest function stands at **14 of 20 cases**, with 0 and 1 (the two
+largest remaining) unattempted, 14 partial, and 2/10/12 blocked or offset-dependent.
