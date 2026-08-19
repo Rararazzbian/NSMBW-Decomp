@@ -407,3 +407,190 @@ enumeration and the base-upcast offset probe -- `off_probe.cpp` was the
 coordinator's starting point, kept as-is), `draw_probe.cpp` (the
 `entry()`/`play()` A-B compile). `d_a_wm_dance_pakkun.cpp` and `build.py`
 are the actual draft and its build script.
+
+---
+
+## Update after coordinator's priority-ordered round: 8/16 still, but residuals collapsed
+
+Same 8/16 MATCH count as last round, but the story underneath changed a lot:
+last round's near-misses were 30-100 instructions off (placeholder logic);
+this round's are single-digit-to-teens, almost entirely register-allocation
+and unknown-data-value residuals rather than structural ones. Per-function:
+
+```
+classInit         MATCH
+ctor               4 differing  (was 46)
+dtor               21 differing (unchanged -- see below, now fully explained)
+create()           38 differing (was 36)
+execute()          64 differing (unchanged -- calcModelFor's real math still unauthored, per instruction 5)
+draw()             MATCH
+doDelete()         MATCH
+createModel()      76 differing (was 77 -- see below, now fully explained)
+tailHelper()       MATCH
+calcModelFor()     97 differing (left alone per instruction 5)
+startStep()        13 differing (was 32)
+resetStep()        MATCH
+updateStepAnim()   MATCH
+unusedStub()       MATCH
+sinit pair         50 differing / MATCH (unchanged, still a knock-on effect)
+
+8/16 byte-identical
+```
+
+### `+0x60`, fully resolved via corpus search (instruction 4)
+
+Disassembled all 177 `.o` files in `bin/compiled/` (every landed unit across
+all four modules, plus the DOL) and grepped for `0x60(r`. The answer was
+sitting in the corpus the whole time:
+
+- `d_base.o` (`dBase_c::dBase_c()`, landed, byte-exact): right after
+  `bl __ct__7fBase_cFv`, it does `stw r0,0x64(r31)` (zeroing
+  `cOwnerSetMg_c::mpRoot`) then `stw r4,0x60(r31)` where r4 was just computed
+  as `lis r4,__vt__7dBase_c@ha; addi r4,r4,__vt__7dBase_c@l`. Then
+  `lwz r12,0x60(r31); lwz r12,0x4c(r12); bctrl` -- a virtual call through
+  THAT pointer -- whose result gets stored into `mpKindString` (`0x68`).
+  That's `this->getKindString()`, called through a SECOND vtable at `+0x60`,
+  not the primary one at `+0x0`.
+- `d_wm_demo_actor.o` (`dWmDemoActor_c::dWmDemoActor_c()`, landed): the exact
+  same shape, `stw r4,0x60(r31)` with r4 = `&__vt__14dWmDemoActor_c`,
+  positioned right between the `bl __ct__10dWmActor_cFv` base-ctor call and
+  constructing `mHeapAllocator`/`mModel`.
+- `d_a_wm_ghost.o` (`daWmGhost_c::daWmGhost_c()` AND `::execute()`, landed,
+  byte-exact): ctor does `stw r4,0x60(r29)` with r4 = `&__vt__11daWmGhost_c`,
+  in the exact same position dWmDancePakkun's does (right after the
+  dWmObjActor_c-inlined-through-to-dWmDemoActor_c base call, right before
+  `mAllocator`'s ctor). `execute()` does the literal double-dereference --
+  `lwz r12,0x60(r30); ...; lwz r12,0x60(r12); bctrl` -- to call
+  `processCutsceneCommand(GetCutName(), m_164)`, the exact source line
+  ghost.cpp already has.
+
+**Conclusion: `this+0x60` is an ordinary secondary vtable pointer that every
+polymorphic `dBase_c`-derived class in the game sets in its own constructor,
+via completely ordinary C++ (no manual code, no header change).** Our ctor
+now has an EMPTY body (`daWmDancePakkun_c::daWmDancePakkun_c() : m_184(-1)
+{}`) and the compiler emits the vtable store automatically; `execute()` now
+calls `processCutsceneCommand(...)` as an ordinary (uninherited-override)
+virtual call. Residual on the ctor dropped from 46 differing to **4**.
+
+The remaining 4-instruction ctor residual is a pure register-choice/ordering
+swap (target stores `m_184=-1` before the vtable pointer; my draft's
+compiler does it in the other order, using r3 where the target uses r4).
+Tried moving `m_184=-1` from the initialiser list into the body, which made
+it worse (back to 46 differing), so reverted. This reads as the
+"declaration order does not drive MWCC's saved-register assignment" class of
+residual AGENT_CONTEXT.md already documents as usually not source-addressable;
+did not find a further lever for it this round.
+
+I did NOT determine what `cOwnerSetMg_c` (or whatever the true secondary
+base's identity is) needs beyond a vtable pointer for this to be "real" --
+i.e. I have not chased the deeper architectural question of why there are
+two full parallel vtables. That's now moot for authoring purposes (ordinary
+C++ reproduces it exactly), but it's still an open curiosity I don't fully
+understand.
+
+### `createModel()`: real strings plugged in, 76/81 differing but EVERY call and argument matches -- residual is register allocation only
+
+Read the compiled bytes with the real strings the coordinator extracted, and
+worked out the exact call sequence instruction-by-instruction (see the
+updated `createModel()` body: `getRes("pakkun","g3d/pakkun.brres")`,
+`GetResMdl`, `mModel.create(..., ANM_TEXSRT|BUFFER_RESMATMISC, 1)`,
+`mModel2.create(..., BUFFER_RESMATMISC, 1)`, `GetResAnmChr("cs_wait")`,
+`mChrAnim[0].create(...)`, `mChrAnim[0].mPlayMode = <table>`,
+`setRate`/`setFrame`, `mModel.setAnm(mChrAnim[0])` (vtable+0x18, a THIRD
+slot identified this round, distinct from `entry()`@0x14 and `play()`@0x1c),
+`setSoftLight_Enemy`, `adjustFrmHeap`). Diffing line-by-line: **every single
+operation, call target, and immediate argument in the entire 81-instruction
+function now matches the target** -- the entire residual is register
+allocation (target holds 5 live values across the function via
+`_savegpr_27`/`r27-r31`; my draft only needs 3, via individual
+`stw r29/r30/r31` saves, because my `static const char *sAnmNames[1]` and
+`static const m3d::playMode_e sPlayModes[1]` each pull in a FRESH base
+register (fresh `lis`/`addi` pair) instead of reusing the single shared
+anchor (`r31 = &lbl_2_data_44590`) the real code clearly uses for
+`"cs_wait"`, `"g3d/pakkun.brres"`, and `"pakkun"` all at once (confirmed:
+the real `GetResAnmChr` argument is loaded via `lwz r4,0x98(r31)` -- an
+indirect pointer stored in .data at that anchor-relative offset, not a
+fresh `lis`/`addi` of its own). **This is very likely fixable** by finding
+whichever real declaration keeps all of these strings anchored to one base
+(possibly a single struct/array combining what I have as three separate
+statics) rather than three separate ones, but I did not solve it this round.
+
+Also confirmed empirically: `mModel`'s `bufferOption` is
+`nw4r::g3d::ScnMdl::ANM_TEXSRT | nw4r::g3d::ScnMdl::BUFFER_RESMATMISC` (=
+`0x224`, decoded from `include/lib/nw4r/g3d/g3d_scnmdl.h`'s `BufferOption`
+enum) -- makes sense given the class owns an `m3d::anmTexSrt_c mTexSrt`
+member. `mModel2` just uses `BUFFER_RESMATMISC` (`0x20`), matching what I'd
+guessed by luck last round.
+
+Renamed `pad_1a8` -> `nw4r::g3d::ResFile mResFile;`: the disassembly shows
+`getRes(...)`'s return value stored directly to `this+0x1a8`, and
+`GetResMdl` called with `this = &(this+0x1a8)` right after -- i.e. that
+4-byte gap is a real member (a `ResFile` handle kept around, not padding).
+One of the two open padding regions from last round is now resolved.
+
+### `startStep()`: real body authored, 32 -> 13 differing
+
+Full body now: `mPos += {table.dx,dy,dz}; mAngle.y = 0x4000; unusedStub();
+mScale.x = <v>; mScale.y = <v>; mScale.z = <v>; resetStep();` (as three
+separate assignment statements, not a chained `a=b=c=`, since the chained
+form compiled the three `stfs` in the wrong order -- z-then-x instead of
+x-then-z -- confirmed by compiling both and diffing, same "compile it and
+let the diff decide" method used for `draw()`). Declared a placeholder
+anonymous `sStepTable` struct standing in for `lbl_2_data_445D0` so the
+address-computation *shape* matches (one shared base register, fixed-offset
+field reads) -- this is deliberately a stand-in, not a claim about the real
+table's type or values (see Open question 4 above). Remaining
+13-instruction residual is (a) symbol-name normalisation (expected, not a
+defect) and (b) a load/fadds register-scheduling permutation across the
+three `mPos` component updates, which looks like the same "pure
+register-permutation residual, not source-addressable" class
+AGENT_CONTEXT.md documents -- did not find a source-level lever for it,
+given time.
+
+### Dtor: 21 differing, now fully explained (not fixed)
+
+Diffed instruction-by-instruction against the target: **every single
+instruction matches except one.** The target has a duplicate branch --
+`cmpwi r30,0x0; beq L; beq L` (the exact "duplicate beq" idiom
+AGENT_CONTEXT.md already flags as a known-but-unexplained MWCC quirk) --
+right before destroying `dWmDemoActor_c`'s own `mHeapAllocator`/`mModel` and
+calling `~dWmActor_c()`. My empty-bodied dtor (which relies entirely on
+implicit member-wise destruction, exactly like `daWmGhost_c::~daWmGhost_c()
+{}`) produces the same sequence with only ONE `beq` where the target has
+two, shifting everything after it by one instruction (otherwise
+byte-for-byte identical -- confirmed the same duplicate-`beq` pattern
+appears twice more earlier in the same function, both already correct in my
+draft). Did not find a source-level trigger for the second `beq` in the
+time available.
+
+### Not touched, per explicit instruction: `calcModelFor()` (97/101 differing)
+
+Left as the same simplified stand-in from last round. Its real body derives
+a dance-rotation offset from `mChrAnim[0].getFrame()`/`getRate()` blended
+against `lbl_2_data_445D0` (frame-indexed, `pairs[frame*2]`/
+`pairs[frame*2+1]`) and `mAngle`; not attempted.
+
+### Also fixed via the corpus read: two call-argument corrections
+
+Both `create()` and `execute()` were calling `calcModelFor(&mModel2)` in my
+first draft; the real target calls `calcModelFor(&mModel)` in BOTH places
+(confirmed re-reading the raw target bytes: `addi r4,r31,0x1ac` in
+`create()`, `addi r4,r30,0x1ac` in `execute()` -- `0x1ac` is `mModel`, not
+`mModel2` at `0x1ec`). Fixed. `mModel2` is now only ever touched in
+`createModel()` within these 16 functions -- I don't know what else (if
+anything, outside this unit) uses it.
+
+### Still unresolved, stated as questions
+
+- The exact register-anchoring pattern in `createModel()` (why the real code
+  shares one base register across three strings and mine doesn't).
+- The duplicate `beq` in the dtor.
+- The `mParam`-indexed `mBgmSync` field setup in `create()`, and
+  `lbl_2_data_445D0`'s real layout/values (used in `create()`,
+  `startStep()`, `calcModelFor()`).
+- `calcModelFor()`'s real rotation math (left alone per instruction 5).
+- The `lbl_2_rodata_87F8`-indexed `__ptmf_scall` dispatch in `execute()` (a
+  pointer-to-member-function table call keyed on `m_2bc*0xc`) -- not
+  reproduced.
+- `pad_2c0[0x10]`/`pad_2d1[0x7]` (what used to be `pad_2c0[0x18]`) remain
+  unexplained past the one field (`m_2d0`) pulled out of it this round.

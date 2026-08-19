@@ -6870,7 +6870,7 @@ exactly on the two anonymous 5-byte strings independently confirms the `.data`
 bound via the family rule in `check_bounds.py`. **Extract a unit's strings this
 way before authoring anything that names a resource.**
 
-### `+0x60` is a four-byte hole in `fBase_c`
+### `+0x60` is the SECONDARY VTABLE POINTER. (Corrected -- see below.)
 
 Measured, not inferred. `mHeap` -- `fBase_c`'s last named field -- ends at
 `0x60`, and `sizeof(fBase_c)` is `0x64`. To rule out the secondary base reusing
@@ -6968,3 +6968,49 @@ against our two, which three different spellings could not reproduce.
 give 29 -- placement does not matter once the scope is widened; explicit
 copy-construction gives 40; removing `pos` and inlining the call gives 46, which
 confirms the widening is what earned the 17 instructions.
+
+## CORRECTION: `+0x60` is a secondary vtable pointer. No header change is needed.
+
+I recorded `+0x60` as "unclaimed padding inside `fBase_c` with no alignment
+reason to exist", called it "strong evidence our `fBase_c` is missing a field",
+and reserved the header change for myself behind a full verify. **All of that was
+wrong, and the correct answer needs no header change at all.**
+
+It was settled by disassembling all 177 landed objects in `bin/compiled/` and
+grepping for the offset. `d_base.o`'s own `dBase_c::dBase_c()` shows it in the
+clear:
+
+```
+stw  r4, 0x60(r31)        ; r4 = &__vt__7dBase_c, computed fresh via lis/addi
+...
+lwz  r12, 0x60(r31)       ; then a virtual call straight back through it
+lwz  r12, 0x4c(r12)
+bctrl
+```
+
+It is **the secondary vtable pointer for the multiple-inheritance base**, written
+by the compiler as part of ordinary construction. `dBase_c` inherits from both
+`fBase_c` and `cOwnerSetMg_c`; the secondary vptr sits immediately before the
+secondary base's own fields, which is exactly why the earlier measurement found
+`mHeap` ending at `0x60` and `cOwnerSetMg_c` starting at `0x64`. The gap is not a
+hole and it is not padding -- it is a slot the ABI requires and the compiler
+fills.
+
+**So plain C++ produces it.** The raw `*(void**)((char*)this + 0x60)` cast has
+been deleted from dance_pakkun; `daWmGhost_c`'s landed ctor and `execute()` show
+the identical shape, double-dereference included, written as ordinary member
+calls. dance_pakkun's ctor went **46 differing -> 4** on this.
+
+Two lessons, and the second is the one that cost the time:
+
+- **An unexplained gap in a class layout is a vtable slot before it is a missing
+  field.** Check the MI structure first; it is cheaper than any layout probe.
+- **The corpus is evidence and it was the last thing anyone tried.** Three rounds
+  went into offset probes, upcast-adjustment tricks and `sizeof` arithmetic --
+  all sound technique, all pointed at the wrong question -- when 177 compiled
+  objects were sitting in the tree with the answer written in them. **Grep the
+  landed corpus for an offset before deriving anything about it.**
+
+The `sizeof`/`offsetof`-via-template-error technique and the upcast-adjustment
+trick are still good and stay recorded. They answered exactly what they were
+asked; the questions were the problem.
