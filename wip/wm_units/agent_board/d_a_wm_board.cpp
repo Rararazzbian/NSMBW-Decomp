@@ -138,6 +138,8 @@ const daWmBoard_c::ProcFunc_t daWmBoard_c::sProcTable[1] = {
 
 ACTOR_PROFILE(WM_BOARD, daWmBoard_c, 0);
 
+extern const float g_unofficial_board_zero = 0.0f;
+
 daWmBoard_c::daWmBoard_c() : mUnk184(-1), mUnk1a8(0) {}
 
 daWmBoard_c::~daWmBoard_c() {
@@ -152,13 +154,12 @@ int daWmBoard_c::create() {
     calcModel();
     resetState();
 
-    mBgmSync = new dWmBgmSync_c();
-    if (mBgmSync != nullptr) {
-        static const short sBgmSyncData[2] = {4, 0};
-        mBgmSync->m_18 = sBgmSyncData;
-        mBgmSync->m_04 = sBgmSyncData[0] - 1;
-        mBgmSync->m_08 = sBgmSyncData[1];
-    }
+    dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
+    mBgmSync = bgmSync;
+    extern const short sBgmSyncData[2] = {4, 0};
+    bgmSync->m_18 = sBgmSyncData;
+    bgmSync->m_04 = sBgmSyncData[0] - 1;
+    bgmSync->m_08 = sBgmSyncData[1];
     return SUCCEEDED;
 }
 
@@ -229,10 +230,12 @@ void daWmBoard_c::calcModel() {
 }
 
 void daWmBoard_c::resetState() {
-    if (!dWmLib::isSpecialWorldCourseOpen((int)ACTOR_PARAM(CourseIndex))) {
+    if (dWmLib::isSpecialWorldCourseOpen((int)ACTOR_PARAM(CourseIndex))) {
         mVisible = false;
     }
-    mScale = mVec3_c(1.0f, 1.0f, 1.0f);
+    mScale.x = 1.0f;
+    mScale.y = 1.0f;
+    mScale.z = 1.0f;
     resetProcIndex();
 }
 

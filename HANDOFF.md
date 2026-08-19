@@ -9041,3 +9041,47 @@ a shared offset residual**, and it is invisible from the functions themselves.
   `__sinit` at exactly 3, proving the residual was not caused by the object it
   had blamed. **A residual that does not move across four independent changes to
   the thing you blamed is evidence you blamed the wrong thing.**
+
+## WM_BOARD 7/15 -> 9/15: the proc-table fix, and the MIRROR of the stack-temp rule
+
+**`__sinit` MATCH.** Trimming the proc table to its one real entry was **necessary
+but not sufficient** — re-decoding the emitted pool against the region afterwards
+showed the target has **two** zero words between the table and the `1.0f` where
+the draft had one. A second named filler closed it.
+
+**Fix one pool defect, then re-measure the POOL, not just the functions.** The
+first correction exposes the second.
+
+**`resetState` MATCH**, on two real bugs read out of the raw block: an inverted
+branch condition, and — the interesting one — **the target has NO stack temp at
+all**, just three direct field stores:
+
+```cpp
+mScale = mVec3_c(1.0f, 1.0f, 1.0f);              // draft: constructs a temp
+mScale.x = 1.0f; mScale.y = 1.0f; mScale.z = 1.0f; // target: no temp
+```
+
+**This is the exact mirror of kinoballoon**, where three functions needed the
+constructor form *because* the target held a result in a stack temp. Same
+question, opposite answer.
+
+**That is the proof that the stack-temp rule is a QUESTION, not a preference for
+one form.** Trace what is actually in the slot — and "there is no slot" is a live
+answer.
+
+### `create` 18 -> 13, and a folding residual with a linkage hypothesis
+
+Two real fixes: dropped a null guard the target never performs (the store follows
+the allocation unconditionally), and bound the freshly-allocated pointer to a
+local reused for all three field stores rather than re-reading the member.
+
+Residual: the target performs genuine `lha` loads from the pool where the draft
+constant-folds, because MWCC can prove a file-local `static const short[2]`'s
+contents. **Two attempts to force a real load by changing the ACCESS PATH — through
+the member pointer, and through an intermediate local — both still folded.**
+
+**Hypothesis being tested: the folding is licensed by the object's LINKAGE, not by
+the access path.** At namespace scope a `const` array has internal linkage, which
+is what lets MWCC both strip it when unreferenced (already recorded) and fold it
+when read. `extern const short[2]` should be a much weaker basis for folding. If
+changing the path cannot fix it, change the linkage.
