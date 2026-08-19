@@ -14,6 +14,19 @@
 /// @ingroup bases
 class daWmKinopio_c : public dWmDemoActor_c {
 public:
+    /// @unofficial startJump()'s 2nd parameter shape, read off fn_2_16D100's
+    /// field offsets (+0x4 float, +0x8 s16, +0xc/+0x10 floats). Caller
+    /// (fn_2_16C810, not yet authored) not yet examined to confirm this is
+    /// really a distinct type vs. a slice of some larger table row.
+    struct JumpParam_t {
+        u32 m_00;
+        float mSpeed;
+        s16 mFrames;
+        s16 pad;
+        float mStartScaleSrc;
+        float mTargetScaleSrc;
+    };
+
     daWmKinopio_c();
     virtual ~daWmKinopio_c();
 
@@ -30,7 +43,7 @@ public:
     void resetStep();        ///< @unofficial fn_2_16C5C0, sets m_190 = 0
     void unusedStub();       ///< @unofficial fn_2_16C5D0, empty (ptmf table target)
     void checkAnmLoop();      ///< @unofficial fn_2_16D050
-    void startJump();          ///< @unofficial fn_2_16D100, calls dWmDemoActor_c::_initDemoJumpBase
+    void startJump(const char *nodeName, const JumpParam_t *param); ///< @unofficial fn_2_16D100
     bool checkSpawnGate();       ///< @unofficial fn_2_16D190, IsSingleEntry() && !fn_800FCB30(0)
 
     /// @unofficial fn_2_16C810, the huge (0x834-byte) per-frame cutscene-

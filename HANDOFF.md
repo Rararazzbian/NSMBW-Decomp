@@ -10121,3 +10121,42 @@ makes it work on unlanded units.
 WM_HANACHAN stands at **12/32**, with `create`, `draw`, the constructor and the
 destructor all matching, and `execute` size-matched at 5 differing (two constants
 sourced from separate anonymous pool slots instead of one named table).
+
+## WM_KINOPIO 13/19 -> 14/19, and a NEW residual class: paired-single vectorisation
+
+`startJump` matched **first attempt**, with its signature settled purely from
+field offsets inside its own body (`+0x4` float, `+0x8` s16, `+0xc`/`+0x10`
+floats) — **a parameter struct's shape can be read from the callee's own
+accesses**, without needing the caller.
+
+`processCutsceneCommand` (0x230) was authored for the first time and its dispatch
+shape confirmed correct — a single if-chain with an early return, not a switch,
+matching the target's branch/skip structure exactly.
+
+**Its residual is a class we have not met before.** The target computes the
+weighted-position maths with **paired-single instructions** — `ps_muls0`,
+`psq_l`/`psq_st`, holding `f30`/`f31` across both calls — while `mVec3_c`'s
+`operator*`/`operator+` compile to plain scalar float ops. **No wrong branch,
+constant or argument**; it is a vectorisation-level difference.
+
+**Lead for whoever returns to it:** `include/lib/revolution/mtx/vec.h` declares
+`PSVECAdd(const Vec *, const Vec *, Vec *)` and
+`PSVECScale(const Vec *, Vec *, f32)`, and `m_vec.hpp` already calls
+`PSVECSquareDistance`/`PSVECMag`. **If the real source used the SDK's
+paired-single helpers rather than `mVec3_c`'s operators, that explains the
+instruction class exactly.** One measurement would settle it.
+
+## A jump table with every case address known is twenty small problems
+
+`fn_2_16C810` is `0x834` — the largest function of the session, deferred four
+times. The groundwork that makes it tractable is done: **20 entries counted from
+relocations** (not guessed), cross-checked against the function's own
+`cmplwi r0, 0x13` bound, with all 20 case addresses catalogued.
+
+**A 20-case dispatch with every case's address known in advance is far more
+tractable than its size suggests.** Relocation counting has now sized tables
+correctly on four units and caught two wrong entry counts.
+
+Reminder for authoring it: with a bound check and a jump table this is a `switch`,
+but **case label order sets body layout independently of the compare order the
+compiler picks** — take the ordering from the table.

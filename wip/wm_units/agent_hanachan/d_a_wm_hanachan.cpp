@@ -6,6 +6,10 @@
 #include <game/mLib/m_3d/smdl.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
+#include <game/bases/d_a_wm_player.hpp>
+
+extern "C" int R_2_1_1994D0(daWmPlayer_c *player);
+extern "C" int R_2_1_1994B0(daWmPlayer_c *player);
 
 /// @unofficial DRAFT, first-authoring round for WM_HANACHAN (.text 0x164430-0x165c70, 32
 /// functions). Base class confirmed from the constructor (bl __ct__14dWmDemoActor_cFv):

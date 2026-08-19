@@ -10,6 +10,13 @@
 // @unofficial cross-module DOL call, unnamed in both symbol tables.
 extern "C" int fn_800FCB30(int);
 
+// @unofficial daWmMap_c::GetPos(const char *) -- not in the real header
+// (only GetPos(int) is declared there); mangled name confirmed directly
+// from the target (GetPos__9daWmMap_cFPCc). Declared as the equivalent
+// free function taking an explicit `this`, same technique as the
+// project's other raw cross-TU externs.
+extern "C" mVec3_c GetPos__9daWmMap_cFPCc(daWmMap_c *self, const char *nodeName);
+
 // @unofficial KNOWN ISSUE, not resolved: the target's .ctors section has
 // exactly 1 entry for this unit; the real source therefore does NOT
 // include d_wm_lib.hpp (that header's own `static ForceInCourseList_t
@@ -140,6 +147,36 @@ void daWmKinopio_c::resetStep() {
 void daWmKinopio_c::unusedStub() {
 }
 
+void daWmKinopio_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
+    if (cutsceneCommandId == -1) {
+        return;
+    }
+
+    if (isFirstFrame && cutsceneCommandId == 0x70) {
+        mSpeedF = 0.800000011920929f;
+        setDirection(mVec3_c(-500.0f, 0.5f, 0.5f));
+
+        if (!checkSpawnGate()) {
+            mVec3_c p1 = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W103");
+            mVec3_c p2 = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W102");
+            m_19c = p1 * 0.0f + p2 * 5.0f;
+        } else {
+            mVec3_c p1 = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W103");
+            mVec3_c p2 = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W102");
+            m_19c = p1 * 0.0f + p2 * 8.0f;
+        }
+
+        m_1a8 = 0;
+        m_198 = 0xf;
+    }
+
+    if (cutsceneCommandId == 0x70) {
+        stepCutscene70();
+    } else {
+        mIsCutEnd = true;
+    }
+}
+
 void daWmKinopio_c::checkAnmLoop() {
     if ((u32) (m_1a8 - 2) <= 7) {
         if (mpMdlMng->getLastFrame() == mpMdlMng->mpMdl->mAnm.getFrame()) {
@@ -150,6 +187,16 @@ void daWmKinopio_c::checkAnmLoop() {
     if (m_1ac > 1000) {
         m_1ac = 0;
     }
+}
+
+void daWmKinopio_c::startJump(const char *nodeName, const JumpParam_t *param) {
+    mVec3_c pos;
+    daWmMap_c::m_instance->GetNodePos(nodeName, pos);
+    _initDemoJumpBase(pos, 0, param->mFrames, param->mSpeed,
+                       1.899999976158142f * param->mStartScaleSrc,
+                       1.899999976158142f * param->mTargetScaleSrc,
+                       mVec3_c::Ex);
+    m_1b4 = 0;
 }
 
 bool daWmKinopio_c::checkSpawnGate() {

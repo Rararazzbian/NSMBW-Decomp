@@ -521,3 +521,98 @@ checkAnmLoop (34 differing, register-preservation shape), `fn_2_16C530`
 resetPosition (6 raw diff lines / 3 counted, rodata rotation),
 `fn_2_16C5E0` processCutsceneCommand and `fn_2_16D100` startJump (not
 attempted), `fn_2_16C810` stepCutscene70 (0x834, left alone throughout).
+
+## Round 5: the two unattempted functions
+
+**Result: 14/19, up from 13/19.** `startJump` (`fn_2_16D100`) reached
+**MATCH** on the first attempt. `processCutsceneCommand` (`fn_2_16C5E0`)
+is now real (structurally authored, dispatch shape confirmed correct)
+but not byte-exact -- 136 differing, arithmetic/vectorization residual
+only, no logic errors identified.
+
+### `startJump` -- MATCH, first attempt
+
+Its true signature (`const char *nodeName, const JumpParam_t *param`) was
+settled from the raw field offsets alone (`+0x4` float, `+0x8` s16,
+`+0xc`/`+0x10` floats), without visibility into its caller
+(`fn_2_16C810`, still unauthored) -- a local `JumpParam_t` struct
+declared in the header captures the shape. `daWmMap_c::GetNodePos(const
+char*, mVec3_c&)` and `dWmDemoActor_c::_initDemoJumpBase(...)` are both
+already declared in real headers; nothing needed to be guessed there.
+
+### `processCutsceneCommand` -- dispatch shape confirmed, arithmetic open
+
+Read the raw bytes fresh rather than trusting the round-1 characterization,
+per the coordinator's repeated "re-read, don't reuse" instruction. Control
+flow, fully confirmed against the disassembly:
+
+```cpp
+void daWmKinopio_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
+    if (cutsceneCommandId == -1) return;
+    if (isFirstFrame && cutsceneCommandId == 0x70) {
+        mSpeedF = 0.8f;
+        setDirection(mVec3_c(-500.0f, 0.5f, 0.5f));
+        if (!checkSpawnGate()) { /* m_19c = GetPos("W103")*0 + GetPos("W102")*5 */ }
+        else                   { /* m_19c = GetPos("W103")*0 + GetPos("W102")*8 */ }
+        m_1a8 = 0; m_198 = 0xf;
+    }
+    if (cutsceneCommandId == 0x70) stepCutscene70();
+    else                           mIsCutEnd = true;
+}
+```
+This is a single if-chain (not a switch): one `cmpwi -1`+`beq`, folded
+`isFirstFrame && cmd==0x70` (two more compare-and-skip pairs sharing one
+body), an inner if/else on `checkSpawnGate()`, then a final if/else on
+`cmd==0x70` at the tail -- matches the target's branch count and skip
+targets exactly, confirmed instruction-by-instruction against the raw
+bytes (not assumed from the round-1 read).
+
+`daWmMap_c::GetPos(const char*)` is not in the real header (only
+`GetPos(int)` is) -- declared as `extern "C" mVec3_c
+GetPos__9daWmMap_cFPCc(daWmMap_c*, const char*)`, the project's usual
+raw-extern technique, using the mangled name read directly off the
+target.
+
+**What's open (136 differing, size 130 vs target 140)**: the target
+computes both branches' weighted-position math using paired-single
+(`ps_muls0`/`ps_add`, `psq_l`/`psq_st`) instructions and holds `f30`/`f31`
+across both `GetPos()` calls (needing the `_savegpr_27`/`stfd
+f31`/`psq_st f31` prologue shape); the current draft's `mVec3_c operator*`
+/`operator+` expression compiles to plain scalar `fmuls`/`fadds` instead.
+This is a vectorization-level difference, not a logic error -- no branch
+target, constant value, or call argument is wrong, only the FP instruction
+selection. Not chased further this round; likely needs a source shape
+that visibly hints paired-single treatment (unclear what that would look
+like in plain C++ without intrinsics), a genuinely open question for next
+round rather than a quick fix.
+
+### `fn_2_16C810` groundwork: jump table entry count confirmed by counting relocations
+
+Per the coordinator's instruction, counted (not guessed) the case count
+before touching the function: relocations in `.data 0x45d14-0x45d68`
+(`jumptable_2_data_45D14`) give exactly **20 entries** (`0x45d14`
+through `0x45d60`, 4 bytes apart, matching the table's own dtk-reported
+size `0x50` exactly and the function's own `cmplwi r0,0x13` bound check).
+Case targets: `0x16c8a0, 0x16c974, 0x16ca0c, 0x16d024, 0x16ca48, 0x16ca74,
+0x16cb28, 0x16cb90, 0x16cbc4, 0x16cc28, 0x16cc3c, 0x16cd08, 0x16cd80,
+0x16ce24, 0x16ce5c, 0x16cf08, 0x16cf2c, 0x16cf4c, 0x16cf60, 0x16d010` --
+this gives the exact per-case byte ranges for ascending-size authoring
+next round, without needing to re-derive them. Not authored this round --
+ran out of time after landing the two previously-unattempted functions,
+which the coordinator correctly identified as higher-value than a fourth
+retry on the three known walls.
+
+## Final result this session: 14/19
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate | — | **MATCH** (11) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16D100` **startJump** | 0x84 | **MATCH** | new this round |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, multiple negatives, left alone |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, multiple negatives, left alone |
+| `fn_2_16D1E0` `.ctors` init | 0x84 | 32 differing | walled, multiple negatives, left alone |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | new this round -- dispatch shape confirmed correct, vectorization residual open |
+| `fn_2_16C810` stepCutscene70 | 0x834 | not attempted | jump table counted (20 entries), case addresses catalogued, not authored |
+
+**14/19 byte-identical.**
