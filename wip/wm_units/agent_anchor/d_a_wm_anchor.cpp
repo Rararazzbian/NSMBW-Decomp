@@ -6,6 +6,18 @@
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_a_wm_map.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
+
+/// @unofficial `lbl_2_data_436A8`, this unit's own .data at offset 0x10
+/// (right before dWmLib::sc_ForceList's own F7C0/W7C0 pair) -- a plain
+/// NAMED pointer variable holding "cobKoopaShip" (`lbl_2_data_43698`, this
+/// unit's own leading pooled string at offset 0). Both setNodePos() and
+/// execute() load the node name through THIS variable (`lwz r4,
+/// lbl_2_data_436A8@l(r4)`), not through the string literal's own address
+/// directly -- confirmed directly from the target, both call sites. Declared
+/// here, before the `d_wm_lib.hpp` include, so it emits into .data ahead of
+/// dWmLib::sc_ForceList's own strings, matching the target's offset.
+static const char *smc_koopaShipNodeName = "cobKoopaShip";
+
 #include <game/bases/d_wm_lib.hpp>
 
 /// @unofficial DRAFT, not yet fully verified against every target instruction.
@@ -105,36 +117,34 @@ public:
     /// to dWmDemoActor_c::doDelete() (`li r3,0x1; blr`), so the override
     /// exists ONLY to pin its position, not to change behaviour.
     virtual int doDelete();
-    /// @unofficial Explicit override, NOT identical to what it would
-    /// inherit -- dWmDemoActor_c's own default returns ACTOR_MAP_DEMO (1);
-    /// the target's own body at 0x15abb0 is `li r3,0x2; blr` --
-    /// ACTOR_MAP_OBJECT (2). dtk's symbol map labels this occurrence
-    /// `GetActorType__13dWmObjActor_cFv` purely because dWmObjActor_c's own
-    /// (unrelated) override happens to return the same value 2 -- same
-    /// bytes, wrong attribution.
-    ///
-    /// Declared IN-CLASS INLINE, not out-of-line: the target places this at
-    /// 0x15abb0, at the very END, after the whole purely-inherited weak
-    /// cluster (setCutEnd/clearCutEnd/checkCutEnd/vf74/vf78) -- the same
-    /// deferred-to-end-of-TU placement the kinoko family's getModelName()
-    /// needed in-class inline for. An out-of-line override (tried first)
-    /// joins the STRONG definition-order batch and lands early, which is
-    /// wrong here despite having the right body.
-    virtual int GetActorType() { return ACTOR_MAP_OBJECT; }
 
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
-    /// @unofficial In-class inline overrides, bodies IDENTICAL to what they
-    /// would inherit from dWmDemoActor_c::clearCutEnd() and
-    /// dWmObjActor_c::vf74() respectively. Hypothesis from the coordinator:
-    /// a purely-inherited virtual gives nothing to order, but a DECLARED
-    /// in-class inline override is still weak (defers to the end-of-TU
-    /// block, same as GetActorType() above) while still being a distinct
-    /// declaration that might let source control its position WITHIN that
-    /// weak cluster. Measuring this, not assuming it -- see agent report
-    /// for the result either way.
-    virtual void clearCutEnd() { mIsCutEnd = false; }
+    /// @unofficial Round 3 on the weak-cluster ordering. Declaring
+    /// GetActorType() in-class inline alone got both its body AND its
+    /// position right (target 0x15abb0, at the very end). Declaring
+    /// clearCutEnd()+vf74() in-class inline alone moved THEM but did not
+    /// reproduce the target's full sequence, while checkCutEnd()/vf78()
+    /// (left purely inherited that round) stayed inert. Conclusion: a
+    /// purely inherited virtual gives nothing to order; a DECLARED in-class
+    /// inline override is weak (still defers to the end-of-TU block, same
+    /// mechanism the kinoko family's getModelName() needed) but is NOT
+    /// inert -- declaration reaches its emission position the same way
+    /// declaration order already reaches vtable slot assignment.
+    ///
+    /// So: all six declared in-class inline here, bodies IDENTICAL to what
+    /// each would otherwise inherit, in the TARGET's own address order
+    /// (0x15ab60-0x15abb0): setCutEnd, clearCutEnd, checkCutEnd, vf78,
+    /// vf74, GetActorType. If declaration order drives weak-emission order
+    /// the same way it drives vtable slots, this reproduces the target
+    /// exactly; if it does not, that's a clean negative -- see agent report
+    /// for the measured draft.txt order this produced.
+    virtual int GetActorType() { return ACTOR_MAP_OBJECT; }
     virtual void vf74() {}
+    virtual bool vf78() { return false; }
+    virtual bool checkCutEnd() { return mIsCutEnd; }
+    virtual void clearCutEnd() { mIsCutEnd = false; }
+    virtual void setCutEnd() { mIsCutEnd = true; }
 
     void createModel();
     void calcModel();
@@ -196,7 +206,7 @@ int daWmAnchor_c::execute() {
     /// below (fn_80100640 + GetNodePos(const char*, mVec3_c&)), but with no
     /// fallback-to-constant branch here. Best-effort, NOT verified byte-exact.
     {
-        void *found = fn_80100640(daWmMap_c::m_instance, "cobKoopaShip", 0);
+        void *found = fn_80100640(daWmMap_c::m_instance, smc_koopaShipNodeName, 0);
         int off = found ? *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8) : 0;
         const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;
         daWmMap_c::m_instance->GetNodePos(name, mPos);
@@ -248,7 +258,7 @@ void daWmAnchor_c::calcModel() {
 /// does not make).
 void daWmAnchor_c::setNodePos() {
     daWmMap_c *map = daWmMap_c::m_instance;
-    void *found = fn_80100640(map, "cobKoopaShip", 0);
+    void *found = fn_80100640(map, smc_koopaShipNodeName, 0);
     if (found) {
         int off = *reinterpret_cast<int *>(reinterpret_cast<u8 *>(found) + 8);
         const char *name = off ? reinterpret_cast<const char *>(reinterpret_cast<u8 *>(found) + off) : nullptr;

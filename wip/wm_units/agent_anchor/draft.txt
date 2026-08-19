@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_wm_anchor.cpp"
 
-# 0x00000000..0x000008B0 | size: 0x8B0
+# 0x00000000..0x000008C0 | size: 0x8C0
 .text
 .balign 16
 
@@ -253,12 +253,12 @@
 /* 0000030C 0000034C  93 E1 00 0C */	stw r31, 0xc(r1)
 /* 00000310 00000350  7C 7F 1B 78 */	mr r31, r3
 /* 00000314 00000354  48 00 00 01 */	bl createModel__12daWmAnchor_cFv
-/* 00000318 00000358  3C 80 00 00 */	lis r4, "@13034"@ha
+/* 00000318 00000358  3C 80 00 00 */	lis r4, "@13047"@ha
 /* 0000031C 0000035C  C0 7F 00 AC */	lfs f3, 0xac(r31)
 /* 00000320 00000360  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
 /* 00000324 00000364  7F E3 FB 78 */	mr r3, r31
 /* 00000328 00000368  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
-/* 0000032C 0000036C  C0 04 00 00 */	lfs f0, "@13034"@l(r4)
+/* 0000032C 0000036C  C0 04 00 00 */	lfs f0, "@13047"@l(r4)
 /* 00000330 00000370  D0 7F 01 28 */	stfs f3, 0x128(r31)
 /* 00000334 00000374  D0 5F 01 2C */	stfs f2, 0x12c(r31)
 /* 00000338 00000378  D0 3F 01 30 */	stfs f1, 0x130(r31)
@@ -313,10 +313,10 @@
 /* 000003E4 00000424  60 00 00 00 */	nop
 .L_000003E8:
 /* 000003E8 00000428  3C 60 00 00 */	lis r3, m_instance__9daWmMap_c@ha
-/* 000003EC 0000042C  3C 80 00 00 */	lis r4, "@13051"@ha
+/* 000003EC 0000042C  3C 80 00 00 */	lis r4, smc_koopaShipNodeName@ha
 /* 000003F0 00000430  80 63 00 00 */	lwz r3, m_instance__9daWmMap_c@l(r3)
-/* 000003F4 00000434  38 84 00 00 */	addi r4, r4, "@13051"@l
-/* 000003F8 00000438  38 A0 00 00 */	li r5, 0x0
+/* 000003F4 00000434  38 A0 00 00 */	li r5, 0x0
+/* 000003F8 00000438  80 84 00 00 */	lwz r4, smc_koopaShipNodeName@l(r4)
 /* 000003FC 0000043C  48 00 00 01 */	bl fn_80100640
 /* 00000400 00000440  2C 03 00 00 */	cmpwi r3, 0x0
 /* 00000404 00000444  7C 60 1B 78 */	mr r0, r3
@@ -399,16 +399,16 @@
 /* 000004EC 0000052C  38 80 FF FF */	li r4, -0x1
 /* 000004F0 00000530  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
 /* 000004F4 00000534  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 000004F8 00000538  3C A0 00 00 */	lis r5, "@13071"@ha
+/* 000004F8 00000538  3C A0 00 00 */	lis r5, "@13083"@ha
 /* 000004FC 0000053C  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000500 00000540  3F E0 00 00 */	lis r31, "@13072"@ha
-/* 00000504 00000544  38 A5 00 00 */	addi r5, r5, "@13071"@l
-/* 00000508 00000548  38 9F 00 00 */	addi r4, r31, "@13072"@l
+/* 00000500 00000540  3F E0 00 00 */	lis r31, "@13084"@ha
+/* 00000504 00000544  38 A5 00 00 */	addi r5, r5, "@13083"@l
+/* 00000508 00000548  38 9F 00 00 */	addi r4, r31, "@13084"@l
 /* 0000050C 0000054C  38 63 00 04 */	addi r3, r3, 0x4
 /* 00000510 00000550  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
 /* 00000514 00000554  90 7E 01 A4 */	stw r3, 0x1a4(r30)
 /* 00000518 00000558  38 7E 01 A4 */	addi r3, r30, 0x1a4
-/* 0000051C 0000055C  38 9F 00 00 */	addi r4, r31, "@13072"@l
+/* 0000051C 0000055C  38 9F 00 00 */	addi r4, r31, "@13084"@l
 /* 00000520 00000560  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
 /* 00000524 00000564  90 61 00 08 */	stw r3, 0x8(r1)
 /* 00000528 00000568  38 7E 01 A8 */	addi r3, r30, 0x1a8
@@ -485,15 +485,15 @@
 .fn setNodePos__12daWmAnchor_cFv, global
 /* 00000620 00000660  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 00000624 00000664  7C 08 02 A6 */	mflr r0
-/* 00000628 00000668  3C 80 00 00 */	lis r4, "@13051"@ha
-/* 0000062C 0000066C  3C A0 00 00 */	lis r5, m_instance__9daWmMap_c@ha
+/* 00000628 00000668  3C A0 00 00 */	lis r5, m_instance__9daWmMap_c@ha
+/* 0000062C 0000066C  3C 80 00 00 */	lis r4, smc_koopaShipNodeName@ha
 /* 00000630 00000670  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000634 00000674  38 84 00 00 */	addi r4, r4, "@13051"@l
-/* 00000638 00000678  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 0000063C 0000067C  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000640 00000680  7C 7E 1B 78 */	mr r30, r3
-/* 00000644 00000684  83 E5 00 00 */	lwz r31, m_instance__9daWmMap_c@l(r5)
-/* 00000648 00000688  38 A0 00 00 */	li r5, 0x0
+/* 00000634 00000674  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000638 00000678  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000063C 0000067C  7C 7E 1B 78 */	mr r30, r3
+/* 00000640 00000680  83 E5 00 00 */	lwz r31, m_instance__9daWmMap_c@l(r5)
+/* 00000644 00000684  38 A0 00 00 */	li r5, 0x0
+/* 00000648 00000688  80 84 00 00 */	lwz r4, smc_koopaShipNodeName@l(r4)
 /* 0000064C 0000068C  7F E3 FB 78 */	mr r3, r31
 /* 00000650 00000690  48 00 00 01 */	bl fn_80100640
 /* 00000654 00000694  2C 03 00 00 */	cmpwi r3, 0x0
@@ -512,8 +512,8 @@
 /* 00000680 000006C0  48 00 00 01 */	bl GetNodePos__9daWmMap_cFPCcR7mVec3_c
 /* 00000684 000006C4  48 00 00 18 */	b .L_0000069C
 .L_00000688:
-/* 00000688 000006C8  3C 60 00 00 */	lis r3, "@13113"@ha
-/* 0000068C 000006CC  C0 03 00 00 */	lfs f0, "@13113"@l(r3)
+/* 00000688 000006C8  3C 60 00 00 */	lis r3, "@13125"@ha
+/* 0000068C 000006CC  C0 03 00 00 */	lfs f0, "@13125"@l(r3)
 /* 00000690 000006D0  D0 1E 00 B4 */	stfs f0, 0xb4(r30)
 /* 00000694 000006D4  D0 1E 00 B0 */	stfs f0, 0xb0(r30)
 /* 00000698 000006D8  D0 1E 00 AC */	stfs f0, 0xac(r30)
@@ -526,9 +526,9 @@
 /* 000006B0 000006F0  7C 63 02 14 */	add r3, r3, r0
 /* 000006B4 000006F4  38 63 01 A0 */	addi r3, r3, 0x1a0
 /* 000006B8 000006F8  48 00 00 01 */	bl setAnchorShadow__13dWmMapModel_cFb
-/* 000006BC 000006FC  3C 60 00 00 */	lis r3, "@13114"@ha
+/* 000006BC 000006FC  3C 60 00 00 */	lis r3, "@13126"@ha
 /* 000006C0 00000700  38 00 00 00 */	li r0, 0x0
-/* 000006C4 00000704  C0 03 00 00 */	lfs f0, "@13114"@l(r3)
+/* 000006C4 00000704  C0 03 00 00 */	lfs f0, "@13126"@l(r3)
 /* 000006C8 00000708  D0 1E 00 E4 */	stfs f0, 0xe4(r30)
 /* 000006CC 0000070C  D0 1E 00 E0 */	stfs f0, 0xe0(r30)
 /* 000006D0 00000710  D0 1E 00 DC */	stfs f0, 0xdc(r30)
@@ -586,131 +586,140 @@
 /* 0000075C 0000079C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x760 | size: 0xC
-# dWmDemoActor_c::setCutEnd()
-.fn setCutEnd__14dWmDemoActor_cFv, weak
+# daWmAnchor_c::setCutEnd()
+.fn setCutEnd__12daWmAnchor_cFv, weak
 /* 00000760 000007A0  38 00 00 01 */	li r0, 0x1
 /* 00000764 000007A4  98 03 01 39 */	stb r0, 0x139(r3)
 /* 00000768 000007A8  4E 80 00 20 */	blr
-.endfn setCutEnd__14dWmDemoActor_cFv
+.endfn setCutEnd__12daWmAnchor_cFv
 /* 0000076C 000007AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x770 | size: 0x8
-# dWmDemoActor_c::checkCutEnd()
-.fn checkCutEnd__14dWmDemoActor_cFv, weak
-/* 00000770 000007B0  88 63 01 39 */	lbz r3, 0x139(r3)
-/* 00000774 000007B4  4E 80 00 20 */	blr
-.endfn checkCutEnd__14dWmDemoActor_cFv
-/* 00000778 000007B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x770 | size: 0xC
+# daWmAnchor_c::clearCutEnd()
+.fn clearCutEnd__12daWmAnchor_cFv, weak
+/* 00000770 000007B0  38 00 00 00 */	li r0, 0x0
+/* 00000774 000007B4  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000778 000007B8  4E 80 00 20 */	blr
+.endfn clearCutEnd__12daWmAnchor_cFv
 /* 0000077C 000007BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x780 | size: 0x4
-# daWmAnchor_c::vf74()
-.fn vf74__12daWmAnchor_cFv, weak
-/* 00000780 000007C0  4E 80 00 20 */	blr
-.endfn vf74__12daWmAnchor_cFv
-/* 00000784 000007C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x780 | size: 0x8
+# daWmAnchor_c::checkCutEnd()
+.fn checkCutEnd__12daWmAnchor_cFv, weak
+/* 00000780 000007C0  88 63 01 39 */	lbz r3, 0x139(r3)
+/* 00000784 000007C4  4E 80 00 20 */	blr
+.endfn checkCutEnd__12daWmAnchor_cFv
 /* 00000788 000007C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000078C 000007CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x790 | size: 0xC
-# daWmAnchor_c::clearCutEnd()
-.fn clearCutEnd__12daWmAnchor_cFv, weak
-/* 00000790 000007D0  38 00 00 00 */	li r0, 0x0
-/* 00000794 000007D4  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000798 000007D8  4E 80 00 20 */	blr
-.endfn clearCutEnd__12daWmAnchor_cFv
+# .text:0x790 | size: 0x8
+# daWmAnchor_c::vf78()
+.fn vf78__12daWmAnchor_cFv, weak
+/* 00000790 000007D0  38 60 00 00 */	li r3, 0x0
+/* 00000794 000007D4  4E 80 00 20 */	blr
+.endfn vf78__12daWmAnchor_cFv
+/* 00000798 000007D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000079C 000007DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x7A0 | size: 0x8
-# daWmAnchor_c::GetActorType()
-.fn GetActorType__12daWmAnchor_cFv, weak
-/* 000007A0 000007E0  38 60 00 02 */	li r3, 0x2
-/* 000007A4 000007E4  4E 80 00 20 */	blr
-.endfn GetActorType__12daWmAnchor_cFv
+# .text:0x7A0 | size: 0x4
+# daWmAnchor_c::vf74()
+.fn vf74__12daWmAnchor_cFv, weak
+/* 000007A0 000007E0  4E 80 00 20 */	blr
+.endfn vf74__12daWmAnchor_cFv
+/* 000007A4 000007E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000007A8 000007E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000007AC 000007EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x7B0 | size: 0x8
-# m3d::anmChr_c::getType() const
-.fn getType__Q23m3d8anmChr_cCFv, weak
-/* 000007B0 000007F0  38 60 00 00 */	li r3, 0x0
+# daWmAnchor_c::GetActorType()
+.fn GetActorType__12daWmAnchor_cFv, weak
+/* 000007B0 000007F0  38 60 00 02 */	li r3, 0x2
 /* 000007B4 000007F4  4E 80 00 20 */	blr
-.endfn getType__Q23m3d8anmChr_cCFv
+.endfn GetActorType__12daWmAnchor_cFv
 /* 000007B8 000007F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000007BC 000007FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x7C0 | size: 0x84
+# .text:0x7C0 | size: 0x8
+# m3d::anmChr_c::getType() const
+.fn getType__Q23m3d8anmChr_cCFv, weak
+/* 000007C0 00000800  38 60 00 00 */	li r3, 0x0
+/* 000007C4 00000804  4E 80 00 20 */	blr
+.endfn getType__Q23m3d8anmChr_cCFv
+/* 000007C8 00000808  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007CC 0000080C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7D0 | size: 0x84
 .fn "__sinit_\d_a_wm_anchor_cpp", local
-/* 000007C0 00000800  94 21 FF E0 */	stwu r1, -0x20(r1)
-/* 000007C4 00000804  7C 08 02 A6 */	mflr r0
-/* 000007C8 00000808  3C A0 00 00 */	lis r5, ...rodata.0@ha
-/* 000007CC 0000080C  3C C0 00 00 */	lis r6, sc_ForceList__6dWmLib@ha
-/* 000007D0 00000810  38 A5 00 00 */	addi r5, r5, ...rodata.0@l
-/* 000007D4 00000814  90 01 00 24 */	stw r0, 0x24(r1)
-/* 000007D8 00000818  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
-/* 000007DC 0000081C  C0 45 00 18 */	lfs f2, 0x18(r5)
-/* 000007E0 00000820  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib@l
-/* 000007E4 00000824  C0 25 00 1C */	lfs f1, 0x1c(r5)
-/* 000007E8 00000828  C0 05 00 20 */	lfs f0, 0x20(r5)
-/* 000007EC 0000082C  3C 80 00 00 */	lis r4, __arraydtor$12781@ha
-/* 000007F0 00000830  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
-/* 000007F4 00000834  3C A0 00 00 */	lis r5, "@12782"@ha
-/* 000007F8 00000838  90 06 00 0C */	stw r0, 0xc(r6)
-/* 000007FC 0000083C  38 84 00 00 */	addi r4, r4, __arraydtor$12781@l
-/* 00000800 00000840  38 A5 00 00 */	addi r5, r5, "@12782"@l
-/* 00000804 00000844  38 60 00 00 */	li r3, 0x0
-/* 00000808 00000848  D0 41 00 08 */	stfs f2, 0x8(r1)
-/* 0000080C 0000084C  D0 21 00 0C */	stfs f1, 0xc(r1)
-/* 00000810 00000850  D0 01 00 10 */	stfs f0, 0x10(r1)
-/* 00000814 00000854  D0 46 00 18 */	stfs f2, 0x18(r6)
-/* 00000818 00000858  D0 26 00 1C */	stfs f1, 0x1c(r6)
-/* 0000081C 0000085C  D0 06 00 20 */	stfs f0, 0x20(r6)
-/* 00000820 00000860  48 00 00 01 */	bl __register_global_object
-/* 00000824 00000864  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
-/* 00000828 00000868  3C 60 00 00 */	lis r3, c_StartPointKinokoHouseID__6dWmLib@ha
-/* 0000082C 0000086C  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
-/* 00000830 00000870  90 03 00 00 */	stw r0, c_StartPointKinokoHouseID__6dWmLib@l(r3)
-/* 00000834 00000874  80 01 00 24 */	lwz r0, 0x24(r1)
-/* 00000838 00000878  7C 08 03 A6 */	mtlr r0
-/* 0000083C 0000087C  38 21 00 20 */	addi r1, r1, 0x20
-/* 00000840 00000880  4E 80 00 20 */	blr
+/* 000007D0 00000810  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 000007D4 00000814  7C 08 02 A6 */	mflr r0
+/* 000007D8 00000818  3C A0 00 00 */	lis r5, ...rodata.0@ha
+/* 000007DC 0000081C  3C C0 00 00 */	lis r6, sc_ForceList__6dWmLib@ha
+/* 000007E0 00000820  38 A5 00 00 */	addi r5, r5, ...rodata.0@l
+/* 000007E4 00000824  90 01 00 24 */	stw r0, 0x24(r1)
+/* 000007E8 00000828  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 000007EC 0000082C  C0 45 00 18 */	lfs f2, 0x18(r5)
+/* 000007F0 00000830  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib@l
+/* 000007F4 00000834  C0 25 00 1C */	lfs f1, 0x1c(r5)
+/* 000007F8 00000838  C0 05 00 20 */	lfs f0, 0x20(r5)
+/* 000007FC 0000083C  3C 80 00 00 */	lis r4, __arraydtor$12782@ha
+/* 00000800 00000840  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 00000804 00000844  3C A0 00 00 */	lis r5, "@12783"@ha
+/* 00000808 00000848  90 06 00 0C */	stw r0, 0xc(r6)
+/* 0000080C 0000084C  38 84 00 00 */	addi r4, r4, __arraydtor$12782@l
+/* 00000810 00000850  38 A5 00 00 */	addi r5, r5, "@12783"@l
+/* 00000814 00000854  38 60 00 00 */	li r3, 0x0
+/* 00000818 00000858  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 0000081C 0000085C  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 00000820 00000860  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 00000824 00000864  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 00000828 00000868  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 0000082C 0000086C  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 00000830 00000870  48 00 00 01 */	bl __register_global_object
+/* 00000834 00000874  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 00000838 00000878  3C 60 00 00 */	lis r3, c_StartPointKinokoHouseID__6dWmLib@ha
+/* 0000083C 0000087C  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 00000840 00000880  90 03 00 00 */	stw r0, c_StartPointKinokoHouseID__6dWmLib@l(r3)
+/* 00000844 00000884  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 00000848 00000888  7C 08 03 A6 */	mtlr r0
+/* 0000084C 0000088C  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000850 00000890  4E 80 00 20 */	blr
 .endfn "__sinit_\d_a_wm_anchor_cpp"
-/* 00000844 00000884  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000848 00000888  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000084C 0000088C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000854 00000894  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000858 00000898  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000085C 0000089C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x850 | size: 0x1C
-.fn __arraydtor$12781, local
-/* 00000850 00000890  3C 60 00 00 */	lis r3, sc_ForceList__6dWmLib@ha
-/* 00000854 00000894  3C 80 00 00 */	lis r4, __dt__Q26dWmLib19ForceInCourseList_tFv@ha
-/* 00000858 00000898  38 63 00 00 */	addi r3, r3, sc_ForceList__6dWmLib@l
-/* 0000085C 0000089C  38 A0 00 24 */	li r5, 0x24
-/* 00000860 000008A0  38 84 00 00 */	addi r4, r4, __dt__Q26dWmLib19ForceInCourseList_tFv@l
-/* 00000864 000008A4  38 C0 00 01 */	li r6, 0x1
-/* 00000868 000008A8  48 00 00 00 */	b __destroy_arr
-.endfn __arraydtor$12781
-/* 0000086C 000008AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x860 | size: 0x1C
+.fn __arraydtor$12782, local
+/* 00000860 000008A0  3C 60 00 00 */	lis r3, sc_ForceList__6dWmLib@ha
+/* 00000864 000008A4  3C 80 00 00 */	lis r4, __dt__Q26dWmLib19ForceInCourseList_tFv@ha
+/* 00000868 000008A8  38 63 00 00 */	addi r3, r3, sc_ForceList__6dWmLib@l
+/* 0000086C 000008AC  38 A0 00 24 */	li r5, 0x24
+/* 00000870 000008B0  38 84 00 00 */	addi r4, r4, __dt__Q26dWmLib19ForceInCourseList_tFv@l
+/* 00000874 000008B4  38 C0 00 01 */	li r6, 0x1
+/* 00000878 000008B8  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$12782
+/* 0000087C 000008BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x870 | size: 0x40
+# .text:0x880 | size: 0x40
 # dWmLib::ForceInCourseList_t::~ForceInCourseList_t()
 .fn __dt__Q26dWmLib19ForceInCourseList_tFv, weak
-/* 00000870 000008B0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000874 000008B4  7C 08 02 A6 */	mflr r0
-/* 00000878 000008B8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000087C 000008BC  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000880 000008C0  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000884 000008C4  7C 7F 1B 78 */	mr r31, r3
-/* 00000888 000008C8  41 82 00 10 */	beq .L_00000898
-/* 0000088C 000008CC  2C 04 00 00 */	cmpwi r4, 0x0
-/* 00000890 000008D0  40 81 00 08 */	ble .L_00000898
-/* 00000894 000008D4  48 00 00 01 */	bl __dl__FPv
-.L_00000898:
-/* 00000898 000008D8  7F E3 FB 78 */	mr r3, r31
-/* 0000089C 000008DC  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 000008A0 000008E0  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000008A4 000008E4  7C 08 03 A6 */	mtlr r0
-/* 000008A8 000008E8  38 21 00 10 */	addi r1, r1, 0x10
-/* 000008AC 000008EC  4E 80 00 20 */	blr
+/* 00000880 000008C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000884 000008C4  7C 08 02 A6 */	mflr r0
+/* 00000888 000008C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000088C 000008CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000890 000008D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000894 000008D4  7C 7F 1B 78 */	mr r31, r3
+/* 00000898 000008D8  41 82 00 10 */	beq .L_000008A8
+/* 0000089C 000008DC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000008A0 000008E0  40 81 00 08 */	ble .L_000008A8
+/* 000008A4 000008E4  48 00 00 01 */	bl __dl__FPv
+.L_000008A8:
+/* 000008A8 000008E8  7F E3 FB 78 */	mr r3, r31
+/* 000008AC 000008EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000008B0 000008F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000008B4 000008F4  7C 08 03 A6 */	mtlr r0
+/* 000008B8 000008F8  38 21 00 10 */	addi r1, r1, 0x10
+/* 000008BC 000008FC  4E 80 00 20 */	blr
 .endfn __dt__Q26dWmLib19ForceInCourseList_tFv
 
 # 0x00000000..0x00000004 | size: 0x4
@@ -733,100 +742,107 @@
 .endobj scStateTable__12daWmAnchor_c
 
 # .rodata:0xC | size: 0x4
-.obj "@13034", local
+.obj "@13047", local
 	.4byte 0x43FA0000
-.endobj "@13034"
+.endobj "@13047"
 
 # .rodata:0x10 | size: 0x4
-.obj "@13113", local
+.obj "@13125", local
 	.4byte 0x00000000
-.endobj "@13113"
+.endobj "@13125"
 
 # .rodata:0x14 | size: 0x4
-.obj "@13114", local
+.obj "@13126", local
 	.4byte 0x3F800000
-.endobj "@13114"
+.endobj "@13126"
 
 # .rodata:0x18 | size: 0x4
-.obj "@13142", local
+.obj "@13155", local
 	.4byte 0x45070000
-.endobj "@13142"
+.endobj "@13155"
 
 # .rodata:0x1C | size: 0x4
-.obj "@13143", local
+.obj "@13156", local
 	.4byte 0xC1F00000
-.endobj "@13143"
+.endobj "@13156"
 
 # .rodata:0x20 | size: 0x4
-.obj "@13144", local
+.obj "@13157", local
 	.4byte 0xC3EF0000
-.endobj "@13144"
+.endobj "@13157"
 
-# 0x00000000..0x000000F8 | size: 0xF8
+# 0x00000000..0x00000108 | size: 0x108
 .data
 .balign 8
 
-# .data:0x0 | size: 0x5
-.obj "@12779", local
-	.4byte 0x46374330
+# .data:0x0 | size: 0xD
+.obj "@12734", local
+	.4byte 0x636F624B
+	.4byte 0x6F6F7061
+	.4byte 0x53686970
 	.byte 0x00
-.endobj "@12779"
+.endobj "@12734"
 	.byte 0x00, 0x00, 0x00
 
-# .data:0x8 | size: 0x5
+# .data:0x10 | size: 0x4
+.obj smc_koopaShipNodeName, local
+	.4byte "@12734"
+.endobj smc_koopaShipNodeName
+
+# .data:0x14 | size: 0x5
 .obj "@12780", local
-	.4byte 0x57374330
+	.4byte 0x46374330
 	.byte 0x00
 .endobj "@12780"
 	.byte 0x00, 0x00, 0x00
 
-# .data:0x10 | size: 0x24
+# .data:0x1C | size: 0x5
+.obj "@12781", local
+	.4byte 0x57374330
+	.byte 0x00
+.endobj "@12781"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x24 | size: 0x24
 # dWmLib::sc_ForceList
 .obj sc_ForceList__6dWmLib, local
 	.4byte 0x00000006
-	.4byte "@12779"
+	.4byte "@12780"
 	.4byte 0x00000006
 	.4byte 0x00000000
 	.4byte 0x00000004
-	.4byte "@12780"
+	.4byte "@12781"
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
 .endobj sc_ForceList__6dWmLib
 
-# .data:0x34 | size: 0xC
+# .data:0x48 | size: 0xC
 .obj g_profile_WM_ANCHOR, global
 	.4byte daWmAnchor_c_classInit__Fv
 	.4byte 0x029F029A
 	.4byte 0x00000000
 .endobj g_profile_WM_ANCHOR
+	.4byte 0x00000000
 
-# .data:0x40 | size: 0xD
-.obj "@13051", local
-	.4byte 0x636F624B
-	.4byte 0x6F6F7061
-	.4byte 0x53686970
-	.byte 0x00
-.endobj "@13051"
-	.byte 0x00, 0x00, 0x00
-
-# .data:0x50 | size: 0x10
-.obj "@13071", local
+# .data:0x58 | size: 0x10
+.obj "@13083", local
 	.4byte 0x6733642F
 	.4byte 0x6D6F6465
 	.4byte 0x6C2E6272
 	.4byte 0x72657300
-.endobj "@13071"
+.endobj "@13083"
 
-# .data:0x60 | size: 0xA
-.obj "@13072", local
+# .data:0x68 | size: 0xA
+.obj "@13084", local
 	.4byte 0x636F6241
 	.4byte 0x6E63686F
 	.2byte 0x7200
-.endobj "@13072"
+.endobj "@13084"
+	.4byte 0x00000000
 	.2byte 0x0000
 
-# .data:0x6C | size: 0x74
+# .data:0x78 | size: 0x78
 # daWmAnchor_c::__vtable
 .obj __vt__12daWmAnchor_c, global
 	.4byte 0x00000000
@@ -854,13 +870,14 @@
 	.4byte GetActorType__12daWmAnchor_cFv
 	.4byte finalUpdate__12dBaseActor_cFv
 	.4byte processCutsceneCommand__12daWmAnchor_cFib
-	.4byte checkCutEnd__14dWmDemoActor_cFv
-	.4byte setCutEnd__14dWmDemoActor_cFv
+	.4byte checkCutEnd__12daWmAnchor_cFv
+	.4byte setCutEnd__12daWmAnchor_cFv
 	.4byte clearCutEnd__12daWmAnchor_cFv
 	.4byte vf74__12daWmAnchor_cFv
+	.4byte vf78__12daWmAnchor_cFv
 .endobj __vt__12daWmAnchor_c
 
-# .data:0xE0 | size: 0x18
+# .data:0xF0 | size: 0x18
 # m3d::anmChr_c::__vtable
 .obj __vt__Q23m3d8anmChr_c, weak
 	.4byte 0x00000000
@@ -876,9 +893,9 @@
 .balign 8
 
 # .bss:0x0 | size: 0xC
-.obj "@12782", local
+.obj "@12783", local
 	.skip 0xC
-.endobj "@12782"
+.endobj "@12783"
 
 # .bss:0xC | size: 0x4
 # dWmLib::c_StartPointKinokoHouseID

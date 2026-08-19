@@ -7927,3 +7927,64 @@ koopa_castle  16/17   __sinit, 13 differing, 22 measured shapes
 Both are one function from landing and both residuals are instruction-scheduling
 or register-preference decisions with no known source-level lever. Do not spend
 further rounds without a genuinely new axis.
+
+## NEW RULE: weak-cluster emission is LIFO — last declared, first emitted
+
+anchor's ordering is **solved**, and the mechanism is general.
+
+Declaring all six of the class's in-class-inline overrides in the target's
+address order produced a draft whose `.text` sequence was the **exact reverse**:
+
+```
+declared in target order  ->  GetActorType, vf74, vf78, checkCutEnd, clearCutEnd, setCutEnd
+target's actual order         setCutEnd, clearCutEnd, checkCutEnd, vf78, vf74, GetActorType
+```
+
+A clean LIFO relationship, not noise. Declaring the six in **reverse** of the
+desired order produced the target's sequence exactly, confirmed from `draft.txt`'s
+own function list rather than from `verify_anon`'s pairing.
+
+**For a class's own in-class-inline (weak) overrides, `.text` emission is
+last-declared-first-emitted.** Note this is the opposite of strong out-of-line
+functions, which emit in definition order. Two batches, two directions:
+
+```
+strong, out-of-line   ->  definition order, early
+weak, in-class inline ->  REVERSE declaration order, deferred to the end
+```
+
+The only remaining `FUNCTION ORDER` line on anchor is a known content-collision
+mislabel (`finalUpdate__12dBaseActor_cFv`), which the target has no separate entry
+for at all. **Effectively zero real order violations.**
+
+### And a real content fix: a string reached through a named pointer
+
+`fn_80100640`'s node-name argument was written as a direct string literal. The
+target loads it **indirectly** (`lwz r4, lbl_2_data_436A8@l(r4)`) through a named
+pointer variable at `.data+0x10` -- not the literal's own pooled address.
+
+```cpp
+static const char *smc_koopaShipNodeName = "cobKoopaShip";  // before the d_wm_lib.hpp include
+```
+
+Same early-declaration-controls-`.data`-position idiom as the kinoko family. This
+gave an **exact `.data` layout match at every offset**:
+
+```
+0x0 "cobKoopaShip" | 0x10 smc_koopaShipNodeName | 0x14 "F7C0" | 0x1c "W7C0"
+0x24 sc_ForceList  | 0x48 g_profile_WM_ANCHOR   | 0x58 "g3d/model.brres"
+0x68 "cobAnchor"   | 0x78 vtable
+```
+
+`setNodePos` 37 -> 31, `execute` 43 -> 42.
+
+**A string argument loaded via `lwz` through a `.data` slot is a named pointer
+variable, not a literal.** A literal's address is materialised directly with
+`lis`/`addi`.
+
+### Arity ruled out properly
+
+`fn_80100640` takes 3 arguments, confirmed by scanning **both call sites' entire
+enclosing functions** for any `r6`/`r7`/`r8` touch -- none anywhere. That is the
+right way to rule out the under-read-arity trap WM_NOTE hit, rather than
+inspecting only the instructions immediately before the call.
