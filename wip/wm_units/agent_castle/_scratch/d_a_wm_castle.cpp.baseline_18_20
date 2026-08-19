@@ -13,18 +13,8 @@
 // applyStopReaction below): r3=mgr, r4=kind, r5=&mModel, r6=name, r7/r8=trailing ints -- matches.
 extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &model, const char *name, int, int);
 
-// RESOLVED this task's round: __sinit now MATCHES (0 differing of 53). See PROBE F below for
-// the mechanism (external trigger object, guard at the target's own measured offset, no
-// registration) and this task's report for the full account, including the hard evidence that
-// this object is initialised from `.ctors` (i.e. it IS `__sinit`, not a function-local static --
-// see castle's own `fn_2_15FAE0`, referenced from `.ctors` at file offset 0x3c8, in
-// bin/dtkspl/d_basesNP/obj/auto_fn_2_15FAE0_text.o).
-//
-// Kept below: the full probe history (A-F), left in place because it is what got here and
-// because the eventual fix (PROBE F) only became findable by re-reading castle's AND
-// koopa_castle's target `__sinit` byte-for-byte, which is worth keeping as a record of what did
-// and did not work first. Target evidence: lbl_2_data_44010 (28 bytes, no relocations, read via
-// dtk) is
+// EXPERIMENTAL, castle-local (moved out of the shared d_wm_lib.hpp shadow -- see this task's
+// report). Target evidence: lbl_2_data_44010 (28 bytes, no relocations, read via dtk) is
 //   0x42C80000 100.0f   0x3ECCCCCD 0.4f   [0.0f 100.0f 50.0f]=mVec3_c (dynamically initialised,
 //   guarded by a byte in lbl_2_bss_FD48)   0x41200000 10.0f    0x00000000 0.0f
 //
@@ -84,98 +74,17 @@ extern "C" void fn_80103420(dWmEffectManager_c *mgr, int kind, m3d::bmdl_c &mode
 // independent things the target has one of each of (registration for the unrelated `sc_ForceList`,
 // a guard for this object) and neither of my two known levers (array-of-mVec3_c vs. POD-array)
 // produces "guard present, registration absent" at once -- see this task's report.
-// @unofficial trivial POD standing in for mOffset's real type. Deliberately NOT mVec3_c: Probe E
-// (see this task's report) proved mVec3_c's member here is what forces `KoopaShipStopConfig_t` --
-// and therefore the whole `sc_KoopaShipStopConfig[]` array -- to be treated as non-trivial, which
-// is what pulls in the SECOND `__register_global_object`/`__arraydtor` pair the target does not
-// have. A trivial x/y/z POD lets the whole aggregate fold to a compile-time-constant `.data`
-// image (matching the target's baked zeros), with no registration and no runtime write of its
-// own -- exactly Probe E's result. This probe pairs that with Probe F's external trigger object
-// so the GUARDED runtime write still happens, via plain float field assignment, which needs
-// nothing from mOffset's type beyond public x/y/z.
-struct Vec3Pod_t {
-    float x, y, z;
-};
-
 struct KoopaShipStopConfig_t {
     float mUnk0;   ///< @unofficial 100.0f in the target.
     float mUnk4;    ///< @unofficial 0.4f in the target.
-    Vec3Pod_t mOffset; ///< @unofficial {0.0f, 100.0f, 50.0f} in the target -- the guarded part.
+    mVec3_c mOffset; ///< @unofficial {0.0f, 100.0f, 50.0f} in the target -- the guarded part.
     float mUnk14;     ///< @unofficial 10.0f in the target.
     float mUnk18;      ///< @unofficial 0.0f in the target.
 };
 
 static KoopaShipStopConfig_t sc_KoopaShipStopConfig[] = {
-    { 100.0f, 0.4f, {0.0f, 0.0f, 0.0f}, 10.0f, 0.0f }
+    { 100.0f, 0.4f, mVec3_c(0.0f, 100.0f, 50.0f), 10.0f, 0.0f }
 };
-
-// PROBE F, this task's round. Ground truth re-read directly from bin/dtkspl/d_basesNP/obj/
-// auto_fn_2_15FAE0_text.o (castle's real __sinit, referenced from .ctors -- confirmed this is
-// NOT a function-local static: it is called exactly once, automatically, from the constructor
-// table, never from any runtime call site). That disassembly settles precisely what Probes A-E
-// only approximated:
-//   - The guard byte is `lbz`/`extsb.`/`bne` against `lbl_2_bss_FD48+0x10`, and set with
-//     `stb r0, 0x10(r30)` afterward -- a plain hand-checked flag, not compiler guard-variable
-//     codegen (which would show a `__sinit_...`-suffixed guard symbol and register differently).
-//   - `lbl_2_bss_FD48` is EXACTLY 0x18 bytes (confirmed against target_bss.txt's own .obj
-//     bound) and nothing else in this TU's compiled text -- not the constructor, not
-//     getKoopaShipStopPos, not any other function -- reads or writes bytes 0x0-0xb or 0x11-0x17
-//     of it. Only two bytes are ever touched: `+0xc` (an int, loaded unconditionally from
-//     `dCsvData_c::c_START_ID` on every __sinit run, BEFORE the guard branch) and `+0x10` (the
-//     guard byte itself).
-//   - The guarded write lands in a SEPARATE object, `lbl_2_data_44010` (castle's own
-//     `sc_KoopaShipStopConfig`), via three plain `stfs` stores -- never a `bl __ct__6mVec3_c...`.
-//     No `bl __register_global_object` appears anywhere near this write.
-// Probes C and D already tried this general shape (external trigger / member `doInit()`) and
-// landed at 38 differing with the guard at `.bss+0x18` and frame `0x40`, both 8/16 bytes over
-// this round's directly-measured target (`+0x10`, frame `0x30`).
-//
-// FIRST cut of this probe gave the trigger its OWN `mStartID(dCsvData_c::c_START_ID)` field --
-// wrong: it compiled to a SECOND, redundant `c_START_ID` load-and-store next to the shared
-// header's OWN `dWmLib::c_StartPointKinokoHouseID = dCsvData_c::c_START_ID;` (already declared
-// above, in d_wm_lib.hpp), which is ALSO a namespace-scope header static with a non-constant
-// (extern-loaded) initialiser and therefore ALSO gets a per-TU dynamic-init entry in THIS unit's
-// own __sinit. koopa_castle's independently-read ground truth
-// (bin/dtkspl/d_basesNP/obj/auto_fn_2_191C30_text.o) has the IDENTICAL
-// `lis/lwz c_START_ID; ...; stw r3, 0xc(r30)` sequence at the same relative position, which is
-// only explicable if both units are compiling the SAME shared header static, not a
-// castle-local field -- confirming the target's lone `.bss+0xc` write is
-// `c_StartPointKinokoHouseID`'s own initialiser, not a member of any castle-declared struct.
-// Removing `mStartID` (letting the existing header static supply that write for free) and
-// leaving the trigger as pure guard state is what closes the offset gap below.
-struct KoopaShipStopTrigger_t {
-    s8 mDone; ///< @unofficial the guard byte at lbl_2_bss_FD48+0x10 -- s8, not bool: the
-              ///< target tests it with `extsb.` (sign-extend + implicit compare), which is
-              ///< NOT what `bool mDone` compiled to here (that gave `lbz`+`cmpwi`, one
-              ///< instruction longer). koopa_castle's independently-read ground truth
-              ///< (fn_2_191C30) shows the identical `extsb.` idiom for its own guard byte.
-    u8 pad_unofficial[7]; ///< @unofficial trailing bytes of lbl_2_bss_FD48 (0x11-0x17) that no
-                           ///< function in this TU reads or writes. check_sections.py reports
-                           ///< the object 7 bytes short of the map's single 0x18 lbl_2_bss_FD48
-                           ///< symbol without this -- see this task's report for what is and
-                           ///< is not established about their true size/content.
-
-    KoopaShipStopTrigger_t() {
-        if (!mDone) {
-            // Target's own instructions 40-45 stage the three floats through r1+0x8/0xc/0x10
-            // BEFORE the real store (the mVec3_c::Zero idiom AGENT_CONTEXT.md records). A
-            // Vec3Pod_t local built via BRACE-INIT (`{0.0f, 100.0f, 50.0f}`) reproduced that
-            // staging but REGRESSED two previously matching functions (checkCourseResult,
-            // processCutsceneCommand) -- the aggregate literal apparently perturbs this TU's
-            // .rodata pool ordering. Building the SAME local via individual field assignment
-            // (below) gives the identical staged-copy codegen without touching the pool --
-            // this is the shape that closed __sinit to a MATCH.
-            Vec3Pod_t offset;
-            offset.x = 0.0f;
-            offset.y = 100.0f;
-            offset.z = 50.0f;
-            sc_KoopaShipStopConfig[0].mOffset = offset;
-            mDone = true;
-        }
-    }
-};
-
-static KoopaShipStopTrigger_t sc_KoopaShipStopTrigger;
 
 ACTOR_PROFILE(WM_CASTLE, daWmCastle_c, 0);
 
@@ -553,7 +462,7 @@ bool daWmCastle_c::getKoopaPos(mVec3_c &out) const {
 // hidden result pointer (r3) rather than storing into a stack temporary later passed by address,
 // and that ABI difference may be why the lever does not transfer.
 mVec3_c daWmCastle_c::getKoopaShipStopPos() const {
-    const Vec3Pod_t &offset = sc_KoopaShipStopConfig[0].mOffset;
+    const mVec3_c &offset = sc_KoopaShipStopConfig[0].mOffset;
     float z = mPos.z + offset.z;
     float y = mPos.y + offset.y;
     float x = mPos.x + offset.x;

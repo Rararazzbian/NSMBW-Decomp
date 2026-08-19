@@ -7539,3 +7539,70 @@ All four items now have **multiple independently-shaped source rewrites
 converging on identical compiled output.** That is much stronger evidence of a
 real wall than one failed attempt per item, and it is the standard this file
 should hold before recording anything as parked.
+
+## castle 18/20 -> 19/20: `__sinit` MATCHES. The 26-shape wall is BROKEN.
+
+And the lever is new, general, and worth more than the unit.
+
+### NEW LEVER: brace-init pools an aggregate constant; field-by-field assignment does not
+
+Staging the guarded write through a local built with **brace initialisation**
+gives 25 differing **and regresses two other functions** (18/20 -> 16/20) --
+the aggregate literal perturbs the `.rodata` pool order for the whole TU.
+Building the same local by **individual field assignment** gives **MATCH**.
+
+```cpp
+Vec3Pod_t v;  v.x = ...; v.y = ...; v.z = ...;   // MATCH
+Vec3Pod_t v = { ..., ..., ... };                 // 25 differing, and breaks two neighbours
+```
+
+Same values, same local, same writes. **An aggregate initialiser becomes a
+pooled `.rodata` constant; field-by-field assignment stays immediate.** Reach for
+this on any residual that looks like pool-order perturbation, and note the damage
+is not local -- it moved functions elsewhere in the unit.
+
+### My hypothesis was wrong, and it was killed with ground truth
+
+I proposed the object was a **function-local static**, on the reasoning that a
+guard byte is that construct's signature. **Wrong, and disproved directly:**
+disassembling `auto_fn_2_15FAE0_text.o` shows castle's `__sinit` is referenced
+from `.ctors` at `0x3c8-0x3cc`, so it runs exactly once from the constructor
+table and never from a call site. The agent checked the thing I flagged as
+possibly fatal, found it fatal, and said so instead of forcing the hypothesis.
+
+### What the wall actually was
+
+Two mistakes compounded, neither of them about registration:
+
+1. The unconditional `.bss+0xc` write in **both** castle's and koopa_castle's
+   `__sinit` is **`dWmLib::c_StartPointKinokoHouseID`'s own per-TU dynamic
+   initialiser**, already supplied by the shared header -- not a field of any
+   castle-local struct. Giving the guard-holder its own `mStartID` field produced
+   a second, wrong load/store. Removing it took 31 -> 25 and made the guard
+   read/branch byte-exact.
+2. **The guarded write never calls `mVec3_c`'s constructor** -- it is three plain
+   `stfs`. So the registration question was a red herring for this object.
+
+Also `bool mDone` -> `s8 mDone` to match the target's `extsb.` idiom (25 -> 24),
+and a trailing `u8 pad_unofficial[7]` after the guard byte to take `.bss` from
+`0x11` to `0x18`. Those 7 bytes' content is not recoverable from castle alone and
+is marked `@unofficial`.
+
+**Castle's `.bss` is exactly `0xfd48-0xfd60`**, cross-checked against landed
+neighbours cannon (`0xfd38-0xfd48`) and cloud (`0xfd60-0xfd70`). The registration
+node for `sc_ForceList` and castle's own guard both live INSIDE that span --
+earlier probes had assumed they were adjacent to it.
+
+### State
+
+**19/20, SECTIONS CLEAN, BOUNDS PLAUSIBLE, VTABLE CLEAN.** Only
+`getKoopaShipStopPos` open at 6 differing -- an `f0`/`f1` pair misassignment
+through the hidden result pointer of a by-value `mVec3_c` return. Pre-existing,
+a different problem, untouched this round to keep the `__sinit` result isolated.
+
+### Try this on koopa_castle immediately
+
+koopa_castle is parked at 16/17 with only its `__sinit` open at 13 differing, on
+what was recorded as the same construct. **The brace-init lever and the
+"`c_StartPointKinokoHouseID` is the header's own initialiser, not your field"
+correction both apply directly.**
