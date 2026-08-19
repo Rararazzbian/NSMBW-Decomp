@@ -20,6 +20,16 @@ extern "C" int R_2_1_1994D0(daWmPlayer_c *player);
 extern "C" int R_2_1_1994B0(daWmPlayer_c *player);
 
 
+// This unit's shared float-constant pool (lbl_2_rodata_89B8..89DC in the target). MWCC folds
+// an offset into an `lfs` immediate only when the address is an object's own first element,
+// never for an indexed read into a shared array (the rule WM_ITEM found the hard way, as a
+// wall in the other direction -- there the draft had an extra `addi` the target lacked; here
+// the target HAS the `addi`, which is exactly the signature of an indexed read). Declaring one
+// named array and indexing it reproduces that `addi` instead of each literal claiming its own
+// dedicated slot. Values/order read directly off the real .rodata bytes at file offset
+// 0x1c6600+addr, index i <-> address 0x89b8+4*i.
+static const float sConsts[] = { 1.0f, 300.0f };
+
 // #unk_1681C0's node-name template. The target .data emits this string's own pointer
 // (lbl_2_data_4526C, at data+0x3c) BEFORE ACTOR_PROFILE's own g_profile object -- confirmed
 // from the target's own byte layout (data+0x34 "Fk00", data+0x3c -> pointer to it, data+0x40
@@ -304,8 +314,8 @@ void daWmKiller_c::unk_168380() {
         return;
     }
 
-    float threshold = 300.0f;
-    do {
+    float threshold = sConsts[1];
+    while (sibling != nullptr) {
         mVec3_c targetPos(sibling->mTargetPos[0], sibling->mTargetPos[1], sibling->mTargetPos[2]);
         bool isClose = std::fabs(playerPos.distTo(targetPos)) < threshold;
         if (isClose) {
@@ -314,7 +324,7 @@ void daWmKiller_c::unk_168380() {
             m_204 = -1;
         }
         sibling = (daWmKiller_c *) dBase_c::searchBaseByProfName(fProfile::WM_KILLER, sibling);
-    } while (sibling != nullptr);
+    }
 }
 
 // unk_168590(). Static (no `this` -- confirmed from its only call site). Iterates every

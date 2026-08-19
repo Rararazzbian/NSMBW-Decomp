@@ -9367,3 +9367,60 @@ the wall produced unwanted elsewhere.
 
 **Same rule, opposite sign, depending on which side has the extra instruction.**
 Third rule today that turns out to be a question rather than a fixed preference.
+
+## New tool: `wip/wm_units/dump_obj_section.py` — dump a compiled object's section bytes
+
+Comparing a draft's emitted `.rodata`/`.data` against the retail bytes word by
+word has been decisive on several units, but **there was no way to do it** — no
+`elftools`, no `objdump` in this toolchain. An agent correctly reported the check
+as "not attempted" rather than faking a result. This closes that gap.
+
+```
+python wip/wm_units/dump_obj_section.py <object.o>              # list sections
+python wip/wm_units/dump_obj_section.py <object.o> .rodata      # dump with float/ASCII decode
+python wip/wm_units/dump_obj_section.py <object.o> .data 0x0 0x80
+```
+
+Minimal self-contained ELF parsing, big-endian 32-bit only, which is all this
+project emits. Compare against the retail bytes with the REL reader — `.text` at
+file offset `0xF0`, other sections from the section table at `0x10`.
+
+### It answered WM_KILLER's open question immediately
+
+```
+draft   1.0  300  100    0   50  1.0 | 2160 -30 -478
+target  1.0  300    0   50   70  500 | 100  0  50  1.0 | 2160 -30 -478  0
+```
+
+**The draft's pool is four words short, and `70.0f` and `500.0f` appear nowhere in
+the draft at all** — they belong to `createModel` and `execute`, both still
+unauthored. So `createModel`'s 76 differing is not a mystery: **the constants it
+reads are not in the pool, so every displacement after them is wrong.**
+
+**A unit's pool cannot be right while any function that contributes to it is
+unwritten.** Author the functions, then judge the pool.
+
+## Adjacency in the byte layout does NOT imply one shared C++ array
+
+I gave WM_KILLER a ten-value pool dump and suggested declaring it as one array.
+The agent applied it, **regressed three previously-matching functions**
+(`create` 6->22, `unk_1680F0` 5->37, `unk_1682F0` 6->33), diagnosed why, and
+reverted to a two-element array used by one function.
+
+The reason: those targets use a **direct `lis`+`lfs` on the constant's own
+symbol, with no `addi`** — each is a standalone scalar object in the real source.
+Only one function's target has the `addi`-then-displacement shape of an indexed
+array read.
+
+**Direct-symbol versus indexed-read is a PER-ACCESS-SITE fact, and the target
+bytes are the only arbiter.** This is the third "check per site, not wholesale"
+finding today, after per-string pointer-versus-literal and per-value operator
+form. **A pool dump shows you the bytes, not the source structure.**
+
+## An outer guard plus `while` reproduces a redundant jump that `do/while` does not
+
+The target had an extra unconditional branch into a loop body that a
+`do { } while()` never produces, even though an earlier `if (x == nullptr) return;`
+already proves the list non-empty. Writing **both** the guard and a plain
+`while (x != nullptr)` reproduced it exactly — **the compiler treats the outer
+guard and the loop condition as unrelated** and does not elide the entry jump.
