@@ -386,29 +386,15 @@ void daWmKiller_c::unk_168380() {
     }
 }
 
-// unk_168590(). Static (no `this` -- confirmed from its only call site). Iterates every
-// daWmKiller_c sibling actor (searchBaseByProfName over the shared WM_KILLER profile) and
-// checks whether any with ACTOR_PARAM(SpawnKind) >= 1 has its own #mClipSphere inside the
-// camera's view clip.
-bool daWmKiller_c::unk_168590() {
-    daWmKiller_c *killer = (daWmKiller_c *) fManager_c::searchBaseByProfName(fProfile::WM_KILLER, nullptr);
-    bool result = false;
-    while (killer != nullptr) {
-        if ((int) ACTOR_PARAM_LOCAL(killer->mParam, SpawnKind) >= 1) {
-            if (dWCamera_c::m_instance->mViewClip.CheckClipSphere(&killer->mClipSphere)) {
-                result = true;
-                break;
-            }
-        }
-        killer = (daWmKiller_c *) fManager_c::searchBaseByProfName(fProfile::WM_KILLER, killer);
-    }
-    return result;
-}
-
 // unk_1684A0(bool isFirstFrame). Two genuine early returns (bypassing the flag/#unk_168590
 // computation entirely): a cutscene-command-0x38 special case returning #m_208 directly, and
 // an ACTOR_PARAM(SpawnKind)==0 case returning the camera's own CheckClipSphere directly. Only
 // the remaining (SpawnKind != 0) path reaches the daWmPlayer_c state checks and #unk_168590.
+//
+// NOTE: this definition must stay BEFORE unk_168590 in source order. The linker places .text
+// in definition order and the target has unk_1684A0 (0x1684a0) immediately before unk_168590
+// (0x168590) -- the reverse of the previous draft, which failed to link even at 22/23 for
+// exactly this reason (verify_anon's own FUNCTION ORDER IS WRONG check).
 bool daWmKiller_c::unk_1684A0(bool isFirstFrame) {
     if (!isFirstFrame && dCsSeqMng_c::ms_instance->GetCutName() == dCsSeqMng_c::CUTSCENE_CMD_56) {
         return m_208;
@@ -426,4 +412,23 @@ bool daWmKiller_c::unk_1684A0(bool isFirstFrame) {
 
     bool viewResult = unk_168590();
     return !flag && viewResult;
+}
+
+// unk_168590(). Static (no `this` -- confirmed from its only call site). Iterates every
+// daWmKiller_c sibling actor (searchBaseByProfName over the shared WM_KILLER profile) and
+// checks whether any with ACTOR_PARAM(SpawnKind) >= 1 has its own #mClipSphere inside the
+// camera's view clip.
+bool daWmKiller_c::unk_168590() {
+    daWmKiller_c *killer = (daWmKiller_c *) fManager_c::searchBaseByProfName(fProfile::WM_KILLER, nullptr);
+    bool result = false;
+    while (killer != nullptr) {
+        if ((int) ACTOR_PARAM_LOCAL(killer->mParam, SpawnKind) >= 1) {
+            if (dWCamera_c::m_instance->mViewClip.CheckClipSphere(&killer->mClipSphere)) {
+                result = true;
+                break;
+            }
+        }
+        killer = (daWmKiller_c *) fManager_c::searchBaseByProfName(fProfile::WM_KILLER, killer);
+    }
+    return result;
 }

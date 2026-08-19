@@ -10481,3 +10481,97 @@ applies it behind a full five-binary verify. `dWmLib::getZoromeTime`,
 WM_KINOPIO's largest function is at **18 of 20 cases**. Remaining: case 12 blocked
 on `dWCamera_c`'s real layout extending past its documented `pad[0x4f8]`, and case
 14 partial.
+
+## `lbl_2_bss_11B70` IDENTIFIED — and the earlier search failed on a FALSE PREMISE
+
+**It is a 4-byte POINTER, not the object.** The previous exhaustive search
+(recorded above as "a shared singleton whose type is genuinely UNIDENTIFIED")
+looked for a class whose layout extends to `+0x55c` and found nothing. It could
+not have found anything: **the bss label is a global instance pointer, and the
+`+0x544`/`+0x55c` offsets are fields of the POINTED-TO object.**
+
+The access shape says so unambiguously — every one of the 65 reference pairs is a
+double indirection:
+
+```
+lis  r3, lbl@ha
+lwz  r5, lbl@l(r3)      <- LOADS A POINTER out of .bss
+stb  r4, 0x544(r5)      <- field access off the LOADED value
+```
+
+**This is the `DISPLACEMENT is not an address suffix` trap wearing a second hat.**
+The trap is usually stated as "do not read `lwz r3, 0x1234(r5)` as address
+0x1234". The stronger form: **a large displacement off a register that was itself
+loaded FROM .bss means the .bss cell is a pointer, and the object is on the heap.**
+Confirmed by the relocation stream: `lbl+0x544` is never a relocation target, and
+would have to be if the field were addressed directly.
+
+### What it actually is
+
+**The `COURSE_SELECT_MANAGER` singleton instance pointer.** Every step verified,
+none inferred:
+
+- **130 .text relocations = 65 reference pairs**, classified by the opcode of the
+  patched instruction: **68 `lwz` (read), 2 `stw` (write), 60 `lis`.**
+  **Exactly two writes is the singleton create/destroy signature** — and both
+  writes fall inside `.text 0x1c18b0-0x1c57f0`, which `profile_map.py` resolves to
+  `g_profile_COURSE_SELECT_MANAGER`.
+- **`sizeof` = `0x570`**, read straight off the allocation:
+  `li r3, 0x570; bl __nw__7fBase_cFUl` at `0x1c18b8`.
+- **Derived from `dBase_c`** — the constructor calls `__ct__7dBase_cFv`
+  (DOL `0x8006c420`) with `r3 = this`.
+- **Contains a `dCourseSelectGuide_c` at `+0xC8`** — `addi r3, 200(r30)` then
+  `bl __ct__20dCourseSelectGuide_cFv` (DOL `0x8000fc30`). That class is the world
+  map HUD and is **already decompiled in our tree**
+  (`include/game/bases/d_CourseSelectGuide.hpp`, `source/dol/bases/`).
+- The pointer is stored with `stw r30, lbl@l(r3)` where `r30` is the value
+  returned by `operator new` — i.e. **`this`**. The destroy site stores literal
+  zero.
+- Constructor also inlines stores at `+0x518/+0x51c/+0x520/+0x524/+0x53c` and
+  constructs an `sStateMethodUsr_FI_c`. All known offsets are `< 0x570`, so the
+  layout is self-consistent.
+
+**The C++ class NAME is still unknown** and that is fine — it is an undecompiled
+REL class, so no header in the tree names it. What is now known is its profile,
+its size, its base, and one member's exact type and offset. **Resolve external
+`bl` targets through `bin/dtk/wiimj2d_symbols.txt`** — that is what named the
+base constructor and the member, and it is a far bigger symbol map than
+`syms.txt` (which is only our curated project list and does not contain them).
+
+### The reusable method
+
+**Classify a bss label's references by the OPCODE of the patched instruction
+before theorising about its type.** Read-vs-write counts alone identify the
+pattern: two writes and many reads is a singleton pointer; many writes is state;
+`addi`-only is address-taking. It cost four commands and settled a question an
+exhaustive type search had already failed to answer.
+
+## A unit reported "one function short" WAS NOT LINKABLE — check function ORDER early
+
+WM_KILLER sat on record at 22/23 for rounds. Its `build.py` `verify_anon` was
+reporting **"FUNCTION ORDER IS WRONG"** the whole time, and nobody acted on it,
+because the tally looked like the only thing standing between the unit and a
+landing.
+
+It was not. The draft defined `unk_168590()` before `unk_1684A0(bool)`; the
+target places `0x1684a0` immediately before `0x168590`. **The linker places
+`.text` in definition order, so this unit would have failed to link even at
+23/23.** Fixed by swapping the two definitions (pure reordering — `unk_1684A0`
+calls `unk_168590` regardless of definition order, since both are declared in the
+class header). Order warning gone, tally unchanged at 22/23.
+
+**The lesson is about WHEN, not what.** Function order is free to check and free
+to fix, and it is invisible in the per-function diff that drives the tally. A
+matched-function count is NOT a landability measure:
+
+- **N/N is necessary, not sufficient.** Order, `.rodata`/`.data` placement,
+  `.ctors` presence and pool contents are all separate gates.
+- **Check order on the FIRST round of a unit, not at landing time.** A unit that
+  spends five rounds at N-1/N with a standing order warning has been burning
+  rounds against a residual while a second, unrelated blocker sat unfixed.
+- It is checkable WITHOUT building: the target address is in the function's own
+  name (`unk_1684A0`, `fn_2_16D940`), so **definition order in the source must be
+  ascending by that address**. That is a text comparison, not a compile.
+
+Recorded because the misjudgement was one of PRIORITY, not of technique: the
+warning was on screen, in the tool's own output, for every round.
