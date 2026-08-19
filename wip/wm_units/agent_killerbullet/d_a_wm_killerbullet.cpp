@@ -42,6 +42,8 @@ extern "C" void fn_80103A00(dWmRotater_c *rotater, bool, int, float);
 static const float sc_60 = 60.0f;    // lbl_2_rodata_89F0
 static const float sc_0 = 0.0f;      // lbl_2_rodata_89F4
 static const float sc_0_001 = 0.001f; // lbl_2_rodata_8A38
+static const float sc_half = 0.5f;   // lbl_2_rodata_8A3C -- confirmed 0.5 by reading
+                                       // original/d_basesNP.rel directly (file offset 0x1cf03c)
 
 // This unit's own uninitialised (zero-at-load) `.bss` cache, confirmed within the pinned
 // bounds (0xfe10-0xfe3c, 0x2c bytes) -- a plain-`{}`-constructed `mVec3_c` has an empty ctor
@@ -459,10 +461,131 @@ void daWmKillerBullet_c::unk_169550() {
     }
 }
 
-// #unk_1695E0 (fn_2_1695E0). NOT YET AUTHORED -- bare stub (see #unk_168990's own note on the
-// scratch-field convention). Called from #state2's own body; real target is 116 lines,
-// scouted to call fn_2_169DA0 (also not yet authored) but not further decoded this round.
-void daWmKillerBullet_c::unk_1695E0() { m_1c0 = 7; }
+// #unk_1695E0 (fn_2_1695E0). REPLACES a fake stub this round -- real content, size-exact
+// (116/116 lines), 67 differing after two structural fixes this round (bss declaration order so
+// #s_bssBox30 lands at +0x30 not +0x20; the star/non-star `if`/`else` polarity, which the
+// target places non-star FIRST inline and star-mode as a trailing goto-style block). Remaining
+// residual: (a) 5 lines of pure symbol naming (#unk_1697B0/#unk_169DA0/#unk_168F00 called by
+// real name); (b) the this+player midpoint calc hits the SAME float-argument-evaluation-order
+// class already parked on #unk_169E10/#unk_1697B0 (not re-attempted -- matches a known wall);
+// (c) minor float-register renumbering in the #mParentKiller delta computation (content AND
+// subtraction order -- Z,Y,X, matching a right-to-left `operator-` evaluation -- both confirmed
+// correct; only the specific register NUMBERS differ, not what they hold).
+//
+// Content: an early-out on #m_1d4
+// (already rotating -- return immediately), then a two-part "is the player attacking this
+// bullet" test (#unk_1697B0 against a `.bss` box at \p s_bssBox30, THEN #unk_169DA0's own
+// distance check), gated further on `daWmPlayer_c::isWalkToAttackPoint()` (a real static, added
+// to the shadow player header alongside `attackMapEnemy`, neither landed yet). On a match, sets
+// #m_1d4 and either (non-star) plays an explosion-shaped effect at the this/player midpoint,
+// caches #mPos/#mParam pieces into the `.bss` block for later consumption, computes a delta
+// vector from #mParentKiller's own (0x1f8,0x1fc,0x200) fields minus its own #mPos into
+// #s_bssDir10, and triggers a cutscene via
+// `dCsSeqMng_c::ms_instance->FUN_801017c0(SMC_DEMO_KILLER, nullptr, nullptr, 0x80)`; or
+// (star mode) just `ms_instance->attackMapEnemy(true)` then #unk_168F00.
+// Declaration order here matters -- the linker packs `.bss` in declaration order, same as
+// `.text`, and the target's own layout is #s_bssVec1c(0x1c) then the two param ints(0x28,0x2c)
+// then #s_bssBox30(0x30), immediately after #s_bssDir10(0x10) ends at 0x1c.
+static mVec3_c s_bssVec1c; // lbl_2_bss_FE2C (bss+0x1c) -- the OTHER vec3 slot #unk_168990's own
+                            // case1/case2 branches read; populated HERE with #mPos.
+static int s_bssParam28; // lbl_2_bss_FE38 (bss+0x28) -- (u8)#mParam, same low-byte extraction
+                           // #unk_169530 already uses.
+static int s_bssParam2c; // lbl_2_bss_FE3C (bss+0x2c) -- (#mParam>>8)&0xff, the SAME
+                           // second-byte extraction #unk_1693C0 already uses.
+static float s_bssBox30[6]; // lbl_2_bss_FE40 (bss+0x30) -- NOT YET POPULATED by anything
+                              // decoded in this unit; likely written by a cutscene/spawn setup
+                              // elsewhere.
+void daWmKillerBullet_c::unk_1695E0() {
+    if (m_1d4) {
+        return;
+    }
+    bool matched = false;
+    if (unk_1697B0(s_bssBox30) && unk_169DA0()) {
+        matched = true;
+    }
+    if (!matched) {
+        return;
+    }
+    if (!daWmPlayer_c::isWalkToAttackPoint()) {
+        return;
+    }
+    m_1d4 = matched;
+    if (!daWmPlayer_c::isPlayerStarMode()) {
+        mVec3_c playerPos = daWmPlayer_c::ms_instance->mPos;
+        mVec3_c midPos = (mPos + playerPos) * sc_half;
+        dWmEffectManager_c::m_pInstance->playEffect(0xf, &midPos, nullptr, nullptr);
+
+        s_bssVec1c = mPos;
+        s_bssParam28 = (u8) mParam;
+        s_bssParam2c = (int) ((mParam >> 8) & 0xff);
+
+        const u8 *pk = (const u8 *) mParentKiller;
+        mVec3_c raw(*(const float *) (pk + 0x1f8), *(const float *) (pk + 0x1fc),
+                    *(const float *) (pk + 0x200));
+        const mVec3_c &parentPos = *(const mVec3_c *) (pk + 0xac);
+        mVec3_c delta = raw - parentPos;
+        s_bssDir10 = delta;
+
+        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_KILLER, nullptr, nullptr, 0x80);
+    } else {
+        daWmPlayer_c::ms_instance->attackMapEnemy(true);
+        unk_168F00();
+    }
+}
+
+// #unk_1697B0 (fn_2_1697B0). Confirmed content: an early-out "did this bullet actually move"
+// check (comparing #mPos against #mLastPos on both X and Z, via the SAME fcmpu-then-fcmpo idiom
+// used everywhere else moved-vs-not is tested in this project -- the specific quadrant value
+// (2/3/4/5) is computed but genuinely unused beyond the ==6 "didn't move" case, matching the
+// target's own dead code exactly rather than a simplified equivalent), then an expanded-AABB
+// overlap test: \p box's own two corner points (six floats, `{x,y,z}` pairs) average to a
+// midpoint (#sc_half, confirmed 0.5 by reading the retail .rel directly), and \p this is
+// "inside" if its own X and Z distance from that midpoint are each under half the shared
+// table's own X/Z sizes (#R_2_5_45428 indices 2/3, both 60.0) plus the box's own half-extents.
+// PARKED at 73/76 differing (target 76 lines, draft 78). Content and the overall two-part
+// shape (moved-check, then expanded-AABB test) are confirmed; two distinct residual axes, both
+// resistant to three genuinely different rewrites: (1) the Z-branch's `==`-then-`<=` compare on
+// the SAME operand pair fuses into a `cror`-combined single test in every phrasing tried
+// (nested if/else with an explicit `quadrant=6` leaf; a `!=`-guarded ternary; nested if/else
+// with the default hoisted to the declaration) -- yet the target's OWN `==`-then-`<=` pair on
+// the X operands, one`if`-level up, never fuses, so the trigger is nesting depth or block
+// emptiness, not the comparison shape itself, and no source rewrite reached it; (2) the AABB
+// half's `mVec3_c sum(...)`/`mid` locals hit the SAME float-argument-evaluation-order residual
+// already parked on #unk_169E10 (register/load scheduling, not content). Not re-attempted this
+// round per the "no fourth variant on a measured wall" rule.
+bool daWmKillerBullet_c::unk_1697B0(const float *box) {
+    int quadrant = 6;
+    if (mPos.x == mLastPos.x) {
+        if (mPos.z == mLastPos.z) {
+            // quadrant stays 6
+        } else if (mPos.z <= mLastPos.z) {
+            quadrant = 3;
+        } else {
+            quadrant = 2;
+        }
+    } else if (mPos.x <= mLastPos.x) {
+        quadrant = 4;
+    } else {
+        quadrant = 5;
+    }
+    if (quadrant == 6) {
+        return false;
+    }
+
+    mVec3_c sum(box[0] + box[3], box[1] + box[4], box[2] + box[5]);
+    mVec3_c mid = sum * sc_half;
+
+    float halfWidthX = mid.x - box[0];
+    float dx = mPos.x - mid.x;
+    if (std::fabs(dx) < R_2_5_45428[2] * sc_half + std::fabs(halfWidthX)) {
+        float halfWidthZ = mid.z - box[2];
+        float dz = mPos.z - mid.z;
+        if (std::fabs(dz) < R_2_5_45428[3] * sc_half + std::fabs(halfWidthZ)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 // #unk_1698E0 (fn_2_1698E0). NOT YET AUTHORED -- bare stub (see #unk_168990's own note on the
 // scratch-field convention). Called from both #state2's and #state3's own tails; real target
@@ -485,6 +608,79 @@ bool daWmKillerBullet_c::unk_169B80(int delta) {
     }
     mAngle.z = (short) m_1c8;
     return wrapped;
+}
+
+// #processCutsceneCommand (fn_2_169BC0). Vtable slot 24, confirmed via check_vtable.py. PARKED
+// at 49/117 differing (target 117 lines, draft 111) after two structural fixes this round: (1)
+// both 3-way dispatches on \p cutsceneCmd are genuine `switch` statements, NOT if/else-if chains
+// -- an if/else-if chain interleaves each compare+branch with its own body, but the target lays
+// out ALL THREE compares up front then the case bodies after, the documented switch-vs-if-chain
+// tell; rewriting from if/else-if to `switch` dropped 102->49 differing outright. (2) `#calcRotate`
+// is a genuine HEADER DEFECT FIX: was `void`, but this call site consumes its result
+// (`if (!m_1fc->calcRotate()) return;`) -- changed to `bool` in the shadow header; #execute's own
+// already-MATCHED call, which discards the result, is unaffected (a discarded value's type never
+// changes codegen). Remaining residual, tried both a named-intermediate and a fully-inlined
+// phrasing (identical result both times): the four `this+0x60`-then-`+0x64`/`+0x68` raw
+// function-pointer-table walks (modelled as raw casts, NOT an invented type, matching the
+// destructor's own precedent for #m_1fc) consistently allocate r4-then-r12 here where the target
+// reuses r12 for both loads -- a register-allocation choice that resists both phrasings tried,
+// plus a few `sc_0`-vs-"SYM0" naming-only lines from float-constant pooling. Gate call through a
+// raw function-pointer table at `this+0x60` (offset 0x64), inherited from the base class. On
+// `isFirstFrame`, a 3-way switch on \p cutsceneCmd (86/89/0x9a, the first two matching real
+// `dCsSeqMng_c::CUTSCENE_CMD_e` entries -- 0x9a has none). A SECOND, independent switch on the
+// SAME \p cutsceneCmd then runs regardless of `isFirstFrame`.
+void daWmKillerBullet_c::processCutsceneCommand(int cutsceneCmd, bool isFirstFrame) {
+    if (cutsceneCmd == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
+        return;
+    }
+    typedef int (*GateFn_t)(daWmKillerBullet_c *);
+    if ((*(GateFn_t *) ((u8 *) *(void **) ((u8 *) this + 0x60) + 0x64))(this)) {
+        return;
+    }
+
+    typedef void (*Vtbl68Fn_t)(daWmKillerBullet_c *);
+
+    if (isFirstFrame) {
+        switch (cutsceneCmd) {
+        case dCsSeqMng_c::CUTSCENE_CMD_86:
+            if (m_1d4) {
+                fn_80103A00(m_1fc, true, -1, sc_0);
+                dWmSeManager_c::m_pInstance->playSound(0x64, mPos, 1);
+            }
+            break;
+        case dCsSeqMng_c::CUTSCENE_CMD_89:
+            if ((int) (mParam >> 16) == 1) {
+                unk_169E10();
+            } else {
+                (*(Vtbl68Fn_t *) ((u8 *) *(void **) ((u8 *) this + 0x60) + 0x68))(this);
+            }
+            break;
+        case 0x9a:
+            m_205 = dCsSeqMng_c::ms_instance->GetCutArg0() != 0;
+            break;
+        }
+    }
+
+    switch (cutsceneCmd) {
+    case dCsSeqMng_c::CUTSCENE_CMD_86:
+        if (m_1d4) {
+            if (!m_1fc->calcRotate()) {
+                return;
+            }
+            fn_80103A00(m_1fc, false, -1, sc_0);
+        }
+        (*(Vtbl68Fn_t *) ((u8 *) *(void **) ((u8 *) this + 0x60) + 0x68))(this);
+        break;
+    case dCsSeqMng_c::CUTSCENE_CMD_89:
+        if ((int) (mParam >> 16) == 1 && unk_169F00()) {
+            *(bool *) ((u8 *) this + 0x124) = false;
+            (*(Vtbl68Fn_t *) ((u8 *) *(void **) ((u8 *) this + 0x60) + 0x68))(this);
+        }
+        break;
+    default:
+        *(bool *) ((u8 *) this + 0x139) = true;
+        break;
+    }
 }
 
 // #unk_169DA0 (fn_2_169DA0). Confirmed content: null-checks #mParentKiller, then compares

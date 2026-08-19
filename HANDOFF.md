@@ -11136,3 +11136,42 @@ undifferentiated pad), `+0x350` `int mJumpTimer`, `+0x354` `int mCurAnimIdx`
 placeholder — recovered from `.rodata` as `{0, 5, 7, 11}` and **independently
 verified against the retail bytes at `0x8C38`: `00000000 00000005 00000007
 0000000b`.**
+
+## `sc_ForceList` is NOT a shared-header defect. Ten landed units prove it.
+
+WM_KINOPIO is blocked on a `sc_ForceList` "double-init" that governs `.data`
+order for everything declared after it, and WM_KILLERBULLET independently
+identified its `fn_2_169FA0` as the compiler-generated `.ctors` static-init for
+the same `dWmLib::sc_ForceList`. Two units converging on one shared static looks
+like a header defect. **It is not, and that is checkable in one command.**
+
+`include/game/bases/d_wm_lib.hpp:96` declares
+
+```cpp
+static ForceInCourseList_t sc_ForceList[] = {
+    {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0",
+     mVec3_c(2160.0f, -30.0f, -478.0f)}
+};
+```
+
+`static` at this scope gives internal linkage, so **every TU that includes the
+header gets its own copy**, and the `mVec3_c(...)` initialiser is a constructor
+call, so each copy is DYNAMICALLY initialised and costs a `.ctors` entry. That is
+the already-recorded rule "including `d_wm_lib.hpp` costs a `.ctors` entry".
+
+**And it is correct as written: `grep -l d_wm_lib.hpp source/d_basesNP/bases/*.cpp`
+returns TEN-PLUS LANDED units** — antlion, cannon, cloud, dokan, dokan_route,
+ghost, grid, kinoko_1up, kinoko_base, kinoko_red and more — every one of them
+byte-perfect against retail with this exact declaration. A shared header cannot
+be simultaneously wrong and produce ten byte-perfect units.
+
+**So the fault is TU-side, and the recorded rule already names the likely cause:
+"some units' targets do NOT include it."** If a draft includes `d_wm_lib.hpp`
+where the original TU did not, the draft gains an extra `sc_ForceList` copy and
+an extra `.ctors` entry — which presents exactly as a "double init" and shifts
+`.data` order for everything after it.
+
+**The general rule worth carrying: before treating a shared header as defective,
+count the landed units that include it.** If any land byte-perfect, the header is
+right and the defect is in your own TU — most often an include the original did
+not have. That check is one `grep -l` and it inverts the whole search.

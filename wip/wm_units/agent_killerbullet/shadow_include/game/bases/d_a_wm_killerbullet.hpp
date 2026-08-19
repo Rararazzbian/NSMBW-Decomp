@@ -32,7 +32,13 @@
 class dWmRotater_c {
 public:
     virtual ~dWmRotater_c();
-    void calcRotate();
+    // HEADER DEFECT FOUND AND FIXED THIS ROUND: was declared `void calcRotate();`, matching
+    // #execute's own call site (`m_1fc->calcRotate();`, result discarded -- codegen-identical
+    // either way). #unk_169BC0/processCutsceneCommand's own call, `if (!m_1fc->calcRotate())
+    // return;`, CONSUMES the result -- a call site consuming a void method's result is a header
+    // defect by definition (project convention). Changed to `bool`; #execute's own MATCH is
+    // unaffected since a discarded return value's type never changes its own codegen.
+    bool calcRotate();
 };
 
 class daWmKillerBullet_c : public dWmDemoActor_c {
@@ -47,6 +53,8 @@ public:
     virtual int execute();
     virtual int draw();
     virtual int doDelete();
+    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame); ///< @unofficial
+                         ///< fn_2_169BC0 -- PARKED at 49/117 differing, see the .cpp's own note.
 
     // The 5-entry state-handler table (lbl_2_rodata_89F8), confirmed by the coordinator's own
     // relocation count -- table order is the STATE order, not address order (entries 3/4 are
@@ -74,7 +82,11 @@ public:
     void unk_1694A0(); ///< @unofficial fn_2_1694A0.
     void *unk_169510(); ///< @unofficial fn_2_169510 -- returns a pointer used as a float source.
     void unk_1691A0(); ///< @unofficial fn_2_1691A0.
-    void unk_1695E0(); ///< @unofficial fn_2_1695E0.
+    void unk_1695E0(); ///< @unofficial fn_2_1695E0 -- real content this round (was a fake
+                         ///< stub), see the .cpp's own note for the residual.
+    bool unk_1697B0(const float *box); ///< @unofficial fn_2_1697B0 -- moved-check plus an
+                                         ///< expanded-AABB overlap test against \p box's
+                                         ///< own two corner points.
     void unk_1698E0(); ///< @unofficial fn_2_1698E0.
     bool unk_169F00(); ///< @unofficial fn_2_169F00 -- called from #state4, member (implicit
                          ///< `this`), NOT the same function as #checkParentFlag.
