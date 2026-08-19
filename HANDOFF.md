@@ -7164,3 +7164,60 @@ adjacency: kinoko_1up `0x3fc-0x400`, kinoko_base `0x400-0x404`, kinoko_red
 rather than presenting it as verified, which was the right call -- and the full
 five-binary verify then confirmed it. **Flagging an inferred bound is worth more
 than quietly asserting it; the build is what settles it.**
+
+## A relocation proves a READ, not OWNERSHIP. And the displacement is what settles it.
+
+antlion_mng's round 3 found a relocation from inside `fn_2_19B170` (a
+`daWmPlayer_c` function, a different TU) targeting `0x85c4`, and concluded the
+`0x14`-byte block there belongs to that TU rather than antlion_mng. **That
+inference does not hold, and the correction generalises.**
+
+`.rodata` is one shared section. A TU can read a constant another TU defines --
+that is what an `extern` declaration produces. So a relocation tells you who
+READS an address. It never tells you who EMITS it.
+
+**What does settle ownership is the compile-time displacement.**
+
+```
+our    __sinit:  reads mNodePos at pool base + 0x20
+target __sinit:  reads mNodePos at pool base + 0x48
+```
+
+That displacement is baked in when the TU is compiled, relative to **that
+object's own** `.rodata` contribution. For the target's `__sinit` to carry
+`+0x48`, the target's object must itself contain `0x48` bytes ahead of
+`mNodePos`. It cannot be `+0x48` into another object's data, because the compiler
+has no idea where another object will be placed. The addresses agree: the
+target's `__sinit` anchors at `0x85c0`, and `0x85c0 + 0x48 = 0x8608`, which is
+exactly where the `{2160.0, -30.0, -478.0}` triple sits -- the only copy in the
+module preceded by `1` and followed by `9`.
+
+So antlion_mng owns `0x85c0-0x8614`, the `0x14` block included, and its
+`__sinit` residual is `0x28` bytes of leading data the TU is not declaring. **A
+gap in our source, not a cross-TU dependency.**
+
+### The rule, stated generally
+
+- **Relocation into a range => somebody reads it. Says nothing about ownership.**
+- **A compile-time displacement in a TU's own instruction => that TU emits
+  everything up to that displacement.** This is the strongest ownership evidence
+  available and it is available from the target's own split objects.
+
+Note how this sits with the antlion result, which looks superficially opposite.
+There, the target's `__sinit` anchored at `0x8598` and never used a displacement
+past `+0x18`, so antlion demonstrably did NOT own `0x85b4`. Same test, opposite
+answer, both times decisive. **Read the displacements out of the target's own
+compiled `__sinit`; it is the one measurement that answers this question.**
+
+### Also measured this round
+
+- **The inline-wrapper lever needs TWO call sites.** It routes an outer consumer
+  through a wrapper while a loop call bypasses it -- with a single call site there
+  is nothing to pair against. `reviveOnRoute` calls `GetPos` once, so the lever
+  cannot apply, independently of whether a wrapper exists. Adding a trailing
+  default-argument overload to test it fails to compile at all:
+  `(10199) ambiguous access to overloaded function`. Both halves recorded so the
+  idea is not re-proposed.
+- `pickRevivedIndices` 40 -> 39 by widening `playerPoint`'s scope above the
+  early return. Splitting the condition into a separate `bool reject = ...`
+  statement gives **44, worse**.

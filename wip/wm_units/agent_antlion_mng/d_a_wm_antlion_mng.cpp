@@ -158,19 +158,29 @@ public:
     /// here). Residual: the SAME two stack regions land at swapped high/low offsets (target
     /// anchors GetPos's temp high, ours low) plus a 5-way register rotation
     /// (map/info/route/accum/picked-ptr) -- three more scope/order permutations tried this round
-    /// beyond the ones already measured, none closed either gap further.
+    /// beyond the ones already measured, none closed either gap further. Also tried this round:
+    /// giving `GetPos` a sibling overload with a trailing default argument
+    /// (`GetPos(int, bool = true)`) to test the inline-wrapper lever from the OTHER side --
+    /// MWCC rejects it outright, `(10199) ambiguous access to overloaded function`, because our
+    /// one-argument call site is an exact match for BOTH candidates once a default fills the
+    /// second slot. The lever needs a genuine second call site (outer vs. loop) to have any
+    /// wrapper to go through; reviveOnRoute only ever calls GetPos once, so there is nothing to
+    /// pair it against within this function.
     void reviveOnRoute();
 
     /// @unofficial Full reconstruction this round -- see the definition. CORRECTION carried over
     /// from last round: this is `fn_2_15BA70`, NOT the function the verifier's nearest-neighbour
     /// heuristic keeps pairing it with (`~clearAllModels`/`~reviveOnRoute`, depending on what
-    /// else is unmatched at the time). 40 differing against the real implementation (down from
-    /// 107 against the old stub) -- shape and every call site confirmed correct; residual is
-    /// register numbering in the rejection-sampling loop plus one target-only quirk (a redundant
-    /// second test of `excludeCurrent` at a control-flow merge point) that several equivalent
-    /// source spellings (`||`, nested `if`, explicit `goto`) all failed to reproduce -- MWCC
-    /// produced the identical 2-branch shape from all three, so the four-branch target shape is
-    /// still unexplained, not just unattempted.
+    /// else is unmatched at the time). 39 differing against the real implementation (down from
+    /// 107 against the old stub) -- shape and every call site confirmed correct; hoisting
+    /// `playerPoint`'s declaration above the early-return check (alongside `numPicked`, same
+    /// widen-scope lever) got `numPicked` matching target's `r31` exactly, 40->39. Residual is a
+    /// 3-way register rotation in the rejection-sampling loop plus one target-only quirk (a
+    /// redundant second test of `excludeCurrent` at a control-flow merge point) that every
+    /// equivalent source spelling tried -- `||`, nested `if`, explicit `goto`, and a separate
+    /// `bool reject = excludeCurrent && playerPoint == cand;` statement -- either reproduced the
+    /// same 2-branch shape or (the separate-statement form) made it 5 differing WORSE. The
+    /// four-branch target shape is still unexplained, not just unattempted.
     ///
     /// fn_2_15BA70 (0x1C0 B). Scans `dCsvData_c::GetRouteFlag` for the
     /// current world's 0xc0 points against two flag masks (0x400/0x800) selected by
@@ -412,12 +422,13 @@ bool daWmAntlionMng_c::pickRevivedIndices(int *out, int count, int worldIndex, b
         }
     }
 
+    int playerPoint;
     int numPicked = 0;
     if (foundCount < count) {
         return false;
     }
 
-    int playerPoint = daWmPlayer_c::ms_instance->m_22c;
+    playerPoint = daWmPlayer_c::ms_instance->m_22c;
     do {
         int randIdx = dGameCom::getRandom(foundCount);
         int cand = candidates[randIdx];
