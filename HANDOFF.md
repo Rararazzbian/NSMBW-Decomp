@@ -9912,3 +9912,47 @@ only the **function you call**, not to reproduce the header's data.
 with a self-initialising static.** That is a cheap, decisive signal about the
 original source's include list, and it is worth checking before assuming a unit
 should include what its siblings include.
+
+## Converting vtable BYTE OFFSETS to SLOT NUMBERS resolves overrides without a draft
+
+WM_HANACHAN read its vtable's relocations directly — `check_vtable.py` needs a
+dtk-dumped target data object, and unlanded units do not have one. It got five
+own-address slots but declined to map them to functions by size, which was right.
+
+**The slot numbers plus the recorded lifecycle-adjacency rule resolve four of
+them outright.** Convert with `slot = (offset - 0x08) / 4 + 2`, then apply *each
+lifecycle stage's pre/post hooks sit directly after that stage's own action slot*:
+
+```
+2  create     3 preCreate    4 postCreate
+5  doDelete   6 preDelete    7 postDelete
+8  execute    9 preExecute  10 postExecute
+11 draw      12 preDraw     13 postDraw
+```
+
+which reproduces the observed 3-slot spacing exactly, and matches
+WM_KILLERBULLET's independently confirmed map (`create` 2, `doDelete` 5,
+`execute` 8, `draw` 11, `processCutsceneCommand` 24).
+
+**Cross-checked independently**: the 8-byte function landing on slot 5 is
+`li r3, 0x1; blr` — the family's standard `doDelete` one-liner. Two routes
+agreeing is as strong as this gets.
+
+**So an unlanded unit's overrides can be identified with no draft at all**, from
+the vtable relocations plus arithmetic. That removes the chicken-and-egg problem
+where `check_vtable.py` needs a draft to produce the map you need to write one.
+
+## Reading a trivial constructor/destructor pair identifies a struct as POD
+
+WM_HANACHAN's custom `0x38`-byte element type has a **4-byte constructor**
+(`blr`, empty) and a **0x40-byte destructor** of the standard vector-deleting
+shape with an otherwise empty body.
+
+**Together those prove the struct is plain data** — no nested objects, no owned
+pointers. That is a complete answer about a type's nature from two very small
+functions, and it is worth reading them early: it tells you whether the rest of
+the layout work needs to account for construction at all.
+
+One field was then pinned from a *user*: a 0x1c-byte function copying three
+floats from `array[0] + 0x10` into the inherited `mPos` fixes an `mVec3_c`-shaped
+field at struct offset `+0x10`.
