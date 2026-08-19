@@ -10575,3 +10575,52 @@ matched-function count is NOT a landability measure:
 
 Recorded because the misjudgement was one of PRIORITY, not of technique: the
 warning was on screen, in the tool's own output, for every round.
+
+## The singleton method GENERALISES — four more resolved, and one that self-flags
+
+`bss_classify.py` + `resolve_singleton.py` run over the whole module, not just
+the one label that prompted them. Every `.bss` singleton in `d_basesNP` now
+resolves to a profile, a `sizeof` read off its own allocation, and a base class:
+
+```
+lbl_2_bss_11B70  COURSE_SELECT_MANAGER              sizeof 0x570  : dBase_c
+                 + sStateMethodUsr_FI_c, + dCourseSelectGuide_c @ +0xC8
+lbl_2_bss_C778   MINI_GAME_WIRE_MESH_MGR_OBJ        sizeof 0x708  : dActor_c
+lbl_2_bss_5AE8   BGM_INTERLOCKING_DUMMY_BLOCK_MGR   sizeof 0x400  : dActor_c
+                 + sStateMethodUsr_FI_c
+lbl_2_bss_C460   MINI_GAME_GUN_BATTERY_MGR_OBJ      sizeof 0x0F4  : dActor_c
+lbl_2_bss_FEE0   WM_KOOPASHIP                       CANDIDATE ONLY (see below)
+```
+
+**`sizeof` here is read, not derived.** It is the immediate in the `li rN, SIZE`
+feeding `operator new` — so it is exact, and it does not depend on having found
+every field. That is a much better starting point for a class layout than
+bounding it from the highest offset any function happens to touch.
+
+### The one that self-flags is the important one
+
+`lbl_2_bss_FEE0` (WM_KOOPASHIP) reports `sizeof 0x40` — and the tool warns,
+because **the allocation it found sits `0x28C` bytes before the pointer store.**
+That distance is the tell: in the four clean cases the allocation is within
+`0x120` of the store, because the shape is tight (`li size; bl new; bl ctor;
+stw ptr`). A far allocation is likely a MEMBER or a temporary — and here the
+intervening calls include `__dt__11dWmSpline_cFv`, so `0x40` is plausibly the
+size of a `dWmSpline_c`, not of the KOOPASHIP singleton.
+
+**The tool does not prove the stored pointer is the one `operator new` returned**,
+and it now says so in its own output rather than presenting every result with
+equal confidence. Treat a warned result as a candidate until the dataflow is
+checked by eye. An honest "candidate" is worth more than a confident wrong
+`sizeof` that someone then builds a class layout on.
+
+### Two rules worth carrying
+
+- **Resolve external `bl` targets through `bin/dtk/wiimj2d_symbols.txt`**, the
+  full DOL map. `syms.txt` is our small curated list; the base-class and member
+  constructors are simply not in it. Searching the wrong map and finding nothing
+  is not evidence of absence.
+- **Never report a fixed lookback window as "the constructor's calls."** The
+  first version of this tool did, and it listed `strcmp`, `strrchr` and
+  `sStateID_c` — the callees of the PRECEDING function — as if they were members
+  of three different classes. Scope the window to the allocation, or print
+  nothing.
