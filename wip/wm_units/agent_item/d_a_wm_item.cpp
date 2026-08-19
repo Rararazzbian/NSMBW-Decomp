@@ -241,7 +241,8 @@ void daWmItem_c::calcModel() {
     mScale.z = k[9];
 
     if (mItemType == 5) {
-        float v = k[9] * k[7];
+        mVec3_c tmp(k[7], k[7], k[7]);
+        float v = k[9] * tmp.x;
         mScale.x = v;
         mScale.y = v;
         mScale.z = v;

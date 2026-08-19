@@ -355,3 +355,61 @@ to MATCH). The hypothesis is real and partially validated, but this unit's
 remaining gap is now better understood as at least two independent axes
 (rodata/table addressing-mode, and stack-frame/register-hoisting
 scheduling), not one.
+
+## Round 3: `calcModel`'s second axis, following the kinoballoon lever in reverse
+
+Coordinator's read of the remaining 60-differing gap: the target stages a
+`mVec3_c`-shaped temporary the draft doesn't, and the mechanism that
+produces an unread stack temp is a by-reference argument -- the "reverse"
+of kinoballoon's addend-vs-result finding. Tested directly.
+
+**What the target actually stores into the mystery slot (`0x8`/`0xc`/`0x10`,
+read via `difftool.py`, not guessed): the addend `k[7]` (0.65), written
+three times, immediately followed by `fmuls f0,f0,f1` computed from the
+*register* (not read back from the slot) -- i.e. a genuinely unread stack
+write.** `mVec3_c` has no scalar-broadcast constructor and no `operator*=`
+taking a `const mVec3_c&` (only `operator*=(f32)`, which needs no by-
+reference storage) -- so the by-reference-parameter theory doesn't apply
+literally here. What DOES reproduce the exact shape is the plain 3-argument
+constructor called with the same value three times:
+
+```cpp
+mVec3_c tmp(k[7], k[7], k[7]);
+float v = k[9] * tmp.x;
+mScale.x = v; mScale.y = v; mScale.z = v;
+```
+
+Result: **60 -> 15 differing, and the instruction count now matches exactly
+(70 vs 70, frame `0x30` both sides)**. This is the single largest jump of
+either round. Every remaining difference is either symbol-name text
+(`sConstTable` vs `lbl_2_rodata_8988`) or one specific residual: the
+draft's `tmp` (conditional, declared inside the `if (mItemType==5)` block)
+and `local` (unconditional, declared after) land on the OPPOSITE stack
+slots from the target -- target puts the conditional/first-used one at the
+lower address (`0x8-0x10`) and the unconditional/second-used one higher
+(`0x14-0x1c`); the draft does the reverse. Tried: moving `tmp`'s
+declaration outside the `if` (unconditional, same nesting as `local`) --
+made it worse, 15 -> 21, reverted. Tried: giving `local` the same
+3-argument-constructor form as `tmp` instead of field-by-field assignment
+-- no change, same 15. Not resolved this round; a nesting-depth or
+scope-lifetime heuristic in MWCC's stack allocator, not an addressing or
+temp-materialization question, is now the sole remaining gap on this
+function, and it is genuinely narrow (2 slots swapped, nothing else).
+
+`__sinit` re-tested per the "shares the pool" note: **unchanged, still 15
+differing.** It is a separate function with its own independent codegen, so
+`calcModel`'s fix does not carry over automatically. Its own shape is a
+distinct partial case of the offset-folding limit: it reads `sConstTable[0..3]`
+(4 reads, multi-access -- the case that DID consolidate to one register in
+`calcModel`), but only 3 of the 4 (`[1]`,`[2]`,`[3]`) share one anchor;
+the first (`[0]`, offset 0 -- an object's own first element, the same
+condition that let `cycleAnm()`'s target fold to 2 instructions) still gets
+its own separate `lis`/`lfs` pair, matching the "offset-0 access folds
+specially" rule found in `cycleAnm()`, just showing up as a partial
+effect here instead of an all-or-nothing one.
+
+**Score: still 8/12 (no function crossed to MATCH this round), but
+`calcModel` moved from 60 to 15 differing with matching instruction count,
+easily the strongest position of the three still-open functions.**
+`createModel` (116) and `cycleAnm` (14) are unchanged, left alone per
+instruction.

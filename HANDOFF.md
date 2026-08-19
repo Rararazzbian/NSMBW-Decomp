@@ -8728,6 +8728,21 @@ constructor-plus-assignment was correct. Here the target stages an extra temp th
 ours does not — which is what **compound assignment** produces, since
 `operator+=` binds its by-reference parameter to a real stack slot.
 
-**If the target has a stack temp you do not, try the compound-assignment form;
-if you have one it does not, try constructor-plus-assignment.** The lever runs in
-both directions.
+**The lever is the QUESTION, not the two answers.** Trace what is actually stored
+in the slot, then find the form that produces it -- do not work down a list of
+candidate spellings.
+
+WM_ITEM proved the point. I predicted compound assignment; the agent traced the
+store first and found the target writes the addend three times and **never reads
+the slot back**, and that `mVec3_c` has no `operator*=(const mVec3_c &)` at all,
+so my theory could not literally apply. The form that reproduced it was a plain
+three-argument constructor called with the same value three times:
+
+```cpp
+mVec3_c tmp(k[7], k[7], k[7]);
+float v = k[9] * tmp.x;
+mScale.x = v; mScale.y = v; mScale.z = v;
+```
+
+**`calcModel` 60 -> 15, with instruction count and frame size both exact**
+(70/70, `0x30` on both sides) -- the largest single jump on that unit.
