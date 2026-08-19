@@ -8784,3 +8784,44 @@ own bytes below its pool (its `__sinit` never reached past `+0x18`); antlion_mng
 DID own a disputed block (`+0x48` could only be computed by a compiler that laid
 out both ends); and adding a candidate object and watching the displacement move
 by exactly its size confirms placement without knowing what the data means.
+
+## The ownership check's false positives on virtual-only methods mean WRONG NEIGHBOURING BOUNDS
+
+WM_BOARD's `check_bounds.py` run flagged five of the unit's own virtual overrides
+— dtor, `execute`, `draw`, `doDelete`, `processCutsceneCommand` — as "never
+referenced from inside the unit". **All five cleared the moment the `.rodata` and
+`.data` bounds were corrected**, with no change to the `.text` claim at all.
+
+The cause: a virtual override is reached through the vtable, which lives in
+`.data`. If the `.data` claim does not contain the vtable, the tool cannot see the
+reference and reports the function as unowned.
+
+**So an ownership warning on a virtual-only method is a symptom of a wrong
+neighbouring-section bound, not a `.text` problem. Fix `.data` and `.rodata`
+first, then re-run.** On this unit the real bounds were `.rodata` ending `0x8648`
+rather than a guessed `0x8654`, and `.data` extending to `0x43b58` rather than a
+guessed `0x43a78` — the secondary-vtable object turned out to be `0xf0` bytes, not
+the ~`0x10` assumed.
+
+## THIRD occurrence: a constructor call you cannot account for is an EMBEDDED MEMBER
+
+WM_BOARD declared a separate `mAllocator_c` member to explain a
+`__ct__12mAllocator_cFv` call, producing `sizeof 0x208` against the real `0x1f0`
+— a clean `0x18` overage, **caught by `classInit`'s own `li r3, 0x1f0`**. A probe
+compile showed `m3d::anmTexSrt_c` is `0x2c` bytes and already contains that
+allocator as a sub-object. Removing the redundant member fixed `classInit` and
+another function to MATCH and took the ctor from 13 differing to 4.
+
+Same finding as WM_START's `m3d::banm_c` (`0x28`, embeds an allocator) and
+anchor's `+0x60` secondary vtable. **An unaccounted-for constructor call, field or
+gap belongs to an embedded member or the ABI before it is a new field of yours.**
+Probe the member's real size with `char[sizeof(X)]` rather than inferring it from
+the constructor's gaps.
+
+**`classInit`'s `li r3, <size>` is a free `sizeof` check** — it is the allocation
+size, so a wrong class size shows up there immediately.
+
+## MWCC rejects in-class default member initialisers
+
+`(10123) ';' expected`. Not supported by this compiler; use the constructor's
+initialiser list. Worth knowing before designing a header around them.
