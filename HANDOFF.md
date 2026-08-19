@@ -6903,3 +6903,68 @@ identifications.** This unit's table currently labels three different targets
 function `clearAllModels` that is really `pickRevivedIndices` -- which I passed
 to an agent as established fact and had to be corrected on. Read the target
 disassembly.
+
+## antlion_mng 16/22 -> 17/22. `processCutsceneCommand` MATCHES, and `R_2_1_*` is proven twice.
+
+`processCutsceneCommand` (144 instructions, the unit's largest) went from 130
+differing to **MATCH**. Three things did it, and only one was a compiler trick:
+
+- `extern "C" bool R_2_1_19B170(daWmPlayer_c *);` declared in the `.cpp` and
+  called with `daWmPlayer_c::ms_instance`. **Second independent confirmation of
+  the `R_2_1_*` linking form this session** (course was the first).
+- Two real logic errors read off the target: the first-frame `0x90` case calls
+  `clearAllModels()`, not `setCutEnd()`; and `0x59`'s timer-expired branch calls
+  `rebuildAllModels(false, true)` before `clearAllModels()`/`setCutEnd()`, not
+  `setActive()`.
+- A missing leading `if (cutsceneCommandId == -1) return;` the draft never had.
+
+`pickRevivedIndices` 107 -> 40 with its logic fully reconstructed:
+`candidates[9]`, a scan over `[0, 0xc0)` through `dCsvData_c::GetRouteFlag` with
+mask `0x400`/`0x800` by world index, an early `false` when fewer than `count` are
+found, then rejection sampling on `dGameCom::getRandom(foundCount)`, then a
+re-validation pass against `dWmLib::getEnemyRevivalCount` forcing rejected slots
+back to `-1`.
+
+`reviveOnRoute` 46 -> 29 by **widening `pos`'s scope** -- declared once and
+assigned per iteration rather than constructed per call. The target builds
+`GetPos`'s return into its own stack temp and copies float-by-float into `pos`
+for `playSound`'s by-reference argument instead of eliding the copy.
+
+**Note this was NOT the inline-wrapper lever, and the agent checked rather than
+assumed.** `playSound`'s 3-argument overload is the target's own direct callee,
+confirmed from the mangled name -- there is no wrapper around a 5-argument form
+and so no trailing default argument to spell or omit. The inline-wrapper rule is
+powerful and has fixed six units, which makes it tempting to reach for on any
+stack-slot difference; check for the wrapper's existence first.
+
+### `dGameCom::getRandom` -- and a mangling trap worth the space
+
+New declaration needed, in `include/game/bases/d_game_com.hpp` inside
+`namespace dGameCom`, after `getRandomSeed()`:
+
+```cpp
+u32 getRandom(unsigned long max);
+```
+
+`getRandom__8dGameComFUl` is a straight tail call into
+`cM_rand_c::ranqd1(unsigned int)` (`mr r4,r3; li r3,m_rnd@sda21; b ranqd1__...`),
+so the return type is `ranqd1`'s own and passes through untouched.
+
+**The parameter must be spelled `unsigned long`, not `u32`.** `u32` is
+`typedef unsigned int` in `types.h`, which mangles to `Ui`; the target's symbol
+ends `Ul`. The two are the same width on this ABI, the code is identical, and the
+only symptom is a silent link failure. Parameter types ARE in the CFront mangled
+name -- check the mangling, not the width.
+
+### Measured negatives, so nobody re-runs them
+
+`pickRevivedIndices`: swapping the `||` operand order made it 41 (worse); nested
+`if` and explicit `goto` restructurings both compiled to byte-identical output at
+40. Its residual includes one genuinely unexplained target quirk -- a redundant
+second test of `excludeCurrent` at a control-flow merge, four target branches
+against our two, which three different spellings could not reproduce.
+
+`reviveOnRoute`: `pos` at function top, before the outer loop, and inside it all
+give 29 -- placement does not matter once the scope is widened; explicit
+copy-construction gives 40; removing `pos` and inlining the call gives 46, which
+confirms the widening is what earned the 17 instructions.

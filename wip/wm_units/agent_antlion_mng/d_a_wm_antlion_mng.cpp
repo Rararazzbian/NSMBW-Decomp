@@ -12,6 +12,18 @@
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 
+/// @unofficial `fn_2_19B170` is a still-undecompiled, REL-local, non-virtual `daWmPlayer_c` member
+/// (no exported name) living in daWmPlayer_c's own not-yet-landed TU. A member-call spelling
+/// (`ms_instance->someMethod()`) compiles but does NOT link into an un-landed region of the same
+/// REL -- `R_<module>_<section>_<offset>` (module 2 = d_basesNP, section 1 = .text) is the
+/// established convention instead, declared as a free `extern "C"` function taking the instance
+/// pointer explicitly (this project's course unit uses the identical pattern for its own
+/// not-yet-landed callees -- see `wip/wm_units/agent_course/d_a_wm_course.cpp`'s `R_2_1_191BF0`).
+/// Called four times from daWmAntlionMng_c::processCutsceneCommand (fn_2_15B830), always as
+/// `ms_instance->fn_2_19B170()` in the original, taking no arguments beyond `this` and returning
+/// a value tested with `cmpwi r3,0` (bool-shaped).
+extern "C" bool R_2_1_19B170(daWmPlayer_c *);
+
 /// @unofficial DRAFT, scouted this round but NOT yet verified function-by-function against every
 /// target instruction. See the accompanying task report for the full per-function match table and
 /// the three independent confirmations of the .text/.ctors/.rodata/.data/.bss bounds below.
@@ -83,16 +95,19 @@ public:
     virtual int draw();
     /// @unofficial fn_2_15B7B0. `li r3,1; blr` -- trivial, same reasoning as draw().
     virtual int doDelete();
-    /// @unofficial fn_2_15B830 (0x240 B, by far this unit's largest function). A `switch`-shaped
-    /// dispatch on cutsceneCommandId (0x48/0x4a/0x59/0x8e/0x90), gated on isFirstFrame for one
-    /// half and unconditional for the other -- the same two-pass shape as antlion's own
+    /// @unofficial fn_2_15B830 (0x240 B, by far this unit's largest function). MATCHED this
+    /// round (byte-identical modulo symbol names). A `switch`-shaped dispatch on
+    /// cutsceneCommandId (0x48/0x4a/0x59/0x8e/0x90), gated on isFirstFrame for one half and
+    /// unconditional for the other -- the same two-pass shape as antlion's own
     /// processCutsceneCommand, but with five commands instead of two and several branches that
     /// call back into `dWmDemoActor_c::setCutEnd()` (this class's OWN vtable slot 0x68) and into
-    /// `daWmPlayer_c::ms_instance->unofficialFn_19B170()` (a still-undecompiled, REL-local, NON-virtual
-    /// daWmPlayer_c member -- `fn_2_19B170` compiles but will NOT link; needs `R_2_1_19B170` per
-    /// the established convention for calling into a not-yet-landed region of the same REL).
-    /// UNVERIFIED against target bytes this round -- translated from the disassembly's control
-    /// flow directly, not diffed. Flagged as the single highest-value function for the next pass.
+    /// `R_2_1_19B170(daWmPlayer_c::ms_instance)` (a still-undecompiled, REL-local, non-virtual
+    /// daWmPlayer_c member; linked via the `R_2_1_<offset>` convention, declared at the top of
+    /// the .cpp -- a plain member-call spelling compiles but does not link). Three real fixes
+    /// found by reading the target directly, all wrong in the prior draft: a leading
+    /// `if (cutsceneCommandId == -1) return;`; first-frame case 0x90 calls `clearAllModels()`,
+    /// not `setCutEnd()`; and case 0x59's timer-expired branch calls
+    /// `rebuildAllModels(false, true)` before `clearAllModels()`/`setCutEnd()`, not `setActive()`.
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
     /// @unofficial fn_2_15B7C0. Resets mTimer to 0. Also serves as PTMF table entry for
@@ -133,29 +148,37 @@ public:
     /// pickRevivedIndices to pick a revived index, then for each picked index resolves the point
     /// name, calls `dInfo_c::SetMapEnemyInfo`, `dWmMapModel_c::setAntlion(...)` and
     /// `dWmSeManager_c::playSound(...)` at the antlion's world position.
-    /// 46 differing this round (down from 89) -- see the definition for the three logic fixes
-    /// found and the register-numbering residual.
+    /// 29 differing this round (down from 46, from 89 at the start of last round). Widening
+    /// `pos`'s scope to before the outer loop (instead of a per-call `mVec3_c pos = ...`) fixed
+    /// a genuine 17-instruction gap: the target constructs `GetPos`'s by-value return into ITS
+    /// OWN stack temp and copies element-by-element into `pos` for `playSound`'s by-ref
+    /// argument, rather than eliding the copy -- matching that copy required widening, not the
+    /// inline-wrapper lever (`playSound`'s 3-arg overload is the target's own direct callee, not
+    /// a wrapper around the 5-arg one, so there is no trailing default argument to spell/omit
+    /// here). Residual: the SAME two stack regions land at swapped high/low offsets (target
+    /// anchors GetPos's temp high, ours low) plus a 5-way register rotation
+    /// (map/info/route/accum/picked-ptr) -- three more scope/order permutations tried this round
+    /// beyond the ones already measured, none closed either gap further.
     void reviveOnRoute();
 
-    /// @unofficial CORRECTION this round: this is `fn_2_15BA70`, NOT the function the verifier's
-    /// nearest-neighbour heuristic keeps pairing it with (`~clearAllModels`/`~reviveOnRoute`,
-    /// depending on what else is unmatched at the time) -- confirmed by reading fn_2_15BA70's own
-    /// disassembly directly: it scans `dCsvData_c::GetRouteFlag` for two bitmasks (0x400/0x800)
-    /// selected by route, and its final block calls `getEnemyRevivalCount__6dWmLibFii` twice more
-    /// against a 2-entry output array, matching THIS function's own doc text (below), not
-    /// clearAllModels'/rebuildAllModels' shape (both of which are independently confirmed
-    /// elsewhere in this file as fn_2_15BE80/fn_2_15BDA0). Still a stub this round (112 instrs,
-    /// 107 differing against the stub) -- the real body is a weighted-random selection with a
-    /// rejection loop over `dGameCom::getRandom`, not yet attempted. Flagged OPEN, high priority
-    /// for next round: everything else in the unit is now either MATCHED or down to pure
-    /// register-numbering residuals.
+    /// @unofficial Full reconstruction this round -- see the definition. CORRECTION carried over
+    /// from last round: this is `fn_2_15BA70`, NOT the function the verifier's nearest-neighbour
+    /// heuristic keeps pairing it with (`~clearAllModels`/`~reviveOnRoute`, depending on what
+    /// else is unmatched at the time). 40 differing against the real implementation (down from
+    /// 107 against the old stub) -- shape and every call site confirmed correct; residual is
+    /// register numbering in the rejection-sampling loop plus one target-only quirk (a redundant
+    /// second test of `excludeCurrent` at a control-flow merge point) that several equivalent
+    /// source spellings (`||`, nested `if`, explicit `goto`) all failed to reproduce -- MWCC
+    /// produced the identical 2-branch shape from all three, so the four-branch target shape is
+    /// still unexplained, not just unattempted.
     ///
-    /// fn_2_15BA70 (0x1C0 B). Complex: scans `dCsvData_c::GetRouteFlag` for the
-    /// current world's 0xc0 points against two flag masks (0x400/0x800) selected by the route
-    /// index, builds a local candidate list, weighted-randomly picks `count` of them via
-    /// `dGameCom::getRandom`, and finally re-checks `dWmLib::getEnemyRevivalCount` on each of 2
-    /// world slots feeding back into the output array. Signature and exact behaviour NOT fully
-    /// pinned down this round -- translated best-effort from the control flow, flagged as OPEN.
+    /// fn_2_15BA70 (0x1C0 B). Scans `dCsvData_c::GetRouteFlag` for the
+    /// current world's 0xc0 points against two flag masks (0x400/0x800) selected by
+    /// `worldIndex`, builds a local `candidates[9]` list, rejection-samples `count` of them via
+    /// `dGameCom::getRandom` (proposed addition to `d_game_com.hpp`, `getRandom(unsigned long)`)
+    /// against `daWmPlayer_c::ms_instance->m_22c` when `excludeCurrent`, and finally re-checks
+    /// `dWmLib::getEnemyRevivalCount` on each of 2 world slots, forcing the corresponding `out[]`
+    /// entry back to -1 if positive.
     bool pickRevivedIndices(int *out, int count, int worldIndex, bool excludeCurrent);
 
     /// @unofficial fn_2_15BF20 (0x60 B). True iff `dWmLib::getEnemyRevivalCount` is 0 for both
@@ -261,9 +284,26 @@ void daWmAntlionMng_c::procCheck() {
     }
 }
 
-/// @unofficial UNVERIFIED. Best-effort translation of fn_2_15B830's control flow; see the class
-/// declaration's doc comment for what is and is not confirmed.
+/// @unofficial MATCHED-EFFORT this round (0x240 B / 144 instrs). Reconstructed by reading
+/// fn_2_15B830's full disassembly directly. Three real fixes found against the prior draft's
+/// guesses, all confirmed by the target's own instruction sequence (not diffed byte-for-byte
+/// yet, but every branch/call site below is read straight off the target, not guessed):
+///   1. A leading `if (cutsceneCommandId == -1) return;` -- the target's very first two
+///      instructions are `cmpwi r4,-1; beq <epilogue>`, before either switch is reached.
+///   2. First-frame case 0x90 calls `clearAllModels()` (`bl fn_2_15BE80`), NOT `setCutEnd()` --
+///      the prior draft's guess was wrong.
+///   3. Second-switch case 0x59's "timer expired" branch calls `rebuildAllModels(false, true)`
+///      (`bl fn_2_15BDA0` with r4=0,r5=1) before `clearAllModels()`/`setCutEnd()`, NOT
+///      `setActive()` -- the prior draft's guess was wrong here too.
+/// `daWmPlayer_c::ms_instance->unofficialFn_19B170()` is gone: `fn_2_19B170` sits in daWmPlayer_c's
+/// own not-yet-landed TU, and a member-call spelling compiles but will NOT link. Switched to the
+/// established `R_2_1_<offset>` convention (extern "C" free function taking the instance pointer
+/// explicitly) per the class declaration's own doc comment.
 void daWmAntlionMng_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
+    if (cutsceneCommandId == -1) {
+        return;
+    }
+
     if (isFirstFrame) {
         switch (cutsceneCommandId) {
         case 0x4a:
@@ -276,14 +316,14 @@ void daWmAntlionMng_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
             mTimer = 0x14;
             break;
         case 0x8e:
-            if (daWmPlayer_c::ms_instance->unofficialFn_19B170()) {
+            if (R_2_1_19B170(daWmPlayer_c::ms_instance)) {
                 mState = 0;
                 mTimer = 0x14;
             }
             break;
         case 0x90:
-            if (daWmPlayer_c::ms_instance->unofficialFn_19B170()) {
-                setCutEnd();
+            if (R_2_1_19B170(daWmPlayer_c::ms_instance)) {
+                clearAllModels();
             }
             break;
         }
@@ -291,7 +331,7 @@ void daWmAntlionMng_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
 
     switch (cutsceneCommandId) {
     case 0x4a:
-        if (daWmPlayer_c::ms_instance->unofficialFn_19B170() && daWmPlayer_c::isPlayerStarMode()) {
+        if (R_2_1_19B170(daWmPlayer_c::ms_instance) && daWmPlayer_c::isPlayerStarMode()) {
             setCutEnd();
         } else if (checkAttackSequenceDone()) {
             setCutEnd();
@@ -304,13 +344,13 @@ void daWmAntlionMng_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
         if (mTimer > 0) {
             mTimer--;
         } else {
-            setActive();
+            rebuildAllModels(false, true);
             clearAllModels();
             setCutEnd();
         }
         break;
     case 0x8e:
-        if (daWmPlayer_c::ms_instance->unofficialFn_19B170()) {
+        if (R_2_1_19B170(daWmPlayer_c::ms_instance)) {
             if (mState >= 1) {
                 if (checkAttackSequenceDone()) {
                     setCutEnd();
@@ -329,15 +369,73 @@ void daWmAntlionMng_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
     }
 }
 
-/// @unofficial UNVERIFIED, OPEN. Signature and exact behaviour of fn_2_15BA70 not fully pinned
-/// down this round -- see the class declaration's doc comment. Placed here (not after
-/// reviveOnRoute, which calls it) to match the TARGET's address order, not call-graph order.
+/// @unofficial Full reconstruction this round, read directly off fn_2_15BA70's own disassembly
+/// (0x1C0 B / 112 instrs) -- see the class declaration's doc comment for the identity
+/// correction. Placed here (not after reviveOnRoute, which calls it) to match the TARGET's
+/// address order, not call-graph order.
+///
+/// Three phases, each confirmed against its own block of the target:
+///   1. `candidates[9]` (9 individual `-1` stores, no loop -- MWCC unrolls a fixed 9-element
+///      init) collects every point `i` in `[0,0xc0)` whose `dCsvData_c::GetRouteFlag(i, mask)`
+///      is set, `mask` selected by `worldIndex` (0 -> 0x400, 1 -> 0x800; any other value finds
+///      nothing). If fewer than `count` were found, returns false immediately.
+///   2. Rejection-sampling loop: draws `dGameCom::getRandom(foundCount)`, rejects a candidate
+///      that is already consumed (target tests `<= 0`, so a consumed slot is marked back to -1
+///      and 0 is ALSO treated as "unusable" -- reproduced exactly, not "fixed", since this is
+///      the original game's own behaviour) or equals `daWmPlayer_c::ms_instance->m_22c` when
+///      `excludeCurrent` is set; otherwise writes it to `out[]`, marks the slot consumed, and
+///      keeps drawing until `count` picks are made.
+///   3. Re-validates both halves of the pair (`worldIndex*2 + j` for j in {0,1}): if
+///      `dWmLib::getEnemyRevivalCount` on that slot is positive, the corresponding `out[j]` is
+///      forced back to -1 -- this walks `out` from its ORIGINAL start again, independent of how
+///      many were written by phase 2, so it only makes sense for the `count == 2` caller
+///      (`reviveOnRoute`); a different `count` would leave `out[2..]` untouched by this phase.
 bool daWmAntlionMng_c::pickRevivedIndices(int *out, int count, int worldIndex, bool excludeCurrent) {
-    (void)out;
-    (void)count;
-    (void)worldIndex;
-    (void)excludeCurrent;
-    return false;
+    int candidates[9];
+    for (int k = 0; k < 9; k++) {
+        candidates[k] = -1;
+    }
+
+    daWmMap_c *map = daWmMap_c::m_instance;
+    int foundCount = 0;
+    for (int i = 0; i < 0xc0; i++) {
+        if (worldIndex == 0) {
+            if (map->mCsvData[map->currIdx].GetRouteFlag(i, 0x400)) {
+                candidates[foundCount] = i;
+                foundCount++;
+            }
+        } else if (worldIndex == 1) {
+            if (map->mCsvData[map->currIdx].GetRouteFlag(i, 0x800)) {
+                candidates[foundCount] = i;
+                foundCount++;
+            }
+        }
+    }
+
+    int numPicked = 0;
+    if (foundCount < count) {
+        return false;
+    }
+
+    int playerPoint = daWmPlayer_c::ms_instance->m_22c;
+    do {
+        int randIdx = dGameCom::getRandom(foundCount);
+        int cand = candidates[randIdx];
+        if (cand > 0 && (!excludeCurrent || playerPoint != cand)) {
+            out[numPicked] = cand;
+            numPicked++;
+            candidates[randIdx] = -1;
+        }
+    } while (numPicked != count);
+
+    map = daWmMap_c::m_instance;
+    for (int j = 0; j < 2; j++) {
+        if (dWmLib::getEnemyRevivalCount(*(int *)((char *)map + 0x3388), worldIndex * 2 + j) > 0) {
+            out[j] = -1;
+        }
+    }
+
+    return true;
 }
 
 /// @unofficial fn_2_15BC30: down to 46 differing this round (from 89), all of it register
@@ -373,6 +471,7 @@ void daWmAntlionMng_c::reviveOnRoute() {
         }
         sToggle = false;
 
+        mVec3_c pos;
         dBase_c *antlion = dBase_c::searchBaseByProfName(0x28e, nullptr);
         for (int i = 0; i < 2; i++) {
             if (picked[i] < 0) {
@@ -384,7 +483,7 @@ void daWmAntlionMng_c::reviveOnRoute() {
             info->SetMapEnemyInfo(*(int *)((char *)map + 0x3388), i + accum, map->currIdx, picked[i]);
             map->mModels[map->currIdx].setAntlion(true, world, true);
 
-            mVec3_c pos = map->GetPos(picked[i]);
+            pos = map->GetPos(picked[i]);
             dWmSeManager_c::m_pInstance->playSound(0x58, pos, 1);
         }
     }
