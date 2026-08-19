@@ -155,7 +155,7 @@ def main():
     verified = False
     for addr in range(create, create - WINDOW, -4):
         if call_target(addr) in OPERATOR_NEW:
-            for back in range(addr - 4, addr - 0x30, -4):
+            for back in range(addr - 4, addr - 0x48, -4):
                 instruction = word(back)
                 if (instruction >> 26) == 14 and ((instruction >> 16) & 31) == 0:
                     size = instruction & 0xFFFF

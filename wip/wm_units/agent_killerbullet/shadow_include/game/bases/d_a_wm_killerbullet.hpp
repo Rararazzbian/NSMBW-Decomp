@@ -77,6 +77,35 @@ public:
                          ///< `this`), NOT the same function as #checkParentFlag.
     void unk_168D50(); ///< @unofficial fn_2_168D50, called from #execute's own tail.
 
+    // Newly authored this round -- all MATCHED (content confirmed, symbol-name-only residuals).
+    dBase_c *unk_1693C0(); ///< @unofficial fn_2_1693C0 -- a dBase_c::searchBaseByProfName
+                             ///< (WM_KILLER, ...) loop, matching the caller's own upper-mParam
+                             ///< byte against each found actor's own low mParam byte. Scouted
+                             ///< as #unk_168990's own case-0 `mParentKiller` finder, but not
+                             ///< yet wired into that still-unauthored caller.
+    void unk_169080(); ///< @unofficial fn_2_169080 -- transitions to state 3, reloads #m_1b8
+                         ///< from the shared table, and fires the same "skl_root"-attached
+                         ///< effect #state2 also fires (same #fn_80103520 call shape). Scouted
+                         ///< as one of #unk_168990's own callees, but not yet wired in there.
+    bool unk_169B80(int delta); ///< @unofficial fn_2_169B80 -- adds \p delta to #m_1c8
+                                  ///< (a wrapping 16-bit counter stored in an `int`), wrapping
+                                  ///< at 0x10000 and returning whether it wrapped; also mirrors
+                                  ///< the low 16 bits into #mAngle's own `z` component. MATCHED.
+    bool unk_169DA0(); ///< @unofficial fn_2_169DA0 -- null-checks #mParentKiller, then compares
+                         ///< `mPos.distTo(mParentKiller->mPos)` against a shared threshold
+                         ///< constant (`R_2_4_89B8[5]`). PARKED, see the .cpp's own note.
+    void unk_169E10(); ///< @unofficial fn_2_169E10 -- builds an offset spawn position from
+                         ///< #mPos plus two shared-table deltas, calls
+                         ///< `_initDemoJumpBase` (real base-class member) with scales derived
+                         ///< from #mScale times two more shared-table entries, then saves and
+                         ///< restores #mAngle3D around a `setDirection` call whose own dir arg
+                         ///< is a cached vector in this unit's own `.bss` (#s_bssDir10, the
+                         ///< `+0x10` slot #unk_168990's own case1/case2 branches also reach),
+                         ///< and finally clears any active effect (#m_1e4).
+    void unk_168F00(); ///< @unofficial fn_2_168F00 -- a true tail call (leaf, no frame): sets
+                         ///< #m_1b0 to 4, then falls straight into #unk_169E10 as its own last
+                         ///< action.
+
     // dWmDemoActor_c itself ends at 0x184 (confirmed via the landed daWmPeach_c's own
     // `addi r3, r31, 0x184` for its own first member -- daWmPeach_c also derives directly
     // from dWmDemoActor_c). The target wants this unit's own mAllocator at 0x188, so there is
@@ -107,7 +136,14 @@ public:
 
     int m_1c0; ///< @unofficial offset 0x1c0. Zeroed by #state2.
 
-    u8 mPad_1c4[0x10]; ///< @unofficial offset 0x1c4, size 0x10 -- placeholder, NOT verified.
+    u8 mPad_1c4[0x4]; ///< @unofficial offset 0x1c4, size 0x4 -- placeholder, NOT verified.
+
+    // @unofficial offset 0x1c8. Confirmed `int` (word-width `stw`/`lwz` in #unk_169B80) rather
+    // than padding -- a wrapping counter, `+= delta` then wrapped at 0x10000. Splits what had
+    // been treated as one 0x10-byte padding run; the remainder below is still unverified.
+    int m_1c8;
+
+    u8 mPad_1cc[0x8]; ///< @unofficial offset 0x1cc, size 0x8 -- placeholder, NOT verified.
 
     bool m_1d4; ///< @unofficial offset 0x1d4. Set/checked by #execute (a "rotation enabled"
                  ///< flag, gating a #calcRotate call through #m_1fc).

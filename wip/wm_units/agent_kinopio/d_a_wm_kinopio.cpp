@@ -239,13 +239,25 @@ void daWmKinopio_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFr
     }
 }
 
+// @unofficial lbl_2_data_45D00/lbl_2_data_45CBC -- SECTION-PLACEMENT bug
+// found and fixed this round: a NAMED `static const char[]` (the form
+// used for these two strings until now) compiles to .rodata under this
+// project's MWCC settings, but the target's own `lbl_2_data_...` labels
+// prove both strings live in .data. processCutsceneCommand's existing
+// inline "W103"/"W102" literals (used directly as call arguments, never
+// named) already land in .data correctly -- confirmed directly against
+// both the target's own .data dump (dump_data.py) and this unit's own
+// compiled draft.o (dump_obj_section.py), which showed the old named
+// "kinopio_all_root"/"W101" landing in .rodata alongside the float table,
+// wrongly reachable through the same base register (r31) already live
+// for that table -- the actual mechanical cause of the "folds into an
+// existing base register instead of getting its own lis/addi" residual
+// seen in stepCutscene70's cases 0/10/12/14. Fixed by using bare inline
+// literals at every call site below instead of named constants (matching
+// the already-.data-correct W103/W102 idiom). Named `static const
+// float`s (k8B50_shared, sCamParams below) are NOT affected -- floats
+// already correctly land in .rodata either way, matching the target.
 namespace {
-    // @unofficial lbl_2_data_45D00, the "kind" node name passed to
-    // fn_80103520 in stepCutscene70() cases 0 and 10.
-    static const char sKinopioAllRoot[] = "kinopio_all_root";
-    // @unofficial lbl_2_data_45CBC, a world-map node name shared by
-    // stepCutscene70() cases 12 and 14.
-    static const char sW101[] = "W101";
     // @unofficial lbl_2_rodata_8B20 -- a 4-float table pointer stored into
     // dWCamera_c's own +0x71c field in case 12. First 3 floats (0.1f,
     // 12.0f, 1.0f) match wip/wm_units/agent_start's own sc_CamParams table
@@ -271,7 +283,7 @@ void daWmKinopio_c::stepCutscene70() {
             m_194 = speed / 15.0f;
             mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
             m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
-            m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, sKinopioAllRoot, 0, 0);
+            m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, "kinopio_all_root", 0, 0);
             m_1a8 = 1;
         }
         break;
@@ -389,7 +401,7 @@ void daWmKinopio_c::stepCutscene70() {
             mSpeedF = 6.0f;
             mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
             m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
-            m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, sKinopioAllRoot, 0, 0);
+            m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, "kinopio_all_root", 0, 0);
             m_1a8 = 0xb;
         }
         break;
@@ -419,7 +431,7 @@ void daWmKinopio_c::stepCutscene70() {
         dWCamera_c *camera = dWCamera_c::m_instance;
         mVec3_c endPos;
         GetEndNodePos__13dWmMapModel_cFR7mVec3_c(&map->mModels[map->currIdx], endPos);
-        m_19c = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
+        m_19c = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W101");
         m_19c.y = endPos.y;
         m_19c.z = endPos.z;
         u8 *cam = (u8 *) camera;
@@ -462,9 +474,9 @@ void daWmKinopio_c::stepCutscene70() {
             // in wip/wm_units/agent_kinoballoon but not in include/, so
             // accessed via raw offset cast here, same idiom as
             // lbl_2_bss_11B70 elsewhere in this function).
-            void *node = fn_80100640(daWmMap_c::m_instance, sW101, 0);
+            void *node = fn_80100640(daWmMap_c::m_instance, "W101", 0);
             *(u32 *) ((u8 *) balloon + 0x184) = node ? *(u32 *) ((u8 *) node + 0xc) : 0;
-            mVec3_c pos = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, sW101);
+            mVec3_c pos = GetPos__9daWmMap_cFPCc(daWmMap_c::m_instance, "W101");
             *(mVec3_c *) ((u8 *) balloon + 0xac) = pos;
         }
         fn_2_16AE70();
