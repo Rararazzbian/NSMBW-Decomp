@@ -9495,3 +9495,46 @@ the session: **4 -> 7 -> 8 -> 13 -> 17 -> 18 -> 22 of 23.**
 Residual: the target assigns `r4` to `mParam`'s extracted byte and `r5` to
 `name[3]`'s pre-add value; the draft has them swapped, and no source-level
 phrasing across five axes flips the allocator's choice.
+
+## WM_KILLERBULLET opened at 4/37, and a LANDING-ORDER DEPENDENCY on WM_KILLER
+
+`daWmKillerBullet_c` derives **directly from `dWmDemoActor_c`** — unlike its parent
+`daWmKiller_c`, which goes through `dWmObjActor_c`. Confirmed by disassembling
+the landed `daWmPeach_c` object, a sibling that derives the same way, rather than
+by inference. `sizeof 0x208`, vtable slot map clean.
+
+**`sizeof(m3d::smdl_c)` is genuinely `0xc`** — vtable plus two pointers, probed
+directly rather than inferred from constructor gaps. That habit has caught three
+phantom members today.
+
+### The cross-unit dependency
+
+WM_KILLER's `execute()` calls `fn_2_169550` and declares it as a free function,
+`R_2_1_169550(dWmActor_c *)`. **That address is inside WM_KILLERBULLET's own
+`.text`** — so it is an ordinary member call with an implicit `this`, not a free
+function taking an explicit pointer.
+
+WM_KILLER matches either way because the bytes are identical, **but once
+WM_KILLERBULLET lands the symbol becomes real and the two declarations must
+agree.** Recorded as a landing-order dependency: land WM_KILLERBULLET's side
+first, or fix WM_KILLER's declaration at the same time.
+
+### Its state table has FIVE entries, counted from the relocations
+
+```
+entry 0 -> .text:0x168eb0    entry 3 -> .text:0x1690f0
+entry 1 -> .text:0x168ff0    entry 4 -> .text:0x168f10
+entry 2 -> .text:0x169280
+```
+
+`execute()` dispatches through a pointer-to-member table at `lbl_2_rodata_89F8`
+indexed by `m_1b0 * 0xc` via `__ptmf_scall` — a genuine five-state machine, so
+**five of the thirty remaining functions are the per-state handlers, identified by
+address before a line is written.**
+
+**Note entries 3 and 4 are out of address order.** The table's order is the STATE
+order, not the layout order — do not infer one from the other.
+
+**Counting relocations to get the entry count is now the standard opener for any
+table.** Two units today lost rounds to a wrong count — one too few, one too many
+— and in both cases every constant after the table shifted.
