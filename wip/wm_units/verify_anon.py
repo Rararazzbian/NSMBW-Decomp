@@ -71,6 +71,20 @@ Consequence: a reported `FUNCTION ORDER IS WRONG` can be an artefact of a
 mis-pairing rather than a real ordering defect. **Before acting on an order
 violation, read the target function at that address and confirm it is what the
 tool says it is.**
+
+PARTIALLY FIXED: the pairing no longer takes the first matching candidate
+unconditionally. Among equally-valid candidates it prefers one that keeps the
+matched sequence ascending, which removes the whole class of order violations
+invented by a tie between byte-identical bodies (WM_ANCHOR's two lone-`blr` weak
+symbols were reported as an ordering defect for exactly that reason). This is
+sound rather than a papering-over: byte-identical functions emit identical
+`.text`, so if an ascending assignment exists the object is consistent with
+correct definition order. A REAL inversion admits no ascending assignment and is
+still reported.
+
+It does NOT fix the other half of the trap -- a draft function paired to a
+target that is genuinely a different function of the same shape (the sandpillar
+case above). Confirming the target at that address is still required.
 """
 import os
 import re
@@ -184,13 +198,28 @@ def main():
     drafts = functions(draft)
     used, exact, matched = set(), 0, []
     print('%-10s %-22s %5s  %s' % ('addr', 'target', 'size', 'result'))
+    last = -1
     for addr, name, ins in target:
         want = norm(ins)
-        hit = None
-        for i, (dname, dins) in enumerate(drafts):
-            if i not in used and eq_mod_tail_blr(want, norm(dins)):
-                hit = i
-                break
+        # Collect EVERY unused candidate, not just the first. Two functions with
+        # byte-identical bodies are interchangeable candidates, and taking the
+        # first one unconditionally invents ordering violations out of a tie:
+        # WM_ANCHOR emits `finalUpdate__12dBaseActor_cFv` and
+        # `vf74__12daWmAnchor_cFv` as separate weak symbols whose bodies are both
+        # a lone `blr`, and greedy-first paired them the wrong way round and then
+        # reported FUNCTION ORDER IS WRONG on the strength of it.
+        candidates = [i for i, (dname, dins) in enumerate(drafts)
+                      if i not in used and eq_mod_tail_blr(want, norm(dins))]
+        # Prefer a candidate that keeps the matched sequence ascending. This is
+        # not cosmetic: if two draft functions have byte-identical bodies then
+        # swapping them emits identical `.text`, so when an ascending assignment
+        # EXISTS the emitted code is consistent with correct definition order and
+        # there is no defect to report. A genuine inversion has no such
+        # assignment and still reports.
+        ascending = [i for i in candidates if i > last]
+        hit = ascending[0] if ascending else (candidates[0] if candidates else None)
+        if hit is not None:
+            last = hit
         matched.append(hit)
         if hit is not None:
             used.add(hit)

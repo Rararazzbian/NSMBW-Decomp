@@ -10886,3 +10886,36 @@ within the hour, which is the argument for it.
 sweep that can silently skip its targets has to name what it skipped, or its
 summary line converts absence of evidence into evidence of absence — and someone
 downstream will cite it as a clean bill of health, exactly as happened here.
+
+## FIXED: the order check no longer invents violations out of a tie
+
+`verify_anon.py` paired each target with the FIRST unused draft function whose
+normalised body matched. Two functions with byte-identical bodies are equally
+valid candidates, so the tie was broken arbitrarily — and when it broke the wrong
+way the tool reported `FUNCTION ORDER IS WRONG` for a draft whose order was
+correct. WM_ANCHOR's two lone-`blr` weak symbols did exactly that.
+
+**The fix collects every candidate and prefers one that keeps the matched
+sequence ascending.** That is sound, not a papering-over: **byte-identical
+functions emit identical `.text`, so if an ascending assignment exists the object
+is consistent with correct definition order and there is nothing to report.** A
+genuine inversion admits no ascending assignment and still reports.
+
+Verified in both directions, which is the part that matters:
+
+- **WM_ANCHOR:** warning gone, tally unchanged at 19/22, and `vf74__13dWmObjActor_cFv`
+  now pairs with `vf74__12daWmAnchor_cFv` instead of stealing
+  `finalUpdate__12dBaseActor_cFv`.
+- **Negative control:** took the same draft, exchanged two DISTINCT-bodied
+  functions to synthesise a real inversion, and the tool still reports
+  `FUNCTION ORDER IS WRONG` and names `calcModel` as defined too late.
+
+**A fix that only removes false positives is untested.** The control that proves
+it still catches the real thing is the half that stops this from becoming a
+silent hole in the linkability gate — and that gate has already caught two
+genuinely unlinkable units today.
+
+This does NOT fix the other half of the pairing trap, documented in the tool's
+own header: a draft function paired to a target that is genuinely a different
+function of the same shape (the sandpillar deleting-destructor case). Confirming
+the target at the reported address is still required.

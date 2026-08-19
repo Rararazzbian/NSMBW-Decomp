@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 10889 lines / 414 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 10922 lines / 415 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -435,3 +435,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `10834-10850` Scouting note CORRECTED
 - `10851-10873` "FUNCTION ORDER IS WRONG" can be a TOOLING artifact. Here is how to tell.
 - `10874-10889` A tool that cannot see its target must not be read as a pass
+- `10890-10922` FIXED: the order check no longer invents violations out of a tie
