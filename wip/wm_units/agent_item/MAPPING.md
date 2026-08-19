@@ -488,3 +488,63 @@ on `create()` and `calcModel()`, the swapped-stack-slot mechanism (source
 declaration order controls slot order) is now demonstrated and reusable,
 and all three remaining gaps are characterized with a specific, measured
 cause rather than left as open questions.
+
+## Round 5 (new agent, coordinator's "genuinely unwritten functions" assignment): measured, found NONE unwritten; three fresh attempts on calcModel(), all negative
+
+**Coordinator's brief described this unit as ~4 unwritten functions. Measured
+first, per instruction: this is not accurate.** Rebuilt and confirmed
+**8/12, unchanged from the prior session's end.** All 4 non-matching
+functions (`createModel` 116, `cycleAnm` 14, `calcModel` 6, `__sinit` 15)
+already have full, non-stub implementations with multiple characterized
+rounds of prior work (Rounds 1-4 above) -- none is blank. This mirrors
+exactly what a sibling session found and reported for WM_ANTLION_MNG: a
+stale "N unwritten" count describing "not yet MATCHING" rather than "no
+draft exists."
+
+**Three genuinely different attempts on `calcModel()` (the closest gap, 6
+differing), all measured, all negative:**
+
+1. Hoist `k[10] * mMotion[1]` into its own named `float bounceY` statement
+   before the `local.x/y/z` assignments (untried axis -- prior rounds only
+   permuted assignment STATEMENT order, never separated the delta's
+   computation from it). Result: still 6 differing (unchanged count, but
+   confirmed via `draft.txt` that the specific register choices for the
+   `fmuls` destination and the `mPos.x`/`mPos.y` loads shifted around --
+   not an improvement, just a different wrong shape).
+2. Swap the multiplication operand order (`mMotion[1] * k[10]` instead of
+   `k[10] * mMotion[1]`). Result: 8 differing. Worse, reverted.
+3. Fully decouple load from store: three named locals (`posX`, `posZ`,
+   `posY`) computed first, assigned to `local.x/y/z` in a second block.
+   Result: 7 differing. Worse, reverted.
+
+Reverted to the baseline (`local.x = mPos.x; local.z = mPos.z; local.y =
+mPos.y + k[10] * mMotion[1];`, 6 differing) after each attempt; confirmed
+via `git diff --stat` that the source is byte-identical to HEAD when this
+round ended. **Combined with the 6 assignment-order permutations already on
+record in Round 4 (x,y,z / x,z,y / y,x,z / y,z,x / z,x,y / z,y,x -- x,z,y
+best), that is 9 total measured variants for this one residual.** The
+target's specific load order into f2/f1/f3 for mPos.y/z/x while storing in
+x,z,y order to the stack is very likely a pure MWCC scheduling choice not
+reachable through statement-level restructuring of this shape -- parking
+it as a wall, not just "not yet found."
+
+`cycleAnm()`'s 14-differing gap (target folds a single non-zero-offset read
+of a multi-use `sConstTable` into the `lfs` immediate; the draft's
+equivalent access, however spelled, always costs one extra `addi`) and
+`__sinit`'s 15-differing gap (same folding limit, on 4 same-shape reads)
+were re-read this round but not re-attempted -- both are already correctly
+diagnosed in Round 2 as a genuine MWCC folding-heuristic limit on
+non-zero-offset multi-use symbol reads, confirmed negative under BOTH
+array-index and explicit-pointer-arithmetic spellings there. No new lever
+for this specific limit was found this round. `createModel()` (116
+differing) is the largest remaining gap, already characterized in Round 2
+as needing BOTH profile-relative addressing AND eager two-anchor hoisting
+to reach the target's `_savegpr_27`/`r27-r31` register signature -- not
+attempted this round given the size of the gap and the time spent
+confirming `calcModel()`'s wall.
+
+**Parked at 8/12, unchanged.** Nothing here should be retried without a
+genuinely new angle: the calcModel() residual now has 9 measured variants
+on record, cycleAnm()/`__sinit` share one clearly-diagnosed compiler
+limit with two spellings already tried, and createModel() has a specific,
+named two-part register-signature target that no variant has hit yet.

@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11210 lines / 425 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11273 lines / 427 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -446,3 +446,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11097-11139` The pool mechanism, MEASURED rather than asserted (WM_KOOPAJR)
 - `11140-11178` `sc_ForceList` is NOT a shared-header defect. Ten landed units prove it.
 - `11179-11210` `.ctors` resolves "which function is `__sinit`" EXACTLY — and the count is a test
+- `11211-11241` MY ERROR: a tally gap is NOT a measure of unwritten work
+- `11242-11273` THERE ARE UNLANDED UNITS OF 0x30 BYTES, and we have been grinding walls

@@ -11207,3 +11207,66 @@ matching entry is equally informative: its TU includes no header that costs one.
 **318 `.ctors` entries across the module, one per unit that has static state.**
 The table is small, exact, and was sitting in the binary the whole time — three
 separate agents spent effort inferring what one relocation walk states outright.
+
+## MY ERROR: a tally gap is NOT a measure of unwritten work
+
+I assigned WM_DANCE_PAKKUN (9/16) and WM_ITEM (8/12) as authoring targets on the
+reasoning that they had "~7 and ~4 unwritten functions". **Both had ZERO.** Every
+non-matching function already had a full draft — dance_pakkun with ten rounds of
+documented iteration behind it, item with four. The agent measured this properly,
+spent its budget on the closest candidates in each, moved nothing, reverted
+cleanly, and reported it.
+
+I read `N/M` in the session summary as "M-N unwritten". It means "M-N not
+MATCHING", and on a parked unit those are almost always walls with history. The
+distinction is the entire basis for choosing a unit, and I had it backwards.
+
+**Before assigning a unit as an authoring target, MEASURE how many of its
+functions have no source at all** — either ask the agent to report that split
+before starting, or read its `MAPPING.md`. "Parked at N/M" says nothing about
+whether the remaining work is writing or grinding.
+
+Two things that did come out of the round:
+
+- **A named family pattern, now on two independent units.** WM_DANCE_PAKKUN's
+  constructor residual is byte-for-byte the same shape as WM_ANCHOR's: base-ctor
+  call, then the vtable installed into `r4` with `+0x184` stored FIRST in the
+  target, versus `r3` and the reversed order in the draft. The same lever (move
+  the init-list member into the body) regressed both — ANCHOR 4 -> 17,
+  DANCE_PAKKUN 4 -> 38. **Two independent confirmations make this a family
+  pattern, not a coincidence.** Do not spend the lever on this ctor skeleton again.
+- dance_pakkun's destructor carries the same duplicate-`beq` shape confirmed
+  unfixable-from-derived-source earlier this session. Noted, correctly not
+  re-tested.
+
+## THERE ARE UNLANDED UNITS OF 0x30 BYTES, and we have been grinding walls
+
+While five agents worked units of 0x1000-0x3000 bytes, a scan of every profile
+range against the landed slices turned up this:
+
+```
+0x30   0xa8470    JR_FLOOR_FIRE_MGR              0x50   0x7d400   AC_FLAGON
+0x30   0xc5c90    LEMMY_FOOTHOLD                 0x50   0x7d450   AC_4SWICHAND
+0x30   0xd1450    AC_LIFT_REMOCON_SEESAW         0x50   0x7d4a0   AC_4SWICHOR
+0x30   0xf5130    MIDDLE_BG_FOR_CASTLE_LUDWIG    0x50   0x7d4f0   AC_RANDSWICH
+0x30   0xf8980    MINI_GAME_GUN_BATTERY_MGR      0x60   0x1c5cb0  WM_TEST
+0x30   0xfc8d0    MINI_GAME_WIRE_MESH_MGR        0xa0   0x152010  AC_WATER_MOVE
+0x30   0x1204e0   PEACH_CASTLE_SEQUENCE_MGR      0xb0   0x77af0   DUMMY_DOOR_CHILD
+```
+
+**0x30 bytes is roughly twelve instructions.** The project has landed nothing in
+this session while agents fought register-allocation residuals on units two
+orders of magnitude larger.
+
+**The caveat that makes this scoping work, not a free lunch:** a slice is per
+TRANSLATION UNIT, not per profile. Six `AC_*` switch profiles sitting at
+consecutive `0x50` offsets are very likely ONE `.cpp` file, and mis-scoping a
+unit from a profile boundary has cost this project expensively twice already
+(WM_ANTLION scoped with both ends wrong; WM_ANTLION_MNG scoped at 79 functions
+when it is 22). Establish the TU boundary before authoring.
+
+Some come with a head start already in hand: `BSS_SINGLETONS.md` gives
+`MINI_GAME_GUN_BATTERY_MGR_OBJ` as `sizeof 0xF4 : dActor_c`,
+`PEACH_CASTLE_SEQUENCE_MGR_OBJ` as `sizeof 0xB8 : dActor_c`, and
+`MINI_GAME_WIRE_MESH_MGR_OBJ` as `sizeof 0x708 : dActor_c` — size, base class and
+singleton pointer already resolved before anyone opens the disassembly.

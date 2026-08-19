@@ -1468,3 +1468,76 @@ __sinit 14 differing via difftool.py (verify_anon: 4), size 52/52 exact; pool-of
 - Scalar-locals variant for the `trans()` call: worse (105->113 size, 101->112 differing). The target's per-component stack staging does NOT mean the source used separate scalar locals -- whatever produces that staging, it isn't this.
 - `getRate() <=` (matching the branch mnemonic literally): worse (105->106 size, 101->103 differing), despite being the more defensible reading of `fcmpo`+`ble`. This is now a flagged, in-source-documented disagreement between "what the branch instruction literally says" and "what measures closer" -- neither resolved, both recorded so the next attempt doesn't have to re-derive either one from scratch.
 - Did not find a variant that improved on the existing 101/105 baseline this round. The function's core arithmetic shape (two `getFrame()` calls, the table lookup, the conditional ratio flip, the angle computation, the `trans`/`ZXYrotM`/`setLocalMtx`/`setScale`/`calc` tail) was already right from two rounds ago; what's not yet right is finer-grained register/temporary handling this round's two attempts did not crack.
+
+## Round 11 (new agent, coordinator's "genuinely unwritten functions" assignment): measured, found NONE unwritten; ctor's cross-unit link to ANCHOR's identical wall
+
+**Coordinator's brief described this unit as ~7 unwritten functions.
+Measured first, per instruction: this is not accurate.** Rebuilt and
+confirmed **9/16, unchanged from the tenth round's end.** Every one of the
+7 non-matching functions (ctor 4, dtor 21, create() 34, createModel() 75,
+calcModelFor() 99/101, startStep() 11, `__sinit` 4-via-verify_anon/14-via-
+difftool) already has ten rounds of characterized prior work above -- none
+is blank. Same finding as WM_ANTLION_MNG and WM_ITEM (both measured this
+same session): a stale "N unwritten" count describing "not yet MATCHING,"
+not "no draft exists."
+
+### Constructor (4 differing) -- CROSS-UNIT CONFIRMATION of a wall already found on WM_ANCHOR this session
+
+Full instruction comparison against the target found the exact same shape
+this session's WM_ANCHOR round diagnosed and failed to fix: the target
+computes the class's own vtable pointer into **r4** and stores the class's
+`+0x184` int member **before** computing `r3 = &mAllocator` for the next
+constructor call; the draft computes the vtable pointer into **r3** and
+does the opposite order. Byte-for-byte the same family pattern as
+`daWmAnchor_c`'s own ctor (also `dWmDemoActor_c`-derived, also a single
+`m_184(-1)`-style init-list member before installing the vtable and calling
+`__ct__16dHeapAllocator_cFv`).
+
+**Tested the one lever already known to fail on ANCHOR, to confirm it fails
+here too rather than assume:** moved `m_184(-1)` from the initializer list
+into the constructor body (`m_184 = -1;` as the first statement). Result:
+**4 differing -> 38 differing.** Same direction, similar magnitude of
+regression as ANCHOR's own 4 -> 17. Reverted immediately, confirmed by
+rebuild. **This is now two independent confirmations of the same lever
+failing on the same source shape across two different units** -- do not
+try it a third time on any `dWmDemoActor_c`-derived class with this
+"single `+0x184` int, init-list form" ctor shape. The residual is very
+likely a genuine MWCC scheduling choice tied to this exact constructor
+skeleton (base-ctor call, then vtable install + one int store, then a
+member sub-object ctor call), not something reachable by reordering the
+derived class's own source.
+
+### Other functions: reviewed, not re-attempted this round
+
+- `startStep()` (11 differing): already has 2 measured-negative variants on
+  record (vector `+=` instead of scalar, and a forced local-copy-first
+  form; both worse, both wrong SIZE). Not retried.
+- `dtor` (21 differing): this session's WM_ANCHOR round independently
+  found and empirically tested the exact same "duplicate `beq`" pattern
+  (two consecutive branches on the same untouched condition, guarding
+  automatic base-subobject destruction) and confirmed via rebuild that an
+  explicit `if (this) {}`-shaped guard is fully eliminated by MWCC as dead
+  code, producing zero change -- not a fix. Given this unit's dtor shows
+  the identical target-instruction shape (per this file's own Round-2
+  section above), that empirical result applies here directly; not
+  re-tested.
+- `create()` (34-36 differing): already has a well-characterized, size-
+  exact-except-2-instructions residual (extra saved register from an
+  early-hoisted `&sStepTable` address, 3 variants already tried and
+  failed). Not retried.
+- `createModel()`/`calcModelFor()` (75, 99-101 differing): both large,
+  already multiply-iterated (register-permutation ceiling confirmed on
+  the former; two fresh axes tried and reverted on the latter last round).
+  Not attempted this round given the ctor investigation and the review of
+  the other functions' histories consumed the round.
+- `__sinit`: pool-offset drift (`0x38` vs `0x54`) already correctly
+  diagnosed as needing a genuine cross-function `.rodata` consolidation
+  (multiple independent pool objects -> one shared object), explicitly
+  flagged as unattempted "real restructuring, not a value swap." Not
+  attempted this round -- would need `calcModelFor()`/`createModel()`
+  closed first per the "a unit's pool cannot be right while a contributing
+  function is unwritten" project rule, since those functions read the
+  same pool region.
+
+**Parked at 9/16, unchanged.** Confirmed via `git diff --stat` that the
+source is byte-identical to HEAD at the end of this round.
