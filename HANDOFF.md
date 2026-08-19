@@ -6828,3 +6828,78 @@ the `__sinit`-compiles-last boundary.
 **Success criterion for any variant: `.rodata` gains the word AND `.text` stays
 `0xb00` at 37/37 with `.ctors`/`.data`/`.bss` untouched.** Measure `.text`'s size
 every time; that is what disqualified the probe.
+
+## WM_DANCE_PAKKUN opened: 8/16 on its first authored round
+
+`.text 0x161940-0x1622b0`, 16 functions, `wip/wm_units/agent_dance_pakkun/`.
+`daWmDancePakkun_c : public dWmDemoActor_c`, `sizeof` `0x2e0`, every offset
+verified against the compiler rather than read off the disassembly. All five
+section bounds report clean:
+
+```
+.text 0x161940-0x1622b0   .data 0x44590-0x44768   .rodata 0x87f0-0x8830
+.bss 0xfd80-0xfd98        .ctors 0x3d4-0x3d8
+```
+
+MATCH on first authoring: `classInit`, `draw`, `doDelete`, `resetStep`,
+`updateStepAnim`, an unused stub, a one-line tail call, and the `sc_ForceList`
+array-dtor thunk.
+
+**That last one matched without being written.** `dWmLib::sc_ForceList` is a
+namespace-scope static fully declared in the landed `d_wm_lib.hpp`, so including
+the header emits the thunk identically -- the "a header static is emitted into
+every TU that odr-uses it" rule. It also answers the open question of which
+function owns the `.ctors`-registered static local: **none of ours, it is
+automatic.** Worth remembering before anyone writes one by hand again.
+
+### The unit's real strings, read out of the retail binary
+
+`.data` file offset is `0x1d0c00`; add the address. The whole claim contains
+only these printable runs:
+
+```
+0x44590  "F7C0"              <- the anonymous sc_ForceList pair
+0x44598  "W7C0"
+0x44620  "cs_wait"           <- animation name
+0x4462c  "g3d/pakkun.brres"  <- resource path
+0x44640  "pakkun"            <- model / archive name
+```
+
+Two uses: they remove the guesswork from `createModel`, and the claim opening
+exactly on the two anonymous 5-byte strings independently confirms the `.data`
+bound via the family rule in `check_bounds.py`. **Extract a unit's strings this
+way before authoring anything that names a resource.**
+
+### `+0x60` is a four-byte hole in `fBase_c`
+
+Measured, not inferred. `mHeap` -- `fBase_c`'s last named field -- ends at
+`0x60`, and `sizeof(fBase_c)` is `0x64`. To rule out the secondary base reusing
+that tail padding, compile the upcast and read the adjustment:
+
+```cpp
+cOwnerSetMg_c *getBase(dBase_c *d) { return d; }   // emits: addi r3, r3, 0x64
+```
+
+So `cOwnerSetMg_c` starts at `0x64` and **`0x60` is unclaimed padding with no
+alignment reason to exist** -- strong evidence our `fBase_c` is missing a field.
+dance_pakkun's ctor and `execute()` both store and double-dereference a `.data`
+table address there.
+
+**Do not add the field.** `f_base.hpp` is depended on by every landed unit; the
+change belongs to the lead and only behind a full five-binary verify. Because the
+hole already exists, naming it would not change `sizeof`, so the change is
+plausible -- but it needs a corpus search first for another `this+0x60` access
+that would show how the field is really spelled. Meanwhile the access is a raw
+cast inside the unit's own `.cpp`, which touches nothing shared.
+
+**The upcast-adjustment trick is worth keeping**: compiling a conversion and
+reading its `addi` off the disassembly gives a secondary base's offset directly.
+
+### Reminder that cost a round elsewhere today
+
+`verify_anon`'s target names are a **nearest-neighbour heuristic, not
+identifications.** This unit's table currently labels three different targets
+`__ct__17daWmDancePakkun_cFv`, and on antlion_mng the same heuristic labelled a
+function `clearAllModels` that is really `pickRevivedIndices` -- which I passed
+to an agent as established fact and had to be corrected on. Read the target
+disassembly.

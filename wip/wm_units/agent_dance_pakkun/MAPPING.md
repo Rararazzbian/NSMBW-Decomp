@@ -262,3 +262,148 @@ Scratch file used for all measured claims above:
 `wip/wm_units/agent_dance_pakkun/layout_check.cpp` (compiles clean with
 `module='d_basesNP'`; left in place for the next round to extend rather than
 re-derive).
+
+---
+
+## Update after coordinator review: `+0x60` enumerated, `draw()` slot settled, unit authored
+
+### `this+0x60`, resolved by enumeration (not fixed, but now precisely bounded)
+
+Per-member `S<offsetof(...)>` probes against `dBaseActor_c` (one member per
+line, class scope, errors read in source order -- all monotonically
+increasing, so no reordering artifact):
+
+```
+mUniqueID=0x0  mParam=0x4  mProfName=0x8  mLifecycleState=0xA
+mDeleteRequested=0xB  mDeferExecute=0xC  mDeferRetryCreate=0xD
+mGroupType=0xE  mProcControl=0xF  mMng=0x10  mpUnusedHelper=0x50
+mUnusedList=0x54  mHeap=0x5C (ends 0x60)  mpKindString=0x68  mpNameString=0x6C
+sizeof(fBase_c)=0x64  sizeof(dBase_c)=0x70  sizeof(dBaseActor_c)=0x128
+```
+
+`mHeap` (the last named `fBase_c` field) ends exactly at `0x60`, and
+`sizeof(fBase_c)` measures `0x64` -- four bytes of *unclaimed* trailing space
+inside `fBase_c` alone, before `dBase_c`'s secondary base or its own fields
+even enter the picture. To rule out `cOwnerSetMg_c` (the secondary base)
+occupying that gap via tail-padding reuse, I compiled the upcast itself and
+read the generated adjustment off the disassembly:
+
+```cpp
+cOwnerSetMg_c *getBase(dBase_c *d) { return d; }
+```
+compiles to `addi r3, r3, 0x64` -- i.e. **`cOwnerSetMg_c`'s sub-object starts
+at `dBase_c+0x64`, not `+0x60`.** (`getBase2` returning `fBase_c*` from the
+same `d` emits no adjustment at all, confirming `fBase_c` is the primary
+base at offset 0, as assumed.) `sizeof(cOwnerSetMg_c)` measures `0x4` (just
+its one pointer member, no padding of its own), which is consistent with
+`dBase_c`'s measured total of `0x70` = `0x64 (fBase_c) + 0x4 (cOwnerSetMg_c)
++ 0x4 (mpKindString) + 0x4 (mpNameString)`.
+
+**Conclusion: offset `0x60` is not any named member of `fBase_c`, `dBase_c`,
+`cOwnerSetMg_c`, or `dBaseActor_c` in the headers as they stand today.** It
+sits inside `fBase_c`'s own reported `sizeof`, past every field the header
+declares, with no alignment reason I can find for the padding to exist at
+all (`0x60` is already 4-aligned; nothing in the class needs 8-alignment).
+Two readings are consistent with the evidence and I can't distinguish them
+further without either the original source or a landed sibling that does the
+same `this+0x60` access:
+
+- `fBase_c` is genuinely missing a field there (a real gap in an
+  already-landed, 7-units-depended-on header) -- **I am not proposing this
+  edit**, per the project rule that a shared-header change needs to be
+  proven safe before anyone touches it, and this is exactly the kind of
+  claim that's been wrong before.
+- Our own unit really does poke an `fBase_c` implementation detail directly
+  (unusual, but the double-`+0x60` indirection in `execute()` reading a
+  function pointer back out of it is exactly the shape you'd get from a
+  hand-rolled dispatch table, and this whole actor is visibly more
+  "table-driven" than its siblings -- see the `lbl_2_rodata_87F8`
+  member-function-pointer table in `execute()` too).
+
+I did not chase this further. What would settle it: grep the landed corpus
+for any other `this+0x60` access on a `dBase_c`-derived object (per
+AGENT_CONTEXT.md's "read a function that already matches" technique) --
+I did not do this search this round.
+
+### `draw()`'s vtable slot -- settled by compiling both, as instructed
+
+```cpp
+int test_entry(m3d::mdl_c *m) { m->entry(); return 1; } // -> lwz r12,0x14(r12)
+int test_play(m3d::mdl_c *m)  { m->play();  return 1; } // -> lwz r12,0x1c(r12)
+```
+Target `draw()` (`fn_2_161d40`) uses vtable+`0x14` -- **`entry()`, not
+`play()`.** My hand-derived vtable slot arithmetic in the first pass was
+wrong (I'd placed `entry` at `+0x10`); the compiled answer is authoritative.
+As a bonus this also identifies `fn_2_161f10` (vtable+`0x1c`, the tail-call
+helper called once from `execute()`): that's `play()`. Both are now
+confirmed functions, and both MATCH byte-for-byte in the build below.
+
+### Draft authored and built: 8/16 MATCH
+
+`wip/wm_units/agent_dance_pakkun/d_a_wm_dance_pakkun.cpp` now exists and
+compiles clean against the shadow header. `verify_anon` result:
+
+```
+0x00161940 fn_2_161940               12  MATCH  <- classInit
+0x00161970 fn_2_161970               56  46 differing  (ctor -- blocked on +0x60, see above)
+0x00161a50 fn_2_161A50               54  21 differing  (dtor -- shape written but not matching)
+0x00161b30 fn_2_161B30               57  36 differing  (create() -- blocked on +0x60 and the mBgmSync/mParam table init)
+0x00161c20 fn_2_161C20               69  64 differing  (execute() -- blocked on +0x60)
+0x00161d40 fn_2_161D40               12  MATCH  <- draw()  (mModel.entry())
+0x00161d70 fn_2_161D70               17  MATCH  <- doDelete()
+0x00161dc0 fn_2_161DC0               81  77 differing  (createModel() -- placeholder resource strings/params, shape only)
+0x00161f10 fn_2_161F10                4  MATCH  <- tailHelper()  (mModel.play())
+0x00161f20 fn_2_161F20              101  100 differing  (calcModelFor() -- the dance-rotation math itself not reproduced)
+0x001620c0 fn_2_1620C0               35  32 differing  (startStep() -- stub only, real body not authored)
+0x00162150 fn_2_162150                3  MATCH  <- resetStep()
+0x00162160 fn_2_162160               19  MATCH  <- updateStepAnim()
+0x001621b0 fn_2_1621B0                1  MATCH  <- unusedStub()
+0x001621c0 fn_2_1621C0               52  50 differing  (mislabelled by the tool as "create" -- see note below)
+0x00162290 fn_2_162290                7  MATCH  <- __arraydtor$12779 (the dWmLib::sc_ForceList array dtor)
+
+8/16 byte-identical modulo symbol names
+```
+
+Notes on the two surprises:
+
+- **`fn_2_162290` (the `dWmLib::sc_ForceList` array-dtor thunk) MATCHES even
+  though I never wrote it.** `dWmLib::sc_ForceList` and
+  `dWmLib::c_StartPointKinokoHouseID` are namespace-scope `static`s already
+  declared **with full initialisers** directly in the existing, landed
+  `d_wm_lib.hpp` (`sc_ForceList[] = {{WORLD_7, "F7C0", WORLD_7,
+  dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160.0f,-30.0f,-478.0f)}};`).
+  Per AGENT_CONTEXT.md's "header static with a non-trivial constructor is
+  emitted into every TU that odr-uses it" rule, simply `#include`-ing
+  `d_wm_lib.hpp` was enough for the compiler to emit this thunk identically
+  -- I did not need to write source for it, and didn't. This resolves
+  Open question 3 from the first pass: it isn't a function-local static
+  inside one of our own member functions, it's the header's own file-scope
+  static, triggered automatically.
+- **`fn_2_1621c0` itself did NOT match**, and `verify_anon` mislabels it as
+  differing against our `create()` -- that's a knock-on effect of every
+  earlier function in the file being the wrong size (my `create()`,
+  `execute()` etc. are shorter than the real ones), which shifts everything
+  downstream in the linear layout out of alignment with the target's
+  addresses. This is expected and not a new finding: once the blocked
+  functions above are authored correctly, `fn_2_1621c0` should re-align
+  automatically (it needs no direct authoring, per the point above).
+
+### What's still unresolved (unchanged from Open questions 1/3/4, now narrower)
+
+- Open question 1 (`+0x60`) is now precisely bounded (see above) but not
+  answered. It blocks the ctor, `execute()`, and part of `create()`.
+- `create()`'s `mBgmSync` setup indexes `lbl_2_data_445D0` by a byte
+  extracted from `mParam` (confirmed: the real function reads
+  `this+0x4` = `fBase_c::mParam`, masks+shifts it, and uses the result as a
+  table offset) -- not reproduced.
+- `calcModelFor()`, `createModel()`'s exact resource/animation names, and
+  `startStep()`'s real body (the `lbl_2_data_445D0`-driven position-delta /
+  `mAngle.y=0x4000` / `mScale` reset sequence described in the original
+  function-map table above) are all still unauthored placeholders.
+- `pad_1a8` and `pad_2c0[0x18]` remain unexplained gaps.
+
+Scratch files added this round: `off_probe2.cpp`..`off_probe5.cpp` (member
+enumeration and the base-upcast offset probe -- `off_probe.cpp` was the
+coordinator's starting point, kept as-is), `draw_probe.cpp` (the
+`entry()`/`play()` A-B compile). `d_a_wm_dance_pakkun.cpp` and `build.py`
+are the actual draft and its build script.
