@@ -8872,3 +8872,47 @@ calcModel      6   register-number/load-scheduling on one triple, decoupled from
 __sinit       15   same offset-folding rule; re-measured after calcModel's fix and did not move,
                    confirming no cross-function pool sharing here
 ```
+
+## Read the VTABLE to identify which target address is which function
+
+WM_KILLER's first round had `execute()` placed at `0x167d20` — an 8-byte function
+— purely because `verify_anon`'s greedy content matcher paired a
+`return SUCCEEDED;` stub against it. **`check_vtable.py` against the class's own
+vtable proved that address is `doDelete`, and `execute` is the 0x124-byte function
+at `0x167b10`.**
+
+The slot map came straight out and matched the family layout exactly:
+
+```
+slot  2  0x167aa0  0x6c   create
+slot  5  0x167d20  0x8    doDelete
+slot  8  0x167b10  0x124  execute
+slot 11  0x167c40  0x30   draw
+slot 24  0x168060  0x88   processCutsceneCommand
+```
+
+**Run `check_vtable.py` before authoring anything.** It gives the function
+identities for free, and it is immune to the content-collision trap that
+misidentifies small functions. Two units today had a function identified wrongly
+by the pairing heuristic; the vtable settles it in one command.
+
+Closing `draw()` and `doDelete()` followed immediately once their identities were
+known — both are family-standard one-liners.
+
+## The `.bss` ownership test applied correctly
+
+Rather than accepting my resolution, the agent checked the actual instruction:
+
+```
+lis r6, lbl_2_bss_FE40@ha ; addi r5, r6, lbl_2_bss_FE40@l
+```
+
+A **full relocated reference to the symbol's own address** — the same shape this
+unit uses for known externs — and **no instruction anywhere in the unit computes
+that address as an owned base plus a constant.** By the displacement test, the TU
+never demonstrates it knows the symbol's placement, so it does not own it.
+
+`.bss` claim stands at `0xfe00-0xfe10`; the far symbol needs an `extern`.
+
+**That is the test applied properly: not "is there a reference" but "is there a
+COMPILE-TIME DISPLACEMENT off a base this TU establishes".**

@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_wm_killer.cpp"
 
-# 0x00000000..0x000003F8 | size: 0x3F8
+# 0x00000000..0x00000458 | size: 0x458
 .text
 .balign 16
 
@@ -263,110 +263,154 @@
 /* 00000338 00000378  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000033C 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x340 | size: 0x8
+# .text:0x340 | size: 0x10
+# daWmKiller_c::create()
+.fn create__12daWmKiller_cFv, global
+/* 00000340 00000380  38 00 00 01 */	li r0, 0x1
+/* 00000344 00000384  98 03 02 08 */	stb r0, 0x208(r3)
+/* 00000348 00000388  38 60 00 01 */	li r3, 0x1
+/* 0000034C 0000038C  4E 80 00 20 */	blr
+.endfn create__12daWmKiller_cFv
+
+# .text:0x350 | size: 0x10
 # daWmKiller_c::execute()
 .fn execute__12daWmKiller_cFv, global
-/* 00000340 00000380  38 60 00 01 */	li r3, 0x1
-/* 00000344 00000384  4E 80 00 20 */	blr
+/* 00000350 00000390  38 00 00 00 */	li r0, 0x0
+/* 00000354 00000394  98 03 02 08 */	stb r0, 0x208(r3)
+/* 00000358 00000398  38 60 00 01 */	li r3, 0x1
+/* 0000035C 0000039C  4E 80 00 20 */	blr
 .endfn execute__12daWmKiller_cFv
-/* 00000348 00000388  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000034C 0000038C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x350 | size: 0x4
-# dBaseActor_c::finalUpdate()
-.fn finalUpdate__12dBaseActor_cFv, weak
-/* 00000350 00000390  4E 80 00 20 */	blr
-.endfn finalUpdate__12dBaseActor_cFv
-/* 00000354 00000394  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000358 00000398  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000035C 0000039C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x360 | size: 0xC
-# dWmDemoActor_c::clearCutEnd()
-.fn clearCutEnd__14dWmDemoActor_cFv, weak
-/* 00000360 000003A0  38 00 00 00 */	li r0, 0x0
-/* 00000364 000003A4  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000368 000003A8  4E 80 00 20 */	blr
-.endfn clearCutEnd__14dWmDemoActor_cFv
-/* 0000036C 000003AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x370 | size: 0xC
-# dWmDemoActor_c::setCutEnd()
-.fn setCutEnd__14dWmDemoActor_cFv, weak
-/* 00000370 000003B0  38 00 00 01 */	li r0, 0x1
-/* 00000374 000003B4  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000378 000003B8  4E 80 00 20 */	blr
-.endfn setCutEnd__14dWmDemoActor_cFv
-/* 0000037C 000003BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x380 | size: 0x8
-# dWmDemoActor_c::checkCutEnd()
-.fn checkCutEnd__14dWmDemoActor_cFv, weak
-/* 00000380 000003C0  88 63 01 39 */	lbz r3, 0x139(r3)
-/* 00000384 000003C4  4E 80 00 20 */	blr
-.endfn checkCutEnd__14dWmDemoActor_cFv
-/* 00000388 000003C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000038C 000003CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x360 | size: 0x30
+# daWmKiller_c::draw()
+.fn draw__12daWmKiller_cFv, global
+/* 00000360 000003A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000364 000003A4  7C 08 02 A6 */	mflr r0
+/* 00000368 000003A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000036C 000003AC  85 83 01 A8 */	lwzu r12, 0x1a8(r3)
+/* 00000370 000003B0  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000374 000003B4  7D 89 03 A6 */	mtctr r12
+/* 00000378 000003B8  4E 80 04 21 */	bctrl
+/* 0000037C 000003BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000380 000003C0  38 60 00 01 */	li r3, 0x1
+/* 00000384 000003C4  7C 08 03 A6 */	mtlr r0
+/* 00000388 000003C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000038C 000003CC  4E 80 00 20 */	blr
+.endfn draw__12daWmKiller_cFv
 
 # .text:0x390 | size: 0x8
-# dWmDemoActor_c::doDelete()
-.fn doDelete__14dWmDemoActor_cFv, weak
+# daWmKiller_c::doDelete()
+.fn doDelete__12daWmKiller_cFv, global
 /* 00000390 000003D0  38 60 00 01 */	li r3, 0x1
 /* 00000394 000003D4  4E 80 00 20 */	blr
-.endfn doDelete__14dWmDemoActor_cFv
+.endfn doDelete__12daWmKiller_cFv
 /* 00000398 000003D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000039C 000003DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x3A0 | size: 0x8
-# dWmDemoActor_c::draw()
-.fn draw__14dWmDemoActor_cFv, weak
-/* 000003A0 000003E0  38 60 00 01 */	li r3, 0x1
-/* 000003A4 000003E4  4E 80 00 20 */	blr
-.endfn draw__14dWmDemoActor_cFv
+# .text:0x3A0 | size: 0x4
+# daWmKiller_c::processCutsceneCommand(int, bool)
+.fn processCutsceneCommand__12daWmKiller_cFib, global
+/* 000003A0 000003E0  4E 80 00 20 */	blr
+.endfn processCutsceneCommand__12daWmKiller_cFib
+/* 000003A4 000003E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000003A8 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000003AC 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x3B0 | size: 0x8
-# dWmDemoActor_c::create()
-.fn create__14dWmDemoActor_cFv, weak
-/* 000003B0 000003F0  38 60 00 01 */	li r3, 0x1
-/* 000003B4 000003F4  4E 80 00 20 */	blr
-.endfn create__14dWmDemoActor_cFv
+# .text:0x3B0 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 000003B0 000003F0  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 000003B4 000003F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000003B8 000003F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000003BC 000003FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x3C0 | size: 0x8
-# dWmObjActor_c::vf78()
-.fn vf78__13dWmObjActor_cFv, weak
-/* 000003C0 00000400  38 60 00 00 */	li r3, 0x0
-/* 000003C4 00000404  4E 80 00 20 */	blr
-.endfn vf78__13dWmObjActor_cFv
-/* 000003C8 00000408  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x3C0 | size: 0xC
+# dWmDemoActor_c::clearCutEnd()
+.fn clearCutEnd__14dWmDemoActor_cFv, weak
+/* 000003C0 00000400  38 00 00 00 */	li r0, 0x0
+/* 000003C4 00000404  98 03 01 39 */	stb r0, 0x139(r3)
+/* 000003C8 00000408  4E 80 00 20 */	blr
+.endfn clearCutEnd__14dWmDemoActor_cFv
 /* 000003CC 0000040C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x3D0 | size: 0x4
-# dWmObjActor_c::vf74()
-.fn vf74__13dWmObjActor_cFv, weak
-/* 000003D0 00000410  4E 80 00 20 */	blr
-.endfn vf74__13dWmObjActor_cFv
-/* 000003D4 00000414  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003D8 00000418  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x3D0 | size: 0xC
+# dWmDemoActor_c::setCutEnd()
+.fn setCutEnd__14dWmDemoActor_cFv, weak
+/* 000003D0 00000410  38 00 00 01 */	li r0, 0x1
+/* 000003D4 00000414  98 03 01 39 */	stb r0, 0x139(r3)
+/* 000003D8 00000418  4E 80 00 20 */	blr
+.endfn setCutEnd__14dWmDemoActor_cFv
 /* 000003DC 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x3E0 | size: 0x8
-# dWmObjActor_c::GetActorType()
-.fn GetActorType__13dWmObjActor_cFv, weak
-/* 000003E0 00000420  38 60 00 02 */	li r3, 0x2
+# dWmDemoActor_c::checkCutEnd()
+.fn checkCutEnd__14dWmDemoActor_cFv, weak
+/* 000003E0 00000420  88 63 01 39 */	lbz r3, 0x139(r3)
 /* 000003E4 00000424  4E 80 00 20 */	blr
-.endfn GetActorType__13dWmObjActor_cFv
+.endfn checkCutEnd__14dWmDemoActor_cFv
 /* 000003E8 00000428  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000003EC 0000042C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x3F0 | size: 0x8
-# m3d::anmChr_c::getType() const
-.fn getType__Q23m3d8anmChr_cCFv, weak
+# dWmObjActor_c::vf78()
+.fn vf78__13dWmObjActor_cFv, weak
 /* 000003F0 00000430  38 60 00 00 */	li r3, 0x0
 /* 000003F4 00000434  4E 80 00 20 */	blr
+.endfn vf78__13dWmObjActor_cFv
+/* 000003F8 00000438  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000003FC 0000043C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x400 | size: 0x4
+# dWmObjActor_c::vf74()
+.fn vf74__13dWmObjActor_cFv, weak
+/* 00000400 00000440  4E 80 00 20 */	blr
+.endfn vf74__13dWmObjActor_cFv
+/* 00000404 00000444  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000408 00000448  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000040C 0000044C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x410 | size: 0x8
+# dWmObjActor_c::GetActorType()
+.fn GetActorType__13dWmObjActor_cFv, weak
+/* 00000410 00000450  38 60 00 02 */	li r3, 0x2
+/* 00000414 00000454  4E 80 00 20 */	blr
+.endfn GetActorType__13dWmObjActor_cFv
+/* 00000418 00000458  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000041C 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x420 | size: 0x8
+# dWmDemoActor_c::doDelete()
+.fn doDelete__14dWmDemoActor_cFv, weak
+/* 00000420 00000460  38 60 00 01 */	li r3, 0x1
+/* 00000424 00000464  4E 80 00 20 */	blr
+.endfn doDelete__14dWmDemoActor_cFv
+/* 00000428 00000468  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000042C 0000046C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x430 | size: 0x8
+# dWmDemoActor_c::draw()
+.fn draw__14dWmDemoActor_cFv, weak
+/* 00000430 00000470  38 60 00 01 */	li r3, 0x1
+/* 00000434 00000474  4E 80 00 20 */	blr
+.endfn draw__14dWmDemoActor_cFv
+/* 00000438 00000478  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000043C 0000047C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x440 | size: 0x8
+# dWmDemoActor_c::create()
+.fn create__14dWmDemoActor_cFv, weak
+/* 00000440 00000480  38 60 00 01 */	li r3, 0x1
+/* 00000444 00000484  4E 80 00 20 */	blr
+.endfn create__14dWmDemoActor_cFv
+/* 00000448 00000488  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000044C 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x450 | size: 0x8
+# m3d::anmChr_c::getType() const
+.fn getType__Q23m3d8anmChr_cCFv, weak
+/* 00000450 00000490  38 60 00 00 */	li r3, 0x0
+/* 00000454 00000494  4E 80 00 20 */	blr
 .endfn getType__Q23m3d8anmChr_cCFv
 
 # 0x00000000..0x00000118 | size: 0x118
@@ -386,16 +430,16 @@
 .obj __vt__12daWmKiller_c, global
 	.4byte 0x00000000
 	.4byte 0x00000000
-	.4byte create__14dWmDemoActor_cFv
+	.4byte create__12daWmKiller_cFv
 	.4byte preCreate__10dWmActor_cFv
 	.4byte postCreate__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
-	.4byte doDelete__14dWmDemoActor_cFv
+	.4byte doDelete__12daWmKiller_cFv
 	.4byte preDelete__10dWmActor_cFv
 	.4byte postDelete__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
 	.4byte execute__12daWmKiller_cFv
 	.4byte preExecute__10dWmActor_cFv
 	.4byte postExecute__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
-	.4byte draw__14dWmDemoActor_cFv
+	.4byte draw__12daWmKiller_cFv
 	.4byte preDraw__10dWmActor_cFv
 	.4byte postDraw__10dWmActor_cFQ27fBase_c12MAIN_STATE_e
 	.4byte deleteReady__7fBase_cFv
@@ -408,7 +452,7 @@
 	.4byte draw2D_lyt2__12dBaseActor_cFv
 	.4byte GetActorType__13dWmObjActor_cFv
 	.4byte finalUpdate__12dBaseActor_cFv
-	.4byte processCutsceneCommand__14dWmDemoActor_cFib
+	.4byte processCutsceneCommand__12daWmKiller_cFib
 	.4byte checkCutEnd__14dWmDemoActor_cFv
 	.4byte setCutEnd__14dWmDemoActor_cFv
 	.4byte clearCutEnd__14dWmDemoActor_cFv

@@ -15,8 +15,16 @@
 class daWmKiller_c : public dWmObjActor_c {
 public:
     daWmKiller_c(); ///< @copydoc dWmObjActor_c::dWmObjActor_c
-    virtual int execute();
     ~daWmKiller_c(); ///< @copydoc dWmObjActor_c::~dWmObjActor_c
+
+    // Vtable slots confirmed via check_vtable.py against lbl_2_data_452E0, not guessed from shape:
+    // slot 2=create(fn_2_167AA0), 5=doDelete(fn_2_167D20), 8=execute(fn_2_167B10),
+    // 11=draw(fn_2_167C40), 24=processCutsceneCommand(fn_2_168060).
+    virtual int create();
+    virtual int execute();
+    virtual int draw();
+    virtual int doDelete();
+    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
     u32 mUnk188; ///< @unused @unofficial offset 0x188, identical position to every other landed WM actor's mUnk188.
     dHeapAllocator_c mAllocator; ///< The allocator. @unofficial offset 0x18c.
