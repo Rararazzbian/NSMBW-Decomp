@@ -8,6 +8,14 @@
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/mLib/m_heap.hpp>
+#include <game/bases/d_a_wm_map.hpp>
+#include <game/bases/d_a_wm_player.hpp>
+
+// @unofficial Cross-unit call into an un-landed function elsewhere in this same REL
+// (d_basesNP), NOT this unit's own code -- bin/dtk/d_basesNP_symbols.txt:
+// fn_2_1709B0 = .text:0x001709B0, size 0x74. Argument role inferred only from the
+// single call site (runMain() case 14 passes literal 0; return value unused).
+extern "C" void R_2_1_1709B0(int);
 
 /// @unofficial Provisional reconstruction of the world map Koopa Jr. actor.
 /// `daWmKoopaJr_c : public dWmDemoActor_c`, sizeof 0x360 (confirmed directly
@@ -71,10 +79,20 @@ public:
 
     void createModel();
     void calcModel();
+    void changeAnim(int animIdx, float blendFrame, float rate, float startFrame); ///< @unofficial fn_2_16E3A0. Skips if mCurAnimIdx == animIdx (dirty check); else GetResAnmChr, mAnimChrs[i].setAnm(mModel, resAnmChr, sc_playModes[i]), mModel.setAnm(mAnimChrs[i], blendFrame), setRate(rate), setFrame(startFrame); then mCurAnimIdx = animIdx.
+
     void resetState();       ///< @unofficial fn_2_16D7B0. Sets mUnk35c = -1, tail-calls resetScaleAndProc().
     void resetScaleAndProc(); ///< @unofficial fn_2_16D7C0. mProcState = 0; mScale = (0.01, 0.01, 0.01).
     void startAction(int type); ///< @unofficial fn_2_16D7F0. Looks up sc_actionTable[type] into mUnk340, then mProcState = 1.
     void lookupAction(int type); ///< @unofficial fn_2_16D920. mUnk340 = sc_actionTable[type].
+
+    /// @unofficial Shared between createModel() and changeAnim(): both reference the SAME
+    /// symbols (lbl_2_data_45E50 for the name pointers, lbl_2_rodata_8BA0-relative for the
+    /// play modes), not two independent per-function anonymous copies -- confirmed by
+    /// changeAnim() indexing `lbl_2_rodata_8BA0 + idx*4` directly, the identical base symbol
+    /// execute()/create() also use.
+    static const char *const sc_animNames[6];
+    static const m3d::playMode_e sc_playModes[6];
 
     void procNone() {} ///< @unofficial fn_2_16D7E0. The idle/no-op state-0 handler.
     void procMain();   ///< @unofficial fn_2_16D830. The state-1 handler.
@@ -90,18 +108,35 @@ public:
     m3d::mdl_c mModel;             ///< @unofficial +0x1a8
     m3d::anmChr_c mAnimChrs[6];    ///< @unofficial +0x1e8
 
-    int mUnk338;      ///< @unofficial +0x338. Not touched by ctor/dtor; role unknown. Confirmed to
-                       ///< exist (not padding folded into mProcState) because execute()'s target
-                       ///< reads mProcState from +0x33c, not +0x338.
-    int mProcState;   ///< @unofficial +0x33c. Index into sc_procTable, consumed by execute().
-    int mUnk340;      ///< @unofficial +0x340. Set by lookupAction() from sc_actionTable.
-    u8 pad344[0x18];   ///< @unofficial +0x344. Confirmed present (not a hand-count): resetState()'s
-                        ///< target stores to +0x35c, 0x18 bytes after mUnk340. Role/subfields unknown.
-    int mUnk35c;        ///< @unofficial +0x35c. Set to -1 by resetState(); role otherwise unknown.
+    int mUnk338;       ///< @unofficial +0x338. Not touched by ctor/dtor; role unknown. Confirmed to
+                        ///< exist (not padding folded into mProcState) because execute()'s target
+                        ///< reads mProcState from +0x33c, not +0x338.
+    int mProcState;    ///< @unofficial +0x33c. Index into sc_procTable, consumed by execute().
+    int mUnk340;       ///< @unofficial +0x340. Set by lookupAction() from sc_actionTable; read by
+                        ///< runMain()'s outer jump table (16 cases, `cmplwi r0,0xf`).
+    mVec3_c mJumpTargetPos; ///< @unofficial +0x344. Confirmed a 3-float mVec3_c, not a raw pad: runMain()
+                        ///< case 0 stores `daWmMap_c::GetPos(...)`'s x/y/z result here via three
+                        ///< `stfs` (0x344/0x348/0x34c), then passes it straight to `_initDemoJumpBase`.
+    int mJumpTimer;     ///< @unofficial +0x350. A frame counter: runMain() case 0 sets it to 0x1e (30),
+                        ///< case 1 decrements it each frame (`subic. r0,r0,1`) and branches on hitting 0.
+    int mCurAnimIdx;    ///< @unofficial +0x354. changeAnim()'s dirty-check/cache of the last-set animation
+                        ///< index; skips all work when the new index already matches.
+    u8 pad358[0x4];      ///< @unofficial +0x358. Untouched by every function authored so far; role unknown.
+    int mUnk35c;         ///< @unofficial +0x35c. Set to -1 by resetState(). runMain() case 2 also stores
+                        ///< `fn_80103520(...)`'s return value here (an effect handle/ID, same
+                        ///< cross-module call already seen in the landed `d_a_wm_kinoko_base.cpp`).
 };
 // sizeof(daWmKoopaJr_c) == 0x360, matching fn_2_16D290's `li r3, 0x360`.
 
 ACTOR_PROFILE(WM_KOOPAJR, daWmKoopaJr_c, 0);
+
+const char *const daWmKoopaJr_c::sc_animNames[6] = {
+    "wait", "run", "jump_st", "jumpA", "jump_ed", "shock_wmap"
+};
+const m3d::playMode_e daWmKoopaJr_c::sc_playModes[6] = {
+    m3d::FORWARD_LOOP, m3d::FORWARD_LOOP,
+    m3d::FORWARD_ONCE, m3d::FORWARD_ONCE, m3d::FORWARD_ONCE, m3d::FORWARD_ONCE
+};
 
 daWmKoopaJr_c::daWmKoopaJr_c() {}
 
@@ -153,11 +188,65 @@ void daWmKoopaJr_c::procMain() {
     }
 }
 
+void daWmKoopaJr_c::changeAnim(int animIdx, float blendFrame, float rate, float startFrame) {
+    if (mCurAnimIdx == animIdx) {
+        return;
+    }
+
+    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sc_animNames[animIdx]);
+    mAnimChrs[animIdx].setAnm(mModel, resAnmChr, sc_playModes[animIdx]);
+    mModel.setAnm(mAnimChrs[animIdx], blendFrame);
+    mAnimChrs[animIdx].setRate(rate);
+    mAnimChrs[animIdx].setFrame(startFrame);
+    mCurAnimIdx = animIdx;
+}
+
 bool daWmKoopaJr_c::runMain() {
-    /// @unofficial STUB. fn_2_16D940 (0xA60) is not authored -- see the class
-    /// declaration comment. This body exists only so procMain()/execute()
-    /// compile; it is not expected to match and is not one of the six
-    /// required functions.
+    /// @unofficial PARTIAL. fn_2_16D940 (0xA60) is a 16-case state machine dispatched
+    /// through `jumptable_2_data_45EC4` on mUnk340 (`cmplwi r0,0xf; bgt <epilogue>`),
+    /// implementing Bowser Jr.'s appear/land/run/disappear cutscene sequence. Cases 0,
+    /// 14 and 15 are authored (each verified against the disassembly
+    /// instruction-by-instruction); case 15 is the ONLY path that returns true, via
+    /// the same `this->vtable+0x60 -> +0x68` dispatch as processCutsceneCommand()'s
+    /// case 0x45, i.e. `setCutEnd()`. Cases 1-13 are explicit stubs -- NOT attempted,
+    /// not guessed. See MAPPING.md for the case-target address table and what each
+    /// stubbed case's first few instructions show, for the next round.
+    switch (mUnk340) {
+    case 0: {
+        mVec3_c targetPos = daWmMap_c::m_instance->GetPos(daWmPlayer_c::ms_instance->m_22c);
+        mJumpTargetPos = targetPos;
+        changeAnim(3, 5.0f, 1.0f, 0.0f);
+        _initDemoJumpBase(mJumpTargetPos, 0, 0x3c, 10.0f, 0.2f * 2.5f, 1.0f * 2.5f, mVec3_c::Ey);
+        mUnk340 = 1;
+        mJumpTimer = 0x1e;
+        break;
+    }
+
+    /// @unofficial Cases 1-14 NOT authored. Confirmed target addresses (from
+    /// `jumptable_2_data_45EC4`, unit .text-relative): 1=0x16DA3C 2=0x16DAD8
+    /// 3=0x16DB68 4=0x16DCDC 5=0x16DDA8 6=0x16DDD8 7=0x16DE8C 8=0x16DF10
+    /// 9=0x16DFA8 10=0x16E0EC 11=0x16E140 12=0x16E220 13=0x16E240 14=0x16E340.
+    case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+    case 8: case 9: case 10: case 11: case 12: case 13:
+        break;
+
+    case 14: {
+        if (_procDemoJumpBase()) {
+            R_2_1_1709B0(0);
+            mUnk340 = 15;
+        }
+        break;
+    }
+
+    case 15: {
+        setCutEnd();
+        return true;
+    }
+
+    default:
+        break;
+    }
+
     return false;
 }
 
@@ -215,11 +304,13 @@ void daWmKoopaJr_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFr
 }
 
 void daWmKoopaJr_c::lookupAction(int type) {
-    /// @unofficial The 4-entry lookup table (lbl_2_rodata_8C38) has not been
-    /// dumped/named -- see MAPPING.md. This is a placeholder that will not
-    /// match; lookupAction() and startAction() are not required for the six
-    /// named functions, only reachable through them.
-    static const int sc_actionTable[4] = {0, 0, 0, 0};
+    /// @unofficial The lookup table's CONTENT is recovered directly from the REL
+    /// (.rodata file offset 0x1C6600+0x8C3C, right after lbl_2_rodata_8C38's leading
+    /// 0 word): {0, 5, 7, 11}. These plausibly index runMain()'s case dispatch
+    /// (mUnk340), i.e. startAction()'s four cutscene-triggered entry points map to
+    /// runMain() cases 0, 5, 7 and 11 -- not yet cross-checked against the case
+    /// bodies themselves.
+    static const int sc_actionTable[4] = {0, 5, 7, 11};
     mUnk340 = sc_actionTable[type];
 }
 
@@ -248,14 +339,6 @@ void daWmKoopaJr_c::createModel() {
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("koopaJr");
 
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
-
-    static const char *const sc_animNames[6] = {
-        "wait", "run", "jump_st", "jumpA", "jump_ed", "shock_wmap"
-    };
-    static const m3d::playMode_e sc_playModes[6] = {
-        m3d::FORWARD_LOOP, m3d::FORWARD_LOOP,
-        m3d::FORWARD_ONCE, m3d::FORWARD_ONCE, m3d::FORWARD_ONCE, m3d::FORWARD_ONCE
-    };
 
     for (int i = 0; i < 6; i++) {
         nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sc_animNames[i]);

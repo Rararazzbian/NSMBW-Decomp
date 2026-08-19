@@ -11093,3 +11093,46 @@ either unit's call site to it closes those functions — the surrounding registe
 allocation still has to agree, and both units also need the right operand types
 at the call. That measurement belongs to the agents; the construct question is
 settled.
+
+## The pool mechanism, MEASURED rather than asserted (WM_KOOPAJR)
+
+The prediction was that authoring the missing contributors would move `create`
+and `execute`'s pool displacements toward the target. It was tested and it moved:
+
+```
+                         before      after      target
+PTMF table               +0x08       +0x50      +0x70
+CalcShadow constants     +0x20/+0x24 +0x48/+0x3c +0x88/+0x8c
+```
+
+**The gap roughly halved after authoring `changeAnim` plus one state-machine
+case's literals.** Both functions are still blocked, but blocked-and-closing is a
+different state from blocked-and-stuck, and the difference is only visible
+because the displacements were recorded before and after. **Record pool
+displacements as NUMBERS across rounds, not as "still short".**
+
+`fn_2_16E3A0` is now `changeAnim(int, float, float, float)` — 57/57 lines, the
+only 4 differing being this unit's own symbol names. Closing it required hoisting
+`sc_animNames[6]`/`sc_playModes[6]` from `createModel()`-local statics to shared
+`static const` class members, **because the target has both functions referencing
+the SAME symbols rather than independent per-function copies.** Two functions
+sharing a pool entry is itself evidence about where a static was declared.
+
+`fn_2_16D940` is a **16-case state machine** (`jumptable_2_data_45EC4`,
+`cmplwi r0,0xf`) — Bowser Jr.'s appear/jump/land/run/disappear cutscene. Cases 0,
+14 and 15 authored and verified instruction-by-instruction; case 15 is the only
+path returning `true`.
+
+**Cases 1-13 deliberately NOT attempted, and the reason is the right one:** the
+float/angle math is intricate enough that guessing risks **adding WRONG pool
+entries**, which would move the displacements further from the target rather than
+closer. In a unit whose remaining blocker IS the pool, a wrong guess is not
+neutral — it is negative. Precise verified partial progress beats a larger
+unverified block.
+
+New fields, evidence-based: `+0x344` `mVec3_c mJumpTargetPos` (was
+undifferentiated pad), `+0x350` `int mJumpTimer`, `+0x354` `int mCurAnimIdx`
+(`changeAnim`'s dirty-check cache). `lookupAction`'s table is no longer a
+placeholder — recovered from `.rodata` as `{0, 5, 7, 11}` and **independently
+verified against the retail bytes at `0x8C38`: `00000000 00000005 00000007
+0000000b`.**

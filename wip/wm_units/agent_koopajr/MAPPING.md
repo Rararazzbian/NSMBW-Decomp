@@ -43,7 +43,7 @@ diff/link, see caveat at the bottom).
 | `fn_2_16D340` | destructor | 0xAC | `__dt__13daWmKoopaJr_cFv` | **MATCH** (0/43 lines) |
 | `fn_2_16D870` | `processCutsceneCommand` | 0xB0 | `processCutsceneCommand__13daWmKoopaJr_cFib` | **MATCH\*** (3/44 lines, all `bl startAction` vs `bl fn_2_16D7F0`) |
 | `fn_2_16D3F0` | `create` | 0x64 | `create__13daWmKoopaJr_cFv` | 3 lines MATCH\* (own-symbol calls) + **2 lines BLOCKED (rodata pool)** — the `lbl_2_rodata_8C0C` (250.0f, `mClipSphere` radius) `lis/lfs` pair |
-| `fn_2_16D460` | `execute` | 0xD0 | `execute__13daWmKoopaJr_cFv` | 1 line MATCH\* (own-symbol call) + **5 lines BLOCKED (rodata pool)** — the `lbl_2_rodata_8BA0` base load and three displacements inside it (PTMF table base `+0x70`, `CalcShadow` constants at `+0x88`/`+0x8c`) |
+| `fn_2_16D460` | `execute` | 0xD0 | `execute__13daWmKoopaJr_cFv` | 1 line MATCH\* (own-symbol call) + **5 lines BLOCKED (rodata pool)**, but the pool position **measurably moved** after authoring `changeAnim()`/`runMain()` case 0 (the PTMF table displacement went from `+0x8` to `+0x50`, wanted `+0x70`; the two `CalcShadow` constant displacements went from `+0x20`/`+0x24` to `+0x48`/`+0x3c`, wanted `+0x88`/`+0x8c`) — confirms the shared-pool mechanism directly, not just by inference. Still short by roughly 8 floats' worth; more of `runMain`'s unauthored cases (1-13) are needed to close the rest. |
 
 **4 of 6 fully closed** (doDelete, draw, destructor byte-identical modulo
 nothing; processCutsceneCommand byte-identical modulo own-symbol naming that
@@ -74,8 +74,8 @@ referencing function found anywhere in this unit's authored code).
 
 | target | size | note |
 |---|---|---|
-| `fn_2_16D940` | 0xA60 | The unit's largest function by far. Confirmed by vtable elimination to be a plain non-virtual member (none of the six overrides). Declared as `bool runMain()` with a `return false;` stub purely so `procMain()` compiles — **the stub body is not a claim about the real function**, just a placeholder. |
-| `fn_2_16E3A0` | 0xE4 | Not declared at all. Likely (with `fn_2_16D940`) the owner of the unclaimed rodata pool slots. |
+| `fn_2_16D940` | 0xA60 | **UPGRADED from stub to partial** (this round, on the coordinator's explicit instruction to open it). See the new "runMain()" section below — 3 of 16 cases authored (0, 14, 15), 13 still bare `break;` stubs. `runMain__13daWmKoopaJr_cFv` diffs 663/664 lines against `fn_2_16D940` (expected — most of the function is unauthored), but this was never the target; the goal was seeding the shared rodata pool, which it did measurably (see the `execute`/`create` row above). |
+| `fn_2_16E3A0` | 0xE4 | **AUTHORED this round as `changeAnim(int animIdx, float blendFrame, float rate, float startFrame)`.** 57/57 lines match in size; the only 4 differing lines are this unit's own `sc_animNames`/`sc_playModes` symbol names (own-symbol naming, see the MATCH\* convention above) — logic is a confirmed match. |
 | `fn_2_16E490` | 0x84 | `__sinit_d_a_wm_koopajr_cpp` — the file's static initializer. Constructs a global object at `lbl_2_data_45DE8` using `dCsvData_c::c_CASTLE_ID`/`c_START_ID` (dynamic-init statics, hence needing `__sinit` rather than being compile-time constants) and three floats from the shared rodata pool, then calls `__register_global_object` with a destructor pointer `fn_2_16E520`. The identity/type of the constructed object is unresolved. Not required for any of the six named functions. |
 | `fn_2_16E520` | 0x1C | The above global object's destructor wrapper (target of `__register_global_object`'s 2nd arg). Not declared. |
 
@@ -95,9 +95,25 @@ citation of each one.
 +0x1e8  m3d::anmChr_c mAnimChrs[6]     -- 0x1e8 + 6*0x38 = 0x338
 +0x338  int mUnk338                    -- untouched by ctor/dtor; existence proven by mProcState landing at +0x33c
 +0x33c  int mProcState                 -- execute()'s PTMF index; fn_2_16D7F0/fn_2_16D7C0 also touch it
-+0x340  int mUnk340                    -- set by lookupAction() from the (unrecovered) 4-entry table
-+0x344  u8 pad344[0x18]                -- untouched; existence proven by mUnk35c landing at +0x35c
-+0x35c  int mUnk35c                    -- set to -1 by resetState(); role otherwise unknown
++0x340  int mUnk340                    -- set by lookupAction(); ALSO read directly by runMain()'s own
+                                          outer 16-case jump table (`lwz r0,0x340(r3); cmplwi r0,0xf`) --
+                                          it is the SAME field, not two separate ones.
++0x344  mVec3_c mJumpTargetPos          -- 3 floats, confirmed by runMain() case 0: three `stfs` at
+                                          0x344/0x348/0x34c immediately after `daWmMap_c::GetPos()`,
+                                          the result then passed straight to `_initDemoJumpBase`.
++0x350  int mJumpTimer                  -- runMain() case 0 sets it to 0x1e; case 1 decrements it every
+                                          frame and branches on hitting 0. A second, structurally
+                                          identical countdown reappears in case 3/6 (not yet confirmed
+                                          to be the SAME field there vs. a related one -- case 6 was not
+                                          authored, only skimmed).
++0x354  int mCurAnimIdx                 -- changeAnim()'s dirty-check cache (confirmed, see below)
++0x358  u8 pad358[0x4]                  -- untouched by every function authored so far
++0x35c  int mUnk35c                     -- set to -1 by resetState(); ALSO set to `fn_80103520(...)`'s
+                                          return value by runMain() case 2 (an effect handle, matching
+                                          the same cross-module call already seen in the landed
+                                          `d_a_wm_kinoko_base.cpp` as `fn_80103420` -- here it is
+                                          `fn_80103520`, a different DOL address, so a SEPARATE
+                                          extern declaration, not a typo of the same one).
 ```
 `sizeof == 0x360` — 0x35c + 4 = 0x360, closes exactly, matching `daWmKoopaJr_c_classInit__Fv`'s `li r3, 0x360` verbatim (this line was checked and now matches byte-for-byte after the `pad344` fix below).
 

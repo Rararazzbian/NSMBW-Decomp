@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11096 lines / 422 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11139 lines / 423 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -443,3 +443,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11024-11038` A CROSS-UNIT residual class: paired-single vectorisation, now on TWO units
 - `11039-11071` SOLVED (the construct, at least): the paired-single Vec3 add is `nw4r::math::VEC3Add`
   - `11072-11096` Why both agents missed it, which is the reusable part
+- `11097-11139` The pool mechanism, MEASURED rather than asserted (WM_KOOPAJR)
