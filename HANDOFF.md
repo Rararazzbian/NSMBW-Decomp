@@ -7282,3 +7282,60 @@ the emitted data, not of an addressing trick -- so the fix is a source shape tha
 emits a pointer and two literals contiguously in that order. Inline literals are
 placed where the compiler chooses; named `static const char[]` arrays are placed
 at their declaration point, which is controllable.
+
+## SINKSHIP LANDED — 11/11 on its first authored round. Eleventh unit.
+
+**11.407% -> 11.424%.** `.text 0x179380-0x1797e0`, 11 functions, no shadow header
+changes, no stubs, no second round. `daWmSinkShip_c : public dWmObjActor_c`.
+
+### The bounds were self-checking, which is the standard to aim for
+
+Every bound was derived independently from symbol-boundary and ownership
+evidence, and then found to **exactly close the gap between two already-landed
+neighbours**: `d_a_wm_sandpillar.cpp` ends at `.data 0x47180`, `.rodata 0x8f98`,
+`.bss 0x10290`, `.ctors 0x42c`, and `d_a_wm_smallcloud.cpp` begins at exactly
+those four addresses. Two independent derivations agreeing is much stronger than
+either alone. `.data` also opens on the two anonymous 5-byte `sc_ForceList`
+strings per the family rule.
+
+### The base class was settled from the vtable, not from the disassembly
+
+`dWmObjActor_c`, not `dWmDemoActor_c`. Confirmed from the target vtable dump: the
+`GetActorType` slot resolves to the imported `GetActorType__13dWmObjActor_cFv`,
+and two trailing slots to `vf74`/`vf78__13dWmObjActor_cFv` -- all three
+`dWmObjActor_c`-only symbols. **A store initially misread as a new field turned
+out to be `dWmObjActor_c`'s own in-class `mResNodeIdx(-1)` initialiser**, which
+the correct base class explains for free. Getting the base right first removes
+phantom members.
+
+### The one real fix: dead stores that are correct
+
+`calcModel()` began at 40/44 differing by passing `mPos`/`mAngle` straight to
+`mMatrix.trans()`/`ZXYrotM()`. The target stages them through locals first:
+
+```cpp
+mVec3_c pos = mPos;
+mAng3_c angle = mAngle;
+```
+
+This is the already-recorded "dead stores that are correct" idiom from
+`dCourseSelectGuide_c::PlayerIconSet`, and the landed `daWmSmallCloud_c::calcModel()`
+uses it too. Straight to MATCH. **Check the landed sibling before assuming a
+by-value argument can be passed directly.**
+
+### Confirmations worth having in writing
+
+- **`dWmLib::sc_ForceList` and `dWmLib::c_StartPointKinokoHouseID` are forced into
+  every TU that includes `d_wm_lib.hpp`, with zero source-level reference needed.**
+  Nothing in `daWmSinkShip_c` reads either, yet the include alone reproduces
+  `__sinit` and the trailing array destructor byte-exact. Both are non-`extern`
+  namespace-scope statics with non-trivial construction. This is now confirmed on
+  three units; stop hand-writing these.
+- The model name `"cobSunkenShip"` was read out of the target's own `.data`
+  (`lbl_2_data_471D0`) and is reused for both the archive lookup and the model
+  name -- no per-world `sprintf`, unlike `daWmSmallCloud_c`.
+- The clip-sphere radius was recovered by decoding `lbl_2_rodata_8F98`'s raw bytes
+  (`0x42C80000` = 100.0f) rather than guessed. Note the pool merges the unit's own
+  constant at offset 0 -- emitted first because `create()` compiles before
+  `__sinit` -- with `sc_ForceList`'s `mNodePos` floats at 4/8/c. Consistent with
+  declaration-order placement and `__sinit` last.
