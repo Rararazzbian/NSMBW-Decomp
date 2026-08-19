@@ -10160,3 +10160,46 @@ correctly on four units and caught two wrong entry counts.
 Reminder for authoring it: with a bound check and a jump table this is a `switch`,
 but **case label order sets body layout independently of the compare order the
 compiler picks** — take the ordering from the table.
+
+## The same lever can close one function and BREAK its sibling
+
+WM_HANACHAN's `state1` closed on the "two apparent call sites actually converge
+on ONE shared call site" reading — the same shape as antlion_mng's
+`checkAttackSequenceDone`, rewritten as a single combined condition:
+
+```cpp
+if (R_2_1_1994B0(player) == 1 || (player->m_18c && R_2_1_1994D0(player) == 1)) { state4WhenNear(); }
+```
+
+**Applying the identical lever to `state2` made it worse** (21 -> 24):
+materialising an explicit `bool` produced `li r0,0/1; cmpwi` instead of the
+target's direct fall-through branching.
+
+**So "one shared call site" is a reading of the target, not a preference.** Check
+the branch targets before combining conditions.
+
+### A live operator-spelling sensitivity, characterised not solved
+
+`state2`'s residual is now specific: the target uses a `cror`-combine on the
+**first** of two `>=` comparisons and not on the second — **the same logical
+comparison, spelled two ways, compiling to two different instruction shapes.**
+That is a source-visible distinction nobody has pinned down yet, and it is a
+better handoff than "21 differing".
+
+## WM_HANACHAN paused at 13/32 — a responsible stop, not a wall
+
+Vtable fully mapped, layout confirmed and closed against `sizeof`, seven
+functions closed across two rounds, and **every open item has a specific recorded
+next step** rather than an unknown:
+
+```
+state2        21   operator-spelling sensitivity, characterised above
+execute        5   two constants from separate anonymous pool slots, want one named table
+createModel   --   structure fully read; needs an unhurried reconstruction of a
+                   PowerPC int-to-double bit-pattern expression (xoris + lfd/fsub/fmul)
+state3        --   fn_2_1651B0, 0x404, known to be the mState==3 handler
+6 functions   --   never examined
+```
+
+**Declining to rush `createModel` was right** — this project has already misread
+that exact bit-pattern idiom once, taking a single double for two floats.

@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_wm_hanachan.cpp"
 
-# 0x00000000..0x00000788 | size: 0x788
+# 0x00000000..0x00000878 | size: 0x878
 .text
 .balign 16
 
@@ -348,12 +348,12 @@
 /* 0000045C 0000049C  93 E1 00 0C */	stw r31, 0xc(r1)
 /* 00000460 000004A0  7C 7F 1B 78 */	mr r31, r3
 /* 00000464 000004A4  48 00 00 01 */	bl createModel__14daWmHanachan_cFv
-/* 00000468 000004A8  3C 80 00 00 */	lis r4, "@12703"@ha
+/* 00000468 000004A8  3C 80 00 00 */	lis r4, "@12734"@ha
 /* 0000046C 000004AC  C0 7F 00 AC */	lfs f3, 0xac(r31)
 /* 00000470 000004B0  C0 5F 00 B0 */	lfs f2, 0xb0(r31)
 /* 00000474 000004B4  7F E3 FB 78 */	mr r3, r31
 /* 00000478 000004B8  C0 3F 00 B4 */	lfs f1, 0xb4(r31)
-/* 0000047C 000004BC  C0 04 00 00 */	lfs f0, "@12703"@l(r4)
+/* 0000047C 000004BC  C0 04 00 00 */	lfs f0, "@12734"@l(r4)
 /* 00000480 000004C0  D0 7F 01 28 */	stfs f3, 0x128(r31)
 /* 00000484 000004C4  D0 5F 01 2C */	stfs f2, 0x12c(r31)
 /* 00000488 000004C8  D0 3F 01 30 */	stfs f1, 0x130(r31)
@@ -406,11 +406,11 @@
 /* 00000530 00000570  48 00 00 01 */	bl unkFn164B10__14daWmHanachan_cFv
 /* 00000534 00000574  7F C3 F3 78 */	mr r3, r30
 /* 00000538 00000578  48 00 00 01 */	bl resetState__14daWmHanachan_cFv
-/* 0000053C 0000057C  3C 60 00 00 */	lis r3, "@12710"@ha
-/* 00000540 00000580  3C 80 00 00 */	lis r4, "@12711"@ha
-/* 00000544 00000584  C0 23 00 00 */	lfs f1, "@12710"@l(r3)
+/* 0000053C 0000057C  3C 60 00 00 */	lis r3, "@12741"@ha
+/* 00000540 00000580  3C 80 00 00 */	lis r4, "@12742"@ha
+/* 00000544 00000584  C0 23 00 00 */	lfs f1, "@12741"@l(r3)
 /* 00000548 00000588  7F C3 F3 78 */	mr r3, r30
-/* 0000054C 0000058C  C0 44 00 00 */	lfs f2, "@12711"@l(r4)
+/* 0000054C 0000058C  C0 44 00 00 */	lfs f2, "@12742"@l(r4)
 /* 00000550 00000590  48 00 00 01 */	bl unkFn1659A0__14daWmHanachan_cFff
 /* 00000554 00000594  83 E1 00 0C */	lwz r31, 0xc(r1)
 /* 00000558 00000598  38 60 00 01 */	li r3, 0x1
@@ -509,167 +509,236 @@
 /* 0000064C 0000068C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0x650 | size: 0x4
-# daWmHanachan_c::state0()
-.fn state0__14daWmHanachan_cFv, global
+# daWmHanachan_c::state4WhenNear()
+.fn state4WhenNear__14daWmHanachan_cFv, global
 /* 00000650 00000690  4E 80 00 20 */	blr
-.endfn state0__14daWmHanachan_cFv
+.endfn state4WhenNear__14daWmHanachan_cFv
 /* 00000654 00000694  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000658 00000698  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000065C 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x660 | size: 0xC
-# daWmHanachan_c::setState1()
-.fn setState1__14daWmHanachan_cFv, global
-/* 00000660 000006A0  38 00 00 01 */	li r0, 0x1
-/* 00000664 000006A4  90 03 04 7C */	stw r0, 0x47c(r3)
-/* 00000668 000006A8  48 00 00 00 */	b clearSpeedAll__14dWmDemoActor_cFv
-.endfn setState1__14daWmHanachan_cFv
+# .text:0x660 | size: 0x4
+# daWmHanachan_c::state0()
+.fn state0__14daWmHanachan_cFv, global
+/* 00000660 000006A0  4E 80 00 20 */	blr
+.endfn state0__14daWmHanachan_cFv
+/* 00000664 000006A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000668 000006A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000066C 000006AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x670 | size: 0x4
-# daWmHanachan_c::state1()
-.fn state1__14daWmHanachan_cFv, global
-/* 00000670 000006B0  4E 80 00 20 */	blr
-.endfn state1__14daWmHanachan_cFv
-/* 00000674 000006B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000678 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x670 | size: 0xC
+# daWmHanachan_c::setState1()
+.fn setState1__14daWmHanachan_cFv, global
+/* 00000670 000006B0  38 00 00 01 */	li r0, 0x1
+/* 00000674 000006B4  90 03 04 7C */	stw r0, 0x47c(r3)
+/* 00000678 000006B8  48 00 00 00 */	b clearSpeedAll__14dWmDemoActor_cFv
+.endfn setState1__14daWmHanachan_cFv
 /* 0000067C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x680 | size: 0xC
-# daWmHanachan_c::setState2()
-.fn setState2__14daWmHanachan_cFv, global
-/* 00000680 000006C0  38 00 00 02 */	li r0, 0x2
-/* 00000684 000006C4  90 03 04 7C */	stw r0, 0x47c(r3)
-/* 00000688 000006C8  4E 80 00 20 */	blr
-.endfn setState2__14daWmHanachan_cFv
-/* 0000068C 000006CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x690 | size: 0x4
-# daWmHanachan_c::state2()
-.fn state2__14daWmHanachan_cFv, global
-/* 00000690 000006D0  4E 80 00 20 */	blr
-.endfn state2__14daWmHanachan_cFv
-/* 00000694 000006D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000698 000006D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000069C 000006DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6A0 | size: 0xC
-# daWmHanachan_c::setState3()
-.fn setState3__14daWmHanachan_cFv, global
-/* 000006A0 000006E0  38 00 00 03 */	li r0, 0x3
-/* 000006A4 000006E4  90 03 04 7C */	stw r0, 0x47c(r3)
-/* 000006A8 000006E8  4E 80 00 20 */	blr
-.endfn setState3__14daWmHanachan_cFv
-/* 000006AC 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6B0 | size: 0x4
-# daWmHanachan_c::state3()
-.fn state3__14daWmHanachan_cFv, global
-/* 000006B0 000006F0  4E 80 00 20 */	blr
-.endfn state3__14daWmHanachan_cFv
-/* 000006B4 000006F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006B8 000006F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006BC 000006FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6C0 | size: 0x1C
-# daWmHanachan_c::resetPosFromState0()
-.fn resetPosFromState0__14daWmHanachan_cFv, global
-/* 000006C0 00000700  C0 43 0D F8 */	lfs f2, 0xdf8(r3)
-/* 000006C4 00000704  C0 23 0D FC */	lfs f1, 0xdfc(r3)
-/* 000006C8 00000708  C0 03 0E 00 */	lfs f0, 0xe00(r3)
-/* 000006CC 0000070C  D0 43 00 AC */	stfs f2, 0xac(r3)
-/* 000006D0 00000710  D0 23 00 B0 */	stfs f1, 0xb0(r3)
-/* 000006D4 00000714  D0 03 00 B4 */	stfs f0, 0xb4(r3)
-/* 000006D8 00000718  4E 80 00 20 */	blr
-.endfn resetPosFromState0__14daWmHanachan_cFv
-/* 000006DC 0000071C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6E0 | size: 0x4
-# daWmHanachan_c::unkFn1659A0(float, float)
-.fn unkFn1659A0__14daWmHanachan_cFff, global
-/* 000006E0 00000720  4E 80 00 20 */	blr
-.endfn unkFn1659A0__14daWmHanachan_cFff
-/* 000006E4 00000724  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006E8 00000728  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x680 | size: 0x6C
+# daWmHanachan_c::state1()
+.fn state1__14daWmHanachan_cFv, global
+/* 00000680 000006C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000684 000006C4  7C 08 02 A6 */	mflr r0
+/* 00000688 000006C8  3C 80 00 00 */	lis r4, ms_instance__12daWmPlayer_c@ha
+/* 0000068C 000006CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000690 000006D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000694 000006D4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000698 000006D8  7C 7E 1B 78 */	mr r30, r3
+/* 0000069C 000006DC  83 E4 00 00 */	lwz r31, ms_instance__12daWmPlayer_c@l(r4)
+/* 000006A0 000006E0  7F E3 FB 78 */	mr r3, r31
+/* 000006A4 000006E4  48 00 00 01 */	bl R_2_1_1994B0
+/* 000006A8 000006E8  2C 03 00 01 */	cmpwi r3, 0x1
+/* 000006AC 000006EC  41 82 00 20 */	beq .L_000006CC
+/* 000006B0 000006F0  88 1F 01 8C */	lbz r0, 0x18c(r31)
+/* 000006B4 000006F4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 000006B8 000006F8  41 82 00 1C */	beq .L_000006D4
+/* 000006BC 000006FC  7F E3 FB 78 */	mr r3, r31
+/* 000006C0 00000700  48 00 00 01 */	bl R_2_1_1994D0
+/* 000006C4 00000704  2C 03 00 01 */	cmpwi r3, 0x1
+/* 000006C8 00000708  40 82 00 0C */	bne .L_000006D4
+.L_000006CC:
+/* 000006CC 0000070C  7F C3 F3 78 */	mr r3, r30
+/* 000006D0 00000710  48 00 00 01 */	bl state4WhenNear__14daWmHanachan_cFv
+.L_000006D4:
+/* 000006D4 00000714  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000006D8 00000718  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000006DC 0000071C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000006E0 00000720  7C 08 03 A6 */	mtlr r0
+/* 000006E4 00000724  38 21 00 10 */	addi r1, r1, 0x10
+/* 000006E8 00000728  4E 80 00 20 */	blr
+.endfn state1__14daWmHanachan_cFv
 /* 000006EC 0000072C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x6F0 | size: 0x4
-# daWmHanachan_c::unkFn165AB0()
-.fn unkFn165AB0__14daWmHanachan_cFv, global
-/* 000006F0 00000730  4E 80 00 20 */	blr
-.endfn unkFn165AB0__14daWmHanachan_cFv
-/* 000006F4 00000734  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006F8 00000738  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x6F0 | size: 0xC
+# daWmHanachan_c::setState2()
+.fn setState2__14daWmHanachan_cFv, global
+/* 000006F0 00000730  38 00 00 02 */	li r0, 0x2
+/* 000006F4 00000734  90 03 04 7C */	stw r0, 0x47c(r3)
+/* 000006F8 00000738  4E 80 00 20 */	blr
+.endfn setState2__14daWmHanachan_cFv
 /* 000006FC 0000073C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x700 | size: 0x30
-# daWmHanachan_c_classInit()
-.fn daWmHanachan_c_classInit__Fv, global
+# .text:0x700 | size: 0x8C
+# daWmHanachan_c::state2()
+.fn state2__14daWmHanachan_cFv, global
 /* 00000700 00000740  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 00000704 00000744  7C 08 02 A6 */	mflr r0
-/* 00000708 00000748  38 60 0F 00 */	li r3, 0xf00
-/* 0000070C 0000074C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000710 00000750  48 00 00 01 */	bl __nw__7fBase_cFUl
-/* 00000714 00000754  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000718 00000758  41 82 00 08 */	beq .L_00000720
-/* 0000071C 0000075C  48 00 00 01 */	bl __ct__14daWmHanachan_cFv
-.L_00000720:
-/* 00000720 00000760  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000724 00000764  7C 08 03 A6 */	mtlr r0
-/* 00000728 00000768  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000072C 0000076C  4E 80 00 20 */	blr
+/* 00000708 00000748  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000070C 0000074C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000710 00000750  7C 7F 1B 78 */	mr r31, r3
+/* 00000714 00000754  48 00 00 01 */	bl calcSpeed__12dBaseActor_cFv
+/* 00000718 00000758  7F E3 FB 78 */	mr r3, r31
+/* 0000071C 0000075C  48 00 00 01 */	bl posMove__12dBaseActor_cFv
+/* 00000720 00000760  C0 3F 04 54 */	lfs f1, 0x454(r31)
+/* 00000724 00000764  C0 1F 04 6C */	lfs f0, 0x46c(r31)
+/* 00000728 00000768  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 0000072C 0000076C  4C 41 13 82 */	cror eq, gt, eq
+/* 00000730 00000770  41 82 00 1C */	beq .L_0000074C
+/* 00000734 00000774  C0 1F 00 AC */	lfs f0, 0xac(r31)
+/* 00000738 00000778  FC 00 08 40 */	fcmpo cr0, f0, f1
+/* 0000073C 0000077C  40 81 00 10 */	ble .L_0000074C
+/* 00000740 00000780  7F E3 FB 78 */	mr r3, r31
+/* 00000744 00000784  48 00 00 01 */	bl setState1__14daWmHanachan_cFv
+/* 00000748 00000788  48 00 00 30 */	b .L_00000778
+.L_0000074C:
+/* 0000074C 0000078C  C0 3F 04 54 */	lfs f1, 0x454(r31)
+/* 00000750 00000790  C0 1F 04 6C */	lfs f0, 0x46c(r31)
+/* 00000754 00000794  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 00000758 00000798  4C 41 13 82 */	cror eq, gt, eq
+/* 0000075C 0000079C  41 82 00 1C */	beq .L_00000778
+/* 00000760 000007A0  C0 1F 00 AC */	lfs f0, 0xac(r31)
+/* 00000764 000007A4  FC 00 08 40 */	fcmpo cr0, f0, f1
+/* 00000768 000007A8  4C 41 13 82 */	cror eq, gt, eq
+/* 0000076C 000007AC  41 82 00 0C */	beq .L_00000778
+/* 00000770 000007B0  7F E3 FB 78 */	mr r3, r31
+/* 00000774 000007B4  48 00 00 01 */	bl setState1__14daWmHanachan_cFv
+.L_00000778:
+/* 00000778 000007B8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000077C 000007BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000780 000007C0  7C 08 03 A6 */	mtlr r0
+/* 00000784 000007C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000788 000007C8  4E 80 00 20 */	blr
+.endfn state2__14daWmHanachan_cFv
+/* 0000078C 000007CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x790 | size: 0xC
+# daWmHanachan_c::setState3()
+.fn setState3__14daWmHanachan_cFv, global
+/* 00000790 000007D0  38 00 00 03 */	li r0, 0x3
+/* 00000794 000007D4  90 03 04 7C */	stw r0, 0x47c(r3)
+/* 00000798 000007D8  4E 80 00 20 */	blr
+.endfn setState3__14daWmHanachan_cFv
+/* 0000079C 000007DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7A0 | size: 0x4
+# daWmHanachan_c::state3()
+.fn state3__14daWmHanachan_cFv, global
+/* 000007A0 000007E0  4E 80 00 20 */	blr
+.endfn state3__14daWmHanachan_cFv
+/* 000007A4 000007E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007A8 000007E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007AC 000007EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7B0 | size: 0x1C
+# daWmHanachan_c::resetPosFromState0()
+.fn resetPosFromState0__14daWmHanachan_cFv, global
+/* 000007B0 000007F0  C0 43 0D F8 */	lfs f2, 0xdf8(r3)
+/* 000007B4 000007F4  C0 23 0D FC */	lfs f1, 0xdfc(r3)
+/* 000007B8 000007F8  C0 03 0E 00 */	lfs f0, 0xe00(r3)
+/* 000007BC 000007FC  D0 43 00 AC */	stfs f2, 0xac(r3)
+/* 000007C0 00000800  D0 23 00 B0 */	stfs f1, 0xb0(r3)
+/* 000007C4 00000804  D0 03 00 B4 */	stfs f0, 0xb4(r3)
+/* 000007C8 00000808  4E 80 00 20 */	blr
+.endfn resetPosFromState0__14daWmHanachan_cFv
+/* 000007CC 0000080C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7D0 | size: 0x4
+# daWmHanachan_c::unkFn1659A0(float, float)
+.fn unkFn1659A0__14daWmHanachan_cFff, global
+/* 000007D0 00000810  4E 80 00 20 */	blr
+.endfn unkFn1659A0__14daWmHanachan_cFff
+/* 000007D4 00000814  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007D8 00000818  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007DC 0000081C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7E0 | size: 0x4
+# daWmHanachan_c::unkFn165AB0()
+.fn unkFn165AB0__14daWmHanachan_cFv, global
+/* 000007E0 00000820  4E 80 00 20 */	blr
+.endfn unkFn165AB0__14daWmHanachan_cFv
+/* 000007E4 00000824  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007E8 00000828  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007EC 0000082C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7F0 | size: 0x30
+# daWmHanachan_c_classInit()
+.fn daWmHanachan_c_classInit__Fv, global
+/* 000007F0 00000830  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000007F4 00000834  7C 08 02 A6 */	mflr r0
+/* 000007F8 00000838  38 60 0F 00 */	li r3, 0xf00
+/* 000007FC 0000083C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000800 00000840  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 00000804 00000844  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000808 00000848  41 82 00 08 */	beq .L_00000810
+/* 0000080C 0000084C  48 00 00 01 */	bl __ct__14daWmHanachan_cFv
+.L_00000810:
+/* 00000810 00000850  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000814 00000854  7C 08 03 A6 */	mtlr r0
+/* 00000818 00000858  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000081C 0000085C  4E 80 00 20 */	blr
 .endfn daWmHanachan_c_classInit__Fv
 
-# .text:0x730 | size: 0x4
+# .text:0x820 | size: 0x4
 # dBaseActor_c::finalUpdate()
 .fn finalUpdate__12dBaseActor_cFv, weak
-/* 00000730 00000770  4E 80 00 20 */	blr
+/* 00000820 00000860  4E 80 00 20 */	blr
 .endfn finalUpdate__12dBaseActor_cFv
-/* 00000734 00000774  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000738 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000073C 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000824 00000864  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000828 00000868  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000082C 0000086C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x740 | size: 0xC
+# .text:0x830 | size: 0xC
 # dWmDemoActor_c::clearCutEnd()
 .fn clearCutEnd__14dWmDemoActor_cFv, weak
-/* 00000740 00000780  38 00 00 00 */	li r0, 0x0
-/* 00000744 00000784  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000748 00000788  4E 80 00 20 */	blr
+/* 00000830 00000870  38 00 00 00 */	li r0, 0x0
+/* 00000834 00000874  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000838 00000878  4E 80 00 20 */	blr
 .endfn clearCutEnd__14dWmDemoActor_cFv
-/* 0000074C 0000078C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000083C 0000087C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x750 | size: 0xC
+# .text:0x840 | size: 0xC
 # dWmDemoActor_c::setCutEnd()
 .fn setCutEnd__14dWmDemoActor_cFv, weak
-/* 00000750 00000790  38 00 00 01 */	li r0, 0x1
-/* 00000754 00000794  98 03 01 39 */	stb r0, 0x139(r3)
-/* 00000758 00000798  4E 80 00 20 */	blr
+/* 00000840 00000880  38 00 00 01 */	li r0, 0x1
+/* 00000844 00000884  98 03 01 39 */	stb r0, 0x139(r3)
+/* 00000848 00000888  4E 80 00 20 */	blr
 .endfn setCutEnd__14dWmDemoActor_cFv
-/* 0000075C 0000079C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000084C 0000088C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x760 | size: 0x8
+# .text:0x850 | size: 0x8
 # dWmDemoActor_c::checkCutEnd()
 .fn checkCutEnd__14dWmDemoActor_cFv, weak
-/* 00000760 000007A0  88 63 01 39 */	lbz r3, 0x139(r3)
-/* 00000764 000007A4  4E 80 00 20 */	blr
+/* 00000850 00000890  88 63 01 39 */	lbz r3, 0x139(r3)
+/* 00000854 00000894  4E 80 00 20 */	blr
 .endfn checkCutEnd__14dWmDemoActor_cFv
-/* 00000768 000007A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000076C 000007AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000858 00000898  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000085C 0000089C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x770 | size: 0x8
+# .text:0x860 | size: 0x8
 # dWmDemoActor_c::GetActorType()
 .fn GetActorType__14dWmDemoActor_cFv, weak
-/* 00000770 000007B0  38 60 00 01 */	li r3, 0x1
-/* 00000774 000007B4  4E 80 00 20 */	blr
+/* 00000860 000008A0  38 60 00 01 */	li r3, 0x1
+/* 00000864 000008A4  4E 80 00 20 */	blr
 .endfn GetActorType__14dWmDemoActor_cFv
-/* 00000778 000007B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000077C 000007BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000868 000008A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000086C 000008AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x780 | size: 0x8
+# .text:0x870 | size: 0x8
 # m3d::anmChr_c::getType() const
 .fn getType__Q23m3d8anmChr_cCFv, weak
-/* 00000780 000007C0  38 60 00 00 */	li r3, 0x0
-/* 00000784 000007C4  4E 80 00 20 */	blr
+/* 00000870 000008B0  38 60 00 00 */	li r3, 0x0
+/* 00000874 000008B4  4E 80 00 20 */	blr
 .endfn getType__Q23m3d8anmChr_cCFv
 
 # 0x00000000..0x0000000C | size: 0xC
@@ -677,19 +746,19 @@
 .balign 8
 
 # .rodata:0x0 | size: 0x4
-.obj "@12703", local
+.obj "@12734", local
 	.4byte 0x437A0000
-.endobj "@12703"
+.endobj "@12734"
 
 # .rodata:0x4 | size: 0x4
-.obj "@12710", local
+.obj "@12741", local
 	.4byte 0x3F800000
-.endobj "@12710"
+.endobj "@12741"
 
 # .rodata:0x8 | size: 0x4
-.obj "@12711", local
+.obj "@12742", local
 	.4byte 0x3FA00000
-.endobj "@12711"
+.endobj "@12742"
 
 # 0x00000000..0x000000C8 | size: 0xC8
 .data

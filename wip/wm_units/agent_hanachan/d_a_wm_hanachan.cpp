@@ -110,6 +110,8 @@ public:
     void resetState();
     /// @unofficial fn_2_164B10 (0x78 B). NOT yet authored -- placeholder, referenced by execute().
     void unkFn164B10();
+    /// @unofficial fn_2_164E10 (0x98 B). NOT yet authored -- placeholder, referenced by state1().
+    void state4WhenNear();
     /// @unofficial fn_2_1659A0 (0x10C B). NOT yet authored -- placeholder, takes two floats.
     void unkFn1659A0(float a, float b);
     /// @unofficial fn_2_165AB0 (0x70 B). NOT yet authored -- placeholder, referenced by draw().
@@ -145,7 +147,13 @@ public:
     /// @unofficial +0x440-0x47c. Gap between mSmdls[5]'s end (0x404+0xc*5=0x440) and mState
     /// (+0x47c, confirmed by fn_2_165090/165110/1651A0's `stw rX, 0x47c(r3)`) and mTrail's start
     /// (+0x484). Not yet identified field-by-field.
-    u8 mPad440[0x47c - 0x440];
+    u8 mPad440[0x454 - 0x440];
+    /// @unofficial +0x454. Compared against mPos.x in state2() as a boundary/fence check.
+    float mUnk454;
+    u8 mPad458[0x46c - 0x458];
+    /// @unofficial +0x46c. Compared against mPos.x in state2() as a boundary/fence check.
+    float mUnk46c;
+    u8 mPad470[0x47c - 0x470];
     /// @unofficial +0x47c. Written by fn_2_165090 (=1, then clearSpeedAll()), fn_2_165110 (=2),
     /// fn_2_1651A0 (=3). A small state machine, name inferred from usage not confirmed.
     int mState;
@@ -215,6 +223,9 @@ void daWmHanachan_c::resetState() {
 void daWmHanachan_c::calcModel() {
 }
 
+void daWmHanachan_c::state4WhenNear() {
+}
+
 void daWmHanachan_c::state0() {
 }
 
@@ -224,6 +235,10 @@ void daWmHanachan_c::setState1() {
 }
 
 void daWmHanachan_c::state1() {
+    daWmPlayer_c *player = daWmPlayer_c::ms_instance;
+    if (R_2_1_1994B0(player) == 1 || (player->m_18c && R_2_1_1994D0(player) == 1)) {
+        state4WhenNear();
+    }
 }
 
 void daWmHanachan_c::setState2() {
@@ -231,6 +246,21 @@ void daWmHanachan_c::setState2() {
 }
 
 void daWmHanachan_c::state2() {
+    calcSpeed();
+    posMove();
+    if (!(mUnk454 >= mUnk46c)) {
+        if (mPos.x > mUnk454) {
+            setState1();
+            return;
+        }
+    }
+    if (mUnk454 >= mUnk46c) {
+        return;
+    }
+    if (mPos.x >= mUnk454) {
+        return;
+    }
+    setState1();
 }
 
 void daWmHanachan_c::setState3() {
