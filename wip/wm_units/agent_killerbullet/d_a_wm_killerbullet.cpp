@@ -1,6 +1,8 @@
 #include <game/bases/d_a_wm_killerbullet.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_wm_effect_manager.hpp>
+#include <game/bases/d_wm_se_manager.hpp>
+#include <cmath>
 
 ACTOR_PROFILE(WM_KILLERBULLET, daWmKillerBullet_c, 0);
 
@@ -9,6 +11,27 @@ ACTOR_PROFILE(WM_KILLERBULLET, daWmKillerBullet_c, 0);
 // exact mangled name so the linker resolves it directly once both units exist -- a landing-
 // order dependency the coordinator has recorded, not something authored here.
 extern "C" bool unk_1684A0__12daWmKiller_cFb(void *self, bool arg);
+extern "C" bool unk_168260__12daWmKiller_cFi(void *self, int index);
+
+// Shared game-parameter table (lbl_2_data_45428, 0x180 bytes, mixed floats/packed shorts,
+// 50 referrers across the module) -- confirmed NOT this unit's own data via check_bounds.py's
+// ownership check. Declared extern via the same R_<module>_<section>_<offset> convention
+// already proven for a far .bss symbol (R_2_6_FE40 in WM_KILLER); section 5 is .data.
+extern "C" const float R_2_5_45428[];
+
+// #state2's two remaining far calls, both raw DOL-absolute addresses (unowned, no mangled
+// name -- modelled by call shape only, per the project's established convention for such
+// calls, not guessed semantics).
+extern "C" int fn_80103520(dWmEffectManager_c *effMgr, int effectId, void *model,
+                            const char *nodeName, const void *angle, const void *scale);
+extern "C" void fn_80103A00(dWmRotater_c *rotater, bool, int, float);
+
+// Two standalone rodata scalars, this unit's own (both within our claimed 0x89f0-0x8a3c
+// range, confirmed via check_bounds.py -- distinct from the shared external table above).
+// Real values read from the retail .rodata at file offset 0x1c6600+addr.
+static const float sc_60 = 60.0f;    // lbl_2_rodata_89F0
+static const float sc_0 = 0.0f;      // lbl_2_rodata_89F4
+static const float sc_0_001 = 0.001f; // lbl_2_rodata_8A38
 
 // #execute's CalcShadow float constants and the state-handler table live in this unit's own
 // .data/.rodata (lbl_2_data_45428, lbl_2_rodata_89F8) -- not yet named/declared here since the
@@ -71,9 +94,7 @@ int daWmKillerBullet_c::execute() {
         m_1fc->calcRotate();
     }
 
-    CalcShadow(0.8f, 0.7f); // lbl_2_data_45428+0x10/+0x14, real values -- but stored as
-                             // fields of a larger DATA struct, not a rodata literal pool;
-                             // that struct is not yet declared (open .data-bounds work).
+    CalcShadow(R_2_5_45428[4], R_2_5_45428[5]); // +0x10/+0x14 of the shared table
     unk_168D50();
     return SUCCEEDED;
 }
@@ -119,15 +140,82 @@ void daWmKillerBullet_c::state4() {
 
 // NOT YET AUTHORED helpers (distinct scratch stubs, avoiding the bool-collapses-to-1 trap by
 // writing into a real, in-bounds, non-bool scratch field -- m_1c0).
-void daWmKillerBullet_c::endEffectAndResetState() { m_1c0 = 2; }
-void daWmKillerBullet_c::endStateOrTransition() { m_1c0 = 3; }
-void daWmKillerBullet_c::unk_1694A0() { m_1c0 = 4; }
-bool daWmKillerBullet_c::unk_169530() { m_1c0 = 14; return false; }
-void *daWmKillerBullet_c::unk_169510() { m_1c0 = 5; return nullptr; }
+// #endEffectAndResetState (fn_2_168E60). Confirmed content: ends any active effect (#m_1e4)
+// and resets the state index to 0.
+void daWmKillerBullet_c::endEffectAndResetState() {
+    if (m_1e4 >= 0) {
+        dWmEffectManager_c::m_pInstance->endEffect(m_1e4);
+        m_1e4 = -1;
+    }
+    m_1b0 = 0;
+}
+// #endStateOrTransition (fn_2_168F50). Confirmed content: if #checkParentFlag() is false,
+// falls back to #endEffectAndResetState(); otherwise transitions to state 1 (a literal, not a
+// float conversion) with a cooldown read from #unk_169510()'s own result (a genuine float->int
+// truncation, `(int)`), ending any active effect and clearing speed.
+void daWmKillerBullet_c::endStateOrTransition() {
+    if (!checkParentFlag()) {
+        m_204 = false;
+        endEffectAndResetState();
+    } else {
+        unk_1694A0();
+        void *p = unk_169510();
+        float cooldown = *(const float *) ((const u8 *) p + 0x14);
+        m_1b0 = 1;
+        m_1b8 = (int) cooldown;
+        if (m_1e4 >= 0) {
+            dWmEffectManager_c::m_pInstance->endEffect(m_1e4);
+            m_1e4 = -1;
+        }
+        clearSpeedAll();
+    }
+}
+// #unk_1694A0. Confirmed content: snaps this bullet's own #mPos to #mParentKiller's own
+// mMotion (the spawn-position member from WM_KILLER's own layout, offset 0x1ec -- confirmed
+// cross-unit), shrinks #mScale to a shared near-zero constant, then calls #unk_169430().
+void daWmKillerBullet_c::unk_1694A0() {
+    const float *parentMotion = (const float *) ((const u8 *) mParentKiller + 0x1ec);
+    mVec3_c pos(parentMotion[0], parentMotion[1], parentMotion[2]);
+    mPos = pos;
+    mScale.x = sc_0_001;
+    mScale.y = sc_0_001;
+    mScale.z = sc_0_001;
+    unk_169430();
+}
+
+void daWmKillerBullet_c::unk_169430() { m_1c0 = 20; }
+// #unk_169530. Confirmed content: a tail call into WM_KILLER's own unk_168260(int) (another
+// real, cross-unit-confirmed call, same landing-order dependency as #checkParentFlag) on
+// #mParentKiller, with an index derived from the low byte of #mParam (0 -> 9, else value-1).
+bool daWmKillerBullet_c::unk_169530() {
+    u8 low = (u8) mParam;
+    int index = (low == 0) ? 9 : (low - 1);
+    return unk_168260__12daWmKiller_cFi(mParentKiller, index);
+}
+// #unk_169510. Confirmed content: indexes a per-"kind" (ACTOR_PARAM(SpawnKind)-shaped, the
+// low byte of #mParam) sub-table within the shared #R_2_5_45428 table -- 0x18-byte entries,
+// base offset 0x54.
+void *daWmKillerBullet_c::unk_169510() {
+    return (void *) ((const u8 *) R_2_5_45428 + 0x54 + (u8) mParam * 0x18);
+}
 void daWmKillerBullet_c::unk_1691A0() { m_1c0 = 6; }
 void daWmKillerBullet_c::unk_1695E0() { m_1c0 = 7; }
 void daWmKillerBullet_c::unk_1698E0() { m_1c0 = 8; }
-bool daWmKillerBullet_c::unk_169F00() { m_1c0 = 9; return false; }
+// #unk_169F00. Confirmed content: rotates toward a shared-table angle, and on a successful
+// #_procDemoJumpBase(), clears rotation, plays an explosion-shaped effect/sound pair, and
+// clears #m_1d4.
+bool daWmKillerBullet_c::unk_169F00() {
+    rotDirectionX(*(const short *) ((const u8 *) R_2_5_45428 + 0x4c), true);
+    if (_procDemoJumpBase() == false) {
+        return false;
+    }
+    m_1d4 = false;
+    mAngle.x = 0;
+    mAngle3D.x = 0;
+    dWmEffectManager_c::m_pInstance->playEffect(0xe, &mPos, nullptr, nullptr);
+    dWmSeManager_c::m_pInstance->playSound(0x56, mPos, 1);
+    return true;
+}
 void daWmKillerBullet_c::unk_168D50() { m_1c0 = 10; }
 
 // state1/state2/state3 (table entries 1/2/3) -- fully decoded from the target, NOT YET
@@ -154,5 +242,64 @@ void daWmKillerBullet_c::state1() {
         }
     }
 }
-void daWmKillerBullet_c::state2() { m_1c0 = 12; }
-void daWmKillerBullet_c::state3() { m_1c0 = 13; }
+// state2 (table entry 2, fn_2_169280). Confirmed content: updates mSpeedF from
+// #unk_169510()'s own result, ticks #m_1e8/plays a "skl_root"-attached effect once it lapses,
+// calls #unk_1695E0(), then checks distance to #mParentKiller's own position (raw offset 0xac
+// -- dBaseActor_c::mPos, same offset on every actor regardless of subclass) against the shared
+// table's own threshold; past it, ends or resets the state depending on #checkParentFlag().
+// Finally, if #m_200's own byte at +0xd is set, resets #m_1c0 and fires fn_80103A00 on #m_1fc.
+void daWmKillerBullet_c::state2() {
+    m_1f9 = false;
+    calcSpeed();
+    posMove();
+
+    float speedF = mSpeedF;
+    void *p = unk_169510();
+    mSpeedF = speedF + *(const float *) ((const u8 *) p + 0x10);
+
+    if (m_1e8 > 0) {
+        m_1e8 -= 1;
+    } else if (m_1e4 < 0) {
+        m_1e4 = fn_80103520(dWmEffectManager_c::m_pInstance, 0x14, &mModel, "skl_root",
+                             (const u8 *) this + 0x100, (const u8 *) this + 0xdc);
+    }
+
+    unk_1695E0();
+
+    const mVec3_c &parentPos = *(const mVec3_c *) ((const u8 *) mParentKiller + 0xac);
+    if (std::fabs(mPos.distTo(parentPos)) > R_2_5_45428[0]) {
+        if (!checkParentFlag()) {
+            endEffectAndResetState();
+        } else {
+            endStateOrTransition();
+        }
+    }
+
+    if (*((const u8 *) m_200 + 0xd) != 0) {
+        m_1c0 = 0;
+        fn_80103A00(m_1fc, true, -1, sc_0);
+    }
+
+    unk_1698E0();
+}
+// state3 (table entry 3, fn_2_1690F0). Confirmed content: a #m_1b8 cooldown counter (same
+// shape as #state1's own), then once it lapses, moves and checks distance to #m_1ec (the
+// stored target position) against the same shared-table threshold as #state2 -- past it, ends
+// any active effect and clears a base-class flag at raw offset 0x124 (the same unnamed field
+// WM_START's own draft already reaches via an identical raw cast).
+void daWmKillerBullet_c::state3() {
+    if (m_1b8 > 0) {
+        m_1b8 -= 1;
+    } else {
+        calcSpeed();
+        posMove();
+        if (std::fabs(mPos.distTo(*(const mVec3_c *) m_1ec)) > R_2_5_45428[0]) {
+            if (m_1e4 >= 0) {
+                dWmEffectManager_c::m_pInstance->endEffect(m_1e4);
+                m_1e4 = -1;
+            }
+            *(bool *) ((u8 *) this + 0x124) = false;
+        }
+        unk_1698E0();
+    }
+}

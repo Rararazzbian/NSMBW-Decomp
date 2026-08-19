@@ -9629,3 +9629,49 @@ Section numbers come from `relfile.py`'s own table.
 **A table sitting near your unit is not necessarily yours** — run the ownership
 check, and if it has referrers from outside your `.text` claim, declare it
 `extern` rather than defining it.
+
+## WM_KILLERBULLET 10/37 -> 15/37: one `extern` unblocked five functions
+
+Declaring the shared parameter table as `extern "C" const float R_2_5_45428[];`
+closed `state2` and `state3` outright and is now read by **five** functions.
+
+**And `unk_169510` turned out to be the table-indexing primitive itself:**
+
+```
+R_2_5_45428 + 0x54 + (u8)mParam * 0x18
+```
+
+— a per-"kind" sub-table inside the shared block. That explains why five separate
+functions read through it, and it means **the shared table has internal structure
+worth mapping** rather than being a flat constant pool.
+
+## FIFTH time today: check `include/` before calling a class unowned
+
+The agent identified `m_200` as `dWmBgmSync_c *` from its vtable symbol, then
+reported the class as "not landed anywhere yet (no header)".
+
+**`include/game/bases/d_wm_bgm_sync.hpp` exists and is complete** — real
+constructor, virtual destructor, `execute()`, `getAnmRate()`, all fields.
+
+**And the "inline construction — manual vtable plus field writes rather than a
+real constructor call" that looked nontrivial to model is simply what
+`new dWmBgmSync_c()` emits.** The constructor is defined in-class, so MWCC inlines
+it: the manual vtable store and field initialisations **are** the inlined
+constructor. `wip/wm_units/agent_board/` does exactly this.
+
+Running tally of things treated as unowned that were already declared: a
+secondary vtable pointer, `SetScnObjOption`, `bmdl_c::play()`, `fanm_c::mPlayMode`,
+and now `dWmBgmSync_c`. **Grep `include/` for the class name first. It costs one
+command.**
+
+## Branch polarity that no phrasing reaches
+
+`unk_169F00` is size-exact (39/39) with correct content, calls and arguments, and
+its early return compiles with the opposite branch type from the target under a
+direct early return, an explicit `== false`, and a result-flag form — the last of
+which also cost two instructions and a spilled register. Kept the best at 26 and
+moved on.
+
+**Distinct from the De Morgan finding**, where restructuring a compound condition
+*did* change the output. Here there is no compound condition to restructure —
+a single predicate's branch type is not always reachable.
