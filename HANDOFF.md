@@ -8245,3 +8245,54 @@ unit, and the agent judged it not safely completable to the same standard in the
 time left. An honest stub beats a guessed body -- a guessed body of the right
 size is worse than none, because it looks finished and poisons `verify_anon`'s
 pairing for its neighbours.
+
+## Reading a `.rodata` pool dump is the fastest way to find a SIZE error
+
+kinoballoon had a pool-offset shift shared by `createModel`, `modeExec` and
+`__sinit`, and four rounds of register and declaration-order work never touched
+it. Dumping the unit's real `.rodata` and reading its structure located the
+likely cause in one pass:
+
+```
++0x00  120.0f
++0x04  {0, -1, <reloc>}   \
++0x10  {0, -1, <reloc>}    >  THREE pointer-to-member-function entries, 0xc stride, 0x24 total
++0x1c  {0, -1, <reloc>}   /
++0x28  -10000.0f, 0.0f, 0.0f, 1.0f, 0.01f, 10.0f
++0x40  {1, 0, 3}  integers   \  two IDENTICAL integer triples, so two declarations
++0x4c  {1, 0, 3}  integers   /  rather than one shared object
++0x58  2160, -30, -478       <- sc_ForceList's mNodePos
+```
+
+The draft models a **one-entry** proc table where the target has **three**. That
+puts everything after it `0x18` bytes too early -- **exactly the shared shift**,
+and it explains why three functions shifted together: one cause upstream of all
+of them, not three separate problems.
+
+**When several functions in a unit share an identical pool-offset shift, look for
+a SIZE error in an object near the front of the pool before attacking any of them
+individually.** A shared symptom usually has a single upstream cause.
+
+Two supporting notes:
+- A duplicated constant in the pool (the two identical `{1, 0, 3}` triples)
+  usually means **two separate declarations**, not one object reused. The same
+  signal appeared on kinoballoon's `.data`, where `"cobKinopio"` sits at two
+  addresses.
+- Integers in `.rodata` are named objects, since this compiler never pools scalar
+  integer literals. That makes them declaration-order-placed and therefore
+  controllable.
+
+### `createModel`'s register gap: parked, and complete
+
+Four independent restructurings -- inlining the call as a direct argument,
+materialising the address explicitly in the window, reference versus pointer, and
+declaration-order swaps -- all produce **byte-identical** output at 76/77
+instructions, 51 differing, `_savegpr_27`. The saved-register level already
+matches the target.
+
+Root cause, at instruction granularity: the target's `r30` does double duty as
+the `.data` pool base and is then **reassigned mid-function** to `&mChrAnim[0]`,
+with the reassignment landing between an address computation and its dereference,
+which splits one load into two instructions. At `-O4` MWCC normalises all four
+source forms to the same internal representation before scheduling, so no
+source-level restructuring reaches the decision.

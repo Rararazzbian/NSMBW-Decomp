@@ -230,7 +230,8 @@ void daWmKinoBalloon_c::createModel() {
     nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobKinopio");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
     static const char *animName = "cobKinopio";
-    anim.create(resMdl, resFile.GetResAnmChr(animName), &mAllocator, nullptr);
+    nw4r::g3d::ResAnmChr resAnmChr = resFile.GetResAnmChr(animName);
+    anim.create(resMdl, resAnmChr, &mAllocator, nullptr);
     mUnk1e8 = false;
     anim.setRate(0.0f);
     anim.setFrame(0.0f);
