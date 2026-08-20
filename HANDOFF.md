@@ -11460,3 +11460,48 @@ WM_KOOPAJR cannot reach N/N alone** — which is a planning fact, not a defect.
 
 A *different* unclaimed pool range (`0x90`-`0xd8`) DOES have confirmed consumers
 in cases 5-13, so that part should keep closing as those are authored.
+
+## `order_sweep.py`: a project-wide gate, and it immediately found two MORE
+
+Three units were found unlinkable one at a time today, each by a different route.
+That is a systematic failure, so it now has a systematic check.
+`wip/wm_units/order_sweep.py` runs the order gate across every unit whose
+`build.py` records its range and target objects.
+
+It works for ANY naming style, because it drives `verify_anon.py`, which pairs
+target to draft on instruction CONTENT and then asks whether the matched draft
+indices ascend. **`check_fn_order.py` covers only the 3 drafts of 56 whose symbol
+names carry the target address**; this covers the rest. It is read-only — no
+compile, no disassembly — so it is safe to run while agents are working.
+
+**First run found two more genuinely unlinkable parked units:**
+
+```
+ORDER WRONG  agent_antlion_mng   18/22   17 defined too late
+ORDER WRONG  agent_hanachan      17/32   16 defined too late
+```
+
+**WM_ANTLION_MNG matters most.** It was surveyed this session and reported as
+"zero unwritten functions, all four residuals are register-allocation walls with
+substantial documented iteration." All true — **and it could not have linked
+regardless**, with seventeen functions defined too late. A unit can be
+simultaneously wall-bound and unlinkable, and the tally shows neither.
+
+**That makes FIVE units found unlinkable in one day** — WM_KILLER,
+WM_KILLERBULLET, WM_KOOPAJR, WM_ANTLION_MNG, WM_HANACHAN.
+
+### The sweep's own first run was wrong, in an instructive way
+
+It reported **`WM_MANTA` as "16/16 and ORDER WRONG"** — a fully-matching unit that
+cannot link. WM_MANTA LANDED hours earlier. The leftover `draft.txt` in its old
+scratch directory is a **stale artefact**; the real source is in `source/` and is
+byte-perfect by definition, re-verified against retail on every build.
+
+**A sweep over scratch directories must exclude units that have already landed**,
+or it will confidently indict shipped, verified code. The tool now skips them and
+says which it skipped — alongside naming every unit it could not check, because
+"not checked" must never render as "checked and fine".
+
+Five units cannot be checked at all: their `build.py` records no range or object
+list. Fixing those `build.py` files is cheap and puts the whole tree under the
+gate.

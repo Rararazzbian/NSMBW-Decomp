@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11463 lines / 436 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11508 lines / 438 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -457,3 +457,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11423-11435` An in-class inline compiles WEAK. If the target symbol is GLOBAL, go out-of-line.
 - `11436-11446` Fix ORDER before diagnosing a pool gap — a wrong order MASKS the real picture
   - `11447-11463` A negative established by exhaustive search AND by experiment
+- `11464-11492` `order_sweep.py`: a project-wide gate, and it immediately found two MORE
+  - `11493-11508` The sweep's own first run was wrong, in an instructive way
