@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11552 lines / 440 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11597 lines / 444 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -461,3 +461,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11493-11508` The sweep's own first run was wrong, in an instructive way
 - `11509-11532` WM_KILLERBULLET: zero fake stubs, and a PREDICTION DISPROVED by its own author
   - `11533-11552` The disproved prediction
+- `11553-11565` LANDED: `d_a_dummy_door.cpp` — the session's first, and the small-unit bet paying off
+  - `11566-11578` Three corrections the agent made to MY briefing, all checked before concluding
+  - `11579-11590` A defect the tally could never have caught: VTABLE ORDER in `.data`
+  - `11591-11597` And a tool limitation found the same way

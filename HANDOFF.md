@@ -11549,3 +11549,48 @@ string-pool contributor.
 than a cautious one never tested.** Both of this agent's predictions were
 explicit and both got measured; one held, one did not, and the doctrine is
 sharper for it.
+
+## LANDED: `d_a_dummy_door.cpp` — the session's first, and the small-unit bet paying off
+
+**`DUMMY_DOOR_CHILD` + `DUMMY_DOOR_PARENT`, `.text 0x77AF0-0x77C50` (0x160 bytes),
+`.data 0x1AA08-0x1ABC8`. 4/4 byte-identical. Five binaries verified green.**
+`d_basesNP` 2.354% -> 2.373%, total 11.471% -> 11.477%.
+
+**352 bytes of `.text`.** It landed in a single round on a unit nobody had opened,
+while five agents spent the session on units of 0x1000-0x3000 bytes and landed
+nothing. The scouted small-unit queue was the right call and this is the evidence.
+
+Both classes are trivial: `daDummyDoorChild_c` / `daDummyDoorParent_c :
+public dActor_c`, no members, overriding exactly one vtable slot each.
+
+### Three corrections the agent made to MY briefing, all checked before concluding
+
+- **No `createChild` call exists in this unit.** I had said a PARENT/CHILD profile
+  pair usually means one creates the other. The agent read both vtables: slot 2
+  (`create()`) is `dActor_c`'s own unmodified base in both. **The naming does not
+  cash out as a call.**
+- **The destructor occupies ONE vtable slot here, not two.** My standing
+  two-slot rule (scalar + vector deleting) is a general hint; **this ABI uses a
+  single flag-argument destructor**, read directly off the vtable data.
+- Both destructors were declared and defined **out-of-line**, because an in-class
+  default would compile weak and defer to end-of-TU while the target's four
+  functions sit in plain non-deferred order.
+
+### A defect the tally could never have caught: VTABLE ORDER in `.data`
+
+The first draft emitted the two compiler-synthesised vtables in `.data` in the
+**wrong relative order** — PARENT before CHILD, backwards from the target. Same
+class of bug as a `.bss` ordering miss, and with **no `.ctors` entry in this unit
+there was no structural check that would have caught it.**
+
+**Root cause, established by experiment: vtable emission order tracks CLASS
+DECLARATION order, not out-of-line definition order.** Swapping the two
+`class {...};` declarations fixed it with zero effect on `.text` order. That is a
+new lever and it is independent of the `.text` ordering rules already on record.
+
+### And a tool limitation found the same way
+
+`check_vtable.py` grabs the FIRST `__vt__` object in `draft.txt` with a bare
+`re.search`, so **a two-vtable file silently checks the wrong one against a
+mismatched target label.** The agent isolated each vtable and confirmed both
+clean independently. Any unit defining more than one class will hit this.
