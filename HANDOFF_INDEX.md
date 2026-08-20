@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11597 lines / 444 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11653 lines / 447 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -465,3 +465,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11566-11578` Three corrections the agent made to MY briefing, all checked before concluding
   - `11579-11590` A defect the tally could never have caught: VTABLE ORDER in `.data`
   - `11591-11597` And a tool limitation found the same way
+- `11598-11614` Read vtables from the `.data` SPLIT OBJECT — it prints real symbol names
+  - `11615-11626` Pooled STRING LITERALS name the class and its states outright
+- `11627-11653` A prediction that HELD: name the overrides before touching the constructor

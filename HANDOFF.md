@@ -11594,3 +11594,59 @@ new lever and it is independent of the `.text` ordering rules already on record.
 `re.search`, so **a two-vtable file silently checks the wrong one against a
 mismatched target label.** The agent isolated each vtable and confirmed both
 clean independently. Any unit defining more than one class will hit this.
+
+## Read vtables from the `.data` SPLIT OBJECT — it prints real symbol names
+
+Every vtable question on this project has been answered by walking `.text`
+relocations and converting offsets to slots by hand. There is a better way, found
+while authoring MINI_GAME_GUN_BATTERY:
+
+**Disassemble the `.data` split object that CONTAINS the vtable** (here
+`bin/dtkspl/d_basesNP/obj/auto_04_000132B0_data.o`). It prints **every slot with
+its real mangled symbol name**, not a bare address. Overrides are then obvious by
+inspection: MGR_OBJ overrides exactly `create`, `execute`, `preExecute` and its
+destructor out of `fBase_c`/`dBase_c`'s 18 primary slots — identified from
+CONTENT, not derived from arithmetic.
+
+**Reach for the `.data` object disasm on any vtable question**, in preference to
+the `.text`-relocation walk. The relocation technique is still what you need when
+no split object covers the vtable, but it should not be the first tool.
+
+### Pooled STRING LITERALS name the class and its states outright
+
+The same dump contained
+`"daMiniGameGunBatteryMgrObj_c::StateID_ShowRule"`, `"...::StateID_Play"` and
+`"...::StateID_ShowResult"` — **byte-for-byte confirmation of a class name this
+project had only guessed**, plus the three real state names and their
+`initialize`/`execute`/`finalize` triples.
+
+`sStateID_c` objects carry their name as a string, so **any unit using the state
+framework has its class name and every state name sitting in `.data` in plain
+ASCII.** Look there before inventing names.
+
+## A prediction that HELD: name the overrides before touching the constructor
+
+MINI_GAME_GUN_BATTERY's constructor was parked at 58 differing with a
+vtable-identity mismatch at `+0x60` and a missing `+0xa0` store. The instruction
+was to leave it alone and identify the real virtual overrides first, on the theory
+that **the vtable stores would reshape themselves** once the overrides existed.
+
+They did. After authoring the four overrides the constructor went **58 differing
+-> 1**, and both the `+0x60` and `+0xa0` problems resolved with no direct work.
+The single remaining residual is a partial-loop-unroll on a 3-element array
+construction, three variants measured.
+
+Recorded because it is the counterpart to a rule already here: **a stuck
+constructor is often a SYMPTOM of undeclared virtuals, not a defect in its own
+right.** Attacking it directly is working on the wrong function.
+
+Two more from the same round: `create()` and the destructor matched exact 0-diff,
+and `preExecute()` closed on three levers — branch polarity in a ternary, an `int`
+(not `bool`) return type on an un-landed callee, and recognising the target's
+**`cntlzw`/`srwi` pair as a logical NOT rather than a boolify**. That idiom is
+worth knowing on sight.
+
+Also corrected: I framed the unit's two largest functions as candidates for
+`execute()`. **`execute()` is 12 lines and forwards to `mStateMgr.executeState()`;
+the large functions are two of the STATE bodies.** In a state-framework unit the
+dispatcher is trivial and the size lives in the states.
