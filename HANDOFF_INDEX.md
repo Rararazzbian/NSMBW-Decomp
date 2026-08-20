@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12588 lines / 491 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12633 lines / 492 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -512,3 +512,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `12522-12541` The consequence: `__sinit` is not a "leave until last" item here
 - `12542-12565` The state framework emits per-STATE, not per-KIND — AC_WATER_MOVE 12/27 -> 19/27
   - `12566-12588` Three real defects, and the first is the instructive one
+- `12589-12633` Two classes sharing a state name in one TU: HAND-EXPAND the second `STATE_VIRTUAL_DEFINE`

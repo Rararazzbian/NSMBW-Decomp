@@ -12585,3 +12585,48 @@ CASTLE_BG eight at once.
 are itemised content gaps, not structural ones — and `__sinit` is already 138/159
 as a side effect of the rest being right, which is exactly the behaviour that
 justifies holding it until last on a unit where nothing is blocked on it.
+
+## Two classes sharing a state name in one TU: HAND-EXPAND the second `STATE_VIRTUAL_DEFINE`
+
+CASTLE_BG decoded its `__sinit` to the byte and **confirmed my original reading
+that the vtable-diff inference had overturned**: `lbl_2_bss_C1AC` really is
+**BOTTOM_BG's own `StateID_DemoWait`**, constructed with the same name string,
+the base's three PMF triples, `getNullState()` for the baseID slot, and a vtable
+for a distinct `sFStateVirtualID_c<daBottomBGForCastleLudwig_c>` instantiation.
+
+It could not write it: `STATE_VIRTUAL_DEFINE(daBottomBGForCastleLudwig_c,
+DemoWait)` fails with `baseID_DemoWait` redefined. **Reading the macro shows why,
+and shows the fix.**
+
+`include/game/sLib/s_State.hpp:46` — `STATE_VIRTUAL_DEFINE` emits **a file-scope
+function template plus its explicit specialisation** before the object definition:
+
+```cpp
+template <typename T> static const sStateIDIf_c &baseID_##name() { return T::StateID_##name; }
+template <> const sStateIDIf_c &baseID_##name<sStateID_c>()      { return sStateID::null; }
+sFStateVirtualID_c<class> class::StateID_##name(
+    baseID_##name<class::StateIDBase_##name>(), #class "::StateID_" #name, ...);
+```
+
+**Invoking it twice for the same `name` in one TU redefines that template** — the
+error is about the helper, not about the state.
+
+**And the derived-class mechanism is already built in.**
+`STATE_VIRTUAL_FUNC_DECLARE` defines `StateIDSelf_##name` and derives
+`StateIDBase_##name` via `decltype(StateBaseGetter##name<class>(0))`, which
+resolves to **the BASE's `StateIDSelf_##name` when the base declared the state**,
+otherwise `sStateID_c`. So `baseID_##name<StateIDBase_##name>()` returns **the
+parent's `StateID_##name` object** — exactly the superState the target passes.
+
+**Fix: declare with the macro, then HAND-EXPAND the definition for the second
+class**, writing the `sFStateVirtualID_c<...> Derived::StateID_Name(Parent::StateID_Name, ...)`
+initialiser directly and NOT re-emitting the `baseID_` template.
+
+**There is a landed precedent for this exact technique, from today.**
+`source/d_basesNP/bases/d_a_ac_switch.cpp` hand-expands `ACTOR_PROFILE` because it
+cannot be invoked seven times for one class — `className##_classInit` collides.
+Same category of problem, same resolution, already verified green.
+
+**The general rule: when a framework macro cannot be invoked twice, the obstruction
+is usually a HELPER it emits, not the thing you are declaring.** Read the
+expansion, keep the parts you need once, and write the rest by hand.
