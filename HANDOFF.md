@@ -11996,3 +11996,48 @@ correct.
   **Independently corroborated by `include/game/bases/d_profile.hpp`, which
   already declares `g_profile_AC_FLAGON`..`g_profile_AC_RNSWICH` as one unbroken
   seven-entry block** — the header knew the answer the whole time.
+
+## LANDED: `d_a_floor_jr_b.cpp` — the "landing-order dependency" was NOT one either
+
+**`.text 0x841E0-0x84290` (0xB0 bytes), `.data 0x1CC30-0x1CEC8`. 2/2. Five
+binaries green.** Fifth landing of the session, and it retires a second
+structural objection within the hour.
+
+The agent had — carefully, and by explicit analogy to the recorded
+WM_KILLERBULLET-on-WM_KILLER case — declined to call this landable: `daFloorJrB_c`
+does not derive from `dActor_c` but from **FLOOR_JR_A**, an unlanded 0xBB0 unit,
+leaving **ten unresolved externals** in its vtable.
+
+**It linked. All five binaries match retail.**
+
+### The general rule, now demonstrated twice in one hour
+
+**A slice does not need to own, or even to have decompiled, the definitions it
+references — only the bytes it claims.** An un-landed region is not absent; it is
+still present as original binary, and references into it resolve. That is exactly
+the property the `R_<module>_<section>_<offset>` convention exists to exploit,
+and it applies to vtable slots pointing at un-landed functions just as it does to
+direct calls.
+
+So **"unit B depends on unlanded unit A" is not by itself a landing blocker.**
+The recorded WM_KILLERBULLET-on-WM_KILLER precedent should be re-examined on the
+same basis rather than cited as established.
+
+### Both objections retired today were CAREFUL, CONSISTENT, and WRONG
+
+- `d_a_peach_castle_sequence.cpp` — an order-gate violation that did not exist.
+- `d_a_ac_switch.cpp` — "cannot be independently linked."
+- `d_a_floor_jr_b.cpp` — "needs FLOOR_JR_A authored first."
+
+Three units, three well-argued reasons not to try, and **one command settled each
+of them.** The five-binary verify is cheap, non-destructive, trivially revertible,
+and it is the project's DEFINITION of correct. **A structural argument about
+whether something can land is a hypothesis; the build is the experiment.**
+
+Two modelling details from the FLOOR_JR_A shadow header, now at
+`include/game/bases/d_a_floor_jr_a.hpp`, that were right and are worth keeping:
+its destructor is declared **out-of-line with no body**, because a first draft
+showed it would otherwise be synthesised as a WEAK symbol inside our own TU; and
+three extra tail virtuals surfaced only when `check_vtable.py` reported
+**"SLOT COUNT DIFFERS by -3"** — a slot count is a precise statement of how many
+declarations are missing, and it points at the end of the class.

@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11999 lines / 465 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12044 lines / 468 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -486,3 +486,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11928-11955` FLOOR_JR_B: correctly held back on a LANDING-ORDER DEPENDENCY
 - `11956-11982` LANDED: `d_a_ac_switch.cpp` — and "cannot be independently linked" was WRONG
   - `11983-11999` The agent's other two results were right, and both corrected ME
+- `12000-12012` LANDED: `d_a_floor_jr_b.cpp` — the "landing-order dependency" was NOT one either
+  - `12013-12025` The general rule, now demonstrated twice in one hour
+  - `12026-12044` Both objections retired today were CAREFUL, CONSISTENT, and WRONG
