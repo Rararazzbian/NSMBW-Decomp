@@ -73,60 +73,92 @@ already-matching `lfs f3, 0xac(r31)`. Do not reach for `mTargetPos` (`+0x168` on
 compiled per the shared header) when you see a Vec3 store at `+0xac` -- that
 address is `mPos`.
 
-## Shadow header: `daWmMap_c::GetPos(const char*)`
+## Header change: `daWmMap_c::GetPos(const char*)` -- APPLIED, real header, not a shadow anymore
 
-`shadow_include/game/bases/d_a_wm_map.hpp` adds one overload not present in the
-real `include/game/bases/d_a_wm_map.hpp`:
+Proposed this round from a shadow copy in `shadow_include/game/bases/d_a_wm_map.hpp`;
+the lead checked the evidence and applied it directly to the real
+`include/game/bases/d_a_wm_map.hpp` (plus a `syms.txt` entry), five binaries
+re-verified green. The shadow copy has been DELETED from this unit's
+`shadow_include/` -- there is nothing left there. Rebuilt against the real
+header afterward: tally unchanged at 16/32, all call sites compile identically.
+
+Evidence that carried it: `bin/dtk/wiimj2d_symbols.txt` line
+"GetPos__9daWmMap_cFPCc = .text:0x80100380; // size:0x50" sits immediately
+after the already-landed `GetPos__9daWmMap_cFi = .text:0x80100310; // size
+0x64", and `getBasePos()`'s target (`fn_2_1657E0`) calls it directly by that
+exact mangled name with the by-value-return-via-hidden-pointer convention
+already established for the `int` overload, passing a name-string literal
+("W502", read directly out of `original/d_basesNP.rel` at the
+relocation-resolved `.data` address). Mirrors the already-landed
+`GetNodePos(const char*, mVec3_c&)` overload in the same header.
+
+## Function-order gate: VERIFIED as the known partial-authoring artifact, not real
+
+Lead asked me to actually check this rather than wave it off, since `verify_anon.py`
+was fixed mid-round. Direct proof, not inference: I disassembled the REAL,
+LANDED, currently-matching compiled object
+`bin/compiled/d_basesNP/d_basesNP/bases/d_a_wm_kinoko_base.o` (via
+`dtk elf disasm`). Its OWN `ACTOR_PROFILE` macro sits at the physical end of
+`d_a_wm_kinoko_base.cpp`, exactly like ours -- yet the compiled object's very
+FIRST function is `daWmKinokoBase_c_classInit__Fv`, ahead of the constructor and
+everything else. So MWCC genuinely relocates the `ACTOR_PROFILE`-generated
+`_classInit` to the front of the object regardless of its source position, on a
+file we KNOW links and matches today. That is the exact same shape as our
+draft's reported violation (classInit's draft-index is high, so everything
+after it in target order reads as "defined too late"). Confirmed benign; not
+reordering anything.
+
+## Open wall: `getBasePos`/`getPosVariant2`/`getPosVariant3` -- shape now closed, registers still open
+
+Lead traced the mechanism centrally: `nw4r::math::VEC3::operator+`
+(`include/lib/nw4r/math/math_types.h:119`) wraps an inline `VEC3Add`
+(same file, line 315) that emits exactly this psq_l/ps_add/psq_st shape,
+distinct from `PSVECAdd` (real `bl`, confirmed) and from `mVec3_c::operator+`
+(scalar, confirmed). Applied it here:
 
 ```cpp
-mVec3_c GetPos(const char *name);
+static const nw4r::math::VEC3 kOffsetA(0.0f, 0.0f, 0.0f); // + kOffsetB, kOffsetC
+
+mVec3_c daWmHanachan_c::getBasePos() {
+    mVec3_c pos = daWmMap_c::m_instance->GetPos("W502");
+    const nw4r::math::VEC3 &posRef = pos;   // base-class reference, zero-cost
+    return posRef + kOffsetA;               // paired-single VEC3::operator+
+}
 ```
 
-Evidence: `bin/dtk/wiimj2d_symbols.txt` line "GetPos__9daWmMap_cFPCc =
-.text:0x80100380; // size:0x50" sits immediately after the already-landed
-`GetPos__9daWmMap_cFi = .text:0x80100310; // size 0x64`, and `getBasePos()`'s
-target (`fn_2_1657E0`) calls it directly by that exact mangled name with the
-by-value-return-via-hidden-pointer convention already established for the `int`
-overload, passing a name-string literal ("W502", read directly out of
-`original/d_basesNP.rel` at the relocation-resolved `.data` address). This
-mirrors the already-landed `GetNodePos(const char*, mVec3_c&)` overload sitting
-right above it in the same header -- a name-based lookup alongside an index-based
-one is already this class's own convention, not a new pattern.
+**Result: the INSTRUCTION SHAPE now matches** -- `psq_l`/`ps_add`/`psq_st` appear
+exactly where the target has them, plus the trailing 3-scalar copy into the
+`mVec3_c` return slot (which is `mVec3_c(const nw4r::math::VEC3&){set(...)}`'s
+own shape, byte-plausible). This took `getBasePos` from 32/33 differing down to
+29, and `getPosVariant2`/`getPosVariant3` similarly improved. **None closed to
+MATCH yet** -- residual is now purely register allocation / instruction
+scheduling, not a wrong construct:
 
-**NOT yet applied to the real header.** Report this to the lead for a
-five-binary-verified header change; until then it lives only in
-`shadow_include/`.
+- The target computes `r31 = lbl_2_data_44D60` (the TABLE's base symbol, not an
+  individually-named `kOffsetA`) BEFORE calling `GetPos`, and indexes into it
+  with a raw `+0x4`/`+0x10`/`+0x1c` displacement at the point of use. My draft
+  computes each `kOffsetX`'s OWN address (its own `lis`/`addi` pair) AFTER the
+  `GetPos` call. This strongly suggests `lbl_2_data_44D60` is genuinely a
+  shared/anonymous literal pool spanning MANY functions in this class (the
+  previous round already found `lbl_2_data_44D60+0x54/+0x58` used by
+  `unkFn1659A0` for its `1.0f`/`1.25f` constants) -- i.e. three SEPARATE named
+  `static const` objects is the wrong shape; it should likely be ONE array or
+  anonymous literals that MWCC naturally pools together once enough of the
+  class's functions that share the table are actually authored. With only 3 of
+  the table's consumers written this round, I cannot yet reproduce the full
+  pool's shared-base-pointer hoisting.
+- GetPos's own destination stack slot also differs (target's GetPos writes
+  directly to the slot that becomes the paired-single source with NO
+  intermediate copy at `r1+0x8`; mine currently allocates its stack slots in a
+  different order -- did not chase further this round).
 
-## Open wall: `getBasePos`/`getPosVariant2`/`getPosVariant3` don't call PSVECAdd
-
-All three now produce the CORRECT VALUE and the correct call graph
-(`getPosVariant2/3` each call `getBasePos()` then add a per-function named
-zero-constant; `getBasePos()` calls the new `GetPos(const char*)` overload then
-adds its own zero-constant) -- but the target's addition is fully INLINE
-paired-single (`psq_l` / `ps_add` / `psq_st`, `qr0`), while calling the SDK's
-`PSVECAdd(const Vec*, const Vec*, Vec*)` (declared in
-`include/lib/revolution/mtx/vec.h`) compiles to a real `bl PSVECAdd`.
-
-**This is not a guess** -- checked directly: `PSVECAdd` itself is a real 0x24-byte
-function at `0x801C1530` (`bin/dtk/wiimj2d_symbols.txt`), and an existing LANDED
-caller (`source/dol/cLib/c_m3d.cpp`'s `cM3d_calcInDivPos1`) really does `bl
-PSVECAdd`/`bl PSVECScale` in the matched retail DOL (dumped directly from
-`original/wiimj2d.dol` at `0x801611a0`) -- so MWCC does NOT auto-inline this
-function from an extern declaration. daWmHanachan_c's target must be using
-something else that IS visible/inline at the call site.
-
-**Lead for next round:** HANDOFF already flagged `typedef __vec2x32float__ v2f;`
-(CodeWarrior's paired-single type, "emits psq_l/psq_st when you assign through
-it") as a live, uncharacterised class from WM_KINOPIO's `processCutsceneCommand`
-residual. This looks like the same mechanism. Try declaring the temporaries as
-raw `v2f` and doing the add via CodeWarrior's paired-single intrinsics/operators
-directly instead of `mVec3_c` + `PSVECAdd`. If that closes `getBasePos`, it
-probably also closes WM_KINOPIO's parked residual -- same underlying idiom, worth
-flagging back.
-
-Current draft compiles and produces the right VALUES via `PSVECAdd`
-(kept in the source as the best available approximation) -- residual is purely
-instruction-shape, 19/19/32 differing on functions of 26/26/36 instructions.
+**Not spending more of this round on it** per lead's instruction. Values and
+call graph are correct; only scheduling remains. Next session: try declaring
+one shared `static const nw4r::math::VEC3 kTable[]` (or wait until more of the
+table's OTHER consumers -- `unkFn1659A0` in particular -- are authored so the
+pool has enough real references to reproduce the hoisting), and try swapping
+`GetPos`'s call to write directly into the slot later read by `psq_l` instead
+of an intermediate.
 
 ## Named constants added this round
 

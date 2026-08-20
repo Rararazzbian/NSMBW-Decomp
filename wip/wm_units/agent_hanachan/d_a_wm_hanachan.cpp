@@ -8,7 +8,7 @@
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_a_wm_player.hpp>
 #include <game/bases/d_a_wm_map.hpp>
-#include <revolution/MTX.h>
+#include <nw4r/math.h>
 
 extern "C" int R_2_1_1994D0(daWmPlayer_c *player);
 extern "C" int R_2_1_1994B0(daWmPlayer_c *player);
@@ -112,7 +112,11 @@ public:
     void resetState();
     /// @unofficial fn_2_164B10 (0x78 B). NOT yet authored -- placeholder, referenced by execute().
     void unkFn164B10();
-    /// @unofficial fn_2_164E10 (0x98 B). NOT yet authored -- placeholder, referenced by state1().
+    /// @unofficial fn_2_164E10 (0x98 B). `mState=0; clearSpeedAll(); mSpeedF=2.5f;
+    /// setDirection(getPosVariant2()-mPos); mUnk480=0;`. `mSpeedF` (a `dBaseActor_c` member)
+    /// identified from `clearSpeedAll()`'s own already-landed body in
+    /// source/dol/bases/d_wm_demo_actor.cpp (`mSpeedF=0.0f` compiles to `stfs ...,0x10c(r3)`,
+    /// the exact offset this function writes 2.5f to right after calling clearSpeedAll()).
     void state4WhenNear();
     /// @unofficial fn_2_1659A0 (0x10C B). NOT yet authored -- placeholder, takes two floats.
     void unkFn1659A0(float a, float b);
@@ -173,9 +177,19 @@ public:
     m3d::mdl_c mModel2;
     m3d::anmChr_c mAnimChr2;
     m3d::smdl_c mSmdls[5];
-    /// @unofficial +0x440-0x454. Gap between mSmdls[5]'s end (0x404+0xc*5=0x440) and mUnk454
-    /// (+0x454). Not yet identified field-by-field.
-    u8 mPad440[0x454 - 0x440];
+    /// @unofficial +0x440. Five RAW POINTERS, not padding -- read off unkFn165AB0's own loop
+    /// this round: `lwz r3, 0x440(r31)` with r31 incrementing by 4 each of 5 iterations, so the
+    /// field is `T *[5]`, not bytes. Never written by the constructor (the ctor's array-
+    /// construction calls jump straight from mSmdls[5] at +0x404 to mTrail[200] at +0x484,
+    /// nothing touches +0x440-0x454), so it is zero-initialised only via
+    /// `fBase_c::operator new`'s blanket zero, same convention as +0x184's mUnk184. Declared as
+    /// `m3d::scnLeaf_c *` -- the loop calls the non-virtual `setPriorityDraw(int,int)` on it
+    /// directly (unconditionally, matching `m3d::scnLeaf_c::setPriorityDraw`'s own signature
+    /// exactly) and then, only if non-null, dispatches vtable slot 0x14 -- `entry()` -- which is
+    /// `scnLeaf_c`'s own slot per the `m3d::mdl_c` vtable dump from earlier this round, so the
+    /// base class pointer is sufficient; no more specific derived type is required to reproduce
+    /// either call.
+    m3d::scnLeaf_c *mUnk440[5];
     /// @unofficial +0x454. THREE consecutive Vec3-shaped fields (0x454, 0x460, 0x46c), read off
     /// fn_2_1655C0's own stores this round -- corrects the previous round's single-float guess
     /// for +0x454/+0x46c (still byte-compatible: `.x` sits at the same offset a bare float did).
@@ -191,7 +205,9 @@ public:
     /// @unofficial +0x47c. Written by fn_2_165090 (=1, then clearSpeedAll()), fn_2_165110 (=2),
     /// fn_2_1651A0 (=3). A small state machine, name inferred from usage not confirmed.
     int mState;
-    u8 mPad480[0x484 - 0x480];
+    /// @unofficial +0x480. Written `=0` by state4WhenNear() only, this round -- not yet known
+    /// to be read anywhere. Ctor does not touch it (zero via `fBase_c::operator new`).
+    int mUnk480;
     /// @unofficial +0x484. 200-element array, element ctor is a REL-external helper
     /// (fn_2_1D70, outside this unit) paired with mVec3_c's real destructor. Represented here as
     /// a raw mVec3_c array pending independent confirmation of the ctor's role.
@@ -202,9 +218,19 @@ public:
     /// (`blr`), standard empty vector-deleting destructor. Only one field confirmed: a
     /// 3-float (mVec3_c-shaped) value at struct-offset +0x10.
     struct HanachanState_t {
-        u8 mPad0[0x10];
+        /// @unofficial +0x0. Written `=0` by calcModel()'s per-state loop.
+        int mUnk0;
+        /// @unofficial +0x4. Written from `mUnk460` by calcModel()'s per-state loop.
+        mVec3_c mUnk4;
         mVec3_c mSomePos;
-        u8 mPad1[0x38 - 0x10 - 0xc];
+        /// @unofficial +0x1c. Written `=true` by calcModel()'s per-state loop.
+        bool mUnk1c;
+        /// @unofficial +0x20 (natural alignment padding 0x1d-0x20 matches the target's own gap
+        /// exactly). Written `=0` by calcModel().
+        int mUnk20;
+        int mUnk24;
+        int mUnk28;
+        u8 mPad2c[0x38 - 0x2c];
     };
     HanachanState_t mStates[5];
 };
@@ -259,9 +285,31 @@ void daWmHanachan_c::resetState() {
 }
 
 void daWmHanachan_c::calcModel() {
+    mAngle.y = -0x4000;
+    resetTrail();
+    resetTargetPositions();
+    for (int i = 0; i < 5; i++) {
+        mStates[i].mUnk0 = 0;
+        mStates[i].mUnk4 = mUnk460;
+        mStates[i].mSomePos = mPos;
+        mStates[i].mSomePos.x += (float) i * 45.0f;
+        mStates[i].mUnk1c = true;
+        mStates[i].mUnk20 = 0;
+        mStates[i].mUnk24 = 0;
+        mStates[i].mUnk28 = 0;
+    }
+    mScale.x = 4.0f;
+    mScale.y = 4.0f;
+    mScale.z = 4.0f;
+    setState3();
 }
 
 void daWmHanachan_c::state4WhenNear() {
+    mState = 0;
+    clearSpeedAll();
+    mSpeedF = 2.5f;
+    setDirection(getPosVariant2() - mPos);
+    mUnk480 = 0;
 }
 
 void daWmHanachan_c::state0() {
@@ -312,10 +360,15 @@ void daWmHanachan_c::state3() {
 /// .data has three distinct 0xc-byte slots (lbl_2_data_44D60+0x4/+0x10/+0x1c, confirmed by a
 /// direct byte read of original/d_basesNP.rel), even though all three currently hold
 /// (0.0f, 0.0f, 0.0f). Declared here, ahead of the whole group, so they pool in this ascending
-/// order independent of which of the three functions below is defined first.
-static const Vec kOffsetA = {0.0f, 0.0f, 0.0f};
-static const Vec kOffsetB = {0.0f, 0.0f, 0.0f};
-static const Vec kOffsetC = {0.0f, 0.0f, 0.0f};
+/// order independent of which of the three functions below is defined first. Typed as
+/// nw4r::math::VEC3 (NOT mVec3_c/revolution Vec) so `operator+` resolves to VEC3's own inline
+/// paired-single VEC3Add (math_types.h:315) instead of mVec3_c's scalar operator+ (m_vec.hpp)
+/// or a real `bl PSVECAdd` -- the lead traced the target's exact psq_l/ps_add/psq_st shape to
+/// that inline, confirmed by a landed PSVECAdd caller (source/dol/cLib/c_m3d.cpp) genuinely
+/// calling out via `bl` in the matched retail DOL, which rules PSVECAdd itself out.
+static const nw4r::math::VEC3 kOffsetA(0.0f, 0.0f, 0.0f);
+static const nw4r::math::VEC3 kOffsetB(0.0f, 0.0f, 0.0f);
+static const nw4r::math::VEC3 kOffsetC(0.0f, 0.0f, 0.0f);
 
 void daWmHanachan_c::resetTargetPositions() {
     mVec3_c pos1 = getBasePos();
@@ -336,23 +389,20 @@ void daWmHanachan_c::resetTrail() {
 
 mVec3_c daWmHanachan_c::getPosVariant3() {
     mVec3_c base = getBasePos();
-    mVec3_c result;
-    PSVECAdd((const Vec *) &base, &kOffsetC, (Vec *) &result);
-    return result;
+    const nw4r::math::VEC3 &baseRef = base;
+    return baseRef + kOffsetC;
 }
 
 mVec3_c daWmHanachan_c::getPosVariant2() {
     mVec3_c base = getBasePos();
-    mVec3_c result;
-    PSVECAdd((const Vec *) &base, &kOffsetB, (Vec *) &result);
-    return result;
+    const nw4r::math::VEC3 &baseRef = base;
+    return baseRef + kOffsetB;
 }
 
 mVec3_c daWmHanachan_c::getBasePos() {
     mVec3_c pos = daWmMap_c::m_instance->GetPos("W502");
-    mVec3_c result;
-    PSVECAdd((const Vec *) &pos, &kOffsetA, (Vec *) &result);
-    return result;
+    const nw4r::math::VEC3 &posRef = pos;
+    return posRef + kOffsetA;
 }
 
 void daWmHanachan_c::resetPosFromState0() {
@@ -360,9 +410,22 @@ void daWmHanachan_c::resetPosFromState0() {
 }
 
 void daWmHanachan_c::unkFn1659A0(float a, float b) {
+    for (int i = 0; i < 5; i++) {
+        mMatrix.trans(mVec3_c(mStates[i].mSomePos.x, a + mStates[i].mSomePos.y, mStates[i].mSomePos.z));
+        mMatrix.ZXYrotM(0, mStates[i].mUnk20, 0);
+        mSmdls[i].setLocalMtx(&mMatrix);
+        mSmdls[i].setScale(b, 1.0f, b);
+        mSmdls[i].calc(false);
+    }
 }
 
 void daWmHanachan_c::unkFn165AB0() {
+    for (int i = 0; i < 5; i++) {
+        mUnk440[i]->setPriorityDraw(0x81, 0x7f);
+        if (mUnk440[i] != nullptr) {
+            mUnk440[i]->entry();
+        }
+    }
 }
 
 const daWmHanachan_c::StateFunc_t daWmHanachan_c::sStateTable[4] = {

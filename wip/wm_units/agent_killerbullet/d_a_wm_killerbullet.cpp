@@ -44,6 +44,8 @@ static const float sc_0 = 0.0f;      // lbl_2_rodata_89F4
 static const float sc_0_001 = 0.001f; // lbl_2_rodata_8A38
 static const float sc_half = 0.5f;   // lbl_2_rodata_8A3C -- confirmed 0.5 by reading
                                        // original/d_basesNP.rel directly (file offset 0x1cf03c)
+static const float sc_1 = 1.0f;      // lbl_2_rodata_8A34 -- confirmed 1.0 by reading
+                                       // original/d_basesNP.rel directly (file offset 0x1cf034)
 
 // This unit's own uninitialised (zero-at-load) `.bss` cache, confirmed within the pinned
 // bounds (0xfe10-0xfe3c, 0x2c bytes) -- a plain-`{}`-constructed `mVec3_c` has an empty ctor
@@ -199,10 +201,24 @@ void daWmKillerBullet_c::unk_168C80() {
     CreateShadowModel("character_SV", "g3d/model.brres", "character_SV", true);
 }
 
-// #unk_168D50 (fn_2_168D50). NOT YET AUTHORED -- bare stub (see #unk_168990's own note on the
-// scratch-field convention). Called unconditionally from both #create's own tail and #execute's
-// own tail.
-void daWmKillerBullet_c::unk_168D50() { m_1c0 = 10; }
+// #unk_168D50 (fn_2_168D50). REPLACES a fake stub this round -- the SAME PSMTXTrans/ZXYrotM/
+// setLocalMtx/setScale/calc(false) idiom already landed on multiple real siblings (confirmed by
+// reading `source/d_basesNP/bases/d_a_wm_antlion.cpp`'s own `calc()`, which is BYTE-IDENTICAL in
+// shape: `mMatrix.trans(pos); mMatrix.ZXYrotM(angle); mModel.setLocalMtx(&mMatrix);
+// mModel.setScale(...); mModel.calc(false);`), except #mScale gets an extra offset added first
+// -- #m_1fc's own `m_0c` field (a `float`, newly modelled -- see the shadow header's own note)
+// times #sc_1 (confirmed 1.0, read directly from the retail `.rel`), added to all three axes.
+// Called unconditionally from both #create's own tail and #execute's own tail.
+void daWmKillerBullet_c::unk_168D50() {
+    mVec3_c pos = mPos;
+    mVec3_c newScale = mScale + m_1fc->m_0c * mVec3_c(sc_1, sc_1, sc_1);
+    mAng3_c angle = mAngle;
+    mMatrix.trans(pos);
+    mMatrix.ZXYrotM(angle);
+    mModel.setLocalMtx(&mMatrix);
+    mModel.setScale(newScale);
+    mModel.calc(false);
+}
 
 // #endEffectAndResetState (fn_2_168E60). Confirmed content: ends any active effect (#m_1e4)
 // and resets the state index to 0.
@@ -326,9 +342,43 @@ void daWmKillerBullet_c::state3() {
     }
 }
 
-// #unk_1691A0 (fn_2_1691A0). NOT YET AUTHORED -- bare stub (see #unk_168990's own note on the
-// scratch-field convention). Called from #state1's own cooldown-lapse arm.
-void daWmKillerBullet_c::unk_1691A0() { m_1c0 = 6; }
+// #unk_1691A0 (fn_2_1691A0). REPLACES a fake stub this round -- real content. Reads
+// #unk_169510's own per-"kind" sub-table entry (+0xc, a float) into #mSpeedF, sets #mScale to a
+// shared-table scalar (index 1, same value on all three axes), transitions to state 2 (also
+// resetting #m_1bc/#m_1c0/#m_1cc/#m_1f8), writes this bullet's own low mParam byte into
+// #mParentKiller's own `m_20c` field (a cross-unit write -- #unk_169550 later reads that SAME
+// field back), faces the bullet at #mParentKiller's own (0x1f8,0x1fc,0x200) fields (the SAME
+// delta-from-those-three-offsets idiom already used in #unk_1695E0), and finally calls
+// WM_KILLER's own `unk_1682F0()` (another real, cross-unit-confirmed call -- HANDOFF already
+// records it as symbol-naming-only against ITS OWN unit) before setting #m_1e8/#m_1f9.
+// Result: 14/55 differing, SAME size. All but 2 lines are naming-only (calls to #unk_169510 and
+// WM_KILLER's own `unk_1682F0` by real name); the rest is a minor store-scheduling shuffle (the
+// #mSpeedF store is deferred a few instructions relative to the target, which stores it
+// immediately) -- not re-attempted further this round, budget went to the other stubs.
+extern "C" void unk_1682F0__12daWmKiller_cFv(void *self);
+void daWmKillerBullet_c::unk_1691A0() {
+    void *p = unk_169510();
+    mSpeedF = *(const float *) ((const u8 *) p + 0xc);
+    mScale.x = R_2_5_45428[1];
+    mScale.y = R_2_5_45428[1];
+    mScale.z = R_2_5_45428[1];
+    m_1b0 = 2;
+    m_1bc = false;
+    m_1c0 = 0;
+    m_1cc = 0;
+    *(int *) ((u8 *) mParentKiller + 0x20c) = (u8) mParam;
+    m_1f8 = false;
+
+    const u8 *pk = (const u8 *) mParentKiller;
+    mVec3_c raw(*(const float *) (pk + 0x1f8), *(const float *) (pk + 0x1fc),
+                *(const float *) (pk + 0x200));
+    mVec3_c delta = raw - mPos;
+    setDirection(delta);
+
+    unk_1682F0__12daWmKiller_cFv(mParentKiller);
+    m_1e8 = 10;
+    m_1f9 = true;
+}
 
 // state2 (table entry 2, fn_2_169280). Confirmed content: updates mSpeedF from
 // #unk_169510()'s own result, ticks #m_1e8/plays a "skl_root"-attached effect once it lapses,
@@ -587,12 +637,119 @@ bool daWmKillerBullet_c::unk_1697B0(const float *box) {
     return false;
 }
 
-// #unk_1698E0 (fn_2_1698E0). NOT YET AUTHORED -- bare stub (see #unk_168990's own note on the
-// scratch-field convention). Called from both #state2's and #state3's own tails; real target
-// is 167 lines, the largest remaining function in this unit, scouted to call fn_2_169B80
-// (also not yet authored, itself a #mAngle-adjacent wrapping counter) five times but not
-// further decoded this round.
-void daWmKillerBullet_c::unk_1698E0() { m_1c0 = 8; }
+// #unk_1698E0 (fn_2_1698E0). REPLACES a fake stub this round -- a 5-state wobble state machine
+// (#m_1c0 = 0..4) run once per frame from both #state2's and #state3's own tails, on top of an
+// unconditional (result-discarded) #calcRotate call through #m_1fc. State 0 initialises #m_1c4
+// from the shared table and zeroes the two counters. State 1 ramps #m_1c4 up (capped) and feeds
+// it to #unk_169B80 every frame, tallying wraps into #m_1cc until BOTH the tally and #mAngle's
+// own z exceed shared thresholds, at which point it hands off to state 2. States 2/3 decay
+// #m_1c4 toward zero from either side and, once it reaches zero, set #m_1d0 (the direction for
+// state 4) and hand off to state 4. State 4 dispatches on #m_1d0 into two near-mirror-image
+// branches that push #m_1c4 further in the same direction (clamped) until #mAngle's own z
+// crosses a threshold, at which point it hands back to state 2 or 3 -- a real oscillation.
+// Every `shared[N]` below is a `short` read from #R_2_5_45428, distinct from the many `float`
+// reads elsewhere in this unit -- the table is genuinely mixed-width, already established.
+//
+// PARKED at 163/167 differing (target 167 lines, draft 170) -- but content, field types, control
+// flow, and every constant are all CONFIRMED correct: states 2 and 3, which never touch the
+// shared table, already diff line-for-line against the target modulo a constant address offset.
+// The residual is ONE register-allocation choice: state 1 (and state 4) read #R_2_5_45428 5+
+// times each, and the compiler caches the table's base address in r30 (a callee-saved register,
+// hence the extra `stw r30,0x8(r1)`/restore in the prologue/epilogue) for the whole function,
+// where the target re-loads `lis`/`addi` fresh at every single read and needs no r30 at all --
+// this shifts every address after case 0 by a near-constant few instructions, cascading through
+// the whole function's branch targets. Two genuinely different attempts, IDENTICAL result both
+// times: (1) the #R5S macro used as-is; (2) each read group wrapped in its own nested `{ }`
+// block to try to shorten the perceived live range. This is the SAME "too many saved registers"
+// class already on record for this unit's own #execute (HANDOFF: "TOO MANY saved registers means
+// the INVERSE lever") -- a genuine wall, not a source-shape problem reachable from here. A third
+// attempt was not made this round in favour of leaving budget for the other 3 stubs.
+#define R5S(off) (*(const short *) ((const u8 *) R_2_5_45428 + (off)))
+void daWmKillerBullet_c::unk_1698E0() {
+    m_1fc->calcRotate();
+    switch (m_1c0) {
+    case 0:
+        m_1c4 = R5S(0x1a);
+        m_1c0 = 1;
+        m_1c8 = 0;
+        m_1cc = 0;
+        break;
+    case 1: {
+        short cap = R5S(0x20);
+        short v = m_1c4 + R5S(0x1c);
+        if (v < cap) {
+            cap = v;
+        }
+        m_1c4 = cap;
+        if (unk_169B80(m_1c4)) {
+            m_1cc += 1;
+        }
+        if (m_1cc > R5S(0x24)) {
+            if (mAngle.z > R5S(0x22)) {
+                m_1c0 = 2;
+                m_1c6 = R5S(0x1c);
+            }
+        }
+        break;
+    }
+    case 2: {
+        short doubled = m_1c6 * 2;
+        if (m_1c4 > doubled) {
+            m_1c4 = m_1c4 - doubled;
+        } else {
+            m_1c4 = 0;
+        }
+        unk_169B80(m_1c4);
+        if (m_1c4 == 0) {
+            m_1d0 = 1;
+            m_1c0 = 4;
+        }
+        break;
+    }
+    case 3: {
+        short doubled = m_1c6 * 2;
+        if (m_1c4 < doubled) {
+            m_1c4 = m_1c4 + doubled;
+        } else {
+            m_1c4 = 0;
+        }
+        unk_169B80(m_1c4);
+        if (m_1c4 == 0) {
+            m_1d0 = 0;
+            m_1c0 = 4;
+        }
+        break;
+    }
+    case 4:
+        if (m_1d0 == 1) {
+            short cap = (short) -R5S(0x20);
+            short v = m_1c4 - R5S(0x1e);
+            if (v < cap) {
+                v = cap;
+            }
+            m_1c4 = v;
+            unk_169B80(m_1c4);
+            if (mAngle.z < (short) -R5S(0x22)) {
+                m_1c0 = 3;
+                m_1c6 = R5S(0x1e);
+            }
+        } else {
+            short cap = R5S(0x20);
+            short v = m_1c4 + R5S(0x1e);
+            if (v > cap) {
+                v = cap;
+            }
+            m_1c4 = v;
+            unk_169B80(m_1c4);
+            if (mAngle.z > R5S(0x22)) {
+                m_1c0 = 2;
+                m_1c6 = R5S(0x1e);
+            }
+        }
+        break;
+    }
+}
+#undef R5S
 
 // #unk_169B80 (fn_2_169B80). Confirmed content: `#m_1c8 += delta`, wraps at 0x10000 (adds
 // 1 after subtracting 0x10000, matching the target's own `subis`+`addi 1` shape exactly, not

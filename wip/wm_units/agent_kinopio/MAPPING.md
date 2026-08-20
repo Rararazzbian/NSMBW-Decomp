@@ -1572,3 +1572,124 @@ divisor is now PROVEN to gate both `fn_2_16D1E0` (3 -> 0) and part of
 reconsidered now that its blast radius is known to be two functions, not
 one, even though the divisor's true source expression is still
 unidentified and must not be guessed.
+
+## Round 14: case 0's divisor SOLVED -- an int OBJECT, not a literal of any spelling
+
+**X/19 unchanged at 14/19**, but `stepCutscene70` dropped from 485 to
+**383** differing (525 vs 517 instructions now, was 525 vs 504 -- the
+8-instruction gap is nearly closed) and `fn_2_16D1E0` stayed at 3
+differing but for a DIFFERENT, better-understood reason (see below). This
+is the single largest jump recorded on this unit's largest function.
+
+### The fix: a plain local `int`, cast to float at each use, reproduces the target's runtime conversion exactly
+
+The coordinator's own re-read of what was already measured supplied the
+key fact: the target's `li r3,0xf` proves the compiler already knows the
+value is 15 -- it is sitting in a register as a propagated constant --
+and STILL emits the full runtime int-to-double bit-trick conversion
+(`lis r0,0x4330; xoris; stw/stw; lfd; fsubs`) instead of folding to a
+pooled `lfs` immediate. That is the signature of converting a typed `int`
+OBJECT (value constant-propagated, conversion NOT folded), not a
+literal or constant expression (whose conversion DOES fold, as already
+proven three ways: `15.0f`, `(int)15`, bare `15`, all identical).
+
+Tried, in order:
+1. `static const int n = 15;` (file scope) -- regressed BACK to 485
+   differing, i.e. folded exactly like a literal. `static const` is
+   compile-time-provable and gets the same treatment. Ruled out.
+2. A plain local `int n = 15;`, divided via `(float) n`, used at BOTH
+   division sites -- **485 -> 383 differing**, and the compiled
+   instruction sequence for case 0's entire bit-trick block now matches
+   the target EXACTLY, opcode-for-opcode, register-for-register, checked
+   line-by-line (the only remaining differences anywhere in this specific
+   block are rodata pool-POSITION digits, e.g. `0x58(r31)` vs `0x60(r31)`
+   for the identical `-2.0f` constant -- the same already-characterized
+   pool-position residual class as everywhere else in this unit, not a
+   new content difference).
+3. Also tried two separate locals (`n1`, `n2`, one per division site) as
+   an alternative hypothesis for why target doesn't CSE the two
+   conversions -- produced the IDENTICAL 383-differing result and the
+   identical single (not doubled) `xoris` bit-pattern computation, so the
+   simpler single-variable form was kept. Target's own apparent
+   "duplication" (two `stw` pairs, two `lfd`/`fsubs`) turned out to be ONE
+   integer-to-bit-pattern computation reused via two separate stack-double
+   conversions for the two division contexts, not two independent int
+   objects; the single local reproduces this exactly.
+
+This is now understood, not guessed, as far as the compiled behaviour
+goes: whatever the real source's divisor object is (a field, a
+parameter, a local -- still not identified by name), it behaves,
+compiles, and reproduces the target byte-for-byte as a genuine `int`
+object cast to `float` at each use, not as any literal. The semantic
+identity of that object (why kinopio's cutscene divides a distance by 15
+twice, via a true variable rather than a constant) remains an open
+question, but the COMPILED SHAPE question the coordinator asked to
+resolve is closed.
+
+### fn_2_16D1E0: still 3 differing, but now a clean, isolated pool-position question
+
+Re-measured after the fix: still 3 differing, but the shift DIRECTION
+flipped (previously target's constants were 4 bytes EARLIER than draft's;
+now they're 8 bytes LATER), because `.rodata` grew from 0x84 to 0x8c
+bytes -- gaining the correct 8-byte bias-double the fix was always
+supposed to add, closing most of the remaining 0xc-byte shortfall against
+target's 0x90 (now only 4 bytes short, was 12).
+
+Traced the remaining 4-byte gap precisely, but did NOT attempt a fix:
+target's table has "1.0" pooled TWICE at two clearly-separated addresses
+(`0x8b28`/rel `+0x18` and `0x8b58`/rel `+0x48`) -- MWCC does not globally
+dedupe an unnamed float literal across unrelated call sites in this
+codebase, confirmed directly from the target's own bytes. This unit's
+`setAnm(...)` calls in cases 1/6/11 (which need a `1.0f` argument) must
+therefore be reusing one of target's TWO already-established `1.0`
+slots, not creating a fresh one -- but in the current draft, cases 1/6/11
+are the FIRST point in the file's own pool order that references `1.0`
+via `.rodata` at all, so they pool a brand-new slot instead, landing
+right where the bias-double/`2160` triple needs to be, pushing everything
+after it out by 4 bytes. Not chased further: the only way to close this
+gap is to make some EARLIER-in-the-file function (most likely
+`resetPosition` or `calcModel`, both defined before `stepCutscene70`)
+independently reference a `1.0f` rodata constant the same way target's
+real source apparently does -- but `calcModel` is an existing MATCH and
+`resetPosition` has its own already-characterized 3-line residual, and
+guessing at an edit to either on unverified grounds risks REGRESSING a
+function that already matches. Recorded as the precise, narrow, final
+blocker on `fn_2_16D1E0` -- an exact explanation of the 4 bytes, not a
+vague "pool order" wave -- for whoever next has a concrete, evidenced
+reason to touch `calcModel`/`resetPosition`'s own constant usage.
+
+### The paired-single lead: confirmed real, deliberately not touched
+
+Read `include/lib/nw4r/math/math_types.h:314-324` directly: `VEC3Add` is
+a genuine, already-existing inline (`psq_l`/`ps_add`/`psq_st` via inline
+asm), not a missing compiler intrinsic that would need inventing. This
+unit's own use case for it would be `processCutsceneCommand`'s already-
+documented residual (case `0x70`'s weighted-position math), NOT anything
+in `stepCutscene70` (re-confirmed this round: no un-vectorised `mVec3_c`
+addition exists anywhere in `stepCutscene70`, only full-struct copies and
+per-component scalar arithmetic). Since two other agents are already
+measuring this exact inline on their own units per the coordinator's own
+note, deliberately did not test it here to avoid duplicating that work --
+`processCutsceneCommand` itself was also out of this round's priority
+order regardless.
+
+## Final result, this round: 14/19 byte-identical
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate, startJump | -- | **MATCH** (13) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled, untouched this round (see fn_2_16D1E0 note above for why it's now a candidate, not just a residual) |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled, untouched this round |
+| `fn_2_16D1E0` `.ctors`/`__sinit` | 0x84 | 3 differing | precise 4-byte pool-position gap identified and explained, not fixed (risk of regressing `calcModel`) |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | untouched this round; confirmed `VEC3Add` is a real inline, deferred to sibling agents already measuring it |
+| `fn_2_16C810` stepCutscene70 | 0x834 | **383 differing (down from 485)** | case 0's divisor solved; instruction shape for the entire bit-trick block now matches target exactly; remaining gap is pool-position + the pre-existing footstep-timing preamble register-order residual (known since round 6) |
+
+**14/19 byte-identical.** `stepCutscene70` is now 517 instructions against
+target's 525 (was 504/525) -- an 8-instruction gap, down from 21, in a
+single round. The two clearest remaining levers, in order: (1) whatever
+makes `calcModel`/`resetPosition` reference `1.0f` early enough in the
+file to let `fn_2_16D1E0` close (needs real evidence first, not a guess);
+(2) `stepCutscene70`'s own preamble register-order residual
+(`isFootStepTiming`/`fn_80105170` argument evaluation, noted since round
+6, never individually chased).

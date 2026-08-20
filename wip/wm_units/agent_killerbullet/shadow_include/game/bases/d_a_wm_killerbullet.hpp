@@ -29,16 +29,29 @@
 /// slot-2/offset-8 release shape shared with #daWmKillerBullet_c::mBgmSync) is modelled;
 /// #calcRotate is called directly (`bl calcRotate__12dWmRotater_cFv`, not a vtable dispatch),
 /// so it is NOT virtual.
+// A class this unit models locally (NOT a shared-tree header defect -- confirmed with the
+// coordinator: `dWmRotater_c` doesn't exist anywhere in include/ or source/ yet, so every field
+// and signature here is this unit's own working model, correctable in place with no shared-tree
+// verify needed. The class IS real in the retail binary (`calcRotate__12dWmRotater_cFv` is at
+// DOL `0x801038D0`) -- a proper landed header is legitimate future work for whoever picks up
+// this class, just not a correction to make here.
 class dWmRotater_c {
 public:
     virtual ~dWmRotater_c();
-    // HEADER DEFECT FOUND AND FIXED THIS ROUND: was declared `void calcRotate();`, matching
-    // #execute's own call site (`m_1fc->calcRotate();`, result discarded -- codegen-identical
-    // either way). #unk_169BC0/processCutsceneCommand's own call, `if (!m_1fc->calcRotate())
-    // return;`, CONSUMES the result -- a call site consuming a void method's result is a header
-    // defect by definition (project convention). Changed to `bool`; #execute's own MATCH is
-    // unaffected since a discarded return value's type never changes its own codegen.
+    // OWN-MODEL CORRECTION: was modelled as `void calcRotate();`, matching #execute's own call
+    // site (`m_1fc->calcRotate();`, result discarded -- codegen-identical either way).
+    // #unk_169BC0/processCutsceneCommand's own call, `if (!m_1fc->calcRotate()) return;`,
+    // CONSUMES the result, so the model needed a return value. Corrected to `bool`; #execute's
+    // own MATCH is unaffected since a discarded return value's type never changes codegen.
     bool calcRotate();
+
+    u8 mPad_04[0x8]; ///< @unofficial offset 0x4, size 0x8 -- placeholder, NOT verified.
+
+    // @unofficial offset 0xc. Confirmed `float` (`lfs`/`stfs`, word-width) -- read by
+    // #unk_168D50 as a scale offset, `create()` still constructs it via raw offset writes (that
+    // function's own choice, unaffected by adding this field -- #create never calls this
+    // class's own constructor at all, per its own note).
+    float m_0c;
 };
 
 class daWmKillerBullet_c : public dWmDemoActor_c {
@@ -81,16 +94,19 @@ public:
     void unk_168990(); ///< @unofficial fn_2_168990, called from #create.
     void unk_1694A0(); ///< @unofficial fn_2_1694A0.
     void *unk_169510(); ///< @unofficial fn_2_169510 -- returns a pointer used as a float source.
-    void unk_1691A0(); ///< @unofficial fn_2_1691A0.
+    void unk_1691A0(); ///< @unofficial fn_2_1691A0 -- real content this round (was a fake
+                         ///< stub), see the .cpp's own note.
     void unk_1695E0(); ///< @unofficial fn_2_1695E0 -- real content this round (was a fake
                          ///< stub), see the .cpp's own note for the residual.
     bool unk_1697B0(const float *box); ///< @unofficial fn_2_1697B0 -- moved-check plus an
                                          ///< expanded-AABB overlap test against \p box's
                                          ///< own two corner points.
-    void unk_1698E0(); ///< @unofficial fn_2_1698E0.
+    void unk_1698E0(); ///< @unofficial fn_2_1698E0 -- real content this round (was a fake
+                         ///< stub), a 5-state wobble machine, see the .cpp's own note.
     bool unk_169F00(); ///< @unofficial fn_2_169F00 -- called from #state4, member (implicit
                          ///< `this`), NOT the same function as #checkParentFlag.
-    void unk_168D50(); ///< @unofficial fn_2_168D50, called from #execute's own tail.
+    void unk_168D50(); ///< @unofficial fn_2_168D50 -- real content this round (was a fake
+                         ///< stub); the matrix-update idiom, see the .cpp's own note.
 
     // Newly authored this round -- all MATCHED (content confirmed, symbol-name-only residuals).
     dBase_c *unk_1693C0(); ///< @unofficial fn_2_1693C0 -- a dBase_c::searchBaseByProfName
@@ -149,16 +165,28 @@ public:
     bool m_1bc; ///< @unofficial offset 0x1bc. Set true unconditionally by #create.
     u8 mPad_1bd[0x3]; ///< @unofficial offset 0x1bd, size 0x3 -- placeholder, NOT verified.
 
-    int m_1c0; ///< @unofficial offset 0x1c0. Zeroed by #state2.
+    int m_1c0; ///< @unofficial offset 0x1c0. Zeroed by #state2. A 5-state wobble state machine,
+                ///< driven every frame by #unk_1698E0 (0=init, 1=ramp, 2/3=decay each direction,
+                ///< 4=oscillate, dispatching between 2/3 via #m_1d0).
 
-    u8 mPad_1c4[0x4]; ///< @unofficial offset 0x1c4, size 0x4 -- placeholder, NOT verified.
+    // @unofficial offset 0x1c4/0x1c6. Confirmed `short` pair (`lha`/`sth`, half-word width) --
+    // this ENTIRE 4-byte run, previously one padding placeholder, is #unk_1698E0's own rotation
+    // step (#m_1c4) and its cached shared-table snapshot (#m_1c6).
+    short m_1c4;
+    short m_1c6;
 
-    // @unofficial offset 0x1c8. Confirmed `int` (word-width `stw`/`lwz` in #unk_169B80) rather
-    // than padding -- a wrapping counter, `+= delta` then wrapped at 0x10000. Splits what had
-    // been treated as one 0x10-byte padding run; the remainder below is still unverified.
+    // @unofficial offset 0x1c8. Confirmed `int` (word-width `stw`/`lwz` in #unk_169B80) -- a
+    // wrapping counter, `+= delta` then wrapped at 0x10000, fed by #m_1c4 every frame.
     int m_1c8;
 
-    u8 mPad_1cc[0x8]; ///< @unofficial offset 0x1cc, size 0x8 -- placeholder, NOT verified.
+    // @unofficial offset 0x1cc. Confirmed `int` (word-width `lwz`/`stw` in #unk_1698E0's own
+    // case 1) -- a wrap-count tally, incremented each time #unk_169B80 reports a wrap.
+    int m_1cc;
+
+    // @unofficial offset 0x1d0. Confirmed `int` (word-width `li`/`stw`, NOT `stb` -- unlike
+    // #m_1d4's own byte-width bool store) -- a direction flag for #unk_1698E0's own state 4,
+    // set to 1 by state 2's own exit and 0 by state 3's own exit.
+    int m_1d0;
 
     bool m_1d4; ///< @unofficial offset 0x1d4. Set/checked by #execute (a "rotation enabled"
                  ///< flag, gating a #calcRotate call through #m_1fc).

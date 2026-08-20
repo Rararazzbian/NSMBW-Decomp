@@ -313,22 +313,36 @@ void daWmKinopio_c::stepCutscene70() {
             // written," not a declaration-order problem for this specific
             // constant.
             //
-            // @unofficial STILL OPEN, not guessed: the divisor is
-            // genuinely `15` (confirmed by value), but the target reaches
-            // it via a full runtime int-to-double bit-trick conversion
-            // (li r3,0xf; lis r0,0x4330; xoris; stw/stw; lfd; fsubs),
-            // TWICE, rather than a pooled float immediate. Every literal
-            // form tried here (`15.0f`, `(int)15`) gets constant-folded
-            // by this same compiler into a plain `lfs`, which does NOT
-            // reproduce the target's shape. The true source expression
-            // for this divisor is therefore something this compiler
-            // cannot see as compile-time-constant -- an unidentified
-            // field, parameter, or macro that evaluates to 15 at this
-            // call site, not a plain numeric literal. Left as a literal
-            // rather than inventing a fake runtime source for it.
+            // @unofficial SOLVED this round: the divisor is `15`,
+            // reached via a full runtime int-to-double bit-trick
+            // conversion in the target (li r3,0xf; lis r0,0x4330; xoris;
+            // stw/stw; lfd; fsubs). Every LITERAL spelling tried
+            // (`15.0f`, `(int)15`, bare `15`) constant-folds to a plain
+            // pooled `lfs` immediate and never reproduces this -- the
+            // key realisation (via the coordinator's own read of the
+            // target: the compiler already knows the value is 15, it's
+            // sitting in r3 as an immediate, and STILL emits the runtime
+            // conversion) is that the target converts a genuine `int`
+            // OBJECT, not a constant expression -- an object's value can
+            // constant-propagate into a register without the CONVERSION
+            // itself folding away, whereas a literal's conversion folds
+            // unconditionally. A plain local, non-`const` `int` (proven
+            // NOT to fold, unlike `static const int` which folds exactly
+            // like a literal) reproduces the target's instruction
+            // sequence exactly, confirmed instruction-by-instruction
+            // (register/opcode shape now matches; only rodata pool
+            // POSITION and stack OFFSET digits differ, the same already-
+            // characterized residual classes as everywhere else in this
+            // function). The real source's reason for `n` being a true
+            // object rather than a constant (a field, parameter, or
+            // local that merely happens to hold 15 here) is still not
+            // identified -- this local is a faithful behavioural stand-in
+            // for whatever that object actually is, not a claim about
+            // its real name or origin.
+            int n = 15;
             float dist = (m_19c.x - mPos.x) * -2.0f;
-            float speed = dist / 15.0f;
-            m_194 = speed / 15.0f;
+            float speed = dist / (float) n;
+            m_194 = speed / (float) n;
             mpMdlMng->mpMdl->setAnm(2, 3.0f, 5.0f, 0.0f);
             m3d::mdl_c *mdl = mpMdlMng->mpMdl->getBodyMdl();
             m_1b0 = fn_80103520(dWmEffectManager_c::m_pInstance, 2, mdl, "kinopio_all_root", 0, 0);

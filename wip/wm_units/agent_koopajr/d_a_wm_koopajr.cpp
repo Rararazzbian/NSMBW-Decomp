@@ -1,7 +1,6 @@
 #include <types.h>
 #include <game/framework/f_profile.hpp>
 #include <game/bases/d_wm_demo_actor.hpp>
-#include <game/bases/d_wm_lib.hpp>
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/mLib/m_3d/anm_chr.hpp>
 #include <game/mLib/m_3d/mdl.hpp>
@@ -10,6 +9,22 @@
 #include <game/mLib/m_heap.hpp>
 #include <game/bases/d_a_wm_map.hpp>
 #include <game/bases/d_a_wm_player.hpp>
+#include <game/bases/d_wm_se_manager.hpp>
+#include <game/bases/d_wm_effect_manager.hpp>
+
+// @unofficial Cross-unit calls into un-landed functions elsewhere in this same REL
+// (d_basesNP), NOT this unit's own code -- bin/dtk/d_basesNP_symbols.txt:
+// fn_2_1709B0 = .text:0x001709B0 size 0x74; fn_2_15F8F0 = .text:0x0015F8F0 size 0x54.
+extern "C" void R_2_1_1709B0(int);
+extern "C" void R_2_1_15F8F0(void *, float, float);
+
+// @unofficial Cross-module call into the DOL, same shape as the already-landed
+// d_a_wm_kinoko_base.cpp's fn_80103420 (mgr, effectId, model, kindStr, int, int) but a
+// DIFFERENT DOL address -- bin/dtk/wiimj2d_symbols.txt: fn_80103520 = .text:0x80103520
+// size 0x10 (a thin trampoline, unlike fn_80103420's 0x74). Return value IS consumed
+// here (stored into mUnk35c), unlike fn_80103420's callers which ignore it.
+extern "C" int fn_80103520(dWmEffectManager_c *mgr, int effectId, m3d::mdl_c *model,
+                            const char *kind, int, int);
 
 // @unofficial Cross-unit call into an un-landed function elsewhere in this same REL
 // (d_basesNP), NOT this unit's own code -- bin/dtk/d_basesNP_symbols.txt:
@@ -91,8 +106,45 @@ public:
     /// play modes), not two independent per-function anonymous copies -- confirmed by
     /// changeAnim() indexing `lbl_2_rodata_8BA0 + idx*4` directly, the identical base symbol
     /// execute()/create() also use.
-    static const char *const sc_animNames[6];
+    static const char *sc_animNames[6];
     static const m3d::playMode_e sc_playModes[6];
+
+    /// @unofficial Read directly out of the REL: .rodata file offset 0x1C6600+0x8BB8
+    /// through +0x8BCC, immediately after sc_playModes (which ends at +0x8BB8) with
+    /// NO gap. Modelled as an array-of-structs, NOT plain scalar class statics --
+    /// tested both ways. Plain `static const float` members got folded by the
+    /// compiler at case 0's use site (`0.2f * 2.5f` collapses to a fresh anonymous
+    /// 0.5f, and even the untouched `sc_jumpSpeed` got copied into a fresh
+    /// anonymous 10.0f instead of being referenced), which does NOT match the
+    /// target: the target computes `startScale`/`targetScale` with a RUNTIME
+    /// `fmuls`, reading four values through a pointer computed ONCE
+    /// (`r5 = &pool[0x18]`) and then offset from it (`r5[0x8]`, `r5[0x10]`,
+    /// `r5[0x14]`) -- the classic shape of `const JumpParams_t &p = table[idx];`
+    /// followed by `p.field` accesses, not scalar named constants.
+    struct JumpParams_t {
+        float scaleMul;   ///< +0x0 (pool +0x18/+0x30) = 2.5 / 6.8
+        u32 unk1c;           ///< +0x4 (pool +0x1c/+0x34) = 0x00000000 / 0x000a000a (packed shorts; NOT a float)
+        /// @unofficial jumpSpeed/startScaleBase kept as raw u32 (not float) so index 1's
+        /// unclaimed, non-round-trippable denormal bit patterns (0x0004000f, 0x001e0000)
+        /// can be stored exactly; case 0 reinterprets index 0's genuinely-float values
+        /// via a pointer cast rather than risk a decimal literal not round-tripping a
+        /// denormal through the compiler's float parser.
+        u32 jumpSpeedRaw;    ///< +0x8 (pool +0x20/+0x38) = 0x41200000(10.0f) / 0x0004000f (idx1 unclaimed)
+        u32 unk24;            ///< +0xc (pool +0x24/+0x3c) = 0x003c0000 / 0x43480000(200.0f, idx1 unclaimed)
+        u32 startScaleBaseRaw; ///< +0x10 (pool +0x28/+0x40) = 0x3e4ccccd(0.2f) / 0x001e0000 (idx1 unclaimed)
+        float targetScaleBase; ///< +0x14 (pool +0x2c/+0x44) = 1.0 / 0.0
+    };
+    /// @unofficial Index 0 fully confirmed (runMain() case 0, every field consumed
+    /// or independently value-checked). Index 1: ONLY `.scaleMul` is confirmed
+    /// (case 2 reads `sc_jumpParams[1].scaleMul` into `mSpeedF`, proven by the
+    /// SAME "`+0x18` then a further `+0x18`" pointer-arithmetic shape as case 0's
+    /// access to index 0); its other three fields hold the RAW bytes from the REL
+    /// but are unclaimed by any authored code, so their type/meaning is a guess --
+    /// `unk1c`/`unk24` are plainly NOT floats (0x000a000a, 0x0004000f each look
+    /// like two packed 16-bit values, not a valid IEEE float), so u32 is honest
+    /// where scalar-float would not be. Growing this array further needs a case
+    /// that reads pool offset 0x48+ the same way.
+    static const JumpParams_t sc_jumpParams[2];
 
     void procNone() {} ///< @unofficial fn_2_16D7E0. The idle/no-op state-0 handler.
     void procMain();   ///< @unofficial fn_2_16D830. The state-1 handler.
@@ -130,12 +182,16 @@ public:
 
 ACTOR_PROFILE(WM_KOOPAJR, daWmKoopaJr_c, 0);
 
-const char *const daWmKoopaJr_c::sc_animNames[6] = {
+const char *daWmKoopaJr_c::sc_animNames[6] = {
     "wait", "run", "jump_st", "jumpA", "jump_ed", "shock_wmap"
 };
 const m3d::playMode_e daWmKoopaJr_c::sc_playModes[6] = {
     m3d::FORWARD_LOOP, m3d::FORWARD_LOOP,
     m3d::FORWARD_ONCE, m3d::FORWARD_ONCE, m3d::FORWARD_ONCE, m3d::FORWARD_ONCE
+};
+const daWmKoopaJr_c::JumpParams_t daWmKoopaJr_c::sc_jumpParams[2] = {
+    {2.5f, 0x00000000, 0x41200000, 0x003c0000, 0x3e4ccccd, 1.0f},
+    {6.8f, 0x000a000a, 0x0004000f, 0x43480000, 0x001e0000, 0.0f}
 };
 
 daWmKoopaJr_c::daWmKoopaJr_c() {}
@@ -205,10 +261,10 @@ bool daWmKoopaJr_c::runMain() {
     /// @unofficial PARTIAL. fn_2_16D940 (0xA60) is a 16-case state machine dispatched
     /// through `jumptable_2_data_45EC4` on mUnk340 (`cmplwi r0,0xf; bgt <epilogue>`),
     /// implementing Bowser Jr.'s appear/land/run/disappear cutscene sequence. Cases 0,
-    /// 14 and 15 are authored (each verified against the disassembly
+    /// 1, 2, 14 and 15 are authored (each verified against the disassembly
     /// instruction-by-instruction); case 15 is the ONLY path that returns true, via
     /// the same `this->vtable+0x60 -> +0x68` dispatch as processCutsceneCommand()'s
-    /// case 0x45, i.e. `setCutEnd()`. Cases 1-13 are explicit stubs -- NOT attempted,
+    /// case 0x45, i.e. `setCutEnd()`. Cases 3-13 are explicit stubs -- NOT attempted,
     /// not guessed. See MAPPING.md for the case-target address table and what each
     /// stubbed case's first few instructions show, for the next round.
     switch (mUnk340) {
@@ -216,7 +272,12 @@ bool daWmKoopaJr_c::runMain() {
         mVec3_c targetPos = daWmMap_c::m_instance->GetPos(daWmPlayer_c::ms_instance->m_22c);
         mJumpTargetPos = targetPos;
         changeAnim(3, 5.0f, 1.0f, 0.0f);
-        _initDemoJumpBase(mJumpTargetPos, 0, 0x3c, 10.0f, 0.2f * 2.5f, 1.0f * 2.5f, mVec3_c::Ey);
+        const JumpParams_t &jp = sc_jumpParams[0];
+        float jumpSpeed = *(const float *)&jp.jumpSpeedRaw;
+        float startScaleBase = *(const float *)&jp.startScaleBaseRaw;
+        _initDemoJumpBase(mJumpTargetPos, 0, 0x3c, jumpSpeed,
+                          startScaleBase * jp.scaleMul,
+                          jp.targetScaleBase * jp.scaleMul, mVec3_c::Ey);
         mUnk340 = 1;
         mJumpTimer = 0x1e;
         break;
@@ -226,7 +287,36 @@ bool daWmKoopaJr_c::runMain() {
     /// `jumptable_2_data_45EC4`, unit .text-relative): 1=0x16DA3C 2=0x16DAD8
     /// 3=0x16DB68 4=0x16DCDC 5=0x16DDA8 6=0x16DDD8 7=0x16DE8C 8=0x16DF10
     /// 9=0x16DFA8 10=0x16E0EC 11=0x16E140 12=0x16E220 13=0x16E240 14=0x16E340.
-    case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+    case 1: {
+        mJumpTimer--;
+        if (mJumpTimer == 0) {
+            R_2_1_15F8F0(this, 1.0f, 0.0f);
+            dWmSeManager_c::m_pInstance->playSound(0x3f, mPos, 1);
+        }
+        if (!_procDemoJumpBase()) {
+            break;
+        }
+        dWmSeManager_c::m_pInstance->playSound(0x40, mPos, 1);
+        dWmEffectManager_c::m_pInstance->playEffect(0xc, &mPos, nullptr, nullptr);
+        changeAnim(4, 5.0f, 0.5f, 0.0f);
+        mUnk340 = 2;
+        break;
+    }
+
+    case 2: {
+        if (!mAnimChrs[4].isStop()) {
+            break;
+        }
+        mJumpTimer = 0x2d;
+        changeAnim(1, 5.0f, 1.5f, 0.0f);
+        mSpeedF = sc_jumpParams[1].scaleMul;
+        setDirection(mVec3_c(1.0f, 0.0f, 0.0f));
+        mUnk35c = fn_80103520(dWmEffectManager_c::m_pInstance, 2, &mModel, "koopaJr_all_root", 0, 0);
+        mUnk340 = 3;
+        break;
+    }
+
+    case 3: case 4: case 5: case 6: case 7:
     case 8: case 9: case 10: case 11: case 12: case 13:
         break;
 
