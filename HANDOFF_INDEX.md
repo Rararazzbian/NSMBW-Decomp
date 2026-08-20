@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12774 lines / 501 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12822 lines / 504 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -522,3 +522,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12732-12742` Refinement: only `STATE_VIRTUAL_DEFINE` collides — the DECLARE side is fine
 - `12743-12761` A LARGE diff with a SIZE mismatch means MISSING CONTENT, not scheduling
   - `12762-12774` Two pieces of discipline from the same round
+- `12775-12788` LEMMY_FOOTHOLD 10/51 -> 30/51: twenty functions from declaring five states
+  - `12789-12804` The bytes proved which SOURCE CONSTRUCT the original used
+  - `12805-12822` The caveat the agent volunteered, which is the right one

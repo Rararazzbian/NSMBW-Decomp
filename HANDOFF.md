@@ -12771,3 +12771,51 @@ turned out to be already emitted.
   **as-is, "not corrected for tidiness."** That instinct is right: the target is
   the specification, and a construct that looks wrong is evidence about the
   original source, not an invitation to normalise it.
+
+## LEMMY_FOOTHOLD 10/51 -> 30/51: twenty functions from declaring five states
+
+**The largest framework payoff recorded on this project.** All twenty new matches
+are emission output from declaring the five states read out of `.data` — three
+`baseID_` helpers, three state objects' destructors, `number()`/`superID()`, and
+eight `isSameName`/trampoline functions across both classes' `sFStateID_c<T>`.
+**None hand-authored** beyond macro plumbing and empty stub bodies.
+
+Implementation, and it confirms the refinement: `daLemmyFootholdMain_c` uses the
+plain `STATE_VIRTUAL_DEFINE` for both its states, legitimately owning the shared
+`baseID_DemoWait<T>` template; `daLemmyFoothold_c`'s duplicate `StateID_DemoWait`
+is hand-expanded, **reusing that existing template** via
+`baseID_DemoWait<daLemmyFoothold_c::StateIDBase_DemoWait>()`.
+
+### The bytes proved which SOURCE CONSTRUCT the original used
+
+Told to read the bytes before choosing the superState argument, the agent found
+the target's `__sinit` reaches it through a **real `bl` to a tiny helper**
+(`fn_2_C61B0` — `lis/addi null__8sStateID; blr`), **not an inlined constant
+load.** A direct `sStateID::null` reference would have been inlined; a call means
+the original routed through the templated `baseID_` mechanism.
+
+**And that helper now matches exactly**, pairing as
+`baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c` — **validating the technique
+and the specific argument value in one shot.**
+
+**A call where you expected a constant is evidence about the SOURCE**, not noise:
+it tells you the original went through a function template rather than naming the
+value directly.
+
+### The caveat the agent volunteered, which is the right one
+
+Nine of fifteen stub bodies do not match — the target has real per-state logic
+there, and sizes of 4-12 instructions rule out empty bodies. **It has NOT
+individually re-attributed which unmatched function is which state's real body**,
+and said so explicitly: **`verify_anon`'s closest-candidate pairings for
+non-matching functions are SIZE-BASED GUESSES, not identity claims.**
+
+That is exactly right, and it is the same distinction that produced two wrong
+attributions on another unit today: **a `~name` in the tool's output is the
+nearest remaining candidate by instruction count, and the tool labels it with a
+tilde precisely so it cannot be mistaken for a fact.** Refusing to let a
+stub-match rate imply more than it does is what keeps a tally comparable.
+
+Order flags are concentrated exactly where the empty stubs sit versus where the
+target's larger real bodies belong — **expected, and should resolve as real
+bodies replace stubs.** Correctly not treated as a structural defect.

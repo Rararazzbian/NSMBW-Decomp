@@ -191,3 +191,144 @@ practice. `source/d_basesNP/bases/d_a_wm_antlion.cpp` (landed, same
 module) was the load-bearing precedent for the `m3d::` model/animation
 construction idiom -- read before writing any of it, not reverse
 engineered from scratch.
+
+## Round 2: the state framework, resolved per the coordinator's own `.data` scan -- 10/51 to 30/51
+
+The coordinator read the unit's entire state inventory directly out of
+`.data` and handed it over rather than leaving it for re-derivation:
+
+```
+daLemmyFootholdMain_c::StateID_DemoWait     +0x283FF
+daLemmyFootholdMain_c::StateID_Wait         +0x28428
+daLemmyFoothold_c::StateID_DemoWait         +0x2844C
+daLemmyFoothold_c::StateID_DemoDown         +0x28470
+daLemmyFoothold_c::StateID_DemoUp           +0x28494
+```
+
+Five states, two on `daLemmyFootholdMain_c`, three on `daLemmyFoothold_c`
+-- exactly what the 0x430-byte `__sinit` (`fn_2_C6920`) registers, and
+the `.data` upper bound for this unit is now known too: it ends before
+`0x286D4` (`daLiftBalance_c::StateID_Wait`, belonging to the NEXT unit,
+`AC_LIFT_BALANCE` at `.text 0xC7270`).
+
+### The `StateID_DemoWait` name collision, resolved by hand-expansion
+
+Both classes declare a state named `DemoWait`. `STATE_VIRTUAL_DEFINE`
+(`include/game/sLib/s_State.hpp:46`) emits a **file-scope** template
+function `baseID_##name<T>()` plus an explicit specialization
+`baseID_##name<sStateID_c>()` -- neither is qualified by the owning
+class, so invoking the macro for `DemoWait` twice (once per class) would
+redefine the same specialization twice, an ODR violation. Same category
+as `source/d_basesNP/bases/d_a_ac_switch.cpp`'s own hand-expansion of
+`ACTOR_PROFILE` (a macro that cannot be invoked twice for one class),
+per the coordinator's own precedent pointer.
+
+**Resolution, verified against the actual bytes, not assumed from the
+inheritance shape**: `daLemmyFootholdMain_c` uses the ordinary
+`STATE_VIRTUAL_DEFINE(daLemmyFootholdMain_c, DemoWait)` macro (registered
+FIRST in `__sinit`, confirmed by the coordinator's `.data` address
+order), which legitimately defines the shared `baseID_DemoWait<T>`
+template and its `sStateID_c` specialization. `daLemmyFoothold_c`'s own
+`StateID_DemoWait` is then **hand-expanded**:
+
+```cpp
+sFStateVirtualID_c<daLemmyFoothold_c> daLemmyFoothold_c::StateID_DemoWait(
+    baseID_DemoWait<daLemmyFoothold_c::StateIDBase_DemoWait>(),
+    "daLemmyFoothold_c::StateID_DemoWait",
+    &daLemmyFoothold_c::initializeState_DemoWait,
+    &daLemmyFoothold_c::executeState_DemoWait,
+    &daLemmyFoothold_c::finalizeState_DemoWait);
+```
+
+The superState argument reuses the EXISTING `baseID_DemoWait<T>`
+template (via `daLemmyFoothold_c::StateIDBase_DemoWait`, which resolves
+to `sStateID_c` since neither `daLemmyFoothold_c` nor `dEn_c` declares
+its own inherited `DemoWait`) rather than a bare `sStateID::null`
+literal -- **checked against the disassembly before writing this**: the
+target's own `__sinit` reaches this superState value via a real `bl` to
+a tiny helper function (`fn_2_C61B0`, `lis/addi null__8sStateID@ha/@l;
+blr`), not an inlined constant load, meaning the target's real source
+also goes through the templated `baseID_` mechanism here, not a direct
+`sStateID::null` reference. This compiled to an **exact match**
+(`fn_2_C61B0 MATCH <- "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"`),
+confirming both the technique and the specific superState value.
+`daLemmyFoothold_c` and `daLemmyFootholdMain_c` are confirmed true
+siblings (both call `__ct__5dEn_cFv` directly; neither derives from the
+other), so this was not a coincidence-prone guess.
+
+### The payoff, exactly as predicted: 20 more functions matched from 5 state declarations
+
+**10/51 -> 30/51.** All of it framework output, none hand-authored
+beyond the `STATE_VIRTUAL_FUNC_DECLARE`/`_DEFINE` plumbing and (for now)
+empty stub bodies for the 15 `initializeState_X`/`executeState_X`/
+`finalizeState_X` methods:
+
+- All 3 `baseID_` helper functions (`DemoWait`, `Wait`, `DemoDown` --
+  `DemoUp` needed none, since it's the last state defined and nothing
+  else references its own `baseID_DemoUp<sStateID_c>` after it, so MWCC
+  never had to emit a separate symbol for it -- consistent with the
+  "some helpers get folded/omitted, don't assume a 1:1 count" lesson
+  already learned on RIVER).
+- Every state object's own destructor: `sFStateID_c<daLemmyFootholdMain_c>`,
+  `sFStateID_c<daLemmyFoothold_c>`, `sFStateVirtualID_c<daLemmyFoothold_c>`
+  (all three MATCH).
+- `number()`/`superID()` for `sFStateVirtualID_c<daLemmyFootholdMain_c>`
+  (MATCH).
+- `isSameName()`/`initializeState()`/`executeState()`/`finalizeState()`
+  trampolines for BOTH classes' `sFStateID_c<T>` (8 functions, all
+  MATCH).
+- 6 of the 15 stub state-logic bodies happened to compile identically to
+  target already (both `DemoWait` initialize/execute/finalize pairs for
+  MAIN, plus `DemoWait`/`DemoDown`'s `initialize`/`execute` for
+  FOOTHOLD) -- these are almost certainly states whose REAL bodies are
+  genuinely trivial/empty in the target too, not a coincidence, though
+  not independently re-verified against the raw target bytes yet (kept
+  as a flagged assumption, not a confirmed read).
+
+### What's still stubbed, precisely -- do not read the above MATCHes as "state logic done"
+
+9 of the 15 state-logic bodies do NOT yet match (their target functions
+are 4-12 instructions, too large for a genuinely empty body, meaning
+target has real per-state logic there): `initializeState_DemoWait`/
+`finalizeState_DemoWait` for `daLemmyFoothold_c` at `0xC6170`/`0xC61A0`
+-- wait, those two addresses are the `mAnimTexSrt` vtable-dispatch thunks
+already identified last round, NOT state bodies; the real still-open
+state bodies are at `0xC6650`/`0xC6680` (`daLemmyFootholdMain_c`-shaped
+sizes, need re-attribution) and `0xC66D0`/`0xC66E0`/`0xC6710`-adjacent
+(`daLemmyFoothold_c::finalizeState_DemoWait`, `initializeState_DemoDown`/
+`executeState_DemoDown` region) and `0xC67B0`/`0xC67C0` vicinity. Not
+individually re-attributed function-by-function this round -- the
+`verify_anon` closest-candidate pairings shown for these are NOT reliable
+identity claims (several show `isSameName`-shaped mismatches purely
+because that's the nearest SIZE match, not because that's what they
+really are). This needs a fresh, careful per-function read next round,
+the same discipline that already caught the `+0x588` dispatch
+misattribution -- **not** an assumption that today's stub-match rate
+generalizes.
+
+### `.data` upper bound noted, not yet used
+
+The coordinator's `0x286D4` boundary (start of the next unit,
+`AC_LIFT_BALANCE`) is recorded here for whoever derives this unit's own
+`.data`/`.rodata` slice claim -- not done this round (function content
+was the priority per instruction).
+
+## Final result, this round: 30/51 byte-identical (up from 10/51)
+
+Function order still reports violations, but they are now concentrated
+exactly where expected: the empty STUB state-logic bodies (trivial, 1-2
+instructions) get positioned differently than the REAL, larger bodies
+target actually has at those same identities would be -- an artifact of
+authoring stubs before real content, not a structural defect. Should
+resolve substantially once real per-state bodies replace the stubs.
+`.ctors` unaffected (still correctly absent from the draft's own output
+in the sections I've touched; the `__sinit` itself is now real content,
+not yet exactly matching, so the `.ctors` entry it produces was not
+independently re-verified this round).
+
+**Next round's clear priority, per the coordinator's own framing**:
+finish reading and authoring the 9 real (non-stub) state-logic bodies
+function-by-function, re-verifying each against target bytes directly
+rather than trusting proximity or size-based candidate pairing --
+exactly the discipline that has already caught two wrong attributions
+elsewhere today.

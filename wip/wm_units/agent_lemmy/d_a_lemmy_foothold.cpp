@@ -5,6 +5,7 @@
 #include <game/bases/d_bg_ctr.hpp>
 #include <game/mLib/m_3d/mdl.hpp>
 #include <game/mLib/m_3d/anm_tex_srt.hpp>
+#include <game/sLib/s_State.hpp>
 
 // @unofficial LEMMY_FOOTHOLD_MAIN's own class layout, read directly off its
 // constructor (fn_2_C5CC0) and cross-checked against the already-landed
@@ -55,6 +56,19 @@
 class daLemmyFoothold_c : public dEn_c {
 public:
     daLemmyFoothold_c();
+
+    // @unofficial Three states, read directly from .data (the
+    // coordinator's own scan of the state-name strings, not guessed):
+    // StateID_DemoWait, StateID_DemoDown, StateID_DemoUp. StateID_DemoWait
+    // COLLIDES in name with daLemmyFootholdMain_c's own StateID_DemoWait
+    // (see the hand-expanded definition below the class bodies) --
+    // STATE_VIRTUAL_DEFINE's baseID_##name helper is file-scope, so two
+    // classes sharing a state NAME in one TU collide on the helper name
+    // alone, independent of any inheritance relationship.
+    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoWait);
+    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoDown);
+    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoUp);
+
     dHeapAllocator_c mAllocator;
     u32 m_540;
     m3d::mdl_c mModel;
@@ -68,9 +82,34 @@ public:
 daLemmyFoothold_c::daLemmyFoothold_c() : m_540(0), m_584(0) {}
 ACTOR_PROFILE(LEMMY_FOOTHOLD, daLemmyFoothold_c, 0);
 
+// @unofficial State bodies -- STUBS for now (empty), not yet read against
+// target bytes. Declaring them (even empty) is what is needed to get the
+// framework-generated machinery (state object dtor/number()/superID()/
+// isSameName()/three trampolines -- none hand-authored) to compile and
+// be positioned correctly; the REAL per-state behaviour is separate,
+// unauthored work for a later pass.
+void daLemmyFoothold_c::initializeState_DemoWait() {}
+void daLemmyFoothold_c::executeState_DemoWait() {}
+void daLemmyFoothold_c::finalizeState_DemoWait() {}
+void daLemmyFoothold_c::initializeState_DemoDown() {}
+void daLemmyFoothold_c::executeState_DemoDown() {}
+void daLemmyFoothold_c::finalizeState_DemoDown() {}
+void daLemmyFoothold_c::initializeState_DemoUp() {}
+void daLemmyFoothold_c::executeState_DemoUp() {}
+void daLemmyFoothold_c::finalizeState_DemoUp() {}
+
 class daLemmyFootholdMain_c : public dEn_c {
 public:
     daLemmyFootholdMain_c() : m_540(0), m_584(0) {}
+
+    // @unofficial Two states, read directly from .data: StateID_DemoWait
+    // (registered FIRST in __sinit -- this class's own STATE_VIRTUAL_DEFINE
+    // is therefore the one that legitimately owns the shared baseID_DemoWait
+    // helper; daLemmyFoothold_c's own DemoWait reuses it, hand-expanded,
+    // below) and StateID_Wait.
+    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFootholdMain_c, DemoWait);
+    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFootholdMain_c, Wait);
+
     dHeapAllocator_c mAllocator;
     u32 m_540;
     m3d::mdl_c mModel;
@@ -81,3 +120,53 @@ public:
 };
 
 ACTOR_PROFILE(LEMMY_FOOTHOLD_MAIN, daLemmyFootholdMain_c, 0);
+
+// @unofficial State bodies -- STUBS for now, see the note on
+// daLemmyFoothold_c's own state bodies above.
+void daLemmyFootholdMain_c::initializeState_DemoWait() {}
+void daLemmyFootholdMain_c::executeState_DemoWait() {}
+void daLemmyFootholdMain_c::finalizeState_DemoWait() {}
+void daLemmyFootholdMain_c::initializeState_Wait() {}
+void daLemmyFootholdMain_c::executeState_Wait() {}
+void daLemmyFootholdMain_c::finalizeState_Wait() {}
+
+// @unofficial __sinit registers these five state objects in this exact
+// order (read directly off fn_2_C6920's own sequence of
+// __ct__10sStateID_cFPCc/__register_global_object call pairs, matching
+// the coordinator's own .data-address scan): MAIN::DemoWait, MAIN::Wait,
+// FOOTHOLD::DemoWait, FOOTHOLD::DemoDown, FOOTHOLD::DemoUp. Static
+// initializers run in TEXTUAL declaration order within a TU, so this
+// block's own ordering is load-bearing, not cosmetic.
+//
+// MAIN::DemoWait uses the ordinary macro -- it is the one that legitimately
+// defines the shared file-scope baseID_DemoWait<T> template (and its
+// sStateID_c specialization) that FOOTHOLD's own DemoWait, below, reuses.
+STATE_VIRTUAL_DEFINE(daLemmyFootholdMain_c, DemoWait);
+STATE_VIRTUAL_DEFINE(daLemmyFootholdMain_c, Wait);
+
+// @unofficial daLemmyFoothold_c::StateID_DemoWait -- HAND-EXPANDED per the
+// coordinator's direction (precedent: source/d_basesNP/bases/d_a_ac_switch.cpp
+// hand-expands ACTOR_PROFILE for the same reason, a macro that cannot be
+// invoked twice for the same name in one TU). Deliberately reuses the
+// EXISTING baseID_DemoWait<T> template (defined above by MAIN's own
+// STATE_VIRTUAL_DEFINE) rather than re-emitting it -- confirmed against
+// the actual __sinit bytes: the superState argument is NOT a plain
+// `sStateID::null` load, it is a real `bl` to a small helper function
+// (matching fn_2_C61B0's own `lis/addi null__8sStateID; blr` shape) --
+// i.e. the target's own compiled code goes through the SAME templated
+// baseID_ mechanism for both classes' DemoWait, not an inlined constant.
+// daLemmyFoothold_c and daLemmyFootholdMain_c are confirmed SIBLINGS (both
+// call `__ct__5dEn_cFv` directly, neither derives from the other), so
+// `StateIDBase_DemoWait` resolves to `sStateID_c` here exactly as it does
+// for MAIN, and the call lands on the SAME already-defined
+// `baseID_DemoWait<sStateID_c>` specialization -- read from the bytes,
+// not assumed from the inheritance shape alone.
+sFStateVirtualID_c<daLemmyFoothold_c> daLemmyFoothold_c::StateID_DemoWait(
+    baseID_DemoWait<daLemmyFoothold_c::StateIDBase_DemoWait>(),
+    "daLemmyFoothold_c::StateID_DemoWait",
+    &daLemmyFoothold_c::initializeState_DemoWait,
+    &daLemmyFoothold_c::executeState_DemoWait,
+    &daLemmyFoothold_c::finalizeState_DemoWait);
+
+STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoDown);
+STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoUp);
