@@ -358,20 +358,28 @@ int daWaterMove_c::doDelete() {
 // g_profile_AC_WATER_MOVE itself in the target -- an MWCC string-pooling detail this
 // draft does not attempt to reproduce), builds mModel/mAnimTexSrt from it, and sets the
 // model's own base animation frame from lbl_2_rodata_8228 (rate constant, unconfirmed).
+// Model-variant name lookup: 3 water-float model names (mUnk4B4 selects which). Target
+// reads these anchor-relative to g_profile_AC_WATER_MOVE itself (+0x54 for GetResMdl's
+// own array, +0x60 -- an IDENTICAL second copy -- for GetResAnmTexSrt's) -- an
+// MWCC pooling detail this draft does not reproduce (own separate arrays instead), so the
+// relocation TARGET differs even where the instruction shape now matches.
+static const char *const sWaterFloatNames[] = {
+    "obj_waterfloat01", "obj_waterfloat03", "obj_waterfloat02"
+};
+
 void daWaterMove_c::createMdl() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
     mResFile = dResMng_c::m_instance->getRes("obj_waterfloat", "g3d/obj_waterfloat.brres");
-    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl((ulong)mUnk4B4);
+    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl(sWaterFloatNames[mUnk4B4]);
     mModel.create(resMdl, &mAllocator, 0x224, 1, nullptr);
     setSoftLight_MapObj(mModel);
 
-    nw4r::g3d::ResAnmTexSrt resAnmTexSrt = mResFile.GetResAnmTexSrt((ulong)mUnk4B4);
+    nw4r::g3d::ResAnmTexSrt resAnmTexSrt = mResFile.GetResAnmTexSrt(sWaterFloatNames[mUnk4B4]);
     mAnimTexSrt.create(resMdl, resAnmTexSrt, &mAllocator, nullptr, 1);
     mAnimTexSrt.setAnm(mModel, resAnmTexSrt, 0, m3d::FORWARD_LOOP);
 
-    static const f32 lbl_2_rodata_8228 = 1.0f;
-    mModel.setAnm(mAnimTexSrt, lbl_2_rodata_8228);
+    mModel.setAnm(mAnimTexSrt, wmConstF(24));
     mModel.setPriorityDraw(-1, 0x85);
 
     mAllocator.adjustFrmHeap();
@@ -447,23 +455,29 @@ void daWaterMove_c::checkPlayers() {
 // step, +0x70 min... exact roles unconfirmed, transcribed literally from the target).
 // Flips field_348_ref's own direction byte when a clamp actually triggers.
 float daWaterMove_c::approach(float value) {
+    const f32 *table = reinterpret_cast<const f32 *>(sWaterMoveConsts);
     int which;
     f32 step;
-    if (mUnk484 >= value) {
-        step = (mUnk47C - value) * wmConstF(31);
+    if (!(mUnk484 < value)) {
+        step = (mUnk47C - value) * table[31];
         which = 0;
     } else {
-        step = (value - mUnk480) * wmConstF(31);
+        step = (value - mUnk480) * table[31];
         which = 1;
     }
-    step += wmConstF(32);
-    if (step >= wmConstF(28)) {
-        step = wmConstF(28);
+    step += table[32];
+    if (step >= table[28]) {
+        step = table[28];
     }
     if (field_348_ref(this) == 1) {
         step = -step;
     }
     value += step;
+    // mUnk47C/mUnk480 are a 2-element clamp array (adjacent floats, indexed by `which`)
+    // -- confirmed by the target's own `slwi r0,r5,2; add r4,r3,r0; lfs f0,0x47c(r4)`
+    // tail, which is array indexing, not two independent if/else arms -- but restructuring
+    // this draft to match that shape regressed the diff count (23 -> 46), so left as the
+    // clearer if/else form; parked, not chased further (three attempts already spent here).
     if (which == 0) {
         if (value >= mUnk47C) {
             return value;

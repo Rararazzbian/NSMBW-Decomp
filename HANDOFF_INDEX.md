@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12686 lines / 494 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12731 lines / 498 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -515,3 +515,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12589-12633` Two classes sharing a state name in one TU: HAND-EXPAND the second `STATE_VIRTUAL_DEFINE`
 - `12634-12668` LEMMY_FOOTHOLD: five states read straight out of `.data`, and the SAME name collision
   - `12669-12686` The round's own discipline is worth noting
+- `12687-12694` Three levers from AC_WATER_MOVE, and a round where the TALLY DID NOT MOVE
+  - `12695-12705` 1. The COMPARISON DIRECTION picks the branch instruction
+  - `12706-12717` 2. Use the SDK's real math helper, not a hand-rolled equivalent
+  - `12718-12731` 3. The overload matters, and so does pooling the strings once

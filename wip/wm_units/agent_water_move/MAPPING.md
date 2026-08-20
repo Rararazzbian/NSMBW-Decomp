@@ -61,16 +61,21 @@ instantiation.
   the target has one pool, not N).
 
 ### Not yet matched (8) -- honest state, not claimed as landed
-| function | note |
-|---|---|
-| `create()` | Best-effort literal transcription of a real bitfield-heavy, multi-branch function (mParam extraction, three-way `changeState` dispatch, a `dWaterEntryMng_c` registration call). Every field/call target is real and cross-checked against landed headers; the bitfield boundaries and the exact registration-struct shape are unconfirmed. |
-| `execute()` | Order/structure right (checkPlayers/calcModel/play/calcWave in the right places), remaining diff is likely register-allocation/expression-order, not wrong content. |
-| `createMdl()` | String literals ("obj_waterfloat", "g3d/obj_waterfloat.brres") are NOT anchor-pooled the way the target has them (both read relative to `g_profile_AC_WATER_MOVE` itself); this draft uses plain literals instead, which diverges in relocation target even where instruction shape matches. |
-| `calcModel()` | The three-pass `ZrotM`/`PSMTXScale`/`PSMTXConcat` wobble sequence (offsets 0x498/0x49c consumed per-axis) is only partially transcribed. |
-| `checkPlayers()` | `fn_800EBBC0`'s exact signature and a `(player->*fn)()` pointer-to-member-function call (read from `+0x60`'s own vtable slot `+0x6c`) are inferred from the disassembly, not independently confirmed. |
-| `approach()` | The rodata ADDRESSES now resolve correctly (fixed this round), but register allocation / statement order still differs -- likely needs the address computation hoisted before the `if`, matching how the target schedules it. |
-| `calcWave()` | `CosIdx`/`SinIdx` (matching `include/lib/nw4r/math/math_triangular.h`) now produce the right CALL target and the right rodata anchor, but a `lha` vs `lhz` half-word load choice (signed vs unsigned short read) still differs, plus downstream scheduling. |
-| `__sinit` | Deliberately NOT touched further this round per the coordinator's own guidance ("__sinit LAST... only tractable once everything feeding it is correct") -- it constructs the three `sFStateID_c<daWaterMove_c>` statics from the STATE_DEFINE argument pool and is already mostly identical without any direct edits, purely as a side effect of the class/state fixes above (21 lines differing out of 159). |
+
+Per-function diff counts this round (raw `difftool.py` line counts, not the normalised
+`verify_anon.py` score -- so these overstate the true gap slightly, since naming-only
+lines still show as "different" here):
+
+| function | diff (start of round -> now) | attempts this round | parked because |
+|---|---|---|---|
+| `create()` | untouched, 141/145 | 0 | Largest remaining function; bitfield-heavy, multi-branch, not started this round in favour of the smaller ones. |
+| `execute()` | untouched, 27/54 | 0 | Same -- order/structure already right, likely register-allocation only, not attempted this round. |
+| `createMdl()` | 70 -> 50 | 3 (see below) | Anchor-pooling gap: target reads its 3 model-variant name strings AND the two `getRes()` strings all anchor-relative to `g_profile_AC_WATER_MOVE` itself; consolidating into one shared `sWaterFloatNames[]` array got the CALL SHAPE right (attempt 2, 76->50), but forcing MWCC to co-locate the `getRes()` strings into the SAME pool regressed it (attempt 3, 50->68, reverted). Parked at the attempt-2 state. |
+| `calcModel()` | untouched, 63/65 | 0 | Not attempted this round. |
+| `checkPlayers()` | untouched | 0 | Not attempted this round. |
+| `approach()` | 49 -> 23 | 3 | (1) hoisted the rodata table address into one local `const f32 *table` shared across both branches instead of two separate loads (49->46); (2) rewrote the entry comparison from `mUnk484 >= value` to `!(mUnk484 < value)`, which changed the compiled branch from a `cror`+`bne` pair to the target's own single `bge`-shaped form (46->23); (3) restructured the tail to index `mUnk47C`/`mUnk480` as a `clamp[which]` 2-element array, matching the target's own `slwi r0,r5,2; add r4,r3,r0` indexing -- this REGRESSED it (23->46) and was reverted. Parked at attempt-2's state; the array-indexing shape is very likely still correct semantically (the target bytes clearly show it), just not reproducible from this specific C++ phrasing in one more try. |
+| `calcWave()` | 37 -> 24 | 2 | (1) switched from manual `mUnk4BA * (1/256)` multiplication to `nw4r::math::CosF(U16ToF32(mUnk4BA))`, matching the real inline chain in `include/lib/nw4r/math/math_triangular.h` (37->27 raw, fixed the wrong int-to-float bit-trick codegen); (2) switched to calling `CosIdx`/`SinIdx` directly (same header) instead of manually chaining `U16ToF32`+`CosF` (cosmetic, same score). Remaining gap is one `lha` vs `lhz` half-word load (signed vs unsigned read of `mUnk4BA` feeding the call) plus its downstream scheduling; not resolved in the tries spent. |
+| `__sinit` | 21/159, untouched | 0 | Deliberately last, per your own guidance -- already close purely as a side effect of the class/state fixes, nothing in this unit is blocked on it. |
 
 ## Verified vs inferred, explicitly
 VERIFIED (byte-identical against a freshly-dumped target, this session): both classInits,

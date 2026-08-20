@@ -12683,3 +12683,48 @@ confirmed layout says is `mAnimTexSrt`'s own vtable slot, not state machinery.
 **Both classes' constructor AND destructor pairs match. A destructor match is
 strong evidence the member layout is right**, because it is sensitive to the whole
 member list.
+
+## Three levers from AC_WATER_MOVE, and a round where the TALLY DID NOT MOVE
+
+19/27 unchanged, and the round was productive: `createMdl` 70 -> 50, `approach`
+49 -> 23, `calcWave` 37 -> 24, each with the regressions tried, measured and
+reverted. **A tally is a coarse instrument. Diff counts falling by half across
+three functions is real progress that N/M cannot express**, and the per-function
+attempt log is what stops the next round re-running the same three misses.
+
+### 1. The COMPARISON DIRECTION picks the branch instruction
+
+`approach()`'s entry test written as `>=` compiled to a **`cror` + `bne` pair**;
+rewritten as a negated `<`, it compiled to the target's **single `bge`**. That one
+change took it 46 -> 23.
+
+This is the positive form of the recorded "De Morgan inversions are NOT
+equivalent": **when the target shows a single condition branch and you have a
+`cror` pair (or vice versa), rewrite the comparison in the other direction.**
+Cheap, mechanical, and it does not change the program's meaning.
+
+### 2. Use the SDK's real math helper, not a hand-rolled equivalent
+
+`calcWave()` had a manual `mUnk4BA * (1/256)` multiply producing the wrong
+int-to-float codegen. Replacing it with the genuine
+**`nw4r::math::CosF(U16ToF32(...))` / `CosIdx` chain from `math_triangular.h`**
+took it 37 -> 24.
+
+**Same family as the paired-single `VEC3Add` finding**: the original called a
+library routine, and hand-rolling the arithmetic the disassembly appears to show
+reproduces the OUTPUT rather than the SOURCE. **When arithmetic will not match,
+ask which library helper the original called before adjusting the expression.**
+
+### 3. The overload matters, and so does pooling the strings once
+
+`createMdl()` was calling the wrong `GetResMdl`/`GetResAnmTexSrt` overload — the
+`ulong` index form where the target uses the `const char *` name form — and
+keeping three model-variant name strings in separate arrays. **One merged
+`sWaterFloatNames[]` array** took it 76 -> 50. Forcing the `getRes()` strings into
+that same pool regressed it to 68 and was reverted, narrowing the remaining gap to
+the `getRes()` call alone.
+
+**Parameter types are encoded in CFront mangling**, so the overload is checkable
+rather than guessable — and this is the second unit this session where merging
+per-function `static const` tables into ONE file-scope aggregate was required, after
+`d_a_wm_sandpillar.cpp`'s eleven-into-one.
