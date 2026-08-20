@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13746 lines / 549 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13835 lines / 553 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -570,3 +570,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13699-13724` `d_line_mng` authoring wave: four parallel agents, and what each proved
   - `13725-13739` Codegen levers found this wave
   - `13740-13746` Cross-checking that paid off
+- `13747-13771` MAJOR: `_savegpr_N`/`_restgpr_N` is a WHOLE-TU decision — standalone compiles differ STRUCTURALLY
+  - `13772-13799` What this means, and it is not small
+- `13800-13824` `d_line_mng` MERGED: 100/182 functions, 27.7% BY BYTES
+  - `13825-13835` `tally.py` has a NAME-KEY flaw: unnamed target functions read as MISSING

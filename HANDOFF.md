@@ -13743,3 +13743,92 @@ alongside the proven ones.
 my header update**, by different evidence than `author_mov` used. `author_core`
 first guessed `u8` from the callee body and **proved itself wrong by testing a
 caller** — the callee body alone is not sufficient evidence for a return width.
+
+## MAJOR: `_savegpr_N`/`_restgpr_N` is a WHOLE-TU decision — standalone compiles differ STRUCTURALLY
+
+The most consequential finding of the `d_line_mng` merge, and it bears on every
+unit on this project, because **every agent here authors standalone.**
+
+MWCC can either emit the shared register-save helpers:
+
+```
+bl _savegpr_27   ...   bl _restgpr_27
+```
+
+or **inline every register store**. The choice is made per translation unit, not
+per function. Measured on `__sinit_\d_line_mng_cpp`:
+
+```
+target and correct drafts   bl _savegpr_27 / _restgpr_27    frame 0x3b0   1193 words
+isolated author_states      register stores inlined         frame 0x3a0   1220 words
+isolated author_core        register stores inlined         frame 0x3a0   1220 words
+full merge                  bl _savegpr_27 / _restgpr_27    frame 0x3b0   1193 words  <- matches
+```
+
+Verified independently here: the merged draft's helper usage matches the target
+**exactly** — one `_savegpr_22`, five `_savegpr_27`, and the matching restores —
+where the isolated compiles had none.
+
+### What this means, and it is not small
+
+**A function compiled in ISOLATION can differ STRUCTURALLY from the same function
+in the full TU — by 27 words in this case — with identical source.** The
+difference is a whole-TU codegen heuristic, so it is invisible to any amount of
+staring at one function.
+
+Consequences to act on:
+- **A size mismatch in a standalone draft is not automatically content.** The
+  size rule ("a length mismatch is CONTENT, never scheduling") still holds
+  *within a fixed compilation context*, but the context itself can change the
+  length. Before spending a round hunting a missing word, check whether the
+  target uses `_savegpr_*`/`_restgpr_*` and your isolated draft does not.
+- I flagged this unit's `__sinit` as STRUCTURAL twice on exactly that reasoning.
+  **I was wrong both times** — it was 1193 all along in any correct whole-TU
+  configuration, and the 1220 was an artifact of isolated compilation.
+- It plausibly explains residuals on OTHER parked units. LEMMY's `__sinit` was
+  characterised as a "standalone-compile pool-position artifact" with 35 words of
+  uniform per-state displacement deltas. That characterisation now has a
+  confirmed mechanism behind it rather than being a guess.
+
+**Cheap diagnostic:** `grep -c "_savegpr_\|_restgpr_" <target.txt>` against the
+same count in your draft. A mismatch there explains a whole class of otherwise
+baffling length differences.
+
+The merging agent labelled the root mechanism its best-supported inference rather
+than a fully bisected result. That is the right level of confidence to claim.
+
+## `d_line_mng` MERGED: 100/182 functions, 27.7% BY BYTES
+
+```
+matched 100/182 functions   2115/7631 words = 27.7% BY BYTES
+```
+
+Independently re-measured, not taken from the report. Compiles clean.
+
+**No real collisions** — the four authors' scope was cleanly disjoint. Two
+apparent overlaps were complementary (one agent declared externs, another
+supplied the bodies).
+
+**A merge-only BONUS worth knowing about:** eight `initializeState_*` functions
+went from length-exact to fully byte-exact once another agent's helper body
+landed in the same TU. **Merging can IMPROVE functions, not only risk them** —
+the same whole-TU effect as the `_savegpr` finding, working in our favour.
+
+**One genuine regression, correctly diagnosed:** `fn_800C15B0` was byte-exact in
+isolation only because its author had added a throwaway
+`DUMMY_FORCE_EMIT_800C15B0()` wrapper, explicitly marked "DELETE at merge."
+Removed as instructed; with no real caller it is dead-stripped by `-O4` and is
+absent. It will return when its true caller `fn_800C31C0` is authored. **A
+function kept alive by a scaffold is not evidence it will survive the merge** —
+note the scaffold in the tally, not just the match.
+
+### `tally.py` has a NAME-KEY flaw: unnamed target functions read as MISSING
+
+`fn_800C1EE0`, `fn_800C3B20`, `fn_800C3B60` report `MISSING` but are present
+under mangled draft names. The tool keys on the `.fn` label, so a bare target
+name never matches a mangled draft name. Same defect class as the one
+`verify_anon.py` exists to solve for the REL units.
+
+It does not change this headline (none of the three would have matched anyway),
+but **the tool undercounts any unit with anonymous target functions** and needs
+content-based pairing as a fallback before it is trusted on one.
