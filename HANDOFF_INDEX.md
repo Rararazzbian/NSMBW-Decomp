@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13101 lines / 514 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13143 lines / 516 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -535,3 +535,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13003-13053` CROSS-CONFIRMED within the hour: the PMF encoding difference IS the virtual/non-virtual distinction
 - `13054-13082` PRECONDITION on the hand-expansion technique: first check you are using the RIGHT macro
   - `13083-13101` The attribution work paid off as a bug-catcher
+- `13102-13123` A "differing" count means NOTHING for a function you have not authored
+  - `13124-13143` The boundary correction: my upper bound was a CEILING, not an edge

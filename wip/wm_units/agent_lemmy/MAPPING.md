@@ -583,3 +583,114 @@ unit's `.data`/`.rodata` slice, still not derived; (5) function order,
 not re-examined this round (still shows violations concentrated at the
 same lower-priority spots as round 3 -- the coordinator's "leave it
 alone" call from round 3 still stands, not re-litigated).
+
+## Round 5: `.data`/`.rodata` slice derived; all 17 unmatched functions surveyed and classified
+
+### `.data` slice: `0x27DB0-0x284F0`
+
+Both ends confirmed by hand against raw REL bytes (`base_data = 0x1d0c00`
+in `original/d_basesNP.rel`), the same method used on RIVER:
+
+- **Start, `0x27DB0`**: raw bytes there (`00000000 001f001d`) match
+  `g_profile_LEMMY_FOOTHOLD`'s own `fProfile::fActorProfile_c` shape
+  exactly (`mpClassInit` relocated to 0 in the file, `mExecuteOrder`/
+  `mDrawOrder` = `0x1f`/`0x1d` as two packed `u16`s). Checked what
+  precedes it: `0x27C00-0x27D44` is a DIFFERENT unit's own state-name
+  strings (`"daLemmyBall_c::StateID_Attack"`, `"...StateID_Revival"`,
+  `"...StateID_DemoIkaku_Wait"`, etc. -- all `daLemmyBall_c`, the
+  already-known sibling `LEMMY_BALL` at `.text 0xC4E80`, confirmed via
+  `ctors_map.py`), followed by pure zero padding through `0x27DB0`. This
+  unit's own data genuinely starts at the profile struct, not before it
+  -- the "manager/object" convention, not the WM-family's
+  leading-strings convention.
+- **End, `0x284F0`**: `scout_unit.py`'s own ownership check (relocations
+  referenced from within this unit's `.text` claim) reports `0x284EC` as
+  the highest genuinely-owned `.data` word -- one more word (`+4`) closes
+  it at `0x284F0`, an 8-byte-aligned boundary. Read past it by hand to
+  confirm the claim doesn't overreach: this unit's own last state-name
+  string (`"daLemmyFoothold_c::StateID_DemoUp"`, ending `0x284B7`) is
+  followed by padding, then **foreign content starting around `0x28550`**
+  -- a *different* `fProfile::fActorProfile_c`-shaped struct
+  (`mExecuteOrder`/`mDrawOrder` = `0x1ce`/`0x1c3`, far outside this
+  unit's own tight `0x1d`-`0x1f` cluster) followed by `"g3d/
+  test_lift.brres"`/`"test_lift"` strings and more state-shaped PMF
+  triples -- all belonging to the coordinator's own-identified next unit
+  (`daLiftBalance_c`/`AC_LIFT_BALANCE`, whose own name string sits at
+  `0x286D4`). This confirms the upper bound is `0x284F0`, well short of
+  the `0x286D4` ceiling the coordinator gave -- that address was an
+  upper LIMIT, not the exact boundary, and the true edge is where this
+  unit's own content actually stops.
+- `check_bounds.py` can't independently verify (no named symbols in this
+  anonymous range, same limitation as RIVER), so both ends rest on the
+  hand-read evidence above, not the tool's own confirmation.
+
+### `.rodata` slice: `0x4A80-0x4AAC` (tentative, not exhaustively swept)
+
+`scout_unit.py`'s REL-relative (non-DOL-absolute) targets for this
+unit's own `.rodata` are exactly 4 addresses: `0x4A80`, `0x4A9C`,
+`0x4AA0`, `0x4AA4` (everything else scout reports, `0x80xxxxxx`, is a
+DOL-absolute inherited-method-table reference, not this REL's own
+`.rodata`). The actual byte extent is larger than these 4 labels alone,
+since code reaches further constants via plain displacement arithmetic
+off one base register (e.g. `lfs f0, 0x28(r31)` where `r31 =
+lbl_2_rodata_4A80`, reaching `0x4AA8` without a separate relocation).
+Checked every confirmed use site of all 4 symbols across the read
+functions (`initializeState_DemoDown`, `executeState_DemoUp`, plus two
+not-yet-authored functions at `0xC5F38`/`0xC6490` that also reference
+`lbl_2_rodata_4A80`) -- the largest displacement found is `+0x28`
+(`0x4AA8`, the `10.0f` divisor), giving an upper bound of `0x4AAC`.
+**Not exhaustive**: 15 functions remain unauthored (see below) and any
+of them could reach a rodata displacement I haven't read yet -- this
+bound should be re-checked once they're authored, not treated as final.
+
+### All 17 unmatched functions surveyed and classified by the size diagnostic
+
+**2 are genuine residuals** (already authored, exact size match, small
+diff, already tried multiple variants -- per round 4):
+
+| target | size | diff | class |
+|---|---|---|---|
+| `0xC6720` `executeState_DemoDown` | 33 | 2 | residual -- pool-position + 1 register choice |
+| `0xC67D0` `executeState_DemoUp` | 47 | 6 | residual -- same two classes |
+
+**15 are missing content** -- genuinely unauthored, no source written at
+all. Their reported "differing" counts in `verify_anon`'s output are
+**not real diffs**: they're the tool's closest-size-candidate fallback
+pairing against unrelated already-authored functions (e.g. several show
+`~executeState_DemoDown` or `~"initializeState__32sFStateID_c<...>"` as
+the "closest match" purely because nothing of the right identity exists
+in the draft yet). Per the coordinator's diagnostic, this is
+unambiguous: no authored candidate of the right size exists, so by
+definition these need reading and writing, not tuning:
+
+| target | size (words) | quick-read finding |
+|---|---|---|
+| `0xC6120` | 10 | `mBgCtr.release(); return 1;` -- **doDelete()**, MAIN |
+| `0xC6680` | 10 | same shape at `+0x5c0` -- **doDelete()**, FOOTHOLD |
+| `0xC60F0` | 12 | `mModel.<vtable+0x14>(); return 1;` -- **draw()**-shaped, MAIN |
+| `0xC6650` | 12 | same shape -- **draw()**-shaped, FOOTHOLD |
+| `0xC65F0` | 21 | not yet read |
+| `0xC6000` | 23 | `mStateMgr.<vtable+0x10>()` (dispatch through `+0x394`, `dActorMultiState_c`'s own state manager) then a virtual call through this object's own vtable at `+0x288` -- **execute()**-shaped, MAIN |
+| `0xC6590` | 23 | same shape, vtable slot `+0x2ac` -- **execute()**-shaped, FOOTHOLD |
+| `0xC5D70` | 32 | not yet read in full |
+| `0xC6310` | 32 | not yet read in full (likely FOOTHOLD's counterpart to `0xC5D70`) |
+| `0xC6060` | 36 | not yet read |
+| `0xC64D0` | 48 | opens with `mAnimTexSrt.setRate(1.0f, 0); mAllocator.adjustFrmHeap();` -- matches the established `createModel()` idiom from `d_a_wm_antlion.cpp` |
+| `0xC5F30` | 50 | opens by storing `mPos.x/y/z`-derived values into this class's own tail fields (`+0x698/+0x69c/+0x6a0`) and zeroing `mScale` (`+0xdc/+0xe0/+0xe4`) -- likely `create()` or `resetPosition()`-shaped |
+| `0xC5DF0` | 78 | not yet read in full |
+| `0xC6390` | 78 | contains the same `setRate(1.0f,0); adjustFrmHeap();` tail as `0xC64D0` -- likely the OTHER class's own `createModel()` |
+| `0xC6920` | 268 | `__sinit`, 35/268 differing -- last priority, not touched this round |
+
+### Net picture, stated separately from the tally per instruction
+
+Structurally, this unit is closer to done than 34/51 alone suggests:
+both classes' full construction/destruction lifecycle, all 5 states, the
+shared weak-stub cluster, and MAIN's two real overrides are exact
+matches. Of the 17 remaining gaps, 2 are small, well-understood residuals
+already parked, and roughly half of the other 15 already have a
+confident structural read (doDelete/draw/execute pairs for both classes,
+plus two likely createModel() twins) from this round's quick survey --
+leaving `0xC65F0`, `0xC5D70`, `0xC6310`, `0xC6060`, `0xC5DF0` as the
+genuinely open, not-yet-characterized functions for the next pass, with
+`0xC5F30`/`0xC64D0`/`0xC6390` needing full (not just opening-instruction)
+reads before authoring.

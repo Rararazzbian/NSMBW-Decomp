@@ -13098,3 +13098,45 @@ the right one:** the unit went from two unread bodies plus an unexplained 267-wo
 `__sinit` gap to two small well-understood residuals, a 35-word gap, and **zero
 open declaration questions.** A tally cannot express that, which is exactly why
 the uncertain surface is worth reporting separately.
+
+## A "differing" count means NOTHING for a function you have not authored
+
+LEMMY's survey classified all 17 unmatched functions and produced a clarification
+about the tool that affects how everyone reads its output:
+
+- **2 are genuine residuals** — authored, size-exact, diffs of 2 and 6, already
+  parked.
+- **15 have NO SOURCE AT ALL.** For those, **`verify_anon`'s "differing" count is
+  its fallback pairing against the nearest unrelated AUTHORED function — not a
+  diff of anything.** The number is noise.
+
+**So a per-function "N differing" is only meaningful once you have written that
+function.** Reading a large count on an unauthored function as "this one is hard"
+is reading the tool's closest-remaining-candidate heuristic as a measurement. This
+is the same `~name` caveat the tool prints for its guesses, one level up: **the
+tilde marks the NAME as a guess, and the COUNT beside it is equally a guess.**
+
+**The practical consequence: a unit's tally splits into three populations, not
+two** — matched, authored-with-residual, and unwritten — and only the middle one
+has meaningful diff counts. Report them separately; "17 unmatched" hid the fact
+that 15 of them had never been attempted.
+
+### The boundary correction: my upper bound was a CEILING, not an edge
+
+I gave LEMMY `0x286D4` as the point where foreign strings begin. **The true `.data`
+edge is `0x284F0`** — the agent read past its own ownership-check cap by hand and
+found this unit's last string ending at `0x284B7`, then padding, then genuinely
+foreign content (a profile struct whose `executeOrder`/`drawOrder` sit far outside
+this unit's tight range, plus another unit's `.brres` strings).
+
+**An upper LIMIT derived from "where foreign content starts appearing" is not the
+same as the boundary**, and the gap between them was `0x1E4` bytes. Both ends
+hand-confirmed against raw REL bytes is the standard the RIVER agent set, and it
+is the right one.
+
+`.rodata` derived as `0x4A80-0x4AAC` and **flagged explicitly as tentative** —
+three of the fifteen unwritten functions reference `lbl_2_rodata_4A80` and have not
+been read, so the bound needs rechecking once they are authored. **Marking a
+derived range as provisional because of what has not been read yet is the right
+habit**; a slice range asserted from an incomplete draft is exactly how units get
+mis-scoped.
