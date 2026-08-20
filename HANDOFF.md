@@ -12398,3 +12398,58 @@ agent_hanachan    16 flagged, 13 unexplained        -> parked unit
 
 Preserved with the stall: `agent_floor_jr_a` 20/29, `agent_river` 15/23,
 `agent_water_move` 12/27. Protected paths clean throughout.
+
+## RIVER parked on the ANCHOR destructor wall — and it CANNOT land, for a different reason than the units that did
+
+**Ten source-level variants across two rounds, all negative**, on the same
+residual: eight of nine RIVER destructors are one instruction short of target — a
+second `beq` on the same `this == 0` test.
+
+Round 1 tried seven declaration-shape axes (implicit, in-class, out-of-line,
+virtual/non-virtual, extra override, explicit ctor, non-copyable). Round 2 tried
+the outstanding `operator new`/`operator delete` lead — **`fBase_c` does declare
+class-scoped operators** (`include/game/framework/f_base.hpp:106-107`), so the
+lead was real — three ways:
+1. in-class inline-forwarding both — **both calls inline away entirely**, destructor unchanged;
+2. out-of-line override of both — changes the call target to the class's own `__dl__14daRiverPaipo_cFPv`, which **the target does not do**, so wrong on two counts and still 22 instructions;
+3. out-of-line `operator delete` alone — still exactly 22 instructions.
+
+**Verified the target shape independently**, and it is subtler than "dead code":
+
+```
+0x12ADB8  cmpwi r3, 0
+0x12ADD0  beq   -> 0x12ADF0     <- outer guard, exits
+0x12ADD4  beq   -> 0x12ADE0     <- INNER guard, skips one call
+0x12ADDC  bl
+0x12ADE0  cmpwi r31, 0 ; bne -> 0x12ADF0
+```
+
+Two `beq` on ONE compare, branching to **different labels** — not a duplicated
+branch but **two nested `this` guards**, the inner one wrapping a single call.
+That is precisely the recorded WM_ANCHOR finding: **a derived class cannot reach a
+construct emitted by inlining its base's destructor.** Second unit, same wall,
+confirmed by ten variants and an independent read of the bytes.
+
+### The distinction that matters: this is BYTES, not an argument
+
+The agent asked, reasonably, whether this might be "the same category as units you
+landed today against similar walls." **It is not, and the difference is the whole
+rule:**
+
+- `d_a_peach_castle_sequence.cpp`, `d_a_ac_switch.cpp` and `d_a_floor_jr_b.cpp`
+  were **byte-complete** and blocked only by an ARGUMENT — a phantom order flag,
+  "cannot be independently linked", "needs the other unit first". A build settled
+  each because there was nothing wrong with the bytes.
+- **RIVER is eight instructions short of retail.** Its `.text` cannot match, so the
+  MD5 cannot match, and no build papers over that.
+
+**Try the build when the objection is structural; keep authoring when the
+objection is bytes.** A wall that leaves the bytes wrong is the second case, however
+well-characterised it is.
+
+**Useful work delivered alongside the negative:** the `.data` slice derived and
+both ends confirmed by hand against raw REL bytes — `0x3AF18-0x3B788`, exactly
+`9 x 0xF0` with no slack, starting on `g_profile_RIVER_BARREL`'s struct and
+stopping precisely where a foreign `g_profile_*` begins (`executeOrder=0x225`,
+outside RIVER's tight `0x28-0x32` cluster). No `.rodata`, `.bss` or `.ctors`
+claim. **That range is ready for whoever closes the destructors.**

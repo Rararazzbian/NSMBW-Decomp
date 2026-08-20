@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12401 lines / 484 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12456 lines / 486 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -505,3 +505,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `12331-12353` And it CORRECTED MY inference, with evidence
 - `12354-12388` The order gate CANNOT be made reliable by classifying its own output
   - `12389-12401` Current classification of the outstanding flags
+- `12402-12432` RIVER parked on the ANCHOR destructor wall — and it CANNOT land, for a different reason than the units that did
+  - `12433-12456` The distinction that matters: this is BYTES, not an argument

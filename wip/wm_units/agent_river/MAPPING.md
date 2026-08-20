@@ -296,3 +296,113 @@ objects plus nine vtables on the ~0xF0 stride (`0x3AF1C`-ish through
 matching the coordinator's own `.data` observation. Left for the next
 round to derive precisely with `check_bounds.py` before proposing the
 slice for real.
+
+## Round 2: operator-delete lead tested (negative, matches the WM_ANCHOR wall), order gate confirmed noise, `.data` slice derived
+
+### The coordinator's `operator delete` lead: tested three ways, none reproduce the extra check
+
+`fBase_c` does declare class-scoped `static void *operator new(size_t);`
+and `static void operator delete(void*);` (`f_base.hpp:106-107`, confirmed
+by reading it directly). Tried, against `daRiverPaipo_c` in isolation:
+
+1. **In-class, inline-forwarding**: `static void operator delete(void *p)
+   { dActorState_c::operator delete(p); }` alongside an inline
+   `operator new` doing the same. The forwarding calls got inlined away
+   entirely -- destructor still calls `__dl__7fBase_cFPv` directly, still
+   22 instructions, no extra check.
+2. **Out-of-line, both `operator new` and `operator delete` overridden**:
+   this genuinely changed the destructor's call target (now
+   `bl __dl__14daRiverPaipo_cFPv`, the class's own out-of-line delete,
+   not `__dl__7fBase_cFPv`) -- but target's real bytes call
+   `__dl__7fBase_cFPv` directly (confirmed from the original diff), so
+   this variant is wrong on two independent counts, and still only 22
+   instructions regardless.
+3. **Out-of-line, `operator delete` only** (no `operator new` override,
+   closest to a minimal, isolated test of the coordinator's specific
+   lead): still exactly 22 instructions. No change.
+
+None of the three add the check. Combined with the seven destructor-shape
+variants from the previous round, this is ten source-level variants tried
+across every axis available in ordinary C++ (declaration style, binding,
+extra vtable content, explicit ctor, class-scoped new/delete in three
+configurations), and the result is uniform: the extra `beq` never
+appears from anything expressible in the derived class's own source.
+
+**Conclusion, per the coordinator's own framing**: this is the same wall
+already established on WM_ANCHOR -- a derived class cannot reach a
+construct emitted by inlining its base's destructor. Recorded as a
+genuine, exhausted negative, not re-attempted further. The eight affected
+functions (every type's own destructor except `daRiverMgr_c`, whose
+destructor is fully implicit and already matches) are left at their
+current state: structurally correct, one instruction short, with the
+exact nature of the gap fully characterized above.
+
+### Order gate: confirmed noise, exactly as the coordinator diagnosed
+
+Checked directly: all five "defined too late" complaints are functions
+with byte-identical siblings elsewhere in the draft (`finalUpdate`,
+which already independently MATCHES, plus the four still-mismatched
+`classInit`s for `daRiverPaipo_c`/`daRiverPakkun_c`/`daRiverPuku_c`/
+`daRiverStarcoin_c`, which are byte-identical to each other and to the
+five already-matching classInits). Content-based pairing cannot
+distinguish interchangeable functions, so the ascending-order check
+reports a tie-break artefact rather than a real defect. Not pursued
+further, per instruction.
+
+### `.data` slice derived and confirmed by direct byte inspection
+
+`python wip/wm_units/scout_unit.py d_basesNP 0x12ad60 0x12b400` reports
+9 distinct `.data` targets `0x3AF28..0x3B6A8` (the nine vtables) and 5
+`.rodata` targets `0x80066FC0..0x80162A60` -- all DOL-absolute addresses
+(`0x8xxxxxxx`), confirming the coordinator's read: this unit owns no
+`.rodata` of its own, only reaches into DOL-resident inherited-method
+vtable slots.
+
+`check_bounds.py` can't validate this range at all (`no symbols in
+range`) since every symbol here is anonymous (`lbl_2_data_*`), so the
+boundary was confirmed by hand instead, directly reading raw bytes from
+`original/d_basesNP.rel` (`base_data = 0x1d0c00`):
+
+- **Start**: `0x3AF18`, 0x10 bytes before `daRiverBarrel_c`'s vtable
+  (`0x3AF28`). Raw bytes there (`00000000 002f002d 00000000 00000000`)
+  are exactly `g_profile_RIVER_BARREL`'s own shape (relocated `mpClassInit`
+  reading as 0 in the raw file, `mExecuteOrder`/`mDrawOrder` as two u16,
+  `mActorProperties` as 0, then padding) -- matching the `fProfile::
+  fActorProfile_c` layout exactly.
+- **End**: `0x3B788`, exactly `daRiverStarcoin_c`'s vtable start
+  (`0x3B6A8`) plus its 0xE0-byte size. Confirmed by reading past it:
+  raw bytes at `0x3B788` onward are a DIFFERENT unit's own
+  `g_profile_*` struct (`mExecuteOrder`/`mDrawOrder` values `0x225`/
+  `0x25D`, in the ordinary few-hundred fProfile range, unlike RIVER's own
+  tight 0x28-0x32 cluster) followed by a `"g3d/fire_rot_cannon.brres"`
+  string -- a clean, symbol-boundary-exact stop into a neighbour's own
+  data, the same shape as WM_KINOPIO's own `.data` end.
+- Total: `0x870` bytes, exactly `9 * 0xF0` (nine `g_profile_*` + vtable
+  pairs on the confirmed-uniform stride), no slack.
+
+## Proposed slice, updated
+
+```json
+{
+  "source": "d_basesNP/bases/d_a_river.cpp",
+  "memoryRanges": {
+    ".text": "0x12ad60-0x12b400",
+    ".data": "0x3af18-0x3b788"
+  }
+}
+```
+
+No `.rodata` claim (DOL absolutes only, nothing owned), no `.bss`, no
+`.ctors` (confirmed empty last round).
+
+## Final state, this round: 15/23 byte-identical, unchanged
+
+No score movement -- this round's work was the coordinator-directed
+`operator delete` test (negative, wall confirmed) and deriving the
+`.data` slice that was left undone last round. If the destructor wall
+holds (as ten variants now suggest), **15/23 with a fully-understood,
+precisely-characterized, and now doubly-confirmed-unreachable single
+residual is very plausibly this unit's practical ceiling from source
+alone** -- worth flagging to the coordinator as a landing candidate on
+structural grounds (both gates clean, `.data` slice derived and
+boundary-confirmed) rather than holding out for N/N.
