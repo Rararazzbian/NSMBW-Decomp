@@ -12311,3 +12311,42 @@ extent: `0x308F8-0x30FA0`.**
 referenced only from other `.data` — state tables, vtable-adjacent structures —
 are invisible to that scan. For a slice range, walk the symbol list to the next
 foreign symbol.
+
+## Declaring a state correctly emits EIGHT functions for free — 12/33 -> 20/33
+
+CASTLE_BG declared `DemoWait` with `STATE_VIRTUAL_FUNC_DECLARE` /
+`STATE_VIRTUAL_DEFINE`, copying the structure of the landed
+`source/dol/bases/d_a_en_togezo_base.cpp`, and **eight functions matched at once**
+— the state object's own destructor, `sFStateVirtualID_c`'s destructor,
+`number()`, `superID()`, `isSameName()`, and the three
+`initializeState`/`executeState`/`finalizeState` trampolines. All confirmed EXACT
+individually, not inferred from the summary line. Independently re-verified here:
+**20/33**.
+
+**A single correct declaration in a template framework is worth eight
+hand-authored functions**, which is the strongest argument yet for resolving the
+framework shape before authoring anything by hand. The three trampolines whose
+identity was an open puzzle two rounds ago were never functions to write.
+
+### And it CORRECTED MY inference, with evidence
+
+I told it the two trampoline triples meant **two classes each having the one
+state**, and to declare `DemoWait` on both. **That does not compile:**
+`STATE_VIRTUAL_DEFINE`'s own `baseID_##name` is a static file-scope function
+template, and invoking the macro twice for one state name in a TU is a genuine
+redefinition (`object 'baseID_DemoWait<...>()' redefined`) — established by trying
+it, not argued.
+
+The better reading of the evidence was already in the vtable: **`DemoWait`'s three
+slots (`0x294`/`0x290`/`0x28c`) are byte-identical between the two classes**, so
+BOTTOM_BG genuinely inherits the state unmodified. Declared once, on the base
+only.
+
+The agent's own hypothesis for the second triple — `STATE_VIRTUAL_DEFINE`'s
+internal `sFStateVirtualID_c<sStateID_c>` null-case specialisation producing a
+second structurally similar object — is **explicitly flagged as not independently
+confirmed** rather than asserted. That is the right way to leave a loose end.
+
+**My error was reasoning from a `.data` shape to a source construct without
+checking whether the construct is even expressible.** The macro's redefinition
+error is a fact about the framework that no amount of reading `.data` reveals.

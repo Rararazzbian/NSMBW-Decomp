@@ -100,19 +100,24 @@ int daMiddleBGForCastleLudwig_c::doDelete() { return 1; }
 // fn_2_F5940. Vtable slot 11 (draw) -- FAKE STUB, same caveat as create.
 int daMiddleBGForCastleLudwig_c::draw() { return 1; }
 
-// fn_2_F5970 (vtable offset 0x28c, shared). Confirmed content: empty body.
-void daMiddleBGForCastleLudwig_c::vf28c() {}
+// DemoWait, THIS ROUND'S STATE-MACHINE FIX. fn_2_F5980 (vtable offset 0x294) =
+// initializeState_DemoWait: confirmed content, empty body. fn_2_F5990 (offset 0x290) =
+// executeState_DemoWait: confirmed content, a pure forwarding thunk into mModel's OWN vtable at
+// offset 0x1c. fn_2_F5970 (offset 0x28c) = finalizeState_DemoWait: confirmed content, empty
+// body. Mapping is the PMF-field read order found in .data (0x294,0x290,0x28c in that order),
+// matching STATE_VIRTUAL_DEFINE's own (&initializeState, &executeState, &finalizeState)
+// argument order -- see the header's own note. STATE_VIRTUAL_DEFINE itself (the static
+// StateID_DemoWait object) is placed after BOTTOM_BG's own dtor at the end of the file since it
+// is compiler-generated .data, not .text, and so is not subject to the function-order gate.
+void daMiddleBGForCastleLudwig_c::initializeState_DemoWait() {}
 
-// fn_2_F5980 (vtable offset 0x294, shared). Confirmed content: empty body.
-void daMiddleBGForCastleLudwig_c::vf294() {}
-
-// fn_2_F5990 (vtable offset 0x290, shared). Confirmed content: a pure forwarding thunk into
-// mModel's OWN vtable at offset 0x1c.
-void daMiddleBGForCastleLudwig_c::vf290() {
+void daMiddleBGForCastleLudwig_c::executeState_DemoWait() {
     typedef void (*Vtbl1CFn_t)(m3d::mdl_c *);
     m3d::mdl_c *m = &mModel;
     (*(Vtbl1CFn_t *) ((const u8 *) *(void **) m + 0x1c))(m);
 }
+
+void daMiddleBGForCastleLudwig_c::finalizeState_DemoWait() {}
 
 // fn_2_F59A0 (vtable offset 0x298, BOTTOM_BG's OWN createModel override). Confirmed content:
 // same idiom as the base class's own override, using BOTTOM_BG's own arc/model strings, read
@@ -146,3 +151,9 @@ void daBottomBGForCastleLudwig_c::vf280() {}
 // base's own destructor with the shared one-slot flag-argument shape -- byte-for-byte the same
 // pattern already landed on DUMMY_DOOR_CHILD/PARENT.
 daBottomBGForCastleLudwig_c::~daBottomBGForCastleLudwig_c() {}
+
+// STATE_VIRTUAL_DEFINE -- compiler-generated .data (the static StateID_DemoWait object and its
+// own template machinery), not .text, so not subject to the function-order gate. Declared ONLY
+// here (base class) -- see the header's own note on why a second invocation for
+// daBottomBGForCastleLudwig_c does not compile.
+STATE_VIRTUAL_DEFINE(daMiddleBGForCastleLudwig_c, DemoWait);

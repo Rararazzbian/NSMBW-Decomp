@@ -5,6 +5,7 @@
 #include <game/bases/d_bg_ctr.hpp>
 #include <game/mLib/m_3d/mdl.hpp>
 #include <game/sLib/s_StateID.hpp>
+#include <game/sLib/s_State.hpp>
 
 /// @unofficial Background-layer controller for MIDDLE_BG_FOR_CASTLE_LUDWIG (used directly, no
 /// further subclass), base of #daBottomBGForCastleLudwig_c (BOTTOM_BG_FOR_CASTLE_LUDWIG).
@@ -60,9 +61,18 @@ public:
     virtual void vf280(); ///< fn_2_F5380 (0x98 bytes). NOT YET AUTHORED.
     virtual void vf284(daMiddleBGForCastleLudwig_c *other); ///< fn_2_F5430. NOT YET AUTHORED.
     virtual void vf288(); ///< fn_2_F5C00. Real content: forwards to #vf2a0.
-    virtual void vf28c(); ///< fn_2_F5970. Real content: empty body.
-    virtual void vf290(); ///< fn_2_F5990. Real content: forwards into #mModel's own vtable.
-    virtual void vf294(); ///< fn_2_F5980. Real content: empty body.
+    // DemoWait -- a virtual state (STATE_VIRTUAL_FUNC_DECLARE/DEFINE), per the coordinator's
+    // own relocation lookup: exactly one state name exists anywhere in this unit's .data
+    // ("daMiddleBGForCastleLudwig_c::StateID_DemoWait", read directly, not guessed), and its
+    // three PMF fields (found immediately after this class's own vtable object in .data,
+    // lbl_2_data_30C3C) point at vtable offsets 0x294/0x290/0x28c in exactly that order --
+    // matching STATE_VIRTUAL_DEFINE's own argument order (&initializeState, &executeState,
+    // &finalizeState). So: initializeState_DemoWait = the old vf294 (fn_2_F5980, empty body),
+    // executeState_DemoWait = the old vf290 (fn_2_F5990, forwards into #mModel's own vtable),
+    // finalizeState_DemoWait = the old vf28c (fn_2_F5970, empty body). Declared on THIS class;
+    // the coordinator's own note that BOTH classes have the state is addressed on
+    // #daBottomBGForCastleLudwig_c below.
+    STATE_VIRTUAL_FUNC_DECLARE(daMiddleBGForCastleLudwig_c, DemoWait);
 
     // #createModel (fn_2_F5550 here -- THIS class's own override, 0x124 bytes, matching
     // #daBottomBGForCastleLudwig_c's own override at the SAME slot, fn_2_F59A0, ALSO 0x124
@@ -102,6 +112,21 @@ public:
 class daBottomBGForCastleLudwig_c : public daMiddleBGForCastleLudwig_c {
 public:
     virtual ~daBottomBGForCastleLudwig_c();
+
+    // DemoWait is declared ONLY on the base class (see daMiddleBGForCastleLudwig_c's own
+    // note) -- a second STATE_VIRTUAL_FUNC_DECLARE/DEFINE invocation for the SAME state name
+    // in the SAME translation unit does NOT compile (baseID_DemoWait, a static file-scope
+    // function template the macro emits, collides -- "object baseID_DemoWait<...> redefined",
+    // confirmed by trying it). Real evidence this round: the base class's own three DemoWait
+    // slots (0x294/0x290/0x28c) are confirmed IDENTICAL between both classes' vtables (the
+    // full diff), meaning BOTTOM_BG genuinely inherits DemoWait unmodified rather than
+    // overriding it -- so this class's own three DIFFERING slots (0x280/0x298/0x29c) are
+    // ordinary new virtuals unrelated to the state machine, not a DemoWait override. The
+    // coordinator's "two classes each having the one state" is most likely explained by
+    // STATE_VIRTUAL_DEFINE's own template machinery instantiating a SECOND, structurally
+    // similar sFStateVirtualID_c<sStateID_c> (the "null"/base-case specialization), not a
+    // second class-level declaration -- not independently confirmed, flagged for the
+    // coordinator rather than guessed further under a compile-error deadline.
 
     // fn_2_F5C10 (0x280). Real content: empty body -- confirmed genuinely different from the
     // base's own #daMiddleBGForCastleLudwig_c::vf280 (0x98 bytes there), not the same function

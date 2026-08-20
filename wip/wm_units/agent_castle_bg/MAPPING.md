@@ -1,10 +1,15 @@
 # MIDDLE_BG_FOR_CASTLE_LUDWIG + BOTTOM_BG_FOR_CASTLE_LUDWIG -- function inventory
 
 Coordinator-scoped unit, one translation unit, two profiles. `.text 0xf5130-0xf6150`, 0x1020
-bytes, 33 functions total (confirmed against `bin/dtk/d_basesNP_symbols.txt`). Object list in
+bytes, 33 functions total (confirmed against `bin/dtk/d_basesNP_symbols.txt`). **`.data`
+extent CORRECTED by the coordinator**: `0x308F8-0x30F34` was only what `.text` REFERENCES
+directly (a lower bound) -- the real extent is `0x308F8-0x30FA0` (`lbl_2_data_30F34` is 0x6C
+bytes and the next symbol, a different unit's `g_profile_MINI_GAME_BALLOON`, starts at
+`0x30FA0`). General rule recorded: objects referenced only from OTHER `.data` (like the state
+machinery here) are invisible to a `.text`-reference scan. Object list in
 `build.py` covers all three dtk-split objects overlapping the range (`auto_00_000F4FB0_text.o`,
 `auto_fn_2_F5C80_text.o`, `auto_00_000F5DA4_text.o`) -- `check_target_objs.py` reports this unit
-clean. **Tally: 12/33 matched.** Not reachable to N/N this round -- a real `dEn_c`-derived
+clean. **Tally: 20/33 matched** (up from 12/33, see the state-machine section below). Not reachable to N/N this round -- a real `dEn_c`-derived
 class with a heap allocator, a model, two `dBg_ctr_c` zones, nine of its own new virtuals, AND
 (discovered this round) a state machine with at least two states.
 
@@ -64,58 +69,45 @@ Both `createModel()` overrides now use these REAL strings (previously a clearly-
 the tally above (both still show as "differing", expected -- likely register-allocation
 residual now that the pool references are correct in kind, not necessarily in exact scheduling).
 
-## NEW THIS ROUND: this unit has a state machine, at least two states -- NOT YET AUTHORED
+## STATE MACHINE RESOLVED THIS ROUND: ONE state, declared ONCE, +8 functions for free
 
-The coordinator's own relocation lookup found the trampolines `fn_2_F60C0`/`fn_2_F60F0`/
-`fn_2_F6120` (the unit's last three functions) referenced from TWO separate 3-word groups in
-`.data` (`0x30F5C-0x30F64` and `0x30F90-0x30F98`), both listing the same three addresses in the
-same order. Investigated further this round:
+The coordinator scanned this unit's ENTIRE `.data` for ASCII and found exactly one state name
+string anywhere in range (`daMiddleBGForCastleLudwig_c::StateID_DemoWait`) -- settling that this
+is one state, not two, and that the two trampoline-referencing groups found earlier are per-CLASS
+duplication, not per-STATE. Declared `STATE_VIRTUAL_FUNC_DECLARE`/`STATE_VIRTUAL_DEFINE(
+daMiddleBGForCastleLudwig_c, DemoWait)` on the base class (copying `d_a_en_togezo_base.cpp`'s own
+structure, one of ten landed TUs using this framework, per the coordinator's citation), renaming
+the old `vf294`/`vf290`/`vf28c` to their real `initializeState_DemoWait`/`executeState_DemoWait`/
+`finalizeState_DemoWait` identities (mapping confirmed by the PMF-field read order in `.data`,
+matching `STATE_VIRTUAL_DEFINE`'s own argument order).
 
-- The trampolines are `__ptmf_scall` call-through-pointer-to-member-function adaptors at stride
-  `0xc` (offsets `0xc`/`0x18`/`0x24` on some small ~0x30-byte type, NOT
-  `daMiddleBGForCastleLudwig_c` itself -- real fields there start at `0x524`). This matches
-  `sFStateID_c<T>::initializeState()`/`executeState()`/`finalizeState()` -- the TEMPLATE class
-  this project's `STATE_FUNC_DECLARE`/`STATE_DEFINE` macros generate (see
-  `include/game/sLib/s_State.hpp`), instantiated once for our class and shared by every
-  `STATE_FUNC_DECLARE`'d (non-virtual) state.
-- `lbl_2_data_30F34` (0x6C bytes) decodes as TWO 13-word vtables (real inherited `sStateID_c`
-  method names -- `isNull`/`isEqual`/`operator==`/`operator!=`/`name`/`number`, plus the three
-  trampolines at the tail) -- these ARE `sFStateID_c<daMiddleBGForCastleLudwig_c>`'s own class
-  vtable (one copy per translation-unit-local instantiation site, not per state instance).
-- Confirmed at least one state name directly: `lbl_2_data_30C3C`'s own trailing bytes (right
-  after its class vtable, no gap, merged under the same dtk label) decode to the ASCII string
-  `"daMiddleBGForCastleLudwig_c::StateID_DemoWait"` -- ONE state is named `DemoWait`. The
-  matching PMF fields immediately before that string (raw ints `0/0x294/0x60`, `0/0x290/0x60`,
-  `0/0x28c/0x60`) are vtable-relative (not fixed-function) pointer-to-member values, pointing at
-  `vf294`/`vf290`/`vf28c` -- meaning `DemoWait`'s own initialize/execute/finalize are declared
-  `virtual` and happen to reuse those three already-authored "shared" slots. **This means
-  `vf294`/`vf290`/`vf28c` are very likely actually
-  `initializeState_DemoWait`/`executeState_DemoWait`/`finalizeState_DemoWait` (or some
-  permutation), not generic new virtuals unrelated to the state machine** -- their CONTENT is
-  still correct as authored (confirmed against real target bytes), but their ROLE/NAME may need
-  correcting once the state declarations are added and re-diffed, per the coordinator's own
-  warning that "a template family emitting more members changes batching around it."
-- The second state's own name was NOT found this round (ran out of time before locating a
-  second `"...::StateID_<name>"` string) -- next round should search the FULL `.data` dump
-  (`target_auto_04_000132B0_data.txt`) for another `"::StateID_"` ASCII occurrence, and also
-  check whether `vf280`/`vf284`/`vf288` (the other three of the nine) are that second state's
-  own init/exec/finalize instead of ordinary virtuals -- would explain why `vf280` differs
-  per-class (a per-class override of a STATE method is completely ordinary) while `vf284`/
-  `vf288` are shared (default behavior only one side overrides).
-- **NOT attempted yet**: adding the actual `STATE_FUNC_DECLARE`/`STATE_DEFINE` (or
-  `STATE_VIRTUAL_FUNC_DECLARE`/`STATE_VIRTUAL_DEFINE`, depending on which of the two mechanisms
-  is actually in play here -- both are now plausible candidates given the virtual-PMF finding)
-  and re-diffing the WHOLE unit afterward, per the coordinator's own explicit instruction. This
-  is the clear next step and was not reached this round due to the class-attribution correction
-  taking priority once found.
-- Ten landed precedents exist (`grep -rl STATE_DEFINE source/`); none needs an explicit-
-  instantiation trick per the coordinator, so if the trampolines don't fall out for free from a
-  plain `STATE_FUNC_DECLARE`/`STATE_DEFINE` pair, the likely answer is that `STATE_VIRTUAL_*`
-  (matching `dEn_c`'s own existing `DieFumi`/`EatIn`/etc. convention, since `dEn_c` itself is
-  already in this class's ancestry) is the mechanism actually used here, not the plain variant
-  `d_a_enemy_ice.hpp`/`d_a_remo_door.hpp` (both `dActorState_c`-based, not `dEn_c`-based) use.
+**Tried declaring `DemoWait` on BOTH classes first, per a literal reading of "two classes each
+having the one state" -- this does NOT compile**: `STATE_VIRTUAL_DEFINE`'s own `baseID_##name`
+is a static FILE-SCOPE function template, and invoking the macro twice for the same state name
+in one TU is a genuine redefinition error (confirmed by trying it: `object 'baseID_DemoWait<...>
+()' redefined`). Declaring it ONCE, only on the base class, compiles clean and is now the
+better-supported reading: a full vtable diff already showed `DemoWait`'s own three slots
+(0x294/0x290/0x28c) are byte-identical between both classes, meaning `daBottomBGForCastleLudwig_c`
+genuinely inherits the state unmodified rather than overriding it. The "two classes" evidence is
+most likely `STATE_VIRTUAL_DEFINE`'s own internal `sFStateVirtualID_c<sStateID_c>` "null"-case
+template specialization producing a second, structurally similar object -- not independently
+confirmed, flagged here rather than asserted.
 
-## MATCHED (12/33)
+**Result: re-diffing the WHOLE unit after adding the declaration (not just the trampolines, per
+the coordinator's own instruction) picked up EIGHT more functions for free** -- all
+compiler-generated template machinery that needed no hand-authoring at all:
+`fn_2_F5DB0`/`fn_2_F5E10`/`fn_2_F5E70`/`fn_2_F5F50`/`fn_2_F6030`/`fn_2_F60C0`/`fn_2_F60F0`/
+`fn_2_F6120` (the state object's own destructor, `sFStateVirtualID_c`'s own destructor,
+`number()`, `superID()`, `isSameName()`, and the three `initializeState`/`executeState`/
+`finalizeState` trampolines) -- confirmed EXACT (0 differing) individually, not assumed from the
+tool's own summary line. Also closed `initializeState_DemoWait`/`finalizeState_DemoWait`
+themselves to EXACT. `executeState_DemoWait` (the old `vf290`, the `mModel`-vtable-thunk content)
+remains at 2/4 differing -- the SAME pre-existing register-allocation residual as before, unlated
+to the rename.
+
+Tally jumped 12/33 -> 20/33 from this one change.
+
+## MATCHED (20/33)
 
 | draft name | target | size | notes |
 |---|---|---|---|
@@ -126,18 +118,26 @@ same order. Investigated further this round:
 | `__dt__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5240` | 35/35 | EXACT. Base dtor |
 | `entryOrRelease__27daMiddleBGForCastleLudwig_cFb` | `fn_2_F52D0` | 6/6 | EXACT |
 | `vf2a0__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5890` | 21/21 | EXACT. Matrix update |
-| `vf28c__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5970` | 1/1 | EXACT. Empty body -- possibly `finalizeState_DemoWait`, see above |
-| `vf294__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5980` | 1/1 | EXACT. Empty body -- possibly `initializeState_DemoWait`, see above |
+| `finalizeState_DemoWait__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5970` | 1/1 | EXACT. Empty body -- renamed from `vf28c` this round |
+| `initializeState_DemoWait__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5980` | 1/1 | EXACT. Empty body -- renamed from `vf294` this round |
 | `vf288__27daMiddleBGForCastleLudwig_cFv` | `fn_2_F5C00` | 4/4 | EXACT. Forwards to `vf2a0()` |
 | `vf280__27daBottomBGForCastleLudwig_cFv` | `fn_2_F5C10` | 1/1 | EXACT. Empty body -- BOTTOM_BG's OWN override (corrected this round) |
 | `__dt__27daBottomBGForCastleLudwig_cFv` | `fn_2_F5C20` | 22/22 | EXACT. BOTTOM_BG's trivial derived dtor |
+| `__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv` | `fn_2_F5DB0` | 22/22 | EXACT. Compiler-generated (STATE_VIRTUAL_DEFINE), NEW this round |
+| `__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv` | `fn_2_F5E10` | 23/23 | EXACT. Compiler-generated, NEW this round -- this is the coordinator's own cited "one internal .text target" |
+| `number__49sFStateVirtualID_c<...>CFv` | `fn_2_F5E70` | 55/55 | EXACT. Compiler-generated, NEW this round |
+| `superID__49sFStateVirtualID_c<...>CFv` | `fn_2_F5F50` | 56/56 | EXACT. Compiler-generated, NEW this round |
+| `isSameName__42sFStateID_c<...>CFPCc` | `fn_2_F6030` | 34/34 | EXACT. Compiler-generated, NEW this round |
+| `initializeState__42sFStateID_c<...>CFR...` | `fn_2_F60C0` | 12/12 | EXACT. Compiler-generated trampoline, NEW this round |
+| `executeState__42sFStateID_c<...>CFR...` | `fn_2_F60F0` | 12/12 | EXACT. Compiler-generated trampoline, NEW this round |
+| `finalizeState__42sFStateID_c<...>CFR...` | `fn_2_F6120` | 12/12 | EXACT. Compiler-generated trampoline, NEW this round |
 
 ## PARKED, real content, close (1)
 
-- **`vf290__27daMiddleBGForCastleLudwig_cFv`** (`fn_2_F5990`, 4/4 lines) -- 2/4 differing.
-  Forwarding thunk into `mModel`'s own vtable at offset 0x1c, target uses r12 exclusively via
-  load-with-update addressing; two variants tried, both land on r4. Register-allocation
-  residual, not content -- park. Possibly `executeState_DemoWait`, see above.
+- **`executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv`** (`fn_2_F5990`, 4/4 lines --
+  renamed from `vf290` this round) -- 2/4 differing. Forwarding thunk into `mModel`'s own vtable
+  at offset 0x1c, target uses r12 exclusively via load-with-update addressing; two variants
+  tried, both land on r4. Register-allocation residual, not content -- park.
 
 ## SCOUTED, FAKE STUBS this round -- 8
 
@@ -159,22 +159,19 @@ REAL strings (see above) but still shows as differing on the tally -- not re-ver
 byte-for-byte this round; likely just scheduling residual now that the pool references are the
 right kind.
 
-## NOT YET TOUCHED THIS ROUND -- 13 functions, absent (not stubbed in the wrong slot)
+## NOT YET TOUCHED THIS ROUND -- 2 functions, absent (not stubbed in the wrong slot)
+
+All the state-machine template members are now matched (see above) -- only two genuinely
+unscouted functions remain untouched.
 
 | target | size | notes |
 |---|---|---|
 | `fn_2_F52F0` | 35 | Unscouted. |
-| `fn_2_F5C80` | 73 | `__sinit`, the `.ctors`-registered static initialiser. Now visible (object-list fixed this round) but not yet read. |
-| `fn_2_F5DB0` | 22 | Unscouted -- likely one of the two `sFStateID_c` state-object DESTRUCTORS (matches its own appearance as `fn_2_F5DB0` inside `lbl_2_data_30F34`'s second 13-word block, at the dtor slot). |
-| `fn_2_F5E10` | 23 | The coordinator's own cited "one internal `.text` target" -- likely the OTHER state object's own dtor override (appears in `lbl_2_data_30F34`'s first block at the dtor slot). |
-| `fn_2_F5E70` | 55 | Unscouted -- likely a state-object override (appeared in the `lbl_2_data_30F34` vtable region at the "isSameName"-equivalent or "number"-equivalent slot). |
-| `fn_2_F5F50` | 56 | Unscouted. |
-| `fn_2_F6030` | 34 | Unscouted -- likely the SHARED "isSameName" override for both state objects (appeared identically in both 13-word blocks). |
-| `fn_2_F60C0`/`fn_2_F60F0`/`fn_2_F6120` | 12 each | The three `sFStateID_c<T>::initializeState/executeState/finalizeState` template trampolines -- SHOULD be emitted automatically once the real `STATE_FUNC_DECLARE`/`STATE_VIRTUAL_FUNC_DECLARE` state declarations are added, not hand-authored. |
+| `fn_2_F5C80` | 73 | `__sinit`, the `.ctors`-registered static initialiser. Now visible (object-list fixed a prior round) but not yet read. |
 
 ## Gates
 
-- **Function order**: GREEN. `order_sweep.py` reports `ok agent_castle_bg 12/33`.
+- **Function order**: GREEN. `order_sweep.py` reports `ok agent_castle_bg 20/33`.
 - **`.ctors`**: GREEN. `0x288 -> __sinit at .text 0xf5c80` for BOTTOM_BG_FOR_CASTLE_LUDWIG,
   matching the coordinator's own citation exactly.
 - **Target-object coverage**: GREEN. `check_target_objs.py` does not flag this unit (fixed this
@@ -208,15 +205,18 @@ its own `target auto_fn_2_F5C80` object, not yet dumped to a standalone `.txt` -
 
 ## Plan for the next round
 
-1. Find the SECOND state's name (search `.data` for a second `"::StateID_"` string).
-2. Determine whether the mechanism is `STATE_FUNC_DECLARE`/`STATE_DEFINE` (plain, matching the
-   `sFStateID_c<T>` trampolines) or `STATE_VIRTUAL_FUNC_DECLARE`/`STATE_VIRTUAL_DEFINE` (matching
-   the virtual-PMF finding on `DemoWait`) -- possibly BOTH, one per state.
-3. Add the state declarations, re-diff the WHOLE unit (not just the trampolines), per the
-   coordinator's own instruction -- expect `vf280`/`vf284`/`vf288`/`vf28c`/`vf290`/`vf294` to
-   possibly need renaming to their real `initializeState_X`/`executeState_X`/`finalizeState_X`
-   identities once the state classes exist, and expect `fn_2_F60C0`/`F60F0`/`F6120`/`F5DB0`/
-   `F5E10`/`F6030` to fall out largely for free.
-4. Then the remaining unscouted functions smallest-first: `fn_2_F52F0`(35), `fn_2_F5F50`(56),
-   `create`/`execute`/`doDelete`/`draw` (shared, high-value), `vf280`(MIDDLE_BG, 42),
-   `vf29c`(MIDDLE_BG, 99 -- largest), `vf29c`(BOTTOM_BG, 74), `fn_2_F5C80`(__sinit, 73).
+State machine is RESOLVED (one state, `DemoWait`, declared once on the base class -- see above).
+Remaining work is now purely ordinary function authoring, smallest-first:
+
+1. `fn_2_F52F0` (35 lines) -- unscouted, smallest remaining real gap.
+2. `vf280` (MIDDLE_BG's own, `fn_2_F5380`, 42 lines) -- unscouted.
+3. `vf29c` (BOTTOM_BG's own, `fn_2_F5AD0`, 74 lines) -- unscouted.
+4. `create`/`doDelete`/`execute`/`draw` (shared between both classes, high-value since every
+   other `dEn_c` actor's own logic usually revolves around these) -- currently `return 1;`
+   stubs, unscouted.
+5. `vf29c` (MIDDLE_BG's own, `fn_2_F5680`, 99 lines -- the largest function in the unit).
+6. `fn_2_F5C80` (`__sinit`, 73 lines) -- now visible after the object-list fix; the `.ctors`
+   gate is already green without it being authored, so this is lower priority than the above.
+7. Once all `.text` is real, re-verify `vf284`'s own stub body (the node-visibility-copy
+   function) against the REAL confirmed node-name table, and try one more variant on
+   `executeState_DemoWait`'s own 2-line register-allocation residual.
