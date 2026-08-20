@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12731 lines / 498 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12774 lines / 501 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -519,3 +519,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `12695-12705` 1. The COMPARISON DIRECTION picks the branch instruction
   - `12706-12717` 2. Use the SDK's real math helper, not a hand-rolled equivalent
   - `12718-12731` 3. The overload matters, and so does pooling the strings once
+- `12732-12742` Refinement: only `STATE_VIRTUAL_DEFINE` collides — the DECLARE side is fine
+- `12743-12761` A LARGE diff with a SIZE mismatch means MISSING CONTENT, not scheduling
+  - `12762-12774` Two pieces of discipline from the same round

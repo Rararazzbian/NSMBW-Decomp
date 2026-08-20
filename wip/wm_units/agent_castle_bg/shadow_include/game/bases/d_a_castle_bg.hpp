@@ -7,6 +7,8 @@
 #include <game/sLib/s_StateID.hpp>
 #include <game/sLib/s_State.hpp>
 #include <game/bases/d_game_com.hpp>
+#include <lib/nw4r/g3d/g3d_obj.h>
+#include <lib/nw4r/g3d/g3d_scnmdl.h>
 
 // setNodeVisibility(m3d::bmdl_c*, int nodeId, int visible) -- not landed anywhere yet
 // (grepped include/game/mLib/m_3d/*.hpp, not found). Declared via its own real mangled
@@ -139,20 +141,19 @@ class daBottomBGForCastleLudwig_c : public daMiddleBGForCastleLudwig_c {
 public:
     virtual ~daBottomBGForCastleLudwig_c();
 
-    // DemoWait is declared ONLY on the base class (see daMiddleBGForCastleLudwig_c's own
-    // note) -- a second STATE_VIRTUAL_FUNC_DECLARE/DEFINE invocation for the SAME state name
-    // in the SAME translation unit does NOT compile (baseID_DemoWait, a static file-scope
-    // function template the macro emits, collides -- "object baseID_DemoWait<...> redefined",
-    // confirmed by trying it). Real evidence this round: the base class's own three DemoWait
-    // slots (0x294/0x290/0x28c) are confirmed IDENTICAL between both classes' vtables (the
-    // full diff), meaning BOTTOM_BG genuinely inherits DemoWait unmodified rather than
-    // overriding it -- so this class's own three DIFFERING slots (0x280/0x298/0x29c) are
-    // ordinary new virtuals unrelated to the state machine, not a DemoWait override. The
-    // coordinator's "two classes each having the one state" is most likely explained by
-    // STATE_VIRTUAL_DEFINE's own template machinery instantiating a SECOND, structurally
-    // similar sFStateVirtualID_c<sStateID_c> (the "null"/base-case specialization), not a
-    // second class-level declaration -- not independently confirmed, flagged for the
-    // coordinator rather than guessed further under a compile-error deadline.
+    // BOTTOM_BG's OWN DemoWait, confirmed real by direct __sinit bytes (fn_2_F5C80):
+    // constructs an `sFStateVirtualID_c<daBottomBGForCastleLudwig_c>` at runtime, copying the
+    // SAME name string and the SAME three PMF values as the base's own StateID_DemoWait.
+    // STATE_VIRTUAL_DEFINE's OWN macro cannot be invoked a second time for the same state name
+    // (its `baseID_##name` helper is a static file-scope function template shared across every
+    // invocation, not the state itself) -- so this is declared normally via
+    // STATE_VIRTUAL_FUNC_DECLARE, then its `StateID_DemoWait` OBJECT is hand-expanded in the
+    // .cpp (matching the landed `d_a_ac_switch.cpp` precedent for the identical class of
+    // problem, `ACTOR_PROFILE` colliding when invoked seven times for one class), passing
+    // `daMiddleBGForCastleLudwig_c::StateID_DemoWait` directly as the base-state argument
+    // (exactly what the macro's own `baseID_##name<StateIDBase_##name>()` would have resolved
+    // to here, since the base class DOES declare this state).
+    STATE_VIRTUAL_FUNC_DECLARE(daBottomBGForCastleLudwig_c, DemoWait);
 
     // fn_2_F5C10 (0x280). Real content: empty body -- confirmed genuinely different from the
     // base's own #daMiddleBGForCastleLudwig_c::vf280 (0x98 bytes there), not the same function

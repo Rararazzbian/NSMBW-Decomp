@@ -96,18 +96,16 @@ void daMiddleBGForCastleLudwig_c::vf284(daMiddleBGForCastleLudwig_c *other) {
 // diff, not eyeballed) but NOT YET SCOUTED. FAKE STUB.
 // fn_2_F54D0. Confirmed content: createModel() and vf29c() (both REAL virtual calls, compile
 // to the identical vtable dispatch the target's own raw offset calls use), then
-// changeState(...) on a still-unidentified 0x34-byte .bss object (NOT a name we can confirm --
-// `lbl_2_bss_C1AC`, uninitialized, passed by reference to `changeState(const sStateIDIf_c&)`;
-// too large for a plain `sStateID_c` and not independently confirmed as anything more specific
-// -- modelled as a raw same-size byte buffer, size confirmed exact from the target's own .bss
-// dump, content NOT confirmed), then a second raw virtual call through the SAME still-unnamed
-// object at offset 0x394 execute() also reaches, this time slot 0x1c instead of 0x10.
-static u8 s_bssUnk[0x34]; // lbl_2_bss_C1AC -- size confirmed, role NOT confirmed.
-
+// changeState(daBottomBGForCastleLudwig_c::StateID_DemoWait) -- `lbl_2_bss_C1AC`, resolved this
+// round by direct __sinit bytes (see MAPPING.md); despite this shared function living on the
+// BASE class, the target genuinely references the DERIVED class's own state object, not a
+// generic/shared one -- taken from the disassembly as-is, not second-guessed. Then a second raw
+// virtual call through the still-unnamed object at offset 0x394 execute() also reaches, this
+// time slot 0x1c instead of 0x10.
 int daMiddleBGForCastleLudwig_c::create() {
     createModel();
     vf29c();
-    changeState(*(const sStateIDIf_c *) s_bssUnk);
+    changeState(daBottomBGForCastleLudwig_c::StateID_DemoWait);
 
     typedef void (*StateMgrFn_t)(void *);
     (*(StateMgrFn_t *) ((const u8 *) *(void **) ((u8 *) this + 0x394) + 0x1c))((u8 *) this + 0x394);
@@ -129,6 +127,17 @@ void daMiddleBGForCastleLudwig_c::createModel() {
     m_540 = (void *) resFile.ptr();
     nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("W7_shiroboss_bg_M");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
+
+    // Real content found this round -- was missing entirely from the earlier draft (a real
+    // content gap, not a scheduling residual, which is why the earlier version was 61/73
+    // differing with 29 lines simply absent). A REAL, landed RTTI cast
+    // (nw4r::g3d::G3dObj::DynamicCast<T>, include/lib/nw4r/g3d/g3d_obj.h) against `this+0x548`
+    // (mModel's own internal G3dObj*), then SetScnObjOption(0x30001, 0) -- both real, landed
+    // members of nw4r::g3d::ScnMdl (g3d_scnmdl.h). The `0x30001` option value has no landed
+    // named constant (grepped) -- used as the literal the bytes show.
+    nw4r::g3d::ScnMdl *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(*(nw4r::g3d::G3dObj **) ((u8 *) this + 0x548));
+    scnMdl->SetScnObjOption(0x30001, 0);
+
     dActor_c::setSoftLight_Map(mModel);
     mAllocator.adjustFrmHeap();
 }
@@ -216,6 +225,11 @@ void daBottomBGForCastleLudwig_c::createModel() {
     m_540 = (void *) resFile.ptr();
     nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("W7_shiroboss_bg_D");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
+
+    // Same real content the base's own override has -- see its own note.
+    nw4r::g3d::ScnMdl *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(*(nw4r::g3d::G3dObj **) ((u8 *) this + 0x548));
+    scnMdl->SetScnObjOption(0x30001, 0);
+
     dActor_c::setSoftLight_Map(mModel);
     mAllocator.adjustFrmHeap();
 }
@@ -239,7 +253,33 @@ void daBottomBGForCastleLudwig_c::vf280() {}
 daBottomBGForCastleLudwig_c::~daBottomBGForCastleLudwig_c() {}
 
 // STATE_VIRTUAL_DEFINE -- compiler-generated .data (the static StateID_DemoWait object and its
-// own template machinery), not .text, so not subject to the function-order gate. Declared ONLY
-// here (base class) -- see the header's own note on why a second invocation for
-// daBottomBGForCastleLudwig_c does not compile.
+// own template machinery), not .text, so not subject to the function-order gate.
 STATE_VIRTUAL_DEFINE(daMiddleBGForCastleLudwig_c, DemoWait);
+
+// BOTTOM_BG's OWN DemoWait -- same bodies as the base's own (confirmed by __sinit copying the
+// SAME three PMF addresses), declared separately only because STATE_VIRTUAL_FUNC_DECLARE
+// requires it for the vtable-slot machinery; the actual behavior is identical.
+void daBottomBGForCastleLudwig_c::initializeState_DemoWait() {}
+
+void daBottomBGForCastleLudwig_c::executeState_DemoWait() {
+    typedef void (*Vtbl1CFn_t)(m3d::mdl_c *);
+    m3d::mdl_c *m = &mModel;
+    (*(Vtbl1CFn_t *) ((const u8 *) *(void **) m + 0x1c))(m);
+}
+
+void daBottomBGForCastleLudwig_c::finalizeState_DemoWait() {}
+
+// Hand-expansion of STATE_VIRTUAL_DEFINE's own object-definition line (NOT the macro itself --
+// see the header's own note on why the macro cannot be invoked a second time for this state
+// name). The base-state argument is `daMiddleBGForCastleLudwig_c::StateID_DemoWait` directly --
+// exactly what the macro's own `baseID_DemoWait<StateIDBase_DemoWait>()` would have resolved to,
+// since the base class DOES declare "DemoWait". The name string is confirmed from __sinit's own
+// bytes to be the SAME string as the base's own object uses (not a new
+// "daBottomBGForCastleLudwig_c::StateID_DemoWait" one) -- used as the bytes say, not as the
+// macro would have generated it.
+sFStateVirtualID_c<daBottomBGForCastleLudwig_c> daBottomBGForCastleLudwig_c::StateID_DemoWait(
+    daMiddleBGForCastleLudwig_c::StateID_DemoWait,
+    "daMiddleBGForCastleLudwig_c::StateID_DemoWait",
+    &daBottomBGForCastleLudwig_c::initializeState_DemoWait,
+    &daBottomBGForCastleLudwig_c::executeState_DemoWait,
+    &daBottomBGForCastleLudwig_c::finalizeState_DemoWait);

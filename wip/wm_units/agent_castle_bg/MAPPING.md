@@ -165,57 +165,49 @@ independently confirmed by matching the exact byte offset against a compiled pro
 project's own precedent for reaching an unnamed base-class member (the destructor's own `m_1fc`
 kind of case on other units).
 
-## `__sinit` fully disassembled this round -- the 0x34-byte `.bss` object IS `DemoWait`, for BOTTOM_BG
+## `__sinit` RESOLVED -- BOTTOM_BG's own `StateID_DemoWait`, hand-expanded
 
-Per the coordinator's own steer: dumped `fn_2_F5C80` (`auto_fn_2_F5C80_text.o`) in full (0x124
-bytes, 37 instructions) and traced every reference precisely. Confirmed:
+Per the coordinator: the compile collision was `STATE_VIRTUAL_DEFINE`'s own `baseID_##name`
+helper (a FILE-SCOPE function template shared across every invocation of that state NAME), not
+the state object itself. `include/game/sLib/s_State.hpp:46`'s own macro expansion shows the
+helper is emitted separately from the object; the object line alone can be hand-written.
 
-- Calls `fn_2_F51B0` (my own `getNullState`, already MATCHED) then `__ct__10sStateID_cFPCc`
-  (the REAL `sStateID_c(const char*)` base ctor) on `&lbl_2_bss_C1AC`, with the name argument at
-  `g_profile_MIDDLE_BG_FOR_CASTLE_LUDWIG + 0x60c`.
-- That name-string address, decoded precisely against the ALREADY-KNOWN trailing-data layout on
-  `daMiddleBGForCastleLudwig_c`'s own vtable object (`lbl_2_data_30C3C`), lands EXACTLY at the
-  START of the string I already read this round: `"daMiddleBGForCastleLudwig_c::StateID_DemoWait"`.
-  **Same name, not a different one.**
-- After the base ctor call, `__sinit` copies THREE PMF triples (9 words, from
-  `g_profile_MIDDLE_BG_FOR_CASTLE_LUDWIG + 0x5e8/+0x5f4/+0x600`) into the new object's own
-  `+0xc/+0x18/+0x24` fields -- these source addresses are `daMiddleBGForCastleLudwig_c::
-  StateID_DemoWait`'s OWN already-compiled `initializeState`/`executeState`/`finalizeState` PMF
-  fields (the SAME three I already matched: `fn_2_F5980`/`fn_2_F5990`/`fn_2_F5970`).
-  `getNullState()`'s own result goes into `+0x30` (the `baseID` field, matching `DemoWait`'s own
-  "no real base" case). The object's own vtable pointer is set to `&lbl_2_data_30F34` (the FIRST
-  of the two `sFStateVirtualID_c<T>`-shaped 13-word vtables in that region) -- a DIFFERENT
-  template instantiation (`sFStateVirtualID_c<daBottomBGForCastleLudwig_c>`, not `<daMiddle...>`).
-  Ends with `bl __register_global_object` (the standard non-trivial-static-destructor
-  registration, not unusual by itself).
+Fixed: `STATE_VIRTUAL_FUNC_DECLARE(daBottomBGForCastleLudwig_c, DemoWait)` declared normally
+(no collision -- this macro only emits the DECLARATION, not the helper), then
+`StateID_DemoWait`'s own DEFINITION hand-expanded directly (matching the landed
+`d_a_ac_switch.cpp` precedent for the identical class of problem -- `ACTOR_PROFILE` invoked
+seven times for one class), passing `daMiddleBGForCastleLudwig_c::StateID_DemoWait` as the
+base-state argument and the SAME name string my `__sinit` trace found
+(`"daMiddleBGForCastleLudwig_c::StateID_DemoWait"` -- confirmed the SAME string, not a new
+`"daBottomBGForCastleLudwig_c::..."` one, exactly as the bytes say). Compiles clean.
 
-**Conclusion: this genuinely IS `daBottomBGForCastleLudwig_c`'s own `StateID_DemoWait` --
-confirming the coordinator's ORIGINAL "two classes each having the one state" reading was
-right all along**, and my earlier reasoning (from the vtable-slot diff alone, without this
-`__sinit` evidence) that BOTTOM_BG "inherits DemoWait unmodified" was the wrong turn. It needs
-RUNTIME construction (not `.data`-only like the base's own copy) specifically because
-`sFStateVirtualID_c<daBottomBGForCastleLudwig_c>` is a DIFFERENT template instantiation whose
-own `baseID_DemoWait<...>()` would need to read `daMiddleBGForCastleLudwig_c::StateID_DemoWait`
-across the class boundary -- not resolvable at pure compile/link time the way the trivial
-`sStateID_c` base case was.
+**Re-diffed the whole unit after this change, as instructed:**
+- `create()` closed from a placeholder-referencing stub to 4/32 differing -- 2 pure naming (our
+  own `StateID_DemoWait` symbol vs the target's anonymous `lbl_2_bss_C1AC` label, same address)
+  and 2 sharing the already-documented `this+0x394` register wall with `execute()`. This IS
+  effectively a match modulo one already-parked wall.
+- `execute()`, both `createModel()` overrides, `vf280`, and everything already-MATCHED: **NO
+  movement** -- confirmed by individually re-diffing each, not assumed. Reporting the null
+  result explicitly per the coordinator's own instruction.
+- `create()`'s own reference genuinely targets `daBottomBGForCastleLudwig_c::StateID_DemoWait`
+  even though `create()` is the SHARED base-class function used by both classes -- taken from
+  the disassembly as-is rather than second-guessed for semantic tidiness.
 
-**NOT YET RESOLVED: how to WRITE this in source.** Tried `STATE_VIRTUAL_FUNC_DECLARE`/
-`STATE_VIRTUAL_DEFINE(daBottomBGForCastleLudwig_c, DemoWait)` again with this new understanding
--- still hits the SAME compile error as before (`baseID_DemoWait` is a static FILE-SCOPE
-function template; a second `STATE_VIRTUAL_DEFINE` invocation for the SAME state NAME, on ANY
-class, redefines it). The target's own `.data` also does NOT show a byte-identical duplicate of
-the whole `sFStateVirtualID_c<T>` construction pattern -- it genuinely re-executes the
-PMF-triple COPY at runtime rather than re-emitting a parallel compile-time object, which is not
-what a second plain macro invocation would produce even if it compiled. Likely explanation
-(NOT confirmed): the real source does not re-invoke `STATE_VIRTUAL_FUNC_DECLARE`/`_DEFINE` a
-second time at all -- `d_a_en_togezo_base.cpp`'s own `WakeupReverse` pattern (a subclass
-re-declaring an ALREADY-parent-declared name) is the closest structural precedent, but applying
-it here (declaring `DemoWait` again on `daBottomBGForCastleLudwig_c`) is exactly what fails to
-compile, so either togezo's own case differs in a way not yet spotted (worth a byte-level check
-of ITS OWN `__sinit`/vtable next round, the same technique used here) or a different, not yet
-identified C++ construct produces this shape. Flagging for the coordinator rather than guessing
-further under time pressure -- reverted the shadow header/cpp to their last KNOWN-GOOD state
-(24/33, both gates green) rather than leave a broken or unconfirmed attempt in the draft.
+## `createModel()` residual RESOLVED to a real content gap, not scheduling
+
+The coordinator's own hunch was right: 61/73 was too large for a register wall. A closer read
+(not another variant) found the draft was missing an ENTIRE trailing segment -- roughly 29
+target instructions, an RTTI-shaped cast against `this+0x548` (a `nw4r::g3d::G3dObj*` inside
+`mModel`) via the REAL, LANDED `nw4r::g3d::G3dObj::DynamicCast<T>` template
+(`include/lib/nw4r/g3d/g3d_obj.h`) to `nw4r::g3d::ScnMdl`, then a REAL, LANDED
+`ScnMdl::SetScnObjOption(ulong, ulong)` call (`g3d_scnmdl.h`, vtable offset 0x20, matching
+exactly) with a literal `0x30001` (no landed named constant found for it). Added to BOTH
+overrides (identical shape, confirmed by direct disasm comparison as before). Closed 61 -> 57
+differing on each -- size now exact (73/73, was 74/73 before a follow-up register-allocation
+tweak); residual is a genuine but smaller register/frame-size difference (target uses 3 saved
+registers reused across the function, the draft's own DynamicCast expression needs a 4th) --
+one variant tried (removing an intermediate named local), no change, not chased further given
+the size of what was already recovered.
 
 ## SCOUTED but NOT YET AUTHORED -- 4 functions
 

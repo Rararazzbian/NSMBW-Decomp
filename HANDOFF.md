@@ -12728,3 +12728,46 @@ the `getRes()` call alone.
 rather than guessable — and this is the second unit this session where merging
 per-function `static const` tables into ONE file-scope aggregate was required, after
 `d_a_wm_sandpillar.cpp`'s eleven-into-one.
+
+## Refinement: only `STATE_VIRTUAL_DEFINE` collides — the DECLARE side is fine
+
+The hand-expansion worked. Sharpening the rule recorded above: **only
+`STATE_VIRTUAL_DEFINE` emits the file-scope `baseID_##name` helper.**
+`STATE_VIRTUAL_FUNC_DECLARE` can be used normally on both classes; only the
+DEFINITION of the second one needs hand-expanding, passing the base class's
+`StateID_##name` as the base-state argument.
+
+That halves the work: **declare with the macro on every class, hand-expand only
+the duplicate definitions.**
+
+## A LARGE diff with a SIZE mismatch means MISSING CONTENT, not scheduling
+
+`createModel()` sat at 61/73 differing. Rather than spend variants on it, the
+agent re-read it fresh — **the draft was missing about 29 real instructions.**
+
+The missing piece was a genuine construct, not a residual: an **RTTI cast**,
+`nw4r::g3d::G3dObj::DynamicCast<T>` (`g3d_obj.h`) applied to `this+0x548`, feeding
+`nw4r::g3d::ScnMdl::SetScnObjOption(0x30001, 0)` (`g3d_scnmdl.h`, vtable offset
+`0x20`, matching exactly). Added to both overrides: **61 -> 57 each, and the size
+became exact at 73/73.**
+
+**The diagnostic is worth stating as a threshold.** When the differing count is a
+large fraction of the function AND the sizes disagree, the draft is missing
+content — **stop trying variants and re-read the target.** Scheduling and
+register-allocation residuals are small and size-preserving; they do not account
+for tens of instructions. This is the second time today that "read it fresh
+instead of varying it" beat iteration, after the three unattributed functions that
+turned out to be already emitted.
+
+### Two pieces of discipline from the same round
+
+- **The no-movement report was explicit and per-function.** After the state
+  change, `execute()`, both `createModel()` overrides, `vf280` and everything
+  already-matched were **individually re-diffed** and confirmed unchanged, rather
+  than assumed from an unchanged summary line. `create()` did move — from
+  referencing a placeholder to 4/32, effectively closed.
+- **`create()` genuinely references BOTTOM_BG's own state object** even though it
+  is the shared base function both classes use. The agent took that from the bytes
+  **as-is, "not corrected for tidiness."** That instinct is right: the target is
+  the specification, and a construct that looks wrong is evidence about the
+  original source, not an invitation to normalise it.
