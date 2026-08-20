@@ -11913,3 +11913,42 @@ expect.
 where the earlier famous mis-scopes (WM_ANTLION, WM_ANTLION_MNG) ran long. The
 ownership check catches both directions; the per-profile heuristic catches
 neither.
+
+## LANDED: `d_a_branch.cpp` — third of the session
+
+**`.text 0x676F0-0x677B0` (0xC0 bytes), `.data 0x176F8-0x177D8`. 3/3. Five
+binaries green.** A `dActor_c`-derived `daBranch_c` with three functions: the
+classInit, a one-slot flag-argument destructor, and — **new beyond the
+`d_a_dummy_door.cpp` precedent** — a `create()` override that is just
+`return FAILED;` (`PACK_RESULT_e` = 2), **found by reading the vtable dump
+directly** rather than assumed from the previous unit's slot pattern.
+
+`check_vtable.py` reported VTABLE CLEAN, 51/51 slots, `0xD4` both sides.
+
+## FLOOR_JR_B: correctly held back on a LANDING-ORDER DEPENDENCY
+
+Both of its own functions verify byte-identical and its vtable is clean, **and the
+agent refused to call it ready to land.** That refusal is the valuable part.
+
+`daFloorJrB_c` does not derive from `dActor_c`. Its constructor calls
+`fn_2_83660`, an address inside **FLOOR_JR_A** — a separate, unlanded, much
+larger unit (`.text 0x834AC-0x8405C`, 0xBB0 bytes, with its own `.ctors`, `.bss`
+and a 45-target `.rodata`). `sizeof(daFloorJrA_c) == 0x8A8`, confirmed against
+FLOOR_JR_A's own classInit allocation constant.
+
+**A real five-binary link needs FLOOR_JR_A authored first — ten unresolved
+externals.** This mirrors the WM_KILLERBULLET-on-WM_KILLER dependency already in
+this project's history: **a unit can be function-complete and still not landable,
+because landability is a property of the whole link, not of the unit.**
+
+Two details worth keeping from the modelling:
+
+- The FLOOR_JR_A shadow needed **three extra tail virtuals** that only surfaced
+  when `check_vtable.py` reported "SLOT COUNT DIFFERS by -3". **A slot-count
+  mismatch is a precise statement about how many declarations are missing** —
+  much stronger than a byte diff, and it points at the end of the class.
+- FLOOR_JR_A's destructor was deliberately declared **out-of-line with no body**,
+  because a first draft showed it would otherwise be synthesised as a WEAK symbol
+  inside OUR TU and placed at link time — the same failure mode recorded for
+  sandpillar. **Modelling a foreign class badly can inject symbols into your own
+  object.**

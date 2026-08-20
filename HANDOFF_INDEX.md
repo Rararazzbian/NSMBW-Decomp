@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11916 lines / 461 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11955 lines / 463 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -482,3 +482,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11868-11880` Two refusals worth as much as the eight cases authored
 - `11881-11896` Adjacent profiles SHARING one `.data` object are ONE class — and the claim is SHORT
   - `11897-11916` This is the exact INVERSE of the RIVER discriminator, and together they decide the question
+- `11917-11927` LANDED: `d_a_branch.cpp` — third of the session
+- `11928-11955` FLOOR_JR_B: correctly held back on a LANDING-ORDER DEPENDENCY
