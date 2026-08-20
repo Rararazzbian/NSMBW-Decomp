@@ -11952,3 +11952,47 @@ Two details worth keeping from the modelling:
   inside OUR TU and placed at link time — the same failure mode recorded for
   sandpillar. **Modelling a foreign class badly can inject symbols into your own
   object.**
+
+## LANDED: `d_a_ac_switch.cpp` — and "cannot be independently linked" was WRONG
+
+**`.text 0x7D400-0x7D630` (0x230 bytes), `.data 0x1BBD8-0x1BC30`. 7/7. Five
+binaries green.** Fourth landing of the session.
+
+The agent reported, with careful reasoning, that this unit **"cannot be
+independently linked, only verified"** — because `daFlagObj_c`'s `create()`,
+`execute()` and destructor span over 11KB at `0x7D630`-`0x7EC90+`, entirely
+outside this unit and not landed anywhere, and the vtable belongs to whichever TU
+eventually defines them.
+
+**It linked, and all five binaries match retail.**
+
+**Why the reasoning was sound and the conclusion still wrong:** an un-landed
+region is not absent. It is still present as original binary, and a reference
+into it resolves. That is the same property the `R_<module>_<section>_<offset>`
+symbol convention exists to exploit — **a slice does not need to own the
+definitions it references, only the bytes it claims.**
+
+**This is the SECOND time today that trying the build beat the analysis** — after
+`d_a_peach_castle_sequence.cpp`, whose order gate reported a violation that did
+not exist. Both times the analysis was careful, internally consistent, and
+wrong; both times one command settled it. **When a unit is function-complete and
+the only objection is a structural argument about whether it CAN land, land it
+and find out.** The five-binary verify is cheap and it is the definition of
+correct.
+
+### The agent's other two results were right, and both corrected ME
+
+- **The one-class-or-six question: ONE class, `daFlagObj_c`**, verified four
+  independent ways — all 14 `.data` relocations from the range hitting one
+  address; the vtable's trailing string table holding seven
+  `daFlagObj_c::StateID_<Name>` strings, one class name and seven states matching
+  the seven profiles 1:1; the profile structs carrying distinct classInit
+  pointers but identical properties; and **two compile probes**, one showing the
+  plain `ACTOR_PROFILE` macro cannot be used seven times for one class
+  (`className##_classInit` collides, which is exactly why classInit had to be
+  hand-expanded).
+- **My bounds were SHORT: seven profiles, not six.** `AC_RNSWICH` sits adjacent
+  with the same 0x4C classInit shape and shares the single `.data` vtable target.
+  **Independently corroborated by `include/game/bases/d_profile.hpp`, which
+  already declares `g_profile_AC_FLAGON`..`g_profile_AC_RNSWICH` as one unbroken
+  seven-entry block** — the header knew the answer the whole time.
