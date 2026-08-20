@@ -42,10 +42,10 @@ public:
     void acm_angle() const; ///< @unofficial Return type NOT YET PROVEN. Computes mAngle +/- 0x4000 depending on mReverse, masked to 16 bits.
 
     void start_line_move();
-    static bool is_unit_circle2x2(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`.
-    static bool is_unit_circle4x4(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`.
+    static bool is_unit_circle2x2(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`. LOCAL OVERRIDE: proven STATIC (no implicit `this`) -- every mov_to_* call site sets only ONE register (r3=the ulong id) before the `bl`, never a second `this` register; a non-static declaration emits an extra `mr r3,this / mr r4,id` pair that the target does not have. Report to lead for the shared header.
+    static bool is_unit_circle4x4(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`. LOCAL OVERRIDE: see is_unit_circle2x2 -- same evidence.
     void change_dir(); ///< Negates mBaseSpeed and flips mReverse.
-    u32 getLineUnitNo(f32, f32); ///< @unofficial PROVEN non-void: every mov_to_*/mov_frm_* caller reads r3 (`mr r31,r3`) right after the `bl`. Width u32 vs u8 vs int NOT yet settled -- author_core to nail it.
+    u32 getLineUnitNo(f32, f32); ///< @unofficial LOCAL OVERRIDE for wip/author_mov testing: proven non-void by mov_to_*/mov_frm_* callers (`mr r31,r3` reads the return register right after the `bl`). Declared `u32` here as the simplest type consistent with the `cmplwi`-chain callers; NOT proven to be exactly u32 vs u8 vs int -- report to lead for the shared header.
     void init_term_ck_pos();
     void check_term();
 
@@ -85,11 +85,11 @@ public:
     void circle_nextpos_set(const mVec2_c &, f32);
     void calc_rotate_to_circle_rev(u16, bool);
     void calc_rotate_to_circle_prev(u16, bool);
-    bool mov_to_rightupper(ulong, const mVec2_c &, bool);
-    bool mov_to_rightlower(ulong, const mVec2_c &, bool);
-    bool mov_to_leftupper(ulong, const mVec2_c &, bool);
-    bool mov_to_leftlower(ulong, const mVec2_c &, bool);
-    void mov_frm_rightupper(const mVec2_c &, bool);
+    bool mov_to_rightupper(ulong, const mVec2_c &, bool); ///< LOCAL OVERRIDE: proven bool -- every mov_frm_* call site does `cmpwi r3,0x0` / `bne` right after the `bl`, and the body itself ends every path with `li r3,0x1`/`li r3,0x0` before the shared epilogue.
+    bool mov_to_rightlower(ulong, const mVec2_c &, bool); ///< LOCAL OVERRIDE: see mov_to_rightupper.
+    bool mov_to_leftupper(ulong, const mVec2_c &, bool); ///< LOCAL OVERRIDE: see mov_to_rightupper.
+    bool mov_to_leftlower(ulong, const mVec2_c &, bool); ///< LOCAL OVERRIDE: see mov_to_rightupper.
+    void mov_frm_rightupper(const mVec2_c &, bool); ///< Confirmed void: move_on_circle1's two call sites never read r3 after the `bl` (fall straight into the shared epilogue).
     void mov_frm_leftlower(const mVec2_c &, bool);
     void mov_frm_rightlower(const mVec2_c &, bool);
     void mov_frm_leftupper(const mVec2_c &, bool);
