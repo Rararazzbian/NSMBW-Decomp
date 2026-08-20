@@ -13050,3 +13050,51 @@ rather than by size match.
 triaged by the size diagnostic: one read in full with three genuine unknowns
 still open (an unnamed float field, an unnamed vtable-slot-`0xd4` method, an
 untyped `.bss` singleton), the other not yet read at all.
+
+## PRECONDITION on the hand-expansion technique: first check you are using the RIGHT macro
+
+The PMF-encoding fix landed on LEMMY exactly as predicted — **`__sinit` 267
+differing -> 35**, proportionally matching FLOOR_JR_A's 74 -> 21. And the
+**function MATCH count held at 34/51 straight through the change**, which is
+itself the proof that **the state bodies were never wrong — only the declaration
+shape was.**
+
+**But the important consequence is a correction to doctrine I recorded earlier
+today.** Once `daLemmyFootholdMain_c`'s states switched to the non-virtual
+`STATE_FUNC_DECLARE`/`STATE_DEFINE`, **they stopped emitting a `baseID_` helper at
+all — so there was nothing left for the other class's `DemoWait` to collide with,
+and the round-3 hand-expansion became unnecessary.** All three of the other
+class's states now use the ordinary macro directly.
+
+**So the `baseID_` collision was a SYMPTOM of the wrong macro, not an independent
+problem.** The recorded fix — declare with the macro, hand-expand the duplicate
+definition — is still correct where two classes genuinely both need the virtual
+form. But it now carries a precondition:
+
+**Before hand-expanding to dodge a `baseID_` collision, read the PMF encodings and
+confirm BOTH classes actually need the virtual macro.** If either one's states use
+the direct-address encoding, it should not be using the virtual form, and fixing
+that removes the collision for free. **Reach for the workaround only after the
+encoding says the collision is real.**
+
+That ordering matters because the workaround is invisible once applied — it
+compiles, it looks deliberate, and it silently preserves a wrong declaration.
+
+### The attribution work paid off as a bug-catcher
+
+`executeState_DemoDown`'s first draft **omitted `calcSpeedY()`/`posMove()`**, and a
+diff against the **correctly attributed** target function exposed it immediately.
+That is the payoff of reading each state object's PMF fields rather than trusting
+size-based pairing: **you can only diff against the right function if you know
+which one it is.** Both bodies now sit at 6/47 and 2/33, entirely the
+pool-position and register-choice residual classes documented all session.
+
+`+0x5b8` was identified as a genuine `mTargetPosY` field, **confirmed by two
+independent call sites computing the same distance expression** — not by a single
+usage.
+
+**Tally 34/51, unchanged in raw count, and the honest framing the agent gave is
+the right one:** the unit went from two unread bodies plus an unexplained 267-word
+`__sinit` gap to two small well-understood residuals, a 35-word gap, and **zero
+open declaration questions.** A tally cannot express that, which is exactly why
+the uncertain surface is worth reporting separately.

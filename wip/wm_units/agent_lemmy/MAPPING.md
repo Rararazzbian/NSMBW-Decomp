@@ -447,3 +447,139 @@ successfully elsewhere in this unit; (2) the FOOTHOLD virtual-PMF-
 encoding question, if a concrete new angle presents itself (not a repeat
 investigation); (3) the unit's own `.data`/`.rodata` slice, still not
 derived.
+
+## Round 4: the macro fix (FLOOR_JR_A's finding, applied here) plus both remaining state bodies
+
+### The PMF-encoding fix: confirmed, and it moved `__sinit` exactly as predicted
+
+The coordinator's answer -- PMF encoding records whether the pointed-to
+method is virtual (`{-1, fn_addr, 0}` = non-virtual, `{vtable_offset,
+0x60, 0}` = virtual), independently discovered on FLOOR_JR_A -- applied
+directly:
+
+- `daLemmyFootholdMain_c`'s two states (`DemoWait`, `Wait`) switched from
+  `STATE_VIRTUAL_FUNC_DECLARE`/`STATE_VIRTUAL_DEFINE` to the plain
+  `STATE_FUNC_DECLARE`/`STATE_DEFINE` (non-virtual).
+- `daLemmyFoothold_c`'s three states keep the virtual macro, but the
+  hand-expansion for `StateID_DemoWait` is **no longer needed**: once
+  MAIN's states are correctly non-virtual, `STATE_DEFINE` never emits a
+  file-scope `baseID_` helper at all, so there is nothing for
+  FOOTHOLD's own (virtual) `StateID_DemoWait` to collide with. All three
+  of FOOTHOLD's states now use the ordinary `STATE_VIRTUAL_DEFINE` macro
+  directly -- simpler than round 3's hand-expansion, not just different.
+
+**Result: `__sinit` went from 267 differing to 35 differing** (out of
+268 words) -- matching the coordinator's FLOOR_JR_A precedent (74 -> 21)
+almost exactly in proportion. The raw MATCH count stayed at 34/51 this
+step (the individual state-body functions were already correct from
+round 3; only the `.data` pool construction sequence itself changed),
+confirming the earlier bodies were never the problem -- only the
+declaration shape was.
+
+**Correction on my own earlier framing**: round 3 called "both classes
+use the identical macro shape" the puzzle. It was the defect. Recorded
+per the coordinator's own point: an honestly-flagged "I cannot explain
+this" is what let another agent's independent finding resolve it --
+worth remembering as a reason not to paper over a genuine unexplained
+observation with a plausible-sounding guess.
+
+### Both remaining state bodies read in full and authored -- one real bug caught, two small residuals left open
+
+**`executeState_DemoUp`** (0xC67D0, 0xBC bytes) read in full:
+
+```cpp
+void daLemmyFoothold_c::executeState_DemoUp() {
+    mAnimTexSrt.play();
+    mSpeed.y = (mTargetPosY - mPos.y) / 10.0f;
+    posMove();
+    float dist = mTargetPosY - mPos.y;
+    float absDist = (dist > 0.0f) ? dist : -dist;
+    if (absDist < 1.0f) {
+        mPos.y = mTargetPosY;
+        void *vtable = *(void **) ((u8 *) this + 0x60);
+        daLemmyFootholdVFunc0xD4_t f = *(daLemmyFootholdVFunc0xD4_t *) ((u8 *) vtable + 0xd4);
+        f(this, &lbl_2_bss_A6C4);
+    }
+}
+```
+
+This identified `+0x5b8` (the gap field flagged open since round 3) as a
+genuine **target Y position** -- both this state and `DemoDown` compute
+`mTargetPosY - mPos.y` as a distance-to-target and drive `mSpeed.y` from
+it; `DemoUp` additionally snaps `mPos.y` to the exact target once within
+`1.0f` and calls a still-unidentified method at vtable byte offset
+`0xd4` (through this object's own `+0x60` vtable pointer), passing the
+address of `lbl_2_bss_A6C4` (one of this unit's 3 confirmed `.bss`
+singletons). Result: **6 differing out of 47** -- all either the
+already-characterized rodata pool-position class, or one register
+choice (`r12` reused vs a fresh `r5`) for the vtable-pointer load. Tried
+two variants (splitting the nested cast into separate statements;
+hoisting the `&lbl_2_bss_A6C4` argument into its own local) -- neither
+changed the output. Per the coordinator's own size/diff diagnostic
+(exact size, small diff = genuine residual, not missing content): parked
+after two attempts rather than continuing to grope for a third.
+
+**`executeState_DemoDown`** (0xC6720, 0x84 bytes): re-read after writing
+the naive first draft (`mAnimTexSrt.play()` + the threshold check alone)
+and caught a **real bug before it shipped** -- the diff against the
+correctly-named target function (26 differing, size matched) showed
+target calling `calcSpeedY()` and `posMove()` in between, which my first
+draft had simply omitted (an oversight from writing the threshold logic
+first and not re-reading the full disassembly before committing to a
+body). Added both calls, matching `executeState_DemoUp`'s own preamble
+shape exactly. **Result: 2 differing out of 33** -- the identical two
+residual classes as `DemoUp` above (rodata pool-position naming, one
+register choice for the same vtable-slot-`0xd4` dispatch). Not chased
+further, same reasoning.
+
+### `mTargetPosY` (+0x5b8) resolved; the vtable-slot-0xd4 method still is not
+
+`+0x5b4`'s gap is now modelled as `u32 m_5b4; float mTargetPosY; u32
+m_5bc;` -- the middle field's role is confirmed by two independent
+call sites computing the identical `target - mPos.y` distance
+expression, not a single occurrence. `m_5b4`/`m_5bc` remain
+unidentified (never touched by either state body). The vtable-slot-0xd4
+method itself: checked `dEn_c`'s own header for a plausible
+single-pointer-argument virtual (callback/notify/register-shaped names)
+and found no clean match; called via a raw vtable-offset function
+pointer (this project's established fallback for a genuinely
+unidentified slot) rather than guessed at by name. Both call sites
+(`DemoDown` and `DemoUp`) were cross-checked to confirm they really are
+the identical method before writing the shared raw-cast helper type --
+not assumed from one site alone.
+
+## Final result, this round: 34/51 byte-identical (unchanged count, but both remaining state bodies now precisely characterized)
+
+All 9 real per-state bodies are now authored. 7 are exact `MATCH`; the
+remaining 2 (`executeState_DemoDown`, `executeState_DemoUp`) are
+confirmed-correct-size, 2-and-6-instruction residuals in the same
+already-documented pool-position/register-choice class seen everywhere
+else in this session -- not logic errors, not missing content. `__sinit`
+itself: 35/268 differing, down from 267 -- the single biggest move this
+session, exactly as predicted. `.ctors` gate re-verified clean.
+
+| target | size | draft | note |
+|---|---|---|---|
+| Both classInits | -- | **MATCH** | |
+| Both ctors/dtors (FOOTHOLD explicit, MAIN implicit) | -- | **MATCH** | |
+| 3 shared weak stubs (`finalUpdate`/`funsuiMoveX`/`setCarryFall`/`endFunsui`/`beginFunsui`) | -- | **MATCH** | |
+| MAIN's `doDelete()`/`preDelete()` overrides | -- | **MATCH** | |
+| 7 of 9 real state bodies | -- | **MATCH** | |
+| `executeState_DemoDown` | 0x84 | 2 differing | pool-position + 1 register choice, both already-characterized residual classes |
+| `executeState_DemoUp` | 0xBC | 6 differing | same two residual classes |
+| `__sinit` | 0x430 | 35/268 differing | down from 267; the macro fix's own predicted effect |
+
+**34/51 byte-identical** (function-count tally unchanged from round 3,
+but the unit's *real, uncertain* surface area shrank enormously: from
+"2 unread/partial bodies + an unexplained 267-word `__sinit` gap + an
+open macro-choice question" to "2 small, well-understood residuals + a
+35-word `__sinit` gap + zero open state-declaration questions").
+
+**Remaining open items, precisely**: (1) the vtable-slot-0xd4 method's
+real identity; (2) `m_5b4`/`m_5bc` (the two still-unidentified words
+flanking `mTargetPosY`); (3) `__sinit`'s own remaining 35-word gap, not
+yet investigated (explicitly last priority, per instruction); (4) the
+unit's `.data`/`.rodata` slice, still not derived; (5) function order,
+not re-examined this round (still shows violations concentrated at the
+same lower-priority spots as round 3 -- the coordinator's "leave it
+alone" call from round 3 still stands, not re-litigated).

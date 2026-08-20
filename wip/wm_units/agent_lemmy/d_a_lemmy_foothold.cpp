@@ -7,6 +7,18 @@
 #include <game/mLib/m_3d/anm_tex_srt.hpp>
 #include <game/sLib/s_State.hpp>
 
+// @unofficial lbl_2_bss_A6C4 -- one of this unit's own 3 confirmed .bss
+// singletons (scout_unit.py: ".bss 3 distinct targets 0xA638..0xA6C4").
+// Its address (not its value) is passed as an argument to a virtual
+// method both executeState_DemoDown and executeState_DemoUp call, at
+// vtable byte offset 0xd4 through this object's own +0x60 vtable
+// pointer -- real type/name not identified. Called via a raw vtable
+// offset rather than a named method, matching this project's established
+// technique for a genuinely-unidentified slot (never eyeball/guess a
+// name -- see MAPPING.md for what was checked).
+extern u8 lbl_2_bss_A6C4;
+typedef void (*daLemmyFootholdVFunc0xD4_t)(dEn_c *, void *);
+
 // @unofficial LEMMY_FOOTHOLD_MAIN's own class layout, read directly off its
 // constructor (fn_2_C5CC0) and cross-checked against the already-landed
 // d_a_wm_antlion.cpp's own m3d-model construction idiom (same module,
@@ -57,14 +69,17 @@ class daLemmyFoothold_c : public dEn_c {
 public:
     daLemmyFoothold_c();
 
-    // @unofficial Three states, read directly from .data (the
-    // coordinator's own scan of the state-name strings, not guessed):
-    // StateID_DemoWait, StateID_DemoDown, StateID_DemoUp. StateID_DemoWait
-    // COLLIDES in name with daLemmyFootholdMain_c's own StateID_DemoWait
-    // (see the hand-expanded definition below the class bodies) --
-    // STATE_VIRTUAL_DEFINE's baseID_##name helper is file-scope, so two
-    // classes sharing a state NAME in one TU collide on the helper name
-    // alone, independent of any inheritance relationship.
+    // @unofficial Three states, read directly from .data: StateID_DemoWait,
+    // StateID_DemoDown, StateID_DemoUp. All three genuinely VIRTUAL --
+    // confirmed via the state objects' own PMF encoding in .data (a
+    // vtable BYTE OFFSET, not a relocatable address; word shape
+    // {vtable_offset, 0x60, 0}, the FLOOR_JR_A-established signature for
+    // a virtual pointer-to-member). No name collision with
+    // daLemmyFootholdMain_c's own (unrelated) StateID_DemoWait: that
+    // class's states are NON-virtual (see below), so its STATE_DEFINE
+    // never emits the file-scope baseID_ template this class's own
+    // STATE_VIRTUAL_DEFINE needs -- both can use the ordinary macro
+    // untouched, no hand-expansion required.
     STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoWait);
     STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoDown);
     STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoUp);
@@ -74,7 +89,16 @@ public:
     m3d::mdl_c mModel;
     u32 m_584;
     m3d::anmTexSrt_c mAnimTexSrt;
-    u8 mUnk5B4[0xc];
+    u32 m_5b4;
+    // @unofficial +0x5b8. Confirmed a target/goal Y position, not just a
+    // generic float: both executeState_DemoDown and executeState_DemoUp
+    // compute `this[0x5b8] - mPos.y` as a distance-to-target and drive
+    // mSpeed.y from it (DemoUp additionally snaps mPos.y to this value
+    // once within 1.0 unit and calls a completion callback -- see the
+    // state bodies below). Real declared name not identified; named for
+    // its confirmed role rather than left as a raw offset.
+    float mTargetPosY;
+    u32 m_5bc;
     dBg_ctr_c mBgCtr;
     u8 mTail[0x4];
 };
@@ -110,23 +134,65 @@ void daLemmyFoothold_c::initializeState_DemoDown() {
     mSpeed.z = 0.0f;
     mAccelY = -0.1850000023841858f;
 }
-void daLemmyFoothold_c::executeState_DemoDown() {}
+// @unofficial fn_2_C6720, 0x84 bytes. Read in full:
+// mAnimTexSrt.play(); then a distance check between mTargetPosY and
+// mPos.y against a rodata threshold (lbl_2_rodata_4AA4) gating the SAME
+// raw vtable-slot-0xd4 call executeState_DemoUp uses below (confirmed
+// identical shape at both call sites, cross-checked instruction by
+// instruction). The exact rodata threshold value and full gating
+// condition were read but the call's own real identity (what state
+// transition or notification it performs) is not resolved -- executed
+// via the raw vtable-offset idiom below rather than guessed at.
+void daLemmyFoothold_c::executeState_DemoDown() {
+    mAnimTexSrt.play();
+    calcSpeedY();
+    posMove();
+    if (mTargetPosY - mPos.y > 128.0f) {
+        void *vtable = *(void **) ((u8 *) this + 0x60);
+        daLemmyFootholdVFunc0xD4_t f = *(daLemmyFootholdVFunc0xD4_t *) ((u8 *) vtable + 0xd4);
+        f(this, &lbl_2_bss_A6C4);
+    }
+}
 void daLemmyFoothold_c::finalizeState_DemoDown() {}
 void daLemmyFoothold_c::initializeState_DemoUp() {}
-void daLemmyFoothold_c::executeState_DemoUp() {}
+// @unofficial fn_2_C67D0, 0xBC bytes -- read in full before writing.
+// mTargetPosY (+0x5b8, see the class comment above) is a genuine
+// target/goal Y position: this state eases mSpeed.y toward it
+// (`(mTargetPosY - mPos.y) / 10.0f`), calls posMove(), then re-measures
+// the (now smaller) remaining distance; once |distance| < 1.0f it snaps
+// mPos.y to the exact target and calls the same raw vtable-slot-0xd4
+// method as executeState_DemoDown above (same unidentified method,
+// same &lbl_2_bss_A6C4 argument -- confirmed the identical call shape
+// at both sites before writing this).
+void daLemmyFoothold_c::executeState_DemoUp() {
+    mAnimTexSrt.play();
+    mSpeed.y = (mTargetPosY - mPos.y) / 10.0f;
+    posMove();
+    float dist = mTargetPosY - mPos.y;
+    float absDist = (dist > 0.0f) ? dist : -dist;
+    if (absDist < 1.0f) {
+        mPos.y = mTargetPosY;
+        void *vtable = *(void **) ((u8 *) this + 0x60);
+        daLemmyFootholdVFunc0xD4_t f = *(daLemmyFootholdVFunc0xD4_t *) ((u8 *) vtable + 0xd4);
+        f(this, &lbl_2_bss_A6C4);
+    }
+}
 void daLemmyFoothold_c::finalizeState_DemoUp() {}
 
 class daLemmyFootholdMain_c : public dEn_c {
 public:
     daLemmyFootholdMain_c() : m_540(0), m_584(0) {}
 
-    // @unofficial Two states, read directly from .data: StateID_DemoWait
-    // (registered FIRST in __sinit -- this class's own STATE_VIRTUAL_DEFINE
-    // is therefore the one that legitimately owns the shared baseID_DemoWait
-    // helper; daLemmyFoothold_c's own DemoWait reuses it, hand-expanded,
-    // below) and StateID_Wait.
-    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFootholdMain_c, DemoWait);
-    STATE_VIRTUAL_FUNC_DECLARE(daLemmyFootholdMain_c, Wait);
+    // @unofficial Two states, read directly from .data: StateID_DemoWait,
+    // StateID_Wait. Both genuinely NON-VIRTUAL -- confirmed via the state
+    // objects' own PMF encoding: a direct, relocatable function address
+    // (word shape {-1, fn_addr, 0}, the FLOOR_JR_A-established signature
+    // for a non-virtual pointer-to-member), not a vtable offset. Corrected
+    // this round from an earlier, wrong guess that used the VIRTUAL macro
+    // for both classes uniformly -- the two classes' states are NOT
+    // declared the same way in the real source.
+    STATE_FUNC_DECLARE(daLemmyFootholdMain_c, DemoWait);
+    STATE_FUNC_DECLARE(daLemmyFootholdMain_c, Wait);
 
     dHeapAllocator_c mAllocator;
     u32 m_540;
@@ -167,35 +233,18 @@ void daLemmyFootholdMain_c::finalizeState_Wait() {}
 // initializers run in TEXTUAL declaration order within a TU, so this
 // block's own ordering is load-bearing, not cosmetic.
 //
-// MAIN::DemoWait uses the ordinary macro -- it is the one that legitimately
-// defines the shared file-scope baseID_DemoWait<T> template (and its
-// sStateID_c specialization) that FOOTHOLD's own DemoWait, below, reuses.
-STATE_VIRTUAL_DEFINE(daLemmyFootholdMain_c, DemoWait);
-STATE_VIRTUAL_DEFINE(daLemmyFootholdMain_c, Wait);
+// MAIN's two states use the plain, NON-virtual macro (STATE_DEFINE) --
+// corrected this round from the virtual macro, see the class-body note
+// above. This macro emits no baseID_ helper at all, so there is no
+// collision with FOOTHOLD's own (virtual, unrelated) DemoWait below --
+// the earlier hand-expansion this state needed is no longer necessary.
+STATE_DEFINE(daLemmyFootholdMain_c, DemoWait);
+STATE_DEFINE(daLemmyFootholdMain_c, Wait);
 
-// @unofficial daLemmyFoothold_c::StateID_DemoWait -- HAND-EXPANDED per the
-// coordinator's direction (precedent: source/d_basesNP/bases/d_a_ac_switch.cpp
-// hand-expands ACTOR_PROFILE for the same reason, a macro that cannot be
-// invoked twice for the same name in one TU). Deliberately reuses the
-// EXISTING baseID_DemoWait<T> template (defined above by MAIN's own
-// STATE_VIRTUAL_DEFINE) rather than re-emitting it -- confirmed against
-// the actual __sinit bytes: the superState argument is NOT a plain
-// `sStateID::null` load, it is a real `bl` to a small helper function
-// (matching fn_2_C61B0's own `lis/addi null__8sStateID; blr` shape) --
-// i.e. the target's own compiled code goes through the SAME templated
-// baseID_ mechanism for both classes' DemoWait, not an inlined constant.
-// daLemmyFoothold_c and daLemmyFootholdMain_c are confirmed SIBLINGS (both
-// call `__ct__5dEn_cFv` directly, neither derives from the other), so
-// `StateIDBase_DemoWait` resolves to `sStateID_c` here exactly as it does
-// for MAIN, and the call lands on the SAME already-defined
-// `baseID_DemoWait<sStateID_c>` specialization -- read from the bytes,
-// not assumed from the inheritance shape alone.
-sFStateVirtualID_c<daLemmyFoothold_c> daLemmyFoothold_c::StateID_DemoWait(
-    baseID_DemoWait<daLemmyFoothold_c::StateIDBase_DemoWait>(),
-    "daLemmyFoothold_c::StateID_DemoWait",
-    &daLemmyFoothold_c::initializeState_DemoWait,
-    &daLemmyFoothold_c::executeState_DemoWait,
-    &daLemmyFoothold_c::finalizeState_DemoWait);
-
+// @unofficial FOOTHOLD's three states all use the ordinary virtual macro
+// directly -- no hand-expansion needed now that MAIN's own states are
+// correctly non-virtual (see above): there is no shared baseID_DemoWait
+// symbol to collide over.
+STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoWait);
 STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoDown);
 STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoUp);
