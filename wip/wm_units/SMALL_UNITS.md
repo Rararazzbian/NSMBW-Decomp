@@ -80,13 +80,50 @@ answers change the source structure rather than a detail of it:
 | `0x1204E0-0x120F00` | 0xA20 | `PEACH_CASTLE_SEQUENCE_MGR` + `_MGR_OBJ` | 1 @ `0x120D00` | `sizeof 0xB8 : dActor_c`; singleton `lbl_2_bss_D8F8` |
 | `0xF8980-0xF9B40` | 0x11C0 | `MINI_GAME_GUN_BATTERY_MGR` + `_MGR_OBJ` | 1 @ `0xF97D0` | `sizeof 0xF4 : dActor_c`; singleton `lbl_2_bss_C460` |
 
+## LANDED from this queue
+
+| unit | range | result |
+|---|---|---|
+| `d_a_dummy_door.cpp` | `.text 0x77AF0-0x77C50` (0x160) | **4/4, five binaries green** |
+| `d_a_peach_castle_sequence.cpp` | `.text 0x1204E0-0x120F00` (0xA20) | **44/44, five binaries green** |
+
+Both from this queue, both in a session where five agents on 0x1000-0x3000-byte
+units landed nothing. The queue is the reason.
+
+## Scoped and validated, assigned or ready
+
+| range | size | profiles | `.ctors` | notes |
+|---|---|---|---|---|
+| `0xF8980-0xF9B40` | 0x11C0 | `MINI_GAME_GUN_BATTERY_MGR` + `_MGR_OBJ` | 1 @ `0xF97D0` | OBJ is `: dBase_c`, `sizeof 0xF4` |
+| `0x12AD60-0x12B400` | 0x6A0 | nine `RIVER_*` | none | nine DISTINCT classes, `sizeof 0x3D0 : dActorState_c` |
+| `0xF5130-0xF6150` | 0x1020 | `MIDDLE_BG_` + `BOTTOM_BG_FOR_CASTLE_LUDWIG` | 1 @ `0xF5C80` | own `.rodata 0x5BC0`, `.data 0x308F8-0x30F34`, `.bss 0xC1A0-0xC1AC` |
+| `0x7D400-0x7D5E0` | 0x1E0 | six `AC_*` switches | none | **whole range references ONE `.data` object** — six classes would need six, so either all six share a class or the bounds are wrong. Settle empirically before authoring. |
+| `0x841E0-0x84290` | 0xB0 | `FLOOR_JR_B` | none | one `.data` object `0x1CC3C` |
+| `0x676F0-0x677B0` | 0xC0 | `BRANCH` | none | one `.data` object `0x17704` |
+
+## The manager/object pair is a SHAPE, not a coincidence
+
+Five of these are a 0x30-byte manager immediately followed by a much larger
+object: `PEACH_CASTLE_SEQUENCE`, `MINI_GAME_GUN_BATTERY`, `MINI_GAME_WIRE_MESH`,
+`JR_FLOOR_FIRE`, `LEMMY_FOOTHOLD`, `MIDDLE_BG`/`BOTTOM_BG_FOR_CASTLE_LUDWIG`.
+
+The manager's whole body is "allocate the object"; it reaches exactly one
+external address, `operator new`. **Two things follow, both learned the hard
+way:**
+- **Pool-overlap grouping CANNOT join them** — the manager references no internal
+  pools at all. What joins them is the single `.ctors` entry spanning both, plus
+  the manager's `createChild` call.
+- **The MANAGER is usually `: dActor_c` and the OBJECT usually is NOT.** Two
+  separate agents caught me recording the manager's base class against the
+  object, on two different units. Any tool that walks outward from a singleton
+  store will meet this pair and can attribute the wrong constructor.
+
 ## Unscoped leads, smallest first
 
 `0xA8470` JR_FLOOR_FIRE_MGR · `0xC5C90` LEMMY_FOOTHOLD ·
 `0xD1450` AC_LIFT_REMOCON_SEESAW · `0xF5130` MIDDLE_BG_FOR_CASTLE_LUDWIG ·
 `0xFC8D0` MINI_GAME_WIRE_MESH_MGR (its `_OBJ` singleton is `sizeof 0x708 : dActor_c`) ·
-`0x77AF0` DUMMY_DOOR_CHILD + `0x77BA0` DUMMY_DOOR_PARENT ·
-`0x841E0` FLOOR_JR_B · `0x676F0` BRANCH · `0x152010` AC_WATER_MOVE ·
+`0x152010` AC_WATER_MOVE ·
 the `AC_*` switch run at `0x7D400-0x7D5E0` (six 0x50 profiles, very likely one TU)
 
 ## The trap that broke the automatic grouping
