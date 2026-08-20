@@ -11877,3 +11877,39 @@ planning fact rather than a defect. 15/19 with both gates green (order OK,
   unverified sub-field inside `m3d::anmChr_c`/`fanm_c`/`banm_c`. **In a unit whose
   blocker is the pool, a guessed constant is not neutral: it moves the
   displacements further from target.** Refusing was the correct move.
+
+## Adjacent profiles SHARING one `.data` object are ONE class — and the claim is SHORT
+
+Scouting `AC_NICE_COIN` (`0x104D70-0x104DC0`, 0x50) and `AC_WATER_MOVE`
+(`0x152010-0x1520B0`, 0xA0) as tiny candidates, the ownership check fired on both:
+each range's own single `.data` object was read from OUTSIDE it. The outside
+reader in each case was **the very next profile** — `AC_NICE_COIN_REGULAR` and
+`AC_WATER_MOVE_REGULAR` — reading **the same object**.
+
+**Two adjacent profiles referencing ONE shared `.data` object are the same class,
+so the claim was short by a profile.** Corrected and re-checked, both are clean:
+
+```
+AC_NICE_COIN  + AC_NICE_COIN_REGULAR   .text 0x104D70-0x105450 (0x6E0)  .ctors 0x2B0 -> __sinit 0x105110
+AC_WATER_MOVE + AC_WATER_MOVE_REGULAR  .text 0x152010-0x1530E0 (0x10D0) .ctors 0x394 -> __sinit 0x152CE0
+```
+
+### This is the exact INVERSE of the RIVER discriminator, and together they decide the question
+
+- **RIVER: nine adjacent profiles, NINE distinct `.data` objects** on a regular
+  `0xF0` stride -> **nine distinct classes.** MWCC generates a per-class vtable
+  purely because each class is a distinct type, even with zero overrides.
+- **AC_NICE_COIN: two adjacent profiles, ONE shared `.data` object** -> **one
+  class with two profile entry points.**
+
+**So counting the distinct `.data` objects a run of profiles reaches answers
+"one class or many?" without compiling anything.** That question has now come up
+on three separate families and it changes the source structure rather than a
+detail of it. It remains worth CONFIRMING by compiling a candidate shape — that
+is how RIVER's answer was established — but the count tells you which answer to
+expect.
+
+**And note which way the error ran:** the naive per-profile bound was SHORT here,
+where the earlier famous mis-scopes (WM_ANTLION, WM_ANTLION_MNG) ran long. The
+ownership check catches both directions; the per-profile heuristic catches
+neither.
