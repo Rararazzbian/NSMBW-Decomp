@@ -436,7 +436,66 @@ bool daWmKoopaJr_c::runMain() {
         break;
     }
 
-    case 3: break;
+    /// @unofficial Case 3 (0x16DB68-0x16DCDC) authored directly off the disassembly.
+    /// Every constant read, none guessed:
+    /// - `mAnimChrs[1].checkFrame(9.0f)` / `checkFrame(28.0f)` -- `this+0x220` is
+    ///   `mAnimChrs[1]` (`+0x1e8 + 1*0x38 = +0x220`); `fanm_c::checkFrame(float) const`
+    ///   (`include/game/mLib/m_3d/fanm.hpp:35`) matches `checkFrame__Q23m3d6fanm_cCFf`
+    ///   exactly; `anmChr_c : public fanm_c` needs no vtable adjustment, matching the
+    ///   direct `this+0x220` call target with no extra indirection. Pool values 9.0f/
+    ///   28.0f read directly (pool offsets 0xb0/0xb4).
+    /// - `adjustHeightBase(mJumpTargetPos, {x+200,y,z}, 5)` -- SAME shape as case 4,
+    ///   confirmed by both cases loading the identical pool value (`sc_jumpParams[1].
+    ///   unk24` = 200.0f) through the identical `&sc_jumpParams[0]+0x24` pointer
+    ///   arithmetic.
+    /// - The `0 < mJumpTimer <= 10` branch computes an angle via
+    ///   `(pool0xb8 / 10.0f) * mAng::DegreeToAngleCoefficient` then `rotDirectionY`
+    ///   (pool0xb8 = -180.0f, read directly). The target computes the literal `10`'s
+    ///   int-to-float conversion via a magic-double-bias trick (`lis 0x4330`/
+    ///   `xoris .../0x8000`/`lfd` against pool+0xd8, the exact 0x4330000080000000 bias
+    ///   constant) rather than folding it to a plain `10.0f` immediate -- a known MWCC
+    ///   codegen quirk for int-literal divisors, NOT reproduced here (this C++ writes
+    ///   the mathematically identical `/ 10.0f`); pool offset 0xd8 is logically
+    ///   accounted for by this case even though the compiled bytes will not reference
+    ///   it the same way.
+    /// - `mSpeedF` (this+0x10c, not a new field) computed by header field-offset
+    ///   arithmetic in `dBaseActor_c` (`mMatrix@0x7c` -> `mPos@0xac` -> ... ->
+    ///   `mAngle@0x100` -> `mAngle3D@0x106`, ending exactly at `0x10c` with no padding
+    ///   gap), corroborated by case 2 already writing this same field from
+    ///   `sc_jumpParams[1].scaleMul` at the same offset.
+    /// - The final-branch dispatch (`mJumpTimer<=0`) is `changeAnim(4,...)` +
+    ///   `mUnk340=4` + `setCutEnd()`, identical in shape to case 4's ending; pool0xa8
+    ///   (5.0f, the blend-frame argument) matches every other `changeAnim` call's
+    ///   observed blend value.
+    case 3: {
+        if (mJumpTimer > 10) {
+            if (mCurAnimIdx == 1) {
+                if (mAnimChrs[1].checkFrame(9.0f) || mAnimChrs[1].checkFrame(28.0f)) {
+                    dWmSeManager_c::m_pInstance->playSound(0x41, mPos, 1);
+                }
+            }
+            mJumpTimer--;
+            calcSpeed();
+            posMove();
+            float farThreshold = *(const float *)&sc_jumpParams[1].unk24;
+            mVec3_c heightTarget(mJumpTargetPos.x + farThreshold, mJumpTargetPos.y, mJumpTargetPos.z);
+            adjustHeightBase(mJumpTargetPos, heightTarget, 5);
+        } else if (mJumpTimer > 0) {
+            if (mUnk35c >= 0) {
+                dWmEffectManager_c::m_pInstance->endEffect(mUnk35c);
+                mUnk35c = -1;
+            }
+            mJumpTimer--;
+            rotDirectionY((short)((-180.0f / 10.0f) * mAng::DegreeToAngleCoefficient), true);
+            mSpeedF = 0.0f;
+        } else {
+            changeAnim(4, 5.0f, 1.0f, 0.0f);
+            mUnk340 = 4;
+            setCutEnd();
+        }
+        break;
+    }
+
 
     /// @unofficial Case 4 (0x16DCDC-0x16DDA8) authored directly off the disassembly --
     /// every constant is directly visible, none guessed:
@@ -474,8 +533,131 @@ bool daWmKoopaJr_c::runMain() {
         break;
     }
 
-    case 5: case 6: case 7:
-    case 8: case 9: case 10: case 11: case 12: case 13:
+    /// @unofficial Case 5 (0x16DDA8-0x16DDD8) authored directly off the disassembly.
+    /// `changeAnim(0, 5.0f, 1.0f, 0.0f)` matches the same argument shape as every
+    /// other `changeAnim` call seen so far (pool 0xa8=5.0f blend, pool 0x8c=1.0f
+    /// rate, pool 0x90=0.0f start frame -- all three already-established pool
+    /// slots, no new float introduced here). `mSpeedF = 0.0f` (this+0x10c, see the
+    /// case 3 comment for the field derivation), `mJumpTimer = 10`, `mUnk340 = 6`.
+    case 5: {
+        changeAnim(0, 5.0f, 1.0f, 0.0f);
+        mSpeedF = 0.0f;
+        mJumpTimer = 0xa;
+        mUnk340 = 6;
+        break;
+    }
+
+    case 6:
+        break;
+
+    /// @unofficial Case 9 (0x16DFA8-0x16E0EC) authored directly off the disassembly.
+    /// Pool: 180.0f (0xcc) / literal 4 -> DegreeToAngleCoefficient angle, same
+    /// magic-double-for-int-literal quirk noted in case 3 (not reproduced, logically
+    /// equivalent `/ 4.0f` used instead). `mSpeedF = sc_jumpParams[1].scaleMul`
+    /// (SAME field/address case 2 already reads, confirmed by the identical
+    /// `&sc_jumpParams[0]+0x18+0x18` pointer arithmetic). `dBase_c::
+    /// searchBaseByProfName(0x284, nullptr)` matches `include/game/bases/
+    /// d_base.hpp:31` exactly; the landed precedent for reading a field off its
+    /// result is a plain C-style cast to the concrete actor type (grepped across
+    /// `source/dol/bases/*.cpp`, e.g. `d_a_en_door.cpp:18`), so the result is cast
+    /// to `dBaseActor_c *` before reading `mPos` at the already-established +0xac
+    /// offset. The trailing `daWmPlayer_c::ms_instance` dispatch is at vtable
+    /// slot "this+0x60 -> +0x64", ONE SLOT BEFORE the already-confirmed setCutEnd
+    /// slot ("+0x60 -> +0x68") -- `checkCutEnd()` is declared immediately before
+    /// `setCutEnd()` in `d_wm_demo_actor.hpp`, so by declaration-order vtable
+    /// layout this is `daWmPlayer_c::ms_instance->checkCutEnd()`.
+    case 9: {
+        if (mJumpTimer > 0) {
+            mJumpTimer--;
+            rotDirectionY((short)((180.0f / 4.0f) * mAng::DegreeToAngleCoefficient), true);
+        } else {
+            if (mUnk35c < 0) {
+                mUnk35c = fn_80103520(dWmEffectManager_c::m_pInstance, 2, &mModel, "koopaJr_all_root", 0, 0);
+            }
+            mSpeedF = sc_jumpParams[1].scaleMul;
+            setDirection(mVec3_c(1.0f, 0.0f, 0.0f));
+            calcSpeed();
+            posMove();
+            dBaseActor_c *target = (dBaseActor_c *)dBase_c::searchBaseByProfName(0x284, nullptr);
+            mVec3_c heightTarget(target->mPos.x, mJumpTargetPos.y, mJumpTargetPos.z);
+            adjustHeightBase(mJumpTargetPos, heightTarget, 5);
+            if (daWmPlayer_c::ms_instance->checkCutEnd()) {
+                setCutEnd();
+            }
+        }
+        break;
+    }
+
+
+    /// @unofficial Case 7 (0x16DE8C-0x16DF10) authored directly off the disassembly --
+    /// `changeAnim(5, 5.0f, 1.0f, 0.0f)` (same three already-established pool
+    /// slots), two `playSound` calls (ids 0x42/0x43, same shape as case 3's),
+    /// `mJumpTargetPos = mPos` (field-by-field, same convention as case 10),
+    /// `setDirection(mVec3_c(-1.0f, 0.0f, 0.0f))` (pool0xbc = -1.0f, already seen
+    /// in the dump; pool0x90 = 0.0f reused for y/z), `mUnk340 = 8`.
+    case 7: {
+        changeAnim(5, 5.0f, 1.0f, 0.0f);
+        dWmSeManager_c::m_pInstance->playSound(0x42, mPos, 1);
+        dWmSeManager_c::m_pInstance->playSound(0x43, mPos, 1);
+        mJumpTargetPos.x = mPos.x;
+        mJumpTargetPos.y = mPos.y;
+        mJumpTargetPos.z = mPos.z;
+        setDirection(mVec3_c(-1.0f, 0.0f, 0.0f));
+        mUnk340 = 8;
+        break;
+    }
+
+    /// @unofficial Case 8 (0x16DF10-0x16DFA8) authored directly off the disassembly.
+    /// `this+0x300` is `mAnimChrs[5]` (`0x1e8 + 5*0x38 = 0x300`). Pool values 34.0f/
+    /// 46.0f (checkFrame thresholds) and 2.0f (a DIFFERENT rate than every other
+    /// `changeAnim` call seen so far -- confirmed distinctly by `lfs f2, 0xc8(r31)`
+    /// landing in the rate argument slot, not the blend or start-frame slots).
+    case 8: {
+        if (mAnimChrs[5].checkFrame(34.0f) || mAnimChrs[5].checkFrame(46.0f)) {
+            dWmEffectManager_c::m_pInstance->playEffect(0xc, &mPos, nullptr, nullptr);
+            dWmSeManager_c::m_pInstance->playSound(0x40, mPos, 1);
+        }
+        if (mAnimChrs[5].isStop()) {
+            mUnk340 = 9;
+            mJumpTimer = 4;
+            changeAnim(1, 5.0f, 2.0f, 0.0f);
+        }
+        break;
+    }
+
+
+    /// @unofficial Case 10 (0x16E0EC-0x16E140) authored directly off the disassembly.
+    /// `mSpeedF = sc_jumpParams[1].scaleMul + pool0xc8` (pool0xc8 = 2.0f read
+    /// directly; `sc_jumpParams[1].scaleMul` = 6.8f, the SAME field case 2 already
+    /// reads via `&sc_jumpParams[0]+0x18` pointer arithmetic -- here the target
+    /// re-derives the identical address, `&sc_jumpParams[0]+0x18+0x18`). Then
+    /// `setDirection(mVec3_c(1,0,0))` (byte-identical shape to case 0's identical
+    /// call), `mJumpTargetPos = mPos` (three individual `lfs`/`stfs` pairs, no
+    /// `mVec3_c` copy-ctor call, matching the project's "no temp observed ->
+    /// direct field stores" convention), `mUnk340 = 11`.
+    case 10: {
+        mSpeedF = sc_jumpParams[1].scaleMul + 2.0f;
+        setDirection(mVec3_c(1.0f, 0.0f, 0.0f));
+        mJumpTargetPos.x = mPos.x;
+        mJumpTargetPos.y = mPos.y;
+        mJumpTargetPos.z = mPos.z;
+        mUnk340 = 11;
+        break;
+    }
+
+    case 11:
+        break;
+
+    /// @unofficial Case 12 (0x16E220-0x16E240) authored directly off the disassembly --
+    /// trivial, identical shape to case 5/case 4's tail: `changeAnim(2, 5.0f, 1.0f,
+    /// 0.0f)` (same three already-established pool slots), `mUnk340 = 13`.
+    case 12: {
+        changeAnim(2, 5.0f, 1.0f, 0.0f);
+        mUnk340 = 13;
+        break;
+    }
+
+    case 13:
         break;
 
     case 14: {

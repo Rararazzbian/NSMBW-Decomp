@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11836 lines / 457 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11880 lines / 459 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -478,3 +478,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11794-11811` An array's LENGTH is a source-visible lever — `mGunSlot[4]` closed a constructor
   - `11812-11820` Write `arr[i].field`, not hand-rolled pointer arithmetic
   - `11821-11836` The landed-precedent rule paid off again, on the first ask
+- `11837-11867` WM_KOOPAJR PARKED as blocked-on-LINK, on three independent measurements
+  - `11868-11880` Two refusals worth as much as the eight cases authored

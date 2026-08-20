@@ -11833,3 +11833,47 @@ further functions are template boilerplate whose content was read and matched
 against known template source but **not individually diffed**, so they are NOT
 counted in the 21. A tally that excludes what has not been individually verified
 is the only kind that survives comparison across rounds.
+
+## WM_KOOPAJR PARKED as blocked-on-LINK, on three independent measurements
+
+The bound was: author the cases whose pool constants are confirmed present, and
+if the `create`/`execute` displacement still has not moved, park it. It did not
+move, and the evidence is now much stronger than "it did not move once."
+
+**Three separate measurement points, one answer:**
+```
+                     after order fix   after case 4   after 7 more cases   target
+PTMF table               +0x50            +0x50            +0x50           +0x70
+CalcShadow constants   +0x6c/+0x68      +0x6c/+0x68      +0x6c/+0x68     +0x8c/+0x88
+```
+
+Eight of sixteen `runMain` cases were authored across two rounds with **every
+constant read directly off the disassembly, none guessed**, and the `0x90`-`0xd8`
+pool range was substantially closed — new entries matching retail exactly
+(`9.0f`/`28.0f` at `0xb0`/`0xb4`, `34.0f`/`46.0f` at `0xc0`/`0xc4`, `-1.0f` at
+`0xbc`, `2.0f` at `0xc8`). **Substantial correct new pool content, and the
+displacement did not shift by a single byte.**
+
+Combined with the earlier exhaustive search — every target instruction touching
+the rodata pool base register, across all 16 cases, every other function, and
+`__sinit`, finding **no consumer anywhere in this unit** for the missing 9-word
+block `0x8be8`-`0x8c08` — the conclusion is that the gap belongs to a sibling
+class and resolves only at real multi-object link time.
+
+**WM_KOOPAJR is therefore blocked-on-LINK, not blocked-on-effort**, and that is a
+planning fact rather than a defect. 15/19 with both gates green (order OK,
+`.ctors` one entry matching). Do not spend further rounds on its `create`/
+`execute`.
+
+### Two refusals worth as much as the eight cases authored
+
+- **Cases 6 and 11 were read in full and then deliberately skipped**, because they
+  add zero pool value beyond what cases 3/7/9/10 already cover. Reading before
+  deciding not to write is the expensive half; skipping without reading would
+  have been guessing in the other direction.
+- **Case 13 was not attempted.** Its first instruction `lfs f2, 0x280(r3)` reads a
+  field that is not a clean `mAnimChrs[i]` index — `0x280-0x1e8 = 0x98`, and
+  `0x98/0x38` does not divide evenly — so authoring it meant inventing an
+  unverified sub-field inside `m3d::anmChr_c`/`fanm_c`/`banm_c`. **In a unit whose
+  blocker is the pool, a guessed constant is not neutral: it moves the
+  displacements further from target.** Refusing was the correct move.

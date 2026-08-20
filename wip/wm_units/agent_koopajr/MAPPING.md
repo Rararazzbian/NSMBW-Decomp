@@ -1,6 +1,60 @@
 # WM_KOOPAJR (`daWmKoopaJr_c`) — function inventory
 
-## THIS ROUND'S FINDINGS (read first — supersedes stale claims below)
+## ROUND 3 — UNIT PARKED, BLOCKED ON LINK (read first)
+
+Coordinator independently verified round 2's order fix and `procNone` fix
+(`verify_anon` reports 15/21 byte-identical, no order violation) and asked me
+to author the `runMain` cases with confirmed pool consumers in `0x90`-`0xd8`
+(cases 5-13, plus case 3 which was already fully read), re-diffing
+`create()`/`execute()` after each and STOPPING once that range closes if the
+`0x8be8`-`0x8c08` gap still hasn't moved — a bounded round, explicitly not
+meant to be ground through past that point.
+
+**Authored this round, each read directly off the disassembly (see the
+individual `case N:` comment blocks in the source for the full citation —
+line/offset numbers, header matches, landed precedents):** cases 3, 5, 7, 8,
+9, 10, 12. Combined with round 2's case 4, that's 8 of `runMain`'s 16 cases
+now non-stub (0, 1, 2, 4, 5, 7, 8, 9, 10, 12, 14, 15 — 12 of 16, the stub list
+below is smaller than it looks since 0/1/2/14/15 predate this notebook
+section).
+
+**Re-diffed `create()`/`execute()` after this batch — ZERO movement, third
+independent confirmation:** PTMF table `+0x50` vs target `+0x70` (unchanged),
+CalcShadow constants `+0x6c`/`+0x68` vs target `+0x8c`/`+0x88` (unchanged).
+Identical to round 2's post-order-fix numbers before any case-4-and-later
+work. Order gate re-checked: still **ORDER OK** (15/19). `.ctors`: still 1
+entry, matches target.
+
+**Conclusion, per the coordinator's own bound: PARK THIS UNIT.** The
+`0x90`-`0xd8` pool range is now substantially closed by authored cases (new
+pool entries this round match retail exactly: 9.0f/28.0f at 0xb0/0xb4 (case
+3's `checkFrame` thresholds), 34.0f/46.0f at 0xc0/0xc4 (case 8's), -1.0f at
+0xbc (case 7's `setDirection`), 2.0f at 0xc8 (case 10's `mSpeedF` term)) and
+the `create()`/`execute()` gap has still not moved by a single byte across
+three independent measurements (after the order fix alone, after case 4
+alone, and after this whole batch). Two cases were deliberately left as
+stubs rather than guessed: **case 6** and **case 11** add no new pool value
+beyond what cases 3/7/9/10 already cover (verified by scanning their full
+target disassembly for `(r31)` offsets before deciding not to author them —
+not a coverage gap, a genuine no-op for the pool-completion goal). **Case 13**
+was read but NOT authored: its first instruction (`lfs f2, 0x280(r3)`) reads
+a field that is not a clean `mAnimChrs[i]` index (`0x280 - 0x1e8 = 0x98`,
+`0x98 / 0x38` does not divide evenly), so it would require guessing an
+unverified sub-field layout inside `m3d::anmChr_c`/`fanm_c`/`banm_c` — not
+attempted, consistent with the project's "don't guess" rule.
+
+Per the coordinator's own framing: this is a **planning fact, not a defect**.
+The remaining `create()`/`execute()` gap (`0x8be8`-`0x8c08` in the retail
+REL, a 9-word/0x24-byte block with no consumer anywhere in this unit's own
+disassembly, exhaustively re-confirmed) is not reachable from a single-file
+`build.py` compile. This unit should be re-tested against the real multi-object
+link once more of `d_basesNP` is landed, not reworked further from here.
+
+---
+
+## ROUND 2 FINDINGS (superseded in priority by ROUND 3 above, kept for the
+detailed reasoning behind the order fix / procNone fix / gap investigation)
+
 
 Picked up mid-edit after a session-limit kill. Rebuilt first per instructions:
 `build.py` compiled clean (`draft.o`/`draft.txt` were current), and the draft
@@ -200,7 +254,7 @@ referencing function found anywhere in this unit's authored code).
 
 | target | size | note |
 |---|---|---|
-| `fn_2_16D940` | 0xA60 | **STALE — see "THIS ROUND'S FINDINGS" at the top.** As of this round: 5 of 16 cases authored (0, 1, 2, 4, 14, 15 — 6 actually, table header undercounts), 10 still bare `break;` stubs (3, 5-13). `runMain__13daWmKoopaJr_cFv` diffs 663/664 lines against `fn_2_16D940` (expected — most of the function is unauthored). Authoring case 4 was an explicit empirical test of whether more cases move the `execute`/`create` pool displacement — confirmed it does NOT (see top section for the exhaustive-search reasoning why). |
+| `fn_2_16D940` | 0xA60 | **STALE — see "ROUND 3" at the top.** As of round 3: 12 of 16 cases authored (0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 14, 15), 4 still bare `break;` stubs (6, 11, 13 deliberately not guessed/not needed for pool coverage; case 13 specifically blocked on an unverified sub-field). `runMain__13daWmKoopaJr_cFv` diffs against `fn_2_16D940` (expected — the function is still not fully authored, and a raw line-diff count isn't meaningful until it is). Unit is PARKED per the coordinator's bound: three independent re-diffs of `execute`/`create` (after the order fix, after case 4, after this whole round-3 batch) show ZERO pool-displacement movement. |
 | `fn_2_16E3A0` | 0xE4 | **AUTHORED this round as `changeAnim(int animIdx, float blendFrame, float rate, float startFrame)`.** 57/57 lines match in size; the only 4 differing lines are this unit's own `sc_animNames`/`sc_playModes` symbol names (own-symbol naming, see the MATCH\* convention above) — logic is a confirmed match. |
 | `fn_2_16E490` | 0x84 | `__sinit_d_a_wm_koopajr_cpp` — the file's static initializer. Constructs a global object at `lbl_2_data_45DE8` using `dCsvData_c::c_CASTLE_ID`/`c_START_ID` (dynamic-init statics, hence needing `__sinit` rather than being compile-time constants) and three floats from the shared rodata pool, then calls `__register_global_object` with a destructor pointer `fn_2_16E520`. The identity/type of the constructed object is unresolved. Not required for any of the six named functions. |
 | `fn_2_16E520` | 0x1C | The above global object's destructor wrapper (target of `__register_global_object`'s 2nd arg). Not declared. |
