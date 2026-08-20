@@ -38,7 +38,7 @@ MEASURED at the storing site and what is INFERRED from the calling function.
 | `lbl_2_bss_11B70` | `COURSE_SELECT_MANAGER` | `0x570` | inferred | `: dBase_c`, `+ sStateMethodUsr_FI_c`, `+ dCourseSelectGuide_c @ +0xC8` |
 | `lbl_2_bss_C778` | `MINI_GAME_WIRE_MESH_MGR_OBJ` | `0x708` | inferred | `: dActor_c` |
 | `lbl_2_bss_5AE8` | `BGM_INTERLOCKING_DUMMY_BLOCK_MGR` | `0x400` | inferred | `: dActor_c`, `+ sStateMethodUsr_FI_c` |
-| `lbl_2_bss_D8F8` | `PEACH_CASTLE_SEQUENCE_MGR_OBJ` | `0x0B8` | inferred | `: dActor_c` |
+| `lbl_2_bss_D8F8` | `PEACH_CASTLE_SEQUENCE_MGR_OBJ` | `0x0B8` | inferred | **`: dBase_c`** (was wrongly recorded as `dActor_c`) |
 | `lbl_2_bss_C460` | `MINI_GAME_GUN_BATTERY_MGR_OBJ` | `0x0F4` | inferred | **`: dBase_c`** (was wrongly recorded as `dActor_c`) |
 
 **"measured"** means the `operator new` is in the same function as the pointer
@@ -48,6 +48,20 @@ comes from the CALLING function's allocation. That is the ordinary
 classInit-allocates / constructor-stores-`this` pattern and the number is very
 probably right, but it is one inference deep and should be re-derived before a
 class layout is built on it.
+
+## The SAME error, caught twice, by two different agents
+
+Both `MINI_GAME_GUN_BATTERY_MGR_OBJ` and `PEACH_CASTLE_SEQUENCE_MGR_OBJ` were
+recorded as `: dActor_c`. **Both are `: dBase_c`.** Two agents authoring the two
+units caught them independently, each by reading the constructor's own call
+(`__ct__7dBase_cFv` at `0xF8AB4` and `0x120644` respectively).
+
+**In both cases the MANAGER genuinely is `dActor_c`-derived and the OBJECT is
+not** — and in both cases my window-based tool read the manager's constructor
+while attributing it to the object. One occurrence is a bug; two identical
+occurrences mean the manager/object pair is a SHAPE, and any tool that walks
+outward from a singleton store will meet it. Check which of the two classes a
+constructor belongs to before attributing a base.
 
 ## The correction, and why it matters more than the numbers
 
