@@ -139,16 +139,33 @@ def norm(instructions):
 def eq_mod_tail_blr(target, draft):
     """True if `draft` equals `target`, or is `target` plus one dead `blr`.
 
-    Allowed ONLY when the target's last instruction is `bctr`: after a tail call
-    a `blr` is unreachable, so it cannot be a real function of its own and its
-    presence or absence changes nothing that executes.
+    Allowed only when the target's last instruction is an UNCONDITIONAL TAIL
+    TRANSFER -- `bctr` (computed) or a plain `b <label>` (direct). After either,
+    a following `blr` is unreachable, so it cannot be a real function of its own
+    and its presence or absence changes nothing that executes.
+
+    The `b` case was originally missing, and it cost a round on
+    d_a_peach_castle_sequence: the target's `fn_2_120970` (8 instructions, ends
+    `b fn_2_1208C0`) plus the lone `blr` dtk splits off as `fn_2_120990`
+    reassemble byte-for-byte into the draft's single 9-instruction function --
+    but the forgiveness only fired for `bctr`, so a complete unit reported
+    43/44 against a defect that does not exist.
+
+    NOT widened to conditional branches or to `blr`-ended targets. An earlier
+    attempt to handle this by restitching the target's function LIST did cascade
+    (a correct 64/66 became 42/52); this stays at the COMPARISON, where the
+    draft's own shape decides, and is gated on the tail transfer being
+    unconditional.
     """
     if draft == target:
         return True
-    return (len(draft) == len(target) + 1
+    if not (len(draft) == len(target) + 1
             and draft[:-1] == target
             and draft[-1].strip() == 'blr'
-            and target and target[-1].strip() == 'bctr')
+            and target):
+        return False
+    last = target[-1].strip()
+    return last == 'bctr' or last == 'b' or last.startswith('b ')
 
 
 def functions(path, with_addr=False):

@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11653 lines / 447 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11677 lines / 448 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -468,3 +468,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11598-11614` Read vtables from the `.data` SPLIT OBJECT — it prints real symbol names
   - `11615-11626` Pooled STRING LITERALS name the class and its states outright
 - `11627-11653` A prediction that HELD: name the overrides before touching the constructor
+- `11654-11677` Tool fix: the trailing-`blr` forgiveness only fired for `bctr`, not for `b`

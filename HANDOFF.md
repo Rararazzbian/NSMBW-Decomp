@@ -11650,3 +11650,27 @@ Also corrected: I framed the unit's two largest functions as candidates for
 `execute()`. **`execute()` is 12 lines and forwards to `mStateMgr.executeState()`;
 the large functions are two of the STATE bodies.** In a state-framework unit the
 dispatcher is trivial and the size lives in the states.
+
+## Tool fix: the trailing-`blr` forgiveness only fired for `bctr`, not for `b`
+
+`verify_anon.py` forgives a draft that is the target plus one dead `blr`, because
+dtk splits an unreachable `blr` after a tail call into its own labelled
+pseudo-function. **The gate was `bctr` only.** A direct tail call ends in a plain
+`b <label>`, and those were not forgiven.
+
+That cost a round on `d_a_peach_castle_sequence`: the target's `fn_2_120970`
+(8 instructions, ending `b fn_2_1208C0`) plus the lone `blr` dtk lists as
+`fn_2_120990` reassemble byte-for-byte into the draft's single 9-instruction
+function. **A complete unit reported 43/44 against a defect that does not exist**
+— the second time this exact artefact has burned a round, after sandpillar.
+
+Widened to any unconditional tail transfer: `bctr`, or `b <label>`. Deliberately
+NOT widened to conditional branches or to `blr`-ended targets, and deliberately
+kept at the COMPARISON rather than restitching the target's function list — the
+file already records that restitching cascades (a correct 64/66 became 42/52).
+
+**Measured tree-wide before and after, which is the part that makes it safe to
+keep:** across every unit the sweep covers, exactly one number moved —
+`agent_peach_castle_seq` from `43/44` to `44/44`. **No other unit's tally changed
+at all.** A forgiveness rule that is too loose shows up as tallies rising
+everywhere; this one moved precisely where the artefact was.
