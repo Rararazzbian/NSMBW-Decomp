@@ -4,13 +4,13 @@ Brand-new unit, `d_basesNP` `.text 0xF8980-0xF9B40` (0x11C0 bytes), ONE translat
 covering both profiles (single `.ctors` entry `0x294 -> __sinit fn_2_F97D0`, confirmed with
 `python wip/wm_units/ctors_map.py d_basesNP GUN_BATTERY`).
 
-**Tally: 41/49 individually diffed and matched** (30 are true 0-diff EXACT matches; 11 differ
+**Tally: 44/49 individually diffed and matched** (33 are true 0-diff EXACT matches; 11 differ
 only in symbol names the target dump structurally cannot show). Both gates green:
 `check_fn_order.py` reports 0 inversions, `ctors_map.py` reports exactly one `.ctors` entry.
-Every one of the 41 was diffed by address, not assumed from content resemblance. Remaining 8:
+Every one of the 44 was diffed by address, not assumed from content resemblance. Remaining 5:
 4 PARKED with real, understood, narrow residuals (register allocation or one specific
-instruction-selection shape); 3 genuinely UNATTRIBUTED (not guessed); 1 is `__sinit`, correctly
-left untouched until everything else is final.
+instruction-selection shape); 1 is `__sinit`, correctly left untouched until everything else
+is final.
 
 ## History (rounds 1-3, condensed)
 
@@ -76,22 +76,31 @@ vtable read, not in the original inventory).
    initializeState, both EXACT once corrected). 3 of the originally-claimed 23 remain genuinely
    unattributed (`fn_2_F9670`/`F9690`/`F96B0`) -- see below, not counted as matched.
 
-## Genuinely unattributed: `fn_2_F9670`, `fn_2_F9690`, `fn_2_F96B0`
+## Round 5: the three "unattributed" thunks resolved
 
-All three are 0x1C-byte MI-adjustment thunks (`mr r4,r3; lwz r3,0x8(r3); lwz r4,0x4(r4); lwz
-r12,0(r3); lwz r12,OFFSET(r12); mtctr r12; bctr` with OFFSET = 0x28/0x2c/0x30 respectively --
-three consecutive vtable slots). They sit in `lbl_2_data_31AD0` right after `fn_2_F8CA0`
-(indices 2-5 of a small 4-real-entry vtable), which made them LOOK like `sStateIDChk_c`'s
-remaining virtuals at first -- but `sStateIDChk_c`/`sStateIDChkIf_c` only declare ONE virtual
-beyond the destructor (`isNormalID`), not three, and
-`isNormalID__13sStateIDChk_cCFRC12sStateIDIf_c` was diffed against all three addresses and
-matches NONE of them (7 differing each, wrong shape entirely). `fn_2_F8CA0` being byte-identical
-to `sStateIDChk_c`'s destructor is most likely identical-code-folding (a shared trivial
-"conditional delete" body), not evidence they belong to the same class. No source in this draft
-currently compiles anything that produces these 3 functions (no matching weak symbols exist in
-`draft.txt` at all), meaning something is not yet written that would trigger them -- most likely
-a state-ID comparison (`isState()`-style, `*mStateMgr.getStateID() == X`) that this class needs
-somewhere not yet identified. Left genuinely open rather than guessed.
+Per the coordinator's direction: diffed the three bodies against each other first (byte-
+identical apart from one displacement each -- `0x28`/`0x2c`/`0x30`, confirming one family of
+three consecutive vtable slots) and re-read them from the `.data` vtable dump
+(`lbl_2_data_31AD0`, indices 2-5: `fn_2_F8CA0` then the three unknowns). The
+`sStateIDChk_c`-remaining-virtuals hypothesis was already disproven (only one virtual beyond the
+dtor exists there). The winning hypothesis was the coordinator's OTHER suggested family:
+`sFState_c<T>` (from `sStateIf_c`: dtor + `initialize()`/`execute()`/`finalize()`, exactly
+three non-dtor virtuals). Its weak symbols were ALREADY present in `draft.txt`
+(`initialize__41sFState_c<...>Fv` etc, generated automatically once `mStateMgr`/`STATE_DEFINE`
+were declared in round 3) -- they had simply never been individually diffed. All three: EXACT
+matches.
+
+`fn_2_F8CA0` is REATTRIBUTED again as a result: it is `sFState_c<T>`'s own destructor (index 2 of
+the SAME `lbl_2_data_31AD0` table, immediately before `initialize`/`execute`/`finalize` at
+indices 3-5), not `sStateIDChk_c`'s. Both attributions are still byte-CORRECT
+(`__dt__41sFState_c<...>Fv` also diffs EXACT against `fn_2_F8CA0`, confirmed) -- genuine
+identical-code-folding between two unrelated empty-bodied destructors, resolved by which
+VTABLE the slot actually belongs to (`sStateIDChk_c`'s real, separate vtable is the
+MODULE-WIDE-SHARED `lbl_2_data_418` object referenced from `mCheck`, established back in round
+2's ownership check -- not `lbl_2_data_31AD0` at all). No declaration was missing; nothing
+needed to be added to source. Re-diffed all 4 parked functions afterward per instruction --
+unchanged (no regression, no movement), consistent with nothing having actually changed in the
+compiled output.
 
 ## Function inventory (49 real functions, 0x11C0 bytes total; sizes sum to exactly 0x11C0)
 
@@ -106,7 +115,7 @@ somewhere not yet identified. Left genuinely open rather than guessed.
 | F8B90 | 0x64 | MATCHED EXACT -- sFStateMgr_c<T,M> dtor |
 | F8C00 | 0x60 | MATCHED EXACT -- sStateMgr_c<T,M,F,C> dtor |
 | F8C60 | 0x40 | MATCHED EXACT -- sFStateFct_c<T> dtor |
-| F8CA0 | 0x40 | MATCHED EXACT -- sStateIDChk_c dtor (corrected attribution) |
+| F8CA0 | 0x40 | MATCHED EXACT -- sFState_c<T> dtor (corrected attribution, twice) |
 | F8CE0 | 0x60 | MATCHED EXACT -- MGR_OBJ::create() |
 | F8D40 | 0x40 | MATCHED (naming) -- MGR_OBJ::preExecute() |
 | F8D80 | 0x30 | MATCHED EXACT -- MGR_OBJ::execute() |
@@ -130,9 +139,9 @@ somewhere not yet identified. Left genuinely open rather than guessed.
 | F9580 | 0x1E | MATCHED EXACT -- MGR_OBJ::~MGR_OBJ() |
 | F9600 | 0x60 | MATCHED EXACT -- sFStateFct_c<T>::build() |
 | F9660 | 0x10 | MATCHED EXACT -- sFStateFct_c<T>::dispose() |
-| F9670 | 0x20 | UNATTRIBUTED -- see above |
-| F9690 | 0x20 | UNATTRIBUTED -- see above |
-| F96B0 | 0x20 | UNATTRIBUTED -- see above |
+| F9670 | 0x20 | MATCHED EXACT -- sFState_c<T>::initialize() |
+| F9690 | 0x20 | MATCHED EXACT -- sFState_c<T>::execute() |
+| F96B0 | 0x20 | MATCHED EXACT -- sFState_c<T>::finalize() |
 | F96D0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::initializeState() |
 | F96E0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::finalizeState() |
 | F96F0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::refreshState() |

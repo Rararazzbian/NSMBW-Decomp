@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12128 lines / 472 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12166 lines / 473 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -493,3 +493,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12081-12099` Individually diffing "known" boilerplate caught TWO wrong attributions
   - `12100-12110` Three functions nothing in the draft produces
   - `12111-12128` Two more results from the same round
+- `12129-12166` IDENTICAL CODE FOLDING means bytes do not determine ATTRIBUTION — the vtable does

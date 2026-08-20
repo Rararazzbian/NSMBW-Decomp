@@ -12125,3 +12125,41 @@ declaration whose instantiation would emit them, not for a mis-authored body.
 **41/49 is not landable** — eight functions still differ, so the slice's bytes
 cannot match retail. Unlike the three units that landed today against structural
 objections, this one is short on CONTENT, and no build will paper over that.
+
+## IDENTICAL CODE FOLDING means bytes do not determine ATTRIBUTION — the vtable does
+
+MINI_GAME_GUN_BATTERY reached **44/49 individually diffed**, and the way the last
+three resolved is the lesson.
+
+The three "unattributed" functions `F9670`/`F9690`/`F96B0` **were already being
+emitted.** Diffing their bodies against each other showed them byte-identical
+except for one displacement each (`0x28`/`0x2c`/`0x30`) — one family, three
+consecutive vtable slots. Reading them out of the `.data` vtable dump placed them
+at indices 2-5 of `lbl_2_data_31AD0`, and they resolved to
+**`sFState_c<T>`'s `initialize()`/`execute()`/`finalize()`** — whose weak symbols
+had been sitting in `draft.txt` since `mStateMgr` was declared two rounds
+earlier. **All three EXACT. No declaration was missing and no source changed;
+they had simply never been individually diffed.**
+
+**The subtle part.** That forced a re-attribution of `F8CA0`, which had been
+credited to `sStateIDChk_c` and is actually **`sFState_c<T>`'s own destructor**,
+the slot immediately before the three. **BOTH attributions were byte-CORRECT** —
+two unrelated empty-bodied destructors folded to identical code. The question
+"which class does this function belong to?" **cannot be answered from the bytes at
+all** when identical code folding is in play; it is answered by **which vtable the
+slot lives in**. `sStateIDChk_c`'s real vtable is the separate, module-wide-shared
+`lbl_2_data_418`.
+
+**So: a byte-identical match is evidence of CORRECTNESS, not of IDENTITY.** On a
+project full of tiny empty-bodied destructors and thunks, those two questions come
+apart constantly, and only the vtable settles the second one. This also explains
+why the earlier "attribution errors" were never wrong code — the emitted bytes
+were right throughout; only the names were misassigned.
+
+Re-diffing the four parked functions after the re-attribution showed **no
+movement**, correctly consistent with nothing in the compiled output having
+changed. Recording a null result that CONFIRMS a prediction is as useful as one
+that refutes it.
+
+**44/49.** Remaining: four parked residuals with narrow documented diffs, plus
+`__sinit`, deliberately left last.
