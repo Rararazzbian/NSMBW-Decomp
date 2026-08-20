@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13263 lines / 523 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13332 lines / 528 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -544,3 +544,8 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13207-13224` HEADER: `dBg_ctr_c::set()` third overload + `struct sBgSetInfo` — five binaries green
 - `13225-13246` Three typing lessons from the same round
 - `13247-13263` `verify_anon`'s positional count INFLATES on a length mismatch
+- `13264-13284` THE LANE DECISION: measured throughput says DOL game code, not `d_basesNP` micro-units
+  - `13285-13301` WHY the REL is structurally the harder lane
+  - `13302-13309` The REL rounds were NOT wasted — they built the playbook
+  - `13310-13326` Where the DOL bytes are
+  - `13327-13332` What NOT to reopen

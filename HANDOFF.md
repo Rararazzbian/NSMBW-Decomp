@@ -13260,3 +13260,72 @@ number worth optimising.**
 is now FINAL rather than provisional — all 16 use sites across all four
 `lbl_2_rodata_*` symbols sit in authored, fully-read functions and none exceeds
 `+0x28`.
+
+## THE LANE DECISION: measured throughput says DOL game code, not `d_basesNP` micro-units
+
+A long run of sessions drifted into `d_basesNP.rel`, landing small units. The
+arithmetic on that drift, from `progress.py --progress-summary`:
+
+```
+wiimj2d.dol       668560/3054592   21.887%    2.39 MB left
+d_basesNP.rel      47644/1859588    2.562%    1.81 MB left
+d_enemiesNP.rel    25120/1221672    2.056%
+d_en_bossNP.rel      112/356396     0.031%
+Total             749556/6500368   11.531%
+```
+
+**Six `d_basesNP` units landed in one long session moved the TOTAL by 0.06%.**
+The two DOL actor units — `source/dol/bases/d_a_en_bros_base.cpp` (99/99) and
+`d_a_en_blockmain.cpp` (97/97) — were **24,716 bytes between them, 0.380%**, most
+functions correct on first compile.
+
+**One DOL actor TU is worth about nineteen of the REL micro-units.** That ratio,
+not any argument about difficulty, is the reason to work the DOL.
+
+### WHY the REL is structurally the harder lane
+
+This is the part to internalise, because it explains every wall of the last
+several sessions in one sentence:
+
+**In a REL, an un-landed neighbour is still raw binary in the same section, so a
+unit only links if its function DEFINITION ORDER is right, its `.ctors` slot
+count is right, and its `.bss`/`.data` bounds are exact.** The cost is not
+writing the functions — it is PLACEMENT. Hence: five units found permanently
+unlinkable on ordering alone (WM_KILLER, WM_KILLERBULLET, WM_KOOPAJR,
+WM_ANTLION_MNG, WM_HANACHAN), the RIVER destructor wall, the `__sinit` puzzles,
+the `.ctors` ownership rounds.
+
+**In the DOL, 144 slices are already dense and the neighbours are landed, so a TU
+only has to be internally correct.** No ordering gate, no `.ctors` arithmetic
+against un-landed code.
+
+### The REL rounds were NOT wasted — they built the playbook
+
+The state-framework lever (one correct `STATE_VIRTUAL_DEFINE` emitting eight or
+twenty functions free), the mangled-name discipline, the size-first diagnostic,
+the eight wrong return types, the PMF virtual/non-virtual encoding. **That
+knowledge was itself copied FROM a landed DOL unit** (`d_a_en_togezo_base.cpp`).
+Spend it where the bytes are.
+
+### Where the DOL bytes are
+
+Largest unclaimed `.text` gaps in `dol/` game code, from `slices/wiimj2d.json`:
+
+```
+0x20290   0xA1F90 -> 0xC2220    d_enemy_state.cpp  -> d_lytbase.cpp
+0x1F2C0   0x667C0 -> 0x85A80    d_base_actor.cpp   -> d_cc.cpp
+0xFC50   0x1440B0 -> 0x153D00   d_a_player.cpp     -> d_pausewindow.cpp
+0xE4F0    0xF74C0 -> 0x1059B0   d_wm_path.cpp      -> d_SelectCursor.cpp
+0xA410    0xE1C90 -> 0xEC0A0    d_util_frame_counter.cpp -> d_wm_actor.cpp
+```
+
+The first is the best hunting ground: it sits directly after the enemy-state base
+class, and **eighteen `d_a_en_*` TUs are already landed**, so candidates there
+come with a large shelf of solved siblings. Being scouted now into
+`wip/dol_scout/DOL_TARGETS.md`.
+
+### What NOT to reopen
+
+RIVER, CASTLE_BG (24/33), and the five order-blocked units. Those walls are
+**measured, not merely hit** — RIVER alone burned ten source-level variants
+across two rounds. Reopening any of them costs a round and returns nothing.
