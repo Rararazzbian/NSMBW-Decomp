@@ -133,63 +133,114 @@ def main():
     # arrives in r3 and is typically carried through one or more `mr` moves (and
     # through a constructor, which returns `this` in r3) before the store.
     def carries_new_result(alloc_addr, store_addr):
+        """Does the register stored actually hold what `operator new` returned?
+
+        Two things make the naive version unsound, and both produced a WRONG
+        row in BSS_SINGLETONS.md before they were fixed:
+
+        1. **A function boundary between the allocation and the store.** Register
+           liveness does not survive one. MINI_GAME_GUN_BATTERY's classInit
+           allocates 0xF4 bytes and RETURNS (`blr`); the singleton store lives in
+           a different function entirely, which allocates nothing.
+        2. **Any instruction that redefines the tracked register kills it.**
+           Tracking only `mr` moves misses `li`/`lis`/`lwz` overwrites, so a
+           register reloaded for an unrelated call still looked live. In that same
+           unit `li r3, 0x164` then `bl createChild` meant the stored value was a
+           CHILD OBJECT, not the allocation -- yet r3 was reported as carrying it.
+
+        A `bl` re-establishes r3 only under the constructor convention (returns
+        `this`), which holds only if r3 was live going in.
+        """
         live = {3}
         for addr in range(alloc_addr + 4, store_addr + 4, 4):
             instruction = word(addr)
             opcode = instruction >> 26
+
+            # Function boundary: liveness cannot cross it.
+            if instruction == 0x4E800020 or opcode == 37:   # blr, stwu (prologue)
+                return False
+
             if opcode == 31 and ((instruction >> 1) & 0x3FF) == 444:   # mr rA, rS
                 source = (instruction >> 21) & 31
                 dest = (instruction >> 16) & 31
-                back = (instruction >> 11) & 31
-                if source == back:
-                    if source in live:
-                        live.add(dest)
-                    else:
-                        live.discard(dest)
-            elif opcode == 18 and (instruction & 1):                   # bl: r3 = this
-                live.add(3)
+                if source == ((instruction >> 11) & 31):
+                    live.add(dest) if source in live else live.discard(dest)
+                    continue
+
+            if opcode == 18 and (instruction & 1):          # bl
+                # Constructor convention returns `this` in r3 -- but only if r3
+                # actually held the object going in.
+                if 3 not in live:
+                    live.discard(3)
+                continue
+
+            # Anything else that writes a register kills our tracking of it.
+            if opcode in (14, 15, 24, 25, 32, 34, 40, 48, 50, 33, 35):
+                live.discard((instruction >> 21) & 31)
+            elif opcode == 31:
+                live.discard((instruction >> 16) & 31)
+
         return ((word(store_addr) >> 21) & 31) in live
 
-    alloc = None
-    size = None
+    def function_start(addr):
+        """Walk back to the prologue of the function containing `addr`."""
+        for probe in range(addr, max(0, addr - 0x2000), -4):
+            if word(probe) >> 26 == 37:          # stwu r1, -N(r1)
+                return probe
+        return None
+
+    def find_alloc(lo, hi):
+        """The `bl <operator new>` in [lo, hi), with its size immediate."""
+        for addr in range(hi, lo, -4):
+            if call_target(addr) in OPERATOR_NEW:
+                for back in range(addr - 4, max(lo, addr - 0x48), -4):
+                    instruction = word(back)
+                    if (instruction >> 26) == 14 and ((instruction >> 16) & 31) == 0:
+                        return addr, instruction & 0xFFFF
+                return addr, None
+        return None, None
+
+    # An allocation only tells you the singleton's size if it is the value being
+    # stored. Scope the search to the STORING FUNCTION -- a fixed byte window
+    # silently crosses `blr` into an unrelated function, and doing so put a wrong
+    # sizeof in BSS_SINGLETONS.md: MINI_GAME_GUN_BATTERY's classInit allocates
+    # 0xF4 and returns, while the store lives in another function that allocates
+    # nothing and stores `createChild()`'s result instead.
+    store_fn = function_start(create)
+    alloc = size = None
     verified = False
-    for addr in range(create, create - WINDOW, -4):
-        if call_target(addr) in OPERATOR_NEW:
-            for back in range(addr - 4, addr - 0x48, -4):
-                instruction = word(back)
-                if (instruction >> 26) == 14 and ((instruction >> 16) & 31) == 0:
-                    size = instruction & 0xFFFF
-                    print("  sizeof           0x%X   (li r%d, 0x%X at 0x%X; bl %s)"
-                          % (size, (instruction >> 21) & 31, size, back,
-                             call_target(addr)))
-                    break
-            alloc = addr
-            verified = carries_new_result(addr, create)
-            break
+    if store_fn is not None:
+        alloc, size = find_alloc(store_fn, create)
+        if alloc is not None:
+            verified = carries_new_result(alloc, create)
+            print("  sizeof           0x%X   (allocated in the storing function"
+                  % size if size else "  sizeof           unknown")
+            if size:
+                print("                   at 0x%X, and the stored register traces"
+                      % alloc)
+                print("                   to it)" if verified else
+                      "                   to something ELSE -- sizeof NOT this object's)")
 
     if alloc is None:
-        print("  allocation not located within 0x%X bytes before the store." % WINDOW)
-        print("  Skipping the call list: printing a fixed window would name the")
-        print("  PRECEDING function's callees as if they belonged to this class.")
+        print("  sizeof           NOT DETERMINED from this site.")
+        print("                   No `operator new` in the function that stores the")
+        print("                   pointer, so the object is allocated elsewhere and")
+        print("                   arrives as an argument. Report the caller's")
+        print("                   allocation only as INFERRED, never as measured:")
+        callers = sorted({addr for addr in range(max(0, store_fn - 0x8000), store_fn)
+                          if (word(addr) >> 26) == 18 and (word(addr) & 1)
+                          and (addr + (((word(addr) & 0x03FFFFFC) ^ 0x02000000) - 0x02000000)) == store_fn}) if store_fn else []
+        for caller in callers[:3]:
+            caller_fn = function_start(caller)
+            if caller_fn is None:
+                continue
+            caller_alloc, caller_size = find_alloc(caller_fn, caller)
+            if caller_size:
+                print("                     caller 0x%X allocates 0x%X (INFERRED)"
+                      % (caller_fn, caller_size))
+        if not callers:
+            print("                     (no direct caller found nearby)")
         return 0
-
-    if verified:
-        print("  dataflow         VERIFIED -- the stored pointer is the value")
-        print("                   operator new returned (traced through mr/bl).")
-    else:
-        print("  dataflow         NOT VERIFIED -- the register stored is not the")
-        print("                   one this allocation produced. The sizeof above")
-        print("                   probably belongs to a MEMBER or a temporary,")
-        print("                   not to the singleton. Treat it as unknown.")
-
-    span = create - alloc
-    if span > NEAR and not verified:
-        print("")
-        print("  WARNING: the allocation is 0x%X bytes before the store." % span)
-        print("  It may allocate a DIFFERENT object (a member, a temporary) rather")
-        print("  than the singleton, in which case the sizeof above is that object's.")
-        print("  Treat it as a CANDIDATE until you confirm the stored register is")
-        print("  the one operator new returned.")
 
     print("")
     print("  calls between the allocation and the pointer store")

@@ -26,28 +26,59 @@ four bytes, and every one of those offsets belongs to a heap object.
 
 ## The table
 
-Every row's `sizeof` is READ off the `li rN, SIZE` feeding `operator new` — not
-derived from the highest field offset anyone happened to observe. Every row
-marked verified had the stored register traced back to that allocation's result.
+**Corrected.** An earlier version presented every row as "dataflow VERIFIED". That
+verification was UNSOUND for five of seven rows — see the correction note below —
+and one row named the wrong base class. `sizeof` is now separated into what is
+MEASURED at the storing site and what is INFERRED from the calling function.
 
-| label | owning profile | sizeof | class / base |
-|---|---|---|---|
-| `lbl_2_bss_11B70` | `COURSE_SELECT_MANAGER` | `0x570` | `: dBase_c`, `+ sStateMethodUsr_FI_c`, `+ dCourseSelectGuide_c @ +0xC8` |
-| `lbl_2_bss_C778` | `MINI_GAME_WIRE_MESH_MGR_OBJ` | `0x708` | `: dActor_c` |
-| `lbl_2_bss_5AE8` | `BGM_INTERLOCKING_DUMMY_BLOCK_MGR` | `0x400` | `: dActor_c`, `+ sStateMethodUsr_FI_c` |
-| `lbl_2_bss_C460` | `MINI_GAME_GUN_BATTERY_MGR_OBJ` | `0x0F4` | `: dActor_c` |
-| `lbl_2_bss_D8F8` | `PEACH_CASTLE_SEQUENCE_MGR_OBJ` | `0x0B8` | `: dActor_c` |
-| `lbl_2_bss_FEE4` | `WM_KOOPASHIP` | `0x038` | `dWmRouteManager_c` |
-| `lbl_2_bss_FEE0` | `WM_KOOPASHIP` | `0x018` | `dWmSpline_c` (ctor `(int, int, float)`) |
+| label | owning unit | sizeof | how | class / base |
+|---|---|---|---|---|
+| `lbl_2_bss_FEE0` | `WM_KOOPASHIP` | `0x018` | **measured** | `dWmSpline_c`, ctor `(int,int,float)` |
+| `lbl_2_bss_FEE4` | `WM_KOOPASHIP` | `0x038` | **measured** | `dWmRouteManager_c` |
+| `lbl_2_bss_11B70` | `COURSE_SELECT_MANAGER` | `0x570` | inferred | `: dBase_c`, `+ sStateMethodUsr_FI_c`, `+ dCourseSelectGuide_c @ +0xC8` |
+| `lbl_2_bss_C778` | `MINI_GAME_WIRE_MESH_MGR_OBJ` | `0x708` | inferred | `: dActor_c` |
+| `lbl_2_bss_5AE8` | `BGM_INTERLOCKING_DUMMY_BLOCK_MGR` | `0x400` | inferred | `: dActor_c`, `+ sStateMethodUsr_FI_c` |
+| `lbl_2_bss_D8F8` | `PEACH_CASTLE_SEQUENCE_MGR_OBJ` | `0x0B8` | inferred | `: dActor_c` |
+| `lbl_2_bss_C460` | `MINI_GAME_GUN_BATTERY_MGR_OBJ` | `0x0F4` | inferred | **`: dBase_c`** (was wrongly recorded as `dActor_c`) |
 
-All seven: **dataflow VERIFIED.**
+**"measured"** means the `operator new` is in the same function as the pointer
+store and the stored register traces to it. **"inferred"** means the storing
+function allocates nothing — the object arrives as an argument — and the size
+comes from the CALLING function's allocation. That is the ordinary
+classInit-allocates / constructor-stores-`this` pattern and the number is very
+probably right, but it is one inference deep and should be re-derived before a
+class layout is built on it.
 
-`dCourseSelectGuide_c` is the world map HUD and is **already decompiled** —
-`include/game/bases/d_CourseSelectGuide.hpp`, `source/dol/bases/`.
+## The correction, and why it matters more than the numbers
 
-WM_KOOPASHIP owns **two adjacent singletons**, `0xFEE0` and `0xFEE4`. The name
-suggests a manager; the first one is a spline. Do not infer a type from the
-profile name.
+The `MINI_GAME_GUN_BATTERY` row said `: dActor_c`. **It is `dBase_c`.** An agent
+authoring the unit caught it from the mangled names, and the check is decisive on
+its own: **`sizeof(dActor_c)` is `0x398`, which is larger than the whole `0xF4`
+object.** A class cannot be smaller than its own base.
+
+The tool went wrong in two ways, both now fixed:
+
+1. **It searched a fixed byte window backwards from the store**, which silently
+   crossed a `blr` into an unrelated function. `MINI_GAME_GUN_BATTERY_MGR_OBJ`'s
+   classInit allocates `0xF4` and RETURNS; the singleton store lives in the
+   MANAGER's constructor, a different function that allocates nothing. The window
+   spanned both and attributed the manager's `__ct__8dActor_cFv` to the object.
+2. **Its register trace only handled `mr` moves**, so an overwrite by
+   `li`/`lis`/`lwz` did not kill the tracked register. In that same function
+   `li r3, 0x164` then `bl createChild` means **the value actually stored is a
+   CHILD OBJECT, not the allocation** — and r3 still looked live.
+
+The allocation search is now scoped to the storing function, register-killing
+instructions are honoured, and a function boundary ends the trace. When the
+storing function allocates nothing the tool says `sizeof NOT DETERMINED from this
+site` and reports the caller's allocation explicitly labelled INFERRED.
+
+**The lesson is about the shape of the mistake.** The tool had a warning for
+"allocation is far from the store" and it did not fire here, because the
+allocation was NEAR — just in a different function. A distance heuristic was
+standing in for a correctness check, and it read as confirmation. **A proxy that
+usually correlates with correctness will eventually disagree with it, and it is
+most convincing exactly when it is wrong.**
 
 ## NOT singletons — and why "two writes" was not enough
 
