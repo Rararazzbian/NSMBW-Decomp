@@ -12453,3 +12453,40 @@ both ends confirmed by hand against raw REL bytes — `0x3AF18-0x3B788`, exactly
 stopping precisely where a foreign `g_profile_*` begins (`executeOrder=0x225`,
 outside RIVER's tight `0x28-0x32` cluster). No `.rodata`, `.bss` or `.ctors`
 claim. **That range is ready for whoever closes the destructors.**
+
+## CORRECTION: `lbl_2_data_1CBF8` is FLOOR_JR_A's OWN object, not a foreign unit's
+
+FLOOR_JR_A reached **22/29** and reported a structural blocker on `__sinit`: the
+target's three state-ID `.bss` objects patch their vtable pointer to
+`lbl_2_data_1CBF8`, which it concluded belongs to **"a separate, unauthored unit
+sitting between FLOOR_JR_A and FLOOR_JR_B's ranges"** — a cross-unit shared
+template instantiation it could not reproduce from its own TU.
+
+**It is not foreign. Only TWO sites in the whole module reference it, and both are
+inside FLOOR_JR_A's own `.text`** (`0x83E66`, `0x83E72`). It is the unit's own
+object, and the "external" reading was the blocker.
+
+**The `.data` range settles it cleanly:**
+```
+0x1C780  g_profile_FLOOR_JR_A       0xC
+0x1C78C  string                     0x22
+0x1C7B0  string                     0x18
+0x1C7C8  string                     0x10
+0x1C7D8  string                     0x10
+0x1C7E8  object                    0x410
+0x1CBF8  object                     0x38   <- the "external" one
+0x1CC30  g_profile_FLOOR_JR_B              <- the LANDED neighbour starts here
+```
+
+So **FLOOR_JR_A `.data = 0x1C780-0x1CC30`**, contiguous, and it abuts
+`d_a_floor_jr_b.cpp`'s already-landed `.data 0x1CC30-0x1CEC8` **exactly**. Two
+adjacent slices meeting with no gap is strong independent confirmation of both.
+
+**The general trap:** an object referenced from a `.bss` vtable patch *looks*
+external because nothing in the draft emits it yet. **Ownership is decided by who
+REFERENCES it, not by whether your draft currently produces it** — one relocation
+query answers it, and the answer here was two sites, both inside the unit.
+
+This is the same class of error as the `.data`-extent correction on CASTLE_BG: a
+range derived from what a draft currently reaches is a LOWER BOUND, and objects
+the draft has not yet learned to emit sit outside it looking foreign.

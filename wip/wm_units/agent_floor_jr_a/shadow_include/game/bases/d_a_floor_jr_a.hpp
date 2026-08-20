@@ -63,6 +63,8 @@ public:
 
     void setUnk_674_348(int val674, u8 val348);  ///< fn_2_83780
     void setupBgCtr();                            ///< fn_2_83970
+    void playCrumbleEffects();                    ///< fn_2_83A10
+    void unk_83A90();                             ///< fn_2_83A90
 
     dHeapAllocator_c mHeapAllocator;      // 0x524
     nw4r::g3d::ResFile mResFile;           // 0x540
