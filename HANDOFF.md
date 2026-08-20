@@ -13491,3 +13491,99 @@ instructions, so they fail MD5 regardless of link-time placement. This is a
 "bytes" objection, not a "structural" one, so the try-the-build move does not
 apply. Parked, not abandoned — if a lever for MWCC register allocation is ever
 found, this unit is one lever away from N/N.
+
+## `d_line_mng.cpp` 0/182 -> 67/182 from DECLARATIONS ALONE — but read the BYTE figure, not the count
+
+Declaring the class layout and all 25 states, with only the constructor and five
+legitimately-empty state stubs authored, took the unit from nothing to 67 of 182
+functions matching. **Independently re-measured here** by recompiling
+`wip/agent_line_mng/work/named/d_line_mng.cpp` and comparing with the project's
+own `harness.canonicalise`, not by trusting the report:
+
+```
+common function names   115
+length matches           67
+exact text matches       56
+CANONICALISED matches    67   <- the project-standard figure, agent's claim confirmed
+```
+
+The 11 that match canonicalised but not textually are all state-framework
+template functions differing only in pool symbol naming. Legitimate.
+
+### THE COUNT IS NOT THE PROGRESS — 36.8% of functions is 6.9% of BYTES
+
+```
+target total   7631 words (30524 bytes)
+matched         527 words ( 2108 bytes)  =  6.9% BY BYTES
+by count        67/182                   = 36.8%
+remaining      7104 words (28416 bytes)
+```
+
+**The state framework emits MANY SMALL functions** — destructors, ID accessors,
+trampolines, `isSameName`. They are real matches and they are free, but a
+function count overstates them by more than five to one on this unit. **Report
+byte-weighted progress on any unit where the framework did the work.** A future
+round reading "67/182" without this line would badly misjudge how far along it is.
+
+### The brief's sibling was WRONG, and the agent said so with three-way evidence
+
+I named `d_pausewindow.cpp` as the structural sibling. It is not.
+`dLineMng_c::mStateMgr` is
+`sFStateStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>` — a
+**state-of-states** manager holding two full `sFStateMgr_c` sub-objects
+(`mainMgr`/`subMgr`) plus a `currentMgr` pointer — where Pausewindow uses a plain
+single `sFStateMgr_c`. Evidenced three independent ways: both template families
+present in the symbol map; vtable slot counts (`0x30` = 10 slots inner, `0x40` =
+14 outer); and two real out-of-line `sStateMethodUsr_FI_c` constructions at
+`this+0x70` and `this+0xac` in the constructor's own disassembly.
+
+Also: **the constructor passes `sStateID::null`, not `StateID_Idle`.** The first
+real state is set later, in `init()`, via a virtual `changeState()`.
+
+### Layout: `sizeof(dLineMng_c) == 0xEC`, verified by COMPILED assertion
+
+Every offset was checked with a compiled `offsetof`/`Probe<N>` assertion **plus a
+negative control proving the check discriminates** — not read off a disassembly
+and asserted. That is the right standard for a layout, which is the shared
+prerequisite every later function depends on.
+
+```
+0x00  mVec2_c mDirVec[7]     (partly lazy-static-initialised)
+0x38  0x40  0x48  0x50  0x58 five more mVec2_c (mSpeed, mPos, mOldPos, mUnitBasePos, +1 unnamed)
+0x60  f32 mBaseSpeed    0x64  u16 mAngle    0x66..0x69  four u8 flags
+0x6c  mStateMgr, size 0x80  ->  object ends at 0xEC
+```
+
+**Open question, flagged not hidden:** no allocation site for `dLineMng_c` exists
+anywhere in `wiimj2d_symbols.txt`, so `sizeof` has no independent second source.
+
+### `__sinit` is OVERSIZED — that is STRUCTURAL, not scheduling
+
+The agent reports `__sinit` at 1220 words against a 1193-word target and calls it
+"a scheduling/`STATE_DEFINE`-order issue, not structural." **That contradicts this
+project's own rule, recorded twice above** ("The size diagnostic works in BOTH
+directions — an OVERSIZED draft is also structural"), and it is the exact
+misreading that hid a wrong return type on LEMMY for six rounds. 27 excess words
+is CONTENT. To be re-opened as such.
+
+## The missing-return sweep across 31 parked units: a CLEAN NEGATIVE
+
+Ran the mechanical tell (draft one word short + `r3` written in the target
+epilogue between the register restore and `mtlr`) across every parked unit.
+
+**0 of 31 units move.** 1616 target functions measured, 175 with a 1-3 word
+delta, 18 with a uniquely-assigned non-filler draft candidate — all 18 read by
+hand, none shows the epilogue `r3` write.
+
+**The useful distinction it drew:** a separate 20 targets DO have the tell's
+epilogue shape (`li r3, 0x1`, the documented `SUCCEEDED` convention), but each
+pairs only to a generic multiply-reused filler function chosen by size
+coincidence. **Those targets are simply UNAUTHORED — not existing drafts with a
+wrong type.** The tell only fires on a function someone has actually written.
+
+So LEMMY's ninth return type was found by REASONING OVER AN OLD NOTE, and that
+did not generalise into a mechanical sweep. Worth the round to establish; do not
+run it again. Method detail preserved: a name-based diff is useless on the WM
+family (1638/1667 falsely "unauthored") because targets are anonymous
+`fn_2_XXXXXX` whose names bake in an address that differs between a standalone
+compile and the linked REL — use `verify_anon.py`'s content-based pairing.

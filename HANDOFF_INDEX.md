@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13494 lines / 535 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13590 lines / 541 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -556,3 +556,9 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `13443-13468` The part that matters more than the ninth instance: HOW it was found
   - `13469-13482` My Lead 3 hypothesis was REFUTED, with arithmetic
 - `13483-13494` LEMMY_FOOTHOLD PARKED at 42/51 — blocked on register choice, not content
+- `13495-13512` `d_line_mng.cpp` 0/182 -> 67/182 from DECLARATIONS ALONE — but read the BYTE figure, not the count
+  - `13513-13527` THE COUNT IS NOT THE PROGRESS — 36.8% of functions is 6.9% of BYTES
+  - `13528-13542` The brief's sibling was WRONG, and the agent said so with three-way evidence
+  - `13543-13559` Layout: `sizeof(dLineMng_c) == 0xEC`, verified by COMPILED assertion
+  - `13560-13568` `__sinit` is OVERSIZED — that is STRUCTURAL, not scheduling
+- `13569-13590` The missing-return sweep across 31 parked units: a CLEAN NEGATIVE

@@ -1,0 +1,4299 @@
+.include "macros.inc"
+.file "d_line_mng.cpp"
+
+# 0x00000000..0x00002308 | size: 0x2308
+.text
+.balign 16
+
+# .text:0x0 | size: 0x108
+# dLineMng_c::dLineMng_c()
+.fn __ct__10dLineMng_cFv, global
+/* 00000000 00000040  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0000000C 0000004C  39 61 00 30 */	addi r11, r1, 0x30
+/* 00000010 00000050  48 00 00 01 */	bl _savegpr_22
+/* 00000014 00000054  3C 80 00 00 */	lis r4, __ct__7mVec2_cFv@ha
+/* 00000018 00000058  3C A0 00 00 */	lis r5, __dt__7mVec2_cFv@ha
+/* 0000001C 0000005C  7C 76 1B 78 */	mr r22, r3
+/* 00000020 00000060  38 C0 00 08 */	li r6, 0x8
+/* 00000024 00000064  38 84 00 00 */	addi r4, r4, __ct__7mVec2_cFv@l
+/* 00000028 00000068  38 A5 00 00 */	addi r5, r5, __dt__7mVec2_cFv@l
+/* 0000002C 0000006C  38 E0 00 07 */	li r7, 0x7
+/* 00000030 00000070  48 00 00 01 */	bl __construct_array
+/* 00000034 00000074  3C 60 00 00 */	lis r3, "__vt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>"@ha
+/* 00000038 00000078  3F 20 00 00 */	lis r25, "__vt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@ha
+/* 0000003C 0000007C  3B 16 00 70 */	addi r24, r22, 0x70
+/* 00000040 00000080  3F 40 00 00 */	lis r26, __vt__13sStateIDChk_c@ha
+/* 00000044 00000084  3F 60 00 00 */	lis r27, "__vt__26sFStateFct_c<10dLineMng_c>"@ha
+/* 00000048 00000088  3F 80 00 00 */	lis r28, "__vt__23sFState_c<10dLineMng_c>"@ha
+/* 0000004C 0000008C  38 63 00 00 */	addi r3, r3, "__vt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>"@l
+/* 00000050 00000090  3B 39 00 00 */	addi r25, r25, "__vt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@l
+/* 00000054 00000094  3B 5A 00 00 */	addi r26, r26, __vt__13sStateIDChk_c@l
+/* 00000058 00000098  3B 7B 00 00 */	addi r27, r27, "__vt__26sFStateFct_c<10dLineMng_c>"@l
+/* 0000005C 0000009C  3B 9C 00 00 */	addi r28, r28, "__vt__23sFState_c<10dLineMng_c>"@l
+/* 00000060 000000A0  3B A0 00 00 */	li r29, 0x0
+/* 00000064 000000A4  3F C0 00 00 */	lis r30, null__8sStateID@ha
+/* 00000068 000000A8  90 76 00 6C */	stw r3, 0x6c(r22)
+/* 0000006C 000000AC  38 B8 00 08 */	addi r5, r24, 0x8
+/* 00000070 000000B0  38 98 00 04 */	addi r4, r24, 0x4
+/* 00000074 000000B4  93 36 00 70 */	stw r25, 0x70(r22)
+/* 00000078 000000B8  38 78 00 18 */	addi r3, r24, 0x18
+/* 0000007C 000000BC  38 DE 00 00 */	addi r6, r30, null__8sStateID@l
+/* 00000080 000000C0  93 56 00 74 */	stw r26, 0x74(r22)
+/* 00000084 000000C4  93 76 00 78 */	stw r27, 0x78(r22)
+/* 00000088 000000C8  93 96 00 7C */	stw r28, 0x7c(r22)
+/* 0000008C 000000CC  92 D6 00 80 */	stw r22, 0x80(r22)
+/* 00000090 000000D0  93 B6 00 84 */	stw r29, 0x84(r22)
+/* 00000094 000000D4  48 00 00 01 */	bl __ct__20sStateMethodUsr_FI_cFR15sStateIDChkIf_cR13sStateFctIf_cRC12sStateIDIf_c
+/* 00000098 000000D8  3F E0 00 00 */	lis r31, "__vt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>"@ha
+/* 0000009C 000000DC  3A F6 00 AC */	addi r23, r22, 0xac
+/* 000000A0 000000E0  3B FF 00 00 */	addi r31, r31, "__vt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>"@l
+/* 000000A4 000000E4  93 36 00 AC */	stw r25, 0xac(r22)
+/* 000000A8 000000E8  38 B7 00 08 */	addi r5, r23, 0x8
+/* 000000AC 000000EC  38 97 00 04 */	addi r4, r23, 0x4
+/* 000000B0 000000F0  93 F8 00 00 */	stw r31, 0x0(r24)
+/* 000000B4 000000F4  38 77 00 18 */	addi r3, r23, 0x18
+/* 000000B8 000000F8  38 DE 00 00 */	addi r6, r30, null__8sStateID@l
+/* 000000BC 000000FC  93 56 00 B0 */	stw r26, 0xb0(r22)
+/* 000000C0 00000100  93 76 00 B4 */	stw r27, 0xb4(r22)
+/* 000000C4 00000104  93 96 00 B8 */	stw r28, 0xb8(r22)
+/* 000000C8 00000108  92 D6 00 BC */	stw r22, 0xbc(r22)
+/* 000000CC 0000010C  93 B6 00 C0 */	stw r29, 0xc0(r22)
+/* 000000D0 00000110  48 00 00 01 */	bl __ct__20sStateMethodUsr_FI_cFR15sStateIDChkIf_cR13sStateFctIf_cRC12sStateIDIf_c
+/* 000000D4 00000114  3C 80 00 00 */	lis r4, "__vt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>"@ha
+/* 000000D8 00000118  7F 00 C3 78 */	mr r0, r24
+/* 000000DC 0000011C  38 84 00 00 */	addi r4, r4, "__vt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>"@l
+/* 000000E0 00000120  93 F7 00 00 */	stw r31, 0x0(r23)
+/* 000000E4 00000124  39 61 00 30 */	addi r11, r1, 0x30
+/* 000000E8 00000128  7E C3 B3 78 */	mr r3, r22
+/* 000000EC 0000012C  90 16 00 E8 */	stw r0, 0xe8(r22)
+/* 000000F0 00000130  90 96 00 6C */	stw r4, 0x6c(r22)
+/* 000000F4 00000134  48 00 00 01 */	bl _restgpr_22
+/* 000000F8 00000138  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 000000FC 0000013C  7C 08 03 A6 */	mtlr r0
+/* 00000100 00000140  38 21 00 30 */	addi r1, r1, 0x30
+/* 00000104 00000144  4E 80 00 20 */	blr
+.endfn __ct__10dLineMng_cFv
+/* 00000108 00000148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000010C 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x110 | size: 0x4
+# mVec2_c::mVec2_c()
+.fn __ct__7mVec2_cFv, weak
+/* 00000110 00000150  4E 80 00 20 */	blr
+.endfn __ct__7mVec2_cFv
+/* 00000114 00000154  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000118 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000011C 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x120 | size: 0x40
+# EGG::Vector2f::~Vector2f()
+.fn __dt__Q23EGG8Vector2fFv, weak
+/* 00000120 00000160  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000124 00000164  7C 08 02 A6 */	mflr r0
+/* 00000128 00000168  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000012C 0000016C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000130 00000170  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000134 00000174  7C 7F 1B 78 */	mr r31, r3
+/* 00000138 00000178  41 82 00 10 */	beq .L_00000148
+/* 0000013C 0000017C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000140 00000180  40 81 00 08 */	ble .L_00000148
+/* 00000144 00000184  48 00 00 01 */	bl __dl__FPv
+.L_00000148:
+/* 00000148 00000188  7F E3 FB 78 */	mr r3, r31
+/* 0000014C 0000018C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000150 00000190  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000154 00000194  7C 08 03 A6 */	mtlr r0
+/* 00000158 00000198  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000015C 0000019C  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG8Vector2fFv
+
+# .text:0x160 | size: 0x40
+# mVec2_c::~mVec2_c()
+.fn __dt__7mVec2_cFv, weak
+/* 00000160 000001A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000164 000001A4  7C 08 02 A6 */	mflr r0
+/* 00000168 000001A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000016C 000001AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000170 000001B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000174 000001B4  7C 7F 1B 78 */	mr r31, r3
+/* 00000178 000001B8  41 82 00 10 */	beq .L_00000188
+/* 0000017C 000001BC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000180 000001C0  40 81 00 08 */	ble .L_00000188
+/* 00000184 000001C4  48 00 00 01 */	bl __dl__FPv
+.L_00000188:
+/* 00000188 000001C8  7F E3 FB 78 */	mr r3, r31
+/* 0000018C 000001CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000190 000001D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000194 000001D4  7C 08 03 A6 */	mtlr r0
+/* 00000198 000001D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000019C 000001DC  4E 80 00 20 */	blr
+.endfn __dt__7mVec2_cFv
+
+# .text:0x1A0 | size: 0x40
+# sStateMgrIf_c::~sStateMgrIf_c()
+.fn __dt__13sStateMgrIf_cFv, weak
+/* 000001A0 000001E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001A4 000001E4  7C 08 02 A6 */	mflr r0
+/* 000001A8 000001E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001AC 000001EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001B0 000001F0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001B4 000001F4  7C 7F 1B 78 */	mr r31, r3
+/* 000001B8 000001F8  41 82 00 10 */	beq .L_000001C8
+/* 000001BC 000001FC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000001C0 00000200  40 81 00 08 */	ble .L_000001C8
+/* 000001C4 00000204  48 00 00 01 */	bl __dl__FPv
+.L_000001C8:
+/* 000001C8 00000208  7F E3 FB 78 */	mr r3, r31
+/* 000001CC 0000020C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000001D0 00000210  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000001D4 00000214  7C 08 03 A6 */	mtlr r0
+/* 000001D8 00000218  38 21 00 10 */	addi r1, r1, 0x10
+/* 000001DC 0000021C  4E 80 00 20 */	blr
+.endfn __dt__13sStateMgrIf_cFv
+
+# .text:0x1E0 | size: 0x40
+# sStateStateMgrIf_c::~sStateStateMgrIf_c()
+.fn __dt__18sStateStateMgrIf_cFv, weak
+/* 000001E0 00000220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001E4 00000224  7C 08 02 A6 */	mflr r0
+/* 000001E8 00000228  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000001EC 0000022C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001F0 00000230  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001F4 00000234  7C 7F 1B 78 */	mr r31, r3
+/* 000001F8 00000238  41 82 00 10 */	beq .L_00000208
+/* 000001FC 0000023C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000200 00000240  40 81 00 08 */	ble .L_00000208
+/* 00000204 00000244  48 00 00 01 */	bl __dl__FPv
+.L_00000208:
+/* 00000208 00000248  7F E3 FB 78 */	mr r3, r31
+/* 0000020C 0000024C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000210 00000250  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000214 00000254  7C 08 03 A6 */	mtlr r0
+/* 00000218 00000258  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000021C 0000025C  4E 80 00 20 */	blr
+.endfn __dt__18sStateStateMgrIf_cFv
+
+# .text:0x220 | size: 0x40
+# sStateIDChkIf_c::~sStateIDChkIf_c()
+.fn __dt__15sStateIDChkIf_cFv, weak
+/* 00000220 00000260  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000224 00000264  7C 08 02 A6 */	mflr r0
+/* 00000228 00000268  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000022C 0000026C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000230 00000270  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000234 00000274  7C 7F 1B 78 */	mr r31, r3
+/* 00000238 00000278  41 82 00 10 */	beq .L_00000248
+/* 0000023C 0000027C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000240 00000280  40 81 00 08 */	ble .L_00000248
+/* 00000244 00000284  48 00 00 01 */	bl __dl__FPv
+.L_00000248:
+/* 00000248 00000288  7F E3 FB 78 */	mr r3, r31
+/* 0000024C 0000028C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000250 00000290  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000254 00000294  7C 08 03 A6 */	mtlr r0
+/* 00000258 00000298  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000025C 0000029C  4E 80 00 20 */	blr
+.endfn __dt__15sStateIDChkIf_cFv
+
+# .text:0x260 | size: 0x40
+# sStateIDChk_c::~sStateIDChk_c()
+.fn __dt__13sStateIDChk_cFv, weak
+/* 00000260 000002A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000264 000002A4  7C 08 02 A6 */	mflr r0
+/* 00000268 000002A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000026C 000002AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000270 000002B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000274 000002B4  7C 7F 1B 78 */	mr r31, r3
+/* 00000278 000002B8  41 82 00 10 */	beq .L_00000288
+/* 0000027C 000002BC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000280 000002C0  40 81 00 08 */	ble .L_00000288
+/* 00000284 000002C4  48 00 00 01 */	bl __dl__FPv
+.L_00000288:
+/* 00000288 000002C8  7F E3 FB 78 */	mr r3, r31
+/* 0000028C 000002CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000290 000002D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000294 000002D4  7C 08 03 A6 */	mtlr r0
+/* 00000298 000002D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000029C 000002DC  4E 80 00 20 */	blr
+.endfn __dt__13sStateIDChk_cFv
+
+# .text:0x2A0 | size: 0x58
+# sStateMethodUsr_FI_c::~sStateMethodUsr_FI_c()
+.fn __dt__20sStateMethodUsr_FI_cFv, weak
+/* 000002A0 000002E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000002A4 000002E4  7C 08 02 A6 */	mflr r0
+/* 000002A8 000002E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000002AC 000002EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000002B0 000002F0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000002B4 000002F4  7C 9F 23 78 */	mr r31, r4
+/* 000002B8 000002F8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000002BC 000002FC  7C 7E 1B 78 */	mr r30, r3
+/* 000002C0 00000300  41 82 00 1C */	beq .L_000002DC
+/* 000002C4 00000304  38 80 00 00 */	li r4, 0x0
+/* 000002C8 00000308  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+/* 000002CC 0000030C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000002D0 00000310  40 81 00 0C */	ble .L_000002DC
+/* 000002D4 00000314  7F C3 F3 78 */	mr r3, r30
+/* 000002D8 00000318  48 00 00 01 */	bl __dl__FPv
+.L_000002DC:
+/* 000002DC 0000031C  7F C3 F3 78 */	mr r3, r30
+/* 000002E0 00000320  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000002E4 00000324  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000002E8 00000328  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000002EC 0000032C  7C 08 03 A6 */	mtlr r0
+/* 000002F0 00000330  38 21 00 10 */	addi r1, r1, 0x10
+/* 000002F4 00000334  4E 80 00 20 */	blr
+.endfn __dt__20sStateMethodUsr_FI_cFv
+/* 000002F8 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000002FC 0000033C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x300 | size: 0x40
+# sStateFctIf_c::~sStateFctIf_c()
+.fn __dt__13sStateFctIf_cFv, weak
+/* 00000300 00000340  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000304 00000344  7C 08 02 A6 */	mflr r0
+/* 00000308 00000348  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000030C 0000034C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000310 00000350  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000314 00000354  7C 7F 1B 78 */	mr r31, r3
+/* 00000318 00000358  41 82 00 10 */	beq .L_00000328
+/* 0000031C 0000035C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000320 00000360  40 81 00 08 */	ble .L_00000328
+/* 00000324 00000364  48 00 00 01 */	bl __dl__FPv
+.L_00000328:
+/* 00000328 00000368  7F E3 FB 78 */	mr r3, r31
+/* 0000032C 0000036C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000330 00000370  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000334 00000374  7C 08 03 A6 */	mtlr r0
+/* 00000338 00000378  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000033C 0000037C  4E 80 00 20 */	blr
+.endfn __dt__13sStateFctIf_cFv
+
+# .text:0x340 | size: 0x40
+# sStateIf_c::~sStateIf_c()
+.fn __dt__10sStateIf_cFv, weak
+/* 00000340 00000380  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000344 00000384  7C 08 02 A6 */	mflr r0
+/* 00000348 00000388  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000034C 0000038C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000350 00000390  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000354 00000394  7C 7F 1B 78 */	mr r31, r3
+/* 00000358 00000398  41 82 00 10 */	beq .L_00000368
+/* 0000035C 0000039C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000360 000003A0  40 81 00 08 */	ble .L_00000368
+/* 00000364 000003A4  48 00 00 01 */	bl __dl__FPv
+.L_00000368:
+/* 00000368 000003A8  7F E3 FB 78 */	mr r3, r31
+/* 0000036C 000003AC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000370 000003B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000374 000003B4  7C 08 03 A6 */	mtlr r0
+/* 00000378 000003B8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000037C 000003BC  4E 80 00 20 */	blr
+.endfn __dt__10sStateIf_cFv
+
+# .text:0x380 | size: 0x40
+# sFState_c<dLineMng_c>::~sFState_c()
+.fn "__dt__23sFState_c<10dLineMng_c>Fv", weak
+/* 00000380 000003C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000384 000003C4  7C 08 02 A6 */	mflr r0
+/* 00000388 000003C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000038C 000003CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000390 000003D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000394 000003D4  7C 7F 1B 78 */	mr r31, r3
+/* 00000398 000003D8  41 82 00 10 */	beq .L_000003A8
+/* 0000039C 000003DC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000003A0 000003E0  40 81 00 08 */	ble .L_000003A8
+/* 000003A4 000003E4  48 00 00 01 */	bl __dl__FPv
+.L_000003A8:
+/* 000003A8 000003E8  7F E3 FB 78 */	mr r3, r31
+/* 000003AC 000003EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000003B0 000003F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000003B4 000003F4  7C 08 03 A6 */	mtlr r0
+/* 000003B8 000003F8  38 21 00 10 */	addi r1, r1, 0x10
+/* 000003BC 000003FC  4E 80 00 20 */	blr
+.endfn "__dt__23sFState_c<10dLineMng_c>Fv"
+
+# .text:0x3C0 | size: 0x40
+# sFStateFct_c<dLineMng_c>::~sFStateFct_c()
+.fn "__dt__26sFStateFct_c<10dLineMng_c>Fv", weak
+/* 000003C0 00000400  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000003C4 00000404  7C 08 02 A6 */	mflr r0
+/* 000003C8 00000408  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000003CC 0000040C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000003D0 00000410  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000003D4 00000414  7C 7F 1B 78 */	mr r31, r3
+/* 000003D8 00000418  41 82 00 10 */	beq .L_000003E8
+/* 000003DC 0000041C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000003E0 00000420  40 81 00 08 */	ble .L_000003E8
+/* 000003E4 00000424  48 00 00 01 */	bl __dl__FPv
+.L_000003E8:
+/* 000003E8 00000428  7F E3 FB 78 */	mr r3, r31
+/* 000003EC 0000042C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000003F0 00000430  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000003F4 00000434  7C 08 03 A6 */	mtlr r0
+/* 000003F8 00000438  38 21 00 10 */	addi r1, r1, 0x10
+/* 000003FC 0000043C  4E 80 00 20 */	blr
+.endfn "__dt__26sFStateFct_c<10dLineMng_c>Fv"
+
+# .text:0x400 | size: 0x60
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::~sStateMgr_c()
+.fn "__dt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 00000400 00000440  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000404 00000444  7C 08 02 A6 */	mflr r0
+/* 00000408 00000448  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000040C 0000044C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000410 00000450  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000414 00000454  7C 9F 23 78 */	mr r31, r4
+/* 00000418 00000458  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000041C 0000045C  7C 7E 1B 78 */	mr r30, r3
+/* 00000420 00000460  41 82 00 24 */	beq .L_00000444
+/* 00000424 00000464  34 63 00 18 */	addic. r3, r3, 0x18
+/* 00000428 00000468  41 82 00 0C */	beq .L_00000434
+/* 0000042C 0000046C  38 80 00 00 */	li r4, 0x0
+/* 00000430 00000470  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_00000434:
+/* 00000434 00000474  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000438 00000478  40 81 00 0C */	ble .L_00000444
+/* 0000043C 0000047C  7F C3 F3 78 */	mr r3, r30
+/* 00000440 00000480  48 00 00 01 */	bl __dl__FPv
+.L_00000444:
+/* 00000444 00000484  7F C3 F3 78 */	mr r3, r30
+/* 00000448 00000488  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0000044C 0000048C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000450 00000490  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000454 00000494  7C 08 03 A6 */	mtlr r0
+/* 00000458 00000498  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000045C 0000049C  4E 80 00 20 */	blr
+.endfn "__dt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x460 | size: 0x64
+# sFStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c>::~sFStateMgr_c()
+.fn "__dt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000460 000004A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000464 000004A4  7C 08 02 A6 */	mflr r0
+/* 00000468 000004A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000046C 000004AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000470 000004B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000474 000004B4  7C 9F 23 78 */	mr r31, r4
+/* 00000478 000004B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000047C 000004BC  7C 7E 1B 78 */	mr r30, r3
+/* 00000480 000004C0  41 82 00 28 */	beq .L_000004A8
+/* 00000484 000004C4  41 82 00 14 */	beq .L_00000498
+/* 00000488 000004C8  34 63 00 18 */	addic. r3, r3, 0x18
+/* 0000048C 000004CC  41 82 00 0C */	beq .L_00000498
+/* 00000490 000004D0  38 80 00 00 */	li r4, 0x0
+/* 00000494 000004D4  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_00000498:
+/* 00000498 000004D8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0000049C 000004DC  40 81 00 0C */	ble .L_000004A8
+/* 000004A0 000004E0  7F C3 F3 78 */	mr r3, r30
+/* 000004A4 000004E4  48 00 00 01 */	bl __dl__FPv
+.L_000004A8:
+/* 000004A8 000004E8  7F C3 F3 78 */	mr r3, r30
+/* 000004AC 000004EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000004B0 000004F0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000004B4 000004F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000004B8 000004F8  7C 08 03 A6 */	mtlr r0
+/* 000004BC 000004FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 000004C0 00000500  4E 80 00 20 */	blr
+.endfn "__dt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>Fv"
+/* 000004C4 00000504  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000004C8 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000004CC 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x4D0 | size: 0x88
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::~sStateStateMgr_c()
+.fn "__dt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 000004D0 00000510  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000004D4 00000514  7C 08 02 A6 */	mflr r0
+/* 000004D8 00000518  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000004DC 0000051C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000004E0 00000520  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000004E4 00000524  7C 9F 23 78 */	mr r31, r4
+/* 000004E8 00000528  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000004EC 0000052C  7C 7E 1B 78 */	mr r30, r3
+/* 000004F0 00000530  41 82 00 4C */	beq .L_0000053C
+/* 000004F4 00000534  34 03 00 40 */	addic. r0, r3, 0x40
+/* 000004F8 00000538  41 82 00 18 */	beq .L_00000510
+/* 000004FC 0000053C  41 82 00 14 */	beq .L_00000510
+/* 00000500 00000540  34 60 00 18 */	addic. r3, r0, 0x18
+/* 00000504 00000544  41 82 00 0C */	beq .L_00000510
+/* 00000508 00000548  38 80 00 00 */	li r4, 0x0
+/* 0000050C 0000054C  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_00000510:
+/* 00000510 00000550  34 1E 00 04 */	addic. r0, r30, 0x4
+/* 00000514 00000554  41 82 00 18 */	beq .L_0000052C
+/* 00000518 00000558  41 82 00 14 */	beq .L_0000052C
+/* 0000051C 0000055C  34 60 00 18 */	addic. r3, r0, 0x18
+/* 00000520 00000560  41 82 00 0C */	beq .L_0000052C
+/* 00000524 00000564  38 80 00 00 */	li r4, 0x0
+/* 00000528 00000568  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_0000052C:
+/* 0000052C 0000056C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000530 00000570  40 81 00 0C */	ble .L_0000053C
+/* 00000534 00000574  7F C3 F3 78 */	mr r3, r30
+/* 00000538 00000578  48 00 00 01 */	bl __dl__FPv
+.L_0000053C:
+/* 0000053C 0000057C  7F C3 F3 78 */	mr r3, r30
+/* 00000540 00000580  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000544 00000584  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000548 00000588  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000054C 0000058C  7C 08 03 A6 */	mtlr r0
+/* 00000550 00000590  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000554 00000594  4E 80 00 20 */	blr
+.endfn "__dt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000558 00000598  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000055C 0000059C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x560 | size: 0x8C
+# sFStateStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::~sFStateStateMgr_c()
+.fn "__dt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000560 000005A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000564 000005A4  7C 08 02 A6 */	mflr r0
+/* 00000568 000005A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000056C 000005AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000570 000005B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000574 000005B4  7C 9F 23 78 */	mr r31, r4
+/* 00000578 000005B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000057C 000005BC  7C 7E 1B 78 */	mr r30, r3
+/* 00000580 000005C0  41 82 00 50 */	beq .L_000005D0
+/* 00000584 000005C4  41 82 00 3C */	beq .L_000005C0
+/* 00000588 000005C8  34 03 00 40 */	addic. r0, r3, 0x40
+/* 0000058C 000005CC  41 82 00 18 */	beq .L_000005A4
+/* 00000590 000005D0  41 82 00 14 */	beq .L_000005A4
+/* 00000594 000005D4  34 60 00 18 */	addic. r3, r0, 0x18
+/* 00000598 000005D8  41 82 00 0C */	beq .L_000005A4
+/* 0000059C 000005DC  38 80 00 00 */	li r4, 0x0
+/* 000005A0 000005E0  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_000005A4:
+/* 000005A4 000005E4  34 1E 00 04 */	addic. r0, r30, 0x4
+/* 000005A8 000005E8  41 82 00 18 */	beq .L_000005C0
+/* 000005AC 000005EC  41 82 00 14 */	beq .L_000005C0
+/* 000005B0 000005F0  34 60 00 18 */	addic. r3, r0, 0x18
+/* 000005B4 000005F4  41 82 00 0C */	beq .L_000005C0
+/* 000005B8 000005F8  38 80 00 00 */	li r4, 0x0
+/* 000005BC 000005FC  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_000005C0:
+/* 000005C0 00000600  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000005C4 00000604  40 81 00 0C */	ble .L_000005D0
+/* 000005C8 00000608  7F C3 F3 78 */	mr r3, r30
+/* 000005CC 0000060C  48 00 00 01 */	bl __dl__FPv
+.L_000005D0:
+/* 000005D0 00000610  7F C3 F3 78 */	mr r3, r30
+/* 000005D4 00000614  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000005D8 00000618  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000005DC 0000061C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000005E0 00000620  7C 08 03 A6 */	mtlr r0
+/* 000005E4 00000624  38 21 00 10 */	addi r1, r1, 0x10
+/* 000005E8 00000628  4E 80 00 20 */	blr
+.endfn "__dt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 000005EC 0000062C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5F0 | size: 0x4
+# dLineMng_c::initializeState_Idle()
+.fn initializeState_Idle__10dLineMng_cFv, global
+/* 000005F0 00000630  4E 80 00 20 */	blr
+.endfn initializeState_Idle__10dLineMng_cFv
+/* 000005F4 00000634  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005F8 00000638  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005FC 0000063C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x600 | size: 0x4
+# dLineMng_c::finalizeState_Idle()
+.fn finalizeState_Idle__10dLineMng_cFv, global
+/* 00000600 00000640  4E 80 00 20 */	blr
+.endfn finalizeState_Idle__10dLineMng_cFv
+/* 00000604 00000644  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000608 00000648  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000060C 0000064C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x610 | size: 0x4
+# dLineMng_c::executeState_Idle()
+.fn executeState_Idle__10dLineMng_cFv, global
+/* 00000610 00000650  4E 80 00 20 */	blr
+.endfn executeState_Idle__10dLineMng_cFv
+/* 00000614 00000654  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000618 00000658  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000061C 0000065C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x620 | size: 0x4
+# dLineMng_c::initializeState_FallDown()
+.fn initializeState_FallDown__10dLineMng_cFv, global
+/* 00000620 00000660  4E 80 00 20 */	blr
+.endfn initializeState_FallDown__10dLineMng_cFv
+/* 00000624 00000664  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000628 00000668  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000062C 0000066C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x630 | size: 0x4
+# dLineMng_c::finalizeState_FallDown()
+.fn finalizeState_FallDown__10dLineMng_cFv, global
+/* 00000630 00000670  4E 80 00 20 */	blr
+.endfn finalizeState_FallDown__10dLineMng_cFv
+/* 00000634 00000674  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000638 00000678  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000063C 0000067C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x640 | size: 0x4
+# dLineMng_c::executeState_FallDown()
+.fn executeState_FallDown__10dLineMng_cFv, global
+/* 00000640 00000680  4E 80 00 20 */	blr
+.endfn executeState_FallDown__10dLineMng_cFv
+/* 00000644 00000684  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000648 00000688  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000064C 0000068C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x650 | size: 0x4
+# dLineMng_c::initializeState_Left45()
+.fn initializeState_Left45__10dLineMng_cFv, global
+/* 00000650 00000690  4E 80 00 20 */	blr
+.endfn initializeState_Left45__10dLineMng_cFv
+/* 00000654 00000694  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000658 00000698  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000065C 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x660 | size: 0x4
+# dLineMng_c::finalizeState_Left45()
+.fn finalizeState_Left45__10dLineMng_cFv, global
+/* 00000660 000006A0  4E 80 00 20 */	blr
+.endfn finalizeState_Left45__10dLineMng_cFv
+/* 00000664 000006A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000668 000006A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000066C 000006AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x670 | size: 0x4
+# dLineMng_c::executeState_Left45()
+.fn executeState_Left45__10dLineMng_cFv, global
+/* 00000670 000006B0  4E 80 00 20 */	blr
+.endfn executeState_Left45__10dLineMng_cFv
+/* 00000674 000006B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000678 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000067C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x680 | size: 0x4
+# dLineMng_c::initializeState_Right45()
+.fn initializeState_Right45__10dLineMng_cFv, global
+/* 00000680 000006C0  4E 80 00 20 */	blr
+.endfn initializeState_Right45__10dLineMng_cFv
+/* 00000684 000006C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000688 000006C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000068C 000006CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x690 | size: 0x4
+# dLineMng_c::finalizeState_Right45()
+.fn finalizeState_Right45__10dLineMng_cFv, global
+/* 00000690 000006D0  4E 80 00 20 */	blr
+.endfn finalizeState_Right45__10dLineMng_cFv
+/* 00000694 000006D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000698 000006D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000069C 000006DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x6A0 | size: 0x4
+# dLineMng_c::executeState_Right45()
+.fn executeState_Right45__10dLineMng_cFv, global
+/* 000006A0 000006E0  4E 80 00 20 */	blr
+.endfn executeState_Right45__10dLineMng_cFv
+/* 000006A4 000006E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006A8 000006E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006AC 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x6B0 | size: 0x4
+# dLineMng_c::initializeState_Side()
+.fn initializeState_Side__10dLineMng_cFv, global
+/* 000006B0 000006F0  4E 80 00 20 */	blr
+.endfn initializeState_Side__10dLineMng_cFv
+/* 000006B4 000006F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006B8 000006F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006BC 000006FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x6C0 | size: 0x4
+# dLineMng_c::finalizeState_Side()
+.fn finalizeState_Side__10dLineMng_cFv, global
+/* 000006C0 00000700  4E 80 00 20 */	blr
+.endfn finalizeState_Side__10dLineMng_cFv
+/* 000006C4 00000704  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006C8 00000708  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006CC 0000070C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x6D0 | size: 0x4
+# dLineMng_c::executeState_Side()
+.fn executeState_Side__10dLineMng_cFv, global
+/* 000006D0 00000710  4E 80 00 20 */	blr
+.endfn executeState_Side__10dLineMng_cFv
+/* 000006D4 00000714  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006D8 00000718  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006DC 0000071C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x6E0 | size: 0x4
+# dLineMng_c::initializeState_Height()
+.fn initializeState_Height__10dLineMng_cFv, global
+/* 000006E0 00000720  4E 80 00 20 */	blr
+.endfn initializeState_Height__10dLineMng_cFv
+/* 000006E4 00000724  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006E8 00000728  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006EC 0000072C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x6F0 | size: 0x4
+# dLineMng_c::finalizeState_Height()
+.fn finalizeState_Height__10dLineMng_cFv, global
+/* 000006F0 00000730  4E 80 00 20 */	blr
+.endfn finalizeState_Height__10dLineMng_cFv
+/* 000006F4 00000734  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006F8 00000738  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000006FC 0000073C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x700 | size: 0x4
+# dLineMng_c::executeState_Height()
+.fn executeState_Height__10dLineMng_cFv, global
+/* 00000700 00000740  4E 80 00 20 */	blr
+.endfn executeState_Height__10dLineMng_cFv
+/* 00000704 00000744  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000708 00000748  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000070C 0000074C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x710 | size: 0x4
+# dLineMng_c::initializeState_CornerHeightLine()
+.fn initializeState_CornerHeightLine__10dLineMng_cFv, global
+/* 00000710 00000750  4E 80 00 20 */	blr
+.endfn initializeState_CornerHeightLine__10dLineMng_cFv
+/* 00000714 00000754  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000718 00000758  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000071C 0000075C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x720 | size: 0x4
+# dLineMng_c::finalizeState_CornerHeightLine()
+.fn finalizeState_CornerHeightLine__10dLineMng_cFv, global
+/* 00000720 00000760  4E 80 00 20 */	blr
+.endfn finalizeState_CornerHeightLine__10dLineMng_cFv
+/* 00000724 00000764  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000728 00000768  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000072C 0000076C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x730 | size: 0x4
+# dLineMng_c::executeState_CornerHeightLine()
+.fn executeState_CornerHeightLine__10dLineMng_cFv, global
+/* 00000730 00000770  4E 80 00 20 */	blr
+.endfn executeState_CornerHeightLine__10dLineMng_cFv
+/* 00000734 00000774  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000738 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000073C 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x740 | size: 0x4
+# dLineMng_c::initializeState_CornerSideLine()
+.fn initializeState_CornerSideLine__10dLineMng_cFv, global
+/* 00000740 00000780  4E 80 00 20 */	blr
+.endfn initializeState_CornerSideLine__10dLineMng_cFv
+/* 00000744 00000784  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000748 00000788  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000074C 0000078C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x750 | size: 0x4
+# dLineMng_c::finalizeState_CornerSideLine()
+.fn finalizeState_CornerSideLine__10dLineMng_cFv, global
+/* 00000750 00000790  4E 80 00 20 */	blr
+.endfn finalizeState_CornerSideLine__10dLineMng_cFv
+/* 00000754 00000794  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000758 00000798  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000075C 0000079C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x760 | size: 0x4
+# dLineMng_c::executeState_CornerSideLine()
+.fn executeState_CornerSideLine__10dLineMng_cFv, global
+/* 00000760 000007A0  4E 80 00 20 */	blr
+.endfn executeState_CornerSideLine__10dLineMng_cFv
+/* 00000764 000007A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000768 000007A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000076C 000007AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x770 | size: 0x4
+# dLineMng_c::initializeState_Left30Left()
+.fn initializeState_Left30Left__10dLineMng_cFv, global
+/* 00000770 000007B0  4E 80 00 20 */	blr
+.endfn initializeState_Left30Left__10dLineMng_cFv
+/* 00000774 000007B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000778 000007B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000077C 000007BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x780 | size: 0x4
+# dLineMng_c::finalizeState_Left30Left()
+.fn finalizeState_Left30Left__10dLineMng_cFv, global
+/* 00000780 000007C0  4E 80 00 20 */	blr
+.endfn finalizeState_Left30Left__10dLineMng_cFv
+/* 00000784 000007C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000788 000007C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000078C 000007CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x790 | size: 0x4
+# dLineMng_c::executeState_Left30Left()
+.fn executeState_Left30Left__10dLineMng_cFv, global
+/* 00000790 000007D0  4E 80 00 20 */	blr
+.endfn executeState_Left30Left__10dLineMng_cFv
+/* 00000794 000007D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000798 000007D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000079C 000007DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7A0 | size: 0x4
+# dLineMng_c::initializeState_Left30Right()
+.fn initializeState_Left30Right__10dLineMng_cFv, global
+/* 000007A0 000007E0  4E 80 00 20 */	blr
+.endfn initializeState_Left30Right__10dLineMng_cFv
+/* 000007A4 000007E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007A8 000007E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007AC 000007EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7B0 | size: 0x4
+# dLineMng_c::finalizeState_Left30Right()
+.fn finalizeState_Left30Right__10dLineMng_cFv, global
+/* 000007B0 000007F0  4E 80 00 20 */	blr
+.endfn finalizeState_Left30Right__10dLineMng_cFv
+/* 000007B4 000007F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007B8 000007F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007BC 000007FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7C0 | size: 0x4
+# dLineMng_c::executeState_Left30Right()
+.fn executeState_Left30Right__10dLineMng_cFv, global
+/* 000007C0 00000800  4E 80 00 20 */	blr
+.endfn executeState_Left30Right__10dLineMng_cFv
+/* 000007C4 00000804  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007C8 00000808  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007CC 0000080C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7D0 | size: 0x4
+# dLineMng_c::initializeState_Right30Left()
+.fn initializeState_Right30Left__10dLineMng_cFv, global
+/* 000007D0 00000810  4E 80 00 20 */	blr
+.endfn initializeState_Right30Left__10dLineMng_cFv
+/* 000007D4 00000814  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007D8 00000818  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007DC 0000081C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7E0 | size: 0x4
+# dLineMng_c::finalizeState_Right30Left()
+.fn finalizeState_Right30Left__10dLineMng_cFv, global
+/* 000007E0 00000820  4E 80 00 20 */	blr
+.endfn finalizeState_Right30Left__10dLineMng_cFv
+/* 000007E4 00000824  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007E8 00000828  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007EC 0000082C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7F0 | size: 0x4
+# dLineMng_c::executeState_Right30Left()
+.fn executeState_Right30Left__10dLineMng_cFv, global
+/* 000007F0 00000830  4E 80 00 20 */	blr
+.endfn executeState_Right30Left__10dLineMng_cFv
+/* 000007F4 00000834  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007F8 00000838  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007FC 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x800 | size: 0x4
+# dLineMng_c::initializeState_Right30Right()
+.fn initializeState_Right30Right__10dLineMng_cFv, global
+/* 00000800 00000840  4E 80 00 20 */	blr
+.endfn initializeState_Right30Right__10dLineMng_cFv
+/* 00000804 00000844  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000808 00000848  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000080C 0000084C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x810 | size: 0x4
+# dLineMng_c::finalizeState_Right30Right()
+.fn finalizeState_Right30Right__10dLineMng_cFv, global
+/* 00000810 00000850  4E 80 00 20 */	blr
+.endfn finalizeState_Right30Right__10dLineMng_cFv
+/* 00000814 00000854  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000818 00000858  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000081C 0000085C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x820 | size: 0x4
+# dLineMng_c::executeState_Right30Right()
+.fn executeState_Right30Right__10dLineMng_cFv, global
+/* 00000820 00000860  4E 80 00 20 */	blr
+.endfn executeState_Right30Right__10dLineMng_cFv
+/* 00000824 00000864  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000828 00000868  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000082C 0000086C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x830 | size: 0x4
+# dLineMng_c::initializeState_Left60Up()
+.fn initializeState_Left60Up__10dLineMng_cFv, global
+/* 00000830 00000870  4E 80 00 20 */	blr
+.endfn initializeState_Left60Up__10dLineMng_cFv
+/* 00000834 00000874  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000838 00000878  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000083C 0000087C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x840 | size: 0x4
+# dLineMng_c::finalizeState_Left60Up()
+.fn finalizeState_Left60Up__10dLineMng_cFv, global
+/* 00000840 00000880  4E 80 00 20 */	blr
+.endfn finalizeState_Left60Up__10dLineMng_cFv
+/* 00000844 00000884  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000848 00000888  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000084C 0000088C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x850 | size: 0x4
+# dLineMng_c::executeState_Left60Up()
+.fn executeState_Left60Up__10dLineMng_cFv, global
+/* 00000850 00000890  4E 80 00 20 */	blr
+.endfn executeState_Left60Up__10dLineMng_cFv
+/* 00000854 00000894  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000858 00000898  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000085C 0000089C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x860 | size: 0x4
+# dLineMng_c::initializeState_Left60Down()
+.fn initializeState_Left60Down__10dLineMng_cFv, global
+/* 00000860 000008A0  4E 80 00 20 */	blr
+.endfn initializeState_Left60Down__10dLineMng_cFv
+/* 00000864 000008A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000868 000008A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000086C 000008AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x870 | size: 0x4
+# dLineMng_c::finalizeState_Left60Down()
+.fn finalizeState_Left60Down__10dLineMng_cFv, global
+/* 00000870 000008B0  4E 80 00 20 */	blr
+.endfn finalizeState_Left60Down__10dLineMng_cFv
+/* 00000874 000008B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000878 000008B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000087C 000008BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x880 | size: 0x4
+# dLineMng_c::executeState_Left60Down()
+.fn executeState_Left60Down__10dLineMng_cFv, global
+/* 00000880 000008C0  4E 80 00 20 */	blr
+.endfn executeState_Left60Down__10dLineMng_cFv
+/* 00000884 000008C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000888 000008C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000088C 000008CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x890 | size: 0x4
+# dLineMng_c::initializeState_Right60Down()
+.fn initializeState_Right60Down__10dLineMng_cFv, global
+/* 00000890 000008D0  4E 80 00 20 */	blr
+.endfn initializeState_Right60Down__10dLineMng_cFv
+/* 00000894 000008D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000898 000008D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000089C 000008DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8A0 | size: 0x4
+# dLineMng_c::finalizeState_Right60Down()
+.fn finalizeState_Right60Down__10dLineMng_cFv, global
+/* 000008A0 000008E0  4E 80 00 20 */	blr
+.endfn finalizeState_Right60Down__10dLineMng_cFv
+/* 000008A4 000008E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008A8 000008E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008AC 000008EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8B0 | size: 0x4
+# dLineMng_c::executeState_Right60Down()
+.fn executeState_Right60Down__10dLineMng_cFv, global
+/* 000008B0 000008F0  4E 80 00 20 */	blr
+.endfn executeState_Right60Down__10dLineMng_cFv
+/* 000008B4 000008F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008B8 000008F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008BC 000008FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8C0 | size: 0x4
+# dLineMng_c::initializeState_Right60Up()
+.fn initializeState_Right60Up__10dLineMng_cFv, global
+/* 000008C0 00000900  4E 80 00 20 */	blr
+.endfn initializeState_Right60Up__10dLineMng_cFv
+/* 000008C4 00000904  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008C8 00000908  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008CC 0000090C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8D0 | size: 0x4
+# dLineMng_c::finalizeState_Right60Up()
+.fn finalizeState_Right60Up__10dLineMng_cFv, global
+/* 000008D0 00000910  4E 80 00 20 */	blr
+.endfn finalizeState_Right60Up__10dLineMng_cFv
+/* 000008D4 00000914  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008D8 00000918  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008DC 0000091C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8E0 | size: 0x4
+# dLineMng_c::executeState_Right60Up()
+.fn executeState_Right60Up__10dLineMng_cFv, global
+/* 000008E0 00000920  4E 80 00 20 */	blr
+.endfn executeState_Right60Up__10dLineMng_cFv
+/* 000008E4 00000924  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008E8 00000928  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008EC 0000092C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8F0 | size: 0x4
+# dLineMng_c::initializeState_Circle()
+.fn initializeState_Circle__10dLineMng_cFv, global
+/* 000008F0 00000930  4E 80 00 20 */	blr
+.endfn initializeState_Circle__10dLineMng_cFv
+/* 000008F4 00000934  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008F8 00000938  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000008FC 0000093C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x900 | size: 0x4
+# dLineMng_c::finalizeState_Circle()
+.fn finalizeState_Circle__10dLineMng_cFv, global
+/* 00000900 00000940  4E 80 00 20 */	blr
+.endfn finalizeState_Circle__10dLineMng_cFv
+/* 00000904 00000944  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000908 00000948  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000090C 0000094C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x910 | size: 0x4
+# dLineMng_c::executeState_Circle()
+.fn executeState_Circle__10dLineMng_cFv, global
+/* 00000910 00000950  4E 80 00 20 */	blr
+.endfn executeState_Circle__10dLineMng_cFv
+/* 00000914 00000954  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000918 00000958  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000091C 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x920 | size: 0x4
+# dLineMng_c::initializeState_Circle2x2Leftup()
+.fn initializeState_Circle2x2Leftup__10dLineMng_cFv, global
+/* 00000920 00000960  4E 80 00 20 */	blr
+.endfn initializeState_Circle2x2Leftup__10dLineMng_cFv
+/* 00000924 00000964  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000928 00000968  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000092C 0000096C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x930 | size: 0x4
+# dLineMng_c::finalizeState_Circle2x2Leftup()
+.fn finalizeState_Circle2x2Leftup__10dLineMng_cFv, global
+/* 00000930 00000970  4E 80 00 20 */	blr
+.endfn finalizeState_Circle2x2Leftup__10dLineMng_cFv
+/* 00000934 00000974  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000938 00000978  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000093C 0000097C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x940 | size: 0x4
+# dLineMng_c::executeState_Circle2x2Leftup()
+.fn executeState_Circle2x2Leftup__10dLineMng_cFv, global
+/* 00000940 00000980  4E 80 00 20 */	blr
+.endfn executeState_Circle2x2Leftup__10dLineMng_cFv
+/* 00000944 00000984  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000948 00000988  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000094C 0000098C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x950 | size: 0x4
+# dLineMng_c::initializeState_Circle2x2Rightup()
+.fn initializeState_Circle2x2Rightup__10dLineMng_cFv, global
+/* 00000950 00000990  4E 80 00 20 */	blr
+.endfn initializeState_Circle2x2Rightup__10dLineMng_cFv
+/* 00000954 00000994  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000958 00000998  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000095C 0000099C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x960 | size: 0x4
+# dLineMng_c::finalizeState_Circle2x2Rightup()
+.fn finalizeState_Circle2x2Rightup__10dLineMng_cFv, global
+/* 00000960 000009A0  4E 80 00 20 */	blr
+.endfn finalizeState_Circle2x2Rightup__10dLineMng_cFv
+/* 00000964 000009A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000968 000009A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000096C 000009AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x970 | size: 0x4
+# dLineMng_c::executeState_Circle2x2Rightup()
+.fn executeState_Circle2x2Rightup__10dLineMng_cFv, global
+/* 00000970 000009B0  4E 80 00 20 */	blr
+.endfn executeState_Circle2x2Rightup__10dLineMng_cFv
+/* 00000974 000009B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000978 000009B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000097C 000009BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x980 | size: 0x4
+# dLineMng_c::initializeState_Circle2x2LeftDown()
+.fn initializeState_Circle2x2LeftDown__10dLineMng_cFv, global
+/* 00000980 000009C0  4E 80 00 20 */	blr
+.endfn initializeState_Circle2x2LeftDown__10dLineMng_cFv
+/* 00000984 000009C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000988 000009C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000098C 000009CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x990 | size: 0x4
+# dLineMng_c::finalizeState_Circle2x2LeftDown()
+.fn finalizeState_Circle2x2LeftDown__10dLineMng_cFv, global
+/* 00000990 000009D0  4E 80 00 20 */	blr
+.endfn finalizeState_Circle2x2LeftDown__10dLineMng_cFv
+/* 00000994 000009D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000998 000009D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000099C 000009DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9A0 | size: 0x4
+# dLineMng_c::executeState_Circle2x2LeftDown()
+.fn executeState_Circle2x2LeftDown__10dLineMng_cFv, global
+/* 000009A0 000009E0  4E 80 00 20 */	blr
+.endfn executeState_Circle2x2LeftDown__10dLineMng_cFv
+/* 000009A4 000009E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009A8 000009E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009AC 000009EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9B0 | size: 0x4
+# dLineMng_c::initializeState_Circle2x2RightDown()
+.fn initializeState_Circle2x2RightDown__10dLineMng_cFv, global
+/* 000009B0 000009F0  4E 80 00 20 */	blr
+.endfn initializeState_Circle2x2RightDown__10dLineMng_cFv
+/* 000009B4 000009F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009B8 000009F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009BC 000009FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9C0 | size: 0x4
+# dLineMng_c::finalizeState_Circle2x2RightDown()
+.fn finalizeState_Circle2x2RightDown__10dLineMng_cFv, global
+/* 000009C0 00000A00  4E 80 00 20 */	blr
+.endfn finalizeState_Circle2x2RightDown__10dLineMng_cFv
+/* 000009C4 00000A04  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009C8 00000A08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009CC 00000A0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9D0 | size: 0x4
+# dLineMng_c::executeState_Circle2x2RightDown()
+.fn executeState_Circle2x2RightDown__10dLineMng_cFv, global
+/* 000009D0 00000A10  4E 80 00 20 */	blr
+.endfn executeState_Circle2x2RightDown__10dLineMng_cFv
+/* 000009D4 00000A14  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009D8 00000A18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009DC 00000A1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9E0 | size: 0x4
+# dLineMng_c::initializeState_Circle4x4Rightup()
+.fn initializeState_Circle4x4Rightup__10dLineMng_cFv, global
+/* 000009E0 00000A20  4E 80 00 20 */	blr
+.endfn initializeState_Circle4x4Rightup__10dLineMng_cFv
+/* 000009E4 00000A24  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009E8 00000A28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009EC 00000A2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9F0 | size: 0x4
+# dLineMng_c::finalizeState_Circle4x4Rightup()
+.fn finalizeState_Circle4x4Rightup__10dLineMng_cFv, global
+/* 000009F0 00000A30  4E 80 00 20 */	blr
+.endfn finalizeState_Circle4x4Rightup__10dLineMng_cFv
+/* 000009F4 00000A34  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009F8 00000A38  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009FC 00000A3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA00 | size: 0x4
+# dLineMng_c::executeState_Circle4x4Rightup()
+.fn executeState_Circle4x4Rightup__10dLineMng_cFv, global
+/* 00000A00 00000A40  4E 80 00 20 */	blr
+.endfn executeState_Circle4x4Rightup__10dLineMng_cFv
+/* 00000A04 00000A44  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A08 00000A48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A0C 00000A4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA10 | size: 0x4
+# dLineMng_c::initializeState_Circle4x4LeftUp()
+.fn initializeState_Circle4x4LeftUp__10dLineMng_cFv, global
+/* 00000A10 00000A50  4E 80 00 20 */	blr
+.endfn initializeState_Circle4x4LeftUp__10dLineMng_cFv
+/* 00000A14 00000A54  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A18 00000A58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A1C 00000A5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA20 | size: 0x4
+# dLineMng_c::finalizeState_Circle4x4LeftUp()
+.fn finalizeState_Circle4x4LeftUp__10dLineMng_cFv, global
+/* 00000A20 00000A60  4E 80 00 20 */	blr
+.endfn finalizeState_Circle4x4LeftUp__10dLineMng_cFv
+/* 00000A24 00000A64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A28 00000A68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A2C 00000A6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA30 | size: 0x4
+# dLineMng_c::executeState_Circle4x4LeftUp()
+.fn executeState_Circle4x4LeftUp__10dLineMng_cFv, global
+/* 00000A30 00000A70  4E 80 00 20 */	blr
+.endfn executeState_Circle4x4LeftUp__10dLineMng_cFv
+/* 00000A34 00000A74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A38 00000A78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A3C 00000A7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA40 | size: 0x4
+# dLineMng_c::initializeState_Circle4x4LeftDown()
+.fn initializeState_Circle4x4LeftDown__10dLineMng_cFv, global
+/* 00000A40 00000A80  4E 80 00 20 */	blr
+.endfn initializeState_Circle4x4LeftDown__10dLineMng_cFv
+/* 00000A44 00000A84  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A48 00000A88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A4C 00000A8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA50 | size: 0x4
+# dLineMng_c::finalizeState_Circle4x4LeftDown()
+.fn finalizeState_Circle4x4LeftDown__10dLineMng_cFv, global
+/* 00000A50 00000A90  4E 80 00 20 */	blr
+.endfn finalizeState_Circle4x4LeftDown__10dLineMng_cFv
+/* 00000A54 00000A94  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A58 00000A98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A5C 00000A9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA60 | size: 0x4
+# dLineMng_c::executeState_Circle4x4LeftDown()
+.fn executeState_Circle4x4LeftDown__10dLineMng_cFv, global
+/* 00000A60 00000AA0  4E 80 00 20 */	blr
+.endfn executeState_Circle4x4LeftDown__10dLineMng_cFv
+/* 00000A64 00000AA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A68 00000AA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A6C 00000AAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA70 | size: 0x4
+# dLineMng_c::initializeState_Circle4x4RightDown()
+.fn initializeState_Circle4x4RightDown__10dLineMng_cFv, global
+/* 00000A70 00000AB0  4E 80 00 20 */	blr
+.endfn initializeState_Circle4x4RightDown__10dLineMng_cFv
+/* 00000A74 00000AB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A78 00000AB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A7C 00000ABC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA80 | size: 0x4
+# dLineMng_c::finalizeState_Circle4x4RightDown()
+.fn finalizeState_Circle4x4RightDown__10dLineMng_cFv, global
+/* 00000A80 00000AC0  4E 80 00 20 */	blr
+.endfn finalizeState_Circle4x4RightDown__10dLineMng_cFv
+/* 00000A84 00000AC4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A88 00000AC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A8C 00000ACC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA90 | size: 0x4
+# dLineMng_c::executeState_Circle4x4RightDown()
+.fn executeState_Circle4x4RightDown__10dLineMng_cFv, global
+/* 00000A90 00000AD0  4E 80 00 20 */	blr
+.endfn executeState_Circle4x4RightDown__10dLineMng_cFv
+/* 00000A94 00000AD4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A98 00000AD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A9C 00000ADC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xAA0 | size: 0x8
+# sStateIDChk_c::isNormalID(const sStateIDIf_c&) const
+.fn isNormalID__13sStateIDChk_cCFRC12sStateIDIf_c, weak
+/* 00000AA0 00000AE0  38 60 00 01 */	li r3, 0x1
+/* 00000AA4 00000AE4  4E 80 00 20 */	blr
+.endfn isNormalID__13sStateIDChk_cCFRC12sStateIDIf_c
+/* 00000AA8 00000AE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000AAC 00000AEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xAB0 | size: 0x60
+# sFStateFct_c<dLineMng_c>::build(const sStateIDIf_c&)
+.fn "build__26sFStateFct_c<10dLineMng_c>FRC12sStateIDIf_c", weak
+/* 00000AB0 00000AF0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000AB4 00000AF4  7C 08 02 A6 */	mflr r0
+/* 00000AB8 00000AF8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000ABC 00000AFC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000AC0 00000B00  7C 9F 23 78 */	mr r31, r4
+/* 00000AC4 00000B04  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000AC8 00000B08  7C 7E 1B 78 */	mr r30, r3
+/* 00000ACC 00000B0C  7F E3 FB 78 */	mr r3, r31
+/* 00000AD0 00000B10  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 00000AD4 00000B14  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000AD8 00000B18  7D 89 03 A6 */	mtctr r12
+/* 00000ADC 00000B1C  4E 80 04 21 */	bctrl
+/* 00000AE0 00000B20  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000AE4 00000B24  40 82 00 10 */	bne .L_00000AF4
+/* 00000AE8 00000B28  93 FE 00 0C */	stw r31, 0xc(r30)
+/* 00000AEC 00000B2C  38 7E 00 04 */	addi r3, r30, 0x4
+/* 00000AF0 00000B30  48 00 00 08 */	b .L_00000AF8
+.L_00000AF4:
+/* 00000AF4 00000B34  38 60 00 00 */	li r3, 0x0
+.L_00000AF8:
+/* 00000AF8 00000B38  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000AFC 00000B3C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000B00 00000B40  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000B04 00000B44  7C 08 03 A6 */	mtlr r0
+/* 00000B08 00000B48  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000B0C 00000B4C  4E 80 00 20 */	blr
+.endfn "build__26sFStateFct_c<10dLineMng_c>FRC12sStateIDIf_c"
+
+# .text:0xB10 | size: 0xC
+# sFStateFct_c<dLineMng_c>::dispose(sStateIf_c*&)
+.fn "dispose__26sFStateFct_c<10dLineMng_c>FRP10sStateIf_c", weak
+/* 00000B10 00000B50  38 00 00 00 */	li r0, 0x0
+/* 00000B14 00000B54  90 04 00 00 */	stw r0, 0x0(r4)
+/* 00000B18 00000B58  4E 80 00 20 */	blr
+.endfn "dispose__26sFStateFct_c<10dLineMng_c>FRP10sStateIf_c"
+/* 00000B1C 00000B5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xB20 | size: 0x1C
+# sFState_c<dLineMng_c>::initialize()
+.fn "initialize__23sFState_c<10dLineMng_c>Fv", weak
+/* 00000B20 00000B60  7C 64 1B 78 */	mr r4, r3
+/* 00000B24 00000B64  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 00000B28 00000B68  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 00000B2C 00000B6C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B30 00000B70  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 00000B34 00000B74  7D 89 03 A6 */	mtctr r12
+/* 00000B38 00000B78  4E 80 04 20 */	bctr
+.endfn "initialize__23sFState_c<10dLineMng_c>Fv"
+/* 00000B3C 00000B7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xB40 | size: 0x1C
+# sFState_c<dLineMng_c>::execute()
+.fn "execute__23sFState_c<10dLineMng_c>Fv", weak
+/* 00000B40 00000B80  7C 64 1B 78 */	mr r4, r3
+/* 00000B44 00000B84  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 00000B48 00000B88  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 00000B4C 00000B8C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B50 00000B90  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 00000B54 00000B94  7D 89 03 A6 */	mtctr r12
+/* 00000B58 00000B98  4E 80 04 20 */	bctr
+.endfn "execute__23sFState_c<10dLineMng_c>Fv"
+/* 00000B5C 00000B9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xB60 | size: 0x1C
+# sFState_c<dLineMng_c>::finalize()
+.fn "finalize__23sFState_c<10dLineMng_c>Fv", weak
+/* 00000B60 00000BA0  7C 64 1B 78 */	mr r4, r3
+/* 00000B64 00000BA4  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 00000B68 00000BA8  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 00000B6C 00000BAC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B70 00000BB0  81 8C 00 30 */	lwz r12, 0x30(r12)
+/* 00000B74 00000BB4  7D 89 03 A6 */	mtctr r12
+/* 00000B78 00000BB8  4E 80 04 20 */	bctr
+.endfn "finalize__23sFState_c<10dLineMng_c>Fv"
+/* 00000B7C 00000BBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xB80 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::initializeState()
+.fn "initializeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000B80 00000BC0  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000B84 00000BC4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B88 00000BC8  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000B8C 00000BCC  7D 89 03 A6 */	mtctr r12
+/* 00000B90 00000BD0  4E 80 04 20 */	bctr
+.endfn "initializeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000B94 00000BD4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000B98 00000BD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000B9C 00000BDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xBA0 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::executeState()
+.fn "executeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000BA0 00000BE0  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000BA4 00000BE4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000BA8 00000BE8  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 00000BAC 00000BEC  7D 89 03 A6 */	mtctr r12
+/* 00000BB0 00000BF0  4E 80 04 20 */	bctr
+.endfn "executeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000BB4 00000BF4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000BB8 00000BF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000BBC 00000BFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xBC0 | size: 0x6C
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::finalizeState()
+.fn "finalizeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000BC0 00000C00  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000BC4 00000C04  7C 08 02 A6 */	mflr r0
+/* 00000BC8 00000C08  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000BCC 00000C0C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000BD0 00000C10  7C 7F 1B 78 */	mr r31, r3
+/* 00000BD4 00000C14  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000BD8 00000C18  81 8C 00 38 */	lwz r12, 0x38(r12)
+/* 00000BDC 00000C1C  7D 89 03 A6 */	mtctr r12
+/* 00000BE0 00000C20  4E 80 04 21 */	bctrl
+/* 00000BE4 00000C24  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000BE8 00000C28  41 82 00 1C */	beq .L_00000C04
+/* 00000BEC 00000C2C  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 00000BF0 00000C30  7F E3 FB 78 */	mr r3, r31
+/* 00000BF4 00000C34  81 8C 00 34 */	lwz r12, 0x34(r12)
+/* 00000BF8 00000C38  7D 89 03 A6 */	mtctr r12
+/* 00000BFC 00000C3C  4E 80 04 21 */	bctrl
+/* 00000C00 00000C40  48 00 00 18 */	b .L_00000C18
+.L_00000C04:
+/* 00000C04 00000C44  80 7F 00 7C */	lwz r3, 0x7c(r31)
+/* 00000C08 00000C48  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000C0C 00000C4C  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000C10 00000C50  7D 89 03 A6 */	mtctr r12
+/* 00000C14 00000C54  4E 80 04 21 */	bctrl
+.L_00000C18:
+/* 00000C18 00000C58  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C1C 00000C5C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000C20 00000C60  7C 08 03 A6 */	mtlr r0
+/* 00000C24 00000C64  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000C28 00000C68  4E 80 00 20 */	blr
+.endfn "finalizeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000C2C 00000C6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xC30 | size: 0x18
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::isSubState() const
+.fn "isSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv", weak
+/* 00000C30 00000C70  80 83 00 7C */	lwz r4, 0x7c(r3)
+/* 00000C34 00000C74  38 03 00 40 */	addi r0, r3, 0x40
+/* 00000C38 00000C78  7C 04 00 50 */	subf r0, r4, r0
+/* 00000C3C 00000C7C  7C 00 00 34 */	cntlzw r0, r0
+/* 00000C40 00000C80  54 03 D9 7E */	srwi r3, r0, 5
+/* 00000C44 00000C84  4E 80 00 20 */	blr
+.endfn "isSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+/* 00000C48 00000C88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C4C 00000C8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xC50 | size: 0x5C
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::returnState()
+.fn "returnState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000C50 00000C90  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000C54 00000C94  7C 08 02 A6 */	mflr r0
+/* 00000C58 00000C98  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000C5C 00000C9C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000C60 00000CA0  7C 7F 1B 78 */	mr r31, r3
+/* 00000C64 00000CA4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000C68 00000CA8  81 8C 00 38 */	lwz r12, 0x38(r12)
+/* 00000C6C 00000CAC  7D 89 03 A6 */	mtctr r12
+/* 00000C70 00000CB0  4E 80 04 21 */	bctrl
+/* 00000C74 00000CB4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000C78 00000CB8  41 82 00 20 */	beq .L_00000C98
+/* 00000C7C 00000CBC  80 7F 00 7C */	lwz r3, 0x7c(r31)
+/* 00000C80 00000CC0  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000C84 00000CC4  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000C88 00000CC8  7D 89 03 A6 */	mtctr r12
+/* 00000C8C 00000CCC  4E 80 04 21 */	bctrl
+/* 00000C90 00000CD0  38 1F 00 04 */	addi r0, r31, 0x4
+/* 00000C94 00000CD4  90 1F 00 7C */	stw r0, 0x7c(r31)
+.L_00000C98:
+/* 00000C98 00000CD8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C9C 00000CDC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000CA0 00000CE0  7C 08 03 A6 */	mtlr r0
+/* 00000CA4 00000CE4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000CA8 00000CE8  4E 80 00 20 */	blr
+.endfn "returnState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000CAC 00000CEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xCB0 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::getOldStateID() const
+.fn "getOldStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv", weak
+/* 00000CB0 00000CF0  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000CB4 00000CF4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000CB8 00000CF8  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 00000CBC 00000CFC  7D 89 03 A6 */	mtctr r12
+/* 00000CC0 00000D00  4E 80 04 20 */	bctr
+.endfn "getOldStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+/* 00000CC4 00000D04  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CC8 00000D08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CCC 00000D0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xCD0 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::refreshState()
+.fn "refreshState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000CD0 00000D10  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000CD4 00000D14  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000CD8 00000D18  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 00000CDC 00000D1C  7D 89 03 A6 */	mtctr r12
+/* 00000CE0 00000D20  4E 80 04 20 */	bctr
+.endfn "refreshState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000CE4 00000D24  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CE8 00000D28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CEC 00000D2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xCF0 | size: 0x1C
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::changeToSubState(const sStateIDIf_c&)
+.fn "changeToSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c", weak
+/* 00000CF0 00000D30  38 03 00 40 */	addi r0, r3, 0x40
+/* 00000CF4 00000D34  90 03 00 7C */	stw r0, 0x7c(r3)
+/* 00000CF8 00000D38  7C 03 03 78 */	mr r3, r0
+/* 00000CFC 00000D3C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000D00 00000D40  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 00000D04 00000D44  7D 89 03 A6 */	mtctr r12
+/* 00000D08 00000D48  4E 80 04 20 */	bctr
+.endfn "changeToSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c"
+/* 00000D0C 00000D4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD10 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::changeState(const sStateIDIf_c&)
+.fn "changeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c", weak
+/* 00000D10 00000D50  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000D14 00000D54  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000D18 00000D58  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 00000D1C 00000D5C  7D 89 03 A6 */	mtctr r12
+/* 00000D20 00000D60  4E 80 04 20 */	bctr
+.endfn "changeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c"
+/* 00000D24 00000D64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D28 00000D68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D2C 00000D6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD30 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::getState() const
+.fn "getState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv", weak
+/* 00000D30 00000D70  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000D34 00000D74  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000D38 00000D78  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 00000D3C 00000D7C  7D 89 03 A6 */	mtctr r12
+/* 00000D40 00000D80  4E 80 04 20 */	bctr
+.endfn "getState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+/* 00000D44 00000D84  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D48 00000D88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D4C 00000D8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD50 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::getNewStateID() const
+.fn "getNewStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv", weak
+/* 00000D50 00000D90  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000D54 00000D94  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000D58 00000D98  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 00000D5C 00000D9C  7D 89 03 A6 */	mtctr r12
+/* 00000D60 00000DA0  4E 80 04 20 */	bctr
+.endfn "getNewStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+/* 00000D64 00000DA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D68 00000DA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D6C 00000DAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD70 | size: 0x14
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::getStateID() const
+.fn "getStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv", weak
+/* 00000D70 00000DB0  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000D74 00000DB4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000D78 00000DB8  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 00000D7C 00000DBC  7D 89 03 A6 */	mtctr r12
+/* 00000D80 00000DC0  4E 80 04 20 */	bctr
+.endfn "getStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+/* 00000D84 00000DC4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D88 00000DC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D8C 00000DCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD90 | size: 0x10
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::getMainStateID() const
+.fn "getMainStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv", weak
+/* 00000D90 00000DD0  85 83 00 04 */	lwzu r12, 0x4(r3)
+/* 00000D94 00000DD4  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 00000D98 00000DD8  7D 89 03 A6 */	mtctr r12
+/* 00000D9C 00000DDC  4E 80 04 20 */	bctr
+.endfn "getMainStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+
+# .text:0xDA0 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::initializeState()
+.fn "initializeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 00000DA0 00000DE0  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000DA4 00000DE4  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000DA8 00000DE8  7D 89 03 A6 */	mtctr r12
+/* 00000DAC 00000DEC  4E 80 04 20 */	bctr
+.endfn "initializeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xDB0 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::executeState()
+.fn "executeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 00000DB0 00000DF0  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000DB4 00000DF4  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 00000DB8 00000DF8  7D 89 03 A6 */	mtctr r12
+/* 00000DBC 00000DFC  4E 80 04 20 */	bctr
+.endfn "executeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xDC0 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::finalizeState()
+.fn "finalizeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 00000DC0 00000E00  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000DC4 00000E04  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000DC8 00000E08  7D 89 03 A6 */	mtctr r12
+/* 00000DCC 00000E0C  4E 80 04 20 */	bctr
+.endfn "finalizeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xDD0 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::changeState(const sStateIDIf_c&)
+.fn "changeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c", weak
+/* 00000DD0 00000E10  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000DD4 00000E14  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 00000DD8 00000E18  7D 89 03 A6 */	mtctr r12
+/* 00000DDC 00000E1C  4E 80 04 20 */	bctr
+.endfn "changeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+
+# .text:0xDE0 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::refreshState()
+.fn "refreshState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 00000DE0 00000E20  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000DE4 00000E24  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 00000DE8 00000E28  7D 89 03 A6 */	mtctr r12
+/* 00000DEC 00000E2C  4E 80 04 20 */	bctr
+.endfn "refreshState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xDF0 | size: 0xC
+# sStateMethod_c::refreshStateMethod()
+.fn refreshStateMethod__14sStateMethod_cFv, weak
+/* 00000DF0 00000E30  38 00 00 01 */	li r0, 0x1
+/* 00000DF4 00000E34  98 03 00 10 */	stb r0, 0x10(r3)
+/* 00000DF8 00000E38  4E 80 00 20 */	blr
+.endfn refreshStateMethod__14sStateMethod_cFv
+/* 00000DFC 00000E3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE00 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getState() const
+.fn "getState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 00000E00 00000E40  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000E04 00000E44  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 00000E08 00000E48  7D 89 03 A6 */	mtctr r12
+/* 00000E0C 00000E4C  4E 80 04 20 */	bctr
+.endfn "getState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xE10 | size: 0x8
+# sStateMethod_c::getState() const
+.fn getState__14sStateMethod_cCFv, weak
+/* 00000E10 00000E50  80 63 00 20 */	lwz r3, 0x20(r3)
+/* 00000E14 00000E54  4E 80 00 20 */	blr
+.endfn getState__14sStateMethod_cCFv
+/* 00000E18 00000E58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E1C 00000E5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE20 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getNewStateID() const
+.fn "getNewStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 00000E20 00000E60  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000E24 00000E64  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 00000E28 00000E68  7D 89 03 A6 */	mtctr r12
+/* 00000E2C 00000E6C  4E 80 04 20 */	bctr
+.endfn "getNewStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xE30 | size: 0x8
+# sStateMethod_c::getNewStateID() const
+.fn getNewStateID__14sStateMethod_cCFv, weak
+/* 00000E30 00000E70  80 63 00 14 */	lwz r3, 0x14(r3)
+/* 00000E34 00000E74  4E 80 00 20 */	blr
+.endfn getNewStateID__14sStateMethod_cCFv
+/* 00000E38 00000E78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E3C 00000E7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE40 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getStateID() const
+.fn "getStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 00000E40 00000E80  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000E44 00000E84  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 00000E48 00000E88  7D 89 03 A6 */	mtctr r12
+/* 00000E4C 00000E8C  4E 80 04 20 */	bctr
+.endfn "getStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xE50 | size: 0x8
+# sStateMethod_c::getStateID() const
+.fn getStateID__14sStateMethod_cCFv, weak
+/* 00000E50 00000E90  80 63 00 1C */	lwz r3, 0x1c(r3)
+/* 00000E54 00000E94  4E 80 00 20 */	blr
+.endfn getStateID__14sStateMethod_cCFv
+/* 00000E58 00000E98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E5C 00000E9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE60 | size: 0x10
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getOldStateID() const
+.fn "getOldStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 00000E60 00000EA0  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 00000E64 00000EA4  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 00000E68 00000EA8  7D 89 03 A6 */	mtctr r12
+/* 00000E6C 00000EAC  4E 80 04 20 */	bctr
+.endfn "getOldStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xE70 | size: 0x8
+# sStateMethod_c::getOldStateID() const
+.fn getOldStateID__14sStateMethod_cCFv, weak
+/* 00000E70 00000EB0  80 63 00 18 */	lwz r3, 0x18(r3)
+/* 00000E74 00000EB4  4E 80 00 20 */	blr
+.endfn getOldStateID__14sStateMethod_cCFv
+/* 00000E78 00000EB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000E7C 00000EBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xE80 | size: 0x30
+# sFStateID_c<dLineMng_c>::finalizeState(dLineMng_c&) const
+.fn "finalizeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c", weak
+/* 00000E80 00000EC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000E84 00000EC4  7C 08 02 A6 */	mflr r0
+/* 00000E88 00000EC8  7C 65 1B 78 */	mr r5, r3
+/* 00000E8C 00000ECC  7C 83 23 78 */	mr r3, r4
+/* 00000E90 00000ED0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000E94 00000ED4  39 85 00 24 */	addi r12, r5, 0x24
+/* 00000E98 00000ED8  48 00 00 01 */	bl __ptmf_scall
+/* 00000E9C 00000EDC  60 00 00 00 */	nop
+/* 00000EA0 00000EE0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000EA4 00000EE4  7C 08 03 A6 */	mtlr r0
+/* 00000EA8 00000EE8  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000EAC 00000EEC  4E 80 00 20 */	blr
+.endfn "finalizeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
+
+# .text:0xEB0 | size: 0x30
+# sFStateID_c<dLineMng_c>::executeState(dLineMng_c&) const
+.fn "executeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c", weak
+/* 00000EB0 00000EF0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000EB4 00000EF4  7C 08 02 A6 */	mflr r0
+/* 00000EB8 00000EF8  7C 65 1B 78 */	mr r5, r3
+/* 00000EBC 00000EFC  7C 83 23 78 */	mr r3, r4
+/* 00000EC0 00000F00  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000EC4 00000F04  39 85 00 18 */	addi r12, r5, 0x18
+/* 00000EC8 00000F08  48 00 00 01 */	bl __ptmf_scall
+/* 00000ECC 00000F0C  60 00 00 00 */	nop
+/* 00000ED0 00000F10  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000ED4 00000F14  7C 08 03 A6 */	mtlr r0
+/* 00000ED8 00000F18  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000EDC 00000F1C  4E 80 00 20 */	blr
+.endfn "executeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
+
+# .text:0xEE0 | size: 0x30
+# sFStateID_c<dLineMng_c>::initializeState(dLineMng_c&) const
+.fn "initializeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c", weak
+/* 00000EE0 00000F20  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000EE4 00000F24  7C 08 02 A6 */	mflr r0
+/* 00000EE8 00000F28  7C 65 1B 78 */	mr r5, r3
+/* 00000EEC 00000F2C  7C 83 23 78 */	mr r3, r4
+/* 00000EF0 00000F30  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000EF4 00000F34  39 85 00 0C */	addi r12, r5, 0xc
+/* 00000EF8 00000F38  48 00 00 01 */	bl __ptmf_scall
+/* 00000EFC 00000F3C  60 00 00 00 */	nop
+/* 00000F00 00000F40  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000F04 00000F44  7C 08 03 A6 */	mtlr r0
+/* 00000F08 00000F48  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000F0C 00000F4C  4E 80 00 20 */	blr
+.endfn "initializeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
+
+# .text:0xF10 | size: 0x1310
+.fn "__sinit_\d_line_mng_cpp", local
+/* 00000F10 00000F50  94 21 FC 60 */	stwu r1, -0x3a0(r1)
+/* 00000F14 00000F54  7C 08 02 A6 */	mflr r0
+/* 00000F18 00000F58  3C 80 00 00 */	lis r4, "@3747"@ha
+/* 00000F1C 00000F5C  3C 60 00 00 */	lis r3, "@3748"@ha
+/* 00000F20 00000F60  90 01 03 A4 */	stw r0, 0x3a4(r1)
+/* 00000F24 00000F64  3C E0 00 00 */	lis r7, "@3749"@ha
+/* 00000F28 00000F68  93 E1 03 9C */	stw r31, 0x39c(r1)
+/* 00000F2C 00000F6C  93 C1 03 98 */	stw r30, 0x398(r1)
+/* 00000F30 00000F70  93 A1 03 94 */	stw r29, 0x394(r1)
+/* 00000F34 00000F74  3F A0 00 00 */	lis r29, ...bss.0@ha
+/* 00000F38 00000F78  3B BD 00 00 */	addi r29, r29, ...bss.0@l
+/* 00000F3C 00000F7C  93 81 03 90 */	stw r28, 0x390(r1)
+/* 00000F40 00000F80  87 84 00 00 */	lwzu r28, "@3747"@l(r4)
+/* 00000F44 00000F84  85 43 00 00 */	lwzu r10, "@3748"@l(r3)
+/* 00000F48 00000F88  84 C7 00 00 */	lwzu r6, "@3749"@l(r7)
+/* 00000F4C 00000F8C  81 84 00 04 */	lwz r12, 0x4(r4)
+/* 00000F50 00000F90  81 64 00 08 */	lwz r11, 0x8(r4)
+/* 00000F54 00000F94  3C 80 00 00 */	lis r4, "@3823"@ha
+/* 00000F58 00000F98  81 23 00 04 */	lwz r9, 0x4(r3)
+/* 00000F5C 00000F9C  38 84 00 00 */	addi r4, r4, "@3823"@l
+/* 00000F60 00000FA0  81 03 00 08 */	lwz r8, 0x8(r3)
+/* 00000F64 00000FA4  38 7D 00 10 */	addi r3, r29, 0x10
+/* 00000F68 00000FA8  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00000F6C 00000FAC  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00000F70 00000FB0  93 81 03 68 */	stw r28, 0x368(r1)
+/* 00000F74 00000FB4  91 81 03 6C */	stw r12, 0x36c(r1)
+/* 00000F78 00000FB8  91 61 03 70 */	stw r11, 0x370(r1)
+/* 00000F7C 00000FBC  91 41 03 74 */	stw r10, 0x374(r1)
+/* 00000F80 00000FC0  91 21 03 78 */	stw r9, 0x378(r1)
+/* 00000F84 00000FC4  91 01 03 7C */	stw r8, 0x37c(r1)
+/* 00000F88 00000FC8  90 C1 03 80 */	stw r6, 0x380(r1)
+/* 00000F8C 00000FCC  90 A1 03 84 */	stw r5, 0x384(r1)
+/* 00000F90 00000FD0  90 01 03 88 */	stw r0, 0x388(r1)
+/* 00000F94 00000FD4  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00000F98 00000FD8  3F C0 00 00 */	lis r30, "__vt__25sFStateID_c<10dLineMng_c>"@ha
+/* 00000F9C 00000FDC  38 7D 00 10 */	addi r3, r29, 0x10
+/* 00000FA0 00000FE0  83 81 03 80 */	lwz r28, 0x380(r1)
+/* 00000FA4 00000FE4  3B DE 00 00 */	addi r30, r30, "__vt__25sFStateID_c<10dLineMng_c>"@l
+/* 00000FA8 00000FE8  81 81 03 84 */	lwz r12, 0x384(r1)
+/* 00000FAC 00000FEC  3F E0 00 00 */	lis r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@ha
+/* 00000FB0 00000FF0  81 61 03 88 */	lwz r11, 0x388(r1)
+/* 00000FB4 00000FF4  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00000FB8 00000FF8  81 41 03 74 */	lwz r10, 0x374(r1)
+/* 00000FBC 00000FFC  38 BD 00 00 */	addi r5, r29, 0x0
+/* 00000FC0 00001000  81 21 03 78 */	lwz r9, 0x378(r1)
+/* 00000FC4 00001004  81 01 03 7C */	lwz r8, 0x37c(r1)
+/* 00000FC8 00001008  80 E1 03 68 */	lwz r7, 0x368(r1)
+/* 00000FCC 0000100C  80 C1 03 6C */	lwz r6, 0x36c(r1)
+/* 00000FD0 00001010  80 01 03 70 */	lwz r0, 0x370(r1)
+/* 00000FD4 00001014  93 DD 00 10 */	stw r30, 0x10(r29)
+/* 00000FD8 00001018  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00000FDC 0000101C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00000FE0 00001020  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00000FE4 00001024  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00000FE8 00001028  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00000FEC 0000102C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00000FF0 00001030  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00000FF4 00001034  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00000FF8 00001038  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00000FFC 0000103C  48 00 00 01 */	bl __register_global_object
+/* 00001000 00001040  3C 60 00 00 */	lis r3, "@3750"@ha
+/* 00001004 00001044  87 83 00 00 */	lwzu r28, "@3750"@l(r3)
+/* 00001008 00001048  3C A0 00 00 */	lis r5, "@3751"@ha
+/* 0000100C 0000104C  85 45 00 00 */	lwzu r10, "@3751"@l(r5)
+/* 00001010 00001050  3C E0 00 00 */	lis r7, "@3752"@ha
+/* 00001014 00001054  84 C7 00 00 */	lwzu r6, "@3752"@l(r7)
+/* 00001018 00001058  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000101C 0000105C  3C 80 00 00 */	lis r4, "@3824"@ha
+/* 00001020 00001060  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001024 00001064  38 84 00 00 */	addi r4, r4, "@3824"@l
+/* 00001028 00001068  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000102C 0000106C  38 7D 00 50 */	addi r3, r29, 0x50
+/* 00001030 00001070  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001034 00001074  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001038 00001078  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000103C 0000107C  93 81 03 44 */	stw r28, 0x344(r1)
+/* 00001040 00001080  91 81 03 48 */	stw r12, 0x348(r1)
+/* 00001044 00001084  91 61 03 4C */	stw r11, 0x34c(r1)
+/* 00001048 00001088  91 41 03 50 */	stw r10, 0x350(r1)
+/* 0000104C 0000108C  91 21 03 54 */	stw r9, 0x354(r1)
+/* 00001050 00001090  91 01 03 58 */	stw r8, 0x358(r1)
+/* 00001054 00001094  90 C1 03 5C */	stw r6, 0x35c(r1)
+/* 00001058 00001098  90 A1 03 60 */	stw r5, 0x360(r1)
+/* 0000105C 0000109C  90 01 03 64 */	stw r0, 0x364(r1)
+/* 00001060 000010A0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001064 000010A4  38 7D 00 50 */	addi r3, r29, 0x50
+/* 00001068 000010A8  83 81 03 5C */	lwz r28, 0x35c(r1)
+/* 0000106C 000010AC  81 81 03 60 */	lwz r12, 0x360(r1)
+/* 00001070 000010B0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001074 000010B4  81 61 03 64 */	lwz r11, 0x364(r1)
+/* 00001078 000010B8  38 BD 00 40 */	addi r5, r29, 0x40
+/* 0000107C 000010BC  81 41 03 50 */	lwz r10, 0x350(r1)
+/* 00001080 000010C0  81 21 03 54 */	lwz r9, 0x354(r1)
+/* 00001084 000010C4  81 01 03 58 */	lwz r8, 0x358(r1)
+/* 00001088 000010C8  80 E1 03 44 */	lwz r7, 0x344(r1)
+/* 0000108C 000010CC  80 C1 03 48 */	lwz r6, 0x348(r1)
+/* 00001090 000010D0  80 01 03 4C */	lwz r0, 0x34c(r1)
+/* 00001094 000010D4  93 DD 00 50 */	stw r30, 0x50(r29)
+/* 00001098 000010D8  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000109C 000010DC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000010A0 000010E0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000010A4 000010E4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000010A8 000010E8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000010AC 000010EC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000010B0 000010F0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000010B4 000010F4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000010B8 000010F8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000010BC 000010FC  48 00 00 01 */	bl __register_global_object
+/* 000010C0 00001100  3C 60 00 00 */	lis r3, "@3753"@ha
+/* 000010C4 00001104  87 83 00 00 */	lwzu r28, "@3753"@l(r3)
+/* 000010C8 00001108  3C A0 00 00 */	lis r5, "@3754"@ha
+/* 000010CC 0000110C  85 45 00 00 */	lwzu r10, "@3754"@l(r5)
+/* 000010D0 00001110  3C E0 00 00 */	lis r7, "@3755"@ha
+/* 000010D4 00001114  84 C7 00 00 */	lwzu r6, "@3755"@l(r7)
+/* 000010D8 00001118  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 000010DC 0000111C  3C 80 00 00 */	lis r4, "@3825"@ha
+/* 000010E0 00001120  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000010E4 00001124  38 84 00 00 */	addi r4, r4, "@3825"@l
+/* 000010E8 00001128  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000010EC 0000112C  38 7D 00 90 */	addi r3, r29, 0x90
+/* 000010F0 00001130  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000010F4 00001134  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000010F8 00001138  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000010FC 0000113C  93 81 03 20 */	stw r28, 0x320(r1)
+/* 00001100 00001140  91 81 03 24 */	stw r12, 0x324(r1)
+/* 00001104 00001144  91 61 03 28 */	stw r11, 0x328(r1)
+/* 00001108 00001148  91 41 03 2C */	stw r10, 0x32c(r1)
+/* 0000110C 0000114C  91 21 03 30 */	stw r9, 0x330(r1)
+/* 00001110 00001150  91 01 03 34 */	stw r8, 0x334(r1)
+/* 00001114 00001154  90 C1 03 38 */	stw r6, 0x338(r1)
+/* 00001118 00001158  90 A1 03 3C */	stw r5, 0x33c(r1)
+/* 0000111C 0000115C  90 01 03 40 */	stw r0, 0x340(r1)
+/* 00001120 00001160  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001124 00001164  38 7D 00 90 */	addi r3, r29, 0x90
+/* 00001128 00001168  83 81 03 38 */	lwz r28, 0x338(r1)
+/* 0000112C 0000116C  81 81 03 3C */	lwz r12, 0x33c(r1)
+/* 00001130 00001170  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001134 00001174  81 61 03 40 */	lwz r11, 0x340(r1)
+/* 00001138 00001178  38 BD 00 80 */	addi r5, r29, 0x80
+/* 0000113C 0000117C  81 41 03 2C */	lwz r10, 0x32c(r1)
+/* 00001140 00001180  81 21 03 30 */	lwz r9, 0x330(r1)
+/* 00001144 00001184  81 01 03 34 */	lwz r8, 0x334(r1)
+/* 00001148 00001188  80 E1 03 20 */	lwz r7, 0x320(r1)
+/* 0000114C 0000118C  80 C1 03 24 */	lwz r6, 0x324(r1)
+/* 00001150 00001190  80 01 03 28 */	lwz r0, 0x328(r1)
+/* 00001154 00001194  93 DD 00 90 */	stw r30, 0x90(r29)
+/* 00001158 00001198  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000115C 0000119C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001160 000011A0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001164 000011A4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001168 000011A8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000116C 000011AC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001170 000011B0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001174 000011B4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001178 000011B8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000117C 000011BC  48 00 00 01 */	bl __register_global_object
+/* 00001180 000011C0  3C 60 00 00 */	lis r3, "@3756"@ha
+/* 00001184 000011C4  87 83 00 00 */	lwzu r28, "@3756"@l(r3)
+/* 00001188 000011C8  3C A0 00 00 */	lis r5, "@3757"@ha
+/* 0000118C 000011CC  85 45 00 00 */	lwzu r10, "@3757"@l(r5)
+/* 00001190 000011D0  3C E0 00 00 */	lis r7, "@3758"@ha
+/* 00001194 000011D4  84 C7 00 00 */	lwzu r6, "@3758"@l(r7)
+/* 00001198 000011D8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000119C 000011DC  3C 80 00 00 */	lis r4, "@3826"@ha
+/* 000011A0 000011E0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000011A4 000011E4  38 84 00 00 */	addi r4, r4, "@3826"@l
+/* 000011A8 000011E8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000011AC 000011EC  38 7D 00 D0 */	addi r3, r29, 0xd0
+/* 000011B0 000011F0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000011B4 000011F4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000011B8 000011F8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000011BC 000011FC  93 81 02 FC */	stw r28, 0x2fc(r1)
+/* 000011C0 00001200  91 81 03 00 */	stw r12, 0x300(r1)
+/* 000011C4 00001204  91 61 03 04 */	stw r11, 0x304(r1)
+/* 000011C8 00001208  91 41 03 08 */	stw r10, 0x308(r1)
+/* 000011CC 0000120C  91 21 03 0C */	stw r9, 0x30c(r1)
+/* 000011D0 00001210  91 01 03 10 */	stw r8, 0x310(r1)
+/* 000011D4 00001214  90 C1 03 14 */	stw r6, 0x314(r1)
+/* 000011D8 00001218  90 A1 03 18 */	stw r5, 0x318(r1)
+/* 000011DC 0000121C  90 01 03 1C */	stw r0, 0x31c(r1)
+/* 000011E0 00001220  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000011E4 00001224  38 7D 00 D0 */	addi r3, r29, 0xd0
+/* 000011E8 00001228  83 81 03 14 */	lwz r28, 0x314(r1)
+/* 000011EC 0000122C  81 81 03 18 */	lwz r12, 0x318(r1)
+/* 000011F0 00001230  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000011F4 00001234  81 61 03 1C */	lwz r11, 0x31c(r1)
+/* 000011F8 00001238  38 BD 00 C0 */	addi r5, r29, 0xc0
+/* 000011FC 0000123C  81 41 03 08 */	lwz r10, 0x308(r1)
+/* 00001200 00001240  81 21 03 0C */	lwz r9, 0x30c(r1)
+/* 00001204 00001244  81 01 03 10 */	lwz r8, 0x310(r1)
+/* 00001208 00001248  80 E1 02 FC */	lwz r7, 0x2fc(r1)
+/* 0000120C 0000124C  80 C1 03 00 */	lwz r6, 0x300(r1)
+/* 00001210 00001250  80 01 03 04 */	lwz r0, 0x304(r1)
+/* 00001214 00001254  93 DD 00 D0 */	stw r30, 0xd0(r29)
+/* 00001218 00001258  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000121C 0000125C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001220 00001260  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001224 00001264  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001228 00001268  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000122C 0000126C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001230 00001270  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001234 00001274  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001238 00001278  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000123C 0000127C  48 00 00 01 */	bl __register_global_object
+/* 00001240 00001280  3C 60 00 00 */	lis r3, "@3759"@ha
+/* 00001244 00001284  87 83 00 00 */	lwzu r28, "@3759"@l(r3)
+/* 00001248 00001288  3C A0 00 00 */	lis r5, "@3760"@ha
+/* 0000124C 0000128C  85 45 00 00 */	lwzu r10, "@3760"@l(r5)
+/* 00001250 00001290  3C E0 00 00 */	lis r7, "@3761"@ha
+/* 00001254 00001294  84 C7 00 00 */	lwzu r6, "@3761"@l(r7)
+/* 00001258 00001298  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000125C 0000129C  3C 80 00 00 */	lis r4, "@3827"@ha
+/* 00001260 000012A0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001264 000012A4  38 84 00 00 */	addi r4, r4, "@3827"@l
+/* 00001268 000012A8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000126C 000012AC  38 7D 01 10 */	addi r3, r29, 0x110
+/* 00001270 000012B0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001274 000012B4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001278 000012B8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000127C 000012BC  93 81 02 D8 */	stw r28, 0x2d8(r1)
+/* 00001280 000012C0  91 81 02 DC */	stw r12, 0x2dc(r1)
+/* 00001284 000012C4  91 61 02 E0 */	stw r11, 0x2e0(r1)
+/* 00001288 000012C8  91 41 02 E4 */	stw r10, 0x2e4(r1)
+/* 0000128C 000012CC  91 21 02 E8 */	stw r9, 0x2e8(r1)
+/* 00001290 000012D0  91 01 02 EC */	stw r8, 0x2ec(r1)
+/* 00001294 000012D4  90 C1 02 F0 */	stw r6, 0x2f0(r1)
+/* 00001298 000012D8  90 A1 02 F4 */	stw r5, 0x2f4(r1)
+/* 0000129C 000012DC  90 01 02 F8 */	stw r0, 0x2f8(r1)
+/* 000012A0 000012E0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000012A4 000012E4  38 7D 01 10 */	addi r3, r29, 0x110
+/* 000012A8 000012E8  83 81 02 F0 */	lwz r28, 0x2f0(r1)
+/* 000012AC 000012EC  81 81 02 F4 */	lwz r12, 0x2f4(r1)
+/* 000012B0 000012F0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000012B4 000012F4  81 61 02 F8 */	lwz r11, 0x2f8(r1)
+/* 000012B8 000012F8  38 BD 01 00 */	addi r5, r29, 0x100
+/* 000012BC 000012FC  81 41 02 E4 */	lwz r10, 0x2e4(r1)
+/* 000012C0 00001300  81 21 02 E8 */	lwz r9, 0x2e8(r1)
+/* 000012C4 00001304  81 01 02 EC */	lwz r8, 0x2ec(r1)
+/* 000012C8 00001308  80 E1 02 D8 */	lwz r7, 0x2d8(r1)
+/* 000012CC 0000130C  80 C1 02 DC */	lwz r6, 0x2dc(r1)
+/* 000012D0 00001310  80 01 02 E0 */	lwz r0, 0x2e0(r1)
+/* 000012D4 00001314  93 DD 01 10 */	stw r30, 0x110(r29)
+/* 000012D8 00001318  93 83 00 0C */	stw r28, 0xc(r3)
+/* 000012DC 0000131C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000012E0 00001320  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000012E4 00001324  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000012E8 00001328  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000012EC 0000132C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000012F0 00001330  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000012F4 00001334  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000012F8 00001338  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000012FC 0000133C  48 00 00 01 */	bl __register_global_object
+/* 00001300 00001340  3C 60 00 00 */	lis r3, "@3762"@ha
+/* 00001304 00001344  87 83 00 00 */	lwzu r28, "@3762"@l(r3)
+/* 00001308 00001348  3C A0 00 00 */	lis r5, "@3763"@ha
+/* 0000130C 0000134C  85 45 00 00 */	lwzu r10, "@3763"@l(r5)
+/* 00001310 00001350  3C E0 00 00 */	lis r7, "@3764"@ha
+/* 00001314 00001354  84 C7 00 00 */	lwzu r6, "@3764"@l(r7)
+/* 00001318 00001358  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000131C 0000135C  3C 80 00 00 */	lis r4, "@3828"@ha
+/* 00001320 00001360  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001324 00001364  38 84 00 00 */	addi r4, r4, "@3828"@l
+/* 00001328 00001368  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000132C 0000136C  38 7D 01 50 */	addi r3, r29, 0x150
+/* 00001330 00001370  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001334 00001374  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001338 00001378  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000133C 0000137C  93 81 02 B4 */	stw r28, 0x2b4(r1)
+/* 00001340 00001380  91 81 02 B8 */	stw r12, 0x2b8(r1)
+/* 00001344 00001384  91 61 02 BC */	stw r11, 0x2bc(r1)
+/* 00001348 00001388  91 41 02 C0 */	stw r10, 0x2c0(r1)
+/* 0000134C 0000138C  91 21 02 C4 */	stw r9, 0x2c4(r1)
+/* 00001350 00001390  91 01 02 C8 */	stw r8, 0x2c8(r1)
+/* 00001354 00001394  90 C1 02 CC */	stw r6, 0x2cc(r1)
+/* 00001358 00001398  90 A1 02 D0 */	stw r5, 0x2d0(r1)
+/* 0000135C 0000139C  90 01 02 D4 */	stw r0, 0x2d4(r1)
+/* 00001360 000013A0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001364 000013A4  38 7D 01 50 */	addi r3, r29, 0x150
+/* 00001368 000013A8  83 81 02 CC */	lwz r28, 0x2cc(r1)
+/* 0000136C 000013AC  81 81 02 D0 */	lwz r12, 0x2d0(r1)
+/* 00001370 000013B0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001374 000013B4  81 61 02 D4 */	lwz r11, 0x2d4(r1)
+/* 00001378 000013B8  38 BD 01 40 */	addi r5, r29, 0x140
+/* 0000137C 000013BC  81 41 02 C0 */	lwz r10, 0x2c0(r1)
+/* 00001380 000013C0  81 21 02 C4 */	lwz r9, 0x2c4(r1)
+/* 00001384 000013C4  81 01 02 C8 */	lwz r8, 0x2c8(r1)
+/* 00001388 000013C8  80 E1 02 B4 */	lwz r7, 0x2b4(r1)
+/* 0000138C 000013CC  80 C1 02 B8 */	lwz r6, 0x2b8(r1)
+/* 00001390 000013D0  80 01 02 BC */	lwz r0, 0x2bc(r1)
+/* 00001394 000013D4  93 DD 01 50 */	stw r30, 0x150(r29)
+/* 00001398 000013D8  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000139C 000013DC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000013A0 000013E0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000013A4 000013E4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000013A8 000013E8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000013AC 000013EC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000013B0 000013F0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000013B4 000013F4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000013B8 000013F8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000013BC 000013FC  48 00 00 01 */	bl __register_global_object
+/* 000013C0 00001400  3C 60 00 00 */	lis r3, "@3765"@ha
+/* 000013C4 00001404  87 83 00 00 */	lwzu r28, "@3765"@l(r3)
+/* 000013C8 00001408  3C A0 00 00 */	lis r5, "@3766"@ha
+/* 000013CC 0000140C  85 45 00 00 */	lwzu r10, "@3766"@l(r5)
+/* 000013D0 00001410  3C E0 00 00 */	lis r7, "@3767"@ha
+/* 000013D4 00001414  84 C7 00 00 */	lwzu r6, "@3767"@l(r7)
+/* 000013D8 00001418  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 000013DC 0000141C  3C 80 00 00 */	lis r4, "@3829"@ha
+/* 000013E0 00001420  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000013E4 00001424  38 84 00 00 */	addi r4, r4, "@3829"@l
+/* 000013E8 00001428  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000013EC 0000142C  38 7D 01 90 */	addi r3, r29, 0x190
+/* 000013F0 00001430  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000013F4 00001434  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000013F8 00001438  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000013FC 0000143C  93 81 02 90 */	stw r28, 0x290(r1)
+/* 00001400 00001440  91 81 02 94 */	stw r12, 0x294(r1)
+/* 00001404 00001444  91 61 02 98 */	stw r11, 0x298(r1)
+/* 00001408 00001448  91 41 02 9C */	stw r10, 0x29c(r1)
+/* 0000140C 0000144C  91 21 02 A0 */	stw r9, 0x2a0(r1)
+/* 00001410 00001450  91 01 02 A4 */	stw r8, 0x2a4(r1)
+/* 00001414 00001454  90 C1 02 A8 */	stw r6, 0x2a8(r1)
+/* 00001418 00001458  90 A1 02 AC */	stw r5, 0x2ac(r1)
+/* 0000141C 0000145C  90 01 02 B0 */	stw r0, 0x2b0(r1)
+/* 00001420 00001460  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001424 00001464  38 7D 01 90 */	addi r3, r29, 0x190
+/* 00001428 00001468  83 81 02 A8 */	lwz r28, 0x2a8(r1)
+/* 0000142C 0000146C  81 81 02 AC */	lwz r12, 0x2ac(r1)
+/* 00001430 00001470  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001434 00001474  81 61 02 B0 */	lwz r11, 0x2b0(r1)
+/* 00001438 00001478  38 BD 01 80 */	addi r5, r29, 0x180
+/* 0000143C 0000147C  81 41 02 9C */	lwz r10, 0x29c(r1)
+/* 00001440 00001480  81 21 02 A0 */	lwz r9, 0x2a0(r1)
+/* 00001444 00001484  81 01 02 A4 */	lwz r8, 0x2a4(r1)
+/* 00001448 00001488  80 E1 02 90 */	lwz r7, 0x290(r1)
+/* 0000144C 0000148C  80 C1 02 94 */	lwz r6, 0x294(r1)
+/* 00001450 00001490  80 01 02 98 */	lwz r0, 0x298(r1)
+/* 00001454 00001494  93 DD 01 90 */	stw r30, 0x190(r29)
+/* 00001458 00001498  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000145C 0000149C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001460 000014A0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001464 000014A4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001468 000014A8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000146C 000014AC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001470 000014B0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001474 000014B4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001478 000014B8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000147C 000014BC  48 00 00 01 */	bl __register_global_object
+/* 00001480 000014C0  3C 60 00 00 */	lis r3, "@3768"@ha
+/* 00001484 000014C4  87 83 00 00 */	lwzu r28, "@3768"@l(r3)
+/* 00001488 000014C8  3C A0 00 00 */	lis r5, "@3769"@ha
+/* 0000148C 000014CC  85 45 00 00 */	lwzu r10, "@3769"@l(r5)
+/* 00001490 000014D0  3C E0 00 00 */	lis r7, "@3770"@ha
+/* 00001494 000014D4  84 C7 00 00 */	lwzu r6, "@3770"@l(r7)
+/* 00001498 000014D8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000149C 000014DC  3C 80 00 00 */	lis r4, "@3830"@ha
+/* 000014A0 000014E0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000014A4 000014E4  38 84 00 00 */	addi r4, r4, "@3830"@l
+/* 000014A8 000014E8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000014AC 000014EC  38 7D 01 D0 */	addi r3, r29, 0x1d0
+/* 000014B0 000014F0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000014B4 000014F4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000014B8 000014F8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000014BC 000014FC  93 81 02 6C */	stw r28, 0x26c(r1)
+/* 000014C0 00001500  91 81 02 70 */	stw r12, 0x270(r1)
+/* 000014C4 00001504  91 61 02 74 */	stw r11, 0x274(r1)
+/* 000014C8 00001508  91 41 02 78 */	stw r10, 0x278(r1)
+/* 000014CC 0000150C  91 21 02 7C */	stw r9, 0x27c(r1)
+/* 000014D0 00001510  91 01 02 80 */	stw r8, 0x280(r1)
+/* 000014D4 00001514  90 C1 02 84 */	stw r6, 0x284(r1)
+/* 000014D8 00001518  90 A1 02 88 */	stw r5, 0x288(r1)
+/* 000014DC 0000151C  90 01 02 8C */	stw r0, 0x28c(r1)
+/* 000014E0 00001520  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000014E4 00001524  38 7D 01 D0 */	addi r3, r29, 0x1d0
+/* 000014E8 00001528  83 81 02 84 */	lwz r28, 0x284(r1)
+/* 000014EC 0000152C  81 81 02 88 */	lwz r12, 0x288(r1)
+/* 000014F0 00001530  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000014F4 00001534  81 61 02 8C */	lwz r11, 0x28c(r1)
+/* 000014F8 00001538  38 BD 01 C0 */	addi r5, r29, 0x1c0
+/* 000014FC 0000153C  81 41 02 78 */	lwz r10, 0x278(r1)
+/* 00001500 00001540  81 21 02 7C */	lwz r9, 0x27c(r1)
+/* 00001504 00001544  81 01 02 80 */	lwz r8, 0x280(r1)
+/* 00001508 00001548  80 E1 02 6C */	lwz r7, 0x26c(r1)
+/* 0000150C 0000154C  80 C1 02 70 */	lwz r6, 0x270(r1)
+/* 00001510 00001550  80 01 02 74 */	lwz r0, 0x274(r1)
+/* 00001514 00001554  93 DD 01 D0 */	stw r30, 0x1d0(r29)
+/* 00001518 00001558  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000151C 0000155C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001520 00001560  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001524 00001564  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001528 00001568  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000152C 0000156C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001530 00001570  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001534 00001574  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001538 00001578  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000153C 0000157C  48 00 00 01 */	bl __register_global_object
+/* 00001540 00001580  3C 60 00 00 */	lis r3, "@3771"@ha
+/* 00001544 00001584  87 83 00 00 */	lwzu r28, "@3771"@l(r3)
+/* 00001548 00001588  3C A0 00 00 */	lis r5, "@3772"@ha
+/* 0000154C 0000158C  85 45 00 00 */	lwzu r10, "@3772"@l(r5)
+/* 00001550 00001590  3C E0 00 00 */	lis r7, "@3773"@ha
+/* 00001554 00001594  84 C7 00 00 */	lwzu r6, "@3773"@l(r7)
+/* 00001558 00001598  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000155C 0000159C  3C 80 00 00 */	lis r4, "@3831"@ha
+/* 00001560 000015A0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001564 000015A4  38 84 00 00 */	addi r4, r4, "@3831"@l
+/* 00001568 000015A8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000156C 000015AC  38 7D 02 10 */	addi r3, r29, 0x210
+/* 00001570 000015B0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001574 000015B4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001578 000015B8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000157C 000015BC  93 81 02 48 */	stw r28, 0x248(r1)
+/* 00001580 000015C0  91 81 02 4C */	stw r12, 0x24c(r1)
+/* 00001584 000015C4  91 61 02 50 */	stw r11, 0x250(r1)
+/* 00001588 000015C8  91 41 02 54 */	stw r10, 0x254(r1)
+/* 0000158C 000015CC  91 21 02 58 */	stw r9, 0x258(r1)
+/* 00001590 000015D0  91 01 02 5C */	stw r8, 0x25c(r1)
+/* 00001594 000015D4  90 C1 02 60 */	stw r6, 0x260(r1)
+/* 00001598 000015D8  90 A1 02 64 */	stw r5, 0x264(r1)
+/* 0000159C 000015DC  90 01 02 68 */	stw r0, 0x268(r1)
+/* 000015A0 000015E0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000015A4 000015E4  38 7D 02 10 */	addi r3, r29, 0x210
+/* 000015A8 000015E8  83 81 02 60 */	lwz r28, 0x260(r1)
+/* 000015AC 000015EC  81 81 02 64 */	lwz r12, 0x264(r1)
+/* 000015B0 000015F0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000015B4 000015F4  81 61 02 68 */	lwz r11, 0x268(r1)
+/* 000015B8 000015F8  38 BD 02 00 */	addi r5, r29, 0x200
+/* 000015BC 000015FC  81 41 02 54 */	lwz r10, 0x254(r1)
+/* 000015C0 00001600  81 21 02 58 */	lwz r9, 0x258(r1)
+/* 000015C4 00001604  81 01 02 5C */	lwz r8, 0x25c(r1)
+/* 000015C8 00001608  80 E1 02 48 */	lwz r7, 0x248(r1)
+/* 000015CC 0000160C  80 C1 02 4C */	lwz r6, 0x24c(r1)
+/* 000015D0 00001610  80 01 02 50 */	lwz r0, 0x250(r1)
+/* 000015D4 00001614  93 DD 02 10 */	stw r30, 0x210(r29)
+/* 000015D8 00001618  93 83 00 0C */	stw r28, 0xc(r3)
+/* 000015DC 0000161C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000015E0 00001620  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000015E4 00001624  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000015E8 00001628  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000015EC 0000162C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000015F0 00001630  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000015F4 00001634  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000015F8 00001638  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000015FC 0000163C  48 00 00 01 */	bl __register_global_object
+/* 00001600 00001640  3C 60 00 00 */	lis r3, "@3774"@ha
+/* 00001604 00001644  87 83 00 00 */	lwzu r28, "@3774"@l(r3)
+/* 00001608 00001648  3C A0 00 00 */	lis r5, "@3775"@ha
+/* 0000160C 0000164C  85 45 00 00 */	lwzu r10, "@3775"@l(r5)
+/* 00001610 00001650  3C E0 00 00 */	lis r7, "@3776"@ha
+/* 00001614 00001654  84 C7 00 00 */	lwzu r6, "@3776"@l(r7)
+/* 00001618 00001658  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000161C 0000165C  3C 80 00 00 */	lis r4, "@3832"@ha
+/* 00001620 00001660  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001624 00001664  38 84 00 00 */	addi r4, r4, "@3832"@l
+/* 00001628 00001668  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000162C 0000166C  38 7D 02 50 */	addi r3, r29, 0x250
+/* 00001630 00001670  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001634 00001674  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001638 00001678  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000163C 0000167C  93 81 02 24 */	stw r28, 0x224(r1)
+/* 00001640 00001680  91 81 02 28 */	stw r12, 0x228(r1)
+/* 00001644 00001684  91 61 02 2C */	stw r11, 0x22c(r1)
+/* 00001648 00001688  91 41 02 30 */	stw r10, 0x230(r1)
+/* 0000164C 0000168C  91 21 02 34 */	stw r9, 0x234(r1)
+/* 00001650 00001690  91 01 02 38 */	stw r8, 0x238(r1)
+/* 00001654 00001694  90 C1 02 3C */	stw r6, 0x23c(r1)
+/* 00001658 00001698  90 A1 02 40 */	stw r5, 0x240(r1)
+/* 0000165C 0000169C  90 01 02 44 */	stw r0, 0x244(r1)
+/* 00001660 000016A0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001664 000016A4  38 7D 02 50 */	addi r3, r29, 0x250
+/* 00001668 000016A8  83 81 02 3C */	lwz r28, 0x23c(r1)
+/* 0000166C 000016AC  81 81 02 40 */	lwz r12, 0x240(r1)
+/* 00001670 000016B0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001674 000016B4  81 61 02 44 */	lwz r11, 0x244(r1)
+/* 00001678 000016B8  38 BD 02 40 */	addi r5, r29, 0x240
+/* 0000167C 000016BC  81 41 02 30 */	lwz r10, 0x230(r1)
+/* 00001680 000016C0  81 21 02 34 */	lwz r9, 0x234(r1)
+/* 00001684 000016C4  81 01 02 38 */	lwz r8, 0x238(r1)
+/* 00001688 000016C8  80 E1 02 24 */	lwz r7, 0x224(r1)
+/* 0000168C 000016CC  80 C1 02 28 */	lwz r6, 0x228(r1)
+/* 00001690 000016D0  80 01 02 2C */	lwz r0, 0x22c(r1)
+/* 00001694 000016D4  93 DD 02 50 */	stw r30, 0x250(r29)
+/* 00001698 000016D8  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000169C 000016DC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000016A0 000016E0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000016A4 000016E4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000016A8 000016E8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000016AC 000016EC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000016B0 000016F0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000016B4 000016F4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000016B8 000016F8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000016BC 000016FC  48 00 00 01 */	bl __register_global_object
+/* 000016C0 00001700  3C 60 00 00 */	lis r3, "@3777"@ha
+/* 000016C4 00001704  87 83 00 00 */	lwzu r28, "@3777"@l(r3)
+/* 000016C8 00001708  3C A0 00 00 */	lis r5, "@3778"@ha
+/* 000016CC 0000170C  85 45 00 00 */	lwzu r10, "@3778"@l(r5)
+/* 000016D0 00001710  3C E0 00 00 */	lis r7, "@3779"@ha
+/* 000016D4 00001714  84 C7 00 00 */	lwzu r6, "@3779"@l(r7)
+/* 000016D8 00001718  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 000016DC 0000171C  3C 80 00 00 */	lis r4, "@3833"@ha
+/* 000016E0 00001720  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000016E4 00001724  38 84 00 00 */	addi r4, r4, "@3833"@l
+/* 000016E8 00001728  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000016EC 0000172C  38 7D 02 90 */	addi r3, r29, 0x290
+/* 000016F0 00001730  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000016F4 00001734  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000016F8 00001738  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000016FC 0000173C  93 81 02 00 */	stw r28, 0x200(r1)
+/* 00001700 00001740  91 81 02 04 */	stw r12, 0x204(r1)
+/* 00001704 00001744  91 61 02 08 */	stw r11, 0x208(r1)
+/* 00001708 00001748  91 41 02 0C */	stw r10, 0x20c(r1)
+/* 0000170C 0000174C  91 21 02 10 */	stw r9, 0x210(r1)
+/* 00001710 00001750  91 01 02 14 */	stw r8, 0x214(r1)
+/* 00001714 00001754  90 C1 02 18 */	stw r6, 0x218(r1)
+/* 00001718 00001758  90 A1 02 1C */	stw r5, 0x21c(r1)
+/* 0000171C 0000175C  90 01 02 20 */	stw r0, 0x220(r1)
+/* 00001720 00001760  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001724 00001764  38 7D 02 90 */	addi r3, r29, 0x290
+/* 00001728 00001768  83 81 02 18 */	lwz r28, 0x218(r1)
+/* 0000172C 0000176C  81 81 02 1C */	lwz r12, 0x21c(r1)
+/* 00001730 00001770  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001734 00001774  81 61 02 20 */	lwz r11, 0x220(r1)
+/* 00001738 00001778  38 BD 02 80 */	addi r5, r29, 0x280
+/* 0000173C 0000177C  81 41 02 0C */	lwz r10, 0x20c(r1)
+/* 00001740 00001780  81 21 02 10 */	lwz r9, 0x210(r1)
+/* 00001744 00001784  81 01 02 14 */	lwz r8, 0x214(r1)
+/* 00001748 00001788  80 E1 02 00 */	lwz r7, 0x200(r1)
+/* 0000174C 0000178C  80 C1 02 04 */	lwz r6, 0x204(r1)
+/* 00001750 00001790  80 01 02 08 */	lwz r0, 0x208(r1)
+/* 00001754 00001794  93 DD 02 90 */	stw r30, 0x290(r29)
+/* 00001758 00001798  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000175C 0000179C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001760 000017A0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001764 000017A4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001768 000017A8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000176C 000017AC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001770 000017B0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001774 000017B4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001778 000017B8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000177C 000017BC  48 00 00 01 */	bl __register_global_object
+/* 00001780 000017C0  3C 60 00 00 */	lis r3, "@3780"@ha
+/* 00001784 000017C4  87 83 00 00 */	lwzu r28, "@3780"@l(r3)
+/* 00001788 000017C8  3C A0 00 00 */	lis r5, "@3781"@ha
+/* 0000178C 000017CC  85 45 00 00 */	lwzu r10, "@3781"@l(r5)
+/* 00001790 000017D0  3C E0 00 00 */	lis r7, "@3782"@ha
+/* 00001794 000017D4  84 C7 00 00 */	lwzu r6, "@3782"@l(r7)
+/* 00001798 000017D8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000179C 000017DC  3C 80 00 00 */	lis r4, "@3834"@ha
+/* 000017A0 000017E0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000017A4 000017E4  38 84 00 00 */	addi r4, r4, "@3834"@l
+/* 000017A8 000017E8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000017AC 000017EC  38 7D 02 D0 */	addi r3, r29, 0x2d0
+/* 000017B0 000017F0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000017B4 000017F4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000017B8 000017F8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000017BC 000017FC  93 81 01 DC */	stw r28, 0x1dc(r1)
+/* 000017C0 00001800  91 81 01 E0 */	stw r12, 0x1e0(r1)
+/* 000017C4 00001804  91 61 01 E4 */	stw r11, 0x1e4(r1)
+/* 000017C8 00001808  91 41 01 E8 */	stw r10, 0x1e8(r1)
+/* 000017CC 0000180C  91 21 01 EC */	stw r9, 0x1ec(r1)
+/* 000017D0 00001810  91 01 01 F0 */	stw r8, 0x1f0(r1)
+/* 000017D4 00001814  90 C1 01 F4 */	stw r6, 0x1f4(r1)
+/* 000017D8 00001818  90 A1 01 F8 */	stw r5, 0x1f8(r1)
+/* 000017DC 0000181C  90 01 01 FC */	stw r0, 0x1fc(r1)
+/* 000017E0 00001820  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000017E4 00001824  38 7D 02 D0 */	addi r3, r29, 0x2d0
+/* 000017E8 00001828  83 81 01 F4 */	lwz r28, 0x1f4(r1)
+/* 000017EC 0000182C  81 81 01 F8 */	lwz r12, 0x1f8(r1)
+/* 000017F0 00001830  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000017F4 00001834  81 61 01 FC */	lwz r11, 0x1fc(r1)
+/* 000017F8 00001838  38 BD 02 C0 */	addi r5, r29, 0x2c0
+/* 000017FC 0000183C  81 41 01 E8 */	lwz r10, 0x1e8(r1)
+/* 00001800 00001840  81 21 01 EC */	lwz r9, 0x1ec(r1)
+/* 00001804 00001844  81 01 01 F0 */	lwz r8, 0x1f0(r1)
+/* 00001808 00001848  80 E1 01 DC */	lwz r7, 0x1dc(r1)
+/* 0000180C 0000184C  80 C1 01 E0 */	lwz r6, 0x1e0(r1)
+/* 00001810 00001850  80 01 01 E4 */	lwz r0, 0x1e4(r1)
+/* 00001814 00001854  93 DD 02 D0 */	stw r30, 0x2d0(r29)
+/* 00001818 00001858  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000181C 0000185C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001820 00001860  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001824 00001864  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001828 00001868  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000182C 0000186C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001830 00001870  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001834 00001874  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001838 00001878  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000183C 0000187C  48 00 00 01 */	bl __register_global_object
+/* 00001840 00001880  3C 60 00 00 */	lis r3, "@3783"@ha
+/* 00001844 00001884  87 83 00 00 */	lwzu r28, "@3783"@l(r3)
+/* 00001848 00001888  3C A0 00 00 */	lis r5, "@3784"@ha
+/* 0000184C 0000188C  85 45 00 00 */	lwzu r10, "@3784"@l(r5)
+/* 00001850 00001890  3C E0 00 00 */	lis r7, "@3785"@ha
+/* 00001854 00001894  84 C7 00 00 */	lwzu r6, "@3785"@l(r7)
+/* 00001858 00001898  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000185C 0000189C  3C 80 00 00 */	lis r4, "@3835"@ha
+/* 00001860 000018A0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001864 000018A4  38 84 00 00 */	addi r4, r4, "@3835"@l
+/* 00001868 000018A8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000186C 000018AC  38 7D 03 10 */	addi r3, r29, 0x310
+/* 00001870 000018B0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001874 000018B4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001878 000018B8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000187C 000018BC  93 81 01 B8 */	stw r28, 0x1b8(r1)
+/* 00001880 000018C0  91 81 01 BC */	stw r12, 0x1bc(r1)
+/* 00001884 000018C4  91 61 01 C0 */	stw r11, 0x1c0(r1)
+/* 00001888 000018C8  91 41 01 C4 */	stw r10, 0x1c4(r1)
+/* 0000188C 000018CC  91 21 01 C8 */	stw r9, 0x1c8(r1)
+/* 00001890 000018D0  91 01 01 CC */	stw r8, 0x1cc(r1)
+/* 00001894 000018D4  90 C1 01 D0 */	stw r6, 0x1d0(r1)
+/* 00001898 000018D8  90 A1 01 D4 */	stw r5, 0x1d4(r1)
+/* 0000189C 000018DC  90 01 01 D8 */	stw r0, 0x1d8(r1)
+/* 000018A0 000018E0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000018A4 000018E4  38 7D 03 10 */	addi r3, r29, 0x310
+/* 000018A8 000018E8  83 81 01 D0 */	lwz r28, 0x1d0(r1)
+/* 000018AC 000018EC  81 81 01 D4 */	lwz r12, 0x1d4(r1)
+/* 000018B0 000018F0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000018B4 000018F4  81 61 01 D8 */	lwz r11, 0x1d8(r1)
+/* 000018B8 000018F8  38 BD 03 00 */	addi r5, r29, 0x300
+/* 000018BC 000018FC  81 41 01 C4 */	lwz r10, 0x1c4(r1)
+/* 000018C0 00001900  81 21 01 C8 */	lwz r9, 0x1c8(r1)
+/* 000018C4 00001904  81 01 01 CC */	lwz r8, 0x1cc(r1)
+/* 000018C8 00001908  80 E1 01 B8 */	lwz r7, 0x1b8(r1)
+/* 000018CC 0000190C  80 C1 01 BC */	lwz r6, 0x1bc(r1)
+/* 000018D0 00001910  80 01 01 C0 */	lwz r0, 0x1c0(r1)
+/* 000018D4 00001914  93 DD 03 10 */	stw r30, 0x310(r29)
+/* 000018D8 00001918  93 83 00 0C */	stw r28, 0xc(r3)
+/* 000018DC 0000191C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000018E0 00001920  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000018E4 00001924  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000018E8 00001928  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000018EC 0000192C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000018F0 00001930  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000018F4 00001934  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000018F8 00001938  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000018FC 0000193C  48 00 00 01 */	bl __register_global_object
+/* 00001900 00001940  3C 60 00 00 */	lis r3, "@3786"@ha
+/* 00001904 00001944  87 83 00 00 */	lwzu r28, "@3786"@l(r3)
+/* 00001908 00001948  3C A0 00 00 */	lis r5, "@3787"@ha
+/* 0000190C 0000194C  85 45 00 00 */	lwzu r10, "@3787"@l(r5)
+/* 00001910 00001950  3C E0 00 00 */	lis r7, "@3788"@ha
+/* 00001914 00001954  84 C7 00 00 */	lwzu r6, "@3788"@l(r7)
+/* 00001918 00001958  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000191C 0000195C  3C 80 00 00 */	lis r4, "@3836"@ha
+/* 00001920 00001960  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001924 00001964  38 84 00 00 */	addi r4, r4, "@3836"@l
+/* 00001928 00001968  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000192C 0000196C  38 7D 03 50 */	addi r3, r29, 0x350
+/* 00001930 00001970  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001934 00001974  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001938 00001978  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000193C 0000197C  93 81 01 94 */	stw r28, 0x194(r1)
+/* 00001940 00001980  91 81 01 98 */	stw r12, 0x198(r1)
+/* 00001944 00001984  91 61 01 9C */	stw r11, 0x19c(r1)
+/* 00001948 00001988  91 41 01 A0 */	stw r10, 0x1a0(r1)
+/* 0000194C 0000198C  91 21 01 A4 */	stw r9, 0x1a4(r1)
+/* 00001950 00001990  91 01 01 A8 */	stw r8, 0x1a8(r1)
+/* 00001954 00001994  90 C1 01 AC */	stw r6, 0x1ac(r1)
+/* 00001958 00001998  90 A1 01 B0 */	stw r5, 0x1b0(r1)
+/* 0000195C 0000199C  90 01 01 B4 */	stw r0, 0x1b4(r1)
+/* 00001960 000019A0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001964 000019A4  38 7D 03 50 */	addi r3, r29, 0x350
+/* 00001968 000019A8  83 81 01 AC */	lwz r28, 0x1ac(r1)
+/* 0000196C 000019AC  81 81 01 B0 */	lwz r12, 0x1b0(r1)
+/* 00001970 000019B0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001974 000019B4  81 61 01 B4 */	lwz r11, 0x1b4(r1)
+/* 00001978 000019B8  38 BD 03 40 */	addi r5, r29, 0x340
+/* 0000197C 000019BC  81 41 01 A0 */	lwz r10, 0x1a0(r1)
+/* 00001980 000019C0  81 21 01 A4 */	lwz r9, 0x1a4(r1)
+/* 00001984 000019C4  81 01 01 A8 */	lwz r8, 0x1a8(r1)
+/* 00001988 000019C8  80 E1 01 94 */	lwz r7, 0x194(r1)
+/* 0000198C 000019CC  80 C1 01 98 */	lwz r6, 0x198(r1)
+/* 00001990 000019D0  80 01 01 9C */	lwz r0, 0x19c(r1)
+/* 00001994 000019D4  93 DD 03 50 */	stw r30, 0x350(r29)
+/* 00001998 000019D8  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000199C 000019DC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000019A0 000019E0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000019A4 000019E4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000019A8 000019E8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000019AC 000019EC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000019B0 000019F0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000019B4 000019F4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000019B8 000019F8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000019BC 000019FC  48 00 00 01 */	bl __register_global_object
+/* 000019C0 00001A00  3C 60 00 00 */	lis r3, "@3789"@ha
+/* 000019C4 00001A04  87 83 00 00 */	lwzu r28, "@3789"@l(r3)
+/* 000019C8 00001A08  3C A0 00 00 */	lis r5, "@3790"@ha
+/* 000019CC 00001A0C  85 45 00 00 */	lwzu r10, "@3790"@l(r5)
+/* 000019D0 00001A10  3C E0 00 00 */	lis r7, "@3791"@ha
+/* 000019D4 00001A14  84 C7 00 00 */	lwzu r6, "@3791"@l(r7)
+/* 000019D8 00001A18  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 000019DC 00001A1C  3C 80 00 00 */	lis r4, "@3837"@ha
+/* 000019E0 00001A20  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000019E4 00001A24  38 84 00 00 */	addi r4, r4, "@3837"@l
+/* 000019E8 00001A28  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000019EC 00001A2C  38 7D 03 90 */	addi r3, r29, 0x390
+/* 000019F0 00001A30  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000019F4 00001A34  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000019F8 00001A38  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000019FC 00001A3C  93 81 01 70 */	stw r28, 0x170(r1)
+/* 00001A00 00001A40  91 81 01 74 */	stw r12, 0x174(r1)
+/* 00001A04 00001A44  91 61 01 78 */	stw r11, 0x178(r1)
+/* 00001A08 00001A48  91 41 01 7C */	stw r10, 0x17c(r1)
+/* 00001A0C 00001A4C  91 21 01 80 */	stw r9, 0x180(r1)
+/* 00001A10 00001A50  91 01 01 84 */	stw r8, 0x184(r1)
+/* 00001A14 00001A54  90 C1 01 88 */	stw r6, 0x188(r1)
+/* 00001A18 00001A58  90 A1 01 8C */	stw r5, 0x18c(r1)
+/* 00001A1C 00001A5C  90 01 01 90 */	stw r0, 0x190(r1)
+/* 00001A20 00001A60  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001A24 00001A64  38 7D 03 90 */	addi r3, r29, 0x390
+/* 00001A28 00001A68  83 81 01 88 */	lwz r28, 0x188(r1)
+/* 00001A2C 00001A6C  81 81 01 8C */	lwz r12, 0x18c(r1)
+/* 00001A30 00001A70  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001A34 00001A74  81 61 01 90 */	lwz r11, 0x190(r1)
+/* 00001A38 00001A78  38 BD 03 80 */	addi r5, r29, 0x380
+/* 00001A3C 00001A7C  81 41 01 7C */	lwz r10, 0x17c(r1)
+/* 00001A40 00001A80  81 21 01 80 */	lwz r9, 0x180(r1)
+/* 00001A44 00001A84  81 01 01 84 */	lwz r8, 0x184(r1)
+/* 00001A48 00001A88  80 E1 01 70 */	lwz r7, 0x170(r1)
+/* 00001A4C 00001A8C  80 C1 01 74 */	lwz r6, 0x174(r1)
+/* 00001A50 00001A90  80 01 01 78 */	lwz r0, 0x178(r1)
+/* 00001A54 00001A94  93 DD 03 90 */	stw r30, 0x390(r29)
+/* 00001A58 00001A98  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001A5C 00001A9C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001A60 00001AA0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001A64 00001AA4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001A68 00001AA8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001A6C 00001AAC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001A70 00001AB0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001A74 00001AB4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001A78 00001AB8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001A7C 00001ABC  48 00 00 01 */	bl __register_global_object
+/* 00001A80 00001AC0  3C 60 00 00 */	lis r3, "@3792"@ha
+/* 00001A84 00001AC4  87 83 00 00 */	lwzu r28, "@3792"@l(r3)
+/* 00001A88 00001AC8  3C A0 00 00 */	lis r5, "@3793"@ha
+/* 00001A8C 00001ACC  85 45 00 00 */	lwzu r10, "@3793"@l(r5)
+/* 00001A90 00001AD0  3C E0 00 00 */	lis r7, "@3794"@ha
+/* 00001A94 00001AD4  84 C7 00 00 */	lwzu r6, "@3794"@l(r7)
+/* 00001A98 00001AD8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001A9C 00001ADC  3C 80 00 00 */	lis r4, "@3838"@ha
+/* 00001AA0 00001AE0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001AA4 00001AE4  38 84 00 00 */	addi r4, r4, "@3838"@l
+/* 00001AA8 00001AE8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001AAC 00001AEC  38 7D 03 D0 */	addi r3, r29, 0x3d0
+/* 00001AB0 00001AF0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001AB4 00001AF4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001AB8 00001AF8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001ABC 00001AFC  93 81 01 4C */	stw r28, 0x14c(r1)
+/* 00001AC0 00001B00  91 81 01 50 */	stw r12, 0x150(r1)
+/* 00001AC4 00001B04  91 61 01 54 */	stw r11, 0x154(r1)
+/* 00001AC8 00001B08  91 41 01 58 */	stw r10, 0x158(r1)
+/* 00001ACC 00001B0C  91 21 01 5C */	stw r9, 0x15c(r1)
+/* 00001AD0 00001B10  91 01 01 60 */	stw r8, 0x160(r1)
+/* 00001AD4 00001B14  90 C1 01 64 */	stw r6, 0x164(r1)
+/* 00001AD8 00001B18  90 A1 01 68 */	stw r5, 0x168(r1)
+/* 00001ADC 00001B1C  90 01 01 6C */	stw r0, 0x16c(r1)
+/* 00001AE0 00001B20  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001AE4 00001B24  38 7D 03 D0 */	addi r3, r29, 0x3d0
+/* 00001AE8 00001B28  83 81 01 64 */	lwz r28, 0x164(r1)
+/* 00001AEC 00001B2C  81 81 01 68 */	lwz r12, 0x168(r1)
+/* 00001AF0 00001B30  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001AF4 00001B34  81 61 01 6C */	lwz r11, 0x16c(r1)
+/* 00001AF8 00001B38  38 BD 03 C0 */	addi r5, r29, 0x3c0
+/* 00001AFC 00001B3C  81 41 01 58 */	lwz r10, 0x158(r1)
+/* 00001B00 00001B40  81 21 01 5C */	lwz r9, 0x15c(r1)
+/* 00001B04 00001B44  81 01 01 60 */	lwz r8, 0x160(r1)
+/* 00001B08 00001B48  80 E1 01 4C */	lwz r7, 0x14c(r1)
+/* 00001B0C 00001B4C  80 C1 01 50 */	lwz r6, 0x150(r1)
+/* 00001B10 00001B50  80 01 01 54 */	lwz r0, 0x154(r1)
+/* 00001B14 00001B54  93 DD 03 D0 */	stw r30, 0x3d0(r29)
+/* 00001B18 00001B58  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001B1C 00001B5C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001B20 00001B60  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001B24 00001B64  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001B28 00001B68  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001B2C 00001B6C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001B30 00001B70  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001B34 00001B74  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001B38 00001B78  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001B3C 00001B7C  48 00 00 01 */	bl __register_global_object
+/* 00001B40 00001B80  3C 60 00 00 */	lis r3, "@3795"@ha
+/* 00001B44 00001B84  87 83 00 00 */	lwzu r28, "@3795"@l(r3)
+/* 00001B48 00001B88  3C A0 00 00 */	lis r5, "@3796"@ha
+/* 00001B4C 00001B8C  85 45 00 00 */	lwzu r10, "@3796"@l(r5)
+/* 00001B50 00001B90  3C E0 00 00 */	lis r7, "@3797"@ha
+/* 00001B54 00001B94  84 C7 00 00 */	lwzu r6, "@3797"@l(r7)
+/* 00001B58 00001B98  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001B5C 00001B9C  3C 80 00 00 */	lis r4, "@3839"@ha
+/* 00001B60 00001BA0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001B64 00001BA4  38 84 00 00 */	addi r4, r4, "@3839"@l
+/* 00001B68 00001BA8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001B6C 00001BAC  38 7D 04 10 */	addi r3, r29, 0x410
+/* 00001B70 00001BB0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001B74 00001BB4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001B78 00001BB8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001B7C 00001BBC  93 81 01 28 */	stw r28, 0x128(r1)
+/* 00001B80 00001BC0  91 81 01 2C */	stw r12, 0x12c(r1)
+/* 00001B84 00001BC4  91 61 01 30 */	stw r11, 0x130(r1)
+/* 00001B88 00001BC8  91 41 01 34 */	stw r10, 0x134(r1)
+/* 00001B8C 00001BCC  91 21 01 38 */	stw r9, 0x138(r1)
+/* 00001B90 00001BD0  91 01 01 3C */	stw r8, 0x13c(r1)
+/* 00001B94 00001BD4  90 C1 01 40 */	stw r6, 0x140(r1)
+/* 00001B98 00001BD8  90 A1 01 44 */	stw r5, 0x144(r1)
+/* 00001B9C 00001BDC  90 01 01 48 */	stw r0, 0x148(r1)
+/* 00001BA0 00001BE0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001BA4 00001BE4  38 7D 04 10 */	addi r3, r29, 0x410
+/* 00001BA8 00001BE8  83 81 01 40 */	lwz r28, 0x140(r1)
+/* 00001BAC 00001BEC  81 81 01 44 */	lwz r12, 0x144(r1)
+/* 00001BB0 00001BF0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001BB4 00001BF4  81 61 01 48 */	lwz r11, 0x148(r1)
+/* 00001BB8 00001BF8  38 BD 04 00 */	addi r5, r29, 0x400
+/* 00001BBC 00001BFC  81 41 01 34 */	lwz r10, 0x134(r1)
+/* 00001BC0 00001C00  81 21 01 38 */	lwz r9, 0x138(r1)
+/* 00001BC4 00001C04  81 01 01 3C */	lwz r8, 0x13c(r1)
+/* 00001BC8 00001C08  80 E1 01 28 */	lwz r7, 0x128(r1)
+/* 00001BCC 00001C0C  80 C1 01 2C */	lwz r6, 0x12c(r1)
+/* 00001BD0 00001C10  80 01 01 30 */	lwz r0, 0x130(r1)
+/* 00001BD4 00001C14  93 DD 04 10 */	stw r30, 0x410(r29)
+/* 00001BD8 00001C18  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001BDC 00001C1C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001BE0 00001C20  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001BE4 00001C24  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001BE8 00001C28  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001BEC 00001C2C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001BF0 00001C30  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001BF4 00001C34  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001BF8 00001C38  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001BFC 00001C3C  48 00 00 01 */	bl __register_global_object
+/* 00001C00 00001C40  3C 60 00 00 */	lis r3, "@3798"@ha
+/* 00001C04 00001C44  87 83 00 00 */	lwzu r28, "@3798"@l(r3)
+/* 00001C08 00001C48  3C A0 00 00 */	lis r5, "@3799"@ha
+/* 00001C0C 00001C4C  85 45 00 00 */	lwzu r10, "@3799"@l(r5)
+/* 00001C10 00001C50  3C E0 00 00 */	lis r7, "@3800"@ha
+/* 00001C14 00001C54  84 C7 00 00 */	lwzu r6, "@3800"@l(r7)
+/* 00001C18 00001C58  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001C1C 00001C5C  3C 80 00 00 */	lis r4, "@3840"@ha
+/* 00001C20 00001C60  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001C24 00001C64  38 84 00 00 */	addi r4, r4, "@3840"@l
+/* 00001C28 00001C68  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001C2C 00001C6C  38 7D 04 50 */	addi r3, r29, 0x450
+/* 00001C30 00001C70  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001C34 00001C74  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001C38 00001C78  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001C3C 00001C7C  93 81 01 04 */	stw r28, 0x104(r1)
+/* 00001C40 00001C80  91 81 01 08 */	stw r12, 0x108(r1)
+/* 00001C44 00001C84  91 61 01 0C */	stw r11, 0x10c(r1)
+/* 00001C48 00001C88  91 41 01 10 */	stw r10, 0x110(r1)
+/* 00001C4C 00001C8C  91 21 01 14 */	stw r9, 0x114(r1)
+/* 00001C50 00001C90  91 01 01 18 */	stw r8, 0x118(r1)
+/* 00001C54 00001C94  90 C1 01 1C */	stw r6, 0x11c(r1)
+/* 00001C58 00001C98  90 A1 01 20 */	stw r5, 0x120(r1)
+/* 00001C5C 00001C9C  90 01 01 24 */	stw r0, 0x124(r1)
+/* 00001C60 00001CA0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001C64 00001CA4  38 7D 04 50 */	addi r3, r29, 0x450
+/* 00001C68 00001CA8  83 81 01 1C */	lwz r28, 0x11c(r1)
+/* 00001C6C 00001CAC  81 81 01 20 */	lwz r12, 0x120(r1)
+/* 00001C70 00001CB0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001C74 00001CB4  81 61 01 24 */	lwz r11, 0x124(r1)
+/* 00001C78 00001CB8  38 BD 04 40 */	addi r5, r29, 0x440
+/* 00001C7C 00001CBC  81 41 01 10 */	lwz r10, 0x110(r1)
+/* 00001C80 00001CC0  81 21 01 14 */	lwz r9, 0x114(r1)
+/* 00001C84 00001CC4  81 01 01 18 */	lwz r8, 0x118(r1)
+/* 00001C88 00001CC8  80 E1 01 04 */	lwz r7, 0x104(r1)
+/* 00001C8C 00001CCC  80 C1 01 08 */	lwz r6, 0x108(r1)
+/* 00001C90 00001CD0  80 01 01 0C */	lwz r0, 0x10c(r1)
+/* 00001C94 00001CD4  93 DD 04 50 */	stw r30, 0x450(r29)
+/* 00001C98 00001CD8  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001C9C 00001CDC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001CA0 00001CE0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001CA4 00001CE4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001CA8 00001CE8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001CAC 00001CEC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001CB0 00001CF0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001CB4 00001CF4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001CB8 00001CF8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001CBC 00001CFC  48 00 00 01 */	bl __register_global_object
+/* 00001CC0 00001D00  3C 60 00 00 */	lis r3, "@3801"@ha
+/* 00001CC4 00001D04  87 83 00 00 */	lwzu r28, "@3801"@l(r3)
+/* 00001CC8 00001D08  3C A0 00 00 */	lis r5, "@3802"@ha
+/* 00001CCC 00001D0C  85 45 00 00 */	lwzu r10, "@3802"@l(r5)
+/* 00001CD0 00001D10  3C E0 00 00 */	lis r7, "@3803"@ha
+/* 00001CD4 00001D14  84 C7 00 00 */	lwzu r6, "@3803"@l(r7)
+/* 00001CD8 00001D18  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001CDC 00001D1C  3C 80 00 00 */	lis r4, "@3841"@ha
+/* 00001CE0 00001D20  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001CE4 00001D24  38 84 00 00 */	addi r4, r4, "@3841"@l
+/* 00001CE8 00001D28  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001CEC 00001D2C  38 7D 04 90 */	addi r3, r29, 0x490
+/* 00001CF0 00001D30  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001CF4 00001D34  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001CF8 00001D38  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001CFC 00001D3C  93 81 00 E0 */	stw r28, 0xe0(r1)
+/* 00001D00 00001D40  91 81 00 E4 */	stw r12, 0xe4(r1)
+/* 00001D04 00001D44  91 61 00 E8 */	stw r11, 0xe8(r1)
+/* 00001D08 00001D48  91 41 00 EC */	stw r10, 0xec(r1)
+/* 00001D0C 00001D4C  91 21 00 F0 */	stw r9, 0xf0(r1)
+/* 00001D10 00001D50  91 01 00 F4 */	stw r8, 0xf4(r1)
+/* 00001D14 00001D54  90 C1 00 F8 */	stw r6, 0xf8(r1)
+/* 00001D18 00001D58  90 A1 00 FC */	stw r5, 0xfc(r1)
+/* 00001D1C 00001D5C  90 01 01 00 */	stw r0, 0x100(r1)
+/* 00001D20 00001D60  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001D24 00001D64  38 7D 04 90 */	addi r3, r29, 0x490
+/* 00001D28 00001D68  83 81 00 F8 */	lwz r28, 0xf8(r1)
+/* 00001D2C 00001D6C  81 81 00 FC */	lwz r12, 0xfc(r1)
+/* 00001D30 00001D70  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001D34 00001D74  81 61 01 00 */	lwz r11, 0x100(r1)
+/* 00001D38 00001D78  38 BD 04 80 */	addi r5, r29, 0x480
+/* 00001D3C 00001D7C  81 41 00 EC */	lwz r10, 0xec(r1)
+/* 00001D40 00001D80  81 21 00 F0 */	lwz r9, 0xf0(r1)
+/* 00001D44 00001D84  81 01 00 F4 */	lwz r8, 0xf4(r1)
+/* 00001D48 00001D88  80 E1 00 E0 */	lwz r7, 0xe0(r1)
+/* 00001D4C 00001D8C  80 C1 00 E4 */	lwz r6, 0xe4(r1)
+/* 00001D50 00001D90  80 01 00 E8 */	lwz r0, 0xe8(r1)
+/* 00001D54 00001D94  93 DD 04 90 */	stw r30, 0x490(r29)
+/* 00001D58 00001D98  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001D5C 00001D9C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001D60 00001DA0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001D64 00001DA4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001D68 00001DA8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001D6C 00001DAC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001D70 00001DB0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001D74 00001DB4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001D78 00001DB8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001D7C 00001DBC  48 00 00 01 */	bl __register_global_object
+/* 00001D80 00001DC0  3C 60 00 00 */	lis r3, "@3804"@ha
+/* 00001D84 00001DC4  87 83 00 00 */	lwzu r28, "@3804"@l(r3)
+/* 00001D88 00001DC8  3C A0 00 00 */	lis r5, "@3805"@ha
+/* 00001D8C 00001DCC  85 45 00 00 */	lwzu r10, "@3805"@l(r5)
+/* 00001D90 00001DD0  3C E0 00 00 */	lis r7, "@3806"@ha
+/* 00001D94 00001DD4  84 C7 00 00 */	lwzu r6, "@3806"@l(r7)
+/* 00001D98 00001DD8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001D9C 00001DDC  3C 80 00 00 */	lis r4, "@3842"@ha
+/* 00001DA0 00001DE0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001DA4 00001DE4  38 84 00 00 */	addi r4, r4, "@3842"@l
+/* 00001DA8 00001DE8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001DAC 00001DEC  38 7D 04 D0 */	addi r3, r29, 0x4d0
+/* 00001DB0 00001DF0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001DB4 00001DF4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001DB8 00001DF8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001DBC 00001DFC  93 81 00 BC */	stw r28, 0xbc(r1)
+/* 00001DC0 00001E00  91 81 00 C0 */	stw r12, 0xc0(r1)
+/* 00001DC4 00001E04  91 61 00 C4 */	stw r11, 0xc4(r1)
+/* 00001DC8 00001E08  91 41 00 C8 */	stw r10, 0xc8(r1)
+/* 00001DCC 00001E0C  91 21 00 CC */	stw r9, 0xcc(r1)
+/* 00001DD0 00001E10  91 01 00 D0 */	stw r8, 0xd0(r1)
+/* 00001DD4 00001E14  90 C1 00 D4 */	stw r6, 0xd4(r1)
+/* 00001DD8 00001E18  90 A1 00 D8 */	stw r5, 0xd8(r1)
+/* 00001DDC 00001E1C  90 01 00 DC */	stw r0, 0xdc(r1)
+/* 00001DE0 00001E20  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001DE4 00001E24  38 7D 04 D0 */	addi r3, r29, 0x4d0
+/* 00001DE8 00001E28  83 81 00 D4 */	lwz r28, 0xd4(r1)
+/* 00001DEC 00001E2C  81 81 00 D8 */	lwz r12, 0xd8(r1)
+/* 00001DF0 00001E30  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001DF4 00001E34  81 61 00 DC */	lwz r11, 0xdc(r1)
+/* 00001DF8 00001E38  38 BD 04 C0 */	addi r5, r29, 0x4c0
+/* 00001DFC 00001E3C  81 41 00 C8 */	lwz r10, 0xc8(r1)
+/* 00001E00 00001E40  81 21 00 CC */	lwz r9, 0xcc(r1)
+/* 00001E04 00001E44  81 01 00 D0 */	lwz r8, 0xd0(r1)
+/* 00001E08 00001E48  80 E1 00 BC */	lwz r7, 0xbc(r1)
+/* 00001E0C 00001E4C  80 C1 00 C0 */	lwz r6, 0xc0(r1)
+/* 00001E10 00001E50  80 01 00 C4 */	lwz r0, 0xc4(r1)
+/* 00001E14 00001E54  93 DD 04 D0 */	stw r30, 0x4d0(r29)
+/* 00001E18 00001E58  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001E1C 00001E5C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001E20 00001E60  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001E24 00001E64  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001E28 00001E68  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001E2C 00001E6C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001E30 00001E70  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001E34 00001E74  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001E38 00001E78  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001E3C 00001E7C  48 00 00 01 */	bl __register_global_object
+/* 00001E40 00001E80  3C 60 00 00 */	lis r3, "@3807"@ha
+/* 00001E44 00001E84  87 83 00 00 */	lwzu r28, "@3807"@l(r3)
+/* 00001E48 00001E88  3C A0 00 00 */	lis r5, "@3808"@ha
+/* 00001E4C 00001E8C  85 45 00 00 */	lwzu r10, "@3808"@l(r5)
+/* 00001E50 00001E90  3C E0 00 00 */	lis r7, "@3809"@ha
+/* 00001E54 00001E94  84 C7 00 00 */	lwzu r6, "@3809"@l(r7)
+/* 00001E58 00001E98  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001E5C 00001E9C  3C 80 00 00 */	lis r4, "@3843"@ha
+/* 00001E60 00001EA0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001E64 00001EA4  38 84 00 00 */	addi r4, r4, "@3843"@l
+/* 00001E68 00001EA8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001E6C 00001EAC  38 7D 05 10 */	addi r3, r29, 0x510
+/* 00001E70 00001EB0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001E74 00001EB4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001E78 00001EB8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001E7C 00001EBC  93 81 00 98 */	stw r28, 0x98(r1)
+/* 00001E80 00001EC0  91 81 00 9C */	stw r12, 0x9c(r1)
+/* 00001E84 00001EC4  91 61 00 A0 */	stw r11, 0xa0(r1)
+/* 00001E88 00001EC8  91 41 00 A4 */	stw r10, 0xa4(r1)
+/* 00001E8C 00001ECC  91 21 00 A8 */	stw r9, 0xa8(r1)
+/* 00001E90 00001ED0  91 01 00 AC */	stw r8, 0xac(r1)
+/* 00001E94 00001ED4  90 C1 00 B0 */	stw r6, 0xb0(r1)
+/* 00001E98 00001ED8  90 A1 00 B4 */	stw r5, 0xb4(r1)
+/* 00001E9C 00001EDC  90 01 00 B8 */	stw r0, 0xb8(r1)
+/* 00001EA0 00001EE0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001EA4 00001EE4  38 7D 05 10 */	addi r3, r29, 0x510
+/* 00001EA8 00001EE8  83 81 00 B0 */	lwz r28, 0xb0(r1)
+/* 00001EAC 00001EEC  81 81 00 B4 */	lwz r12, 0xb4(r1)
+/* 00001EB0 00001EF0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001EB4 00001EF4  81 61 00 B8 */	lwz r11, 0xb8(r1)
+/* 00001EB8 00001EF8  38 BD 05 00 */	addi r5, r29, 0x500
+/* 00001EBC 00001EFC  81 41 00 A4 */	lwz r10, 0xa4(r1)
+/* 00001EC0 00001F00  81 21 00 A8 */	lwz r9, 0xa8(r1)
+/* 00001EC4 00001F04  81 01 00 AC */	lwz r8, 0xac(r1)
+/* 00001EC8 00001F08  80 E1 00 98 */	lwz r7, 0x98(r1)
+/* 00001ECC 00001F0C  80 C1 00 9C */	lwz r6, 0x9c(r1)
+/* 00001ED0 00001F10  80 01 00 A0 */	lwz r0, 0xa0(r1)
+/* 00001ED4 00001F14  93 DD 05 10 */	stw r30, 0x510(r29)
+/* 00001ED8 00001F18  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001EDC 00001F1C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001EE0 00001F20  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001EE4 00001F24  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001EE8 00001F28  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001EEC 00001F2C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001EF0 00001F30  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001EF4 00001F34  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001EF8 00001F38  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001EFC 00001F3C  48 00 00 01 */	bl __register_global_object
+/* 00001F00 00001F40  3C 60 00 00 */	lis r3, "@3810"@ha
+/* 00001F04 00001F44  87 83 00 00 */	lwzu r28, "@3810"@l(r3)
+/* 00001F08 00001F48  3C A0 00 00 */	lis r5, "@3811"@ha
+/* 00001F0C 00001F4C  85 45 00 00 */	lwzu r10, "@3811"@l(r5)
+/* 00001F10 00001F50  3C E0 00 00 */	lis r7, "@3812"@ha
+/* 00001F14 00001F54  84 C7 00 00 */	lwzu r6, "@3812"@l(r7)
+/* 00001F18 00001F58  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001F1C 00001F5C  3C 80 00 00 */	lis r4, "@3844"@ha
+/* 00001F20 00001F60  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001F24 00001F64  38 84 00 00 */	addi r4, r4, "@3844"@l
+/* 00001F28 00001F68  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001F2C 00001F6C  38 7D 05 50 */	addi r3, r29, 0x550
+/* 00001F30 00001F70  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001F34 00001F74  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001F38 00001F78  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001F3C 00001F7C  93 81 00 74 */	stw r28, 0x74(r1)
+/* 00001F40 00001F80  91 81 00 78 */	stw r12, 0x78(r1)
+/* 00001F44 00001F84  91 61 00 7C */	stw r11, 0x7c(r1)
+/* 00001F48 00001F88  91 41 00 80 */	stw r10, 0x80(r1)
+/* 00001F4C 00001F8C  91 21 00 84 */	stw r9, 0x84(r1)
+/* 00001F50 00001F90  91 01 00 88 */	stw r8, 0x88(r1)
+/* 00001F54 00001F94  90 C1 00 8C */	stw r6, 0x8c(r1)
+/* 00001F58 00001F98  90 A1 00 90 */	stw r5, 0x90(r1)
+/* 00001F5C 00001F9C  90 01 00 94 */	stw r0, 0x94(r1)
+/* 00001F60 00001FA0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00001F64 00001FA4  38 7D 05 50 */	addi r3, r29, 0x550
+/* 00001F68 00001FA8  83 81 00 8C */	lwz r28, 0x8c(r1)
+/* 00001F6C 00001FAC  81 81 00 90 */	lwz r12, 0x90(r1)
+/* 00001F70 00001FB0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00001F74 00001FB4  81 61 00 94 */	lwz r11, 0x94(r1)
+/* 00001F78 00001FB8  38 BD 05 40 */	addi r5, r29, 0x540
+/* 00001F7C 00001FBC  81 41 00 80 */	lwz r10, 0x80(r1)
+/* 00001F80 00001FC0  81 21 00 84 */	lwz r9, 0x84(r1)
+/* 00001F84 00001FC4  81 01 00 88 */	lwz r8, 0x88(r1)
+/* 00001F88 00001FC8  80 E1 00 74 */	lwz r7, 0x74(r1)
+/* 00001F8C 00001FCC  80 C1 00 78 */	lwz r6, 0x78(r1)
+/* 00001F90 00001FD0  80 01 00 7C */	lwz r0, 0x7c(r1)
+/* 00001F94 00001FD4  93 DD 05 50 */	stw r30, 0x550(r29)
+/* 00001F98 00001FD8  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00001F9C 00001FDC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00001FA0 00001FE0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00001FA4 00001FE4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00001FA8 00001FE8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00001FAC 00001FEC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00001FB0 00001FF0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00001FB4 00001FF4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00001FB8 00001FF8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00001FBC 00001FFC  48 00 00 01 */	bl __register_global_object
+/* 00001FC0 00002000  3C 60 00 00 */	lis r3, "@3813"@ha
+/* 00001FC4 00002004  87 83 00 00 */	lwzu r28, "@3813"@l(r3)
+/* 00001FC8 00002008  3C A0 00 00 */	lis r5, "@3814"@ha
+/* 00001FCC 0000200C  85 45 00 00 */	lwzu r10, "@3814"@l(r5)
+/* 00001FD0 00002010  3C E0 00 00 */	lis r7, "@3815"@ha
+/* 00001FD4 00002014  84 C7 00 00 */	lwzu r6, "@3815"@l(r7)
+/* 00001FD8 00002018  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00001FDC 0000201C  3C 80 00 00 */	lis r4, "@3845"@ha
+/* 00001FE0 00002020  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00001FE4 00002024  38 84 00 00 */	addi r4, r4, "@3845"@l
+/* 00001FE8 00002028  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 00001FEC 0000202C  38 7D 05 90 */	addi r3, r29, 0x590
+/* 00001FF0 00002030  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00001FF4 00002034  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00001FF8 00002038  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 00001FFC 0000203C  93 81 00 50 */	stw r28, 0x50(r1)
+/* 00002000 00002040  91 81 00 54 */	stw r12, 0x54(r1)
+/* 00002004 00002044  91 61 00 58 */	stw r11, 0x58(r1)
+/* 00002008 00002048  91 41 00 5C */	stw r10, 0x5c(r1)
+/* 0000200C 0000204C  91 21 00 60 */	stw r9, 0x60(r1)
+/* 00002010 00002050  91 01 00 64 */	stw r8, 0x64(r1)
+/* 00002014 00002054  90 C1 00 68 */	stw r6, 0x68(r1)
+/* 00002018 00002058  90 A1 00 6C */	stw r5, 0x6c(r1)
+/* 0000201C 0000205C  90 01 00 70 */	stw r0, 0x70(r1)
+/* 00002020 00002060  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00002024 00002064  38 7D 05 90 */	addi r3, r29, 0x590
+/* 00002028 00002068  83 81 00 68 */	lwz r28, 0x68(r1)
+/* 0000202C 0000206C  81 81 00 6C */	lwz r12, 0x6c(r1)
+/* 00002030 00002070  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 00002034 00002074  81 61 00 70 */	lwz r11, 0x70(r1)
+/* 00002038 00002078  38 BD 05 80 */	addi r5, r29, 0x580
+/* 0000203C 0000207C  81 41 00 5C */	lwz r10, 0x5c(r1)
+/* 00002040 00002080  81 21 00 60 */	lwz r9, 0x60(r1)
+/* 00002044 00002084  81 01 00 64 */	lwz r8, 0x64(r1)
+/* 00002048 00002088  80 E1 00 50 */	lwz r7, 0x50(r1)
+/* 0000204C 0000208C  80 C1 00 54 */	lwz r6, 0x54(r1)
+/* 00002050 00002090  80 01 00 58 */	lwz r0, 0x58(r1)
+/* 00002054 00002094  93 DD 05 90 */	stw r30, 0x590(r29)
+/* 00002058 00002098  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000205C 0000209C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00002060 000020A0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00002064 000020A4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00002068 000020A8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000206C 000020AC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00002070 000020B0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00002074 000020B4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00002078 000020B8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000207C 000020BC  48 00 00 01 */	bl __register_global_object
+/* 00002080 000020C0  3C 60 00 00 */	lis r3, "@3816"@ha
+/* 00002084 000020C4  87 83 00 00 */	lwzu r28, "@3816"@l(r3)
+/* 00002088 000020C8  3C A0 00 00 */	lis r5, "@3817"@ha
+/* 0000208C 000020CC  85 45 00 00 */	lwzu r10, "@3817"@l(r5)
+/* 00002090 000020D0  3C E0 00 00 */	lis r7, "@3818"@ha
+/* 00002094 000020D4  84 C7 00 00 */	lwzu r6, "@3818"@l(r7)
+/* 00002098 000020D8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000209C 000020DC  3C 80 00 00 */	lis r4, "@3846"@ha
+/* 000020A0 000020E0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 000020A4 000020E4  38 84 00 00 */	addi r4, r4, "@3846"@l
+/* 000020A8 000020E8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 000020AC 000020EC  38 7D 05 D0 */	addi r3, r29, 0x5d0
+/* 000020B0 000020F0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 000020B4 000020F4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 000020B8 000020F8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 000020BC 000020FC  93 81 00 2C */	stw r28, 0x2c(r1)
+/* 000020C0 00002100  91 81 00 30 */	stw r12, 0x30(r1)
+/* 000020C4 00002104  91 61 00 34 */	stw r11, 0x34(r1)
+/* 000020C8 00002108  91 41 00 38 */	stw r10, 0x38(r1)
+/* 000020CC 0000210C  91 21 00 3C */	stw r9, 0x3c(r1)
+/* 000020D0 00002110  91 01 00 40 */	stw r8, 0x40(r1)
+/* 000020D4 00002114  90 C1 00 44 */	stw r6, 0x44(r1)
+/* 000020D8 00002118  90 A1 00 48 */	stw r5, 0x48(r1)
+/* 000020DC 0000211C  90 01 00 4C */	stw r0, 0x4c(r1)
+/* 000020E0 00002120  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000020E4 00002124  38 7D 05 D0 */	addi r3, r29, 0x5d0
+/* 000020E8 00002128  83 81 00 44 */	lwz r28, 0x44(r1)
+/* 000020EC 0000212C  81 81 00 48 */	lwz r12, 0x48(r1)
+/* 000020F0 00002130  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000020F4 00002134  81 61 00 4C */	lwz r11, 0x4c(r1)
+/* 000020F8 00002138  38 BD 05 C0 */	addi r5, r29, 0x5c0
+/* 000020FC 0000213C  81 41 00 38 */	lwz r10, 0x38(r1)
+/* 00002100 00002140  81 21 00 3C */	lwz r9, 0x3c(r1)
+/* 00002104 00002144  81 01 00 40 */	lwz r8, 0x40(r1)
+/* 00002108 00002148  80 E1 00 2C */	lwz r7, 0x2c(r1)
+/* 0000210C 0000214C  80 C1 00 30 */	lwz r6, 0x30(r1)
+/* 00002110 00002150  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 00002114 00002154  93 DD 05 D0 */	stw r30, 0x5d0(r29)
+/* 00002118 00002158  93 83 00 0C */	stw r28, 0xc(r3)
+/* 0000211C 0000215C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00002120 00002160  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00002124 00002164  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00002128 00002168  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 0000212C 0000216C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00002130 00002170  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00002134 00002174  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00002138 00002178  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 0000213C 0000217C  48 00 00 01 */	bl __register_global_object
+/* 00002140 00002180  3C 60 00 00 */	lis r3, "@3819"@ha
+/* 00002144 00002184  87 83 00 00 */	lwzu r28, "@3819"@l(r3)
+/* 00002148 00002188  3C A0 00 00 */	lis r5, "@3820"@ha
+/* 0000214C 0000218C  85 45 00 00 */	lwzu r10, "@3820"@l(r5)
+/* 00002150 00002190  3C E0 00 00 */	lis r7, "@3821"@ha
+/* 00002154 00002194  84 C7 00 00 */	lwzu r6, "@3821"@l(r7)
+/* 00002158 00002198  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 0000215C 0000219C  3C 80 00 00 */	lis r4, "@3847"@ha
+/* 00002160 000021A0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00002164 000021A4  38 84 00 00 */	addi r4, r4, "@3847"@l
+/* 00002168 000021A8  81 25 00 04 */	lwz r9, 0x4(r5)
+/* 0000216C 000021AC  38 7D 06 10 */	addi r3, r29, 0x610
+/* 00002170 000021B0  81 05 00 08 */	lwz r8, 0x8(r5)
+/* 00002174 000021B4  80 A7 00 04 */	lwz r5, 0x4(r7)
+/* 00002178 000021B8  80 07 00 08 */	lwz r0, 0x8(r7)
+/* 0000217C 000021BC  93 81 00 08 */	stw r28, 0x8(r1)
+/* 00002180 000021C0  91 81 00 0C */	stw r12, 0xc(r1)
+/* 00002184 000021C4  91 61 00 10 */	stw r11, 0x10(r1)
+/* 00002188 000021C8  91 41 00 14 */	stw r10, 0x14(r1)
+/* 0000218C 000021CC  91 21 00 18 */	stw r9, 0x18(r1)
+/* 00002190 000021D0  91 01 00 1C */	stw r8, 0x1c(r1)
+/* 00002194 000021D4  90 C1 00 20 */	stw r6, 0x20(r1)
+/* 00002198 000021D8  90 A1 00 24 */	stw r5, 0x24(r1)
+/* 0000219C 000021DC  90 01 00 28 */	stw r0, 0x28(r1)
+/* 000021A0 000021E0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 000021A4 000021E4  38 7D 06 10 */	addi r3, r29, 0x610
+/* 000021A8 000021E8  83 81 00 20 */	lwz r28, 0x20(r1)
+/* 000021AC 000021EC  81 81 00 24 */	lwz r12, 0x24(r1)
+/* 000021B0 000021F0  38 9F 00 00 */	addi r4, r31, "__dt__25sFStateID_c<10dLineMng_c>Fv"@l
+/* 000021B4 000021F4  81 61 00 28 */	lwz r11, 0x28(r1)
+/* 000021B8 000021F8  38 BD 06 00 */	addi r5, r29, 0x600
+/* 000021BC 000021FC  81 41 00 14 */	lwz r10, 0x14(r1)
+/* 000021C0 00002200  81 21 00 18 */	lwz r9, 0x18(r1)
+/* 000021C4 00002204  81 01 00 1C */	lwz r8, 0x1c(r1)
+/* 000021C8 00002208  80 E1 00 08 */	lwz r7, 0x8(r1)
+/* 000021CC 0000220C  80 C1 00 0C */	lwz r6, 0xc(r1)
+/* 000021D0 00002210  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 000021D4 00002214  93 DD 06 10 */	stw r30, 0x610(r29)
+/* 000021D8 00002218  93 83 00 0C */	stw r28, 0xc(r3)
+/* 000021DC 0000221C  91 83 00 10 */	stw r12, 0x10(r3)
+/* 000021E0 00002220  91 63 00 14 */	stw r11, 0x14(r3)
+/* 000021E4 00002224  91 43 00 18 */	stw r10, 0x18(r3)
+/* 000021E8 00002228  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 000021EC 0000222C  91 03 00 20 */	stw r8, 0x20(r3)
+/* 000021F0 00002230  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 000021F4 00002234  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 000021F8 00002238  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 000021FC 0000223C  48 00 00 01 */	bl __register_global_object
+/* 00002200 00002240  80 01 03 A4 */	lwz r0, 0x3a4(r1)
+/* 00002204 00002244  83 E1 03 9C */	lwz r31, 0x39c(r1)
+/* 00002208 00002248  83 C1 03 98 */	lwz r30, 0x398(r1)
+/* 0000220C 0000224C  83 A1 03 94 */	lwz r29, 0x394(r1)
+/* 00002210 00002250  83 81 03 90 */	lwz r28, 0x390(r1)
+/* 00002214 00002254  7C 08 03 A6 */	mtlr r0
+/* 00002218 00002258  38 21 03 A0 */	addi r1, r1, 0x3a0
+/* 0000221C 0000225C  4E 80 00 20 */	blr
+.endfn "__sinit_\d_line_mng_cpp"
+
+# .text:0x2220 | size: 0x58
+# sFStateID_c<dLineMng_c>::~sFStateID_c()
+.fn "__dt__25sFStateID_c<10dLineMng_c>Fv", weak
+/* 00002220 00002260  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00002224 00002264  7C 08 02 A6 */	mflr r0
+/* 00002228 00002268  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000222C 0000226C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00002230 00002270  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00002234 00002274  7C 9F 23 78 */	mr r31, r4
+/* 00002238 00002278  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000223C 0000227C  7C 7E 1B 78 */	mr r30, r3
+/* 00002240 00002280  41 82 00 1C */	beq .L_0000225C
+/* 00002244 00002284  38 80 00 00 */	li r4, 0x0
+/* 00002248 00002288  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 0000224C 0000228C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00002250 00002290  40 81 00 0C */	ble .L_0000225C
+/* 00002254 00002294  7F C3 F3 78 */	mr r3, r30
+/* 00002258 00002298  48 00 00 01 */	bl __dl__FPv
+.L_0000225C:
+/* 0000225C 0000229C  7F C3 F3 78 */	mr r3, r30
+/* 00002260 000022A0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00002264 000022A4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00002268 000022A8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000226C 000022AC  7C 08 03 A6 */	mtlr r0
+/* 00002270 000022B0  38 21 00 10 */	addi r1, r1, 0x10
+/* 00002274 000022B4  4E 80 00 20 */	blr
+.endfn "__dt__25sFStateID_c<10dLineMng_c>Fv"
+/* 00002278 000022B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000227C 000022BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x2280 | size: 0x88
+# sFStateID_c<dLineMng_c>::isSameName(const char*) const
+.fn "isSameName__25sFStateID_c<10dLineMng_c>CFPCc", weak
+/* 00002280 000022C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00002284 000022C4  7C 08 02 A6 */	mflr r0
+/* 00002288 000022C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000228C 000022CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00002290 000022D0  7C 9F 23 78 */	mr r31, r4
+/* 00002294 000022D4  38 80 00 3A */	li r4, 0x3a
+/* 00002298 000022D8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000229C 000022DC  7C 7E 1B 78 */	mr r30, r3
+/* 000022A0 000022E0  7F E3 FB 78 */	mr r3, r31
+/* 000022A4 000022E4  48 00 00 01 */	bl strrchr
+/* 000022A8 000022E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000022AC 000022EC  41 82 00 08 */	beq .L_000022B4
+/* 000022B0 000022F0  3B E3 00 01 */	addi r31, r3, 0x1
+.L_000022B4:
+/* 000022B4 000022F4  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 000022B8 000022F8  7F C3 F3 78 */	mr r3, r30
+/* 000022BC 000022FC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 000022C0 00002300  7D 89 03 A6 */	mtctr r12
+/* 000022C4 00002304  4E 80 04 21 */	bctrl
+/* 000022C8 00002308  38 80 00 3A */	li r4, 0x3a
+/* 000022CC 0000230C  48 00 00 01 */	bl strrchr
+/* 000022D0 00002310  7F E4 FB 78 */	mr r4, r31
+/* 000022D4 00002314  38 63 00 01 */	addi r3, r3, 0x1
+/* 000022D8 00002318  48 00 00 01 */	bl strcmp
+/* 000022DC 0000231C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000022E0 00002320  40 82 00 0C */	bne .L_000022EC
+/* 000022E4 00002324  38 60 00 01 */	li r3, 0x1
+/* 000022E8 00002328  48 00 00 08 */	b .L_000022F0
+.L_000022EC:
+/* 000022EC 0000232C  38 60 00 00 */	li r3, 0x0
+.L_000022F0:
+/* 000022F0 00002330  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000022F4 00002334  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000022F8 00002338  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000022FC 0000233C  7C 08 03 A6 */	mtlr r0
+/* 00002300 00002340  38 21 00 10 */	addi r1, r1, 0x10
+/* 00002304 00002344  4E 80 00 20 */	blr
+.endfn "isSameName__25sFStateID_c<10dLineMng_c>CFPCc"
+
+# 0x00000000..0x00000004 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_line_mng_cpp"
+
+# 0x00000000..0x000008E0 | size: 0x8E0
+.data
+.balign 8
+
+# .data:0x0 | size: 0x40
+# sFStateStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::__vtable
+.obj "__vt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "initializeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "executeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "finalizeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "changeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c"
+	.4byte "refreshState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "getState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getNewStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getOldStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "changeToSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c"
+	.4byte "returnState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "isSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getMainStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+.endobj "__vt__77sFStateStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>"
+
+# .data:0x40 | size: 0x40
+# sStateStateMgr_c<dLineMng_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::__vtable
+.obj "__vt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "initializeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "executeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "finalizeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "changeState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c"
+	.4byte "refreshState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "getState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getNewStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getOldStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "changeToSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c"
+	.4byte "returnState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "isSubState__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+	.4byte "getMainStateID__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>CFv"
+.endobj "__vt__91sStateStateMgr_c<10dLineMng_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>"
+
+# .data:0x80 | size: 0x30
+# sFStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c>::__vtable
+.obj "__vt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "initializeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "executeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "finalizeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "changeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+	.4byte "refreshState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "getState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getNewStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getOldStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+.endobj "__vt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>"
+
+# .data:0xB0 | size: 0x30
+# sStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::__vtable
+.obj "__vt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "initializeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "executeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "finalizeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "changeState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+	.4byte "refreshState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "getState__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getNewStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getOldStateID__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+.endobj "__vt__79sStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"
+
+# .data:0xE0 | size: 0x14
+# sFStateFct_c<dLineMng_c>::__vtable
+.obj "__vt__26sFStateFct_c<10dLineMng_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__26sFStateFct_c<10dLineMng_c>Fv"
+	.4byte "build__26sFStateFct_c<10dLineMng_c>FRC12sStateIDIf_c"
+	.4byte "dispose__26sFStateFct_c<10dLineMng_c>FRP10sStateIf_c"
+.endobj "__vt__26sFStateFct_c<10dLineMng_c>"
+	.4byte 0x00000000
+
+# .data:0xF8 | size: 0x18
+# sFState_c<dLineMng_c>::__vtable
+.obj "__vt__23sFState_c<10dLineMng_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__23sFState_c<10dLineMng_c>Fv"
+	.4byte "initialize__23sFState_c<10dLineMng_c>Fv"
+	.4byte "execute__23sFState_c<10dLineMng_c>Fv"
+	.4byte "finalize__23sFState_c<10dLineMng_c>Fv"
+.endobj "__vt__23sFState_c<10dLineMng_c>"
+
+# .data:0x110 | size: 0x40
+# sStateStateMgrIf_c::__vtable
+.obj __vt__18sStateStateMgrIf_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__18sStateStateMgrIf_cFv
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj __vt__18sStateStateMgrIf_c
+
+# .data:0x150 | size: 0x30
+# sStateMgrIf_c::__vtable
+.obj __vt__13sStateMgrIf_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__13sStateMgrIf_cFv
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj __vt__13sStateMgrIf_c
+
+# .data:0x180 | size: 0x10
+# sStateIDChk_c::__vtable
+.obj __vt__13sStateIDChk_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__13sStateIDChk_cFv
+	.4byte isNormalID__13sStateIDChk_cCFRC12sStateIDIf_c
+.endobj __vt__13sStateIDChk_c
+
+# .data:0x190 | size: 0x10
+# sStateIDChkIf_c::__vtable
+.obj __vt__15sStateIDChkIf_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__15sStateIDChkIf_cFv
+	.4byte 0x00000000
+.endobj __vt__15sStateIDChkIf_c
+
+# .data:0x1A0 | size: 0x14
+# sStateFctIf_c::__vtable
+.obj __vt__13sStateFctIf_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__13sStateFctIf_cFv
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj __vt__13sStateFctIf_c
+	.4byte 0x00000000
+
+# .data:0x1B8 | size: 0x18
+# sStateIf_c::__vtable
+.obj __vt__10sStateIf_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__10sStateIf_cFv
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj __vt__10sStateIf_c
+
+# .data:0x1D0 | size: 0xC
+.obj "@3747", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Idle__10dLineMng_cFv
+.endobj "@3747"
+
+# .data:0x1DC | size: 0xC
+.obj "@3748", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Idle__10dLineMng_cFv
+.endobj "@3748"
+
+# .data:0x1E8 | size: 0xC
+.obj "@3749", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Idle__10dLineMng_cFv
+.endobj "@3749"
+
+# .data:0x1F4 | size: 0xC
+.obj "@3750", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_FallDown__10dLineMng_cFv
+.endobj "@3750"
+
+# .data:0x200 | size: 0xC
+.obj "@3751", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_FallDown__10dLineMng_cFv
+.endobj "@3751"
+
+# .data:0x20C | size: 0xC
+.obj "@3752", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_FallDown__10dLineMng_cFv
+.endobj "@3752"
+
+# .data:0x218 | size: 0xC
+.obj "@3753", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Left45__10dLineMng_cFv
+.endobj "@3753"
+
+# .data:0x224 | size: 0xC
+.obj "@3754", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Left45__10dLineMng_cFv
+.endobj "@3754"
+
+# .data:0x230 | size: 0xC
+.obj "@3755", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Left45__10dLineMng_cFv
+.endobj "@3755"
+
+# .data:0x23C | size: 0xC
+.obj "@3756", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Right45__10dLineMng_cFv
+.endobj "@3756"
+
+# .data:0x248 | size: 0xC
+.obj "@3757", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Right45__10dLineMng_cFv
+.endobj "@3757"
+
+# .data:0x254 | size: 0xC
+.obj "@3758", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Right45__10dLineMng_cFv
+.endobj "@3758"
+
+# .data:0x260 | size: 0xC
+.obj "@3759", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Side__10dLineMng_cFv
+.endobj "@3759"
+
+# .data:0x26C | size: 0xC
+.obj "@3760", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Side__10dLineMng_cFv
+.endobj "@3760"
+
+# .data:0x278 | size: 0xC
+.obj "@3761", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Side__10dLineMng_cFv
+.endobj "@3761"
+
+# .data:0x284 | size: 0xC
+.obj "@3762", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Height__10dLineMng_cFv
+.endobj "@3762"
+
+# .data:0x290 | size: 0xC
+.obj "@3763", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Height__10dLineMng_cFv
+.endobj "@3763"
+
+# .data:0x29C | size: 0xC
+.obj "@3764", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Height__10dLineMng_cFv
+.endobj "@3764"
+
+# .data:0x2A8 | size: 0xC
+.obj "@3765", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_CornerHeightLine__10dLineMng_cFv
+.endobj "@3765"
+
+# .data:0x2B4 | size: 0xC
+.obj "@3766", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_CornerHeightLine__10dLineMng_cFv
+.endobj "@3766"
+
+# .data:0x2C0 | size: 0xC
+.obj "@3767", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_CornerHeightLine__10dLineMng_cFv
+.endobj "@3767"
+
+# .data:0x2CC | size: 0xC
+.obj "@3768", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_CornerSideLine__10dLineMng_cFv
+.endobj "@3768"
+
+# .data:0x2D8 | size: 0xC
+.obj "@3769", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_CornerSideLine__10dLineMng_cFv
+.endobj "@3769"
+
+# .data:0x2E4 | size: 0xC
+.obj "@3770", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_CornerSideLine__10dLineMng_cFv
+.endobj "@3770"
+
+# .data:0x2F0 | size: 0xC
+.obj "@3771", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Left30Left__10dLineMng_cFv
+.endobj "@3771"
+
+# .data:0x2FC | size: 0xC
+.obj "@3772", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Left30Left__10dLineMng_cFv
+.endobj "@3772"
+
+# .data:0x308 | size: 0xC
+.obj "@3773", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Left30Left__10dLineMng_cFv
+.endobj "@3773"
+
+# .data:0x314 | size: 0xC
+.obj "@3774", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Left30Right__10dLineMng_cFv
+.endobj "@3774"
+
+# .data:0x320 | size: 0xC
+.obj "@3775", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Left30Right__10dLineMng_cFv
+.endobj "@3775"
+
+# .data:0x32C | size: 0xC
+.obj "@3776", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Left30Right__10dLineMng_cFv
+.endobj "@3776"
+
+# .data:0x338 | size: 0xC
+.obj "@3777", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Right30Left__10dLineMng_cFv
+.endobj "@3777"
+
+# .data:0x344 | size: 0xC
+.obj "@3778", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Right30Left__10dLineMng_cFv
+.endobj "@3778"
+
+# .data:0x350 | size: 0xC
+.obj "@3779", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Right30Left__10dLineMng_cFv
+.endobj "@3779"
+
+# .data:0x35C | size: 0xC
+.obj "@3780", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Right30Right__10dLineMng_cFv
+.endobj "@3780"
+
+# .data:0x368 | size: 0xC
+.obj "@3781", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Right30Right__10dLineMng_cFv
+.endobj "@3781"
+
+# .data:0x374 | size: 0xC
+.obj "@3782", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Right30Right__10dLineMng_cFv
+.endobj "@3782"
+
+# .data:0x380 | size: 0xC
+.obj "@3783", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Left60Up__10dLineMng_cFv
+.endobj "@3783"
+
+# .data:0x38C | size: 0xC
+.obj "@3784", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Left60Up__10dLineMng_cFv
+.endobj "@3784"
+
+# .data:0x398 | size: 0xC
+.obj "@3785", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Left60Up__10dLineMng_cFv
+.endobj "@3785"
+
+# .data:0x3A4 | size: 0xC
+.obj "@3786", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Left60Down__10dLineMng_cFv
+.endobj "@3786"
+
+# .data:0x3B0 | size: 0xC
+.obj "@3787", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Left60Down__10dLineMng_cFv
+.endobj "@3787"
+
+# .data:0x3BC | size: 0xC
+.obj "@3788", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Left60Down__10dLineMng_cFv
+.endobj "@3788"
+
+# .data:0x3C8 | size: 0xC
+.obj "@3789", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Right60Down__10dLineMng_cFv
+.endobj "@3789"
+
+# .data:0x3D4 | size: 0xC
+.obj "@3790", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Right60Down__10dLineMng_cFv
+.endobj "@3790"
+
+# .data:0x3E0 | size: 0xC
+.obj "@3791", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Right60Down__10dLineMng_cFv
+.endobj "@3791"
+
+# .data:0x3EC | size: 0xC
+.obj "@3792", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Right60Up__10dLineMng_cFv
+.endobj "@3792"
+
+# .data:0x3F8 | size: 0xC
+.obj "@3793", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Right60Up__10dLineMng_cFv
+.endobj "@3793"
+
+# .data:0x404 | size: 0xC
+.obj "@3794", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Right60Up__10dLineMng_cFv
+.endobj "@3794"
+
+# .data:0x410 | size: 0xC
+.obj "@3795", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle__10dLineMng_cFv
+.endobj "@3795"
+
+# .data:0x41C | size: 0xC
+.obj "@3796", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle__10dLineMng_cFv
+.endobj "@3796"
+
+# .data:0x428 | size: 0xC
+.obj "@3797", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle__10dLineMng_cFv
+.endobj "@3797"
+
+# .data:0x434 | size: 0xC
+.obj "@3798", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle2x2Leftup__10dLineMng_cFv
+.endobj "@3798"
+
+# .data:0x440 | size: 0xC
+.obj "@3799", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle2x2Leftup__10dLineMng_cFv
+.endobj "@3799"
+
+# .data:0x44C | size: 0xC
+.obj "@3800", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle2x2Leftup__10dLineMng_cFv
+.endobj "@3800"
+
+# .data:0x458 | size: 0xC
+.obj "@3801", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle2x2Rightup__10dLineMng_cFv
+.endobj "@3801"
+
+# .data:0x464 | size: 0xC
+.obj "@3802", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle2x2Rightup__10dLineMng_cFv
+.endobj "@3802"
+
+# .data:0x470 | size: 0xC
+.obj "@3803", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle2x2Rightup__10dLineMng_cFv
+.endobj "@3803"
+
+# .data:0x47C | size: 0xC
+.obj "@3804", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle2x2LeftDown__10dLineMng_cFv
+.endobj "@3804"
+
+# .data:0x488 | size: 0xC
+.obj "@3805", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle2x2LeftDown__10dLineMng_cFv
+.endobj "@3805"
+
+# .data:0x494 | size: 0xC
+.obj "@3806", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle2x2LeftDown__10dLineMng_cFv
+.endobj "@3806"
+
+# .data:0x4A0 | size: 0xC
+.obj "@3807", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle2x2RightDown__10dLineMng_cFv
+.endobj "@3807"
+
+# .data:0x4AC | size: 0xC
+.obj "@3808", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle2x2RightDown__10dLineMng_cFv
+.endobj "@3808"
+
+# .data:0x4B8 | size: 0xC
+.obj "@3809", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle2x2RightDown__10dLineMng_cFv
+.endobj "@3809"
+
+# .data:0x4C4 | size: 0xC
+.obj "@3810", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle4x4Rightup__10dLineMng_cFv
+.endobj "@3810"
+
+# .data:0x4D0 | size: 0xC
+.obj "@3811", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle4x4Rightup__10dLineMng_cFv
+.endobj "@3811"
+
+# .data:0x4DC | size: 0xC
+.obj "@3812", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle4x4Rightup__10dLineMng_cFv
+.endobj "@3812"
+
+# .data:0x4E8 | size: 0xC
+.obj "@3813", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle4x4LeftUp__10dLineMng_cFv
+.endobj "@3813"
+
+# .data:0x4F4 | size: 0xC
+.obj "@3814", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle4x4LeftUp__10dLineMng_cFv
+.endobj "@3814"
+
+# .data:0x500 | size: 0xC
+.obj "@3815", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle4x4LeftUp__10dLineMng_cFv
+.endobj "@3815"
+
+# .data:0x50C | size: 0xC
+.obj "@3816", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle4x4LeftDown__10dLineMng_cFv
+.endobj "@3816"
+
+# .data:0x518 | size: 0xC
+.obj "@3817", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle4x4LeftDown__10dLineMng_cFv
+.endobj "@3817"
+
+# .data:0x524 | size: 0xC
+.obj "@3818", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle4x4LeftDown__10dLineMng_cFv
+.endobj "@3818"
+
+# .data:0x530 | size: 0xC
+.obj "@3819", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Circle4x4RightDown__10dLineMng_cFv
+.endobj "@3819"
+
+# .data:0x53C | size: 0xC
+.obj "@3820", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Circle4x4RightDown__10dLineMng_cFv
+.endobj "@3820"
+
+# .data:0x548 | size: 0xC
+.obj "@3821", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Circle4x4RightDown__10dLineMng_cFv
+.endobj "@3821"
+
+# .data:0x554 | size: 0x19
+.obj "@3823", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x49646C65
+	.byte 0x00
+.endobj "@3823"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x570 | size: 0x1D
+.obj "@3824", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x46616C6C
+	.4byte 0x446F776E
+	.byte 0x00
+.endobj "@3824"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x590 | size: 0x1B
+.obj "@3825", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x4C656674
+	.byte 0x34, 0x35, 0x00
+.endobj "@3825"
+	.byte 0x00
+
+# .data:0x5AC | size: 0x1C
+.obj "@3826", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x52696768
+	.4byte 0x74343500
+.endobj "@3826"
+
+# .data:0x5C8 | size: 0x19
+.obj "@3827", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x53696465
+	.byte 0x00
+.endobj "@3827"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x5E4 | size: 0x1B
+.obj "@3828", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x48656967
+	.byte 0x68, 0x74, 0x00
+.endobj "@3828"
+	.byte 0x00
+
+# .data:0x600 | size: 0x25
+.obj "@3829", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x436F726E
+	.4byte 0x65724865
+	.4byte 0x69676874
+	.4byte 0x4C696E65
+	.byte 0x00
+.endobj "@3829"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x628 | size: 0x23
+.obj "@3830", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x436F726E
+	.4byte 0x65725369
+	.4byte 0x64654C69
+	.byte 0x6E, 0x65, 0x00
+.endobj "@3830"
+	.byte 0x00
+
+# .data:0x64C | size: 0x1F
+.obj "@3831", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x4C656674
+	.4byte 0x33304C65
+	.byte 0x66, 0x74, 0x00
+.endobj "@3831"
+	.4byte 0x00000000
+	.byte 0x00
+
+# .data:0x670 | size: 0x20
+.obj "@3832", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x4C656674
+	.4byte 0x33305269
+	.4byte 0x67687400
+.endobj "@3832"
+
+# .data:0x690 | size: 0x20
+.obj "@3833", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x52696768
+	.4byte 0x7433304C
+	.4byte 0x65667400
+.endobj "@3833"
+
+# .data:0x6B0 | size: 0x21
+.obj "@3834", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x52696768
+	.4byte 0x74333052
+	.4byte 0x69676874
+	.byte 0x00
+.endobj "@3834"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x6D4 | size: 0x1D
+.obj "@3835", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x4C656674
+	.4byte 0x36305570
+	.byte 0x00
+.endobj "@3835"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x6F4 | size: 0x1F
+.obj "@3836", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x4C656674
+	.4byte 0x3630446F
+	.byte 0x77, 0x6E, 0x00
+.endobj "@3836"
+	.4byte 0x00000000
+	.byte 0x00
+
+# .data:0x718 | size: 0x20
+.obj "@3837", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x52696768
+	.4byte 0x74363044
+	.4byte 0x6F776E00
+.endobj "@3837"
+
+# .data:0x738 | size: 0x1E
+.obj "@3838", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x52696768
+	.4byte 0x74363055
+	.2byte 0x7000
+.endobj "@3838"
+	.2byte 0x0000
+
+# .data:0x758 | size: 0x1B
+.obj "@3839", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.byte 0x6C, 0x65, 0x00
+.endobj "@3839"
+	.byte 0x00
+
+# .data:0x774 | size: 0x24
+.obj "@3840", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653278
+	.4byte 0x324C6566
+	.4byte 0x74757000
+.endobj "@3840"
+
+# .data:0x798 | size: 0x25
+.obj "@3841", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653278
+	.4byte 0x32526967
+	.4byte 0x68747570
+	.byte 0x00
+.endobj "@3841"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x7C0 | size: 0x26
+.obj "@3842", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653278
+	.4byte 0x324C6566
+	.4byte 0x74446F77
+	.2byte 0x6E00
+.endobj "@3842"
+	.2byte 0x0000
+
+# .data:0x7E8 | size: 0x27
+.obj "@3843", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653278
+	.4byte 0x32526967
+	.4byte 0x6874446F
+	.byte 0x77, 0x6E, 0x00
+.endobj "@3843"
+	.byte 0x00
+
+# .data:0x810 | size: 0x25
+.obj "@3844", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653478
+	.4byte 0x34526967
+	.4byte 0x68747570
+	.byte 0x00
+.endobj "@3844"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x838 | size: 0x24
+.obj "@3845", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653478
+	.4byte 0x344C6566
+	.4byte 0x74557000
+.endobj "@3845"
+
+# .data:0x85C | size: 0x26
+.obj "@3846", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653478
+	.4byte 0x344C6566
+	.4byte 0x74446F77
+	.2byte 0x6E00
+.endobj "@3846"
+	.2byte 0x0000
+
+# .data:0x884 | size: 0x27
+.obj "@3847", local
+	.4byte 0x644C696E
+	.4byte 0x654D6E67
+	.4byte 0x5F633A3A
+	.4byte 0x53746174
+	.4byte 0x6549445F
+	.4byte 0x43697263
+	.4byte 0x6C653478
+	.4byte 0x34526967
+	.4byte 0x6874446F
+	.byte 0x77, 0x6E, 0x00
+.endobj "@3847"
+	.byte 0x00
+
+# .data:0x8AC | size: 0x34
+# sFStateID_c<dLineMng_c>::__vtable
+.obj "__vt__25sFStateID_c<10dLineMng_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__25sFStateID_c<10dLineMng_c>Fv"
+	.4byte isNull__10sStateID_cCFv
+	.4byte isEqual__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __eq__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __ne__10sStateID_cCFRC12sStateIDIf_c
+	.4byte "isSameName__25sFStateID_c<10dLineMng_c>CFPCc"
+	.4byte name__10sStateID_cCFv
+	.4byte number__10sStateID_cCFv
+	.4byte "initializeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
+	.4byte "executeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
+	.4byte "finalizeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
+.endobj "__vt__25sFStateID_c<10dLineMng_c>"
+
+# 0x00000000..0x00000640 | size: 0x640
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | size: 0xC
+.obj "@2100", local
+# .bss:0x0 | size: 0x0
+.sym ...bss.0, local
+	.skip 0xC
+.endobj "@2100"
+	.skip 0x4
+
+# .bss:0x10 | size: 0x30
+# dLineMng_c::StateID_Idle
+.obj StateID_Idle__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Idle__10dLineMng_c
+
+# .bss:0x40 | size: 0xC
+.obj "@2104", local
+	.skip 0xC
+.endobj "@2104"
+	.skip 0x4
+
+# .bss:0x50 | size: 0x30
+# dLineMng_c::StateID_FallDown
+.obj StateID_FallDown__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_FallDown__10dLineMng_c
+
+# .bss:0x80 | size: 0xC
+.obj "@2108", local
+	.skip 0xC
+.endobj "@2108"
+	.skip 0x4
+
+# .bss:0x90 | size: 0x30
+# dLineMng_c::StateID_Left45
+.obj StateID_Left45__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Left45__10dLineMng_c
+
+# .bss:0xC0 | size: 0xC
+.obj "@2112", local
+	.skip 0xC
+.endobj "@2112"
+	.skip 0x4
+
+# .bss:0xD0 | size: 0x30
+# dLineMng_c::StateID_Right45
+.obj StateID_Right45__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Right45__10dLineMng_c
+
+# .bss:0x100 | size: 0xC
+.obj "@2116", local
+	.skip 0xC
+.endobj "@2116"
+	.skip 0x4
+
+# .bss:0x110 | size: 0x30
+# dLineMng_c::StateID_Side
+.obj StateID_Side__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Side__10dLineMng_c
+
+# .bss:0x140 | size: 0xC
+.obj "@2120", local
+	.skip 0xC
+.endobj "@2120"
+	.skip 0x4
+
+# .bss:0x150 | size: 0x30
+# dLineMng_c::StateID_Height
+.obj StateID_Height__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Height__10dLineMng_c
+
+# .bss:0x180 | size: 0xC
+.obj "@2124", local
+	.skip 0xC
+.endobj "@2124"
+	.skip 0x4
+
+# .bss:0x190 | size: 0x30
+# dLineMng_c::StateID_CornerHeightLine
+.obj StateID_CornerHeightLine__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_CornerHeightLine__10dLineMng_c
+
+# .bss:0x1C0 | size: 0xC
+.obj "@2128", local
+	.skip 0xC
+.endobj "@2128"
+	.skip 0x4
+
+# .bss:0x1D0 | size: 0x30
+# dLineMng_c::StateID_CornerSideLine
+.obj StateID_CornerSideLine__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_CornerSideLine__10dLineMng_c
+
+# .bss:0x200 | size: 0xC
+.obj "@2132", local
+	.skip 0xC
+.endobj "@2132"
+	.skip 0x4
+
+# .bss:0x210 | size: 0x30
+# dLineMng_c::StateID_Left30Left
+.obj StateID_Left30Left__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Left30Left__10dLineMng_c
+
+# .bss:0x240 | size: 0xC
+.obj "@2136", local
+	.skip 0xC
+.endobj "@2136"
+	.skip 0x4
+
+# .bss:0x250 | size: 0x30
+# dLineMng_c::StateID_Left30Right
+.obj StateID_Left30Right__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Left30Right__10dLineMng_c
+
+# .bss:0x280 | size: 0xC
+.obj "@2140", local
+	.skip 0xC
+.endobj "@2140"
+	.skip 0x4
+
+# .bss:0x290 | size: 0x30
+# dLineMng_c::StateID_Right30Left
+.obj StateID_Right30Left__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Right30Left__10dLineMng_c
+
+# .bss:0x2C0 | size: 0xC
+.obj "@2144", local
+	.skip 0xC
+.endobj "@2144"
+	.skip 0x4
+
+# .bss:0x2D0 | size: 0x30
+# dLineMng_c::StateID_Right30Right
+.obj StateID_Right30Right__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Right30Right__10dLineMng_c
+
+# .bss:0x300 | size: 0xC
+.obj "@2148", local
+	.skip 0xC
+.endobj "@2148"
+	.skip 0x4
+
+# .bss:0x310 | size: 0x30
+# dLineMng_c::StateID_Left60Up
+.obj StateID_Left60Up__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Left60Up__10dLineMng_c
+
+# .bss:0x340 | size: 0xC
+.obj "@2152", local
+	.skip 0xC
+.endobj "@2152"
+	.skip 0x4
+
+# .bss:0x350 | size: 0x30
+# dLineMng_c::StateID_Left60Down
+.obj StateID_Left60Down__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Left60Down__10dLineMng_c
+
+# .bss:0x380 | size: 0xC
+.obj "@2156", local
+	.skip 0xC
+.endobj "@2156"
+	.skip 0x4
+
+# .bss:0x390 | size: 0x30
+# dLineMng_c::StateID_Right60Down
+.obj StateID_Right60Down__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Right60Down__10dLineMng_c
+
+# .bss:0x3C0 | size: 0xC
+.obj "@2160", local
+	.skip 0xC
+.endobj "@2160"
+	.skip 0x4
+
+# .bss:0x3D0 | size: 0x30
+# dLineMng_c::StateID_Right60Up
+.obj StateID_Right60Up__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Right60Up__10dLineMng_c
+
+# .bss:0x400 | size: 0xC
+.obj "@2164", local
+	.skip 0xC
+.endobj "@2164"
+	.skip 0x4
+
+# .bss:0x410 | size: 0x30
+# dLineMng_c::StateID_Circle
+.obj StateID_Circle__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle__10dLineMng_c
+
+# .bss:0x440 | size: 0xC
+.obj "@2168", local
+	.skip 0xC
+.endobj "@2168"
+	.skip 0x4
+
+# .bss:0x450 | size: 0x30
+# dLineMng_c::StateID_Circle2x2Leftup
+.obj StateID_Circle2x2Leftup__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle2x2Leftup__10dLineMng_c
+
+# .bss:0x480 | size: 0xC
+.obj "@2172", local
+	.skip 0xC
+.endobj "@2172"
+	.skip 0x4
+
+# .bss:0x490 | size: 0x30
+# dLineMng_c::StateID_Circle2x2Rightup
+.obj StateID_Circle2x2Rightup__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle2x2Rightup__10dLineMng_c
+
+# .bss:0x4C0 | size: 0xC
+.obj "@2176", local
+	.skip 0xC
+.endobj "@2176"
+	.skip 0x4
+
+# .bss:0x4D0 | size: 0x30
+# dLineMng_c::StateID_Circle2x2LeftDown
+.obj StateID_Circle2x2LeftDown__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle2x2LeftDown__10dLineMng_c
+
+# .bss:0x500 | size: 0xC
+.obj "@2180", local
+	.skip 0xC
+.endobj "@2180"
+	.skip 0x4
+
+# .bss:0x510 | size: 0x30
+# dLineMng_c::StateID_Circle2x2RightDown
+.obj StateID_Circle2x2RightDown__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle2x2RightDown__10dLineMng_c
+
+# .bss:0x540 | size: 0xC
+.obj "@2184", local
+	.skip 0xC
+.endobj "@2184"
+	.skip 0x4
+
+# .bss:0x550 | size: 0x30
+# dLineMng_c::StateID_Circle4x4Rightup
+.obj StateID_Circle4x4Rightup__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle4x4Rightup__10dLineMng_c
+
+# .bss:0x580 | size: 0xC
+.obj "@2188", local
+	.skip 0xC
+.endobj "@2188"
+	.skip 0x4
+
+# .bss:0x590 | size: 0x30
+# dLineMng_c::StateID_Circle4x4LeftUp
+.obj StateID_Circle4x4LeftUp__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle4x4LeftUp__10dLineMng_c
+
+# .bss:0x5C0 | size: 0xC
+.obj "@2192", local
+	.skip 0xC
+.endobj "@2192"
+	.skip 0x4
+
+# .bss:0x5D0 | size: 0x30
+# dLineMng_c::StateID_Circle4x4LeftDown
+.obj StateID_Circle4x4LeftDown__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle4x4LeftDown__10dLineMng_c
+
+# .bss:0x600 | size: 0xC
+.obj "@2196", local
+	.skip 0xC
+.endobj "@2196"
+	.skip 0x4
+
+# .bss:0x610 | size: 0x30
+# dLineMng_c::StateID_Circle4x4RightDown
+.obj StateID_Circle4x4RightDown__10dLineMng_c, global
+	.skip 0x30
+.endobj StateID_Circle4x4RightDown__10dLineMng_c
