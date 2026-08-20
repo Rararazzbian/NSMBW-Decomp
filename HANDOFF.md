@@ -12819,3 +12819,49 @@ stub-match rate imply more than it does is what keeps a tally comparable.
 Order flags are concentrated exactly where the empty stubs sit versus where the
 target's larger real bodies belong — **expected, and should resolve as real
 bodies replace stubs.** Correctly not treated as a structural defect.
+
+## MWCC evaluates CONSTRUCTOR ARGUMENTS RIGHT-TO-LEFT — write them in natural order
+
+AC_WATER_MOVE's `execute()` reached N/N from 27 differing, and one of the two
+fixes is a compiler fact worth having on its own.
+
+The `mUnk470/474/478` delta store is **not three sequential assignments.** The
+target builds **one `mVec3_c(x, y, z)` temporary**, and **MWCC evaluates
+constructor arguments right-to-left** — computing `z` FIRST despite it being
+written last. Writing the constructor in natural `(x, y, z)` order and trusting
+that evaluation order **reproduced the target's z,y,x compute sequence exactly.**
+
+**This explains the already-recorded "chained vector assignment stores z,y,x"**
+rather than merely restating it: the ordering is not a quirk of assignment, it is
+argument evaluation order, and it applies to any multi-argument call whose
+arguments have side effects or non-trivial computation.
+
+**The practical form: do NOT reorder your source to chase a reversed sequence in
+the target.** Write the arguments in the natural order and let the compiler
+reverse them. Reordering the source to match the disassembly is the same mistake
+as hand-rolling pointer arithmetic — reproducing the OUTPUT instead of the SOURCE.
+
+The second fix was the comparison-direction lever again: `mUnk4A8 > 0` ->
+`mUnk4A8 != 0`, the same family as `approach()`'s `>=` -> negated `<` last round.
+**Two functions closed on that lever in two consecutive rounds.**
+
+### `lha` vs `lhz` was the TYPE question, confirmed
+
+The half-word residual in `calcWave()` was signedness, exactly as flagged:
+**`mUnk4BA` needed to be `u16`, not `s16`**, which fixed both the `CosIdx` and
+`SinIdx` call-site loads (24 -> 22). **`lha` sign-extends, `lhz` zero-extends — a
+mismatch there is a declared-type defect, never a scheduling one.**
+
+### And two refusals worth as much as the fixes
+
+- `checkPlayers()` had a real bug fixed (passing `approach`'s clamp bounds where
+  the target passes `mPos.x`/`mPos.y`), and its two remaining gaps — a
+  `_savegpr_27` multi-register save pattern, and a virtual call through a pointer
+  at the player object's `+0x60` treated directly as a vtable rather than
+  double-indirected — were **flagged for dedicated investigation rather than
+  another lever guess.**
+- `calcModel()` and `create()` were **looked at and not attempted**: `calcModel`'s
+  target is 157 instructions against a 52-instruction placeholder missing an
+  entire rotation/wobble sequence. **That is the size-mismatch diagnostic applied
+  correctly** — large gap plus wrong size means missing content, so it needs a
+  dedicated read, not a partial hack.

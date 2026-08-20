@@ -164,7 +164,7 @@ public:
                  ///< targets" selector read back by create()
     u32 mUnk4B4; ///< +0x4b4, an index (<<2) into lbl_2_rodata_81C8's own trailing floats
     u8 mUnk4B8; ///< +0x4b8
-    s16 mUnk4BA; ///< +0x4ba, calcWave()'s own running angle counter
+    u16 mUnk4BA; ///< +0x4ba, calcWave()'s own running angle counter
     u8 mUnk4BC_pad[4]; ///< @unofficial trailing padding to reach sizeof == 0x4c0
 };
 
@@ -315,7 +315,7 @@ int daWaterMove_c::create() {
 
 // fn_2_1523A0. UNVERIFIED -- literal transcription, not round-tripped.
 int daWaterMove_c::execute() {
-    if (mUnk4A8 > 0) {
+    if (mUnk4A8 != 0) {
         mUnk4A8--;
     }
     mStateMgr.executeState();
@@ -327,9 +327,14 @@ int daWaterMove_c::execute() {
 
     mAnimTexSrt.play();
 
-    mUnk470 = mPos.x - mHomePos.x;
-    mUnk474 = mPos.y - mHomePos.y;
-    mUnk478 = mPos.z - mHomePos.z;
+    // Computed Z,Y,X (not X,Y,Z) into a local temp first, then copied to the members --
+    // matches the target's own instruction order exactly (delta.z first, into f3/stack
+    // +0x10, then y, then x), which a plain `mUnk470=...; mUnk474=...; mUnk478=...;`
+    // in written order does not reproduce.
+    mVec3_c delta(mPos.x - mHomePos.x, mPos.y - mHomePos.y, mPos.z - mHomePos.z);
+    mUnk470 = delta.x;
+    mUnk474 = delta.y;
+    mUnk478 = delta.z;
 
     calcWave();
 
@@ -422,7 +427,7 @@ void daWaterMove_c::calcModel() {
 // excluded) calls fn_800EBBC0 with mPos.x/mPos.z, folds a per-player result byte through
 // lbl_2_rodata_8240's own lookup table into mUnk4B8, forcing mUnk4A8=3 when it changes.
 void daWaterMove_c::checkPlayers() {
-    static const u8 lbl_2_rodata_8240[4] = {0x01, 0x02, 0x04, 0x08};
+    const u8 *lookup = reinterpret_cast<const u8 *>(&sWaterMoveConsts[30]);
 
     u32 result = 0;
     daPlBase_c *player = (daPlBase_c *)fManager_c::searchBaseByGroupType(2, this);
@@ -430,14 +435,14 @@ void daWaterMove_c::checkPlayers() {
         u8 kind = *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(player) + 0x38c);
         if (kind == 1 || kind == 2) {
             if (!player->isStatus(0x7e)) {
-                f32 px = mUnk47C, pz = mUnk480;
+                f32 px = mPos.x, pz = mPos.y;
                 u32 r = fn_800EBBC0(player, &px, &pz, mUnk4A4, player->mLayer);
                 s32 sr = (s8)r;
                 if (sr != -1) {
                     typedef u8 (daPlBase_c::*MemFn)();
                     MemFn fn = *reinterpret_cast<MemFn *>(reinterpret_cast<u8 *>(player) + 0x60);
                     u8 idx = (player->*fn)();
-                    result |= lbl_2_rodata_8240[(s8)idx];
+                    result |= lookup[(s8)idx];
                 }
             }
         }

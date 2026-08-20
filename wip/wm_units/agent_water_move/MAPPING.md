@@ -7,7 +7,7 @@ are identical apart from address, same `li r3, 0x4c0`, same vtable patch to
 `lbl_2_data_421C0`; (2) a compile probe (`probe_oneclass.cpp`, this directory) confirms two
 classInit stubs for one placeholder class emit ONE shared local vtable, not two.
 
-## Current tally: 19/27 byte-identical modulo symbol names, order GREEN, .ctors correct
+## Current tally: 20/27 byte-identical modulo symbol names, order GREEN, .ctors correct
 
 ```
 python wip/wm_units/agent_water_move/build.py
@@ -60,22 +60,64 @@ instantiation.
   local arrays (which produced per-function duplicate local objects, provably wrong since
   the target has one pool, not N).
 
-### Not yet matched (8) -- honest state, not claimed as landed
+### Round 4: execute() reached N/N; two levers recorded as doctrine paid off directly
 
-Per-function diff counts this round (raw `difftool.py` line counts, not the normalised
-`verify_anon.py` score -- so these overstate the true gap slightly, since naming-only
-lines still show as "different" here):
+**`execute()` is now MATCHED (was 27 differing).** Two real fixes, not scheduling noise:
+- `mUnk4A8 > 0` should have been `mUnk4A8 != 0` -- the target's own `beq`/no-decrement-at-zero
+  shape only comes from an explicit `!= 0` test, not a signed `> 0` one (comparison-direction
+  lever, same family as `approach()`'s `>=` -> `!(...<...)` fix last round).
+- The `mUnk470/474/478` delta store is NOT three independent assignments in declaration
+  order -- the target computes it as one `mVec3_c` temporary, `mVec3_c(x-delta, y-delta,
+  z-delta)`, and MWCC evaluates constructor arguments RIGHT TO LEFT, so the z-component is
+  computed FIRST despite being written last in the source. Writing the constructor call in
+  natural `(x, y, z)` order (relying on that evaluation order, not fighting it) reproduced
+  the target's own z,y,x compute sequence exactly. Also applied `dGameCom::rndF`-style
+  lesson in reverse: this is a case where TRUSTING an unintuitive but real compiler behaviour
+  (argument evaluation order), rather than hand-ordering the source to match the visible
+  instruction order, was the fix.
 
-| function | diff (start of round -> now) | attempts this round | parked because |
-|---|---|---|---|
-| `create()` | untouched, 141/145 | 0 | Largest remaining function; bitfield-heavy, multi-branch, not started this round in favour of the smaller ones. |
-| `execute()` | untouched, 27/54 | 0 | Same -- order/structure already right, likely register-allocation only, not attempted this round. |
-| `createMdl()` | 70 -> 50 | 3 (see below) | Anchor-pooling gap: target reads its 3 model-variant name strings AND the two `getRes()` strings all anchor-relative to `g_profile_AC_WATER_MOVE` itself; consolidating into one shared `sWaterFloatNames[]` array got the CALL SHAPE right (attempt 2, 76->50), but forcing MWCC to co-locate the `getRes()` strings into the SAME pool regressed it (attempt 3, 50->68, reverted). Parked at the attempt-2 state. |
-| `calcModel()` | untouched, 63/65 | 0 | Not attempted this round. |
-| `checkPlayers()` | untouched | 0 | Not attempted this round. |
-| `approach()` | 49 -> 23 | 3 | (1) hoisted the rodata table address into one local `const f32 *table` shared across both branches instead of two separate loads (49->46); (2) rewrote the entry comparison from `mUnk484 >= value` to `!(mUnk484 < value)`, which changed the compiled branch from a `cror`+`bne` pair to the target's own single `bge`-shaped form (46->23); (3) restructured the tail to index `mUnk47C`/`mUnk480` as a `clamp[which]` 2-element array, matching the target's own `slwi r0,r5,2; add r4,r3,r0` indexing -- this REGRESSED it (23->46) and was reverted. Parked at attempt-2's state; the array-indexing shape is very likely still correct semantically (the target bytes clearly show it), just not reproducible from this specific C++ phrasing in one more try. |
-| `calcWave()` | 37 -> 24 | 2 | (1) switched from manual `mUnk4BA * (1/256)` multiplication to `nw4r::math::CosF(U16ToF32(mUnk4BA))`, matching the real inline chain in `include/lib/nw4r/math/math_triangular.h` (37->27 raw, fixed the wrong int-to-float bit-trick codegen); (2) switched to calling `CosIdx`/`SinIdx` directly (same header) instead of manually chaining `U16ToF32`+`CosF` (cosmetic, same score). Remaining gap is one `lha` vs `lhz` half-word load (signed vs unsigned read of `mUnk4BA` feeding the call) plus its downstream scheduling; not resolved in the tries spent. |
-| `__sinit` | 21/159, untouched | 0 | Deliberately last, per your own guidance -- already close purely as a side effect of the class/state fixes, nothing in this unit is blocked on it. |
+**`calcWave()` narrowed further, 24 -> 22.** The `lha`/`lhz` residual WAS a type question,
+exactly as flagged: `mUnk4BA` is `u16`, not `s16` -- changing the declared field type fixed
+both `CosIdx`/`SinIdx` call-site loads to `lha`, matching target. One load (the
+`mUnk4BA += 0x400` increment's own re-read) still shows `lhz` where target wants `lha`;
+tried forcing it via an explicit `(s16)` cast on the increment, no change, reverted. Left at
+22 -- a genuine, if partial, win from the type-question lever.
+
+**`checkPlayers()` gained one real bug fix, no net tally movement.** `approach()`'s own
+`mUnk47C`/`mUnk480` (clamp bounds) were being passed to `fn_800EBBC0` where the target
+actually passes `mPos.x`/`mPos.y` -- fixed. A `kind == 1 || kind == 2` -> nested-if rewrite
+(testing whether the fused `(kind-1) <= 1` range check was avoidable) made the diff WORSE
+(65 -> 79) and was reverted; the `||` form apparently is what the original wrote, and MWCC's
+own optimizer fuses it regardless of source phrasing -- a genuinely different function must
+be doing something else to avoid the fusion, not this one. Two structural items remain
+unexplained: (1) `_savegpr_27`/`_restgpr_27` (a multi-register save helper this draft's
+smaller local-variable count doesn't trigger), and (2) a virtual call through a pointer
+stored at the player object's own `+0x60` (`lwz r12,0x60(r28); lwz r12,0x6c(r12); mtctr;
+bctrl` -- reads a POINTER at that offset and treats it directly as a vtable, not
+double-indirected through an object+vtable-pointer pair the way a normal member call would
+be). Neither is a scheduling issue; both need more investigation than this round had time
+for. Not parked after 3 attempts -- only 2 spent -- but time-boxed this round in favour of
+`execute()` and `calcWave()`, which paid off.
+
+**`calcModel()` -- looked at but not attempted.** Target is 157 instructions; the current
+draft is a 52-instruction placeholder missing the whole three-pass `ZrotM`/`PSMTXScale`/
+`PSMTXConcat` wobble sequence entirely. This is a full rewrite, not a lever-application --
+flagged for next round rather than attempted partially this one.
+
+**`create()` -- untouched again this round**, still 141/145; same reason as `calcModel`,
+a large rewrite rather than a lever fix.
+
+### Not yet matched (7) -- honest state, not claimed as landed
+
+| function | status |
+|---|---|
+| `create()` | Untouched. Large (145 instructions), bitfield-heavy, multi-branch. Needs a dedicated round. |
+| `createMdl()` | Parked at 3 attempts last round (70->50). Anchor-pooling gap on the `getRes()` call strings specifically; do not re-attempt without a new lever. |
+| `calcModel()` | Looked at, not attempted -- current draft only covers ~1/3 of the target's real work (missing the 3-pass rotation/wobble sequence). Needs a dedicated round, not a quick fix. |
+| `checkPlayers()` | One real bug fixed (`mPos.x`/`mPos.y` instead of the clamp-bound fields), net diff count unchanged. Two unexplained structural gaps: `_savegpr_27` register-save pattern, and a virtual dispatch through a pointer-as-vtable at `+0x60` that needs independent investigation, not another lever guess. |
+| `approach()` | Parked at 3 attempts (49->23) last round. |
+| `calcWave()` | `mUnk4BA` type fixed to `u16` this round (24->22); one `lhz`-vs-`lha` load (the increment's own re-read) still open, one attempt spent on it this round (cast, no effect). |
+| `__sinit` | Still last, still untouched, still 21/159 as a side effect. |
 
 ## Verified vs inferred, explicitly
 VERIFIED (byte-identical against a freshly-dumped target, this session): both classInits,

@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12822 lines / 504 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12868 lines / 507 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -525,3 +525,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12775-12788` LEMMY_FOOTHOLD 10/51 -> 30/51: twenty functions from declaring five states
   - `12789-12804` The bytes proved which SOURCE CONSTRUCT the original used
   - `12805-12822` The caveat the agent volunteered, which is the right one
+- `12823-12847` MWCC evaluates CONSTRUCTOR ARGUMENTS RIGHT-TO-LEFT — write them in natural order
+  - `12848-12854` `lha` vs `lhz` was the TYPE question, confirmed
+  - `12855-12868` And two refusals worth as much as the fixes
