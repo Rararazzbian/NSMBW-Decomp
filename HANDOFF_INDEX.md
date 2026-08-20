@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13143 lines / 516 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13206 lines / 520 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -537,3 +537,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `13083-13101` The attribution work paid off as a bug-catcher
 - `13102-13123` A "differing" count means NOTHING for a function you have not authored
   - `13124-13143` The boundary correction: my upper bound was a CEILING, not an edge
+- `13144-13154` A PROBE COMPILE beat a hand count — and the hand count would have been WRONG
+- `13155-13176` A vtable slot landing N slots EARLY means N missing declarations BEFORE it
+  - `13177-13184` A misattribution caught BEFORE any code was written
+- `13185-13206` HEADER GAP CONFIRMED: `dBg_ctr_c::set` is missing a THIRD overload

@@ -13140,3 +13140,66 @@ been read, so the bound needs rechecking once they are authored. **Marking a
 derived range as provisional because of what has not been read yet is the right
 habit**; a slice range asserted from an incomplete draft is exactly how units get
 mis-scoped.
+
+## A PROBE COMPILE beat a hand count — and the hand count would have been WRONG
+
+LEMMY went **34/51 -> 42/51**, and the single most instructive moment was a
+near-miss it avoided: **`entry()`'s vtable slot was settled by a probe compile
+rather than slot arithmetic, and the hand count would have said `setAnm()` — a
+real method, and the wrong one.**
+
+That is exactly the failure the probe discipline exists to prevent, caught in the
+act. **Slot arithmetic produces a plausible, existing, wrong answer**; it does not
+fail loudly. Compile the candidate and compare.
+
+## A vtable slot landing N slots EARLY means N missing declarations BEFORE it
+
+`execute()` dispatches `calcModel()` through the class's own vtable, and the slot
+was landing **2 slots early**. Reading the functions at the missing slots turned up
+**two more not-yet-named virtuals** that had to be declared *before* `calcModel()`
+— and for one of the two classes, **the three virtual states had to be declared
+before those.** Confirmed by reordering and re-measuring, not assumed.
+
+**A slot offset is a COUNT of the declarations preceding it**, so an offset that is
+short by N tells you exactly N declarations are missing earlier in the class. This
+is the same instrument as `check_vtable.py`'s "SLOT COUNT DIFFERS by -3" from
+FLOOR_JR_B, applied to a single dispatch rather than a whole table.
+
+And the payoff compounded: **those two unnamed virtuals turned out to be `create()`
+itself.** Both classes' `create()` now sit at 2/32 — the same register-choice
+residual now confirmed across **four** sites, which makes it systemic rather than
+four separate puzzles.
+
+Also found: **the two classes use DIFFERENT `.bss` singletons** for the same
+vtable-slot-`0xd4` call (`lbl_2_bss_A648` for MAIN, `lbl_2_bss_A6C4` for FOOTHOLD)
+— worth knowing before assuming a shared object.
+
+### A misattribution caught BEFORE any code was written
+
+`verify_anon` guessed `~__ct__17daLemmyFoothold_cFv` for one function; **the
+`mBgCtr` offset used inside it (`+0x5b4`) proved it belongs to the OTHER class.**
+Caught by reading the function's own field offsets rather than accepting the
+tool's nearest-candidate guess. Third unit this session where the closest-candidate
+name was wrong.
+
+## HEADER GAP CONFIRMED: `dBg_ctr_c::set` is missing a THIRD overload
+
+The agent flagged a call to
+`set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c` that exists nowhere in the
+landed header. **Verified — it is real and the header genuinely has only two of
+three overloads:**
+
+```
+DOL map:  set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c = .text:0x8007FB10  (0x64)
+header:   set(dActor_c*, float, float, float, float, ...)     line 36
+          set(dActor_c*, mVec2_c, mVec2_c, ...)               line 37
+          ^ the sBgSetInfo form is absent
+```
+
+**`sBgSetInfo` is real too** — `setObjBgInfoCallBack__17daObjMoveOnBase_cFR10sBgSetInfo`
+at `0x800454C0` uses it — but it is declared nowhere in the tree.
+
+The mangling gives the parameters exactly: **`(dActor_c *, const sBgSetInfo *, u8,
+u8, mVec3_c *)`**. Only the return type is open, as always. **A forward
+declaration `struct sBgSetInfo;` is sufficient for the overload**, since the
+parameter is a pointer — the struct's layout is not needed to declare the method.

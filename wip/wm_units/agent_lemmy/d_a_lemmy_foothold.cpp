@@ -17,6 +17,7 @@
 // technique for a genuinely-unidentified slot (never eyeball/guess a
 // name -- see MAPPING.md for what was checked).
 extern u8 lbl_2_bss_A6C4;
+extern u8 lbl_2_bss_A648;
 typedef void (*daLemmyFootholdVFunc0xD4_t)(dEn_c *, void *);
 
 // @unofficial LEMMY_FOOTHOLD_MAIN's own class layout, read directly off its
@@ -69,6 +70,25 @@ class daLemmyFoothold_c : public dEn_c {
 public:
     daLemmyFoothold_c();
 
+    // @unofficial fn_2_C6650, 12 words. `mModel.entry(); return 1;` --
+    // entry() confirmed at vtable byte offset 0x14 by a probe compile of
+    // m3d::mdl_c (a hand-count would have said setAnm() -- exactly the
+    // "never eyeball" trap; the probe settled it in one step). Matches
+    // d_a_wm_antlion.cpp's own established `mModel.entry(); return
+    // SUCCEEDED;` draw() idiom exactly.
+    virtual int draw();
+    // @unofficial fn_2_C6680, 10 words. `mBgCtr.release(); return 1;`
+    virtual int doDelete();
+    // @unofficial fn_2_C6590, 23 words, read in full before writing:
+    // `mStateMgr.executeState(); calcModel(); mBgCtr.calc(); return 1;`
+    virtual int execute();
+    // @unofficial fn_2_C6310, 32 words, read in full before writing:
+    // `vUnk2A4(); vUnk2A8(); <vtable-slot-0xd4>(&lbl_2_bss_A6C4);
+    // mStateMgr.refreshState(); return 1;` -- refreshState() confirmed
+    // at vtable slot 0x1c by a probe compile of dEn_c::mStateMgr
+    // (sStateStateMgr_c's own inherited sStateMgrIf_c slot layout).
+    virtual int create();
+
     // @unofficial Three states, read directly from .data: StateID_DemoWait,
     // StateID_DemoDown, StateID_DemoUp. All three genuinely VIRTUAL --
     // confirmed via the state objects' own PMF encoding in .data (a
@@ -80,9 +100,35 @@ public:
     // never emits the file-scope baseID_ template this class's own
     // STATE_VIRTUAL_DEFINE needs -- both can use the ordinary macro
     // untouched, no hand-expansion required.
+    //
+    // DECLARATION ORDER IS LOAD-BEARING here: these three states must
+    // come BEFORE vUnk2A4/vUnk2A8/calcModel below, confirmed by reading
+    // fn_2_C6310 (a not-yet-authored function, still called `vUnk2A4()`/
+    // `vUnk2A8()` below) dispatch through this class's own vtable at
+    // +0x2a4/+0x2a8 -- i.e. right after the states' own 9 slots
+    // (+0x280..+0x2a0) end, not before them.
     STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoWait);
     STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoDown);
     STATE_VIRTUAL_FUNC_DECLARE(daLemmyFoothold_c, DemoUp);
+
+    // @unofficial Two more NEW virtuals this class introduces, real
+    // name/content not yet identified -- found while fixing calcModel()'s
+    // own vtable slot (execute() dispatches calcModel() at +0x2ac; it
+    // only lands there once two slots' worth of real virtuals sit before
+    // it). Both are called, no-arg, from fn_2_C6310 (32 words, not yet
+    // authored -- likely create(), see the file-scope comment near
+    // STATE_VIRTUAL_DEFINE below) at vtable+0x2a4/+0x2a8 respectively.
+    // Declared here (empty bodies) purely to get the SLOT NUMBERS right
+    // for calcModel(), confirmed correct because execute() now matches
+    // exactly; their own real bodies remain open.
+    virtual void vUnk2A4();
+    virtual void vUnk2A8();
+    // @unofficial Dispatched through this class's own vtable at +0x2ac
+    // (confirmed: execute() now matches target exactly at this slot).
+    // Named by the established project-wide idiom (execute() calling a
+    // class-specific calc through its own vtable, e.g.
+    // d_a_wm_antlion.cpp's own execute()/calc() pair).
+    virtual void calcModel();
 
     dHeapAllocator_c mAllocator;
     u32 m_540;
@@ -194,6 +240,24 @@ public:
     STATE_FUNC_DECLARE(daLemmyFootholdMain_c, DemoWait);
     STATE_FUNC_DECLARE(daLemmyFootholdMain_c, Wait);
 
+    // @unofficial Same three overrides as daLemmyFoothold_c above, at its
+    // own target addresses (0xC60F0 draw, 0xC6120 doDelete, 0xC6000
+    // execute -- all read/confirmed the same way).
+    virtual int draw();
+    virtual int doDelete();
+    virtual int execute();
+    // @unofficial fn_2_C5D70, 32 words -- this class's own counterpart
+    // to daLemmyFoothold_c::create() above, identical shape.
+    virtual int create();
+    // @unofficial Same two unidentified virtuals as daLemmyFoothold_c's
+    // own vUnk2A4/vUnk2A8 above (dispatched from fn_2_C5D70, this
+    // class's own not-yet-authored counterpart to fn_2_C6310, at
+    // vtable+0x280/+0x284 -- no state slots precede them here since this
+    // class's own states are non-virtual).
+    virtual void vUnk2A4();
+    virtual void vUnk2A8();
+    virtual void calcModel();
+
     dHeapAllocator_c mAllocator;
     u32 m_540;
     m3d::mdl_c mModel;
@@ -225,6 +289,39 @@ void daLemmyFootholdMain_c::initializeState_Wait() {}
 void daLemmyFootholdMain_c::executeState_Wait() { mAnimTexSrt.play(); }
 void daLemmyFootholdMain_c::finalizeState_Wait() {}
 
+// @unofficial draw()/doDelete()/execute() for both classes -- confirmed
+// via probe compile (m3d::mdl_c::entry() at vtable+0x14, NOT a hand
+// count) and full disassembly reads (see the class-body comments above
+// for the exact target addresses and reasoning).
+int daLemmyFoothold_c::draw() {
+    mModel.entry();
+    return SUCCEEDED;
+}
+int daLemmyFoothold_c::doDelete() {
+    mBgCtr.release();
+    return 1;
+}
+int daLemmyFoothold_c::execute() {
+    mStateMgr.executeState();
+    calcModel();
+    mBgCtr.calc();
+    return 1;
+}
+int daLemmyFootholdMain_c::draw() {
+    mModel.entry();
+    return SUCCEEDED;
+}
+int daLemmyFootholdMain_c::doDelete() {
+    mBgCtr.release();
+    return 1;
+}
+int daLemmyFootholdMain_c::execute() {
+    mStateMgr.executeState();
+    calcModel();
+    mBgCtr.calc();
+    return 1;
+}
+
 // @unofficial __sinit registers these five state objects in this exact
 // order (read directly off fn_2_C6920's own sequence of
 // __ct__10sStateID_cFPCc/__register_global_object call pairs, matching
@@ -248,3 +345,48 @@ STATE_DEFINE(daLemmyFootholdMain_c, Wait);
 STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoWait);
 STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoDown);
 STATE_VIRTUAL_DEFINE(daLemmyFoothold_c, DemoUp);
+// @unofficial fn_2_C65F0 (FOOTHOLD, 21 words) / fn_2_C6060 (MAIN, 36
+// words) -- read in full before writing. Both build a transform matrix
+// from mPos/mAngle then push it and mScale to the model; MAIN's is the
+// fuller shape (rotates on all three axes), FOOTHOLD's skips rotation
+// entirely (translation only) -- a real, confirmed difference between
+// the two classes, not an oversight. Both explain why execute()'s
+// vtable-slot mismatch (0x280 vs the wanted 0x288/0x2ac) closes once
+// these are declared: calcModel() needed to exist as a real virtual
+// before its own slot number would be correct.
+void daLemmyFoothold_c::calcModel() {
+    mMatrix.trans(mPos);
+    mModel.setLocalMtx(&mMatrix);
+    mModel.setScale(mScale);
+}
+void daLemmyFootholdMain_c::calcModel() {
+    mMatrix.trans(mPos);
+    mMatrix.YrotM(mAngle.y);
+    mMatrix.XrotM(mAngle.x);
+    mMatrix.ZrotM(mAngle.z);
+    mModel.setLocalMtx(&mMatrix);
+    mModel.setScale(mScale);
+}
+void daLemmyFoothold_c::vUnk2A4() {}
+void daLemmyFoothold_c::vUnk2A8() {}
+void daLemmyFootholdMain_c::vUnk2A4() {}
+void daLemmyFootholdMain_c::vUnk2A8() {}
+
+int daLemmyFoothold_c::create() {
+    vUnk2A4();
+    vUnk2A8();
+    void *vtable = *(void **) ((u8 *) this + 0x60);
+    daLemmyFootholdVFunc0xD4_t f = *(daLemmyFootholdVFunc0xD4_t *) ((u8 *) vtable + 0xd4);
+    f(this, &lbl_2_bss_A6C4);
+    mStateMgr.refreshState();
+    return 1;
+}
+int daLemmyFootholdMain_c::create() {
+    vUnk2A4();
+    vUnk2A8();
+    void *vtable = *(void **) ((u8 *) this + 0x60);
+    daLemmyFootholdVFunc0xD4_t f = *(daLemmyFootholdVFunc0xD4_t *) ((u8 *) vtable + 0xd4);
+    f(this, &lbl_2_bss_A648);
+    mStateMgr.refreshState();
+    return 1;
+}

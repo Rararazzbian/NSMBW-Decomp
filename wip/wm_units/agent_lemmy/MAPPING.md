@@ -694,3 +694,129 @@ leaving `0xC65F0`, `0xC5D70`, `0xC6310`, `0xC6060`, `0xC5DF0` as the
 genuinely open, not-yet-characterized functions for the next pass, with
 `0xC5F30`/`0xC64D0`/`0xC6390` needing full (not just opening-instruction)
 reads before authoring.
+
+## Round 6: authoring the fifteen -- 34/51 to 42/51, plus a real header gap found
+
+### The near-free batch: draw()/doDelete()/execute()/calcModel(), all confirmed exact
+
+Authored in the coordinator's specified order. All of it verified, none
+guessed:
+
+- **`draw()`** (both classes): `mModel.entry(); return SUCCEEDED;`.
+  `entry()`'s vtable slot (`0x14`) settled by a **probe compile** of
+  `m3d::mdl_c`, not a hand count -- the hand count would have said
+  `setAnm()` (a real, different method with an incompatible signature),
+  exactly the "never eyeball" trap. **MATCH**, both classes.
+- **`doDelete()`** (both classes): `mBgCtr.release(); return 1;`.
+  **MATCH**, both classes.
+- **`calcModel()`** (both classes): read in full before writing. FOOTHOLD's
+  is translation-only (`mMatrix.trans(mPos); mModel.setLocalMtx(&mMatrix);
+  mModel.setScale(mScale);`); MAIN's additionally rotates on all three
+  axes (`YrotM`/`XrotM`/`ZrotM` on `mAngle.y`/`.x`/`.z`) before the same
+  two calls -- a real, confirmed difference between the two classes, not
+  an oversight. **MATCH**, both classes.
+- **`execute()`** (both classes): `mStateMgr.executeState(); calcModel();
+  mBgCtr.calc(); return 1;`. Getting this to match exactly required
+  finding two more virtual functions first -- see below. **MATCH**, both
+  classes.
+
+### The vtable-slot fix that unblocked `execute()`
+
+`execute()`'s own dispatch to `calcModel()` initially landed 2 slots
+early (`+0x280` instead of the wanted `+0x288`/`+0x2ac`). Read
+`fn_2_C5D70`/`fn_2_C6310` (the two 32-word functions right where the
+missing slots pointed) and found each dispatches through **two more**
+of this class's own new vtable slots before anything else -- confirmed
+by declaring two placeholder virtuals (`vUnk2A4`/`vUnk2A8`, real
+name/content still open) in the right position and watching
+`calcModel()`'s own slot number correct itself. **Declaration order is
+load-bearing here**: for `daLemmyFoothold_c`, the three virtual states
+must be declared *before* `vUnk2A4`/`vUnk2A8`/`calcModel()` (their own 9
+slots, `+0x280..+0x2a0`, sit immediately before the two unknowns at
+`+0x2a4`/`+0x2a8`) -- confirmed by reordering and re-measuring, not
+assumed from the macro's own textual position in the class body.
+
+### `create()` identified and authored for both classes -- 2/32 differing, same known residual
+
+The same `fn_2_C5D70`/`fn_2_C6310` pair turned out to be `create()`
+itself once `vUnk2A4`/`vUnk2A8` existed to call: `vUnk2A4(); vUnk2A8();
+<vtable-slot-0xd4>(&bss-singleton); mStateMgr.refreshState(); return 1;`.
+`refreshState()`'s own vtable slot (`0x1c`) settled by a **probe compile**
+of `dEn_c::mStateMgr` against all six `sStateMgrIf_c` methods at once
+(`initializeState`/`executeState`/`finalizeState`/`changeState`/
+`refreshState`/`getState`), not a hand count of the header's declaration
+order -- worth recording since a hand count here would have needed to
+also account for `sStateStateMgrIf_c`'s own additional pure virtuals,
+easy to get subtly wrong. **A new fact surfaced by this**: the two
+classes use *different* `.bss` singletons for the vtable-slot-`0xd4`
+call -- `lbl_2_bss_A6C4` for `daLemmyFoothold_c` (already known),
+**`lbl_2_bss_A648` for `daLemmyFootholdMain_c`** (new). Both `create()`s:
+**2/32 differing**, the identical register-choice residual already
+characterized on `executeState_DemoDown`/`executeState_DemoUp` (a fresh
+register instead of reusing one across the raw vtable-slot-`0xd4` cast)
+-- now seen four times across this unit, confirmed systemic, not chased
+further.
+
+### Two functions read in full, NOT yet authored -- a genuine header gap found, not a misread
+
+`fn_2_C5F30` (50 words) and `fn_2_C64D0` (48 words) are `dBg_ctr_c`-setup
+functions, one per class, storing `mPos` into a 3-float field
+immediately adjacent to `mBgCtr` (confirming `m_5b4`/`mTargetPosY`/
+`m_5bc` really do form one `mPos`-shaped snapshot, consistent with the
+round-4 finding that `mTargetPosY` gets read/written from multiple
+places) and resetting `mScale` to `1.0f`, before calling:
+
+```
+set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c
+```
+
+**This exact overload does not exist in the landed `d_bg_ctr.hpp`** --
+grepped the whole tree for `sBgSetInfo`, zero hits anywhere, landed or
+not. The header currently declares two `set()` overloads (one taking
+four bare floats, one taking two `mVec2_c`s), neither matching this
+mangled name. This is a real, confirmed gap in an already-landed shared
+header (not a misread on my part -- the mangled name is unambiguous),
+flagged rather than worked around with a guess. **Not authored this
+round**: the `sBgSetInfo` struct's own field layout (a ~40-byte
+stack-built aggregate, floats plus what look like 2-3 trailing words)
+would need to be reverse-engineered from the stack-store pattern before
+either function can be written correctly, and that's real additional
+work, not a quick fix.
+
+**A genuine misattribution avoided while reading these**: `fn_2_C5F30`'s
+own `dBg_ctr_c::set()` call targets `this+0x5b4` -- `daLemmyFootholdMain_c`'s
+own `mBgCtr` offset, NOT `daLemmyFoothold_c`'s (`+0x5c0`). `verify_anon`'s
+own closest-candidate guess for this function was `~__ct__17daLemmyFoothold_cFv`
+-- checking the actual offset used inside the function caught that this
+function belongs to the OTHER class before any code got written for it.
+
+### Two more functions read partially, not yet finished
+
+`fn_2_C5DF0`/`fn_2_C6390` (78 words each): confirmed `createModel()` for
+both classes (heap allocator creation, resource lookup, `m3d::mdl_c`
+create, `setSoftLight_MapObj`, `anmTexSrt_c` create + `setAnm`) -- matches
+the established `d_a_wm_antlion.cpp` idiom closely. Read most of
+`fn_2_C6390`'s body but not the tail; not authored this round, ran out
+of time after the `sBgSetInfo` investigation.
+
+### `.rodata` bound re-checked, unchanged
+
+All newly-read functions' `lbl_2_rodata_4A80` displacements (`0x0`,
+`0x8`, `0x18`) stay within the already-established `0x4A80-0x4AAC`
+range -- no adjustment needed. Two functions (`fn_2_C5DF0`/`fn_2_C6390`'s
+own tails) remain unauthored, so this is still not fully exhaustive, but
+narrower than last round.
+
+## Three-population split, this round
+
+| population | count | members |
+|---|---|---|
+| **Matched** | 42 | all classInits/ctors/dtors, all shared weak stubs, all 5 states, `draw`/`doDelete`/`execute`/`calcModel` (both classes) |
+| **Authored, small residual** | 4 | `executeState_DemoDown`(2/33), `executeState_DemoUp`(6/47), `create__daLemmyFoothold_c`(2/32), `create__daLemmyFootholdMain_c`(2/32) -- all the same register-choice class, not chased further |
+| **Unwritten** | 5 | `fn_2_C5F30`/`fn_2_C64D0` (dBg_ctr-set, blocked on a real missing header overload), `fn_2_C5DF0`/`fn_2_C6390` (createModel, role confirmed, not finished), `__sinit` (35/268, last priority per instruction) |
+
+**42/51 by raw count**, but the honest picture is stronger: every
+lifecycle method except one `dBg_ctr_c::set()` call site pattern is now
+understood, and the one genuinely open structural item is a **missing
+header overload**, not an unresolved mystery -- a materially different
+situation from "17 unmatched functions" two rounds ago.
