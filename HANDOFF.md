@@ -13419,3 +13419,75 @@ The `@LOCAL@...@name` form in the symbol map gives you a function-local static's
 name outright — worth grepping for on any unit.
 
 No `include/game/bases/d_line_mng.hpp` exists; a header will have to be proposed.
+
+## A NINTH wrong return type — and the SIZE DIAGNOSTIC found what six rounds of counting missed
+
+LEMMY's two `vUnk2A4()` copies (`fn_2_C5F30`, `fn_2_C64D0`) were declared `void`.
+The target epilogues, verified independently here in
+`wip/wm_units/agent_lemmy/target_C58E0.txt`:
+
+```
+/* 000C5FE0 */  lwz  r31, 0x3c(r1)
+/* 000C5FE4 */  li   r3, 0x1        <-- INSIDE the epilogue
+/* 000C5FE8 */  lwz  r0, 0x44(r1)
+/* 000C5FEC */  mtlr r0
+/* 000C5FF0 */  addi r1, r1, 0x40
+/* 000C5FF4 */  blr
+```
+
+`li r3, 0x1` after the register restores and before `mtlr` is a **return value**,
+not dead code. A `void` declaration cannot emit it. Both are `int` returning `1`.
+**Ninth wrong return type on this project.** Return types are ABSENT from CFront
+mangling; only parameters are encoded. Never take one from analogy.
+
+### The part that matters more than the ninth instance: HOW it was found
+
+For SIX rounds these two functions were logged as **"pool-position residual
+only, confirmed by line-by-line read."** They were not. They were one word short,
+and that one word was the return value.
+
+**The size mismatch was sitting in the notes the whole time and was read as
+noise.** This project's own rule says a size mismatch is STRUCTURAL in both
+directions — a pool-position residual physically CANNOT change the instruction
+count, because it only changes displacement operands. Applying that rule to an
+already-written note, with no new disassembly, produced the ninth return type.
+
+**So: a one-word-short draft with `li r3, <N>` in the target's epilogue is a
+DIRECT TELL for a missing return value.** That is a cheap, mechanical sweep and
+it should be run across every parked unit.
+
+Fixing it exposed two more real defects in the same function pair, both content:
+- the plain `daLemmyFoothold_c` copy had been given `daLemmyFootholdMain_c`'s
+  literal constants; real values measured out of `original/d_basesNP.rel`'s
+  `.rodata` bytes;
+- the target initialises the `mVec3_c` argument BEFORE the `sBgSetInfo` local;
+  the draft had it reversed.
+
+Result: `fn_2_C64D0` 49 words vs 48 / 46 differing -> **48/48 words, 3 differing**.
+`fn_2_C5F30` 49 vs 50 / 21 differing -> **50/50 words, 5 differing**.
+
+### My Lead 3 hypothesis was REFUTED, with arithmetic
+
+I proposed the `__sinit` 35-word gap hid a miscoded PMF triple. It does not.
+All 268 mnemonics match target in order. Of 53 textually-differing lines, 18 are
+symbol-name-only (relocated, raw bytes identical) and **exactly 35 are immediate
+displacements decomposing into 5 blocks of 7 — one per state — with uniform
+deltas (+0x14, +0x10)**. A uniform per-state delta is a pool-position signature,
+not a miscoding. The round-4 PMF fix is fully applied, not partial.
+
+**A residual that decomposes into equal blocks with a constant delta is
+positional. A residual that changes the instruction COUNT is content.** That pair
+of signatures separates the two classes mechanically, and should be checked
+before either is called "residual".
+
+## LEMMY_FOOTHOLD PARKED at 42/51 — blocked on register choice, not content
+
+Every function is written. Both size mismatches are now closed. The remaining
+nine gaps are four register-choice residuals (`create()` x2,
+`executeState_DemoDown`/`Up`) plus positional displacement.
+
+**It cannot land**: register-allocation differences are genuinely different
+instructions, so they fail MD5 regardless of link-time placement. This is a
+"bytes" objection, not a "structural" one, so the try-the-build move does not
+apply. Parked, not abandoned — if a lever for MWCC register allocation is ever
+found, this unit is one lever away from N/N.

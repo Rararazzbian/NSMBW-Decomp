@@ -6,9 +6,12 @@ import harness as H
 HERE = os.path.join(ROOT, 'wip', 'wm_units', 'agent_lemmy')
 src = os.path.join(HERE, 'd_a_lemmy_foothold.cpp')
 obj = os.path.join(HERE, 'draft.o')
-inc = os.path.join(HERE, 'shadow_include')
 
-ok, log = H.compile_draft(src, obj, extra_inc=[inc], module='d_basesNP')
+# shadow_include/game/bases/d_bg_ctr.hpp was deleted: the third set()
+# overload and the sBgSetInfo forward declaration it proposed have been
+# applied to the real include/game/bases/d_bg_ctr.hpp and verified green
+# against all five binaries. Build against the real header now.
+ok, log = H.compile_draft(src, obj, module='d_basesNP')
 if not ok:
     print('COMPILE FAILED')
     print(log[-10000:])

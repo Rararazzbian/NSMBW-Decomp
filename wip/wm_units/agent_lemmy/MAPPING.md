@@ -952,3 +952,204 @@ register choice) that this project has repeatedly found do not close on
 further source-level variation. `.data`/`.rodata` bounds are both now
 final. `__sinit`'s own 35-word gap is the last open item, deliberately
 untouched.
+
+## Round 8: housekeeping, then three coordinator leads -- SIZE mismatch fixed, one asymmetry explained (partially fixed), one negative result
+
+### Housekeeping: shadow header retired, tally re-verified unchanged
+
+`wip/wm_units/agent_lemmy/shadow_include/game/bases/d_bg_ctr.hpp` was
+byte-identical to the real, now-updated
+`include/game/bases/d_bg_ctr.hpp` (diffed directly, `IDENTICAL`).
+Deleted the shadow copy, dropped `build.py`'s `extra_inc` argument, and
+rebuilt against the real header only: **42/51, unchanged** -- confirmed
+before touching anything else, per instruction.
+
+### LEAD 1, CONFIRMED: `vUnk2A4()` was declared the wrong return type -- fixed, size mismatch closed
+
+The coordinator was right that a size mismatch is structural. Read
+target `fn_2_C64D0` (`daLemmyFoothold_c`'s copy, 48 words) and
+`fn_2_C5F30` (`daLemmyFootholdMain_c`'s copy, 50 words) in full and
+found the missing word directly: **both targets end with `li r3, 0x1`
+immediately before the epilogue** -- a real returned value, not a
+leftover unused store. My draft declared `virtual void vUnk2A4()`.
+Changed both classes' declaration and both definitions to
+`virtual int vUnk2A4()` returning `1`. Measured, not inferred: I
+compiled it both ways and let the diff decide, per this project's own
+rule on CFront return types.
+
+That alone didn't fully close it -- fixing the return type made
+`daLemmyFoothold_c`'s copy (target 48 words) emit **50** words (now TWO
+too long, not one), because a second, independent defect was present
+underneath the first: the plain class's `sBgSetInfoLocal_t info`
+literals had been copied from MAIN's own values (`-152/16/152/-48`)
+instead of using its own. Measured directly from
+`original/d_basesNP.rel`'s `.rodata` (section index 4, file offset
+`0x1c6600`, confirmed via the REL section table at `0x10`/`0x4c`; see
+`wip/wm_units/profile_map.py`'s section-index convention): the plain
+class's target issues only **3** rodata loads (`+0x0`=1.0, `+0x18`=-16.0,
+`+0x8`=16.0) and REUSES two of them (`info.a==info.d==-16.0f`,
+`info.b==info.c==16.0f`), where MAIN's own copy loads 5 DISTINCT
+constants with no reuse. My draft's copied literals forced two
+unnecessary extra rodata loads. Fixed the plain class's four literals to
+`-16.0f/16.0f/16.0f/-16.0f`, closing the SIZE mismatch exactly:
+`fn_2_C64D0` (48 words) now compiles to 48. `fn_2_C5F30` (50 words) was
+already correct on this axis (its own literals were right from round 7).
+
+A third fix, found by direct instruction-order comparison against
+target (not guessed): target initializes `v` (the `mVec3_c` argument,
+stored at `r1+0x8/0xc/0x10`) BEFORE `info`'s fields (`r1+0x14..0x2c`) in
+BOTH classes; my draft had `info` declared first. Swapping the
+declaration order in both classes' `vUnk2A4()` matched the store order
+exactly and closed most of the remaining gap.
+
+**Measured before/after, both classes:**
+
+| target | size (target) | size (draft, before) | differing (progression) |
+|---|---|---|---|
+| `fn_2_C64D0` (`daLemmyFoothold_c`) | 48 | 49 -> 50 -> 48 | 46 -> 47 -> 13 -> **3** |
+| `fn_2_C5F30` (`daLemmyFootholdMain_c`) | 50 | 49 -> 50 | 21 -> 15 -> **5** |
+
+Both are now SIZE-MATCHED. The remaining 3/5 differing are, confirmed by
+direct instruction-by-instruction comparison (every mnemonic and operand
+position now matches target except three `lfs`/`stfs` immediate
+displacements), a pool-position residual: my draft's standalone compile
+builds its OWN small anonymous rodata pool (shown as `...rodata.0`) for
+these three floats, containing only what THIS file's functions
+reference in FILE ORDER, so the three constants land at different
+displacements (`0x10/0x14/0x18` in my pool) than in the real, whole-TU
+merged pool (`lbl_2_rodata_4A80`, where the same three values sit at
+`0x0/0x18/0x8` because OTHER functions in the complete TU already
+established earlier entries). This is the same already-documented
+pool-position class seen throughout this unit -- not chased further,
+since it requires the WHOLE TU's pool composition to match, not a
+per-function source change.
+
+### LEAD 2, ASYMMETRY EXPLAINED via raw relocation ground truth, size unaffected
+
+Confirmed the coordinator's suspicion that MAIN and FOOTHOLD's
+`createModel()` (`vUnk2A8()`) really do differ in content, and found the
+exact mechanism -- NOT from the disassembly's symbol labels (which are
+dtk's nearest-symbol heuristic and can mislead), but from the RAW
+relocation table via `wip/wm_units/profile_map.py`'s `relocations()`:
+
+- `fn_2_C6390` (`daLemmyFoothold_c`'s own copy, confirmed by address
+  adjacency to its already-matched `create()`/`vUnk2A4()` neighbours,
+  `fn_2_C6310`/`fn_2_C64D0`) has **direct** relocations to two SEPARATE
+  addresses, `0x27dc8` and `0x27de4` -- ordinary, freshly-compiled
+  string literals, exactly what writing `"boss_lemmy_ashiba"`/`"g3d/
+  boss_lemmy_ashiba.brres"` produces. This is what my draft already did
+  for both classes, which is why this copy was already close (8/78).
+- `fn_2_C5DF0` (`daLemmyFootholdMain_c`'s own copy, same adjacency
+  argument against `fn_2_C5D70`/`fn_2_C5F30`) has exactly **two**
+  relocations in the equivalent region, and BOTH target `0x27db0` --
+  `g_profile_LEMMY_FOOTHOLD`'s own address (`daLemmyFoothold_c`'s
+  profile, declared earlier in this same TU). The two `getRes()`
+  arguments are then reached by PLAIN IMMEDIATE arithmetic off that one
+  base (`+0x34` for the name, `+0x18` for the path) with NO further
+  relocation for either add. `0x27db0+0x18 == 0x27dc8` and
+  `0x27db0+0x34 == 0x27de4` exactly -- so MAIN reaches the SAME two
+  physical string objects FOOTHOLD owns, via pointer arithmetic on
+  `&g_profile_LEMMY_FOOTHOLD`, not by writing its own fresh literals.
+
+Changed `daLemmyFootholdMain_c::vUnk2A8()`'s `getRes()` call to
+`(const char *)((u8 *) &g_profile_LEMMY_FOOTHOLD + 0x34)` /
+`+0x18` in place of the literal strings. Confirmed this is the right
+mechanism -- the compiled draft immediately switched from two separate
+`lis` (targeting two different anonymous pool symbols) to exactly the
+target's own shape (one `lis`/`addi` to `g_profile_LEMMY_FOOTHOLD`, then
+two plain `addi`s with no relocation).
+
+**This did NOT move the diff count (still 22/78).** A second, genuinely
+separate defect remains, and I tested it directly rather than assuming:
+target computes the base pointer into a NONVOLATILE register (`r30`)
+right after the prologue, before the `createFrmHeap()` call, keeping it
+alive across that call; my compiled code (both the inline-expression
+version and a version with named locals declared before the call --
+tried both, neither changed anything) allocates the SAME logical value
+to a VOLATILE register that createFrmHeap's own arguments need, forcing
+the computation to be redone AFTER that call instead. Two tested
+variants, zero effect on the emitted bytes -- this matches
+AGENT_CONTEXT.md's own documented finding that MWCC's register/schedule
+assignment is not reliably driven by C++ declaration order or
+expression structure. Parked as a measured, not-source-addressable
+residual; the pointer-arithmetic content fix is kept because it is
+independently confirmed correct via ground-truth relocation data (the
+strongest evidence class in this project), even though it did not move
+this round's raw count.
+
+**The 4-instruction offset labelled `+0x48` in `fn_2_C5DF0`** (used
+twice, for `GetResMdl`/`GetResAnmTexSrt`) is a THIRD, separate string
+object at `0x27df8` that FOOTHOLD's own function never touches -- i.e.
+there are genuinely TWO physical copies of `"boss_lemmy_ashiba"` in
+`.data` (one embedded near `g_profile_LEMMY_FOOTHOLD` at `+0x34`, reused
+by MAIN only for the `getRes()` call; another, ordinary literal at
+`0x27df8`, apparently written fresh in MAIN's own source for the
+`GetResMdl`/`GetResAnmTexSrt` calls, since my draft's own literal
+`"boss_lemmy_ashiba"` for those two calls was NOT touched by this round's
+fix and needed no change). Left as-is; not confirmed further.
+
+### LEAD 3, NEGATIVE RESULT, confirmed by exact per-word decomposition: the 35-word gap is pool position, not a missed PMF case
+
+Extracted every one of the 268 instructions on both sides (draft and
+`fn_2_C6920`) and compared them mechanically. **All 268 mnemonics match
+exactly, in order, with no exceptions** -- the structural shape (which
+constructors run, which macro variant per state, the
+`__register_global_object` calls, the direct-vs-virtual PMF encoding
+per class) is fully correct; round 4's fix is confirmed complete, not
+partial.
+
+53 lines differ textually. Of those, 18 are symbol-NAME-only
+differences (`g_profile_LEMMY_FOOTHOLD` vs my draft's own anonymous
+`...data.0`, `lbl_2_data_284B8` vs a vtable symbol name, etc.) on
+RELOCATED instructions (`@ha`/`@l` pairs) -- these encode to IDENTICAL
+raw bytes in the object file (the relocated field is blanked until link
+time), so they cannot be part of a byte-level diff count.
+
+The remaining **exactly 35** lines are plain, unrelocated immediate
+displacements (`addi rX, r29, 0xNNN` / `lwz rX, 0xNNN(r29)`) that
+genuinely differ in value -- and they decompose perfectly into **5
+blocks of 7** (one block per state: MAIN's `DemoWait`/`Wait`, FOOTHOLD's
+`DemoWait`/`DemoDown`/`DemoUp`), matching the reported count exactly.
+Within each block the delta between target and draft is a CONSTANT: the
+three state-object sub-field offsets (a state's own `+0x0/+0xc/+0x18`)
+are all off by exactly `+0x14`; the state's own NAME-STRING address
+(reached separately, later in `.data`) is off by exactly `+0x10`. Both
+deltas are uniform across all 5 blocks -- this is the standalone-compile
+pool-position artifact already characterized everywhere else in this
+unit (my draft's own `.data` layout doesn't yet contain the same
+preceding/interleaved content -- `createModel()`'s archive strings, the
+`sBgSetInfoLocal_t` constant table, etc. -- that the real, complete TU
+has, so everything after `g_profile_LEMMY_FOOTHOLD` sits at a
+uniformly-shifted but internally-consistent offset), not a logic error
+and not a further PMF-encoding case. **Lead 3's specific hypothesis --
+that a remaining miscoded PMF triple was hiding in the 35 -- is
+refuted by this decomposition.** Nothing was changed in `__sinit` as a
+result; it is confirmed, not guessed, to already be correct in every way
+byte-position can express without completing the unit's entire `.data`
+section as explicit C++ statics (a materially larger task than
+re-reading against the PMF rule).
+
+### Final result, this round: 42/51 raw count unchanged, but two SIZE mismatches closed and one asymmetry explained
+
+| target | before (size/diff) | after (size/diff) |
+|---|---|---|
+| `fn_2_C64D0` (`vUnk2A4`, FOOTHOLD) | 49 vs 48 (mismatch) / 46 | 48 vs 48 / **3** |
+| `fn_2_C5F30` (`vUnk2A4`, MAIN) | 49 vs 50 (mismatch) / 21 | 50 vs 50 / **5** |
+| `fn_2_C5DF0` (`vUnk2A8`, MAIN) | 78 vs 78 / 22 | 78 vs 78 / 22 (content fix confirmed via relocations; register-scheduling residual untouched by two tested variants) |
+| `fn_2_C6390` (`vUnk2A8`, FOOTHOLD) | 78 vs 78 / 8 | unchanged (already correct) |
+| `fn_2_C6920` (`__sinit`) | 268 vs 268 / 35 | unchanged (confirmed: pure pool position, not a PMF gap) |
+
+**42/51 by raw count, unchanged from last round** -- because none of the
+five affected functions crossed the exact-match threshold this round --
+but the SIZE MISMATCH the coordinator flagged as structural is
+genuinely closed (both `vUnk2A4()` copies are size-correct now, with
+only single-digit pool-position residuals left, down from double digits
+and an outright length mismatch), and both other leads produced
+evidence-backed answers rather than further guessing: one real,
+ground-truth-confirmed content fix that didn't move its own byte count
+(a separate, tested, not-source-addressable register-scheduling issue
+sits underneath it), and one clean negative result on `__sinit` backed
+by an exact per-word decomposition, not an impression.
+
+The four register-choice residuals (`create()` x2,
+`executeState_DemoDown`/`Up`) were left untouched, as instructed.

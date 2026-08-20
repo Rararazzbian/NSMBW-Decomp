@@ -133,10 +133,15 @@ public:
     // it). Both are called, no-arg, from fn_2_C6310 (32 words, not yet
     // authored -- likely create(), see the file-scope comment near
     // STATE_VIRTUAL_DEFINE below) at vtable+0x2a4/+0x2a8 respectively.
-    // Declared here (empty bodies) purely to get the SLOT NUMBERS right
-    // for calcModel(), confirmed correct because execute() now matches
-    // exactly; their own real bodies remain open.
-    virtual void vUnk2A4();
+    // Declared here purely to get the SLOT NUMBERS right for calcModel(),
+    // confirmed correct because execute() now matches exactly.
+    // vUnk2A4 is `int`, not `void`: target fn_2_C64D0/fn_2_C5F30 both
+    // end with `li r3, 0x1` immediately before the epilogue, a real
+    // returned value, not a leftover unused store (confirmed by the
+    // draft being exactly one word SHORT/LONG against each target until
+    // this was added -- a size mismatch this project treats as
+    // structural, not scheduling). vUnk2A8's own body remains open.
+    virtual int vUnk2A4();
     virtual void vUnk2A8();
     // @unofficial Dispatched through this class's own vtable at +0x2ac
     // (confirmed: execute() now matches target exactly at this slot).
@@ -268,8 +273,9 @@ public:
     // own vUnk2A4/vUnk2A8 above (dispatched from fn_2_C5D70, this
     // class's own not-yet-authored counterpart to fn_2_C6310, at
     // vtable+0x280/+0x284 -- no state slots precede them here since this
-    // class's own states are non-virtual).
-    virtual void vUnk2A4();
+    // class's own states are non-virtual). vUnk2A4 is `int`, see the
+    // sibling class's own declaration above for the evidence.
+    virtual int vUnk2A4();
     virtual void vUnk2A8();
     virtual void calcModel();
 
@@ -383,37 +389,48 @@ void daLemmyFootholdMain_c::calcModel() {
     mModel.setScale(mScale);
 }
 // @unofficial fn_2_C64D0 (48 words), read in full: snapshots mPos into
-// m_5b4/mTargetPosY/m_5bc, resets mScale to 1.0f, then calls the
-// still-header-missing `dBg_ctr_c::set(dActor_c*, const sBgSetInfo*,
-// u8, u8, mVec3_c*)` overload (now proposed as a shadow header change --
-// see shadow_include/game/bases/d_bg_ctr.hpp), sets a flag bit on
-// mBgCtr's own (already-declared) mFlags field, then calls
-// mBgCtr.entry(). The `u8` at `this+0x38f` is a real field read
-// directly off target, not yet identified by name -- raw offset cast
-// rather than guessed.
-void daLemmyFoothold_c::vUnk2A4() {
+// m_5b4/mTargetPosY/m_5bc, resets mScale to 1.0f, then calls
+// `dBg_ctr_c::set(dActor_c*, const sBgSetInfo*, u8, u8, mVec3_c*)`
+// (the third overload, now landed in the real
+// include/game/bases/d_bg_ctr.hpp), sets a flag bit on mBgCtr's own
+// (already-declared) mFlags field, then calls mBgCtr.entry(). The `u8`
+// at `this+0x38f` is a real field read directly off target, not yet
+// identified by name -- raw offset cast rather than guessed.
+//
+// The `info` literals here are NOT the same four values as MAIN's own
+// copy below -- measured directly from original/d_basesNP.rel's
+// .rodata (section 4, file offset 0x1c6600 + 0x4a80/+0x18/+0x8): this
+// class's target only issues 3 rodata loads (0x0=1.0, 0x18=-16.0,
+// 0x8=16.0) and reuses two of them (info.a==info.d==-16.0f,
+// info.b==info.c==16.0f), where MAIN's own copy loads 5 DISTINCT
+// constants with no reuse. Copying MAIN's -152/16/152/-48 values here
+// (as an earlier round did) forced two extra, unnecessary rodata loads
+// and was the actual cause of a real SIZE mismatch (50 words emitted
+// vs target's 48) -- not a scheduling residual.
+int daLemmyFoothold_c::vUnk2A4() {
     m_5b4 = mPos.x;
     mTargetPosY = mPos.y;
     m_5bc = mPos.z;
     mScale.x = 1.0f;
     mScale.y = 1.0f;
     mScale.z = 1.0f;
-    sBgSetInfoLocal_t info;
-    info.a = -152.0f;
-    info.b = 16.0f;
-    info.c = 152.0f;
-    info.d = -48.0f;
-    info.e = 0;
-    info.f = 0;
-    info.g = 0;
     mVec3_c v;
     v.x = 1.0f;
     v.y = 1.0f;
     v.z = 1.0f;
+    sBgSetInfoLocal_t info;
+    info.a = -16.0f;
+    info.b = 16.0f;
+    info.c = 16.0f;
+    info.d = -16.0f;
+    info.e = 0;
+    info.f = 0;
+    info.g = 0;
     u8 u = *((u8 *) this + 0x38f);
     mBgCtr.set(this, (const sBgSetInfo *) &info, 3, u, &v);
     mBgCtr.mFlags |= 4;
     mBgCtr.entry();
+    return 1;
 }
 // @unofficial fn_2_C6390 (78 words) -- this class's own createModel(),
 // matching the established d_a_wm_antlion.cpp idiom closely (heap
@@ -442,13 +459,17 @@ void daLemmyFoothold_c::vUnk2A8() {
 // into THIS class's own tail region (+0x698/+0x69c/+0x6a0, right after
 // mBgCtr which ends at +0x698 for this class -- confirmed the offset,
 // not assumed from symmetry with FOOTHOLD alone).
-void daLemmyFootholdMain_c::vUnk2A4() {
+int daLemmyFootholdMain_c::vUnk2A4() {
     *(float *) ((u8 *) this + 0x698) = mPos.x;
     *(float *) ((u8 *) this + 0x69c) = mPos.y;
     *(float *) ((u8 *) this + 0x6a0) = mPos.z;
     mScale.x = 1.0f;
     mScale.y = 1.0f;
     mScale.z = 1.0f;
+    mVec3_c v;
+    v.x = 1.0f;
+    v.y = 1.0f;
+    v.z = 1.0f;
     sBgSetInfoLocal_t info;
     info.a = -152.0f;
     info.b = 16.0f;
@@ -457,20 +478,40 @@ void daLemmyFootholdMain_c::vUnk2A4() {
     info.e = 0;
     info.f = 0;
     info.g = 0;
-    mVec3_c v;
-    v.x = 1.0f;
-    v.y = 1.0f;
-    v.z = 1.0f;
     u8 u = *((u8 *) this + 0x38f);
     mBgCtr.set(this, (const sBgSetInfo *) &info, 3, u, &v);
     mBgCtr.mFlags |= 4;
     mBgCtr.entry();
+    return 1;
 }
-// @unofficial fn_2_C5DF0 (78 words) -- MAIN's own createModel(), same
-// shape as daLemmyFoothold_c's own above.
+// @unofficial fn_2_C5DF0 (78 words) -- MAIN's own createModel(). Same
+// logical shape as daLemmyFoothold_c's own above (same calls, same
+// order), but NOT the same emitted addressing -- measured directly from
+// the raw relocation table (wip/wm_units/profile_map.py's relocations()),
+// not from the disassembly's symbol labels, which can mislead (a label
+// is dtk's nearest-symbol heuristic, not evidence of what the source
+// computed). FOOTHOLD's own copy (fn_2_C6390) has DIRECT relocations to
+// two addresses (0x27dc8, 0x27de4) with no shared base -- ordinary fresh
+// string literals. MAIN's copy has exactly TWO relocations, BOTH
+// targeting 0x27db0 -- g_profile_LEMMY_FOOTHOLD's own address, i.e.
+// daLemmyFoothold_c's profile object, declared earlier in this same
+// TU -- with the two getRes() arguments reached by PLAIN IMMEDIATE
+// arithmetic off that one base (+0x34 for the name, +0x18 for the path,
+// no further relocation for either add). So MAIN's real source reaches
+// FOOTHOLD's own archive name/path via pointer arithmetic on
+// &g_profile_LEMMY_FOOTHOLD, not by writing its own fresh string
+// literals for this call -- the offsets are unofficial (no named field
+// exists for them in the current fProfile::fActorProfile_c), but the
+// BASE and the "no separate relocation for the two adds" shape are
+// measured, not guessed. GetResMdl/GetResAnmTexSrt below still take a
+// literal "boss_lemmy_ashiba" -- their own target relocations (not
+//0x27db0-relative) show that pattern was NOT changed for those two
+// calls, only for the getRes() call itself.
 void daLemmyFootholdMain_c::vUnk2A8() {
+    const char *path = (const char *) ((u8 *) &g_profile_LEMMY_FOOTHOLD + 0x18);
+    const char *name = (const char *) ((u8 *) &g_profile_LEMMY_FOOTHOLD + 0x34);
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
-    mRes = dResMng_c::m_instance->getRes("boss_lemmy_ashiba", "g3d/boss_lemmy_ashiba.brres");
+    mRes = dResMng_c::m_instance->getRes(name, path);
     nw4r::g3d::ResMdl mdl = mRes.GetResMdl("boss_lemmy_ashiba");
     mModel.create(mdl, &mAllocator, 0x24, 1, nullptr);
     dActor_c::setSoftLight_MapObj(mModel);
