@@ -13329,3 +13329,93 @@ come with a large shelf of solved siblings. Being scouted now into
 RIVER, CASTLE_BG (24/33), and the five order-blocked units. Those walls are
 **measured, not merely hit** — RIVER alone burned ten source-level variants
 across two rounds. Reopening any of them costs a round and returns nothing.
+
+## THE DOL NAMES ITS OWN TRANSLATION UNITS — `__sinit_\<file>_cpp` in the symbol map
+
+The single most useful thing found while scouting the DOL, and it inverts the
+REL playbook.
+
+`bin/dtk/wiimj2d_symbols.txt` contains symbols of the form:
+
+```
+__sinit_\d_line_mng_cpp            = .text:0x800C7600; // size:0x12A4
+__sinit_\d_iggy_wan_kusari_cpp     = .text:0x800BA630; // size:0x4D4
+__sinit_\d_enemy_toride_kokoopa_cpp = .text:0x800AED40; // size:0x1698
+```
+
+**These name the real source file directly.** For any TU with static state, the
+filename is GIVEN, not inferred — and the `__sinit` address is a hard anchor
+inside that TU's `.text`.
+
+Contrast the REL lane, where a unit's identity had to be reconstructed from
+profile names and pool-ownership overlap, and where mis-scoping cost whole rounds
+twice (WM_ANTLION with both ends wrong, WM_ANTLION_MNG scoped at 79 functions
+when it is 22).
+
+**`bin/dtk/dtk_splits_wiimj2d.txt` does NOT contain these** — verified by grep,
+none of the three names above appear in it. That file is generated from landed
+slices and lists only solved units, exactly as `scout_unit.py`'s docstring warns.
+The `__sinit` symbols are in the FULL symbol map and are a separate, better
+source. Do not confuse the two.
+
+**Also: `scout_unit.py` does not transfer to the DOL.** It walks a REL's
+relocation stream; the DOL is fully linked and position-fixed, so there is no
+relocation stream. `.ctors` in the DOL is a plain array of already-resolved
+absolute function pointers, readable straight out of `original/wiimj2d.dol`, and
+reading it gives a contiguous, gapless ordering of every sinit-bearing TU. That
+is a second independent way to bracket a unit.
+
+### The scouted gap was NOT what I predicted, and the agent said so
+
+I sent the scout in on the premise that the region after `d_enemy_state.cpp` was
+"more `d_a_en_*` enemies, with eighteen landed siblings." **It carves into 23 TUs
+of which exactly ONE is an enemy actor, and that one is blocked** — its vtable is
+375 slots against `dEnBoss_c`'s 226, and `dEnBoss_c` is an undeclared base class
+living in a DIFFERENT unclaimed gap (`0x91BD0`-`0x98370`). The rest is
+infrastructure: faders, font manager, game-pad cores, lift-draw helpers, a
+line/rail movement manager.
+
+**The right resemblance axis was not the actor family but the STATE-MACHINE
+FRAMEWORK** — the useful siblings turned out to be `d_pausewindow.cpp` and
+`d_a_spin_child_base.cpp`. A brief that names the wrong similarity axis is worse
+than one that names none; the agent flagging it beat force-fitting my premise.
+
+## FIRST DOL TARGET: `d_line_mng.cpp` — 31,712 bytes and 25 NAMED states
+
+Chosen and verified before dispatch:
+
+```
+.text  0x800C0DC0-0x800C89A0   (offset 0xBA640-0xC2220)   0x7BE0 = 31712 bytes
+182 functions: 38 state-framework instantiations, ~144 real dLineMng_c methods
+NO __vt__10dLineMng_c  ->  the class has no vtable of its own
+__sinit_\d_line_mng_cpp at 0x800C7600, size 0x12A4  ->  exactly one .ctors entry
+```
+
+**31,712 bytes is 0.49% of the whole project in one unit** — larger than the last
+six landed units combined, and larger than either of the two big DOL landings.
+
+Why it was picked over the other 22 candidates:
+- **No own vtable.** The blocker that stops the one enemy unit in that gap
+  (undeclared base class, wrong slot count) cannot arise here.
+- **The symbol map names all 25 states**: `Idle, FallDown, Side, Height, Circle,
+  CornerHeightLine, CornerSideLine, Left45, Right45, Left30Left, Left30Right,
+  Right30Left, Right30Right, Left60Up, Left60Down, Right60Up, Right60Down,
+  Circle2x2Leftup, Circle2x2LeftDown, Circle2x2Rightup, Circle2x2RightDown,
+  Circle4x4LeftUp, Circle4x4LeftDown, Circle4x4Rightup, Circle4x4RightDown`
+  (the inconsistent "up"/"Up" capitalisation is REAL — copy it exactly).
+  On LEMMY, declaring FIVE states emitted twenty functions free. There are
+  twenty-five here.
+- **The methods are self-contained `mVec2_c` geometry with fully-typed
+  signatures** — `line_cross_slope_check__10dLineMng_cFRC7mVec2_cRC7mVec2_cRfRf`
+  is `(const mVec2_c&, const mVec2_c&, float&, float&)`. No actor lifecycle, no
+  resource handles, no model/animation code.
+- **A landed structural sibling exists**: `source/dol/bases/d_pausewindow.cpp`
+  uses the identical `sFStateMgr_c<Class, sStateMethodUsr_FI_c>` member shape.
+
+Detail worth keeping: `is_unit_circle2x2` and `is_unit_circle4x4` each own a
+FUNCTION-LOCAL STATIC array named `d_unit`
+(`@LOCAL@is_unit_circle2x2__10dLineMng_cFUl@d_unit`, `.rodata`, `0x10`/`0x20`).
+The `@LOCAL@...@name` form in the symbol map gives you a function-local static's
+name outright — worth grepping for on any unit.
+
+No `include/game/bases/d_line_mng.hpp` exists; a header will have to be proposed.

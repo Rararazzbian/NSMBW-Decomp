@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13332 lines / 528 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13422 lines / 531 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -549,3 +549,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `13302-13309` The REL rounds were NOT wasted — they built the playbook
   - `13310-13326` Where the DOL bytes are
   - `13327-13332` What NOT to reopen
+- `13333-13367` THE DOL NAMES ITS OWN TRANSLATION UNITS — `__sinit_\<file>_cpp` in the symbol map
+  - `13368-13382` The scouted gap was NOT what I predicted, and the agent said so
+- `13383-13422` FIRST DOL TARGET: `d_line_mng.cpp` — 31,712 bytes and 25 NAMED states
