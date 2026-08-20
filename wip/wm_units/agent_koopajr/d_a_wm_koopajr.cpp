@@ -146,7 +146,13 @@ public:
     /// that reads pool offset 0x48+ the same way.
     static const JumpParams_t sc_jumpParams[2];
 
-    void procNone() {} ///< @unofficial fn_2_16D7E0. The idle/no-op state-0 handler.
+    void procNone(); ///< @unofficial fn_2_16D7E0. The idle/no-op state-0 handler. Defined out-of-line
+                      ///< (NOT inline in the class body): the target marks fn_2_16D7E0 `global`, not
+                      ///< `weak`, which an in-class trivial inline would compile as (vague linkage).
+                      ///< This also fixes its .text POSITION -- an in-class inline landed wherever the
+                      ///< compiler first needed it (adjacent to execute()'s PTMF table reference),
+                      ///< which put it far from its true target address between resetScaleAndProc()
+                      ///< and startAction().
     void procMain();   ///< @unofficial fn_2_16D830. The state-1 handler.
 
     bool runMain(); ///< @unofficial fn_2_16D940. NOT authored -- the unit's largest function
@@ -198,7 +204,46 @@ daWmKoopaJr_c::daWmKoopaJr_c() {}
 
 daWmKoopaJr_c::~daWmKoopaJr_c() {}
 
-int daWmKoopaJr_c::doDelete() {
+// @unofficial FUNCTION DEFINITION ORDER BELOW IS DELIBERATE, not source-cosmetic. The
+// linker places .text in definition order, so these must appear in the SAME relative
+// order as the target's real addresses: create(0x16d3f0), execute(0x16d460),
+// draw(0x16d530), doDelete(0x16d580), createModel(0x16d590), calcModel(0x16d700),
+// resetState(0x16d7b0), resetScaleAndProc(0x16d7c0), procNone(0x16d7e0),
+// startAction(0x16d7f0), procMain(0x16d830), processCutsceneCommand(0x16d870),
+// lookupAction(0x16d920), runMain(0x16d940), changeAnim(0x16e3a0). An EARLIER draft of
+// this file had these in an unrelated order (grouped by discovery order instead), which
+// verify_anon.py's greedy ascending-pairing flagged directly (FUNCTION ORDER IS WRONG)
+// -- confirmed against d_a_wm_smallcloud.cpp's documented precedent in that tool's own
+// docstring, where a clean-looking per-function tally still failed to link because every
+// `bl` past the misordered point had the wrong displacement. This also matters for the
+// anonymous rodata POOL: literal constants are pooled in definition order, so an out-of-
+// order function steals another function's expected pool slot and produces exactly the
+// kind of "logic matches, displacement is off by N words" symptom this unit had.
+int daWmKoopaJr_c::create() {
+    createModel();
+    mClipSphere.set(mPos, 250.0f);
+    calcModel();
+    resetState();
+    return SUCCEEDED;
+}
+
+int daWmKoopaJr_c::execute() {
+    static void (daWmKoopaJr_c::*const sc_procTable[2])() = {
+        &daWmKoopaJr_c::procNone,
+        &daWmKoopaJr_c::procMain,
+    };
+
+    dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
+    if (csSeqMng->FUN_80915600()) {
+        processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
+    }
+
+    (this->*sc_procTable[mProcState])();
+
+    mModel.play();
+    CalcShadow(0.5f, 1.0f, 1.0f, 1.0f);
+    calcModel();
+
     return SUCCEEDED;
 }
 
@@ -206,6 +251,51 @@ int daWmKoopaJr_c::draw() {
     mModel.entry();
     DrawShadow(true);
     return SUCCEEDED;
+}
+
+int daWmKoopaJr_c::doDelete() {
+    return SUCCEEDED;
+}
+
+void daWmKoopaJr_c::createModel() {
+    /// @unofficial NOT verified byte-exact. Logic and every string/constant
+    /// below are read directly out of the REL: the resource table at
+    /// lbl_2_data_45DD8 (.data file offset 0x1D0C00+0x45DD8) and the shared
+    /// float pool at lbl_2_rodata_8BA0 (.rodata file offset
+    /// 0x1C6600+0x8BA0). What remains unverified is ORDER: the shared rodata
+    /// pool (0x8ba0-0x8c90) holds constants used not just here but by
+    /// execute(), create(), AND several values that belong to NEITHER --
+    /// e.g. 0x8bc4/0x8bd4/0x8bd8/0x8be0/0x8bec, which never appear in this
+    /// function's own disassembly and must belong to fn_2_16D940 or
+    /// fn_2_16E3A0 (both unauthored). Until those are written, this
+    /// function's rodata objects cannot land at the retail addresses, which
+    /// is why create()/execute() still show `SYM0`-vs-`lbl_2_rodata_8C0C`
+    /// style diffs even though their own logic matches. See MAPPING.md.
+    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
+
+    mResFile = dResMng_c::m_instance->getRes("koopaJr", "g3d/koopaJr.brres");
+    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("koopaJr");
+
+    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
+
+    for (int i = 0; i < 6; i++) {
+        nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sc_animNames[i]);
+        mAnimChrs[i].create(resMdl, resAnmChr, &mAllocator, nullptr);
+        mAnimChrs[i].mPlayMode = sc_playModes[i];
+        mAnimChrs[i].setRate(0.0f);
+        mAnimChrs[i].setFrame(0.0f);
+    }
+
+    /// @unofficial `GetResNode("mask")`'s result has bit 0x200 cleared out of
+    /// its flags word (`rlwinm r0,r0,0,24,22` in the target) when the node
+    /// exists. Not modelled here -- the exact API for mutating a ResNode's
+    /// flags in-place hasn't been located in include/, so this is left as a
+    /// gap rather than guessed.
+
+    dWmActor_c::setSoftLight_Boss(mModel);
+    mAllocator.adjustFrmHeap();
+
+    CreateShadowModel("character_SV", "g3d/model.brres", "character_SV", true);
 }
 
 void daWmKoopaJr_c::calcModel() {
@@ -218,6 +308,11 @@ void daWmKoopaJr_c::calcModel() {
     mModel.calc(false);
 }
 
+void daWmKoopaJr_c::resetState() {
+    mUnk35c = -1;
+    resetScaleAndProc();
+}
+
 void daWmKoopaJr_c::resetScaleAndProc() {
     mProcState = 0;
     mScale.x = 0.01f;
@@ -225,17 +320,11 @@ void daWmKoopaJr_c::resetScaleAndProc() {
     mScale.z = 0.01f;
 }
 
-void daWmKoopaJr_c::resetState() {
-    mUnk35c = -1;
-    resetScaleAndProc();
-}
+void daWmKoopaJr_c::procNone() {}
 
-int daWmKoopaJr_c::create() {
-    createModel();
-    mClipSphere.set(mPos, 250.0f);
-    calcModel();
-    resetState();
-    return SUCCEEDED;
+void daWmKoopaJr_c::startAction(int type) {
+    lookupAction(type);
+    mProcState = 1;
 }
 
 void daWmKoopaJr_c::procMain() {
@@ -244,17 +333,48 @@ void daWmKoopaJr_c::procMain() {
     }
 }
 
-void daWmKoopaJr_c::changeAnim(int animIdx, float blendFrame, float rate, float startFrame) {
-    if (mCurAnimIdx == animIdx) {
+void daWmKoopaJr_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
+    if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return;
     }
 
-    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sc_animNames[animIdx]);
-    mAnimChrs[animIdx].setAnm(mModel, resAnmChr, sc_playModes[animIdx]);
-    mModel.setAnm(mAnimChrs[animIdx], blendFrame);
-    mAnimChrs[animIdx].setRate(rate);
-    mAnimChrs[animIdx].setFrame(startFrame);
-    mCurAnimIdx = animIdx;
+    if (isFirstFrame) {
+        switch (cutsceneCommandId) {
+        case 0x43:
+            startAction(0);
+            break;
+
+        case 0x45:
+            setCutEnd();
+            break;
+
+        case 0x46:
+            startAction(2);
+            break;
+
+        case 0x44:
+            startAction(3);
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if ((u32)(cutsceneCommandId - 0x43) > 3) {
+        mIsCutEnd = true;
+    }
+}
+
+void daWmKoopaJr_c::lookupAction(int type) {
+    /// @unofficial The lookup table's CONTENT is recovered directly from the REL
+    /// (.rodata file offset 0x1C6600+0x8C3C, right after lbl_2_rodata_8C38's leading
+    /// 0 word): {0, 5, 7, 11}. These plausibly index runMain()'s case dispatch
+    /// (mUnk340), i.e. startAction()'s four cutscene-triggered entry points map to
+    /// runMain() cases 0, 5, 7 and 11 -- not yet cross-checked against the case
+    /// bodies themselves.
+    static const int sc_actionTable[4] = {0, 5, 7, 11};
+    mUnk340 = sc_actionTable[type];
 }
 
 bool daWmKoopaJr_c::runMain() {
@@ -316,7 +436,45 @@ bool daWmKoopaJr_c::runMain() {
         break;
     }
 
-    case 3: case 4: case 5: case 6: case 7:
+    case 3: break;
+
+    /// @unofficial Case 4 (0x16DCDC-0x16DDA8) authored directly off the disassembly --
+    /// every constant is directly visible, none guessed:
+    /// - `fn_80103520`'s 4th arg is "koopaJr_all_root" (read straight out of the REL's
+    ///   .data at lbl_2_data_45EB0, the SAME string case 2 already uses).
+    /// - `sc_jumpParams[1].unk24` is loaded here via `lfs` (not as a raw word), and its
+    ///   bit pattern 0x43480000 IS a clean round-trippable float (200.0f) -- unlike
+    ///   index 0's same field (0x003c0000, a denormal), so this is the first authored
+    ///   evidence that `unk24` is genuinely a float field, just read through the
+    ///   existing reinterpret-cast convention (matching case 0's jumpSpeedRaw/
+    ///   startScaleBaseRaw handling) rather than widening the struct's declared type,
+    ///   since index 0's value still does not round-trip through a decimal literal.
+    /// - `adjustHeightBase(startPos, targetPos, directionType)` matches
+    ///   `include/game/bases/d_wm_demo_actor.hpp:53` exactly; `mVec3_c::distTo`
+    ///   (`include/game/mLib/m_vec.hpp:214`) matches the `PSVECSquareDistance`+`sqrt`
+    ///   pair exactly, argument order confirmed (`this`=&mPos, arg=&mJumpTargetPos).
+    /// - The trailing "this+0x60 -> +0x68" dispatch is `setCutEnd()`, the SAME pattern
+    ///   already confirmed in case 15 and processCutsceneCommand()'s case 0x45.
+    case 4: {
+        if (mUnk35c < 0) {
+            mUnk35c = fn_80103520(dWmEffectManager_c::m_pInstance, 2, &mModel, "koopaJr_all_root", 0, 0);
+        }
+        calcSpeed();
+        posMove();
+        float farThreshold = *(const float *)&sc_jumpParams[1].unk24;
+        mVec3_c heightTarget(mJumpTargetPos.x + farThreshold, mJumpTargetPos.y, mJumpTargetPos.z);
+        adjustHeightBase(mJumpTargetPos, heightTarget, 5);
+        if (mPos.distTo(mJumpTargetPos) > farThreshold) {
+            if (mUnk35c >= 0) {
+                dWmEffectManager_c::m_pInstance->endEffect(mUnk35c);
+                mUnk35c = -1;
+            }
+            setCutEnd();
+        }
+        break;
+    }
+
+    case 5: case 6: case 7:
     case 8: case 9: case 10: case 11: case 12: case 13:
         break;
 
@@ -340,112 +498,15 @@ bool daWmKoopaJr_c::runMain() {
     return false;
 }
 
-int daWmKoopaJr_c::execute() {
-    static void (daWmKoopaJr_c::*const sc_procTable[2])() = {
-        &daWmKoopaJr_c::procNone,
-        &daWmKoopaJr_c::procMain,
-    };
-
-    dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
-    if (csSeqMng->FUN_80915600()) {
-        processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
-    }
-
-    (this->*sc_procTable[mProcState])();
-
-    mModel.play();
-    CalcShadow(0.5f, 1.0f, 1.0f, 1.0f);
-    calcModel();
-
-    return SUCCEEDED;
-}
-
-void daWmKoopaJr_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
-    if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
+void daWmKoopaJr_c::changeAnim(int animIdx, float blendFrame, float rate, float startFrame) {
+    if (mCurAnimIdx == animIdx) {
         return;
     }
 
-    if (isFirstFrame) {
-        switch (cutsceneCommandId) {
-        case 0x43:
-            startAction(0);
-            break;
-
-        case 0x45:
-            setCutEnd();
-            break;
-
-        case 0x46:
-            startAction(2);
-            break;
-
-        case 0x44:
-            startAction(3);
-            break;
-
-        default:
-            break;
-        }
-    }
-
-    if ((u32)(cutsceneCommandId - 0x43) > 3) {
-        mIsCutEnd = true;
-    }
-}
-
-void daWmKoopaJr_c::lookupAction(int type) {
-    /// @unofficial The lookup table's CONTENT is recovered directly from the REL
-    /// (.rodata file offset 0x1C6600+0x8C3C, right after lbl_2_rodata_8C38's leading
-    /// 0 word): {0, 5, 7, 11}. These plausibly index runMain()'s case dispatch
-    /// (mUnk340), i.e. startAction()'s four cutscene-triggered entry points map to
-    /// runMain() cases 0, 5, 7 and 11 -- not yet cross-checked against the case
-    /// bodies themselves.
-    static const int sc_actionTable[4] = {0, 5, 7, 11};
-    mUnk340 = sc_actionTable[type];
-}
-
-void daWmKoopaJr_c::startAction(int type) {
-    lookupAction(type);
-    mProcState = 1;
-}
-
-void daWmKoopaJr_c::createModel() {
-    /// @unofficial NOT verified byte-exact. Logic and every string/constant
-    /// below are read directly out of the REL: the resource table at
-    /// lbl_2_data_45DD8 (.data file offset 0x1D0C00+0x45DD8) and the shared
-    /// float pool at lbl_2_rodata_8BA0 (.rodata file offset
-    /// 0x1C6600+0x8BA0). What remains unverified is ORDER: the shared rodata
-    /// pool (0x8ba0-0x8c90) holds constants used not just here but by
-    /// execute(), create(), AND several values that belong to NEITHER --
-    /// e.g. 0x8bc4/0x8bd4/0x8bd8/0x8be0/0x8bec, which never appear in this
-    /// function's own disassembly and must belong to fn_2_16D940 or
-    /// fn_2_16E3A0 (both unauthored). Until those are written, this
-    /// function's rodata objects cannot land at the retail addresses, which
-    /// is why create()/execute() still show `SYM0`-vs-`lbl_2_rodata_8C0C`
-    /// style diffs even though their own logic matches. See MAPPING.md.
-    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
-
-    mResFile = dResMng_c::m_instance->getRes("koopaJr", "g3d/koopaJr.brres");
-    nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("koopaJr");
-
-    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
-
-    for (int i = 0; i < 6; i++) {
-        nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sc_animNames[i]);
-        mAnimChrs[i].create(resMdl, resAnmChr, &mAllocator, nullptr);
-        mAnimChrs[i].mPlayMode = sc_playModes[i];
-        mAnimChrs[i].setRate(0.0f);
-        mAnimChrs[i].setFrame(0.0f);
-    }
-
-    /// @unofficial `GetResNode("mask")`'s result has bit 0x200 cleared out of
-    /// its flags word (`rlwinm r0,r0,0,24,22` in the target) when the node
-    /// exists. Not modelled here -- the exact API for mutating a ResNode's
-    /// flags in-place hasn't been located in include/, so this is left as a
-    /// gap rather than guessed.
-
-    dWmActor_c::setSoftLight_Boss(mModel);
-    mAllocator.adjustFrmHeap();
-
-    CreateShadowModel("character_SV", "g3d/model.brres", "character_SV", true);
+    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(sc_animNames[animIdx]);
+    mAnimChrs[animIdx].setAnm(mModel, resAnmChr, sc_playModes[animIdx]);
+    mModel.setAnm(mAnimChrs[animIdx], blendFrame);
+    mAnimChrs[animIdx].setRate(rate);
+    mAnimChrs[animIdx].setFrame(startFrame);
+    mCurAnimIdx = animIdx;
 }

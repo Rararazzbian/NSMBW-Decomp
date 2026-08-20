@@ -1,5 +1,131 @@
 # WM_KOOPAJR (`daWmKoopaJr_c`) — function inventory
 
+## THIS ROUND'S FINDINGS (read first — supersedes stale claims below)
+
+Picked up mid-edit after a session-limit kill. Rebuilt first per instructions:
+`build.py` compiled clean (`draft.o`/`draft.txt` were current), and the draft
+on disk already had cases 1 and 2 of `runMain` authored beyond what the
+notebook below described (0, 14, 15 only) — the predecessor made progress
+after the last MAPPING.md save but before being killed.
+
+**1. FUNCTION DEFINITION ORDER WAS WRONG — fixed, verified, real.** The `.cpp`
+defined functions in an unrelated order (`ctor,dtor,doDelete,draw,calcModel,
+resetScaleAndProc,resetState,create,procMain,changeAnim,runMain,execute,
+processCutsceneCommand,lookupAction,startAction,createModel`) against the
+target's true address order (`create,execute,draw,doDelete,createModel,
+calcModel,resetState,resetScaleAndProc,procNone,startAction,procMain,
+processCutsceneCommand,lookupAction,runMain,changeAnim`). `check_fn_order.py`
+can't see this (it only checks files using `fn_2_*` symbol names, and this
+unit's functions have real names), so I reproduced `verify_anon.py`'s
+ascending-pairing algorithm directly against the two target dumps + `draft.txt`
+and it reported **FUNCTION ORDER IS WRONG** outright, with 8 functions "defined
+too late". This is exactly the `d_a_wm_smallcloud.cpp` failure mode
+`verify_anon.py`'s own docstring warns about: a unit can tally well
+per-function and still fail to link because every `bl`/pool-relative
+displacement past the inversion point is wrong. **Fixed** by physically
+reordering every out-of-line member function definition in the `.cpp` to match
+the target's address order (see the block comment now at the top of that
+section in the source). Re-ran the same check after: **ORDER OK**, all 15
+non-trivial functions in the range now pair up in strictly ascending order.
+
+**2. `procNone` was in-class inline; the target has it out-of-line — fixed,
+verified.** The target's `fn_2_16D7E0` is marked `global` in the dump, not
+`weak` — a trivial in-class-defined member (`void procNone() {}`) compiles
+with vague/weak linkage, so `global` proves the original source defined it
+out-of-line as its own `daWmKoopaJr_c::procNone() {}` at its own position in
+the file (between `resetScaleAndProc` and `startAction`). Before this fix the
+compiler was placing the in-class inline body wherever it was first
+ODR-referenced (adjacent to `execute()`, wherever `execute()` happened to be
+defined) — completely wrong position. After the fix `fn_2_16D7E0` pairs
+**MATCH** in the order-check, in the right slot.
+
+**3. Re-measured create()/execute() pool displacement after the order fix —
+gap COLLAPSED to one clean number, but does not close from cases 1-13.**
+Before this round (per the stale table below): PTMF table `+0x50` vs target
+`+0x70` (gap 8), CalcShadow constants `+0x48`/`+0x3c` vs target `+0x88`/`+0x8c`
+(gaps 0x40/0x50 — inconsistent, scattered). **After only the order fix** (no
+new case authored yet): PTMF `+0x50` vs `+0x70` (gap **0x20**), CalcShadow
+`+0x6c`/`+0x68` vs `+0x8c`/`+0x88` (gap **0x20** both). All three collapsed to
+the exact same clean 0x20-byte (8-word) gap — a real signal that fixing order
+removed noise from the measurement, leaving one genuine missing chunk.
+
+I then tried to find what fills it. Full-pool dump (`original/d_basesNP.rel`,
+file offset `0x1C6600+addr`) shows a **9-word (0x24-byte) block of retail data
+at `0x8be8`-`0x8c08`, between `sc_jumpParams`'s end (`0x8be4`) and `create()`'s
+`250.0f` (`0x8c0c`)**, that is the root cause. I searched EXHAUSTIVELY for a
+consumer of this specific range: every `(r31)` (the pool-base register)
+displacement referenced anywhere across all 664 lines / all 16 cases of the
+target's own `fn_2_16D940` (`runMain`) disassembly, every function in
+`createModel`, and every other function in the unit, against all three target
+dumps covering this unit's full address range (including `__sinit`,
+`fn_2_16E490`). **None reference offsets 0x48-0x68 (pool-relative).** The
+offsets runMain's cases DO use are `0x18, 0x88, 0x8c, 0x90, 0xa8, 0xac, 0xb0,
+0xb4, 0xb8, 0xbc, 0xc0, 0xc4, 0xc8, 0xcc, 0xd0, 0xd8` — none in the gap.
+
+As an empirical test (per the task's own prescribed method — author a case,
+re-diff, check whether the displacement moved), I authored **case 4**
+(`0x16DCDC`-`0x16DDA8`, see below) and rebuilt: **the create()/execute() pool
+displacement did not move at all** (still `+0x50`/`+0x6c`/`+0x68` vs
+`+0x70`/`+0x8c`/`+0x88`), exactly as the exhaustive scan predicted, because
+case 4 introduces zero new distinct rodata literals (its one constant,
+`sc_jumpParams[1].unk24` = 200.0f, is already present in the pool).
+
+**Conclusion, clearly labelled as inference, not fact:** the 9-word gap
+blocking create()/execute()'s last few lines is very likely **not resolvable
+by authoring more of this unit's own code** — I cannot find a consumer for it
+anywhere in daWmKoopaJr_c. It is possibly a sibling class's pooled constant
+that the real multi-object link interleaves adjacent to ours (a single-file
+`build.py` compile cannot reproduce that), consistent with `verify_anon.py`'s
+own documented warning that this class of problem is invisible until the
+actual link. **This is different from the OTHER unclaimed pool range
+(0x90-0xd8), which DOES have confirmed consumers in runMain's still-unwritten
+cases 5-13** — that range should keep closing as more cases are authored;
+the 0x48-0x68 gap should not be expected to.
+
+**4. Case 4 of `runMain` authored** (0x16DCDC-0x16DDA8, 34 target instructions).
+Every constant read directly off the disassembly, none guessed: `fn_80103520`
+called with the string `"koopaJr_all_root"` (read from `.data` at
+`lbl_2_data_45EB0`, same string case 2 already uses), `calcSpeed()`/`posMove()`
+(inherited, already-used pattern), `adjustHeightBase(startPos, targetPos,
+directionType)` matching `include/game/bases/d_wm_demo_actor.hpp:53` exactly,
+`mVec3_c::distTo` (`include/game/mLib/m_vec.hpp:214`) matching the
+`PSVECSquareDistance`+`sqrt` instruction pair exactly, and the trailing
+`this+0x60 -> +0x68` dispatch confirmed as `setCutEnd()` (same pattern as case
+15 / `processCutsceneCommand`'s case `0x45`). One new fact: `sc_jumpParams[1].
+unk24` is read here via `lfs` (not as a raw word) and its bit pattern
+(`0x43480000`) is a clean, round-trippable 200.0f — the first evidence that
+`unk24` is genuinely a float field (kept as `u32` in the struct and read via
+reinterpret-cast at the use site, since index 0's `unk24` — `0x003c0000` — is
+still a denormal that does not round-trip through a decimal literal, so
+widening the struct's declared field type is not safe). Not diff-verified
+against target byte-for-byte (runMain as a whole is still far from complete,
+so a raw per-function diff count isn't meaningful yet) — logic correctness is
+"read directly off the disassembly", not machine-verified.
+
+**Cases 3, 5-13 remain unauthored stubs** — case 3 was read in full during
+this investigation (own comment block above it in the source lists everything
+found: `checkFrame` threshold comparisons at pool `0xb0`/`0xb4`, an
+int-to-double magic-constant conversion feeding `DegreeToAngleCoefficient`/
+`rotDirectionY`, a write to `this+0x10c`) but not authored — it's meaningfully
+more complex than case 4 and was not finished this round for time, not
+because anything about it looks unrecoverable.
+
+**5. Verified gates:** `.ctors` — 1 entry (`fn_2_16E490` /
+`g_profile_WM_KOOPAJR`), matches target, no double-init. Function order —
+OK (see above). Full per-function tally after all changes: 15/19 in the
+mapped table below are unchanged from before this round (this round's fixes
+address the *order* gate and the *procNone* placement/type, not per-function
+byte counts, since the previous per-function diffs were already correct logic
+modulo symbol names before the reorder — the reorder mainly fixes whether the
+unit LINKS, which the per-function tally cannot see at all). `createModel`
+regressed in raw diff count (83/92 lines vs an earlier claimed "86/92") purely
+because the pool shift changed its register allocation cascade — its content
+gap (the unmodelled `GetResNode` mask-clear block) is unchanged and was
+already a known, explicitly-flagged gap, not a new defect. Left untouched
+per instructions ("re-test only after the pool fills").
+
+---
+
 `daWmKoopaJr_c : public dWmDemoActor_c`, `sizeof == 0x360` (confirmed twice:
 `fn_2_16D290`'s `li r3, 0x360`, and independently by the destructor's member
 teardown reaching exactly `+0x184` before falling into the base dtor chain).
@@ -74,7 +200,7 @@ referencing function found anywhere in this unit's authored code).
 
 | target | size | note |
 |---|---|---|
-| `fn_2_16D940` | 0xA60 | **UPGRADED from stub to partial** (this round, on the coordinator's explicit instruction to open it). See the new "runMain()" section below — 3 of 16 cases authored (0, 14, 15), 13 still bare `break;` stubs. `runMain__13daWmKoopaJr_cFv` diffs 663/664 lines against `fn_2_16D940` (expected — most of the function is unauthored), but this was never the target; the goal was seeding the shared rodata pool, which it did measurably (see the `execute`/`create` row above). |
+| `fn_2_16D940` | 0xA60 | **STALE — see "THIS ROUND'S FINDINGS" at the top.** As of this round: 5 of 16 cases authored (0, 1, 2, 4, 14, 15 — 6 actually, table header undercounts), 10 still bare `break;` stubs (3, 5-13). `runMain__13daWmKoopaJr_cFv` diffs 663/664 lines against `fn_2_16D940` (expected — most of the function is unauthored). Authoring case 4 was an explicit empirical test of whether more cases move the `execute`/`create` pool displacement — confirmed it does NOT (see top section for the exhaustive-search reasoning why). |
 | `fn_2_16E3A0` | 0xE4 | **AUTHORED this round as `changeAnim(int animIdx, float blendFrame, float rate, float startFrame)`.** 57/57 lines match in size; the only 4 differing lines are this unit's own `sc_animNames`/`sc_playModes` symbol names (own-symbol naming, see the MATCH\* convention above) — logic is a confirmed match. |
 | `fn_2_16E490` | 0x84 | `__sinit_d_a_wm_koopajr_cpp` — the file's static initializer. Constructs a global object at `lbl_2_data_45DE8` using `dCsvData_c::c_CASTLE_ID`/`c_START_ID` (dynamic-init statics, hence needing `__sinit` rather than being compile-time constants) and three floats from the shared rodata pool, then calls `__register_global_object` with a destructor pointer `fn_2_16E520`. The identity/type of the constructed object is unresolved. Not required for any of the six named functions. |
 | `fn_2_16E520` | 0x1C | The above global object's destructor wrapper (target of `__register_global_object`'s 2nd arg). Not declared. |

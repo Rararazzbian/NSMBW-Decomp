@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11404 lines / 432 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11463 lines / 436 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -453,3 +453,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11338-11359` The refinement, which the ownership check needs
 - `11360-11389` Case 0's divisor: CONFIRMED — an `int` OBJECT, not a literal
   - `11390-11404` WM_KINOPIO is parked at 14/19, and the numbers say why
+- `11405-11422` THIRD unlinkable unit today — and this one NO TOOL could see
+- `11423-11435` An in-class inline compiles WEAK. If the target symbol is GLOBAL, go out-of-line.
+- `11436-11446` Fix ORDER before diagnosing a pool gap — a wrong order MASKS the real picture
+  - `11447-11463` A negative established by exhaustive search AND by experiment

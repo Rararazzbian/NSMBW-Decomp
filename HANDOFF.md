@@ -11401,3 +11401,62 @@ wrong — it is simply far from done, and the project's own planning fact applie
 **a unit that does not close quickly tends not to close at all.** Capacity moves
 to a small unscoped unit instead. This is a park, not an abandonment; MAPPING.md
 carries fifteen rounds of measured negatives for whoever returns to it.
+
+## THIRD unlinkable unit today — and this one NO TOOL could see
+
+WM_KOOPAJR's definition order did not match the target's address order: **eight
+functions defined too late.** A silent link-breaker, invisible to the per-function
+tally, and **invisible to `check_fn_order.py` as well** — that tool recovers the
+target address from the function's own name, and this draft uses real names.
+
+**The method that found it is the general answer for real-name drafts:**
+reproduce `verify_anon.py`'s own ascending-pairing against the target dumps. That
+works regardless of naming, because it pairs on instruction CONTENT and then asks
+whether the matched draft indices ascend. Independently re-verified here: after
+the fix, no order violation, 15/21 byte-identical.
+
+Running tally for the day: **WM_KILLER, WM_KILLERBULLET and now WM_KOOPAJR were
+all unlinkable while showing respectable match counts.** Three units, three
+different discovery routes. Check order EARLY on every unit; it is free and it is
+not what the tally measures.
+
+## An in-class inline compiles WEAK. If the target symbol is GLOBAL, go out-of-line.
+
+`procNone` was defined in-class inline, which MWCC emits as a **weak** symbol. The
+target's `fn_2_16D7E0` is **global**. Moving the definition out-of-line fixed it
+and the function now pairs MATCH in its correct slot.
+
+**Symbol BINDING is checkable evidence about where a definition was written**, and
+it is independent of the instruction diff — a function can be byte-identical and
+still wrong if its binding differs, because the linker treats the two differently.
+This pairs with the already-recorded emission rules: strong out-of-line functions
+emit in definition order; weak in-class inlines emit in REVERSE declaration order,
+deferred to the end (LIFO). **Read the binding, not just the bytes.**
+
+## Fix ORDER before diagnosing a pool gap — a wrong order MASKS the real picture
+
+Before the order fix, WM_KOOPAJR's `create`/`execute` pool displacements were
+scattered and uninterpretable: `8`, `0x40`, `0x50` on three affected symbols.
+**After the order fix alone, they collapsed to a single uniform `0x20` gap on all
+three.** Same code, same pool contents — the disagreement was the ordering.
+
+So pool diagnosis performed on a mis-ordered file is measuring noise. **Order is a
+precondition for the pool numbers to mean anything**, which makes it a cheap first
+step rather than a landing-time checklist item.
+
+### A negative established by exhaustive search AND by experiment
+
+The missing 9-word block (retail `0x8be8`-`0x8c08`) has **no consumer anywhere in
+this unit** — every target instruction referencing the rodata pool base register
+was checked across all 16 cases of `runMain`, every other function, and `__sinit`.
+Then the prediction was TESTED rather than assumed: case 4 was authored with every
+constant read directly off the disassembly (none guessed), and **the create/execute
+gap did not move at all**, exactly as predicted.
+
+Conclusion, correctly labelled by the agent as INFERENCE not fact: that specific
+gap is not closable from this unit's own code, and is likely a sibling class's
+pooled constant resolvable only at real multi-object link time. **If true,
+WM_KOOPAJR cannot reach N/N alone** — which is a planning fact, not a defect.
+
+A *different* unclaimed pool range (`0x90`-`0xd8`) DOES have confirmed consumers
+in cases 5-13, so that part should keep closing as those are authored.
