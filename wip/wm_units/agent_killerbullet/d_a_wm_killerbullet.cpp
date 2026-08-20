@@ -50,10 +50,26 @@ static const float sc_1 = 1.0f;      // lbl_2_rodata_8A34 -- confirmed 1.0 by re
 // This unit's own uninitialised (zero-at-load) `.bss` cache, confirmed within the pinned
 // bounds (0xfe10-0xfe3c, 0x2c bytes) -- a plain-`{}`-constructed `mVec3_c` has an empty ctor
 // (see include/game/mLib/m_vec.hpp) so it lands in `.bss`, not `.data`, matching the target.
-// Only the `+0x10` slot is claimed here (read by #unk_168990's own case1/case2 branches AND
-// by #unk_169E10 as a `setDirection` arg); the rest of the 0x2c-byte region (`+0x00`, `+0x1c`,
-// `+0x28`) is still unmapped -- left to whichever round authors #unk_168990 itself.
+// Declaration ORDER matters -- the linker packs `.bss` in declaration order like `.text` --
+// the confirmed order is #s_bssDir10(+0x10) then #s_bssVec1c(+0x1c) then the two param ints
+// (+0x28, +0x2c) then #s_bssBox30(+0x30). Moved up here (from their original position just
+// before #unk_1695E0) because #unk_168990, authored this round, is the FIRST function to read
+// #s_bssVec1c/#s_bssParam28 -- a C++ file-scope static must be declared before its first use,
+// and this move does not change their RELATIVE order, so `.bss` packing is unaffected.
 static mVec3_c s_bssDir10; // lbl_2_bss_FE20
+
+static mVec3_c s_bssVec1c; // lbl_2_bss_FE2C (bss+0x1c) -- the spawn-position cache #unk_168990's
+                            // own case1/case2 branches copy into #mPos; also #unk_1695E0's own
+                            // non-star-mode cache target.
+static int s_bssParam28; // lbl_2_bss_FE38 (bss+0x28) -- (u8)#mParam, same low-byte extraction
+                           // #unk_169530 already uses; indexes the per-"kind" sub-table
+                           // #unk_168990's own case2 reads (same table #unk_169510 indexes,
+                           // just via this cached index rather than a fresh `(u8)mParam` read).
+static int s_bssParam2c; // lbl_2_bss_FE3C (bss+0x2c) -- (#mParam>>8)&0xff, the SAME
+                           // second-byte extraction #unk_1693C0 already uses.
+static float s_bssBox30[6]; // lbl_2_bss_FE40 (bss+0x30) -- NOT YET POPULATED by anything
+                              // decoded in this unit; likely written by a cutscene/spawn setup
+                              // elsewhere.
 
 // #execute's CalcShadow float constants and the state-handler table live in this unit's own
 // .data/.rodata (lbl_2_data_45428, lbl_2_rodata_89F8) -- not yet named/declared here since the
@@ -117,13 +133,43 @@ int daWmKillerBullet_c::create() {
     return SUCCEEDED;
 }
 
-// #unk_168990 (fn_2_168990). NOT YET AUTHORED -- bare stub (writes into a real, in-bounds,
-// non-bool scratch field, #m_1c0, rather than claiming false content). The real target is a
-// 3-way branch on ACTOR_PARAM's upper byte, reading a cache in this unit's own .bss
-// (lbl_2_bss_FE10, within the confirmed 0xfe10-0xfe3c bounds) and calling two still-unowned
-// sibling functions (fn_2_1693C0, a dBase_c::searchBaseByProfName(0x275, ...) parent-finder
-// loop, and fn_2_169080) -- both scouted this round but not yet authored themselves.
-void daWmKillerBullet_c::unk_168990() { m_1c0 = 22; }
+// #unk_168990 (fn_2_168990). REPLACES a fake stub this round -- real content. Always resets
+// via #endEffectAndResetState() first, then a 3-way switch on `(int)(mParam>>16)` (the SAME
+// upper-half extraction #draw/#execute/#processCutsceneCommand already use):
+// - case 0: finds #mParentKiller via #unk_1693C0()'s own search loop, then calls #unk_1694A0()
+//   (which snaps #mPos to #mParentKiller's own spawn position and faces along X).
+// - case 1: faces via #setDirection(#s_bssDir10), snaps #mPos to #s_bssVec1c (this unit's own
+//   `.bss` spawn-position cache, the `+0x1c` slot), and sets #mScale to a shared-table scalar
+//   (index 1, same value on all three axes -- the SAME constant #unk_1691A0 already uses).
+// - case 2: the SAME facing/#mPos/#mScale sequence as case 1, PLUS #mSpeedF from the same
+//   per-"kind" sub-table #unk_169510 indexes (base+0x54, 0x18-byte stride, `+0xc` field) but
+//   keyed by #s_bssParam28 (a cached index, not a fresh `(u8)mParam` read), #m_1ec snapshotted
+//   from #s_bssVec1c, and finally #unk_169080().
+void daWmKillerBullet_c::unk_168990() {
+    endEffectAndResetState();
+    int kind = (int) (mParam >> 16);
+    if (kind == 0) {
+        mParentKiller = unk_1693C0();
+        unk_1694A0();
+    } else if (kind == 1) {
+        setDirection(s_bssDir10);
+        mPos = s_bssVec1c;
+        mScale.x = R_2_5_45428[1];
+        mScale.y = R_2_5_45428[1];
+        mScale.z = R_2_5_45428[1];
+    } else if (kind == 2) {
+        setDirection(s_bssDir10);
+        mPos = s_bssVec1c;
+        mScale.x = R_2_5_45428[1];
+        mScale.y = R_2_5_45428[1];
+        mScale.z = R_2_5_45428[1];
+        mSpeedF = *(const float *) ((const u8 *) R_2_5_45428 + 0x54 + s_bssParam28 * 0x18 + 0xc);
+        m_1ec[0] = mPos.x;
+        m_1ec[1] = mPos.y;
+        m_1ec[2] = mPos.z;
+        unk_169080();
+    }
+}
 
 // execute(). Vtable slot 8, confirmed via check_vtable.py. Fully decoded from the target:
 // a virtual dispatch through #m_200 (vtable slot 3, real class unconfirmed -- called via a raw
@@ -211,8 +257,10 @@ void daWmKillerBullet_c::unk_168C80() {
 // Called unconditionally from both #create's own tail and #execute's own tail.
 void daWmKillerBullet_c::unk_168D50() {
     mVec3_c pos = mPos;
-    mVec3_c newScale = mScale + m_1fc->m_0c * mVec3_c(sc_1, sc_1, sc_1);
     mAng3_c angle = mAngle;
+    mVec3_c scale = mScale;
+    float offset = m_1fc->m_0c;
+    mVec3_c newScale = scale + offset * mVec3_c(sc_1, sc_1, sc_1);
     mMatrix.trans(pos);
     mMatrix.ZXYrotM(angle);
     mModel.setLocalMtx(&mMatrix);
@@ -533,18 +581,9 @@ void daWmKillerBullet_c::unk_169550() {
 // #s_bssDir10, and triggers a cutscene via
 // `dCsSeqMng_c::ms_instance->FUN_801017c0(SMC_DEMO_KILLER, nullptr, nullptr, 0x80)`; or
 // (star mode) just `ms_instance->attackMapEnemy(true)` then #unk_168F00.
-// Declaration order here matters -- the linker packs `.bss` in declaration order, same as
-// `.text`, and the target's own layout is #s_bssVec1c(0x1c) then the two param ints(0x28,0x2c)
-// then #s_bssBox30(0x30), immediately after #s_bssDir10(0x10) ends at 0x1c.
-static mVec3_c s_bssVec1c; // lbl_2_bss_FE2C (bss+0x1c) -- the OTHER vec3 slot #unk_168990's own
-                            // case1/case2 branches read; populated HERE with #mPos.
-static int s_bssParam28; // lbl_2_bss_FE38 (bss+0x28) -- (u8)#mParam, same low-byte extraction
-                           // #unk_169530 already uses.
-static int s_bssParam2c; // lbl_2_bss_FE3C (bss+0x2c) -- (#mParam>>8)&0xff, the SAME
-                           // second-byte extraction #unk_1693C0 already uses.
-static float s_bssBox30[6]; // lbl_2_bss_FE40 (bss+0x30) -- NOT YET POPULATED by anything
-                              // decoded in this unit; likely written by a cutscene/spawn setup
-                              // elsewhere.
+// (#s_bssVec1c/#s_bssParam28/#s_bssParam2c/#s_bssBox30 are declared up near #s_bssDir10, at the
+// top of the file -- moved there so #unk_168990, which is defined earlier in `.text` than this
+// function, can also see them; see that declaration's own note.)
 void daWmKillerBullet_c::unk_1695E0() {
     if (m_1d4) {
         return;
@@ -676,7 +715,7 @@ void daWmKillerBullet_c::unk_1698E0() {
         break;
     case 1: {
         short cap = R5S(0x20);
-        short v = m_1c4 + R5S(0x1c);
+        int v = m_1c4 + R5S(0x1c);
         if (v < cap) {
             cap = v;
         }
@@ -723,7 +762,7 @@ void daWmKillerBullet_c::unk_1698E0() {
     case 4:
         if (m_1d0 == 1) {
             short cap = (short) -R5S(0x20);
-            short v = m_1c4 - R5S(0x1e);
+            int v = m_1c4 - R5S(0x1e);
             if (v < cap) {
                 v = cap;
             }
@@ -735,7 +774,7 @@ void daWmKillerBullet_c::unk_1698E0() {
             }
         } else {
             short cap = R5S(0x20);
-            short v = m_1c4 + R5S(0x1e);
+            int v = m_1c4 + R5S(0x1e);
             if (v > cap) {
                 v = cap;
             }

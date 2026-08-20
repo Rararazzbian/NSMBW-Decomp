@@ -12,9 +12,21 @@ dumps:
 means `harness.extract()`-canonicalised bodies are byte-identical OR differ ONLY in symbol naming
 (a `bl`/reference to a still-unnamed sibling function, or a `lbl_2_*`/pooled-float address the
 target can't name yet but we can) -- see HANDOFF's "residual lines that are purely symbol naming"
-precedent. History: 17/37 at pickup -> 19/37 after the first round (2 new small functions
-matched, one critical link-order fix) -> **20/37** this round (1 more new function matched: the
+precedent. History: 17/37 at pickup -> 19/37 -> 20/37 (1 more new function matched: the
 WM_KILLER cross-unit dependency).
+
+## THIS ROUND: rebuild-from-disk found the predecessor's uncommitted mid-edit state, corrected it
+
+Per the pickup instructions, the predecessor was killed mid-session; its last edits were
+uncommitted and MAPPING.md was stale relative to disk. **Rebuilding first established the true
+state: `unk_168D50`, `unk_1691A0`, and `unk_1698E0` already had REAL content on disk (not the
+fake `m_1c0 = 22`-style stubs MAPPING's own "STUBS" table still listed) -- only `unk_168990` was
+genuinely still a bare stub.** The tally itself was unaffected (still 20/37 -- none of the
+predecessor's uncommitted work had closed a residual to naming-only), but the STARTING POINT for
+this round's work was different from the handoff's own framing. Re-prioritized accordingly:
+authored the one true remaining stub first, then improved the other three's real-but-incomplete
+residuals. **Zero fake stubs remain in this unit after this round** (see the STUBS section,
+now empty).
 
 ## Function definition order -- STILL GREEN
 
@@ -54,7 +66,7 @@ inserted at its correct address slot, never appended at the end.**
 | draft name | target | size (target/draft) | diff | status |
 |---|---|---|---|---|
 | `create` | `fn_2_168860` | 74/74 | 18 | Real register-allocation difference. Not attempted this round. |
-| `unk_168C80` | `fn_2_168C80` | 49/49 | 7 | POOL-DEPENDENT (HANDOFF-documented, and independently re-confirmed by the coordinator's own citation). **Re-diffed opportunistically after every function authored this round -- STILL 7, unchanged.** Everything authored this round added `.bss` statics and `.text` functions, not `.data` string-pool contributors, so this null result is exactly what the rule predicts, not a contradiction of it. Will move once whichever function contributes the missing `0x144` bytes of `.data` pool is authored (still `unk_168990`, `unk_168D50`, `unk_1691A0`, or `unk_1698E0` -- all 4 remaining fake stubs). |
+| `unk_168C80` | `fn_2_168C80` | 49/49 | 7 | POOL-DEPENDENT (HANDOFF-documented, and independently re-confirmed by the coordinator's own citation). **Re-diffed opportunistically after every function touched this round (including fully authoring `unk_168990`) -- STILL 7, unchanged.** `unk_168990` turned out to be pure control flow plus `.bss` reads, not a `.data` string-pool contributor, so this null result is exactly what the rule predicts. With zero fake stubs left in the unit (see below), whatever is missing the `0x144` bytes of `.data` pool is NOT one of this unit's own hand-written functions -- next round should look at `fn_2_169FA0`'s own still-undecoded 64 lines (the guarded static-local object) before assuming another `.text` function is responsible. |
 | `execute` | `fn_2_168AB0` | 84/90 | 89 | Documented wall (5 variants on record). Checked: no `dPyMdlBase_c` usage in this unit, so the `getBodyMdl` header-fix news does not apply here. Not re-attempted. |
 | `unk_169F00` | `fn_2_169F00` | 39/39 | 26 | Documented wall (3 variants on record, size-exact, branch polarity unreachable). Not re-attempted. |
 
@@ -99,8 +111,66 @@ seen elsewhere in this unit -- not wrong calls, wrong fields, or wrong constants
   r4-then-r12 where the target reuses r12 for both loads; tried both a named-intermediate and a
   fully-inlined phrasing with an IDENTICAL result both times (register-allocation wall, not
   source-shape-dependent) -- plus a few naming-only lines from float-constant pooling.
+- **`unk_168990`** (target 71 lines) -- 29/71 differing. **NEW this round -- was the only
+  actually-still-unauthored fake stub found on rebuild** (see "THIS ROUND" note above; MAPPING's
+  own STUBS table was stale). Real content: `endEffectAndResetState()` unconditionally, then an
+  if/else-if chain (matching the target's own cascaded `cmpwi`/`beq` dispatch shape -- tried
+  `switch` first, got 66 differing; if/else-if dropped it to 40) on `(int)(mParam>>16)`: case 0
+  finds `mParentKiller` via `unk_1693C0()` then calls `unk_1694A0()`; case 1 faces via
+  `setDirection(s_bssDir10)` and snaps `mPos`/`mScale` from this unit's own `.bss` cache
+  (`s_bssVec1c`, a shared-table scalar); case 2 does the same PLUS `mSpeedF` from the
+  per-"kind" sub-table `unk_169510` also indexes (keyed by a cached `s_bssParam28` instead of a
+  fresh `(u8)mParam` read), `m_1ec` snapshotted from `mPos` (NOT re-read from `s_bssVec1c` --
+  that re-read cost 11 extra differing lines before the fix, since the target reuses the SAME
+  float registers already loaded for the `mPos` assignment), then `unk_169080()`. Required
+  moving the `.bss` statics (`s_bssVec1c`/`s_bssParam28`/`s_bssParam2c`/`s_bssBox30`) up in the
+  file from their old position (just before `unk_1695E0`) to right after `s_bssDir10`, since
+  this function -- defined earlier in `.text` -- is their first use; the RELATIVE `.bss` order
+  is unchanged, so packing is unaffected (confirmed by rebuild). Residual: 10 confirmed
+  naming-only lines (an unnamed `.bss` base symbol showing as `SYM0`, three `bl` targets, two
+  `R_2_5_45428` references) plus ~19 lines of real register-allocation/store-ordering
+  difference in case 1/2's shared-table reads -- SAME size (71/71), structurally confirmed
+  correct.
+- **`unk_168D50`** (target 67 lines) -- 33/67 differing, DOWN from 60/67 against an
+  INCOMPLETE 64-line draft found on rebuild (the predecessor's uncommitted mid-edit had gotten
+  the shape half right but was missing 3 lines of real content). Fixed via statement reordering:
+  declaring `pos`/`angle`/`scale`/`offset` as separate named locals in that exact order (instead
+  of one combined `newScale = mScale + m_1fc->m_0c * mVec3_c(...)` expression) got the frame
+  size and register set to match the target exactly (`-0x60`/`f1-f7`, no more no less) --
+  confirms `mPos` is loaded first and stays live in `f1`/`f2`/`f3` all the way to the inlined
+  `PSMTXTrans` call (real `f32,f32,f32`-by-value args, not a pointer -- confirmed from `mPos`'s
+  fields never being re-read after their initial load). Three more variants tried (calling
+  `trans(mPos)`/`ZXYrotM(mAngle)` directly with no named locals: regressed to 65/67 with the
+  WRONG frame size, `-0x40` not `-0x60`; two different declaration orderings: 37 and 59) all
+  worse -- confirms the `scale`+`offset`-as-separate-locals shape is the local optimum. Residual:
+  `m_1fc->m_0c`/`mScale` still get read into different FPRs than target's exact numbering, and a
+  `sc_1`-vs-`SYM0` naming difference -- the SAME float-argument-evaluation-order class already
+  parked elsewhere in this unit.
+- **`unk_1698E0`** (target 167 lines) -- 112/166 differing, DOWN from 163/167 against the
+  predecessor's own uncommitted real-but-incomplete draft. Root cause of most of the drop: `short
+  v = m_1c4 + R5S(offset)` (case 1 and both case-4 branches) forced an extra `extsh` the target
+  doesn't have, because assigning an already-sign-extended 32-bit add result into a `short`
+  local makes MWCC re-truncate-then-extend defensively; changing `v`'s type to `int` (the
+  arithmetic's real type) removed it and dropped 163->112 on its own. A third attempt --
+  converting the `switch` to an if/else-if chain, matching the "switch-vs-if-chain" tell that
+  worked on `processCutsceneCommand` -- made it WORSE (161, and a worse dispatch shape besides:
+  the target's own case-selection here is a clean cascaded `cmpwi`/`beq` run, i.e. genuinely
+  `switch`-shaped, unlike `processCutsceneCommand`'s interleaved target) and was reverted; kept
+  `switch`. Residual, confirmed unchanged from the predecessor's own diagnosis: the compiler
+  still caches `R_2_5_45428`'s base address in the callee-saved `r30` for the whole function
+  (extra `stw r30,0x8(r1)`/restore) where the target re-loads `lis`/`addi` fresh at every read --
+  the SAME "too many saved registers" wall already on record for this unit's own `execute()` (5
+  variants tried there, still unresolved) -- a genuine compiler-heuristic wall, not reachable
+  from source shape as far as three combined attempts (macro-as-is, nested-block scoping, and
+  this round's int-typing + if-chain) have found.
+- **`unk_1691A0`** (target 55 lines) -- still 14/55 differing, UNCHANGED. One more variant tried
+  this round (factoring `mSpeedF`/`mScale`'s shared-table read into named locals, matching the
+  lever that worked on `unk_168D50`) regressed to 15 and was reverted. Confirmed still the SAME
+  minor store-scheduling residual the predecessor already diagnosed (`mSpeedF`'s store deferred
+  a few instructions relative to the target's immediate store) -- two attempts now on record,
+  genuinely resistant; leaving parked rather than spending a third.
 
-## HEADER DEFECT FOUND AND FIXED THIS ROUND (shadow copy only)
+## HEADER DEFECT FOUND AND FIXED LAST ROUND (shadow copy only, still in effect)
 
 **`dWmRotater_c::calcRotate()` was declared `void`; it genuinely returns `bool`.**
 `processCutsceneCommand`'s own call site, `if (!m_1fc->calcRotate()) return;`, CONSUMES the
@@ -113,23 +183,30 @@ landed header anywhere in the project yet (shadow-only, same as the rest of this
 is nothing to apply to the real tree -- recorded here for whichever agent eventually lands this
 class for real.
 
-## STUBS -- STILL NOT YET AUTHORED (fake bodies, `m_1c0 = <literal>`)
+## STUBS -- NONE REMAIN
 
-Down from 5 to 4 this round (`unk_1695E0` was replaced with real content, see above).
-
-| draft name | target | target lines | calls (from scouting) |
-|---|---|---|---|
-| `unk_168990` | `fn_2_168990` | 71 | `endEffectAndResetState`, `unk_1693C0`, `unk_1694A0`, `unk_169080`; 3-way branch on `(u16)(mParam>>16)`; reads/writes a partially-mapped `.bss` cache at `lbl_2_bss_FE10` |
-| `unk_168D50` | `fn_2_168D50` | 67 | unscouted |
-| `unk_1691A0` | `fn_2_1691A0` | 55 | unscouted |
-| `unk_1698E0` | `fn_2_1698E0` | 167 | largest remaining function; calls `fn_2_169B80` (now MATCHED) five times |
+Down from 4 (as MAPPING's own table claimed at pickup) to 0 this round. That 4-count was
+already stale on rebuild -- only `unk_168990` was genuinely still a bare stub; `unk_168D50`,
+`unk_1691A0`, and `unk_1698E0` already had real (if incomplete/residual) content from the
+predecessor's own uncommitted work. All four now have real content authored and verified; see
+the "AUTHORED THIS ROUND, PARKED" section above for each one's residual. Every remaining
+non-matched function in this unit past this point is a genuine register-allocation/scheduling
+residual on CONFIRMED-correct content, not missing logic.
 
 ## STILL UNSTARTED -- 2 remain, BOTH deliberately left (coordinator's own call)
 
 | target | size (lines) | notes |
 |---|---|---|
 | `fn_2_16A130` | 7 | Compiler-generated `__destroy_arr` boilerplate. Deprioritised per the coordinator's explicit instruction. |
-| `fn_2_169FA0` | 97 | **INVESTIGATED this round, found to be compiler-generated, not hand-written.** Registered in `.ctors` (confirmed: the target dump's own trailing `.section .ctors` / `.4byte fn_2_169FA0`) -- it is the target's OWN static-initialization routine for THIS translation unit, generated automatically from `#include <game/bases/d_wm_lib.hpp>`'s file-scope `static dWmLib::ForceInCourseList_t sc_ForceList[] = {...}` (a REAL, already-landed array with real initializer values, confirmed by reading the header directly -- one entry is literally `{WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160.0f, -30.0f, -478.0f)}`, matching `2160.0` at rodata `0x8a40`, the constant immediately following our own claimed rodata bound). **Our draft ALREADY auto-generates the matching piece** -- `"__sinit_\d_a_wm_killerbullet_cpp"` in the current draft.txt already contains `sc_ForceList`/`c_CASTLE_ID`/`c_START_ID`/`__register_global_object` in the SAME shape, just currently only 33 lines vs the target's 97. The missing 64 lines are a SEPARATE guarded static-local object (a `bne`-gated init flag at `.bss+0x48`, further `mVec3_c::Ex`/`mVec3_c::Zero`-derived writes into `R_2_5_45428`'s own sub-entries) that almost certainly lives inside one of the 4 still-unauthored functions above -- NOT inside `fn_2_16A130`'s own sibling `.ctors` registration, since `fn_2_169FA0` and `fn_2_16A130` are positioned in the target immediately AFTER every hand-written function in address order, exactly where a TU's `__sinit`/array-dtor pair always lands. **Prediction for the next round: once the 4 remaining stubs are authored for real, re-diff the EXISTING `__sinit`/`__arraydtor$12783` (no new code needed) -- they should close toward `fn_2_169FA0`/`fn_2_16A130` on their own**, the same "pool can't be right until every contributor exists" rule already established for `unk_168C80`, just for compiler-generated code instead of hand-written.
+| `fn_2_169FA0` | 97 | **INVESTIGATED this round, found to be compiler-generated, not hand-written.** Registered in `.ctors` (confirmed: the target dump's own trailing `.section .ctors` / `.4byte fn_2_169FA0`) -- it is the target's OWN static-initialization routine for THIS translation unit, generated automatically from `#include <game/bases/d_wm_lib.hpp>`'s file-scope `static dWmLib::ForceInCourseList_t sc_ForceList[] = {...}` (a REAL, already-landed array with real initializer values, confirmed by reading the header directly -- one entry is literally `{WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160.0f, -30.0f, -478.0f)}`, matching `2160.0` at rodata `0x8a40`, the constant immediately following our own claimed rodata bound). **Our draft ALREADY auto-generates the matching piece** -- `"__sinit_\d_a_wm_killerbullet_cpp"` in the current draft.txt already contains `sc_ForceList`/`c_CASTLE_ID`/`c_START_ID`/`__register_global_object` in the SAME shape, just currently only 33 lines vs the target's 97. The missing 64 lines are a SEPARATE guarded static-local object (a `bne`-gated init flag at `.bss+0x48`, further `mVec3_c::Ex`/`mVec3_c::Zero`-derived writes into `R_2_5_45428`'s own sub-entries) that almost certainly lives inside one of the 4 still-unauthored functions above -- NOT inside `fn_2_16A130`'s own sibling `.ctors` registration, since `fn_2_169FA0` and `fn_2_16A130` are positioned in the target immediately AFTER every hand-written function in address order, exactly where a TU's `__sinit`/array-dtor pair always lands. **Prediction from last round -- TESTED this round, did NOT pan out.** All 4 stubs are now
+authored for real (see above); re-diffed `__sinit_\d_a_wm_killerbullet_cpp` against
+`fn_2_169FA0` afterward with NO new code -- still exactly 33/97 lines, completely unchanged.
+The missing 64-line guarded static-local object is NOT produced as a side effect of any of the
+4 stubs own content; it must be genuinely separate, still-unauthored code (or a compiler
+behavior not yet modelled) -- correcting the "pool can not be right until every contributor
+exists" extrapolation to compiler-generated `.ctors` code specifically, which does not appear
+to hold the same way it does for `unk_168C80`'s hand-written `.data` pool. Left as-is; not
+attempted further this round (still deprioritized per the coordinator's own instruction).
 
 ## Shadow header changes this round
 
@@ -157,7 +234,7 @@ rule already established for `s_bssDir10`): `s_bssVec1c`, `s_bssParam28`, `s_bss
 Checked specifically for the `dPyMdlBase_c::getBodyMdl()` vtable-0x28 pattern per the original
 coordinator news -- this unit has no `dPyMdlBase_c` usage at all (grepped, confirmed last round).
 The `dWmRotater_c::calcRotate()` fix above is a DIFFERENT instance of the same general rule
-(void-declared method whose result is consumed at a call site), found independently this round.
+(void-declared method whose result is consumed at a call site), found independently last round.
 
 ## How to reproduce this tally
 

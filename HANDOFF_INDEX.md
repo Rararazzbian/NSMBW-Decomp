@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11508 lines / 438 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11552 lines / 440 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -459,3 +459,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11447-11463` A negative established by exhaustive search AND by experiment
 - `11464-11492` `order_sweep.py`: a project-wide gate, and it immediately found two MORE
   - `11493-11508` The sweep's own first run was wrong, in an instructive way
+- `11509-11532` WM_KILLERBULLET: zero fake stubs, and a PREDICTION DISPROVED by its own author
+  - `11533-11552` The disproved prediction

@@ -11505,3 +11505,47 @@ says which it skipped — alongside naming every unit it could not check, becaus
 Five units cannot be checked at all: their `build.py` records no range or object
 list. Fixing those `build.py` files is cheap and puts the whole tree under the
 gate.
+
+## WM_KILLERBULLET: zero fake stubs, and a PREDICTION DISPROVED by its own author
+
+Tally held at 20/37, and that number understates the round: **every fake stub in
+the unit is gone**, a first for this unit. The gains turned fake or broken content
+into genuinely-close real content rather than crossing the match threshold.
+
+- `unk_168990` (the last true stub) authored from scratch: `3/71` undefined ->
+  **29/71 size-exact**, 10 of those naming-only.
+- `unk_168D50`: `60/67` -> **33/67 size-exact** via statement-order restructuring
+  into separate `pos`/`angle`/`scale`/`offset` locals. Three other variants
+  measured worse (65, 37, 59) and rejected.
+- `unk_1698E0` (167 lines, the largest): **`short` locals were forcing spurious
+  `extsh` instructions the target does not have.** Retyping to `int` dropped
+  `163 -> 112/166`. A switch->if-chain conversion — the lever that worked on
+  `processCutsceneCommand` — made it WORSE here (161) and was reverted.
+  **The same lever closing one function and breaking its sibling is already on
+  record; this is another instance.**
+- `unk_1691A0`: one more variant regressed to 15, reverted. Two attempts now on
+  record.
+
+**A local's declared WIDTH is a source-visible lever.** `short` where the target
+used `int` costs a spurious `extsh` per use — visible, mechanical, and worth
+checking before reaching for scheduling explanations.
+
+### The disproved prediction
+
+Last round this agent predicted `fn_2_169FA0`'s `.ctors`/`__sinit` residual would
+**close on its own once every stub was authored**, by analogy with the recorded
+rule that a unit's pool cannot be right while contributing functions are
+unwritten. It authored all four, re-diffed, and found **exactly 33/97, no change
+whatsoever.** It recorded the correction against its own prediction.
+
+**That bounds the pool doctrine usefully.** "Pool offsets short because siblings
+are unwritten" describes `.data`/`.rodata` POOL POSITION. It does not extend to
+compiler-generated `__sinit` content, which is driven by the static declarations
+themselves, not by how many ordinary functions exist. `unk_168C80` also held at
+7/49 — correctly predicted, since nothing authored this round was a `.data`
+string-pool contributor.
+
+**A prediction volunteered and then falsified by its own author is worth more
+than a cautious one never tested.** Both of this agent's predictions were
+explicit and both got measured; one held, one did not, and the doctrine is
+sharper for it.
