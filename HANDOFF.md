@@ -12163,3 +12163,57 @@ that refutes it.
 
 **44/49.** Remaining: four parked residuals with narrow documented diffs, plus
 `__sinit`, deliberately left last.
+
+## TRAP: vtable SLOT order and `.text` DEFINITION order are INDEPENDENT
+
+AC_NICE_COIN hit this and named it precisely: **the order virtuals are DECLARED
+in (which fixes their vtable slots) and the order their definitions appear in the
+`.cpp` (which fixes `.text` layout) are two separate orderings that need not
+correlate.** Conflating them is the same class of bug as WM_KOOPAJR's function
+order defect but subtler, because slot order looks like an ordering authority and
+is not one for `.text`.
+
+Ground-truth them separately: **slot order from the base class's own header
+declaration order** (`f_base.hpp` here), **definition order from the real
+addresses** in `bin/dtk/d_basesNP_symbols.txt`. Fixing the definition order to
+`create, execute, draw, doDelete` cleared `verify_anon`'s order check.
+
+## AC_NICE_COIN: `__sinit` matching EXACTLY is a proof about the declarations
+
+**15/19 MATCH plus 2 own-symbol-only, first round.** The standout:
+**`__sinit` matches fully byte-identical at 112 instructions, zero diff.**
+
+That is worth more than one function. `__sinit` is compiler-generated from the
+unit's static initialisers, so a byte-exact `__sinit` is **independent
+confirmation that the class name, both state names and the `STATE_DEFINE` usage
+are all exactly right** — none of which the function itself contains. A generated
+function matching exactly proves the DECLARATIONS that generated it.
+
+The class name `daNiceCoin_c` and its states `Search` and `EndWait` were **read
+out of the raw REL bytes** as `STATE_DEFINE`-generated ASCII, not invented.
+
+Also: the standard `ACTOR_PROFILE` macro **cannot be invoked twice for one class**
+— reproduced as the exact `(10333) redefined` error — resolved with the
+hand-expansion pattern already landed in
+`source/d_basesNP/bases/d_a_ac_switch.cpp`, which hit the identical problem with
+seven profiles. **A landed unit had already solved it.**
+
+### The two blockers are NOT guesses — the mangled names settle the parameters
+
+`create()` and `executeState_Search()` call two functions undeclared anywhere in
+`include/` or `source/`. The agent declined to invent a signature. It did not have
+to: both are in the full DOL map with their parameters encoded.
+
+```
+CoinGetBitSet__5dBg_cFUsUsi   = .text:0x800777B0   size 0x60
+CoinGetBitCheck__5dBg_cFUsUsi = .text:0x80077810   size 0x44
+```
+
+`F Us Us i` decodes to **`(u16, u16, int)`** — exactly the shape the agent had
+inferred, now proven rather than assumed. `dBg_c` and its `static dBg_c *m_bg_p`
+already exist in `include/game/bases/d_bg.hpp`, so only the two method
+declarations are missing.
+
+**Only the RETURN types remain open**, because CFront mangling omits them — the
+project's own recurring trap, with seven wrong return types found here. Those come
+from the call sites: a consumed result proves a non-void return.
