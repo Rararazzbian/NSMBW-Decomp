@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11793 lines / 454 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11836 lines / 457 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -475,3 +475,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11727-11737` The agent's own negatives still stand and are worth keeping
 - `11738-11764` HEADER WIDENED: `PauseManager_c` gains `m_1d` at `0x1d` — five binaries green
 - `11765-11793` MINI_GAME_GUN_BATTERY 9/49 -> 14/49, and "confirm cheaply" done properly
+- `11794-11811` An array's LENGTH is a source-visible lever — `mGunSlot[4]` closed a constructor
+  - `11812-11820` Write `arr[i].field`, not hand-rolled pointer arithmetic
+  - `11821-11836` The landed-precedent rule paid off again, on the first ask

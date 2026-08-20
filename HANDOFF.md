@@ -11790,3 +11790,46 @@ Also confirmed: following `d_pausewindow.cpp`'s structure verbatim
 `mStateMgr(*this, StateID_ShowRule)` instead of a `sStateID::null` placeholder)
 needed **no explicit-instantiation trick** — consistent with none of the ten
 landed TUs needing one.
+
+## An array's LENGTH is a source-visible lever — `mGunSlot[4]` closed a constructor
+
+MINI_GAME_GUN_BATTERY's constructor sat at 58 differing across two rounds with a
+partial-loop-unroll residual that no unroll variant touched. The unit's own
+pointer-to-member triples revealed that three separate fields (`m_70`/`m_74`/
+`m_78`) were really **slot 0 of a four-element array**.
+
+Declaring `mGunSlot[4]` instead of "three fields plus `mGunSlot[3]`" took it from
+**58 differing to a fully matched 59/59 exact line count**, every remaining diff
+naming-only.
+
+**The mechanism is worth more than the fix.** The target has a genuine
+3-iteration loop starting at element 0. Against a 3-element array that shape is
+inexplicable and invites unroll experiments. Against a 4-element array it is
+obvious: element 0 folds into the same array-construction codegen path as 1-3
+instead of being modelled as separate fields. **A loop whose trip count does not
+match your array is evidence about the ARRAY, not about unrolling.**
+
+### Write `arr[i].field`, not hand-rolled pointer arithmetic
+
+The three slot helpers (`addToSlot`, `setM_f0`, `markSlotUsed`) matched exactly
+when written as ordinary `mGunSlot[gunIndex].field` access — **letting the
+compiler generate the multiply-and-index addressing itself** rather than
+hand-writing the pointer arithmetic the disassembly appears to show. The
+disassembly shows the compiler's OUTPUT; reproducing that output literally in
+source is usually the wrong move.
+
+### The landed-precedent rule paid off again, on the first ask
+
+Told to grep `source/` before proposing a `dBg_c` header change, the agent found
+`source/d_basesNP/bases/d_a_wm_note.cpp` reaching past `dWCamera_c`'s documented
+layout with a local raw byte-pointer cast confined to its own `.cpp`. It applied
+the identical technique to `dBg_c::m_bg_p` — **two more functions matched, no
+header touched.** Same precedent that earlier retired a "camera layout defect"
+that was never a defect.
+
+**MINI_GAME_GUN_BATTERY: 9/49 -> 14/49 -> 21/49** (12 exact 0-diff, 9
+naming-only), both gates green. The agent flagged its own honest caveat: ~16
+further functions are template boilerplate whose content was read and matched
+against known template source but **not individually diffed**, so they are NOT
+counted in the 21. A tally that excludes what has not been individually verified
+is the only kind that survives comparison across rounds.

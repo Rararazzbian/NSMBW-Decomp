@@ -8,6 +8,10 @@
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_a_player_demo_manager.hpp>
 #include <game/bases/d_pause_manager.hpp>
+#include <game/bases/d_bg.hpp>
+#include <game/snd/snd_audio_mgr.hpp>
+#include <game/snd/snd_scene_manager.hpp>
+#include <game/sLib/s_lib.hpp>
 
 /// @unofficial `fn_2_420`, called from `preExecute()` -- outside our claim, not yet
 /// landed. Signature guessed as no-arg bool predicate (its call site never sets an
@@ -138,10 +142,21 @@ public:
     STATE_FUNC_DECLARE(daMiniGameGunBatteryMgrObj_c, Play);
     STATE_FUNC_DECLARE(daMiniGameGunBatteryMgrObj_c, ShowResult);
 
-    u8 m_70; ///< @unofficial PLACEHOLDER
-    s32 m_74; ///< @unofficial PLACEHOLDER
-    s32 m_78; ///< @unofficial PLACEHOLDER
-    daGunBatteryGunSlot_t mGunSlot[3]; ///< @unofficial PLACEHOLDER, 0x7c-0xa0
+    // Per-gun-slot helpers -- names/semantics read from disassembly (content
+    // fully understood), addresses fn_2_F8DC0/F8DF0/F8E80/F8ED0/F8EE0.
+    void addToSlot(int gunIndex, int amount); ///< `fn_2_F8DC0`.
+    void perPlayerRestCheck(); ///< `fn_2_F8DF0`. UNVERIFIED -- see definition comment.
+    bool timerOrKeyGate(); ///< `fn_2_F8E80`. PLACEHOLDER name -- not fully worked out, not wired up.
+    void setM_f0(int v); ///< `fn_2_F8ED0`.
+    void markSlotUsed(int gunIndex); ///< `fn_2_F8EE0`.
+
+    /// @unofficial PLACEHOLDER name. 4 elements, not 3 -- confirmed by
+    /// `fn_2_F8DC0`/`fn_2_F8EE0` (not yet wired up as members), which index
+    /// `this + gunIndex*0xc` starting from THIS field for `gunIndex==0`, i.e.
+    /// what was previously modelled as separate `m_70`/`m_74`/`m_78` fields
+    /// is really `mGunSlot[0]`. Matches `daPyMng_c::getNumInGame()`'s 4-player
+    /// cap.
+    daGunBatteryGunSlot_t mGunSlot[4]; ///< 0x70-0xa0
 
     sFStateMgr_c<daMiniGameGunBatteryMgrObj_c, sStateMethodUsr_FI_c> mStateMgr; ///< 0xa0-0xdc
 
@@ -187,7 +202,6 @@ int daMiniGameGunBatteryMgr_c::doDelete() {
 }
 
 daMiniGameGunBatteryMgrObj_c::daMiniGameGunBatteryMgrObj_c() :
-    m_70(0), m_74(0), m_78(-1),
     mStateMgr(*this, StateID_ShowRule)
 {
 }
@@ -209,6 +223,58 @@ int daMiniGameGunBatteryMgrObj_c::preExecute() {
 int daMiniGameGunBatteryMgrObj_c::execute() {
     mStateMgr.executeState();
     return SUCCEEDED;
+}
+
+// fn_2_F8DC0 (0x24, EXACT content read): indexes this + gunIndex*0xc, i.e.
+// &mGunSlot[gunIndex], and touches its own +4/+8 fields directly -- writing
+// it as ordinary array-member access should reproduce identical addressing.
+void daMiniGameGunBatteryMgrObj_c::addToSlot(int gunIndex, int amount) {
+    mGunSlot[gunIndex].m_04 += amount;
+    mGunSlot[gunIndex].m_08++;
+}
+
+/// @unofficial `fn_2_F8DF0` (0x90). UNVERIFIED -- not diffed against target
+/// this round, written from disassembly analysis only. For each of the 4
+/// players: if `daPyMng_c::getPlayer(i)` is non-null and `mGunSlot[i].m_04 >
+/// 0`, calls THROUGH THE PLAYER'S OWN SECONDARY (MI) VTABLE at `this+0x60`
+/// then slot offset `0x6c` (same `this+0x60` secondary-vtable convention
+/// established for `dBase_c`/`dActor_c` elsewhere this project, NOT walked
+/// further to a real declared virtual -- modelled as a raw cast rather than
+/// an invented type, matching the project's own established precedent for
+/// this exact situation). The call returns a pointer; the byte at offset 0
+/// of that pointer, sign-extended, is passed to
+/// `daPyMng_c::addRest(value, mGunSlot[i].m_04, false)`.
+void daMiniGameGunBatteryMgrObj_c::perPlayerRestCheck() {
+    typedef void *(*Func)(dAcPy_c *);
+    for (int i = 0; i < 4; i++) {
+        dAcPy_c *player = daPyMng_c::getPlayer(i);
+        if (player) {
+            int amount = mGunSlot[i].m_04;
+            if (amount > 0) {
+                Func fn = *(Func *)((u8 *)*(void ***)((u8 *)player + 0x60) + 0x6c);
+                s8 val = *(s8 *)fn(player);
+                daPyMng_c::addRest(val, amount, false);
+            }
+        }
+    }
+}
+
+/// @unofficial `fn_2_F8ED0` (0x8, EXACT content read -- trivial one-line
+/// setter, `stw r4, 0xf0(r3); blr`).
+void daMiniGameGunBatteryMgrObj_c::setM_f0(int v) {
+    m_f0 = v;
+}
+
+/// @unofficial `fn_2_F8EE0` (0x34, EXACT content read).
+void daMiniGameGunBatteryMgrObj_c::markSlotUsed(int gunIndex) {
+    if (gunIndex == -1) {
+        return;
+    }
+    if (mGunSlot[gunIndex].m_00 != 0) {
+        return;
+    }
+    mGunSlot[gunIndex].m_00 = 1;
+    m_e4++;
 }
 
 // State bodies, in TARGET ADDRESS order (finalize, execute, initialize per
@@ -237,31 +303,55 @@ void daMiniGameGunBatteryMgrObj_c::executeState_ShowRule() {
 void daMiniGameGunBatteryMgrObj_c::initializeState_ShowRule() {
 }
 
-/// @unofficial PARKED -- not yet authored. Needs `dBg_c` extended past its
-/// current known extent (`include/game/bases/d_bg.hpp` ends around raw
-/// offset 0x9008f; this function touches 0x90110/0x90114, ~0x85 bytes
-/// further, unexplored and not grepped against any other landed user of
-/// that region this round). `fn_2_F9160`.
+/// @unofficial `fn_2_F9160`. Reaches PAST `dBg_c`'s currently-documented
+/// extent (`include/game/bases/d_bg.hpp` ends around raw offset 0x9008f;
+/// this touches 0x90110/0x90114, ~0x85 bytes further) -- per the coordinator,
+/// `source/d_basesNP/bases/d_a_wm_note.cpp:164-169` already hits the exact
+/// same situation on a DIFFERENT class (`dWCamera_c`, also under-documented)
+/// and solves it with a local raw byte-pointer cast confined to its own
+/// `.cpp`, no header change:
+///     u8 *cam = (u8 *) camera;
+///     *(u32 *) (cam + 0x604) = 1;
+/// Same technique applied here instead of extending `dBg_c`.
 void daMiniGameGunBatteryMgrObj_c::finalizeState_Play() {
+    *(u8 *)((u8 *)dBg_c::m_bg_p + 0x90114) = 15;
+    *(float *)((u8 *)dBg_c::m_bg_p + 0x90110) = 0.0f;
+    SndAudioMgr::sInstance->startSystemSe(0x5ddu, 1);
+    m_e0 = 1;
+    daPyDemoMng_c::mspInstance->endControlDemoAll(0);
+    SndSceneMgr::sInstance->fn_8019C010(3);
+    m_dc = 0;
 }
 
-/// @unofficial PARKED -- not yet authored. Same `dBg_c` extension need as
-/// `finalizeState_Play`, plus `sLib::addCalc(float*, float, float, float,
-/// float)`. `fn_2_F9200`.
+/// @unofficial `fn_2_F9200`. Same `dBg_c` raw-cast technique as
+/// `finalizeState_Play`, applied to the SAME field this function eases
+/// toward `1.0f` via `sLib::addCalc`. Once `m_e4`/`m_e8` (both PLACEHOLDER
+/// names) reach equal, positive values, transitions to `StateID_ShowResult`.
 void daMiniGameGunBatteryMgrObj_c::executeState_Play() {
+    float tmp = *(float *)((u8 *)dBg_c::m_bg_p + 0x90110);
+    sLib::addCalc(&tmp, 1.0f, 0.5f, 0.02f, 0.02f);
+    *(float *)((u8 *)dBg_c::m_bg_p + 0x90110) = tmp;
+
+    if (m_e4 == m_e8) {
+        if (m_e4 > 0) {
+            if (m_e8 > 0) {
+                mStateMgr.changeState(StateID_ShowResult);
+            }
+        }
+    }
 }
 
 /// @unofficial `fn_2_F92B0` -- confirmed EMPTY (`blr`, 4 bytes).
 void daMiniGameGunBatteryMgrObj_c::initializeState_Play() {
 }
 
-/// @unofficial PARKED -- not yet authored. Needs two more member helpers
-/// (`fn_2_F8DF0`, a per-player loop over `daPyMng_c::getPlayer()` that reads
-/// `m_74`/`mGunSlot[i].m_04` via raw pointer arithmetic across the field
-/// boundary -- confirmed by disassembly, not yet written; and `fn_2_F8ED0`,
-/// a trivial one-line setter for `m_f0`, disassembly already read and
-/// trivial to write, just not wired up yet). `fn_2_F92C0`.
+/// @unofficial `fn_2_F92C0`.
 void daMiniGameGunBatteryMgrObj_c::finalizeState_ShowResult() {
+    m_dc = 0;
+    m_ec = 0;
+    daPyDemoMng_c::mspInstance->startControlDemoAll();
+    perPlayerRestCheck();
+    setM_f0(0x2d);
 }
 
 /// @unofficial PARKED -- not yet authored (0x1F0 bytes, real game logic).
