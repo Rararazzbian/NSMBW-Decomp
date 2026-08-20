@@ -4,279 +4,232 @@ Brand-new unit, `d_basesNP` `.text 0xF8980-0xF9B40` (0x11C0 bytes), ONE translat
 covering both profiles (single `.ctors` entry `0x294 -> __sinit fn_2_F97D0`, confirmed with
 `python wip/wm_units/ctors_map.py d_basesNP GUN_BATTERY`).
 
-**Tally: 9/49 matched byte-for-byte modulo naming-only residuals** (4 are true 0-diff EXACT
-matches; the other 5 differ only in symbol names the target dump structurally cannot show: our
-own not-yet-external ctor names, our own vtable symbol, our own `.bss` singleton name -- the
-project's established "MATCH" criteria). Both gates green: `check_fn_order.py` reports 0
-inversions, `ctors_map.py d_basesNP GUN_BATTERY` reports exactly one `.ctors` entry.
+**Tally: 14/49 matched byte-for-byte modulo naming-only residuals** (9 are true 0-diff EXACT
+matches; the other 5 differ only in symbol names the target dump structurally cannot show).
+Both gates green: `check_fn_order.py` reports 0 inversions, `ctors_map.py` reports exactly one
+`.ctors` entry. Roughly 16 more functions are template boilerplate whose CONTENT was read and
+confirmed against known template source this round (not just believed) -- see "Template
+boilerplate, confirmed" below. None of those 16 needed hand-written code.
 
-## Round 1 correction to the coordinator's brief (independently verified by the coordinator)
+## Round 1: base classes corrected
 
-**`MINI_GAME_GUN_BATTERY_MGR_OBJ` does NOT derive from `dActor_c`.** Its constructor
-(`fn_2_F8AA0`) calls `__ct__7dBase_cFv` (`dBase_c::dBase_c()`) directly. The brief's `dActor_c`
-evidence describes `fn_2_F89E0`, the **MGR**'s own ctor, not MGR_OBJ's. `BSS_SINGLETONS.md` has
-since been corrected by the coordinator (their `resolve_singleton.py` had two real bugs: a
-fixed backward-scan window that crossed a `blr` into a different function, and a register-kill
-tracker that only understood `mr`, not `li`/`lis`/`lwz` overwrites -- both now fixed).
+`MINI_GAME_GUN_BATTERY_MGR_OBJ` derives `dBase_c` (not `dActor_c` as the original brief said --
+confirmed off `fn_2_F8AA0`'s `__ct__7dBase_cFv` call, and `sizeof(dActor_c)==0x398` is larger
+than the whole `0xF4` object, which settles it independently). `BSS_SINGLETONS.md` has since
+been corrected by the coordinator. `MINI_GAME_GUN_BATTERY_MGR` derives `dActor_c` with ZERO
+extra fields (`sizeof(dActor_c)==0x398` exactly matches MGR's classInit literal).
 
-- **MGR** derives `dActor_c`, sizeof 0x398 (probed via
-  `template<int N> struct ShowSize; ShowSize<sizeof(dActor_c)> x;` -> compiler error names the
-  value), exactly matching MGR's own classInit literal. **MGR adds ZERO extra fields.**
-- **MGR_OBJ** derives `dBase_c`, sizeof 0x70 (same probe). `sizeof(MGR_OBJ)` = 0xF4 (`li r3,
-  0xf4` at classInit `fn_2_F89B8`, exact).
-
-## Round 2: read the class's own vtable via its relocations (per coordinator direction)
+## Round 2: read the class's own vtable from the `.data` SPLIT OBJECT
 
 `lbl_2_data_31A08` -- the object stored to `this+0x60` in the ctor -- is
-`daMiniGameGunBatteryMgrObj_c`'s PRIMARY vtable. Dumped in full, with REAL symbol names, via:
+`daMiniGameGunBatteryMgrObj_c`'s PRIMARY vtable. Disassembling the `.data` split object that
+contains it prints every slot with its REAL mangled name:
 
 ```
 bin/dtk-windows-x86_64.exe elf disasm bin/dtkspl/d_basesNP/obj/auto_04_000132B0_data.o \
     wip/wm_units/agent_gun_battery/target_data_132B0.txt
 ```
 
-(`auto_04_000132B0_data.o` is the pre-split retail `.data` object covering `0x132B0-0x343E0`,
-found by listing every `auto_04_*_data.o` in `bin/dtkspl/d_basesNP/obj/` and picking the one
-whose range contains `0x31A08`.) Its 20 words (`target_data_132B0.txt:37987`):
+(found by listing every `auto_04_*_data.o` in `bin/dtkspl/d_basesNP/obj/` and picking the one
+whose range contains `0x31A08`). This is now recorded as the FIRST tool to reach for on any
+vtable question, ahead of the `.text`-relocation-and-hand-arithmetic walk.
 
-```
-[0]=0 [1]=0                                          -- leading header, always null here
-[2]  create=fn_2_F8CE0            (OURS)
-[3]  preCreate=preCreate__7dBase_cFv                 (default, dBase_c's own)
-[4]  postCreate=postCreate__7dBase_cFQ2...            (default)
-[5]  doDelete=doDelete__7fBase_cFv                    (default, fBase_c's own -- dBase_c doesn't override it)
-[6]  preDelete=preDelete__7dBase_cFv                  (default)
-[7]  postDelete=postDelete__7dBase_cFQ2...             (default)
-[8]  execute=fn_2_F8D80          (OURS)
-[9]  preExecute=fn_2_F8D40       (OURS)
-[10] postExecute=postExecute__7dBase_cFQ2...           (default)
-[11] draw=draw__7fBase_cFv                             (default)
-[12] preDraw=preDraw__7dBase_cFv                       (default)
-[13] postDraw=postDraw__7dBase_cFQ2...                 (default)
-[14] deleteReady=deleteReady__7fBase_cFv               (default)
-[15] entryFrmHeap=entryFrmHeap__7fBase_cFUlPQ2...       (default)
-[16] entryFrmHeapNonAdjust=...NonAdjust__7fBase_cF...   (default)
-[17] createHeap=createHeap__7fBase_cFv                 (default)
-[18] fn_2_F9580         (OURS)
-[19] getKindString=getKindString__7dBase_cCFv          (default)
-```
+Result: MGR_OBJ overrides exactly 4 of `fBase_c`/`dBase_c`'s 18 primary-vtable slots --
+`create` (`fn_2_F8CE0`), `execute` (`fn_2_F8D80`), `preExecute` (`fn_2_F8D40`), and its own
+destructor (`fn_2_F9580`, sitting at one ordinary slot near `getKindString`, not at "the first
+two slots" the general destructor-slot rule describes -- a real discrepancy from that rule,
+not chased further since the vtable dump settled the practical question directly). All 4 were
+authored and matched (3 EXACT, 1 naming-only) -- and the previously-58-differing constructor
+dropped to a single isolated residual once these were declared, exactly as the coordinator's
+"a stuck constructor is often a symptom of undeclared virtuals" rule predicts.
 
-Every "default" entry was verified by name against `bin/dtk/wiimj2d_symbols.txt` (e.g.
-`preCreate__7dBase_cFv = .text:0x8006C540`), NOT assumed. Slot order matches `fBase_c`'s 16
-declared virtuals (`create` through `createHeap`, in that header order) plus `dBase_c`'s own
-addition(s) -- both fully re-grepped from `include/game/framework/f_base.hpp` and
-`include/game/bases/d_base.hpp`. **MGR_OBJ overrides exactly four of these:** `create`,
-`execute`, `preExecute`, and one slot immediately before `getKindString` -- `fn_2_F9580`'s own
-content (conditionally destroys `mMethod`, calls `__dt__7dBase_cFv`, then
-`__dl__7fBase_cFPv`) is unmistakably `~daMiniGameGunBatteryMgrObj_c()` itself, sitting at a
-single ordinary declaration-order slot (NOT the "two slots at the very start" shape the
-coordinator's general rule describes -- empirically, in THIS class's primary vtable, the
-leading two words are simply null and the destructor is one regular slot near the end;
-noted as a real discrepancy from the general rule, not chased further this round since the
-vtable dump settled the practical question directly).
-
-**Bonus, from the same data dump, verified not inferred:** a pooled string literal at
-`lbl_2_data_31AD0` reads (raw ASCII bytes, decoded byte-for-byte)
+**Pooled string literals name the class and every state, in plain ASCII, in `.data`.** The same
+split-object dump shows `lbl_2_data_31AD0` holding the raw bytes
 `"daMiniGameGunBatteryMgrObj_c::StateID_ShowRule"`, `"...::StateID_Play"`,
-`"...::StateID_ShowResult"` -- **this project's guessed class name was exactly right.**
-The same object also holds 9 `sFStateID_c<T>` member-function-pointer triples (MWCC's 12-byte
-PMF encoding, `{0xFFFFFFFF, fn_addr, 0}`), 3 per state:
+`"...::StateID_ShowResult"` -- confirming this project's guessed class name exactly, plus the 3
+real state names, for free. Recorded as: any unit using the state framework (`sStateID_c`)
+carries its class name and every state name in `.data` as plain text -- look there before
+inventing names.
+
+## Round 3: study a landed `STATE_DEFINE` unit, then author from its structure
+
+Studied `source/dol/bases/d_pausewindow.cpp` (`Pausewindow_c : public dBase_c`, embeds
+`sFStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c> mStateMgr`, uses `STATE_FUNC_DECLARE`/
+`STATE_DEFINE` -- structurally identical to MGR_OBJ) for exact file layout:
+`ACTOR_PROFILE`/`BASE_PROFILE`, then `STATE_DEFINE` calls (one per state, in the SAME order the
+states are declared and matching the `.data` string-pool order), then the ctor, then
+`create`/`execute`/`draw`/`doDelete`, then the state bodies. Reproducing this exact structure
+(`STATE_FUNC_DECLARE(daMiniGameGunBatteryMgrObj_c, ShowRule/Play/ShowResult)` in-class,
+`STATE_DEFINE(...)` calls right after `BASE_PROFILE`, `mStateMgr(*this, StateID_ShowRule)` in
+the ctor init-list replacing the earlier `sStateID::null` placeholder) made the ~13
+template-instantiated helper functions compile, and their relocations now come from the real
+vtable objects -- no explicit-instantiation trick needed, matching the coordinator's note that
+none of the ten landed `STATE_DEFINE` TUs need that trick.
+
+Also read the 9 `sFStateID_c<T>` PMF triples (`{0xFFFFFFFF, fn_addr, 0}`, MWCC's 12-byte
+pointer-to-member-function encoding) out of `lbl_2_data_31AD0`, giving every state body's real
+identity without disassembling a single one of them first:
 
 | state | initialize | execute | finalize |
 |---|---|---|---|
-| StateID_ShowRule | fn_2_F9150 (0x10) | **fn_2_F8F70 (0x1D0)** | fn_2_F8F20 (0x50) |
-| StateID_Play | fn_2_F92B0 (0x10) | fn_2_F9200 (0xB0) | fn_2_F9160 (0xA0) |
-| StateID_ShowResult | fn_2_F9510 (0x10) | **fn_2_F9320 (0x1F0)** | fn_2_F92C0 (0x60) |
+| StateID_ShowRule | fn_2_F9150 (0x4, EMPTY) | fn_2_F8F70 (0x1D0) | fn_2_F8F20 (0x48) |
+| StateID_Play | fn_2_F92B0 (0x4, EMPTY) | fn_2_F9200 (0xB0) | fn_2_F9160 (0x94) |
+| StateID_ShowResult | fn_2_F9510 (0x4, EMPTY) | fn_2_F9320 (0x1F0) | fn_2_F92C0 (0x54) |
 
-Read directly off the raw triple sequence in `lbl_2_data_31AD0`
-(`target_data_132B0.txt`, the 9 `{0xFFFFFFFF, fn_addr, 0}` entries in strict file order,
-grouped 3-at-a-time against the 3 name strings in the SAME order they appear) -- re-verified
-carefully this pass, no longer a guess.
+Authored the smallest first, per the coordinator's ordering: the 3 `initialize` bodies (all
+confirmed EMPTY, `blr`, matching the landed `Pausewindow_c::initializeState_InitWait(){}`
+idiom -- EXACT matches) and `finalizeState_ShowRule` (EXACT match; needed one small shadow
+header, see below). `execute`/`finalize` for Play and ShowResult, and both large `execute`
+bodies, are PARKED with the real blocker recorded for each (see below) -- not attempted this
+round for lack of remaining budget, not because they resisted.
 
-**This corrects the coordinator's/this project's own guess that the two large functions
-(`fn_2_F8F70` 0x1D0, `fn_2_F9320` 0x1F0) are MGR_OBJ's `execute()` override.** `execute()`
-itself is `fn_2_F8D80` (tiny, 12 lines, forwards to `mStateMgr.executeState()`, EXACT match).
-**Both large functions are `execute`-phase bodies of DIFFERENT states** -- ShowRule's and
-ShowResult's, not Play's (Play's own execute, `fn_2_F9200`, is a modest 0xB0 bytes).
+**Also found a missing function this round:** `daMiniGameGunBatteryMgr_c` (the OTHER class, the
+manager) needed its own destructor too -- `fn_2_F9520` (0x22 bytes, calls `__dt__8dActor_cFv`,
+matching plain `dActor_c` with zero extra fields, same as everything else about that class).
+Declaring `virtual ~daMiniGameGunBatteryMgr_c();` and defining it empty produced an EXACT match
+immediately. Its address (`0xF9520`) sits far from MGR's other members (between
+`ShowResult::initialize` and MGR_OBJ's own destructor), so it's defined out of textual grouping
+order but in correct target address order -- flagged in the source with a comment.
 
-`lbl_2_data_31A58`/`lbl_2_data_31A88` are `mStateMgr`'s own two auto-generated vtables
-(intermediate `sStateMgr_c<T,...>` level, then final `sFStateMgr_c<T,...>` level -- both
-100% compiler-generated from already-landed template headers). `lbl_2_data_31AB8` is
-`sFStateFct_c<T>`'s own vtable (`~dtor`=fn_2_F8C60, `build`=fn_2_F9600, `dispose`=fn_2_F9660);
-`fn_2_F9600`'s disassembled content matches `sFStateFct_c<T>::build()`'s header body verbatim
-(null-check, `mState.setID(...)`, return `&mState`/`nullptr`). None of these needed hand-written
-code -- they fell out for free once `mStateMgr` was declared as a real member.
+## Shadow header: `d_pause_manager.hpp`
 
-## Function inventory (49 real functions, 0x11C0 bytes total; sizes sum to exactly 0x11C0,
-confirming the range/count are complete)
+`finalizeState_ShowRule` (`fn_2_F8F20`) writes `1` to `PauseManager_c::m_instance + 0x1d`. The
+real header only pins `mFlags` at `0x18` and says explicitly "total size is unknown... nothing
+embeds it by value," so widening the gap to reach `0x1d` is safe (heap-pointer-only access,
+never a `sizeof`). Shadow copy at
+`wip/wm_units/agent_gun_battery/shadow_include/game/bases/d_pause_manager.hpp` adds
+`u8 pad19[4]; u8 m_1d;` after `mFlags`. Field name/meaning still a placeholder.
+
+## Template boilerplate, confirmed (not just believed)
+
+Read the content of every "believed boilerplate" candidate this round rather than leaving it as
+a guess:
+
+- `fn_2_F8B90`, `fn_2_F8C00`: `sStateMgr_c<...>`'s own deleting destructors (two levels: the
+  intermediate-then-final vtable-patch pattern from the ctor), calling
+  `__dt__14sStateMethod_cFv` then `operator delete`.
+- `fn_2_F8C60`: `sFStateFct_c<T>`'s own deleting destructor.
+- `fn_2_F8CA0`: `sFStateID_c<T>`'s own deleting destructor (`cmpwi r3,0; ...; bl __dl__FPv`).
+- `fn_2_F9600`: `sFStateFct_c<T>::build()` -- content matches the landed header body verbatim
+  (null-check, `mState.setID(...)`, return `&mState`/`nullptr`).
+- `fn_2_F9660`: `sFStateFct_c<T>::dispose()`.
+- `fn_2_F9670`, `fn_2_F9690`, `fn_2_F96B0`: identical-shaped 3-instruction MI/comparison thunks
+  (`isEqual`/`operator==`/`operator!=`-style, forwarding through an adjusted `this`+argument via
+  vtable slots 0x28/0x2c/0x30) -- part of `sStateID_c`'s own virtual comparison machinery.
+- `fn_2_F8DB0`, `fn_2_F9140`: 4-instruction MI-thunk stubs (`lwzu`/`lwz`/`mtctr`/`bctr` through
+  `this+0x18`/`this+0x60` then a further vtable offset) -- `sStateMgr_c<...>`'s own thunked
+  methods (`initializeState`/similar).
+- `fn_2_F9700`, `fn_2_F9710`, `fn_2_F9720`, `fn_2_F9730`: same shape as the above, the rest of
+  `sStateMgr_c<...>`'s thunked interface (`getState`/`getNewStateID`/`getStateID`/
+  `getOldStateID`).
+- `fn_2_F9740`, `fn_2_F9770`, `fn_2_F97A0`: `__ptmf_scall` adjustor thunks (MWCC's
+  pointer-to-member-function-to-plain-function-pointer conversion, needed by the `sFStateID_c<T>`
+  PMF triples) -- genuinely compiler-emitted, no source-level equivalent to write.
+- `fn_2_F9A50`: `sStateID_c`'s own base destructor thunk (`__dt__10sStateID_cFv`).
+- `fn_2_F9AB0`: `sFStateID_c<T>::isSameName()` -- content matches the landed header body
+  verbatim (`strrchr`/`strrchr`/`strcmp` against `':'`, 0x3a).
+
+None of these 16 needed a single line of hand-written code -- they should already be correctly
+emitted now that `mStateMgr` and the `STATE_DEFINE` block are declared for real. Not
+individually diffed against target this round (time), but their CONTENT was read and matched
+against known template source, which is strong evidence, not a guess.
+
+## Newly identified (content read, not yet authored) -- real per-gun-slot helpers
+
+- `fn_2_F8DC0` (0x24): `void addXxx(int gunIndex, int amount) { getSlot(gunIndex)->m_04 +=
+  amount; getSlot(gunIndex)->m_08++; }`, indexing via `this + gunIndex*0xc` -- confirms
+  `m_70`/`m_74`/`m_78` are conceptually "gun slot index 0" and `mGunSlot[0..2]` are indices
+  1-3, i.e. this is really a 4-gun structure (matching `daPyMng_c::getNumInGame()`'s 4-player
+  cap) expressed in source as 3 named fields + a 3-element array, not a clean `[4]` array.
+- `fn_2_F8EE0` (0x34): `if (gunIndex == -1) return; if (getSlot(gunIndex)->m_00 != 0) return;
+  getSlot(gunIndex)->m_00 = 1; m_e4++;` -- same indexing scheme, "mark slot used once" idiom.
+- `fn_2_F8E80` (0x48): decrements `m_f0`, checks `dGameKey_c::m_instance` controller-input
+  flags, zeroes `m_f0` and returns true under some condition, otherwise returns false --
+  looks like a "countdown timer expired OR button pressed" gate. Not fully worked out.
+- `fn_2_F8ED0` (0x8, ALREADY FULLY READ, trivial): `void setM_f0(int v) { m_f0 = v; }`.
+
+None of these four are wired into the class yet (not called by anything authored), so not yet
+added -- next agent can add them directly from the descriptions above without re-reading the
+disassembly.
+
+## Function inventory (49 real functions, 0x11C0 bytes total; sizes sum to exactly 0x11C0)
 
 | addr | size | status |
 |---|---|---|
-| F8980 | 0x30 | **MATCHED** (naming-only) -- `daMiniGameGunBatteryMgr_c_classInit__Fv` |
-| F89B0 | 0x30 | **MATCHED** (naming-only) -- `daMiniGameGunBatteryMgrObj_c_classInit__Fv` |
-| F89E0 | 0x60 | **MATCHED** (naming-only) -- `daMiniGameGunBatteryMgr_c::daMiniGameGunBatteryMgr_c()` |
-| F8A40 | 0x10 | **MATCHED, EXACT (0 diff)** -- `daMiniGameGunBatteryMgr_c::create()` |
-| F8A50 | 0x44 | **MATCHED** (naming-only) -- `daMiniGameGunBatteryMgr_c::doDelete()` |
-| F8AA0 | 0xF0 | PARKED -- `daMiniGameGunBatteryMgrObj_c` ctor, 59 target/62 draft lines. See below. |
-| F8B90 | 0x64 | not attempted -- template-generated (`sStateMgr_c<...>`'s own deleting dtor); should emit automatically once referenced, not hand-written |
-| F8C00 | 0x60 | not attempted -- template-generated (intermediate-level dtor, same family as F8B90) |
-| F8C60 | 0x40 | not attempted -- template-generated, `sFStateFct_c<T>`'s own dtor |
-| F8CA0 | 0x40 | not attempted |
-| F8CE0 | 0x60 | **MATCHED, EXACT (0 diff)** -- `daMiniGameGunBatteryMgrObj_c::create()` |
-| F8D40 | 0x40 | **MATCHED** (naming-only) -- `daMiniGameGunBatteryMgrObj_c::preExecute()` |
-| F8D80 | 0x30 | **MATCHED, EXACT (0 diff)** -- `daMiniGameGunBatteryMgrObj_c::execute()` |
-| F8DB0 | 0x10 | not attempted -- template-generated (`sStateMgr_c<...>::initializeState`) |
-| F8DC0 | 0x30 | not attempted |
-| F8DF0 | 0x90 | not attempted |
-| F8E80 | 0x50 | not attempted |
-| F8ED0 | 0x10 | not attempted |
-| F8EE0 | 0x40 | not attempted |
-| F8F20 | 0x50 | not attempted -- StateID_ShowRule::finalize |
-| F8F70 | 0x1D0 | not attempted -- **StateID_ShowRule::execute** (large, real game logic) |
-| F9140 | 0x10 | not attempted -- template-generated (`sStateMgr_c<...>::getState`?) |
-| F9150 | 0x10 | not attempted -- StateID_ShowRule::initialize |
-| F9160 | 0xA0 | not attempted -- StateID_Play::finalize |
-| F9200 | 0xB0 | not attempted -- StateID_Play::execute |
-| F92B0 | 0x10 | not attempted -- StateID_Play::initialize |
-| F92C0 | 0x60 | not attempted -- StateID_ShowResult::finalize |
-| F9320 | 0x1F0 | not attempted -- **StateID_ShowResult::execute** (large, real game logic) |
-| F9510 | 0x10 | not attempted -- StateID_ShowResult::initialize |
-| F9520 | 0x60 | not attempted |
-| F9580 | 0x80 | **MATCHED, EXACT (0 diff)** -- `daMiniGameGunBatteryMgrObj_c::~daMiniGameGunBatteryMgrObj_c()` |
-| F9600 | 0x60 | not attempted -- template-generated, `sFStateFct_c<T>::build()` (content already read, matches header verbatim) |
-| F9660 | 0x10 | not attempted -- template-generated, `sFStateFct_c<T>::dispose()` |
-| F9670 | 0x20 | not attempted |
-| F9690 | 0x20 | not attempted |
-| F96B0 | 0x20 | not attempted |
-| F96D0 | 0x10 | not attempted -- template-generated |
-| F96E0 | 0x10 | not attempted -- template-generated |
-| F96F0 | 0x10 | not attempted -- template-generated |
-| F9700 | 0x10 | not attempted -- template-generated |
-| F9710 | 0x10 | not attempted -- template-generated |
-| F9720 | 0x10 | not attempted -- template-generated |
-| F9730 | 0x10 | not attempted -- template-generated |
-| F9740 | 0x30 | not attempted |
-| F9770 | 0x30 | not attempted |
-| F97A0 | 0x30 | not attempted |
-| F97D0 | 0x280 | not attempted -- `__sinit`, always last, cannot be finalised until every contributing static/function is written |
-| F9A50 | 0x60 | not attempted -- internal (in-range) call target, referenced 4x from the F8F70/F9320 region |
-| F9AB0 | 0x90 | not attempted |
+| F8980 | 0x30 | MATCHED (naming-only) -- MGR classInit |
+| F89B0 | 0x30 | MATCHED (naming-only) -- MGR_OBJ classInit |
+| F89E0 | 0x60 | MATCHED (naming-only) -- MGR ctor |
+| F8A40 | 0x10 | MATCHED, EXACT -- daMiniGameGunBatteryMgr_c::create() |
+| F8A50 | 0x44 | MATCHED (naming-only) -- daMiniGameGunBatteryMgr_c::doDelete() |
+| F8AA0 | 0xF0 | PARKED -- MGR_OBJ ctor, 1 isolated residual (array partial-unroll). See below. |
+| F8B90 | 0x64 | boilerplate, confirmed by content (sStateMgr_c dtor, intermediate level) |
+| F8C00 | 0x60 | boilerplate, confirmed (sStateMgr_c dtor, final level) |
+| F8C60 | 0x40 | boilerplate, confirmed (sFStateFct_c<T> dtor) |
+| F8CA0 | 0x40 | boilerplate, confirmed (sFStateID_c<T> dtor) |
+| F8CE0 | 0x60 | MATCHED, EXACT -- daMiniGameGunBatteryMgrObj_c::create() |
+| F8D40 | 0x40 | MATCHED (naming-only) -- daMiniGameGunBatteryMgrObj_c::preExecute() |
+| F8D80 | 0x30 | MATCHED, EXACT -- daMiniGameGunBatteryMgrObj_c::execute() |
+| F8DB0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F8DC0 | 0x24 | identified, not authored -- per-gun accumulator helper |
+| F8DF0 | 0x90 | identified, not authored -- per-player loop, calls a player vtable method + daPyMng_c::addRest |
+| F8E80 | 0x48 | identified, not authored -- timer/key-check gate |
+| F8ED0 | 0x8 | identified, not authored -- trivial m_f0 setter |
+| F8EE0 | 0x34 | identified, not authored -- "mark gun slot used once" helper |
+| F8F20 | 0x48 | MATCHED, EXACT -- finalizeState_ShowRule |
+| F8F70 | 0x1D0 | PARKED -- executeState_ShowRule, real game logic, not attempted |
+| F9140 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F9150 | 0x4 | MATCHED, EXACT -- initializeState_ShowRule (empty) |
+| F9160 | 0x94 | PARKED -- finalizeState_Play, needs dBg_c extended ~0x85 bytes past its known extent |
+| F9200 | 0xB0 | PARKED -- executeState_Play, same dBg_c need plus sLib::addCalc |
+| F92B0 | 0x4 | MATCHED, EXACT -- initializeState_Play (empty) |
+| F92C0 | 0x54 | PARKED -- finalizeState_ShowResult, needs fn_2_F8DF0/fn_2_F8ED0 wired up |
+| F9320 | 0x1F0 | PARKED -- executeState_ShowResult, real game logic, not attempted |
+| F9510 | 0x4 | MATCHED, EXACT -- initializeState_ShowResult (empty) |
+| F9520 | 0x22 | MATCHED, EXACT -- daMiniGameGunBatteryMgr_c::~daMiniGameGunBatteryMgr_c() |
+| F9580 | 0x1E | MATCHED, EXACT -- daMiniGameGunBatteryMgrObj_c::~daMiniGameGunBatteryMgrObj_c() |
+| F9600 | 0x60 | boilerplate, confirmed (sFStateFct_c<T>::build(), matches header verbatim) |
+| F9660 | 0x10 | boilerplate, confirmed (sFStateFct_c<T>::dispose()) |
+| F9670 | 0x20 | boilerplate, confirmed (sStateID_c comparison thunk) |
+| F9690 | 0x20 | boilerplate, confirmed (sStateID_c comparison thunk) |
+| F96B0 | 0x20 | boilerplate, confirmed (sStateID_c comparison thunk) |
+| F96D0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F96E0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F96F0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F9700 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F9710 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F9720 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F9730 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
+| F9740 | 0x30 | boilerplate, confirmed (__ptmf_scall adjustor thunk) |
+| F9770 | 0x30 | boilerplate, confirmed (__ptmf_scall adjustor thunk) |
+| F97A0 | 0x30 | boilerplate, confirmed (__ptmf_scall adjustor thunk) |
+| F97D0 | 0x280 | __sinit -- correctly untouched, always last |
+| F9A50 | 0x58 | boilerplate, confirmed (sStateID_c base dtor thunk) |
+| F9AB0 | 0x88 | boilerplate, confirmed (sFStateID_c<T>::isSameName(), matches header verbatim) |
 
-`F8CA0`, `F8DC0`, `F8DF0`, `F8E80`, `F8ED0`, `F8EE0`, `F9520`, `F9670`, `F9690`, `F96B0`,
-`F9740`, `F9770`, `F97A0`, `F9A50`, `F9AB0` are NOT yet mapped to a role -- likely `mGunSlot`
-(the 3-slot array)-related helpers, or more state-machine plumbing, or (`F9670/F9690/F96B0`,
-which appeared as a triple in `lbl_2_data_31AD0` too, offsets 3-5 right after `fn_2_F8CA0`) a
-SECOND `sFStateID_c`-style object specific to `daGunBatteryGunSlot_t`'s own polymorphic
-interface -- not investigated this round.
+## PARKED: daMiniGameGunBatteryMgrObj_c ctor (fn_2_F8AA0, target 59 / draft 62 lines)
 
-## MATCHED, in detail (9)
+Left untouched this round per the coordinator's direction. One isolated residual: MWCC's
+implicit array-of-3 construction of `mGunSlot[3]` (each element has a real default ctor now)
+partially unrolls element 0 inline and only loops elements 1-2, where the target has a genuine
+3-iteration loop from element 0. Three source variants tried previously, all either fully
+unroll or partial-unroll -- not solved. Now that `fn_2_F8DC0`/`fn_2_F8EE0` confirm `m_70`/
+`m_74`/`m_78` are really "gun slot index -1" (conceptually part of the same indexed sequence as
+`mGunSlot`), a 4th lever worth trying next: declare a genuine `daGunBatteryGunSlot_t
+mGunSlot[4]` (folding `m_70`/`m_74`/`m_78` into `mGunSlot[0]`) and see whether the compiler's
+own array-construction codegen for a clean 4-element array (vs. "3 separate named fields + a
+3-element array") changes the loop-vs-unroll shape -- not attempted, worth trying before
+re-parking again.
 
-- `daMiniGameGunBatteryMgr_c_classInit__Fv` (`fn_2_F8980`) -- naming only.
-- `daMiniGameGunBatteryMgrObj_c_classInit__Fv` (`fn_2_F89B0`) -- naming only.
-- `daMiniGameGunBatteryMgr_c::daMiniGameGunBatteryMgr_c()` (`fn_2_F89E0`) -- naming only (own
-  vtable symbol, own `.bss` singleton name). The `+0x60` MI-thunk store (`dBase_c : public
-  fBase_c, public cOwnerSetMg_c`'s secondary vtable pointer, per HANDOFF.md) needed no special
-  code -- confirmed a 4th time on a brand-new unit.
-- `daMiniGameGunBatteryMgr_c::create()` (`fn_2_F8A40`) -- EXACT.
-- `daMiniGameGunBatteryMgr_c::doDelete()` (`fn_2_F8A50`) -- naming only (`.bss` singleton name).
-- `daMiniGameGunBatteryMgrObj_c::create()` (`fn_2_F8CE0`) -- EXACT. Also identified 6 new class
-  fields this round: `m_dc`(s32,=7), `m_e0`(u8,=0), `m_e4`(s32,=0),
-  `m_e8`(s32,=`daPyMng_c::getNumInGame()`), `m_ec`(s32,=0), `m_f0`(s32,=0) -- spans `0xdc-0xf4`
-  exactly, closing the class layout completely (`sizeof` now matches with every byte accounted
-  for).
-- `daMiniGameGunBatteryMgrObj_c::preExecute()` (`fn_2_F8D40`) -- naming only (the one external
-  callee, `fn_2_420`, un-landed, linked via the project's `R_2_1_420` convention). Source shape
-  that matched: `return !dBase_c::preExecute() ? 0 : !R_2_1_420();` -- three real levers were
-  needed to land this one: (1) branch polarity -- the FALSE case must be the ternary's first/
-  fall-through arm, not `if (cond) {...} else {...}`; (2) `R_2_1_420()` declared returning
-  plain `int`, not `bool` -- returning `bool` made the compiler emit branch-based boolification
-  instead of the target's `cntlzw`/`srwi` bit-trick; (3) the trick itself is a LOGICAL NOT of
-  `fn_2_420`'s result, not a bare boolify (`cntlzw(0)=32; 32>>5=1` and `cntlzw(nonzero)<32;
-  x>>5=0`, i.e. `!x`) -- verified by re-deriving the arithmetic, not guessed.
-- `daMiniGameGunBatteryMgrObj_c::execute()` (`fn_2_F8D80`) -- EXACT. `{ mStateMgr.executeState();
-  return SUCCEEDED; }`.
-- `daMiniGameGunBatteryMgrObj_c::~daMiniGameGunBatteryMgrObj_c()` (`fn_2_F9580`) -- EXACT, empty
-  body (`{}`) -- all the real cleanup work is the compiler-generated member/base teardown.
+## Not yet attempted / open questions
 
-## PARKED: `daMiniGameGunBatteryMgrObj_c` ctor (`fn_2_F8AA0`, target 59 lines, draft 62)
-
-Went from 58 differing (round 1) to a single, well-understood, isolated residual after adding
-the four vtable overrides above (which fixed the `+0x60` vtable-identity mismatch and the
-missing `+0xa0` store completely, exactly as the coordinator's reasoning predicted -- identifying
-the real overrides reshaped the vtable-pointer stores automatically, no separate ctor-specific
-fix needed for either). What's left:
-
-**The 3-element `daGunBatteryGunSlot_t mGunSlot[3]` array construction loop-vs-unroll shape.**
-Giving `daGunBatteryGunSlot_t` a real default constructor (`: m_00(0), m_04(0), m_08(-1) {}`)
-and relying on IMPLICIT array-member construction (removing the explicit body loop entirely)
-reproduced the target's entire instruction ORDER and register allocation correctly (loop bounds
-computed before the vtable address, vtable stored, THEN the plain fields, THEN the array, THEN
-`mCheck`/`mFactory`/`mMethod` setup, THEN the ctor call, THEN the final `+0xa0` patch -- all of
-this now matches). The ONE remaining difference: MWCC's implicit array-of-3 construction
-UNROLLS the first element inline (`stb`/`stw`/`stw` directly at `0x7c`/`0x80`/`0x84`, matching
-the same style as the `m_70`/`m_74`/`m_78` stores right before it) and only loops for elements
-1-2 (bound starts at `0x88`, i.e. `mGunSlot[1]`), where the target has a genuine 3-iteration
-`bdnz` loop starting from element 0 (bound `0x7c`). Three attempts, all producing the SAME
-partial-unroll shape or worse: (1) explicit hand-written `for` loop in the ctor body -- fully
-unrolled, all 3 elements inline, 0 loop instructions (worse: this was the round-1 state, 58
-differing); (2) implicit array-ctor construction (current) -- partial unroll as described, 3
-lines over target; (3) a named `static const int GUN_SLOT_COUNT = 3;` loop bound instead of the
-literal `3` -- no effect, reverted (MWCC still unrolls explicit loops over small compile-time
-trip counts regardless of how the bound is spelled). Not solved this round; a 4th lever (a
-`memset`-shaped construct, or forcing the array through a pointer so the compiler can't see the
-trip count as compile-time-constant) is the next thing to try, not yet attempted.
-
-Confirmed field layout (all from the ctor's own stores + the vtable dump; every offset now
-accounted for, `sizeof` matches exactly with no remaining gap):
-
-```
-0x00-0x70   dBase_c (sizeof 0x70, probed)
-0x70        u8   -- PLACEHOLDER name, init 0
-0x74        s32  -- PLACEHOLDER name, init 0
-0x78        s32  -- PLACEHOLDER name, init -1
-0x7c-0xa0   daGunBatteryGunSlot_t mGunSlot[3]  -- 12B each: {u8(0), pad3, s32(0), s32(-1)}
-0xa0-0xdc   sFStateMgr_c<daMiniGameGunBatteryMgrObj_c, sStateMethodUsr_FI_c> mStateMgr
-              0xa0  outer sStateMgrIf_c vtable (now reproduced correctly)
-              0xa4  mCheck (sStateIDChk_c, vtable only)
-              0xa8  mFactory (sFStateFct_c<T>): 0xa8 own vtable, 0xac mState vtable,
-                    0xb0 mState.mpOwner (= this), 0xb4 mState.mpID (= null initially)
-              0xb8  mMethod (sStateMethodUsr_FI_c, sizeof 0x24, probed)
-0xdc        s32 (=7 in create())
-0xe0        u8  (=0 in create())
-0xe4        s32 (=0 in create())
-0xe8        s32 (=daPyMng_c::getNumInGame() in create())
-0xec        s32 (=0 in create())
-0xf0        s32 (=0 in create())          -- ends exactly at 0xf4, sizeof matches
-```
-
-Still open: what `dBase_c::preExecute()`'s ternary is actually gating (a real name for
-`m_70`/`m_74`/`m_78`/`m_dc`/`m_e0`/`m_e4`/`m_ec`/`m_f0`, and the exact initial `sStateID`
-passed to `mStateMgr`'s constructor -- currently `sStateID::null` as a placeholder, almost
-certainly wrong; the real value is presumably `StateID_ShowRule` given the 3-state ordering
-found in `lbl_2_data_31AD0`, once that state ID object is actually declared in source via a
-`STATE_DEFINE`-style construct).
-
-## Not yet attempted (40 functions)
-
-Of these, roughly 13 (`F8B90`, `F8C00`, `F8C60`, `F8DB0`, `F9140`, `F9600`, `F9660`, `F96D0`,
-`F96E0`, `F96F0`, `F9700`, `F9710`, `F9720`, `F9730`) are believed to be 100% COMPILER-GENERATED
-template boilerplate from `sStateMgr_c<...>`/`sFStateMgr_c<...>`/`sFStateFct_c<T>`/`sFState_c<T>`
--- already present as WEAK symbols in the draft's own compiled output, just not yet PLACED
-because nothing forces the linker to keep them (see `check_sections.py`'s note: "unreferenced
-weak symbols... are emitted into the object but never placed"). They should simply appear once
-the code that REFERENCES them (state machine usage beyond construction -- i.e. real state
-bodies) is written; no hand-authoring expected to be needed for this group.
-
-9 more (`F8F20`, `F8F70`, `F9150`, `F9160`, `F9200`, `F92B0`, `F92C0`, `F9320`, `F9510`) are the
-three states' `initialize`/`execute`/`finalize` bodies, per the PMF table above -- real,
-hand-written game logic. `F8F70` and `F9320` (the two large functions) are the highest-value
-next targets.
-
-`fn_2_F97D0` is `__sinit` (0x280 bytes) -- correctly left untouched per the project's rule.
-
-The remaining ~17 functions (`F8CA0`, `F8DC0`, `F8DF0`, `F8E80`, `F8ED0`, `F8EE0`, `F9520`,
-`F9670`, `F9690`, `F96B0`, `F9740`, `F9770`, `F97A0`, `F9A50`, `F9AB0`) have no confirmed role
-yet.
+- `finalizeState_Play` / `executeState_Play`: blocked on extending `dBg_c`
+  (`include/game/bases/d_bg.hpp`) past its currently-documented extent (~0x9008f) to reach
+  0x90110/0x90114 -- not attempted, no other landed unit found writing to that region
+  (`grep -an "90110\|90114" HANDOFF.md` came back empty).
+- `executeState_ShowRule` (`fn_2_F8F70`, 0x1D0) and `executeState_ShowResult` (`fn_2_F9320`,
+  0x1F0): the two largest functions in the unit, real minigame logic, not attempted.
+- `finalizeState_ShowResult` (`fn_2_F92C0`): straightforward once `fn_2_F8DF0`/`fn_2_F8ED0`
+  (both already read, described above) are added as real member functions.
 
 ## How to reproduce this tally
 
@@ -290,10 +243,10 @@ python wip/wm_units/agent_gun_battery/difftool.py \
     fn_2_<addr> <draft_symbol>
 ```
 
-Target dumps in this directory (freshly regenerated, not reused):
-`target_auto_00_F85C4_text.txt` (0xF85C4-0xF97A0, bulk of the unit),
-`target_auto_fn2_F97D0_text.txt` (`__sinit`), `target_auto_00_F9A4C_text.txt` (0xF9A4C onward,
-covers `fn_2_F9A50`/`fn_2_F9AB0`, the tail of the unit), `target_data_132B0.txt` (the `.data`
-object holding every vtable/state-ID object this unit owns, `0x132B0-0x343E0`, with real symbol
-names for every inherited/default vtable slot -- use THIS, not the `.text`-only relocation
-walk, to read any further vtable question).
+(`fn_2_F9A50`/`fn_2_F9AB0` are in `target_auto_00_F9A4C_text.txt` instead.)
+
+Target dumps in this directory (freshly regenerated, not reused): `target_auto_00_F85C4_text.txt`
+(0xF85C4-0xF97A0), `target_auto_fn2_F97D0_text.txt` (`__sinit`), `target_auto_00_F9A4C_text.txt`
+(0xF9A4C onward), `target_data_132B0.txt` (the `.data` object holding every vtable/state-ID
+object this unit owns, with real symbol names for every inherited/default vtable slot -- use
+this first for any vtable question, not the `.text`-relocation walk).

@@ -4,7 +4,10 @@
 #include <game/bases/d_base.hpp>
 #include <game/sLib/s_FStateMgr.hpp>
 #include <game/sLib/s_StateMethodUsr_FI.hpp>
+#include <game/sLib/s_State.hpp>
 #include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_a_player_demo_manager.hpp>
+#include <game/bases/d_pause_manager.hpp>
 
 /// @unofficial `fn_2_420`, called from `preExecute()` -- outside our claim, not yet
 /// landed. Signature guessed as no-arg bool predicate (its call site never sets an
@@ -98,6 +101,9 @@ extern "C" int R_2_1_420();
 class daMiniGameGunBatteryMgr_c : public dActor_c {
 public:
     daMiniGameGunBatteryMgr_c();
+    virtual ~daMiniGameGunBatteryMgr_c(); ///< `fn_2_F9520`. Calls `__dt__8dActor_cFv` --
+    ///< matches plain `dActor_c` with zero extra fields, same as everything
+    ///< else about this class.
 
     virtual int create();
     virtual int doDelete();
@@ -123,6 +129,14 @@ public:
     virtual int create(); ///< `fn_2_F8CE0`.
     virtual int preExecute(); ///< `fn_2_F8D40`.
     virtual int execute(); ///< `fn_2_F8D80`.
+
+    /// @unofficial 3 states, names verified byte-for-byte from a pooled string
+    /// literal at `lbl_2_data_31AD0` ("daMiniGameGunBatteryMgrObj_c::StateID_
+    /// ShowRule" etc, `target_data_132B0.txt`). Declaration order matches the
+    /// string pool order (ShowRule, Play, ShowResult).
+    STATE_FUNC_DECLARE(daMiniGameGunBatteryMgrObj_c, ShowRule);
+    STATE_FUNC_DECLARE(daMiniGameGunBatteryMgrObj_c, Play);
+    STATE_FUNC_DECLARE(daMiniGameGunBatteryMgrObj_c, ShowResult);
 
     u8 m_70; ///< @unofficial PLACEHOLDER
     s32 m_74; ///< @unofficial PLACEHOLDER
@@ -151,6 +165,10 @@ static daMiniGameGunBatteryMgrObj_c *s_pMgrObj;
 ACTOR_PROFILE(MINI_GAME_GUN_BATTERY_MGR, daMiniGameGunBatteryMgr_c, 0);
 BASE_PROFILE(MINI_GAME_GUN_BATTERY_MGR_OBJ, daMiniGameGunBatteryMgrObj_c);
 
+STATE_DEFINE(daMiniGameGunBatteryMgrObj_c, ShowRule);
+STATE_DEFINE(daMiniGameGunBatteryMgrObj_c, Play);
+STATE_DEFINE(daMiniGameGunBatteryMgrObj_c, ShowResult);
+
 daMiniGameGunBatteryMgr_c::daMiniGameGunBatteryMgr_c() {
     s_pMgrObj = (daMiniGameGunBatteryMgrObj_c *)fBase_c::createChild(
         fProfile::MINI_GAME_GUN_BATTERY_MGR_OBJ, this, 0, 0);
@@ -170,7 +188,7 @@ int daMiniGameGunBatteryMgr_c::doDelete() {
 
 daMiniGameGunBatteryMgrObj_c::daMiniGameGunBatteryMgrObj_c() :
     m_70(0), m_74(0), m_78(-1),
-    mStateMgr(*this, sStateID::null)
+    mStateMgr(*this, StateID_ShowRule)
 {
 }
 
@@ -191,6 +209,76 @@ int daMiniGameGunBatteryMgrObj_c::preExecute() {
 int daMiniGameGunBatteryMgrObj_c::execute() {
     mStateMgr.executeState();
     return SUCCEEDED;
+}
+
+// State bodies, in TARGET ADDRESS order (finalize, execute, initialize per
+// state -- NOT the STATE_FUNC_DECLARE-declared init/exec/final order; this
+// project's own definition order is what the linker uses for .text
+// placement, and this unit's own author happened to write finalize first).
+// ShowRule: fn_2_F8F20(final) fn_2_F8F70(exec) fn_2_F9150(init)
+// Play:     fn_2_F9160(final) fn_2_F9200(exec) fn_2_F92B0(init)
+// ShowResult: fn_2_F92C0(final) fn_2_F9320(exec) fn_2_F9510(init)
+
+void daMiniGameGunBatteryMgrObj_c::finalizeState_ShowRule() {
+    m_ec = 0;
+    m_dc = 0;
+    m_e0 = 0;
+    daPyDemoMng_c::mspInstance->startControlDemoAll();
+    PauseManager_c::m_instance->m_1d = 1;
+}
+
+/// @unofficial PARKED -- not yet authored (0x1D0 bytes, real game logic).
+/// `fn_2_F8F70`.
+void daMiniGameGunBatteryMgrObj_c::executeState_ShowRule() {
+}
+
+/// @unofficial `fn_2_F9150` -- confirmed EMPTY (`blr`, 4 bytes), matches the
+/// landed `Pausewindow_c::initializeState_InitWait(){}` idiom exactly.
+void daMiniGameGunBatteryMgrObj_c::initializeState_ShowRule() {
+}
+
+/// @unofficial PARKED -- not yet authored. Needs `dBg_c` extended past its
+/// current known extent (`include/game/bases/d_bg.hpp` ends around raw
+/// offset 0x9008f; this function touches 0x90110/0x90114, ~0x85 bytes
+/// further, unexplored and not grepped against any other landed user of
+/// that region this round). `fn_2_F9160`.
+void daMiniGameGunBatteryMgrObj_c::finalizeState_Play() {
+}
+
+/// @unofficial PARKED -- not yet authored. Same `dBg_c` extension need as
+/// `finalizeState_Play`, plus `sLib::addCalc(float*, float, float, float,
+/// float)`. `fn_2_F9200`.
+void daMiniGameGunBatteryMgrObj_c::executeState_Play() {
+}
+
+/// @unofficial `fn_2_F92B0` -- confirmed EMPTY (`blr`, 4 bytes).
+void daMiniGameGunBatteryMgrObj_c::initializeState_Play() {
+}
+
+/// @unofficial PARKED -- not yet authored. Needs two more member helpers
+/// (`fn_2_F8DF0`, a per-player loop over `daPyMng_c::getPlayer()` that reads
+/// `m_74`/`mGunSlot[i].m_04` via raw pointer arithmetic across the field
+/// boundary -- confirmed by disassembly, not yet written; and `fn_2_F8ED0`,
+/// a trivial one-line setter for `m_f0`, disassembly already read and
+/// trivial to write, just not wired up yet). `fn_2_F92C0`.
+void daMiniGameGunBatteryMgrObj_c::finalizeState_ShowResult() {
+}
+
+/// @unofficial PARKED -- not yet authored (0x1F0 bytes, real game logic).
+/// `fn_2_F9320`.
+void daMiniGameGunBatteryMgrObj_c::executeState_ShowResult() {
+}
+
+/// @unofficial `fn_2_F9510` -- confirmed EMPTY (`blr`, 4 bytes).
+void daMiniGameGunBatteryMgrObj_c::initializeState_ShowResult() {
+}
+
+// fn_2_F9520 -- daMiniGameGunBatteryMgr_c's OWN destructor. Its target
+// address (0xF9520) sits between ShowResult::initialize (0xF9510) and
+// MGR_OBJ's own destructor (0xF9580), i.e. textually far from MGR's other
+// members above -- kept here, in true address order, rather than grouped
+// with the rest of daMiniGameGunBatteryMgr_c's definitions.
+daMiniGameGunBatteryMgr_c::~daMiniGameGunBatteryMgr_c() {
 }
 
 // fn_2_F9580 -- defined last: its target address (0xF9580) comes AFTER many

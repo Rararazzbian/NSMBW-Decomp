@@ -11734,3 +11734,59 @@ destructor out-of-line in `Pausewindow_c`'s convention regressed the flag count
 7 -> 21, **proving the real source uses inline `{}` destructors** — established by
 elimination, not assumption. Those remain true and useful even though the gate
 they were aimed at was misfiring.
+
+## HEADER WIDENED: `PauseManager_c` gains `m_1d` at `0x1d` — five binaries green
+
+Applied to `include/game/bases/d_pause_manager.hpp`, verified 5/5. Evidence
+checked before applying, and it is the SAME evidence class that pinned the only
+other known field in this class:
+
+```
+lis  r3, m_instance__14PauseManager_c
+li   r0, 1
+lwz  r3, 0(r3)
+stb  r0, 29(r3)          <- 29 = 0x1d
+```
+
+in `daMiniGameGunBatteryMgrObj_c::finalizeState_ShowRule` (`fn_2_F8F20`). The
+header already pins `mFlags` at `0x18` by exactly this reasoning — a `lbz`/`ori`/
+`stb` through the instance pointer — so this is the established standard for this
+class, not a new kind of claim.
+
+**Why widening was safe, and why that mattered:** the header's OWN comment states
+the total size is unknown *because the class is heap-allocated and nothing embeds
+it by value*. Confirmed independently by grep. **A field added past the last known
+offset only affects pointer-based field access; it cannot change any `sizeof`**,
+so no already-landed TU can be disturbed. Had anything embedded it by value this
+would have been a much riskier change and would have needed a different argument.
+
+Sixth shared-header change to go in through the shadow-header workflow today.
+
+## MINI_GAME_GUN_BATTERY 9/49 -> 14/49, and "confirm cheaply" done properly
+
+I asked the agent to *cheaply confirm* its belief that ~13 functions were
+compiler-generated template boilerplate. **It read the content of all sixteen
+instead**, and confirmed every one: `sStateMgr_c`/`sFStateFct_c`/`sFStateID_c`
+destructors and thunks, `sFStateFct_c<T>::build()` and
+`sFStateID_c<T>::isSameName()` matching their landed headers verbatim, and
+`__ptmf_scall` adjustor thunks for the pointer-to-member triples. **None needs
+hand-written code.** A labelled guess turned into a closed question for the next
+agent, which is worth more than the round it cost.
+
+Two further results from doing that reading:
+
+- **A function the inventory had missed entirely.** `daMiniGameGunBatteryMgr_c`
+  needs its own destructor (`F9520`, calling `__dt__8dActor_cFv`). Declared and
+  defined empty — exact match immediately. **An inventory built from a profile
+  range can omit a function; reading the PMF triples and thunks found it.**
+- **The parked constructor's residual now has a named cause.** The PMF triples
+  revealed `m_70`/`m_74`/`m_78` are conceptually gun slot 0 of a real FOUR-gun
+  structure — so the array-unroll residual is likely "declare `mGunSlot[4]`"
+  rather than the current "three separate fields plus `mGunSlot[3]`". Left as a
+  documented next lever rather than re-attempted, per instruction.
+
+Also confirmed: following `d_pausewindow.cpp`'s structure verbatim
+(`STATE_FUNC_DECLARE` in-class, `STATE_DEFINE` right after `BASE_PROFILE`,
+`mStateMgr(*this, StateID_ShowRule)` instead of a `sStateID::null` placeholder)
+needed **no explicit-instantiation trick** — consistent with none of the ten
+landed TUs needing one.
