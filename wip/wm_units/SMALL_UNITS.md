@@ -40,6 +40,39 @@ Why this is the best candidate on the board:
 - 0x6A0 across nine profiles is roughly 0xBC each — classInit plus a small
   create and a method or two per type.
 
+### RIVER: all nine profiles are structurally IDENTICAL
+
+Read before assigning, so the agent starts from a map rather than a range:
+
+```
+every profile:  sizeof 0x3D0,  base dActorState_c
+classInit (~0x50)  stwu; li r3,0x3D0; bl __nw__7fBase_cFUl; null-check;
+                   bl __ct__13dActorState_cFv; lis/addi a pointer; stw it at +0x60
++0x50 (~0x60)      deleting-destructor wrapper: null-check;
+                   bl __dt__13dActorState_cFv; bl __dl__7fBase_cFPv
+```
+
+`sizeof` is read off `li r3, 0x3D0` feeding `operator new` in each classInit —
+exact, not inferred. The four DOL calls resolve to `__nw__7fBase_cFUl`
+(`0x80162A00`), `__ct__13dActorState_cFv` (`0x80066FC0`),
+`__dt__13dActorState_cFv` (`0x800671B0`), `__dl__7fBase_cFPv` (`0x80162A60`).
+
+So: **roughly two functions per profile, eighteen total at 0x50-0x60 bytes each,
+eight of the nine differing only in the pointer stored at `+0x60`.** Get one type
+byte-identical and the rest follow almost mechanically — which is exactly why a
+unit like this can reach N/N in a round where a 0x3000-byte unit cannot.
+
+**Two questions to settle from the disassembly before authoring**, because the
+answers change the source structure rather than a detail of it:
+- **What is stored at `+0x60`?** On this project `+0x60` is the secondary vtable
+  pointer of a `dBase_c : public fBase_c, public cOwnerSetMg_c` layout, produced
+  automatically by ordinary C++ and never to be hand-rolled. But this class
+  derives from `dActorState_c`, so verify rather than assume the same thing.
+- **Nine distinct classes, or ONE class with nine `classInit` entry points?**
+  Identical `sizeof` and identical base constructor across all nine is suspicious
+  in a useful way. Whatever the classInits store at `+0x60` should settle it, and
+  the answer is the difference between nine small class definitions and one.
+
 ## Also scoped and validated
 
 | range | size | profiles | `.ctors` | notes |
