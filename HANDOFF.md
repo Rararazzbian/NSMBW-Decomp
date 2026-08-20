@@ -11356,3 +11356,48 @@ exclusions or it produces a false positive on every unit that owns a singleton.
 With both excluded, **no unit-owned pool is read from outside** — the claim
 `0x1204E0-0x120F00` is NOT short, and the unit is scoped and ready to author with
 `sizeof 0xB8`, base `dActor_c`, and its singleton already resolved.
+
+## Case 0's divisor: CONFIRMED — an `int` OBJECT, not a literal
+
+The reading was right and the fix survived the session-limit kill inside the
+preservation commit:
+
+```cpp
+int n = 15;
+float speed = dist / (float) n;
+m_194 = speed / (float) n;
+```
+
+`15.0f`, `(int)15` and bare `15` all constant-fold to an immediate. **A named
+`int` local does not** — the value propagates into `r3` as an immediate while the
+int-to-float conversion survives, which is exactly what the target shows
+(`li r3,0xf; lis r0,0x4330; xoris; stw/stw; lfd; fsubs`). The `0x4330` bias is
+the SIGNED idiom, which is what pinned it to `int` rather than `u32`.
+
+**`stepCutscene70` went 485 -> 383 differing.** But `fn_2_16D1E0` did NOT close:
+its remaining 3-line gap is a pool-POSITION residual (the target dedupes a `1.0f`
+slot this draft never reaches), not the divisor. **My prediction that solving the
+divisor would close it was wrong** — the two shared a symptom, not a cause.
+
+Round 15 added one clean negative: hoisting `mpMdlMng->mpMdl->m_152` into an
+explicit local before the footstep-sound call produced **byte-for-byte identical
+codegen**, reverted. And a tangent closed rather than left open: the
+`.rodata 0x8b10-0x8ba0` table was re-derived from `original/d_basesNP.rel` against
+a verified anchor and case 6's constants are correct. Its unreferenced
+`0.2f/0.25f/0.75f` slots belong to `processCutsceneCommand` and `checkAnmLoop`,
+both already walled — **not a gap in `stepCutscene70`.**
+
+### WM_KINOPIO is parked at 14/19, and the numbers say why
+
+```
+resetPosition 3   fn_2_16D1E0 3   checkAnmLoop 34
+processCutsceneCommand 136        stepCutscene70 383
+```
+
+**383 differing lines is not a residual, it is a distance.** Fifteen rounds have
+gone into this unit. Both gates are clean (one `.ctors` entry matching target;
+definition order ascending across all 18 functions), so nothing structural is
+wrong — it is simply far from done, and the project's own planning fact applies:
+**a unit that does not close quickly tends not to close at all.** Capacity moves
+to a small unscoped unit instead. This is a park, not an abandonment; MAPPING.md
+carries fifteen rounds of measured negatives for whoever returns to it.

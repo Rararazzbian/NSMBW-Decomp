@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11359 lines / 430 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11404 lines / 432 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -451,3 +451,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `11274-11318` `sc_ForceList` double-init SOLVED: it was our own duplicate declaration
 - `11319-11337` Scoping a fresh unit: `scout_unit.py`, and the singleton exception to the ownership check
   - `11338-11359` The refinement, which the ownership check needs
+- `11360-11389` Case 0's divisor: CONFIRMED — an `int` OBJECT, not a literal
+  - `11390-11404` WM_KINOPIO is parked at 14/19, and the numbers say why

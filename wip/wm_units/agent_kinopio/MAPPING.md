@@ -1693,3 +1693,91 @@ file to let `fn_2_16D1E0` close (needs real evidence first, not a guess);
 (2) `stepCutscene70`'s own preamble register-order residual
 (`isFootStepTiming`/`fn_80105170` argument evaluation, noted since round
 6, never individually chased).
+
+## Round 15: rebuild-verified round 14's state, one negative on the preamble lever
+
+The session that produced round 14 was killed mid-limit; its edits were
+committed uncommitted-looking ("Preserve five agents' mid-round state")
+with an explicit warning not to trust the tally without a rebuild. Per
+the coordinator's instruction, rebuilt from a clean tree before touching
+anything.
+
+### Rebuild confirms round 14's tally exactly -- 14/19, nothing lost
+
+`python wip/wm_units/agent_kinopio/build.py` reproduces round 14's exact
+numbers with zero drift: `stepCutscene70` 383 differing, `fn_2_16D1E0` 3
+differing, `checkAnmLoop` 34, `resetPosition` 3, `processCutsceneCommand`
+136, 13 outright MATCH-family functions (12 real + `startJump`) plus
+`fn_2_16D270`. **The int-`n`-divisor fix (case 0 of `stepCutscene70`,
+`int n = 15; ... (float) n`) is present in the committed source and
+compiles correctly** -- this was this round's assigned primary task, and
+it turns out to already be solved and landed from round 14; verified by
+rebuild, not re-derived from scratch (re-deriving would have risked
+undoing a working fix). `ctors_map.py d_basesNP WM_KINOPIO` re-confirms
+exactly one `.ctors` entry (`0x40c -> 0x16d1e0`), matching target.
+`.text` definition order re-checked against target address order --
+still exactly ascending, ctor/dtor/create/execute/draw/doDelete/
+createModel/calcModel/resetPosition/resetStep/unusedStub/
+processCutsceneCommand/stepCutscene70/checkAnmLoop/startJump/
+checkSpawnGate/.ctors-init/.ctors-callback. Both non-tally gates clean.
+
+### One new lever tried: `stepCutscene70`'s footstep-preamble argument order -- no effect
+
+Round 6 flagged, and round 14 left unaddressed, a register-allocation
+difference in the `isFootStepTiming()`-guarded `fn_80105170(...)` call:
+target computes `mpMdlMng` into `r3` first (reused later for
+`m_pInstance` only after `r3`'s old value is consumed via `lwz r6,
+0x4(r3)`), while the draft computes `m_pInstance` into `r3` immediately
+and stashes `mpMdlMng` in `r5` instead. Tried hoisting the 4th argument
+(`mpMdlMng->mpMdl->m_152`) into an explicit local `u8 v` before the call,
+on the theory that forcing early evaluation might shift which value gets
+`r3` first. **Rebuilt: byte-for-byte identical codegen, zero change**
+(checked in `draft.txt` instruction-by-instruction, not just the diff
+count) -- reverted immediately, `git diff` now empty. Recorded as a
+genuine, specific negative on this exact lever, not a repeat of an
+untried idea.
+
+### Tangent chased and closed: the 0x8b10 rodata table's `0.2f`/`0.25f`/`0.75f` entries are NOT this unit's missing content
+
+Re-derived the target's `.rodata 0x8b10-0x8ba0` table directly from
+`original/d_basesNP.rel` (`base_rodata = 0x1c6600`, cross-checked against
+the known-good `2160.0f/-30.0f/-478.0f` anchor at target `+0x78/+0x7c/
++0x80` before trusting anything else) to double-check case 6's `setAnm`
+constants were not another round-8-style addressing bug. **They are not**
+-- case 6's target bytes (`lfs f1,0x48(r31); lfs f2,0x60(r31); lfs
+f3,0x40(r31)`) map to `1.0/20.0/0.0` in this freshly-anchored table,
+exactly matching the already-authored `setAnm(0, 1.0f, 20.0f, 0.0f)`.
+Round 8's fix stands, re-confirmed independently. The table also contains
+`0.2f`/`0.25f`/`0.75f` (displacements `0x4c/0x50/0x54`) that this unit's
+draft never references -- traced their actual referencing instructions
+(`lfs f30/f31, 0x4c/0x50/0x54(r29)` at target `0x16C68C/0x16C718/
+0x16C73C`, and `lfs f2/f0, 0x4c/0x50(r8)` at `0x16E2B0/0x16E2B8`) to
+**inside `processCutsceneCommand` (target range `0x16c5e0-0x16c810`) and
+`checkAnmLoop` (target range `0x16d050-0x16d100`)**, both already-walled,
+already-characterized residuals explicitly out of this round's scope (the
+paired-single `VEC3Add` lead for the former, the `f31`-register-holding
+shape for the latter). Not this unit's rodata table being short on
+`stepCutscene70`'s account -- a real check, genuinely negative for this
+round's purposes, not a new open item.
+
+## Final result, this round: 14/19 byte-identical, unchanged
+
+No score movement -- this was a verification round following a
+session-limit interruption, not a development round. Everything from
+round 14 stands confirmed by an independent rebuild:
+
+| target | size | draft | note |
+|---|---|---|---|
+| classInit, ctor, dtor, create, execute, draw, doDelete, createModel, calcModel, resetStep, unusedStub, checkSpawnGate, startJump | -- | **MATCH** (13) | |
+| `fn_2_16D270` `.ctors` callback | 0x1C | **MATCH** | |
+| `fn_2_16C530` resetPosition | 0x90 | 3 differing | walled |
+| `fn_2_16D050` checkAnmLoop | 0xB0 | 34 differing | walled; owns 2 of the "missing" 0.2/0.25/0.75 rodata refs |
+| `fn_2_16D1E0` `.ctors`/`__sinit` | 0x84 | 3 differing | pool-position only, root cause (case 0's divisor) confirmed fixed and stable |
+| `fn_2_16C5E0` processCutsceneCommand | 0x230 | 136 differing | walled, owns the rest of the "missing" rodata refs; paired-single lead deferred to sibling agents |
+| `fn_2_16C810` stepCutscene70 | 0x834 | 383 differing | 20/20 cases authored; preamble register-order lever tried once more, no effect |
+
+**14/19 byte-identical.** No regressions. `git diff` is clean at the end
+of this round (the one experimental edit was reverted after measuring no
+effect). Nothing new for the next agent to avoid re-trying beyond what
+round 14 already recorded, plus this round's one footstep-preamble
+negative.
