@@ -13667,3 +13667,79 @@ block**, not just the `change_dir()` call it appears to guard. Related:
 `change_dir()` polarity around the circle cases is NOT a clean rule — it inverts
 between right-side and left-side functions and one case breaks the pattern
 outright. Settled per-case from the actual `beq`/`bne` bytes.
+
+## A LAYOUT field read as PADDING for a whole round — the argument from silence
+
+`dLineMng_c` offset `0x6a` was recorded in `MAPPING.md` as *"2 bytes of implicit
+padding (alignment for mStateMgr's vtable pointer). Not a named member."* The
+reasoning given was that `init()` never touches it.
+
+**It is a real one-byte field.** Verified independently here in the target:
+
+```
+/* 800C1608  9B DD 00 6A */  stb r30, 0x6a(r29)    start_line_move(), r30 = 0
+/* 800C19D8  98 1C 00 6A */  stb r0,  0x6a(r28)    check_term(), r0 = 1
+```
+
+Both store through the OBJECT pointer (`r29`, `r28`), not through `r1` — so
+neither is a stack spill. Only `0x6b` is true alignment padding.
+
+**The defect in the original reasoning is worth naming, because it will recur:
+`init()` never touching a field is an ARGUMENT FROM SILENCE.** A field written by
+no constructor and no initialiser, only by two state-transition methods, is
+invisible to exactly the functions a layout reconstruction reads first. The
+counter-technique is cheap: **before calling any offset padding, grep the target
+disassembly for that offset across the WHOLE unit**, not just the functions you
+happened to read. `grep -n "0x6a(" target.txt` would have found it in one command.
+
+This matters more than one field, because layout is the shared prerequisite every
+other function depends on — an agent authoring against a wrong layout burns its
+whole round.
+
+## `d_line_mng` authoring wave: four parallel agents, and what each proved
+
+```
+author_mov     8/8   byte-exact   mov_to_* x4, mov_frm_* x4   (1188 words)
+author_geom    0/16  byte-exact, 10/16 LENGTH-exact (register residual only)
+author_states  32/60 byte-exact, including all nine Circle* variants
+author_core    8/17  byte-exact, plus fn_800C15B0
+```
+
+**Sixteen further wrong declarations, all found by the same call-site method**, on
+top of the three earlier in the day:
+- five free predicates are `static` (`line_cross_chk1/2/3`,
+  `line_cross_slope_check`, `line_cross_range_check`) — proven by
+  calling-convention register accounting, no register left for an implicit `this`
+- all sixteen `*_cross_chk` predicates return `bool`, not `void`
+- `check_term` returns `bool` — **found independently by two agents**, one
+  mid-authoring and one flagging it as its highest-value follow-up
+- `getLineUnitNo` is `u32` — now **triple-confirmed**, most decisively from
+  `cmplwi` used directly on `r3` twice with no masking, which rules out `u8`
+
+**One return type is DELIBERATELY weaker than the rest and is flagged as such:**
+`CalcAdjustPosY` is `f32`, argued from dead-code-elimination behaviour because
+**no caller exists anywhere in the TU**, so the call-site method could not be
+applied at all. That is the right way to leave it — labelled, not quietly ranked
+alongside the proven ones.
+
+### Codegen levers found this wave
+
+- MWCC evaluates `.set()` arguments RIGHT-TO-LEFT (matching the known
+  constructor-argument rule).
+- Constant folding via same-TU initialisers.
+- `!=` versus `<` in a loop condition **defeats counted-loop conversion** — a
+  source-level lever on loop shape, which is rare on this project.
+- The angle-clamp steps that read as subtractions of `0x3f00`/`0x7f00` are
+  ADDITIONS of the complementary constants (`0xc100`, `0x8100`), confirmed from
+  the `addis` instruction rather than the disassembler's rendering.
+- A named local for a value reused after a call makes MWCC spill it to a
+  nonvolatile FPR (wrong bytes, frame grows `0x10`); writing the expression twice
+  avoids the spill at 1-3 extra words. **Reported as a characterised tradeoff
+  rather than papered over** — the right call.
+
+### Cross-checking that paid off
+
+`author_states` re-proved `getLineUnitNo` as `u32` **independently, before seeing
+my header update**, by different evidence than `author_mov` used. `author_core`
+first guessed `u8` from the callee body and **proved itself wrong by testing a
+caller** — the callee body alone is not sufficient evidence for a return width.

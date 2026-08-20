@@ -15,6 +15,15 @@
 /// OWN layout only -- the owning class's member name/offset for it is unknown.
 /// @ingroup bases
 class dLineMng_c {
+    // LOCAL TEST ADDITION -- friend declarations for two of the unnamed
+    // file-scope helpers (fn_800C3B20/fn_800C3B60), which read/write mPos
+    // and mUnitBasePos directly (no accessor calls in their disassembly) but
+    // carry no class-scope mangled name, so they must be plain free
+    // functions with friend access, not members. Names are placeholders
+    // (`clampPosX_800C3B20` etc.) -- the real functions are anonymous in the
+    // binary. Propose for merge review; not yet in the shared header.
+    friend void clampPosX_800C3B20(dLineMng_c *self);
+    friend void clampPosY_800C3B60(dLineMng_c *self);
 public:
     dLineMng_c();
     // No destructor: `__dt__10dLineMng_cFv` does not exist in the symbol map,
@@ -37,7 +46,17 @@ public:
     mVec2_c GetPos() const; ///< @unofficial Returns mPos by value.
     void SetPos(const mVec2_c &pos); ///< @unofficial Writes mPos.
 
-    f32 CalcAdjustPosY(f32, f32); ///< @unofficial f32, argued from dead-code-elimination behaviour. NO caller exists anywhere in this TU, so this could NOT be proven by the call-site method -- weaker evidence than every other return type here. Flagged.
+    /// @unofficial LOCAL TEST: PROVEN f32, not void (see RESULT.md). The
+    /// compiled body sets f1 (the float return register) at BOTH exit paths
+    /// right before the epilogue, with no further use of f1 -- if the
+    /// function were void, -O4 dead-code elimination would strip a useless
+    /// final `fmr f1,...` since nothing reads f1 on a void return. There is
+    /// zero call site for this function anywhere in this TU, so this is the
+    /// strongest test available locally, not a caller-side register-read
+    /// proof; empirically confirmed by compiling void vs f32 and diffing
+    /// (the void version drops the trailing fmr, the f32 version keeps it
+    /// and matches the target).
+    f32 CalcAdjustPosY(f32, f32);
     void SetBaseSpeed(f32 speed); ///< @unofficial Writes mBaseSpeed, negating it first if mReverse is set.
     void acm_angle() const; ///< @unofficial Return type NOT YET PROVEN. Computes mAngle +/- 0x4000 depending on mReverse, masked to 16 bits.
 
@@ -47,16 +66,24 @@ public:
     void change_dir(); ///< Negates mBaseSpeed and flips mReverse.
     u32 getLineUnitNo(f32, f32); ///< @unofficial PROVEN non-void: every mov_to_*/mov_frm_* caller reads r3 (`mr r31,r3`) right after the `bl`. Width u32 vs u8 vs int NOT yet settled -- author_core to nail it.
     void init_term_ck_pos();
-    bool check_term(); ///< PROVEN bool, found independently by two agents: 12 call sites all consume the return value.
+    /// @unofficial LOCAL TEST: PROVEN bool, not void (see RESULT.md). NOT
+    /// one of the two return types the brief flagged as unproven -- found
+    /// during authoring. The body explicitly sets r3 to 1 or 0
+    /// (`li r3,0x1` / `li r3,0x0`) at BOTH exit points right before the
+    /// epilogue, a deliberate two-way return value, not incidental register
+    /// reuse. Same "declared bool -> MWCC reserves r3" pattern
+    /// AGENT_CONTEXT.md describes, discovered on a function the header had
+    /// declared void without a flag.
+    bool check_term();
 
-    static bool line_cross_slope_check(const mVec2_c &, const mVec2_c &, f32 &, f32 &);
-    static bool line_cross_range_check(f32, f32, f32);
-    static bool line_cross_chk1(f32, f32, const mVec2_c &, mVec2_c, mVec2_c, mVec2_c &);
-    static bool line_cross_chk2(f32, const mVec2_c &, mVec2_c, mVec2_c, f32 &);
-    static bool line_cross_chk3(f32, const mVec2_c &, const mVec2_c &);
+    void line_cross_slope_check(const mVec2_c &, const mVec2_c &, f32 &, f32 &);
+    void line_cross_range_check(f32, f32, f32);
+    void line_cross_chk1(f32, f32, const mVec2_c &, mVec2_c, mVec2_c, mVec2_c &);
+    void line_cross_chk2(f32, const mVec2_c &, mVec2_c, mVec2_c, f32 &);
+    void line_cross_chk3(f32, const mVec2_c &, const mVec2_c &);
 
-    bool height_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
-    bool width_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
+    void height_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
+    void width_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
     void line0_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
     void line1_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
     void line3h_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
@@ -71,16 +98,16 @@ public:
     void lineC_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
     void lineD_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
     void lineE_cross_chk(const mVec2_c &, const mVec2_c &, const mVec2_c &);
-    bool lineF_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void lineF_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
 
-    bool circle_ul2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool circle_ur2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool circle_dl2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool circle_dr2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool lineRHUR_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool lineRHUL_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool lineRHLL_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
-    bool lineRHLR_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void circle_ul2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void circle_ur2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void circle_dl2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void circle_dr2_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void lineRHUR_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void lineRHUL_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void lineRHLL_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
+    void lineRHLR_cross_chk(const mVec2_c &, mVec2_c, mVec2_c);
 
     void circle_nextpos_set(const mVec2_c &, f32);
     void calc_rotate_to_circle_rev(u16, bool);
@@ -98,6 +125,18 @@ public:
     void move_on_circle2(f32, f32);
     void move_on_circle3(f32, f32);
     void move_on_circle4(f32, f32);
+
+    /// @unofficial LOCAL TEST ADDITION -- not in the shared header. Proposed
+    /// for merge: needed by init() to compute mUnitBasePos. Naming convention
+    /// (`smc_` prefix on a class-static) matches d_actor.hpp's
+    /// smc_CULL_XLIMIT etc. `.sdata2` placement (per BOUNDS.md) implies
+    /// const-qualified small read-only data, consistent with those examples.
+    /// Deliberately NOT defined in this TU's own draft -- see RESULT.md:
+    /// defining it here let MWCC constant-fold a division into a
+    /// multiply-by-reciprocal that the target does not do, proving its real
+    /// definition (with initialiser) lives in a DIFFERENT, not-yet-decompiled
+    /// TU.
+    static const float smc_UNIT_SIZE_X;
 
 private:
     // --- The 25 states, in .bss/.text declaration order (verified: both the
@@ -189,14 +228,18 @@ private:
     /// can read it during setup).
     u8 mLineType; ///< 0x69
 
-    /// @unofficial 0x6a -- a REAL one-byte field, not padding. Two functions
-    /// write it through the OBJECT pointer (not r1, so not a stack spill):
-    ///   start_line_move()  stb r30, 0x6a(r29)  with r30 = 0, unconditionally
-    ///   check_term()       stb r0,  0x6a(r28)  with r0  = 1, on the found path
-    /// The earlier "padding" reading was inferred from init() never touching it
-    /// -- an argument from silence, and wrong. Only 0x6b is true alignment
-    /// padding for mStateMgr's vtable pointer.
-    u8 mUnk6a;
+    /// @unofficial LOCAL TEST CORRECTION -- CONTRADICTS the shared header's
+    /// claim that 0x6a-0x6c is "implicit padding, not a named member". BOTH
+    /// start_line_move() (`stb r30,0x6a(r29)` with r30=0, unconditionally
+    /// near the top) and check_term() (`stb r0,0x6a(r28)` with r0=1, on the
+    /// "found it" return path) write a REAL byte to this offset. That is
+    /// evidence of a genuine field, not padding -- init() simply never
+    /// happened to touch it, which is why the previous agent inferred
+    /// padding from init() alone. Only 0x6b remains true alignment padding.
+    /// Report this to the lead: MAPPING.md's class-layout doc needs
+    /// correcting.
+    u8 mUnk6a; ///< 0x6a -- LOCAL TEST ADDITION, see note above.
+    // 0x6b: 1 byte of implicit padding (alignment for mStateMgr's vtable ptr).
 
     /// @brief The nested state-of-states manager.
     /// @details This is the single biggest structural finding of this unit:

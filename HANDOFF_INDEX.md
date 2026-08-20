@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13670 lines / 545 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13746 lines / 549 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -566,3 +566,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13624-13649` `d_line_mng`: `mov_to_*`/`mov_frm_*` 8/8 byte-exact, and THREE proven declaration fixes
   - `13650-13660` A `.data` "constant table" may be a SWITCH JUMP TABLE
   - `13661-13670` And a control-flow trap: re-read branch targets ARITHMETICALLY
+- `13671-13698` A LAYOUT field read as PADDING for a whole round — the argument from silence
+- `13699-13724` `d_line_mng` authoring wave: four parallel agents, and what each proved
+  - `13725-13739` Codegen levers found this wave
+  - `13740-13746` Cross-checking that paid off
