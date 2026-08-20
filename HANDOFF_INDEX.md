@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12220 lines / 476 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12269 lines / 478 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -497,3 +497,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12167-12180` TRAP: vtable SLOT order and `.text` DEFINITION order are INDEPENDENT
 - `12181-12200` AC_NICE_COIN: `__sinit` matching EXACTLY is a proof about the declarations
   - `12201-12220` The two blockers are NOT guesses — the mangled names settle the parameters
+- `12221-12240` HEADER: `dBg_c::CoinGetBitCheck` / `CoinGetBitSet` — five binaries green
+- `12241-12269` `__sinit` closed by DECLARATION ORDER, and the re-verify that followed

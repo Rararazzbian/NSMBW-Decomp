@@ -12217,3 +12217,52 @@ declarations are missing.
 **Only the RETURN types remain open**, because CFront mangling omits them — the
 project's own recurring trap, with seven wrong return types found here. Those come
 from the call sites: a consumed result proves a non-void return.
+
+## HEADER: `dBg_c::CoinGetBitCheck` / `CoinGetBitSet` — five binaries green
+
+Applied to `include/game/bases/d_bg.hpp` plus two `syms.txt` entries. Seventh
+shared-header change of the session, and the evidence chain is the cleanest yet
+because **the two halves of a C++ signature came from two different sources**:
+
+- **Parameters, PROVEN by the mangled name.**
+  `CoinGetBitCheck__5dBg_cFUsUsi` / `CoinGetBitSet__5dBg_cFUsUsi` — `F Us Us i`
+  is `(unsigned short, unsigned short, int)`. Not inferred.
+- **Return types, read off the ONLY two call sites in the codebase**, and I
+  verified both independently before applying:
+  `CoinGetBitCheck` at `0x104E7C` is followed immediately by `cmpwi r3, 0` — the
+  result is tested, so non-void. `CoinGetBitSet` at `0x105044` is followed by
+  `lwz r12, 0x394(r31)` — r3 is never read, consistent with `void`.
+
+**CFront mangling encodes parameters and omits the return type**, so a signature
+is always assembled from these two independent evidence sources. Seven wrong
+return types have been found on this project; every one was a case of the second
+source not being consulted.
+
+## `__sinit` closed by DECLARATION ORDER, and the re-verify that followed
+
+MINI_GAME_GUN_BATTERY reached **45/49** with `__sinit` an exact 159/159 match.
+
+**It was never a content problem.** `fn_2_F97D0` compiled to the exact target
+size immediately, with one residual: the first state's hidden `objectRef`
+exit-registration node landed at `region+4` instead of the target's `region+0`,
+while states 2 and 3 were already exact. The fix was **moving the singleton
+pointer declaration `s_pMgrObj` from BEFORE the `ACTOR_PROFILE`/`BASE_PROFILE`/
+`STATE_DEFINE` block to AFTER it** — pure reordering, no content change.
+
+This is the sharpest confirmation yet of the recorded rule that **`__sinit` is a
+function of the DECLARATIONS and their ORDER**, and of the decision to hold it
+until last: it only became a one-line fix once everything feeding it was correct.
+Attempted earlier it would have been measuring an incomplete file.
+
+**And then the agent re-verified everything, because a static moving shifts the
+pool underneath it:** all 44 previously-matched functions plus all 20
+template-boilerplate functions re-diffed with **zero regressions**, and the four
+parked functions re-tested with **no movement** (identical counts: 10, 16, 55,
+90). It reported that null result explicitly rather than leaving it implicit.
+
+**A reordering that fixes one function can silently break another**, so the
+re-verify is not optional — and reporting "nothing moved" is what makes the next
+round's numbers comparable.
+
+**45/49 is not landable**: four functions remain short on CONTENT, which is bytes,
+not an argument a build can settle.

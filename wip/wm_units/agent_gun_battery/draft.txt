@@ -1494,7 +1494,7 @@
 /* 0000114C 0000118C  81 61 00 70 */	lwz r11, 0x70(r1)
 /* 00001150 00001190  38 9F 00 00 */	addi r4, r31, "__dt__43sFStateID_c<28daMiniGameGunBatteryMgrObj_c>Fv"@l
 /* 00001154 00001194  81 41 00 5C */	lwz r10, 0x5c(r1)
-/* 00001158 00001198  38 BC 00 04 */	addi r5, r28, 0x4
+/* 00001158 00001198  38 BC 00 00 */	addi r5, r28, 0x0
 /* 0000115C 0000119C  81 21 00 60 */	lwz r9, 0x60(r1)
 /* 00001160 000011A0  81 01 00 64 */	lwz r8, 0x64(r1)
 /* 00001164 000011A4  80 E1 00 50 */	lwz r7, 0x50(r1)
@@ -2066,21 +2066,17 @@
 	.4byte "finalizeState__43sFStateID_c<28daMiniGameGunBatteryMgrObj_c>CFR28daMiniGameGunBatteryMgrObj_c"
 .endobj "__vt__43sFStateID_c<28daMiniGameGunBatteryMgrObj_c>"
 
-# 0x00000000..0x000000C0 | size: 0xC0
+# 0x00000000..0x000000C4 | size: 0xC4
 .section .bss, "wa", @nobits
 .balign 8
 
-# .bss:0x0 | size: 0x4
-.obj s_pMgrObj, local
+# .bss:0x0 | size: 0xC
+.obj "@22411", local
 # .bss:0x0 | size: 0x0
 .sym ...bss.0, local
-	.skip 0x4
-.endobj s_pMgrObj
-
-# .bss:0x4 | size: 0xC
-.obj "@22411", local
 	.skip 0xC
 .endobj "@22411"
+	.skip 0x4
 
 # .bss:0x10 | size: 0x30
 # daMiniGameGunBatteryMgrObj_c::StateID_ShowRule
@@ -2111,3 +2107,8 @@
 .obj StateID_ShowResult__28daMiniGameGunBatteryMgrObj_c, global
 	.skip 0x30
 .endobj StateID_ShowResult__28daMiniGameGunBatteryMgrObj_c
+
+# .bss:0xC0 | size: 0x4
+.obj s_pMgrObj, local
+	.skip 0x4
+.endobj s_pMgrObj

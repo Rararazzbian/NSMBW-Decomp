@@ -173,3 +173,52 @@ content). `draw()`/`doDelete()`'s identity rests on the vtable-slot argument
 above, not content uniqueness -- worth an independent recheck once real
 content differentiates them (unlikely to ever happen, both are genuinely
 trivial in the target too).
+
+## ROUND 2 — shadow header proposed, create() authored, one blocker remains
+
+Coordinator supplied the proof I was missing: both `CoinGetBitCheck`/
+`CoinGetBitSet` are in `bin/dtk/wiimj2d_symbols.txt` (the full DOL map),
+mangled `__5dBg_cFUsUsi` = `(u16, u16, int)`, confirming the inferred
+signature outright. Proposed shadow addition at
+`wip/wm_units/agent_nice_coin/shadow_include/game/bases/d_bg.hpp`:
+`bool CoinGetBitCheck(u16 x, u16 negY, int index);` and
+`void CoinGetBitSet(u16 x, u16 negY, int index);` — return types read off the
+only two call sites in the codebase (both in this draft): CoinGetBitCheck's
+result is tested (`cmpwi r3,0; beq ...`) and consumed as `if
+(CoinGetBitCheck(...)) return 2;`, proving non-void, `bool` being the
+natural type for a value used only as a condition; CoinGetBitSet's result is
+never read after the call, consistent with `void`.
+
+`create()` authored using this: profName check (`this+0x8` vs `0x251`,
+`AC_NICE_COIN_REGULAR`'s own profile-order word — a RUNTIME check, since
+both classInits call the identical base ctor), `CoinGetBitCheck((u16)mPos.x,
+(u16)-mPos.y, dActor_c::m_mbgchoice_keep)`, and the three `ACTOR_PARAM`-
+shaped `mParam` bit-fields (now declared as real fields `mUnk3d0`/`mUnk3dc`/
+`mUnk3e0`/`mUnk3d4`, offsets `+0x3d0`/`+0x3dc`/`+0x3e0`/`+0x3d4` — corrected
+an initial bit-position mixup between `mUnk3dc`/`mUnk3e0` by re-deriving
+`extrwi`'s exact semantics rather than trusting a first guess).
+
+**One piece deliberately NOT authored: the trailing `mStateMgr.changeState(...)`-
+shaped dispatch** (confirmed as `changeState`'s vtable slot — `+0x18` off
+`this+0x394` — by cross-referencing `s_StateMgr.hpp`'s declared virtual
+order against `execute()`'s already-confirmed `+0x10` `executeState()`
+dispatch). `create()`'s call passes `&lbl_2_bss_C9E0` (0x40 bytes);
+`executeState_Search()`'s passes `&lbl_2_bss_CA20` (0x30 bytes) — different
+sizes, so different types, and NEITHER matches `StateID_Search`/
+`StateID_EndWait` (both already accounted for, in `.data`, proven by the
+byte-perfect `__sinit` match) nor `sStateID::null` (an `extern`, named
+symbol — would show its real mangled name, not an anonymous `.bss` label).
+`executeState_Search()` also needs two more fields (`mUnk3e4`, `mUnk3e8`)
+that are read/compared in that function but never WRITTEN anywhere in
+`create()` or `executeState_Search()` itself — some other, not-yet-
+identified function must set them. Left as a flagged gap rather than
+guessed, consistent with the project's standing "a wrong constant/target
+moves things further from correct, not closer" rule.
+
+Tally unchanged at 15/19 MATCH-class (the two unauthored functions still
+don't byte-match, expected — the missing `changeState()` call and register-
+allocation drift from the rest of the body being present now cascade
+through the whole function, same effect WM_KOOPAJR's cascading-diff lesson
+described). Real, structural progress: `create()`'s closest-candidate size
+match went from an unrelated function to itself, and its logic is now
+correctly shaped for everything except the one flagged call.

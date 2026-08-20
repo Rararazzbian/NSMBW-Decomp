@@ -173,11 +173,6 @@ public:
     s32 m_f0; ///< @unofficial PLACEHOLDER, init 0 in create().
 };
 
-/// @unofficial Singleton pointer to the single spawned MGR_OBJ child.
-/// `.bss lbl_2_bss_C460`. Create site: MGR's ctor (`fn_2_F8A1C`). Destroy site:
-/// MGR's `doDelete` (`fn_2_F8A78`).
-static daMiniGameGunBatteryMgrObj_c *s_pMgrObj;
-
 // classInit functions are emitted here (matching target address order:
 // fn_2_F8980 == MGR classInit, fn_2_F89B0 == MGR_OBJ classInit, BOTH before
 // the ctor/create/doDelete bodies below -- the linker places .text in
@@ -188,6 +183,11 @@ BASE_PROFILE(MINI_GAME_GUN_BATTERY_MGR_OBJ, daMiniGameGunBatteryMgrObj_c);
 STATE_DEFINE(daMiniGameGunBatteryMgrObj_c, ShowRule);
 STATE_DEFINE(daMiniGameGunBatteryMgrObj_c, Play);
 STATE_DEFINE(daMiniGameGunBatteryMgrObj_c, ShowResult);
+
+/// @unofficial Singleton pointer to the single spawned MGR_OBJ child.
+/// `.bss lbl_2_bss_C460`. Create site: MGR's ctor (`fn_2_F8A1C`). Destroy site:
+/// MGR's `doDelete` (`fn_2_F8A78`).
+static daMiniGameGunBatteryMgrObj_c *s_pMgrObj;
 
 daMiniGameGunBatteryMgr_c::daMiniGameGunBatteryMgr_c() {
     s_pMgrObj = (daMiniGameGunBatteryMgrObj_c *)fBase_c::createChild(

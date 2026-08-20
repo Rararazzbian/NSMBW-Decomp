@@ -8,7 +8,8 @@ SRC = os.path.join(HERE, 'd_a_nice_coin.cpp')
 OBJ = os.path.join(HERE, 'draft.o')
 TXT = os.path.join(HERE, 'draft.txt')
 
-ok, log = H.compile_draft(SRC, OBJ, extra_inc=[], module='d_basesNP')
+SHADOW_INC = os.path.join(HERE, 'shadow_include')
+ok, log = H.compile_draft(SRC, OBJ, extra_inc=[SHADOW_INC], module='d_basesNP')
 if not ok:
     print('COMPILE FAILED')
     print(log[-6000:])

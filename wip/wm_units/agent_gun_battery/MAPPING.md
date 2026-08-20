@@ -4,13 +4,13 @@ Brand-new unit, `d_basesNP` `.text 0xF8980-0xF9B40` (0x11C0 bytes), ONE translat
 covering both profiles (single `.ctors` entry `0x294 -> __sinit fn_2_F97D0`, confirmed with
 `python wip/wm_units/ctors_map.py d_basesNP GUN_BATTERY`).
 
-**Tally: 44/49 individually diffed and matched** (33 are true 0-diff EXACT matches; 11 differ
+**Tally: 45/49 individually diffed and matched** (34 are true 0-diff EXACT matches; 11 differ
 only in symbol names the target dump structurally cannot show). Both gates green:
 `check_fn_order.py` reports 0 inversions, `ctors_map.py` reports exactly one `.ctors` entry.
-Every one of the 44 was diffed by address, not assumed from content resemblance. Remaining 5:
-4 PARKED with real, understood, narrow residuals (register allocation or one specific
-instruction-selection shape); 1 is `__sinit`, correctly left untouched until everything else
-is final.
+Every one of the 45 was diffed by address, not assumed from content resemblance. `__sinit` is
+now included and MATCHED (see Round 6). Remaining 4: all PARKED with real, understood, narrow
+residuals (register allocation or one specific instruction-selection shape) -- re-tested after
+`__sinit` was completed and confirmed unchanged (no movement).
 
 ## History (rounds 1-3, condensed)
 
@@ -102,6 +102,37 @@ needed to be added to source. Re-diffed all 4 parked functions afterward per ins
 unchanged (no regression, no movement), consistent with nothing having actually changed in the
 compiled output.
 
+## Round 6: `__sinit`
+
+Per the coordinator's direction, attempted only once 44/49 real functions (everything except
+`__sinit` itself) were matched -- the precondition for `__sinit` being tractable at all, since
+its content is driven entirely by the unit's static declarations, which were not all correct
+until this point.
+
+`fn_2_F97D0` constructs the 3 `sFStateID_c<daMiniGameGunBatteryMgrObj_c>` state objects (calling
+`sStateID_c(name)` as their base, then filling in the 3 PMF fields and re-patching the vtable
+pointer to the derived type, then `__register_global_object`-registering each for exit-time
+destruction -- standard MWCC static-object bookkeeping, matching the landed
+`source/runtime/global_destructor_chain.c`). The draft compiled to the exact target SIZE
+immediately (159/159 lines) with only ONE real (non-naming) residual: the very first state's
+hidden `objectRef` registration node was built at `region+4` instead of the target's `region+0`
+-- a 4-byte padding-side difference, states 2 and 3 already matched exactly.
+
+**Fixed by reordering, not by touching anything content-related**: moving the singleton pointer
+declaration (`static daMiniGameGunBatteryMgrObj_c *s_pMgrObj;`) from BEFORE the
+`ACTOR_PROFILE`/`BASE_PROFILE`/`STATE_DEFINE` block to AFTER it resolved the padding-side
+difference completely. `__sinit` is now an EXACT 159/159 line match, all 10 remaining
+differences confirmed naming-only (our own profile/vtable/destructor/bss-region symbols, which
+the target dump cannot show under our names).
+
+Re-verified after this reorder, per instruction (a static's position moving shifts the pool
+underneath everything else): all 44 previously-matched real functions AND all 20
+template-boilerplate functions re-diffed -- zero regressions, all still EXACT/naming-only. The
+4 parked functions were also re-tested -- confirmed NO MOVEMENT (same diff counts as before:
+`perPlayerRestCheck` 10, `timerOrKeyGate` 16, `executeState_ShowRule` 55,
+`executeState_ShowResult` 90). A null result that confirms the prediction (their residuals are
+independent of this particular pool shift), reported rather than left implicit.
+
 ## Function inventory (49 real functions, 0x11C0 bytes total; sizes sum to exactly 0x11C0)
 
 | addr | size | status |
@@ -152,7 +183,7 @@ compiled output.
 | F9740 | 0x30 | MATCHED EXACT -- sFStateID_c<T>::finalizeState() thunk (corrected attribution) |
 | F9770 | 0x30 | MATCHED EXACT -- sFStateID_c<T>::executeState() thunk |
 | F97A0 | 0x30 | MATCHED EXACT -- sFStateID_c<T>::initializeState() thunk (corrected attribution) |
-| F97D0 | 0x280 | __sinit -- correctly untouched, always last |
+| F97D0 | 0x280 | MATCHED (naming, 159/159) -- __sinit |
 | F9A50 | 0x58 | MATCHED EXACT -- sFStateID_c<T> dtor (corrected attribution) |
 | F9AB0 | 0x88 | MATCHED EXACT -- sFStateID_c<T>::isSameName() |
 
