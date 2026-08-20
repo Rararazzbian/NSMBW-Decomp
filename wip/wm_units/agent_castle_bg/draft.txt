@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_castle_bg.cpp"
 
-# 0x00000000..0x00000A50 | size: 0xA50
+# 0x00000000..0x00000D60 | size: 0xD60
 .text
 .balign 16
 
@@ -151,759 +151,972 @@
 /* 000001B8 000001F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000001BC 000001FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1C0 | size: 0x4
+# .text:0x1C0 | size: 0x8C
+# daMiddleBGForCastleLudwig_c::activate(bool)
+.fn activate__27daMiddleBGForCastleLudwig_cFb, global
+/* 000001C0 00000200  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000001C4 00000204  7C 08 02 A6 */	mflr r0
+/* 000001C8 00000208  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000001CC 0000020C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001D0 00000210  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001D4 00000214  7C 9F 23 78 */	mr r31, r4
+/* 000001D8 00000218  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000001DC 0000021C  7C 7E 1B 78 */	mr r30, r3
+/* 000001E0 00000220  41 82 00 18 */	beq .L_000001F8
+/* 000001E4 00000224  38 80 00 01 */	li r4, 0x1
+/* 000001E8 00000228  38 A0 00 00 */	li r5, 0x0
+/* 000001EC 0000022C  38 63 05 44 */	addi r3, r3, 0x544
+/* 000001F0 00000230  48 00 00 01 */	bl setOption__Q23m3d9scnLeaf_cFUlUl
+/* 000001F4 00000234  48 00 00 14 */	b .L_00000208
+.L_000001F8:
+/* 000001F8 00000238  38 80 00 01 */	li r4, 0x1
+/* 000001FC 0000023C  38 A0 00 01 */	li r5, 0x1
+/* 00000200 00000240  38 63 05 44 */	addi r3, r3, 0x544
+/* 00000204 00000244  48 00 00 01 */	bl setOption__Q23m3d9scnLeaf_cFUlUl
+.L_00000208:
+/* 00000208 00000248  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0000020C 0000024C  41 82 00 18 */	beq .L_00000224
+/* 00000210 00000250  38 7E 06 68 */	addi r3, r30, 0x668
+/* 00000214 00000254  48 00 00 01 */	bl entry__9dBg_ctr_cFv
+/* 00000218 00000258  38 7E 05 84 */	addi r3, r30, 0x584
+/* 0000021C 0000025C  48 00 00 01 */	bl entry__9dBg_ctr_cFv
+/* 00000220 00000260  48 00 00 14 */	b .L_00000234
+.L_00000224:
+/* 00000224 00000264  38 7E 06 68 */	addi r3, r30, 0x668
+/* 00000228 00000268  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 0000022C 0000026C  38 7E 05 84 */	addi r3, r30, 0x584
+/* 00000230 00000270  48 00 00 01 */	bl release__9dBg_ctr_cFv
+.L_00000234:
+/* 00000234 00000274  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000238 00000278  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0000023C 0000027C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000240 00000280  7C 08 03 A6 */	mtlr r0
+/* 00000244 00000284  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000248 00000288  4E 80 00 20 */	blr
+.endfn activate__27daMiddleBGForCastleLudwig_cFb
+/* 0000024C 0000028C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x250 | size: 0xB8
 # daMiddleBGForCastleLudwig_c::vf280()
 .fn vf280__27daMiddleBGForCastleLudwig_cFv, global
-/* 000001C0 00000200  4E 80 00 20 */	blr
+/* 00000250 00000290  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000254 00000294  7C 08 02 A6 */	mflr r0
+/* 00000258 00000298  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0000025C 0000029C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 00000260 000002A0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 00000264 000002A4  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 00000268 000002A8  93 81 00 10 */	stw r28, 0x10(r1)
+/* 0000026C 000002AC  7C 7C 1B 78 */	mr r28, r3
+/* 00000270 000002B0  38 63 05 44 */	addi r3, r3, 0x544
+/* 00000274 000002B4  48 00 00 01 */	bl getResMdl__Q23m3d6bmdl_cCFv
+/* 00000278 000002B8  3F E0 00 00 */	lis r31, sc_nodeNames@ha
+/* 0000027C 000002BC  90 61 00 08 */	stw r3, 0x8(r1)
+/* 00000280 000002C0  3B FF 00 00 */	addi r31, r31, sc_nodeNames@l
+/* 00000284 000002C4  3B A0 00 00 */	li r29, 0x0
+.L_00000288:
+/* 00000288 000002C8  7F DC EA 14 */	add r30, r28, r29
+/* 0000028C 000002CC  38 60 00 64 */	li r3, 0x64
+/* 00000290 000002D0  48 00 00 01 */	bl rndInt__8dGameComFUl
+/* 00000294 000002D4  68 64 00 0A */	xori r4, r3, 0xa
+/* 00000298 000002D8  38 61 00 08 */	addi r3, r1, 0x8
+/* 0000029C 000002DC  70 80 00 0A */	andi. r0, r4, 0xa
+/* 000002A0 000002E0  7C 84 0E 70 */	srawi r4, r4, 1
+/* 000002A4 000002E4  7C 00 20 50 */	subf r0, r0, r4
+/* 000002A8 000002E8  54 00 0F FE */	srwi r0, r0, 31
+/* 000002AC 000002EC  98 1E 07 64 */	stb r0, 0x764(r30)
+/* 000002B0 000002F0  80 9F 00 00 */	lwz r4, 0x0(r31)
+/* 000002B4 000002F4  48 00 00 01 */	bl GetResNode__Q34nw4r3g3d6ResMdlCFPCc
+/* 000002B8 000002F8  7C 64 1B 79 */	mr. r4, r3
+/* 000002BC 000002FC  38 7C 05 44 */	addi r3, r28, 0x544
+/* 000002C0 00000300  41 82 00 0C */	beq .L_000002CC
+/* 000002C4 00000304  80 84 00 0C */	lwz r4, 0xc(r4)
+/* 000002C8 00000308  48 00 00 08 */	b .L_000002D0
+.L_000002CC:
+/* 000002CC 0000030C  38 80 00 00 */	li r4, 0x0
+.L_000002D0:
+/* 000002D0 00000310  88 BE 07 64 */	lbz r5, 0x764(r30)
+/* 000002D4 00000314  48 00 00 01 */	bl setNodeVisibility__3d3dFPQ23m3d6bmdl_cii
+/* 000002D8 00000318  3B BD 00 01 */	addi r29, r29, 0x1
+/* 000002DC 0000031C  3B FF 00 04 */	addi r31, r31, 0x4
+/* 000002E0 00000320  2C 1D 00 02 */	cmpwi r29, 0x2
+/* 000002E4 00000324  41 80 FF A4 */	blt .L_00000288
+/* 000002E8 00000328  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000002EC 0000032C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 000002F0 00000330  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 000002F4 00000334  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 000002F8 00000338  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 000002FC 0000033C  7C 08 03 A6 */	mtlr r0
+/* 00000300 00000340  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000304 00000344  4E 80 00 20 */	blr
 .endfn vf280__27daMiddleBGForCastleLudwig_cFv
-/* 000001C4 00000204  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000001C8 00000208  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000001CC 0000020C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000308 00000348  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000030C 0000034C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1D0 | size: 0x4
+# .text:0x310 | size: 0x98
 # daMiddleBGForCastleLudwig_c::vf284(daMiddleBGForCastleLudwig_c*)
 .fn vf284__27daMiddleBGForCastleLudwig_cFP27daMiddleBGForCastleLudwig_c, global
-/* 000001D0 00000210  4E 80 00 20 */	blr
+/* 00000310 00000350  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 00000314 00000354  7C 08 02 A6 */	mflr r0
+/* 00000318 00000358  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0000031C 0000035C  39 61 00 30 */	addi r11, r1, 0x30
+/* 00000320 00000360  48 00 00 01 */	bl _savegpr_27
+/* 00000324 00000364  7C 7B 1B 78 */	mr r27, r3
+/* 00000328 00000368  7C 9C 23 78 */	mr r28, r4
+/* 0000032C 0000036C  38 63 05 44 */	addi r3, r3, 0x544
+/* 00000330 00000370  48 00 00 01 */	bl getResMdl__Q23m3d6bmdl_cCFv
+/* 00000334 00000374  3F E0 00 00 */	lis r31, sc_nodeNames@ha
+/* 00000338 00000378  90 61 00 08 */	stw r3, 0x8(r1)
+/* 0000033C 0000037C  3B FF 00 00 */	addi r31, r31, sc_nodeNames@l
+/* 00000340 00000380  3B A0 00 00 */	li r29, 0x0
+.L_00000344:
+/* 00000344 00000384  7C 7C EA 14 */	add r3, r28, r29
+/* 00000348 00000388  7F DB EA 14 */	add r30, r27, r29
+/* 0000034C 0000038C  88 03 07 64 */	lbz r0, 0x764(r3)
+/* 00000350 00000390  38 61 00 08 */	addi r3, r1, 0x8
+/* 00000354 00000394  98 1E 07 64 */	stb r0, 0x764(r30)
+/* 00000358 00000398  80 9F 00 00 */	lwz r4, 0x0(r31)
+/* 0000035C 0000039C  48 00 00 01 */	bl GetResNode__Q34nw4r3g3d6ResMdlCFPCc
+/* 00000360 000003A0  7C 64 1B 79 */	mr. r4, r3
+/* 00000364 000003A4  38 7B 05 44 */	addi r3, r27, 0x544
+/* 00000368 000003A8  41 82 00 0C */	beq .L_00000374
+/* 0000036C 000003AC  80 84 00 0C */	lwz r4, 0xc(r4)
+/* 00000370 000003B0  48 00 00 08 */	b .L_00000378
+.L_00000374:
+/* 00000374 000003B4  38 80 00 00 */	li r4, 0x0
+.L_00000378:
+/* 00000378 000003B8  88 BE 07 64 */	lbz r5, 0x764(r30)
+/* 0000037C 000003BC  48 00 00 01 */	bl setNodeVisibility__3d3dFPQ23m3d6bmdl_cii
+/* 00000380 000003C0  3B BD 00 01 */	addi r29, r29, 0x1
+/* 00000384 000003C4  3B FF 00 04 */	addi r31, r31, 0x4
+/* 00000388 000003C8  2C 1D 00 02 */	cmpwi r29, 0x2
+/* 0000038C 000003CC  41 80 FF B8 */	blt .L_00000344
+/* 00000390 000003D0  39 61 00 30 */	addi r11, r1, 0x30
+/* 00000394 000003D4  48 00 00 01 */	bl _restgpr_27
+/* 00000398 000003D8  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0000039C 000003DC  7C 08 03 A6 */	mtlr r0
+/* 000003A0 000003E0  38 21 00 30 */	addi r1, r1, 0x30
+/* 000003A4 000003E4  4E 80 00 20 */	blr
 .endfn vf284__27daMiddleBGForCastleLudwig_cFP27daMiddleBGForCastleLudwig_c
-/* 000001D4 00000214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000001D8 00000218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000001DC 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000003A8 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000003AC 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1E0 | size: 0x8
+# .text:0x3B0 | size: 0x80
 # daMiddleBGForCastleLudwig_c::create()
 .fn create__27daMiddleBGForCastleLudwig_cFv, global
-/* 000001E0 00000220  38 60 00 01 */	li r3, 0x1
-/* 000001E4 00000224  4E 80 00 20 */	blr
+/* 000003B0 000003F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000003B4 000003F4  7C 08 02 A6 */	mflr r0
+/* 000003B8 000003F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000003BC 000003FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000003C0 00000400  7C 7F 1B 78 */	mr r31, r3
+/* 000003C4 00000404  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 000003C8 00000408  81 8C 02 98 */	lwz r12, 0x298(r12)
+/* 000003CC 0000040C  7D 89 03 A6 */	mtctr r12
+/* 000003D0 00000410  4E 80 04 21 */	bctrl
+/* 000003D4 00000414  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 000003D8 00000418  7F E3 FB 78 */	mr r3, r31
+/* 000003DC 0000041C  81 8C 02 9C */	lwz r12, 0x29c(r12)
+/* 000003E0 00000420  7D 89 03 A6 */	mtctr r12
+/* 000003E4 00000424  4E 80 04 21 */	bctrl
+/* 000003E8 00000428  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 000003EC 0000042C  3C 80 00 00 */	lis r4, s_bssUnk@ha
+/* 000003F0 00000430  7F E3 FB 78 */	mr r3, r31
+/* 000003F4 00000434  81 8C 00 D4 */	lwz r12, 0xd4(r12)
+/* 000003F8 00000438  38 84 00 00 */	addi r4, r4, s_bssUnk@l
+/* 000003FC 0000043C  7D 89 03 A6 */	mtctr r12
+/* 00000400 00000440  4E 80 04 21 */	bctrl
+/* 00000404 00000444  80 9F 03 94 */	lwz r4, 0x394(r31)
+/* 00000408 00000448  38 7F 03 94 */	addi r3, r31, 0x394
+/* 0000040C 0000044C  81 84 00 1C */	lwz r12, 0x1c(r4)
+/* 00000410 00000450  7D 89 03 A6 */	mtctr r12
+/* 00000414 00000454  4E 80 04 21 */	bctrl
+/* 00000418 00000458  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0000041C 0000045C  38 60 00 01 */	li r3, 0x1
+/* 00000420 00000460  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000424 00000464  7C 08 03 A6 */	mtlr r0
+/* 00000428 00000468  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000042C 0000046C  4E 80 00 20 */	blr
 .endfn create__27daMiddleBGForCastleLudwig_cFv
-/* 000001E8 00000228  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000001EC 0000022C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1F0 | size: 0xB0
+# .text:0x430 | size: 0xB0
 # daMiddleBGForCastleLudwig_c::createModel()
 .fn createModel__27daMiddleBGForCastleLudwig_cFv, global
-/* 000001F0 00000230  94 21 FF E0 */	stwu r1, -0x20(r1)
-/* 000001F4 00000234  7C 08 02 A6 */	mflr r0
-/* 000001F8 00000238  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
-/* 000001FC 0000023C  38 C0 00 00 */	li r6, 0x0
-/* 00000200 00000240  90 01 00 24 */	stw r0, 0x24(r1)
-/* 00000204 00000244  38 E0 00 20 */	li r7, 0x20
-/* 00000208 00000248  93 E1 00 1C */	stw r31, 0x1c(r1)
-/* 0000020C 0000024C  93 C1 00 18 */	stw r30, 0x18(r1)
-/* 00000210 00000250  7C 7E 1B 78 */	mr r30, r3
-/* 00000214 00000254  38 63 05 24 */	addi r3, r3, 0x524
-/* 00000218 00000258  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
-/* 0000021C 0000025C  38 80 FF FF */	li r4, -0x1
-/* 00000220 00000260  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
-/* 00000224 00000264  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 00000228 00000268  3C A0 00 00 */	lis r5, "@13879"@ha
-/* 0000022C 0000026C  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000230 00000270  3F E0 00 00 */	lis r31, "@13880"@ha
-/* 00000234 00000274  38 A5 00 00 */	addi r5, r5, "@13879"@l
-/* 00000238 00000278  38 9F 00 00 */	addi r4, r31, "@13880"@l
-/* 0000023C 0000027C  38 63 00 04 */	addi r3, r3, 0x4
-/* 00000240 00000280  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
-/* 00000244 00000284  90 61 00 0C */	stw r3, 0xc(r1)
-/* 00000248 00000288  38 9F 00 00 */	addi r4, r31, "@13880"@l
-/* 0000024C 0000028C  90 7E 05 40 */	stw r3, 0x540(r30)
-/* 00000250 00000290  38 61 00 0C */	addi r3, r1, 0xc
-/* 00000254 00000294  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
-/* 00000258 00000298  90 61 00 08 */	stw r3, 0x8(r1)
-/* 0000025C 0000029C  38 7E 05 44 */	addi r3, r30, 0x544
-/* 00000260 000002A0  38 81 00 08 */	addi r4, r1, 0x8
-/* 00000264 000002A4  38 BE 05 24 */	addi r5, r30, 0x524
-/* 00000268 000002A8  38 C0 00 20 */	li r6, 0x20
-/* 0000026C 000002AC  38 E0 00 01 */	li r7, 0x1
-/* 00000270 000002B0  39 00 00 00 */	li r8, 0x0
-/* 00000274 000002B4  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
-/* 00000278 000002B8  38 7E 05 44 */	addi r3, r30, 0x544
-/* 0000027C 000002BC  48 00 00 01 */	bl setSoftLight_Map__8dActor_cFRQ23m3d6bmdl_c
-/* 00000280 000002C0  38 7E 05 24 */	addi r3, r30, 0x524
-/* 00000284 000002C4  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
-/* 00000288 000002C8  80 01 00 24 */	lwz r0, 0x24(r1)
-/* 0000028C 000002CC  83 E1 00 1C */	lwz r31, 0x1c(r1)
-/* 00000290 000002D0  83 C1 00 18 */	lwz r30, 0x18(r1)
-/* 00000294 000002D4  7C 08 03 A6 */	mtlr r0
-/* 00000298 000002D8  38 21 00 20 */	addi r1, r1, 0x20
-/* 0000029C 000002DC  4E 80 00 20 */	blr
+/* 00000430 00000470  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000434 00000474  7C 08 02 A6 */	mflr r0
+/* 00000438 00000478  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 0000043C 0000047C  38 C0 00 00 */	li r6, 0x0
+/* 00000440 00000480  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000444 00000484  38 E0 00 20 */	li r7, 0x20
+/* 00000448 00000488  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0000044C 0000048C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 00000450 00000490  7C 7E 1B 78 */	mr r30, r3
+/* 00000454 00000494  38 63 05 24 */	addi r3, r3, 0x524
+/* 00000458 00000498  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 0000045C 0000049C  38 80 FF FF */	li r4, -0x1
+/* 00000460 000004A0  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 00000464 000004A4  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 00000468 000004A8  3C A0 00 00 */	lis r5, "@15882"@ha
+/* 0000046C 000004AC  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 00000470 000004B0  3F E0 00 00 */	lis r31, "@15883"@ha
+/* 00000474 000004B4  38 A5 00 00 */	addi r5, r5, "@15882"@l
+/* 00000478 000004B8  38 9F 00 00 */	addi r4, r31, "@15883"@l
+/* 0000047C 000004BC  38 63 00 04 */	addi r3, r3, 0x4
+/* 00000480 000004C0  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 00000484 000004C4  90 61 00 0C */	stw r3, 0xc(r1)
+/* 00000488 000004C8  38 9F 00 00 */	addi r4, r31, "@15883"@l
+/* 0000048C 000004CC  90 7E 05 40 */	stw r3, 0x540(r30)
+/* 00000490 000004D0  38 61 00 0C */	addi r3, r1, 0xc
+/* 00000494 000004D4  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 00000498 000004D8  90 61 00 08 */	stw r3, 0x8(r1)
+/* 0000049C 000004DC  38 7E 05 44 */	addi r3, r30, 0x544
+/* 000004A0 000004E0  38 81 00 08 */	addi r4, r1, 0x8
+/* 000004A4 000004E4  38 BE 05 24 */	addi r5, r30, 0x524
+/* 000004A8 000004E8  38 C0 00 20 */	li r6, 0x20
+/* 000004AC 000004EC  38 E0 00 01 */	li r7, 0x1
+/* 000004B0 000004F0  39 00 00 00 */	li r8, 0x0
+/* 000004B4 000004F4  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 000004B8 000004F8  38 7E 05 44 */	addi r3, r30, 0x544
+/* 000004BC 000004FC  48 00 00 01 */	bl setSoftLight_Map__8dActor_cFRQ23m3d6bmdl_c
+/* 000004C0 00000500  38 7E 05 24 */	addi r3, r30, 0x524
+/* 000004C4 00000504  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 000004C8 00000508  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000004CC 0000050C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 000004D0 00000510  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 000004D4 00000514  7C 08 03 A6 */	mtlr r0
+/* 000004D8 00000518  38 21 00 20 */	addi r1, r1, 0x20
+/* 000004DC 0000051C  4E 80 00 20 */	blr
 .endfn createModel__27daMiddleBGForCastleLudwig_cFv
 
-# .text:0x2A0 | size: 0x4
+# .text:0x4E0 | size: 0x4
 # daMiddleBGForCastleLudwig_c::vf29c()
 .fn vf29c__27daMiddleBGForCastleLudwig_cFv, global
-/* 000002A0 000002E0  4E 80 00 20 */	blr
-.endfn vf29c__27daMiddleBGForCastleLudwig_cFv
-/* 000002A4 000002E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000002A8 000002E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000002AC 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x2B0 | size: 0x8
-# daMiddleBGForCastleLudwig_c::execute()
-.fn execute__27daMiddleBGForCastleLudwig_cFv, global
-/* 000002B0 000002F0  38 60 00 01 */	li r3, 0x1
-/* 000002B4 000002F4  4E 80 00 20 */	blr
-.endfn execute__27daMiddleBGForCastleLudwig_cFv
-/* 000002B8 000002F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000002BC 000002FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x2C0 | size: 0x54
-# daMiddleBGForCastleLudwig_c::vf2a0()
-.fn vf2a0__27daMiddleBGForCastleLudwig_cFv, global
-/* 000002C0 00000300  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000002C4 00000304  7C 08 02 A6 */	mflr r0
-/* 000002C8 00000308  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000002CC 0000030C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 000002D0 00000310  7C 7F 1B 78 */	mr r31, r3
-/* 000002D4 00000314  C0 23 00 AC */	lfs f1, 0xac(r3)
-/* 000002D8 00000318  C0 43 00 B0 */	lfs f2, 0xb0(r3)
-/* 000002DC 0000031C  C0 63 00 B4 */	lfs f3, 0xb4(r3)
-/* 000002E0 00000320  38 63 00 7C */	addi r3, r3, 0x7c
-/* 000002E4 00000324  48 00 00 01 */	bl PSMTXTrans
-/* 000002E8 00000328  38 7F 05 44 */	addi r3, r31, 0x544
-/* 000002EC 0000032C  38 9F 00 7C */	addi r4, r31, 0x7c
-/* 000002F0 00000330  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
-/* 000002F4 00000334  38 7F 05 44 */	addi r3, r31, 0x544
-/* 000002F8 00000338  38 9F 00 DC */	addi r4, r31, 0xdc
-/* 000002FC 0000033C  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
-/* 00000300 00000340  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000304 00000344  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000308 00000348  7C 08 03 A6 */	mtlr r0
-/* 0000030C 0000034C  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000310 00000350  4E 80 00 20 */	blr
-.endfn vf2a0__27daMiddleBGForCastleLudwig_cFv
-/* 00000314 00000354  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000318 00000358  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000031C 0000035C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x320 | size: 0x8
-# daMiddleBGForCastleLudwig_c::doDelete()
-.fn doDelete__27daMiddleBGForCastleLudwig_cFv, global
-/* 00000320 00000360  38 60 00 01 */	li r3, 0x1
-/* 00000324 00000364  4E 80 00 20 */	blr
-.endfn doDelete__27daMiddleBGForCastleLudwig_cFv
-/* 00000328 00000368  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000032C 0000036C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x330 | size: 0x8
-# daMiddleBGForCastleLudwig_c::draw()
-.fn draw__27daMiddleBGForCastleLudwig_cFv, global
-/* 00000330 00000370  38 60 00 01 */	li r3, 0x1
-/* 00000334 00000374  4E 80 00 20 */	blr
-.endfn draw__27daMiddleBGForCastleLudwig_cFv
-/* 00000338 00000378  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000033C 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x340 | size: 0x4
-# daMiddleBGForCastleLudwig_c::initializeState_DemoWait()
-.fn initializeState_DemoWait__27daMiddleBGForCastleLudwig_cFv, global
-/* 00000340 00000380  4E 80 00 20 */	blr
-.endfn initializeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
-/* 00000344 00000384  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000348 00000388  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000034C 0000038C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x350 | size: 0x10
-# daMiddleBGForCastleLudwig_c::executeState_DemoWait()
-.fn executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv, global
-/* 00000350 00000390  84 83 05 44 */	lwzu r4, 0x544(r3)
-/* 00000354 00000394  81 84 00 1C */	lwz r12, 0x1c(r4)
-/* 00000358 00000398  7D 89 03 A6 */	mtctr r12
-/* 0000035C 0000039C  4E 80 04 20 */	bctr
-.endfn executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
-
-# .text:0x360 | size: 0x4
-# daMiddleBGForCastleLudwig_c::finalizeState_DemoWait()
-.fn finalizeState_DemoWait__27daMiddleBGForCastleLudwig_cFv, global
-/* 00000360 000003A0  4E 80 00 20 */	blr
-.endfn finalizeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
-/* 00000364 000003A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000368 000003A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000036C 000003AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x370 | size: 0xB0
-# daBottomBGForCastleLudwig_c::createModel()
-.fn createModel__27daBottomBGForCastleLudwig_cFv, global
-/* 00000370 000003B0  94 21 FF E0 */	stwu r1, -0x20(r1)
-/* 00000374 000003B4  7C 08 02 A6 */	mflr r0
-/* 00000378 000003B8  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
-/* 0000037C 000003BC  38 C0 00 00 */	li r6, 0x0
-/* 00000380 000003C0  90 01 00 24 */	stw r0, 0x24(r1)
-/* 00000384 000003C4  38 E0 00 20 */	li r7, 0x20
-/* 00000388 000003C8  93 E1 00 1C */	stw r31, 0x1c(r1)
-/* 0000038C 000003CC  93 C1 00 18 */	stw r30, 0x18(r1)
-/* 00000390 000003D0  7C 7E 1B 78 */	mr r30, r3
-/* 00000394 000003D4  38 63 05 24 */	addi r3, r3, 0x524
-/* 00000398 000003D8  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
-/* 0000039C 000003DC  38 80 FF FF */	li r4, -0x1
-/* 000003A0 000003E0  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
-/* 000003A4 000003E4  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 000003A8 000003E8  3C A0 00 00 */	lis r5, "@13913"@ha
-/* 000003AC 000003EC  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 000003B0 000003F0  3F E0 00 00 */	lis r31, "@13914"@ha
-/* 000003B4 000003F4  38 A5 00 00 */	addi r5, r5, "@13913"@l
-/* 000003B8 000003F8  38 9F 00 00 */	addi r4, r31, "@13914"@l
-/* 000003BC 000003FC  38 63 00 04 */	addi r3, r3, 0x4
-/* 000003C0 00000400  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
-/* 000003C4 00000404  90 61 00 0C */	stw r3, 0xc(r1)
-/* 000003C8 00000408  38 9F 00 00 */	addi r4, r31, "@13914"@l
-/* 000003CC 0000040C  90 7E 05 40 */	stw r3, 0x540(r30)
-/* 000003D0 00000410  38 61 00 0C */	addi r3, r1, 0xc
-/* 000003D4 00000414  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
-/* 000003D8 00000418  90 61 00 08 */	stw r3, 0x8(r1)
-/* 000003DC 0000041C  38 7E 05 44 */	addi r3, r30, 0x544
-/* 000003E0 00000420  38 81 00 08 */	addi r4, r1, 0x8
-/* 000003E4 00000424  38 BE 05 24 */	addi r5, r30, 0x524
-/* 000003E8 00000428  38 C0 00 20 */	li r6, 0x20
-/* 000003EC 0000042C  38 E0 00 01 */	li r7, 0x1
-/* 000003F0 00000430  39 00 00 00 */	li r8, 0x0
-/* 000003F4 00000434  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
-/* 000003F8 00000438  38 7E 05 44 */	addi r3, r30, 0x544
-/* 000003FC 0000043C  48 00 00 01 */	bl setSoftLight_Map__8dActor_cFRQ23m3d6bmdl_c
-/* 00000400 00000440  38 7E 05 24 */	addi r3, r30, 0x524
-/* 00000404 00000444  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
-/* 00000408 00000448  80 01 00 24 */	lwz r0, 0x24(r1)
-/* 0000040C 0000044C  83 E1 00 1C */	lwz r31, 0x1c(r1)
-/* 00000410 00000450  83 C1 00 18 */	lwz r30, 0x18(r1)
-/* 00000414 00000454  7C 08 03 A6 */	mtlr r0
-/* 00000418 00000458  38 21 00 20 */	addi r1, r1, 0x20
-/* 0000041C 0000045C  4E 80 00 20 */	blr
-.endfn createModel__27daBottomBGForCastleLudwig_cFv
-
-# .text:0x420 | size: 0x4
-# daBottomBGForCastleLudwig_c::vf29c()
-.fn vf29c__27daBottomBGForCastleLudwig_cFv, global
-/* 00000420 00000460  4E 80 00 20 */	blr
-.endfn vf29c__27daBottomBGForCastleLudwig_cFv
-/* 00000424 00000464  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000428 00000468  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000042C 0000046C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x430 | size: 0x10
-# daMiddleBGForCastleLudwig_c::vf288()
-.fn vf288__27daMiddleBGForCastleLudwig_cFv, global
-/* 00000430 00000470  81 83 00 60 */	lwz r12, 0x60(r3)
-/* 00000434 00000474  81 8C 02 A0 */	lwz r12, 0x2a0(r12)
-/* 00000438 00000478  7D 89 03 A6 */	mtctr r12
-/* 0000043C 0000047C  4E 80 04 20 */	bctr
-.endfn vf288__27daMiddleBGForCastleLudwig_cFv
-
-# .text:0x440 | size: 0x4
-# daBottomBGForCastleLudwig_c::vf280()
-.fn vf280__27daBottomBGForCastleLudwig_cFv, global
-/* 00000440 00000480  4E 80 00 20 */	blr
-.endfn vf280__27daBottomBGForCastleLudwig_cFv
-/* 00000444 00000484  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000448 00000488  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000044C 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x450 | size: 0x58
-# daBottomBGForCastleLudwig_c::~daBottomBGForCastleLudwig_c()
-.fn __dt__27daBottomBGForCastleLudwig_cFv, global
-/* 00000450 00000490  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000454 00000494  7C 08 02 A6 */	mflr r0
-/* 00000458 00000498  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000045C 0000049C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000460 000004A0  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000464 000004A4  7C 9F 23 78 */	mr r31, r4
-/* 00000468 000004A8  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 0000046C 000004AC  7C 7E 1B 78 */	mr r30, r3
-/* 00000470 000004B0  41 82 00 1C */	beq .L_0000048C
-/* 00000474 000004B4  38 80 00 00 */	li r4, 0x0
-/* 00000478 000004B8  48 00 00 01 */	bl __dt__27daMiddleBGForCastleLudwig_cFv
-/* 0000047C 000004BC  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000480 000004C0  40 81 00 0C */	ble .L_0000048C
-/* 00000484 000004C4  7F C3 F3 78 */	mr r3, r30
-/* 00000488 000004C8  48 00 00 01 */	bl __dl__7fBase_cFPv
-.L_0000048C:
-/* 0000048C 000004CC  7F C3 F3 78 */	mr r3, r30
-/* 00000490 000004D0  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000494 000004D4  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000498 000004D8  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 0000049C 000004DC  7C 08 03 A6 */	mtlr r0
-/* 000004A0 000004E0  38 21 00 10 */	addi r1, r1, 0x10
-/* 000004A4 000004E4  4E 80 00 20 */	blr
-.endfn __dt__27daBottomBGForCastleLudwig_cFv
-/* 000004A8 000004E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000004AC 000004EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x4B0 | size: 0xC
-# const sStateIDIf_c& baseID_DemoWait<sStateID_c>()
-.fn "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c", local
-/* 000004B0 000004F0  3C 60 00 00 */	lis r3, null__8sStateID@ha
-/* 000004B4 000004F4  38 63 00 00 */	addi r3, r3, null__8sStateID@l
-/* 000004B8 000004F8  4E 80 00 20 */	blr
-.endfn "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"
-/* 000004BC 000004FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x4C0 | size: 0x4
-# dBaseActor_c::finalUpdate()
-.fn finalUpdate__12dBaseActor_cFv, weak
-/* 000004C0 00000500  4E 80 00 20 */	blr
-.endfn finalUpdate__12dBaseActor_cFv
-/* 000004C4 00000504  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000004C8 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000004CC 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x4D0 | size: 0x8
-# dBaseActor_c::GetActorType()
-.fn GetActorType__12dBaseActor_cFv, weak
-/* 000004D0 00000510  38 60 00 08 */	li r3, 0x8
-/* 000004D4 00000514  4E 80 00 20 */	blr
-.endfn GetActorType__12dBaseActor_cFv
-/* 000004D8 00000518  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000004DC 0000051C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x4E0 | size: 0x4
-# dActor_c::funsuiMoveX()
-.fn funsuiMoveX__8dActor_cFv, weak
 /* 000004E0 00000520  4E 80 00 20 */	blr
-.endfn funsuiMoveX__8dActor_cFv
+.endfn vf29c__27daMiddleBGForCastleLudwig_cFv
 /* 000004E4 00000524  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000004E8 00000528  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000004EC 0000052C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x4F0 | size: 0x4
+# .text:0x4F0 | size: 0x80
+# daMiddleBGForCastleLudwig_c::execute()
+.fn execute__27daMiddleBGForCastleLudwig_cFv, global
+/* 000004F0 00000530  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000004F4 00000534  7C 08 02 A6 */	mflr r0
+/* 000004F8 00000538  38 A3 03 94 */	addi r5, r3, 0x394
+/* 000004FC 0000053C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000500 00000540  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000504 00000544  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000508 00000548  7C 7E 1B 78 */	mr r30, r3
+/* 0000050C 0000054C  80 83 03 94 */	lwz r4, 0x394(r3)
+/* 00000510 00000550  7C A3 2B 78 */	mr r3, r5
+/* 00000514 00000554  81 84 00 10 */	lwz r12, 0x10(r4)
+/* 00000518 00000558  7D 89 03 A6 */	mtctr r12
+/* 0000051C 0000055C  4E 80 04 21 */	bctrl
+/* 00000520 00000560  81 9E 00 60 */	lwz r12, 0x60(r30)
+/* 00000524 00000564  7F C3 F3 78 */	mr r3, r30
+/* 00000528 00000568  81 8C 02 A0 */	lwz r12, 0x2a0(r12)
+/* 0000052C 0000056C  7D 89 03 A6 */	mtctr r12
+/* 00000530 00000570  4E 80 04 21 */	bctrl
+/* 00000534 00000574  3B FE 05 84 */	addi r31, r30, 0x584
+/* 00000538 00000578  3B C0 00 00 */	li r30, 0x0
+.L_0000053C:
+/* 0000053C 0000057C  7F E3 FB 78 */	mr r3, r31
+/* 00000540 00000580  48 00 00 01 */	bl calc__9dBg_ctr_cFv
+/* 00000544 00000584  3B DE 00 01 */	addi r30, r30, 0x1
+/* 00000548 00000588  3B FF 00 E4 */	addi r31, r31, 0xe4
+/* 0000054C 0000058C  2C 1E 00 02 */	cmpwi r30, 0x2
+/* 00000550 00000590  41 80 FF EC */	blt .L_0000053C
+/* 00000554 00000594  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000558 00000598  38 60 00 01 */	li r3, 0x1
+/* 0000055C 0000059C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000560 000005A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000564 000005A4  7C 08 03 A6 */	mtlr r0
+/* 00000568 000005A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000056C 000005AC  4E 80 00 20 */	blr
+.endfn execute__27daMiddleBGForCastleLudwig_cFv
+
+# .text:0x570 | size: 0x54
+# daMiddleBGForCastleLudwig_c::vf2a0()
+.fn vf2a0__27daMiddleBGForCastleLudwig_cFv, global
+/* 00000570 000005B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000574 000005B4  7C 08 02 A6 */	mflr r0
+/* 00000578 000005B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000057C 000005BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000580 000005C0  7C 7F 1B 78 */	mr r31, r3
+/* 00000584 000005C4  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 00000588 000005C8  C0 43 00 B0 */	lfs f2, 0xb0(r3)
+/* 0000058C 000005CC  C0 63 00 B4 */	lfs f3, 0xb4(r3)
+/* 00000590 000005D0  38 63 00 7C */	addi r3, r3, 0x7c
+/* 00000594 000005D4  48 00 00 01 */	bl PSMTXTrans
+/* 00000598 000005D8  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0000059C 000005DC  38 9F 00 7C */	addi r4, r31, 0x7c
+/* 000005A0 000005E0  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 000005A4 000005E4  38 7F 05 44 */	addi r3, r31, 0x544
+/* 000005A8 000005E8  38 9F 00 DC */	addi r4, r31, 0xdc
+/* 000005AC 000005EC  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 000005B0 000005F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000005B4 000005F4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000005B8 000005F8  7C 08 03 A6 */	mtlr r0
+/* 000005BC 000005FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 000005C0 00000600  4E 80 00 20 */	blr
+.endfn vf2a0__27daMiddleBGForCastleLudwig_cFv
+/* 000005C4 00000604  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005C8 00000608  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005CC 0000060C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x5D0 | size: 0x50
+# daMiddleBGForCastleLudwig_c::doDelete()
+.fn doDelete__27daMiddleBGForCastleLudwig_cFv, global
+/* 000005D0 00000610  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000005D4 00000614  7C 08 02 A6 */	mflr r0
+/* 000005D8 00000618  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000005DC 0000061C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000005E0 00000620  3B E3 05 84 */	addi r31, r3, 0x584
+/* 000005E4 00000624  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000005E8 00000628  3B C0 00 00 */	li r30, 0x0
+.L_000005EC:
+/* 000005EC 0000062C  7F E3 FB 78 */	mr r3, r31
+/* 000005F0 00000630  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 000005F4 00000634  3B DE 00 01 */	addi r30, r30, 0x1
+/* 000005F8 00000638  3B FF 00 E4 */	addi r31, r31, 0xe4
+/* 000005FC 0000063C  2C 1E 00 02 */	cmpwi r30, 0x2
+/* 00000600 00000640  41 80 FF EC */	blt .L_000005EC
+/* 00000604 00000644  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000608 00000648  38 60 00 01 */	li r3, 0x1
+/* 0000060C 0000064C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000610 00000650  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000614 00000654  7C 08 03 A6 */	mtlr r0
+/* 00000618 00000658  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000061C 0000065C  4E 80 00 20 */	blr
+.endfn doDelete__27daMiddleBGForCastleLudwig_cFv
+
+# .text:0x620 | size: 0x30
+# daMiddleBGForCastleLudwig_c::draw()
+.fn draw__27daMiddleBGForCastleLudwig_cFv, global
+/* 00000620 00000660  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000624 00000664  7C 08 02 A6 */	mflr r0
+/* 00000628 00000668  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000062C 0000066C  85 83 05 44 */	lwzu r12, 0x544(r3)
+/* 00000630 00000670  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000634 00000674  7D 89 03 A6 */	mtctr r12
+/* 00000638 00000678  4E 80 04 21 */	bctrl
+/* 0000063C 0000067C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000640 00000680  38 60 00 01 */	li r3, 0x1
+/* 00000644 00000684  7C 08 03 A6 */	mtlr r0
+/* 00000648 00000688  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000064C 0000068C  4E 80 00 20 */	blr
+.endfn draw__27daMiddleBGForCastleLudwig_cFv
+
+# .text:0x650 | size: 0x4
+# daMiddleBGForCastleLudwig_c::initializeState_DemoWait()
+.fn initializeState_DemoWait__27daMiddleBGForCastleLudwig_cFv, global
+/* 00000650 00000690  4E 80 00 20 */	blr
+.endfn initializeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
+/* 00000654 00000694  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000658 00000698  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000065C 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x660 | size: 0x10
+# daMiddleBGForCastleLudwig_c::executeState_DemoWait()
+.fn executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv, global
+/* 00000660 000006A0  84 83 05 44 */	lwzu r4, 0x544(r3)
+/* 00000664 000006A4  81 84 00 1C */	lwz r12, 0x1c(r4)
+/* 00000668 000006A8  7D 89 03 A6 */	mtctr r12
+/* 0000066C 000006AC  4E 80 04 20 */	bctr
+.endfn executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
+
+# .text:0x670 | size: 0x4
+# daMiddleBGForCastleLudwig_c::finalizeState_DemoWait()
+.fn finalizeState_DemoWait__27daMiddleBGForCastleLudwig_cFv, global
+/* 00000670 000006B0  4E 80 00 20 */	blr
+.endfn finalizeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
+/* 00000674 000006B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000678 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000067C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x680 | size: 0xB0
+# daBottomBGForCastleLudwig_c::createModel()
+.fn createModel__27daBottomBGForCastleLudwig_cFv, global
+/* 00000680 000006C0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000684 000006C4  7C 08 02 A6 */	mflr r0
+/* 00000688 000006C8  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 0000068C 000006CC  38 C0 00 00 */	li r6, 0x0
+/* 00000690 000006D0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000694 000006D4  38 E0 00 20 */	li r7, 0x20
+/* 00000698 000006D8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0000069C 000006DC  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 000006A0 000006E0  7C 7E 1B 78 */	mr r30, r3
+/* 000006A4 000006E4  38 63 05 24 */	addi r3, r3, 0x524
+/* 000006A8 000006E8  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 000006AC 000006EC  38 80 FF FF */	li r4, -0x1
+/* 000006B0 000006F0  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 000006B4 000006F4  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 000006B8 000006F8  3C A0 00 00 */	lis r5, "@15929"@ha
+/* 000006BC 000006FC  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 000006C0 00000700  3F E0 00 00 */	lis r31, "@15930"@ha
+/* 000006C4 00000704  38 A5 00 00 */	addi r5, r5, "@15929"@l
+/* 000006C8 00000708  38 9F 00 00 */	addi r4, r31, "@15930"@l
+/* 000006CC 0000070C  38 63 00 04 */	addi r3, r3, 0x4
+/* 000006D0 00000710  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 000006D4 00000714  90 61 00 0C */	stw r3, 0xc(r1)
+/* 000006D8 00000718  38 9F 00 00 */	addi r4, r31, "@15930"@l
+/* 000006DC 0000071C  90 7E 05 40 */	stw r3, 0x540(r30)
+/* 000006E0 00000720  38 61 00 0C */	addi r3, r1, 0xc
+/* 000006E4 00000724  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 000006E8 00000728  90 61 00 08 */	stw r3, 0x8(r1)
+/* 000006EC 0000072C  38 7E 05 44 */	addi r3, r30, 0x544
+/* 000006F0 00000730  38 81 00 08 */	addi r4, r1, 0x8
+/* 000006F4 00000734  38 BE 05 24 */	addi r5, r30, 0x524
+/* 000006F8 00000738  38 C0 00 20 */	li r6, 0x20
+/* 000006FC 0000073C  38 E0 00 01 */	li r7, 0x1
+/* 00000700 00000740  39 00 00 00 */	li r8, 0x0
+/* 00000704 00000744  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 00000708 00000748  38 7E 05 44 */	addi r3, r30, 0x544
+/* 0000070C 0000074C  48 00 00 01 */	bl setSoftLight_Map__8dActor_cFRQ23m3d6bmdl_c
+/* 00000710 00000750  38 7E 05 24 */	addi r3, r30, 0x524
+/* 00000714 00000754  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 00000718 00000758  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0000071C 0000075C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 00000720 00000760  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 00000724 00000764  7C 08 03 A6 */	mtlr r0
+/* 00000728 00000768  38 21 00 20 */	addi r1, r1, 0x20
+/* 0000072C 0000076C  4E 80 00 20 */	blr
+.endfn createModel__27daBottomBGForCastleLudwig_cFv
+
+# .text:0x730 | size: 0x4
+# daBottomBGForCastleLudwig_c::vf29c()
+.fn vf29c__27daBottomBGForCastleLudwig_cFv, global
+/* 00000730 00000770  4E 80 00 20 */	blr
+.endfn vf29c__27daBottomBGForCastleLudwig_cFv
+/* 00000734 00000774  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000738 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000073C 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x740 | size: 0x10
+# daMiddleBGForCastleLudwig_c::vf288()
+.fn vf288__27daMiddleBGForCastleLudwig_cFv, global
+/* 00000740 00000780  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 00000744 00000784  81 8C 02 A0 */	lwz r12, 0x2a0(r12)
+/* 00000748 00000788  7D 89 03 A6 */	mtctr r12
+/* 0000074C 0000078C  4E 80 04 20 */	bctr
+.endfn vf288__27daMiddleBGForCastleLudwig_cFv
+
+# .text:0x750 | size: 0x4
+# daBottomBGForCastleLudwig_c::vf280()
+.fn vf280__27daBottomBGForCastleLudwig_cFv, global
+/* 00000750 00000790  4E 80 00 20 */	blr
+.endfn vf280__27daBottomBGForCastleLudwig_cFv
+/* 00000754 00000794  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000758 00000798  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000075C 0000079C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x760 | size: 0x58
+# daBottomBGForCastleLudwig_c::~daBottomBGForCastleLudwig_c()
+.fn __dt__27daBottomBGForCastleLudwig_cFv, global
+/* 00000760 000007A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000764 000007A4  7C 08 02 A6 */	mflr r0
+/* 00000768 000007A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000076C 000007AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000770 000007B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000774 000007B4  7C 9F 23 78 */	mr r31, r4
+/* 00000778 000007B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0000077C 000007BC  7C 7E 1B 78 */	mr r30, r3
+/* 00000780 000007C0  41 82 00 1C */	beq .L_0000079C
+/* 00000784 000007C4  38 80 00 00 */	li r4, 0x0
+/* 00000788 000007C8  48 00 00 01 */	bl __dt__27daMiddleBGForCastleLudwig_cFv
+/* 0000078C 000007CC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000790 000007D0  40 81 00 0C */	ble .L_0000079C
+/* 00000794 000007D4  7F C3 F3 78 */	mr r3, r30
+/* 00000798 000007D8  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_0000079C:
+/* 0000079C 000007DC  7F C3 F3 78 */	mr r3, r30
+/* 000007A0 000007E0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000007A4 000007E4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 000007A8 000007E8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000007AC 000007EC  7C 08 03 A6 */	mtlr r0
+/* 000007B0 000007F0  38 21 00 10 */	addi r1, r1, 0x10
+/* 000007B4 000007F4  4E 80 00 20 */	blr
+.endfn __dt__27daBottomBGForCastleLudwig_cFv
+/* 000007B8 000007F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007BC 000007FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7C0 | size: 0xC
+# const sStateIDIf_c& baseID_DemoWait<sStateID_c>()
+.fn "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c", local
+/* 000007C0 00000800  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 000007C4 00000804  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 000007C8 00000808  4E 80 00 20 */	blr
+.endfn "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"
+/* 000007CC 0000080C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7D0 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 000007D0 00000810  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 000007D4 00000814  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007D8 00000818  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007DC 0000081C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7E0 | size: 0x8
+# dBaseActor_c::GetActorType()
+.fn GetActorType__12dBaseActor_cFv, weak
+/* 000007E0 00000820  38 60 00 08 */	li r3, 0x8
+/* 000007E4 00000824  4E 80 00 20 */	blr
+.endfn GetActorType__12dBaseActor_cFv
+/* 000007E8 00000828  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007EC 0000082C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7F0 | size: 0x4
+# dActor_c::funsuiMoveX()
+.fn funsuiMoveX__8dActor_cFv, weak
+/* 000007F0 00000830  4E 80 00 20 */	blr
+.endfn funsuiMoveX__8dActor_cFv
+/* 000007F4 00000834  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007F8 00000838  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007FC 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x800 | size: 0x4
 # dActor_c::setCarryFall(dActor_c*, int)
 .fn setCarryFall__8dActor_cFP8dActor_ci, weak
-/* 000004F0 00000530  4E 80 00 20 */	blr
+/* 00000800 00000840  4E 80 00 20 */	blr
 .endfn setCarryFall__8dActor_cFP8dActor_ci
-/* 000004F4 00000534  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000004F8 00000538  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000004FC 0000053C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000804 00000844  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000808 00000848  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000080C 0000084C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x500 | size: 0x8
+# .text:0x810 | size: 0x8
 # dActor_c::isSpinLiftUpEnable()
 .fn isSpinLiftUpEnable__8dActor_cFv, weak
-/* 00000500 00000540  38 60 00 01 */	li r3, 0x1
-/* 00000504 00000544  4E 80 00 20 */	blr
+/* 00000810 00000850  38 60 00 01 */	li r3, 0x1
+/* 00000814 00000854  4E 80 00 20 */	blr
 .endfn isSpinLiftUpEnable__8dActor_cFv
-/* 00000508 00000548  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000050C 0000054C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000818 00000858  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000081C 0000085C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x510 | size: 0x8
+# .text:0x820 | size: 0x8
 # dActor_c::getPlrNo()
 .fn getPlrNo__8dActor_cFv, weak
-/* 00000510 00000550  38 63 03 8D */	addi r3, r3, 0x38d
-/* 00000514 00000554  4E 80 00 20 */	blr
+/* 00000820 00000860  38 63 03 8D */	addi r3, r3, 0x38d
+/* 00000824 00000864  4E 80 00 20 */	blr
 .endfn getPlrNo__8dActor_cFv
-/* 00000518 00000558  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000051C 0000055C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000828 00000868  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000082C 0000086C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x520 | size: 0x8
+# .text:0x830 | size: 0x8
 # dActor_c::vf68(dBg_ctr_c*)
 .fn vf68__8dActor_cFP9dBg_ctr_c, weak
-/* 00000520 00000560  38 60 00 01 */	li r3, 0x1
-/* 00000524 00000564  4E 80 00 20 */	blr
+/* 00000830 00000870  38 60 00 01 */	li r3, 0x1
+/* 00000834 00000874  4E 80 00 20 */	blr
 .endfn vf68__8dActor_cFP9dBg_ctr_c
-/* 00000528 00000568  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000052C 0000056C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000838 00000878  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000083C 0000087C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x530 | size: 0x8
+# .text:0x840 | size: 0x8
 # dEn_c::isFunsui() const
 .fn isFunsui__5dEn_cCFv, weak
-/* 00000530 00000570  38 60 00 00 */	li r3, 0x0
-/* 00000534 00000574  4E 80 00 20 */	blr
+/* 00000840 00000880  38 60 00 00 */	li r3, 0x0
+/* 00000844 00000884  4E 80 00 20 */	blr
 .endfn isFunsui__5dEn_cCFv
-/* 00000538 00000578  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000053C 0000057C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x540 | size: 0x4
-# dEn_c::endFunsui()
-.fn endFunsui__5dEn_cFv, weak
-/* 00000540 00000580  4E 80 00 20 */	blr
-.endfn endFunsui__5dEn_cFv
-/* 00000544 00000584  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000548 00000588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000054C 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x550 | size: 0x4
-# dEn_c::beginFunsui()
-.fn beginFunsui__5dEn_cFv, weak
-/* 00000550 00000590  4E 80 00 20 */	blr
-.endfn beginFunsui__5dEn_cFv
-/* 00000554 00000594  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000558 00000598  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000055C 0000059C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x560 | size: 0x8
-# dEn_c::calcBoyonScale()
-.fn calcBoyonScale__5dEn_cFv, weak
-/* 00000560 000005A0  38 63 04 64 */	addi r3, r3, 0x464
-/* 00000564 000005A4  48 00 00 00 */	b execute__12dEnBoyoMng_cFv
-.endfn calcBoyonScale__5dEn_cFv
-/* 00000568 000005A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000056C 000005AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x570 | size: 0xC
-# dEn_c::isQuakeDamage()
-.fn isQuakeDamage__5dEn_cFv, weak
-/* 00000570 000005B0  80 03 02 74 */	lwz r0, 0x274(r3)
-/* 00000574 000005B4  54 03 02 E4 */	rlwinm r3, r0, 0, 11, 18
-/* 00000578 000005B8  4E 80 00 20 */	blr
-.endfn isQuakeDamage__5dEn_cFv
-/* 0000057C 000005BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x580 | size: 0x124
-.fn "__sinit_\d_a_castle_bg_cpp", local
-/* 00000580 000005C0  94 21 FF C0 */	stwu r1, -0x40(r1)
-/* 00000584 000005C4  7C 08 02 A6 */	mflr r0
-/* 00000588 000005C8  3D 80 00 00 */	lis r12, ...data.0@ha
-/* 0000058C 000005CC  90 01 00 44 */	stw r0, 0x44(r1)
-/* 00000590 000005D0  39 8C 00 00 */	addi r12, r12, ...data.0@l
-/* 00000594 000005D4  38 AC 05 C0 */	addi r5, r12, 0x5c0
-/* 00000598 000005D8  93 E1 00 3C */	stw r31, 0x3c(r1)
-/* 0000059C 000005DC  38 8C 05 CC */	addi r4, r12, 0x5cc
-/* 000005A0 000005E0  38 6C 05 D8 */	addi r3, r12, 0x5d8
-/* 000005A4 000005E4  93 C1 00 38 */	stw r30, 0x38(r1)
-/* 000005A8 000005E8  3B CC 05 E4 */	addi r30, r12, 0x5e4
-/* 000005AC 000005EC  93 A1 00 34 */	stw r29, 0x34(r1)
-/* 000005B0 000005F0  93 81 00 30 */	stw r28, 0x30(r1)
-/* 000005B4 000005F4  81 6C 05 C0 */	lwz r11, 0x5c0(r12)
-/* 000005B8 000005F8  81 45 00 04 */	lwz r10, 0x4(r5)
-/* 000005BC 000005FC  81 25 00 08 */	lwz r9, 0x8(r5)
-/* 000005C0 00000600  81 0C 05 CC */	lwz r8, 0x5cc(r12)
-/* 000005C4 00000604  80 E4 00 04 */	lwz r7, 0x4(r4)
-/* 000005C8 00000608  80 C4 00 08 */	lwz r6, 0x8(r4)
-/* 000005CC 0000060C  80 AC 05 D8 */	lwz r5, 0x5d8(r12)
-/* 000005D0 00000610  80 83 00 04 */	lwz r4, 0x4(r3)
-/* 000005D4 00000614  80 03 00 08 */	lwz r0, 0x8(r3)
-/* 000005D8 00000618  91 61 00 08 */	stw r11, 0x8(r1)
-/* 000005DC 0000061C  91 41 00 0C */	stw r10, 0xc(r1)
-/* 000005E0 00000620  91 21 00 10 */	stw r9, 0x10(r1)
-/* 000005E4 00000624  91 01 00 14 */	stw r8, 0x14(r1)
-/* 000005E8 00000628  90 E1 00 18 */	stw r7, 0x18(r1)
-/* 000005EC 0000062C  90 C1 00 1C */	stw r6, 0x1c(r1)
-/* 000005F0 00000630  90 A1 00 20 */	stw r5, 0x20(r1)
-/* 000005F4 00000634  90 81 00 24 */	stw r4, 0x24(r1)
-/* 000005F8 00000638  90 01 00 28 */	stw r0, 0x28(r1)
-/* 000005FC 0000063C  48 00 00 01 */	bl "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"
-/* 00000600 00000640  3F A0 00 00 */	lis r29, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@ha
-/* 00000604 00000644  7C 7C 1B 78 */	mr r28, r3
-/* 00000608 00000648  7F C4 F3 78 */	mr r4, r30
-/* 0000060C 0000064C  38 7D 00 00 */	addi r3, r29, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@l
-/* 00000610 00000650  48 00 00 01 */	bl __ct__10sStateID_cFPCc
-/* 00000614 00000654  38 7D 00 00 */	addi r3, r29, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@l
-/* 00000618 00000658  83 C1 00 20 */	lwz r30, 0x20(r1)
-/* 0000061C 0000065C  83 E1 00 24 */	lwz r31, 0x24(r1)
-/* 00000620 00000660  3C C0 00 00 */	lis r6, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@ha
-/* 00000624 00000664  81 81 00 28 */	lwz r12, 0x28(r1)
-/* 00000628 00000668  38 C6 00 00 */	addi r6, r6, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@l
-/* 0000062C 0000066C  81 61 00 14 */	lwz r11, 0x14(r1)
-/* 00000630 00000670  3C 80 00 00 */	lis r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@ha
-/* 00000634 00000674  81 41 00 18 */	lwz r10, 0x18(r1)
-/* 00000638 00000678  3C A0 00 00 */	lis r5, "@13539"@ha
-/* 0000063C 0000067C  81 21 00 1C */	lwz r9, 0x1c(r1)
-/* 00000640 00000680  38 84 00 00 */	addi r4, r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@l
-/* 00000644 00000684  81 01 00 08 */	lwz r8, 0x8(r1)
-/* 00000648 00000688  38 A5 00 00 */	addi r5, r5, "@13539"@l
-/* 0000064C 0000068C  80 E1 00 0C */	lwz r7, 0xc(r1)
-/* 00000650 00000690  80 01 00 10 */	lwz r0, 0x10(r1)
-/* 00000654 00000694  93 C3 00 0C */	stw r30, 0xc(r3)
-/* 00000658 00000698  93 E3 00 10 */	stw r31, 0x10(r3)
-/* 0000065C 0000069C  91 83 00 14 */	stw r12, 0x14(r3)
-/* 00000660 000006A0  91 63 00 18 */	stw r11, 0x18(r3)
-/* 00000664 000006A4  91 43 00 1C */	stw r10, 0x1c(r3)
-/* 00000668 000006A8  91 23 00 20 */	stw r9, 0x20(r3)
-/* 0000066C 000006AC  91 03 00 24 */	stw r8, 0x24(r3)
-/* 00000670 000006B0  90 E3 00 28 */	stw r7, 0x28(r3)
-/* 00000674 000006B4  90 03 00 2C */	stw r0, 0x2c(r3)
-/* 00000678 000006B8  90 DD 00 00 */	stw r6, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@l(r29)
-/* 0000067C 000006BC  93 83 00 30 */	stw r28, 0x30(r3)
-/* 00000680 000006C0  48 00 00 01 */	bl __register_global_object
-/* 00000684 000006C4  80 01 00 44 */	lwz r0, 0x44(r1)
-/* 00000688 000006C8  83 E1 00 3C */	lwz r31, 0x3c(r1)
-/* 0000068C 000006CC  83 C1 00 38 */	lwz r30, 0x38(r1)
-/* 00000690 000006D0  83 A1 00 34 */	lwz r29, 0x34(r1)
-/* 00000694 000006D4  83 81 00 30 */	lwz r28, 0x30(r1)
-/* 00000698 000006D8  7C 08 03 A6 */	mtlr r0
-/* 0000069C 000006DC  38 21 00 40 */	addi r1, r1, 0x40
-/* 000006A0 000006E0  4E 80 00 20 */	blr
-.endfn "__sinit_\d_a_castle_bg_cpp"
-/* 000006A4 000006E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006A8 000006E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006AC 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6B0 | size: 0x58
-# sFStateID_c<daMiddleBGForCastleLudwig_c>::~sFStateID_c()
-.fn "__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv", weak
-/* 000006B0 000006F0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000006B4 000006F4  7C 08 02 A6 */	mflr r0
-/* 000006B8 000006F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000006BC 000006FC  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000006C0 00000700  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 000006C4 00000704  7C 9F 23 78 */	mr r31, r4
-/* 000006C8 00000708  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 000006CC 0000070C  7C 7E 1B 78 */	mr r30, r3
-/* 000006D0 00000710  41 82 00 1C */	beq .L_000006EC
-/* 000006D4 00000714  38 80 00 00 */	li r4, 0x0
-/* 000006D8 00000718  48 00 00 01 */	bl __dt__10sStateID_cFv
-/* 000006DC 0000071C  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 000006E0 00000720  40 81 00 0C */	ble .L_000006EC
-/* 000006E4 00000724  7F C3 F3 78 */	mr r3, r30
-/* 000006E8 00000728  48 00 00 01 */	bl __dl__FPv
-.L_000006EC:
-/* 000006EC 0000072C  7F C3 F3 78 */	mr r3, r30
-/* 000006F0 00000730  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 000006F4 00000734  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 000006F8 00000738  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000006FC 0000073C  7C 08 03 A6 */	mtlr r0
-/* 00000700 00000740  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000704 00000744  4E 80 00 20 */	blr
-.endfn "__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv"
-/* 00000708 00000748  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000070C 0000074C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x710 | size: 0x5C
-# sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::~sFStateVirtualID_c()
-.fn "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv", weak
-/* 00000710 00000750  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000714 00000754  7C 08 02 A6 */	mflr r0
-/* 00000718 00000758  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000071C 0000075C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000720 00000760  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000724 00000764  7C 9F 23 78 */	mr r31, r4
-/* 00000728 00000768  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 0000072C 0000076C  7C 7E 1B 78 */	mr r30, r3
-/* 00000730 00000770  41 82 00 20 */	beq .L_00000750
-/* 00000734 00000774  41 82 00 0C */	beq .L_00000740
-/* 00000738 00000778  38 80 00 00 */	li r4, 0x0
-/* 0000073C 0000077C  48 00 00 01 */	bl __dt__10sStateID_cFv
-.L_00000740:
-/* 00000740 00000780  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000744 00000784  40 81 00 0C */	ble .L_00000750
-/* 00000748 00000788  7F C3 F3 78 */	mr r3, r30
-/* 0000074C 0000078C  48 00 00 01 */	bl __dl__FPv
-.L_00000750:
-/* 00000750 00000790  7F C3 F3 78 */	mr r3, r30
-/* 00000754 00000794  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000758 00000798  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 0000075C 0000079C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000760 000007A0  7C 08 03 A6 */	mtlr r0
-/* 00000764 000007A4  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000768 000007A8  4E 80 00 20 */	blr
-.endfn "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"
-/* 0000076C 000007AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x770 | size: 0xDC
-# sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::number() const
-.fn "number__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv", weak
-/* 00000770 000007B0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000774 000007B4  7C 08 02 A6 */	mflr r0
-/* 00000778 000007B8  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000077C 000007BC  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000780 000007C0  7C 7F 1B 78 */	mr r31, r3
-/* 00000784 000007C4  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00000788 000007C8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000078C 000007CC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000790 000007D0  7D 89 03 A6 */	mtctr r12
-/* 00000794 000007D4  4E 80 04 21 */	bctrl
-/* 00000798 000007D8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000079C 000007DC  40 82 00 94 */	bne .L_00000830
-/* 000007A0 000007E0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000007A4 000007E4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000007A8 000007E8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000007AC 000007EC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000007B0 000007F0  7D 89 03 A6 */	mtctr r12
-/* 000007B4 000007F4  4E 80 04 21 */	bctrl
-/* 000007B8 000007F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000007BC 000007FC  40 82 00 74 */	bne .L_00000830
-/* 000007C0 00000800  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000007C4 00000804  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000007C8 00000808  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000007CC 0000080C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000007D0 00000810  7D 89 03 A6 */	mtctr r12
-/* 000007D4 00000814  4E 80 04 21 */	bctrl
-/* 000007D8 00000818  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000007DC 0000081C  40 82 00 54 */	bne .L_00000830
-/* 000007E0 00000820  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000007E4 00000824  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000007E8 00000828  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000007EC 0000082C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000007F0 00000830  7D 89 03 A6 */	mtctr r12
-/* 000007F4 00000834  4E 80 04 21 */	bctrl
-/* 000007F8 00000838  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000007FC 0000083C  40 82 00 34 */	bne .L_00000830
-/* 00000800 00000840  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000804 00000844  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000808 00000848  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000080C 0000084C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000810 00000850  7D 89 03 A6 */	mtctr r12
-/* 00000814 00000854  4E 80 04 21 */	bctrl
-/* 00000818 00000858  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000081C 0000085C  41 82 00 08 */	beq .L_00000824
-/* 00000820 00000860  48 00 00 10 */	b .L_00000830
-.L_00000824:
-/* 00000824 00000864  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000828 00000868  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
-/* 0000082C 0000086C  7C 7F 1B 78 */	mr r31, r3
-.L_00000830:
-/* 00000830 00000870  7F E3 FB 78 */	mr r3, r31
-/* 00000834 00000874  48 00 00 01 */	bl number__10sStateID_cCFv
-/* 00000838 00000878  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 0000083C 0000087C  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000840 00000880  7C 08 03 A6 */	mtlr r0
-/* 00000844 00000884  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000848 00000888  4E 80 00 20 */	blr
-.endfn "number__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+/* 00000848 00000888  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000084C 0000088C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x850 | size: 0xE0
-# sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::superID() const
-.fn "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv", weak
-/* 00000850 00000890  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000854 00000894  7C 08 02 A6 */	mflr r0
-/* 00000858 00000898  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000085C 0000089C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000860 000008A0  7C 7F 1B 78 */	mr r31, r3
-/* 00000864 000008A4  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00000868 000008A8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000086C 000008AC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000870 000008B0  7D 89 03 A6 */	mtctr r12
-/* 00000874 000008B4  4E 80 04 21 */	bctrl
-/* 00000878 000008B8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000087C 000008BC  40 82 00 9C */	bne .L_00000918
-/* 00000880 000008C0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000884 000008C4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000888 000008C8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000088C 000008CC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000890 000008D0  7D 89 03 A6 */	mtctr r12
-/* 00000894 000008D4  4E 80 04 21 */	bctrl
-/* 00000898 000008D8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000089C 000008DC  40 82 00 74 */	bne .L_00000910
-/* 000008A0 000008E0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000008A4 000008E4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000008A8 000008E8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000008AC 000008EC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000008B0 000008F0  7D 89 03 A6 */	mtctr r12
-/* 000008B4 000008F4  4E 80 04 21 */	bctrl
-/* 000008B8 000008F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000008BC 000008FC  40 82 00 54 */	bne .L_00000910
-/* 000008C0 00000900  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000008C4 00000904  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000008C8 00000908  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000008CC 0000090C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000008D0 00000910  7D 89 03 A6 */	mtctr r12
-/* 000008D4 00000914  4E 80 04 21 */	bctrl
-/* 000008D8 00000918  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000008DC 0000091C  40 82 00 34 */	bne .L_00000910
-/* 000008E0 00000920  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000008E4 00000924  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000008E8 00000928  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000008EC 0000092C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000008F0 00000930  7D 89 03 A6 */	mtctr r12
-/* 000008F4 00000934  4E 80 04 21 */	bctrl
-/* 000008F8 00000938  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000008FC 0000093C  41 82 00 08 */	beq .L_00000904
-/* 00000900 00000940  48 00 00 10 */	b .L_00000910
-.L_00000904:
-/* 00000904 00000944  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000908 00000948  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
-/* 0000090C 0000094C  7C 7F 1B 78 */	mr r31, r3
-.L_00000910:
-/* 00000910 00000950  7F E3 FB 78 */	mr r3, r31
-/* 00000914 00000954  48 00 00 08 */	b .L_0000091C
-.L_00000918:
-/* 00000918 00000958  7F E3 FB 78 */	mr r3, r31
-.L_0000091C:
-/* 0000091C 0000095C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000920 00000960  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000924 00000964  7C 08 03 A6 */	mtlr r0
-/* 00000928 00000968  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000092C 0000096C  4E 80 00 20 */	blr
-.endfn "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+# .text:0x850 | size: 0x4
+# dEn_c::endFunsui()
+.fn endFunsui__5dEn_cFv, weak
+/* 00000850 00000890  4E 80 00 20 */	blr
+.endfn endFunsui__5dEn_cFv
+/* 00000854 00000894  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000858 00000898  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000085C 0000089C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x930 | size: 0x88
-# sFStateID_c<daMiddleBGForCastleLudwig_c>::isSameName(const char*) const
-.fn "isSameName__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFPCc", weak
-/* 00000930 00000970  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000934 00000974  7C 08 02 A6 */	mflr r0
-/* 00000938 00000978  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000093C 0000097C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000940 00000980  7C 9F 23 78 */	mr r31, r4
-/* 00000944 00000984  38 80 00 3A */	li r4, 0x3a
-/* 00000948 00000988  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 0000094C 0000098C  7C 7E 1B 78 */	mr r30, r3
-/* 00000950 00000990  7F E3 FB 78 */	mr r3, r31
-/* 00000954 00000994  48 00 00 01 */	bl strrchr
-/* 00000958 00000998  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000095C 0000099C  41 82 00 08 */	beq .L_00000964
-/* 00000960 000009A0  3B E3 00 01 */	addi r31, r3, 0x1
-.L_00000964:
-/* 00000964 000009A4  81 9E 00 00 */	lwz r12, 0x0(r30)
-/* 00000968 000009A8  7F C3 F3 78 */	mr r3, r30
-/* 0000096C 000009AC  81 8C 00 20 */	lwz r12, 0x20(r12)
-/* 00000970 000009B0  7D 89 03 A6 */	mtctr r12
-/* 00000974 000009B4  4E 80 04 21 */	bctrl
-/* 00000978 000009B8  38 80 00 3A */	li r4, 0x3a
-/* 0000097C 000009BC  48 00 00 01 */	bl strrchr
-/* 00000980 000009C0  7F E4 FB 78 */	mr r4, r31
-/* 00000984 000009C4  38 63 00 01 */	addi r3, r3, 0x1
-/* 00000988 000009C8  48 00 00 01 */	bl strcmp
-/* 0000098C 000009CC  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000990 000009D0  40 82 00 0C */	bne .L_0000099C
-/* 00000994 000009D4  38 60 00 01 */	li r3, 0x1
-/* 00000998 000009D8  48 00 00 08 */	b .L_000009A0
-.L_0000099C:
-/* 0000099C 000009DC  38 60 00 00 */	li r3, 0x0
-.L_000009A0:
-/* 000009A0 000009E0  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000009A4 000009E4  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 000009A8 000009E8  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 000009AC 000009EC  7C 08 03 A6 */	mtlr r0
-/* 000009B0 000009F0  38 21 00 10 */	addi r1, r1, 0x10
-/* 000009B4 000009F4  4E 80 00 20 */	blr
-.endfn "isSameName__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFPCc"
+# .text:0x860 | size: 0x4
+# dEn_c::beginFunsui()
+.fn beginFunsui__5dEn_cFv, weak
+/* 00000860 000008A0  4E 80 00 20 */	blr
+.endfn beginFunsui__5dEn_cFv
+/* 00000864 000008A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000868 000008A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000086C 000008AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x870 | size: 0x8
+# dEn_c::calcBoyonScale()
+.fn calcBoyonScale__5dEn_cFv, weak
+/* 00000870 000008B0  38 63 04 64 */	addi r3, r3, 0x464
+/* 00000874 000008B4  48 00 00 00 */	b execute__12dEnBoyoMng_cFv
+.endfn calcBoyonScale__5dEn_cFv
+/* 00000878 000008B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000087C 000008BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x880 | size: 0xC
+# dEn_c::isQuakeDamage()
+.fn isQuakeDamage__5dEn_cFv, weak
+/* 00000880 000008C0  80 03 02 74 */	lwz r0, 0x274(r3)
+/* 00000884 000008C4  54 03 02 E4 */	rlwinm r3, r0, 0, 11, 18
+/* 00000888 000008C8  4E 80 00 20 */	blr
+.endfn isQuakeDamage__5dEn_cFv
+/* 0000088C 000008CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x890 | size: 0x124
+.fn "__sinit_\d_a_castle_bg_cpp", local
+/* 00000890 000008D0  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 00000894 000008D4  7C 08 02 A6 */	mflr r0
+/* 00000898 000008D8  3D 80 00 00 */	lis r12, ...data.0@ha
+/* 0000089C 000008DC  90 01 00 44 */	stw r0, 0x44(r1)
+/* 000008A0 000008E0  39 8C 00 00 */	addi r12, r12, ...data.0@l
+/* 000008A4 000008E4  38 AC 05 DC */	addi r5, r12, 0x5dc
+/* 000008A8 000008E8  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 000008AC 000008EC  38 8C 05 E8 */	addi r4, r12, 0x5e8
+/* 000008B0 000008F0  38 6C 05 F4 */	addi r3, r12, 0x5f4
+/* 000008B4 000008F4  93 C1 00 38 */	stw r30, 0x38(r1)
+/* 000008B8 000008F8  3B CC 06 00 */	addi r30, r12, 0x600
+/* 000008BC 000008FC  93 A1 00 34 */	stw r29, 0x34(r1)
+/* 000008C0 00000900  93 81 00 30 */	stw r28, 0x30(r1)
+/* 000008C4 00000904  81 6C 05 DC */	lwz r11, 0x5dc(r12)
+/* 000008C8 00000908  81 45 00 04 */	lwz r10, 0x4(r5)
+/* 000008CC 0000090C  81 25 00 08 */	lwz r9, 0x8(r5)
+/* 000008D0 00000910  81 0C 05 E8 */	lwz r8, 0x5e8(r12)
+/* 000008D4 00000914  80 E4 00 04 */	lwz r7, 0x4(r4)
+/* 000008D8 00000918  80 C4 00 08 */	lwz r6, 0x8(r4)
+/* 000008DC 0000091C  80 AC 05 F4 */	lwz r5, 0x5f4(r12)
+/* 000008E0 00000920  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 000008E4 00000924  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 000008E8 00000928  91 61 00 08 */	stw r11, 0x8(r1)
+/* 000008EC 0000092C  91 41 00 0C */	stw r10, 0xc(r1)
+/* 000008F0 00000930  91 21 00 10 */	stw r9, 0x10(r1)
+/* 000008F4 00000934  91 01 00 14 */	stw r8, 0x14(r1)
+/* 000008F8 00000938  90 E1 00 18 */	stw r7, 0x18(r1)
+/* 000008FC 0000093C  90 C1 00 1C */	stw r6, 0x1c(r1)
+/* 00000900 00000940  90 A1 00 20 */	stw r5, 0x20(r1)
+/* 00000904 00000944  90 81 00 24 */	stw r4, 0x24(r1)
+/* 00000908 00000948  90 01 00 28 */	stw r0, 0x28(r1)
+/* 0000090C 0000094C  48 00 00 01 */	bl "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"
+/* 00000910 00000950  3F A0 00 00 */	lis r29, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@ha
+/* 00000914 00000954  7C 7C 1B 78 */	mr r28, r3
+/* 00000918 00000958  7F C4 F3 78 */	mr r4, r30
+/* 0000091C 0000095C  38 7D 00 00 */	addi r3, r29, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@l
+/* 00000920 00000960  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00000924 00000964  38 7D 00 00 */	addi r3, r29, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@l
+/* 00000928 00000968  83 C1 00 20 */	lwz r30, 0x20(r1)
+/* 0000092C 0000096C  83 E1 00 24 */	lwz r31, 0x24(r1)
+/* 00000930 00000970  3C C0 00 00 */	lis r6, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@ha
+/* 00000934 00000974  81 81 00 28 */	lwz r12, 0x28(r1)
+/* 00000938 00000978  38 C6 00 00 */	addi r6, r6, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@l
+/* 0000093C 0000097C  81 61 00 14 */	lwz r11, 0x14(r1)
+/* 00000940 00000980  3C 80 00 00 */	lis r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@ha
+/* 00000944 00000984  81 41 00 18 */	lwz r10, 0x18(r1)
+/* 00000948 00000988  3C A0 00 00 */	lis r5, "@15461"@ha
+/* 0000094C 0000098C  81 21 00 1C */	lwz r9, 0x1c(r1)
+/* 00000950 00000990  38 84 00 00 */	addi r4, r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@l
+/* 00000954 00000994  81 01 00 08 */	lwz r8, 0x8(r1)
+/* 00000958 00000998  38 A5 00 00 */	addi r5, r5, "@15461"@l
+/* 0000095C 0000099C  80 E1 00 0C */	lwz r7, 0xc(r1)
+/* 00000960 000009A0  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 00000964 000009A4  93 C3 00 0C */	stw r30, 0xc(r3)
+/* 00000968 000009A8  93 E3 00 10 */	stw r31, 0x10(r3)
+/* 0000096C 000009AC  91 83 00 14 */	stw r12, 0x14(r3)
+/* 00000970 000009B0  91 63 00 18 */	stw r11, 0x18(r3)
+/* 00000974 000009B4  91 43 00 1C */	stw r10, 0x1c(r3)
+/* 00000978 000009B8  91 23 00 20 */	stw r9, 0x20(r3)
+/* 0000097C 000009BC  91 03 00 24 */	stw r8, 0x24(r3)
+/* 00000980 000009C0  90 E3 00 28 */	stw r7, 0x28(r3)
+/* 00000984 000009C4  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00000988 000009C8  90 DD 00 00 */	stw r6, StateID_DemoWait__27daMiddleBGForCastleLudwig_c@l(r29)
+/* 0000098C 000009CC  93 83 00 30 */	stw r28, 0x30(r3)
+/* 00000990 000009D0  48 00 00 01 */	bl __register_global_object
+/* 00000994 000009D4  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 00000998 000009D8  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 0000099C 000009DC  83 C1 00 38 */	lwz r30, 0x38(r1)
+/* 000009A0 000009E0  83 A1 00 34 */	lwz r29, 0x34(r1)
+/* 000009A4 000009E4  83 81 00 30 */	lwz r28, 0x30(r1)
+/* 000009A8 000009E8  7C 08 03 A6 */	mtlr r0
+/* 000009AC 000009EC  38 21 00 40 */	addi r1, r1, 0x40
+/* 000009B0 000009F0  4E 80 00 20 */	blr
+.endfn "__sinit_\d_a_castle_bg_cpp"
+/* 000009B4 000009F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000009B8 000009F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 000009BC 000009FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x9C0 | size: 0x30
-# sFStateID_c<daMiddleBGForCastleLudwig_c>::initializeState(daMiddleBGForCastleLudwig_c&) const
-.fn "initializeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
+# .text:0x9C0 | size: 0x58
+# sFStateID_c<daMiddleBGForCastleLudwig_c>::~sFStateID_c()
+.fn "__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv", weak
 /* 000009C0 00000A00  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 000009C4 00000A04  7C 08 02 A6 */	mflr r0
-/* 000009C8 00000A08  7C 65 1B 78 */	mr r5, r3
-/* 000009CC 00000A0C  7C 83 23 78 */	mr r3, r4
-/* 000009D0 00000A10  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000009D4 00000A14  39 85 00 0C */	addi r12, r5, 0xc
-/* 000009D8 00000A18  48 00 00 01 */	bl __ptmf_scall
-/* 000009DC 00000A1C  60 00 00 00 */	nop
-/* 000009E0 00000A20  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000009E4 00000A24  7C 08 03 A6 */	mtlr r0
-/* 000009E8 00000A28  38 21 00 10 */	addi r1, r1, 0x10
-/* 000009EC 00000A2C  4E 80 00 20 */	blr
-.endfn "initializeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
+/* 000009C8 00000A08  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000009CC 00000A0C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000009D0 00000A10  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000009D4 00000A14  7C 9F 23 78 */	mr r31, r4
+/* 000009D8 00000A18  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000009DC 00000A1C  7C 7E 1B 78 */	mr r30, r3
+/* 000009E0 00000A20  41 82 00 1C */	beq .L_000009FC
+/* 000009E4 00000A24  38 80 00 00 */	li r4, 0x0
+/* 000009E8 00000A28  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 000009EC 00000A2C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 000009F0 00000A30  40 81 00 0C */	ble .L_000009FC
+/* 000009F4 00000A34  7F C3 F3 78 */	mr r3, r30
+/* 000009F8 00000A38  48 00 00 01 */	bl __dl__FPv
+.L_000009FC:
+/* 000009FC 00000A3C  7F C3 F3 78 */	mr r3, r30
+/* 00000A00 00000A40  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000A04 00000A44  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000A08 00000A48  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000A0C 00000A4C  7C 08 03 A6 */	mtlr r0
+/* 00000A10 00000A50  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000A14 00000A54  4E 80 00 20 */	blr
+.endfn "__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv"
+/* 00000A18 00000A58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000A1C 00000A5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x9F0 | size: 0x30
-# sFStateID_c<daMiddleBGForCastleLudwig_c>::executeState(daMiddleBGForCastleLudwig_c&) const
-.fn "executeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
-/* 000009F0 00000A30  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000009F4 00000A34  7C 08 02 A6 */	mflr r0
-/* 000009F8 00000A38  7C 65 1B 78 */	mr r5, r3
-/* 000009FC 00000A3C  7C 83 23 78 */	mr r3, r4
-/* 00000A00 00000A40  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000A04 00000A44  39 85 00 18 */	addi r12, r5, 0x18
-/* 00000A08 00000A48  48 00 00 01 */	bl __ptmf_scall
-/* 00000A0C 00000A4C  60 00 00 00 */	nop
-/* 00000A10 00000A50  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000A14 00000A54  7C 08 03 A6 */	mtlr r0
-/* 00000A18 00000A58  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000A1C 00000A5C  4E 80 00 20 */	blr
-.endfn "executeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
-
-# .text:0xA20 | size: 0x30
-# sFStateID_c<daMiddleBGForCastleLudwig_c>::finalizeState(daMiddleBGForCastleLudwig_c&) const
-.fn "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
+# .text:0xA20 | size: 0x5C
+# sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::~sFStateVirtualID_c()
+.fn "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv", weak
 /* 00000A20 00000A60  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 00000A24 00000A64  7C 08 02 A6 */	mflr r0
-/* 00000A28 00000A68  7C 65 1B 78 */	mr r5, r3
-/* 00000A2C 00000A6C  7C 83 23 78 */	mr r3, r4
-/* 00000A30 00000A70  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000A34 00000A74  39 85 00 24 */	addi r12, r5, 0x24
-/* 00000A38 00000A78  48 00 00 01 */	bl __ptmf_scall
-/* 00000A3C 00000A7C  60 00 00 00 */	nop
-/* 00000A40 00000A80  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000A44 00000A84  7C 08 03 A6 */	mtlr r0
-/* 00000A48 00000A88  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000A4C 00000A8C  4E 80 00 20 */	blr
+/* 00000A28 00000A68  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000A2C 00000A6C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000A30 00000A70  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000A34 00000A74  7C 9F 23 78 */	mr r31, r4
+/* 00000A38 00000A78  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000A3C 00000A7C  7C 7E 1B 78 */	mr r30, r3
+/* 00000A40 00000A80  41 82 00 20 */	beq .L_00000A60
+/* 00000A44 00000A84  41 82 00 0C */	beq .L_00000A50
+/* 00000A48 00000A88  38 80 00 00 */	li r4, 0x0
+/* 00000A4C 00000A8C  48 00 00 01 */	bl __dt__10sStateID_cFv
+.L_00000A50:
+/* 00000A50 00000A90  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000A54 00000A94  40 81 00 0C */	ble .L_00000A60
+/* 00000A58 00000A98  7F C3 F3 78 */	mr r3, r30
+/* 00000A5C 00000A9C  48 00 00 01 */	bl __dl__FPv
+.L_00000A60:
+/* 00000A60 00000AA0  7F C3 F3 78 */	mr r3, r30
+/* 00000A64 00000AA4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000A68 00000AA8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000A6C 00000AAC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000A70 00000AB0  7C 08 03 A6 */	mtlr r0
+/* 00000A74 00000AB4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000A78 00000AB8  4E 80 00 20 */	blr
+.endfn "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"
+/* 00000A7C 00000ABC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xA80 | size: 0xDC
+# sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::number() const
+.fn "number__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv", weak
+/* 00000A80 00000AC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000A84 00000AC4  7C 08 02 A6 */	mflr r0
+/* 00000A88 00000AC8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000A8C 00000ACC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000A90 00000AD0  7C 7F 1B 78 */	mr r31, r3
+/* 00000A94 00000AD4  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 00000A98 00000AD8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000A9C 00000ADC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000AA0 00000AE0  7D 89 03 A6 */	mtctr r12
+/* 00000AA4 00000AE4  4E 80 04 21 */	bctrl
+/* 00000AA8 00000AE8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000AAC 00000AEC  40 82 00 94 */	bne .L_00000B40
+/* 00000AB0 00000AF0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000AB4 00000AF4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000AB8 00000AF8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000ABC 00000AFC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000AC0 00000B00  7D 89 03 A6 */	mtctr r12
+/* 00000AC4 00000B04  4E 80 04 21 */	bctrl
+/* 00000AC8 00000B08  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000ACC 00000B0C  40 82 00 74 */	bne .L_00000B40
+/* 00000AD0 00000B10  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000AD4 00000B14  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000AD8 00000B18  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000ADC 00000B1C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000AE0 00000B20  7D 89 03 A6 */	mtctr r12
+/* 00000AE4 00000B24  4E 80 04 21 */	bctrl
+/* 00000AE8 00000B28  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000AEC 00000B2C  40 82 00 54 */	bne .L_00000B40
+/* 00000AF0 00000B30  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000AF4 00000B34  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000AF8 00000B38  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000AFC 00000B3C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000B00 00000B40  7D 89 03 A6 */	mtctr r12
+/* 00000B04 00000B44  4E 80 04 21 */	bctrl
+/* 00000B08 00000B48  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000B0C 00000B4C  40 82 00 34 */	bne .L_00000B40
+/* 00000B10 00000B50  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000B14 00000B54  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000B18 00000B58  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B1C 00000B5C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000B20 00000B60  7D 89 03 A6 */	mtctr r12
+/* 00000B24 00000B64  4E 80 04 21 */	bctrl
+/* 00000B28 00000B68  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000B2C 00000B6C  41 82 00 08 */	beq .L_00000B34
+/* 00000B30 00000B70  48 00 00 10 */	b .L_00000B40
+.L_00000B34:
+/* 00000B34 00000B74  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000B38 00000B78  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+/* 00000B3C 00000B7C  7C 7F 1B 78 */	mr r31, r3
+.L_00000B40:
+/* 00000B40 00000B80  7F E3 FB 78 */	mr r3, r31
+/* 00000B44 00000B84  48 00 00 01 */	bl number__10sStateID_cCFv
+/* 00000B48 00000B88  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000B4C 00000B8C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000B50 00000B90  7C 08 03 A6 */	mtlr r0
+/* 00000B54 00000B94  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000B58 00000B98  4E 80 00 20 */	blr
+.endfn "number__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+/* 00000B5C 00000B9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xB60 | size: 0xE0
+# sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::superID() const
+.fn "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv", weak
+/* 00000B60 00000BA0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000B64 00000BA4  7C 08 02 A6 */	mflr r0
+/* 00000B68 00000BA8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000B6C 00000BAC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000B70 00000BB0  7C 7F 1B 78 */	mr r31, r3
+/* 00000B74 00000BB4  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 00000B78 00000BB8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B7C 00000BBC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000B80 00000BC0  7D 89 03 A6 */	mtctr r12
+/* 00000B84 00000BC4  4E 80 04 21 */	bctrl
+/* 00000B88 00000BC8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000B8C 00000BCC  40 82 00 9C */	bne .L_00000C28
+/* 00000B90 00000BD0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000B94 00000BD4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000B98 00000BD8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000B9C 00000BDC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000BA0 00000BE0  7D 89 03 A6 */	mtctr r12
+/* 00000BA4 00000BE4  4E 80 04 21 */	bctrl
+/* 00000BA8 00000BE8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000BAC 00000BEC  40 82 00 74 */	bne .L_00000C20
+/* 00000BB0 00000BF0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000BB4 00000BF4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000BB8 00000BF8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000BBC 00000BFC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000BC0 00000C00  7D 89 03 A6 */	mtctr r12
+/* 00000BC4 00000C04  4E 80 04 21 */	bctrl
+/* 00000BC8 00000C08  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000BCC 00000C0C  40 82 00 54 */	bne .L_00000C20
+/* 00000BD0 00000C10  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000BD4 00000C14  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000BD8 00000C18  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000BDC 00000C1C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000BE0 00000C20  7D 89 03 A6 */	mtctr r12
+/* 00000BE4 00000C24  4E 80 04 21 */	bctrl
+/* 00000BE8 00000C28  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000BEC 00000C2C  40 82 00 34 */	bne .L_00000C20
+/* 00000BF0 00000C30  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00000BF4 00000C34  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000BF8 00000C38  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000BFC 00000C3C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00000C00 00000C40  7D 89 03 A6 */	mtctr r12
+/* 00000C04 00000C44  4E 80 04 21 */	bctrl
+/* 00000C08 00000C48  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000C0C 00000C4C  41 82 00 08 */	beq .L_00000C14
+/* 00000C10 00000C50  48 00 00 10 */	b .L_00000C20
+.L_00000C14:
+/* 00000C14 00000C54  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00000C18 00000C58  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+/* 00000C1C 00000C5C  7C 7F 1B 78 */	mr r31, r3
+.L_00000C20:
+/* 00000C20 00000C60  7F E3 FB 78 */	mr r3, r31
+/* 00000C24 00000C64  48 00 00 08 */	b .L_00000C2C
+.L_00000C28:
+/* 00000C28 00000C68  7F E3 FB 78 */	mr r3, r31
+.L_00000C2C:
+/* 00000C2C 00000C6C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C30 00000C70  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000C34 00000C74  7C 08 03 A6 */	mtlr r0
+/* 00000C38 00000C78  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000C3C 00000C7C  4E 80 00 20 */	blr
+.endfn "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+
+# .text:0xC40 | size: 0x88
+# sFStateID_c<daMiddleBGForCastleLudwig_c>::isSameName(const char*) const
+.fn "isSameName__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFPCc", weak
+/* 00000C40 00000C80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000C44 00000C84  7C 08 02 A6 */	mflr r0
+/* 00000C48 00000C88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000C4C 00000C8C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000C50 00000C90  7C 9F 23 78 */	mr r31, r4
+/* 00000C54 00000C94  38 80 00 3A */	li r4, 0x3a
+/* 00000C58 00000C98  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000C5C 00000C9C  7C 7E 1B 78 */	mr r30, r3
+/* 00000C60 00000CA0  7F E3 FB 78 */	mr r3, r31
+/* 00000C64 00000CA4  48 00 00 01 */	bl strrchr
+/* 00000C68 00000CA8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000C6C 00000CAC  41 82 00 08 */	beq .L_00000C74
+/* 00000C70 00000CB0  3B E3 00 01 */	addi r31, r3, 0x1
+.L_00000C74:
+/* 00000C74 00000CB4  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 00000C78 00000CB8  7F C3 F3 78 */	mr r3, r30
+/* 00000C7C 00000CBC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 00000C80 00000CC0  7D 89 03 A6 */	mtctr r12
+/* 00000C84 00000CC4  4E 80 04 21 */	bctrl
+/* 00000C88 00000CC8  38 80 00 3A */	li r4, 0x3a
+/* 00000C8C 00000CCC  48 00 00 01 */	bl strrchr
+/* 00000C90 00000CD0  7F E4 FB 78 */	mr r4, r31
+/* 00000C94 00000CD4  38 63 00 01 */	addi r3, r3, 0x1
+/* 00000C98 00000CD8  48 00 00 01 */	bl strcmp
+/* 00000C9C 00000CDC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000CA0 00000CE0  40 82 00 0C */	bne .L_00000CAC
+/* 00000CA4 00000CE4  38 60 00 01 */	li r3, 0x1
+/* 00000CA8 00000CE8  48 00 00 08 */	b .L_00000CB0
+.L_00000CAC:
+/* 00000CAC 00000CEC  38 60 00 00 */	li r3, 0x0
+.L_00000CB0:
+/* 00000CB0 00000CF0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000CB4 00000CF4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000CB8 00000CF8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000CBC 00000CFC  7C 08 03 A6 */	mtlr r0
+/* 00000CC0 00000D00  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000CC4 00000D04  4E 80 00 20 */	blr
+.endfn "isSameName__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFPCc"
+/* 00000CC8 00000D08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CCC 00000D0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xCD0 | size: 0x30
+# sFStateID_c<daMiddleBGForCastleLudwig_c>::initializeState(daMiddleBGForCastleLudwig_c&) const
+.fn "initializeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
+/* 00000CD0 00000D10  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000CD4 00000D14  7C 08 02 A6 */	mflr r0
+/* 00000CD8 00000D18  7C 65 1B 78 */	mr r5, r3
+/* 00000CDC 00000D1C  7C 83 23 78 */	mr r3, r4
+/* 00000CE0 00000D20  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000CE4 00000D24  39 85 00 0C */	addi r12, r5, 0xc
+/* 00000CE8 00000D28  48 00 00 01 */	bl __ptmf_scall
+/* 00000CEC 00000D2C  60 00 00 00 */	nop
+/* 00000CF0 00000D30  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000CF4 00000D34  7C 08 03 A6 */	mtlr r0
+/* 00000CF8 00000D38  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000CFC 00000D3C  4E 80 00 20 */	blr
+.endfn "initializeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
+
+# .text:0xD00 | size: 0x30
+# sFStateID_c<daMiddleBGForCastleLudwig_c>::executeState(daMiddleBGForCastleLudwig_c&) const
+.fn "executeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
+/* 00000D00 00000D40  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000D04 00000D44  7C 08 02 A6 */	mflr r0
+/* 00000D08 00000D48  7C 65 1B 78 */	mr r5, r3
+/* 00000D0C 00000D4C  7C 83 23 78 */	mr r3, r4
+/* 00000D10 00000D50  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000D14 00000D54  39 85 00 18 */	addi r12, r5, 0x18
+/* 00000D18 00000D58  48 00 00 01 */	bl __ptmf_scall
+/* 00000D1C 00000D5C  60 00 00 00 */	nop
+/* 00000D20 00000D60  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000D24 00000D64  7C 08 03 A6 */	mtlr r0
+/* 00000D28 00000D68  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000D2C 00000D6C  4E 80 00 20 */	blr
+.endfn "executeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
+
+# .text:0xD30 | size: 0x30
+# sFStateID_c<daMiddleBGForCastleLudwig_c>::finalizeState(daMiddleBGForCastleLudwig_c&) const
+.fn "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
+/* 00000D30 00000D70  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000D34 00000D74  7C 08 02 A6 */	mflr r0
+/* 00000D38 00000D78  7C 65 1B 78 */	mr r5, r3
+/* 00000D3C 00000D7C  7C 83 23 78 */	mr r3, r4
+/* 00000D40 00000D80  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000D44 00000D84  39 85 00 24 */	addi r12, r5, 0x24
+/* 00000D48 00000D88  48 00 00 01 */	bl __ptmf_scall
+/* 00000D4C 00000D8C  60 00 00 00 */	nop
+/* 00000D50 00000D90  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000D54 00000D94  7C 08 03 A6 */	mtlr r0
+/* 00000D58 00000D98  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000D5C 00000D9C  4E 80 00 20 */	blr
 .endfn "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
 
 # 0x00000000..0x00000004 | size: 0x4
@@ -911,7 +1124,17 @@
 .balign 4
 	.4byte "__sinit_\d_a_castle_bg_cpp"
 
-# 0x00000000..0x0000067C | size: 0x67C
+# 0x00000000..0x00000008 | size: 0x8
+.rodata
+.balign 8
+
+# .rodata:0x0 | size: 0x8
+.obj sc_nodeNames, local
+	.4byte "@15305"
+	.4byte "@15306"
+.endobj sc_nodeNames
+
+# 0x00000000..0x00000698 | size: 0x698
 .data
 .balign 8
 # .data:0x0 | size: 0x0
@@ -931,8 +1154,24 @@
 	.4byte 0x00000000
 .endobj g_profile_BOTTOM_BG_FOR_CASTLE_LUDWIG
 
-# .data:0x18 | size: 0x1C
-.obj "@13879", local
+# .data:0x18 | size: 0xC
+.obj "@15305", local
+	.4byte 0x77696E64
+	.4byte 0x6F775F6C
+	.4byte 0x65667400
+.endobj "@15305"
+
+# .data:0x24 | size: 0xD
+.obj "@15306", local
+	.4byte 0x77696E64
+	.4byte 0x6F775F72
+	.4byte 0x69676874
+	.byte 0x00
+.endobj "@15306"
+	.byte 0x00, 0x00, 0x00
+
+# .data:0x34 | size: 0x1C
+.obj "@15882", local
 	.4byte 0x6733642F
 	.4byte 0x57375F73
 	.4byte 0x6869726F
@@ -940,20 +1179,20 @@
 	.4byte 0x5F62675F
 	.4byte 0x4D2E6272
 	.4byte 0x72657300
-.endobj "@13879"
+.endobj "@15882"
 
-# .data:0x34 | size: 0x12
-.obj "@13880", local
+# .data:0x50 | size: 0x12
+.obj "@15883", local
 	.4byte 0x57375F73
 	.4byte 0x6869726F
 	.4byte 0x626F7373
 	.4byte 0x5F62675F
 	.2byte 0x4D00
-.endobj "@13880"
+.endobj "@15883"
 	.2byte 0x0000
 
-# .data:0x48 | size: 0x1C
-.obj "@13913", local
+# .data:0x64 | size: 0x1C
+.obj "@15929", local
 	.4byte 0x6733642F
 	.4byte 0x57375F73
 	.4byte 0x6869726F
@@ -961,19 +1200,19 @@
 	.4byte 0x5F62675F
 	.4byte 0x442E6272
 	.4byte 0x72657300
-.endobj "@13913"
+.endobj "@15929"
 
-# .data:0x64 | size: 0x12
-.obj "@13914", local
+# .data:0x80 | size: 0x12
+.obj "@15930", local
 	.4byte 0x57375F73
 	.4byte 0x6869726F
 	.4byte 0x626F7373
 	.4byte 0x5F62675F
 	.2byte 0x4400
-.endobj "@13914"
+.endobj "@15930"
 	.2byte 0x0000
 
-# .data:0x78 | size: 0x2A4
+# .data:0x94 | size: 0x2A4
 # daBottomBGForCastleLudwig_c::__vtable
 .obj __vt__27daBottomBGForCastleLudwig_c, global
 	.4byte 0x00000000
@@ -1147,7 +1386,7 @@
 	.4byte vf2a0__27daMiddleBGForCastleLudwig_cFv
 .endobj __vt__27daBottomBGForCastleLudwig_c
 
-# .data:0x31C | size: 0x2A4
+# .data:0x338 | size: 0x2A4
 # daMiddleBGForCastleLudwig_c::__vtable
 .obj __vt__27daMiddleBGForCastleLudwig_c, global
 	.4byte 0x00000000
@@ -1321,29 +1560,29 @@
 	.4byte vf2a0__27daMiddleBGForCastleLudwig_cFv
 .endobj __vt__27daMiddleBGForCastleLudwig_c
 
-# .data:0x5C0 | size: 0xC
-.obj "@13939", local
+# .data:0x5DC | size: 0xC
+.obj "@15955", local
 	.4byte 0x00000000
 	.4byte 0x00000294
 	.4byte 0x00000060
-.endobj "@13939"
+.endobj "@15955"
 
-# .data:0x5CC | size: 0xC
-.obj "@13940", local
+# .data:0x5E8 | size: 0xC
+.obj "@15956", local
 	.4byte 0x00000000
 	.4byte 0x00000290
 	.4byte 0x00000060
-.endobj "@13940"
+.endobj "@15956"
 
-# .data:0x5D8 | size: 0xC
-.obj "@13941", local
+# .data:0x5F4 | size: 0xC
+.obj "@15957", local
 	.4byte 0x00000000
 	.4byte 0x0000028C
 	.4byte 0x00000060
-.endobj "@13941"
+.endobj "@15957"
 
-# .data:0x5E4 | size: 0x2E
-.obj "@13943", local
+# .data:0x600 | size: 0x2E
+.obj "@15959", local
 	.4byte 0x64614D69
 	.4byte 0x64646C65
 	.4byte 0x4247466F
@@ -1356,10 +1595,10 @@
 	.4byte 0x5F44656D
 	.4byte 0x6F576169
 	.2byte 0x7400
-.endobj "@13943"
+.endobj "@15959"
 	.2byte 0x0000
 
-# .data:0x614 | size: 0x34
+# .data:0x630 | size: 0x34
 # sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::__vtable
 .obj "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>", weak
 	.4byte 0x00000000
@@ -1377,7 +1616,7 @@
 	.4byte "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
 .endobj "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"
 
-# .data:0x648 | size: 0x34
+# .data:0x664 | size: 0x34
 # sFStateID_c<daMiddleBGForCastleLudwig_c>::__vtable
 .obj "__vt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>", weak
 	.4byte 0x00000000
@@ -1395,16 +1634,21 @@
 	.4byte "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
 .endobj "__vt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>"
 
-# 0x00000000..0x00000040 | size: 0x40
+# 0x00000000..0x00000074 | size: 0x74
 .section .bss, "wa", @nobits
 .balign 8
 
-# .bss:0x0 | size: 0xC
-.obj "@13539", local
-	.skip 0xC
-.endobj "@13539"
+# .bss:0x0 | size: 0x34
+.obj s_bssUnk, local
+	.skip 0x34
+.endobj s_bssUnk
 
-# .bss:0xC | size: 0x34
+# .bss:0x34 | size: 0xC
+.obj "@15461", local
+	.skip 0xC
+.endobj "@15461"
+
+# .bss:0x40 | size: 0x34
 # daMiddleBGForCastleLudwig_c::StateID_DemoWait
 .obj StateID_DemoWait__27daMiddleBGForCastleLudwig_c, global
 	.skip 0x34

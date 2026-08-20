@@ -45,20 +45,75 @@ void daMiddleBGForCastleLudwig_c::entryOrRelease(bool doEntry) {
     }
 }
 
-// fn_2_F5380 (vtable offset 0x280, MIDDLE_BG's OWN override -- CORRECTED this round, was
-// mis-attached to BOTTOM_BG). FAKE STUB -- unscouted this round (0x98 bytes target).
-void daMiddleBGForCastleLudwig_c::vf280() {}
+// fn_2_F52F0. Confirmed content: NOT a vtable slot -- an ordinary helper touching BOTH zones
+// (unlike entryOrRelease's own zone-0-only shape) plus a model render option.
+void daMiddleBGForCastleLudwig_c::activate(bool show) {
+    if (show) {
+        mModel.setOption(1, 0);
+    } else {
+        mModel.setOption(1, 1);
+    }
+    if (show) {
+        mBgCtr[1].entry();
+        mBgCtr[0].entry();
+    } else {
+        mBgCtr[1].release();
+        mBgCtr[0].release();
+    }
+}
 
-// fn_2_F5430 (vtable offset 0x284, shared by both classes). FAKE STUB -- already scouted (a
-// 2-entry visibility-byte copy from another instance of this same class, plus GetResNode/
-// setNodeVisibility calls against the real, confirmed 2-entry name table lbl_2_data_30930 --
-// node names "window_left"/"window_right", read directly from .data) but not yet authored as
-// real content.
-void daMiddleBGForCastleLudwig_c::vf284(daMiddleBGForCastleLudwig_c *other) {}
+// The window-node name table both vf280 and vf284 index -- real strings read directly from
+// .data (lbl_2_data_30910/lbl_2_data_3091C): "window_left"/"window_right".
+static const char *const sc_nodeNames[2] = { "window_left", "window_right" };
+
+// fn_2_F5380 (vtable offset 0x280, MIDDLE_BG's OWN override -- CORRECTED this round, was
+// mis-attached to BOTTOM_BG). Confirmed content: per node, roll a 10% random visibility flag
+// (rndInt(100) < 10 -- semantics confirmed by hand-tracing the target's own cntlzw/slw/srwi
+// bit-trick, exact codegen match not yet reproduced), look the node up via mModel's own ResMdl,
+// and call setNodeVisibility with the node's own id (0 if not found).
+void daMiddleBGForCastleLudwig_c::vf280() {
+    nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+    for (int i = 0; i < 2; i++) {
+        m_764[i] = dGameCom::rndInt(0x64) < 0xa;
+        nw4r::g3d::ResNode node = resMdl.GetResNode(sc_nodeNames[i]);
+        d3d::setNodeVisibility(&mModel, node.GetID(), m_764[i]);
+    }
+}
+
+// fn_2_F5430 (vtable offset 0x284, shared by both classes). Confirmed content: copies
+// m_764[i] from \p other (byte-for-byte, same index), then the SAME node-lookup/
+// setNodeVisibility idiom as vf280.
+void daMiddleBGForCastleLudwig_c::vf284(daMiddleBGForCastleLudwig_c *other) {
+    nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+    for (int i = 0; i < 2; i++) {
+        m_764[i] = other->m_764[i];
+        nw4r::g3d::ResNode node = resMdl.GetResNode(sc_nodeNames[i]);
+        d3d::setNodeVisibility(&mModel, node.GetID(), m_764[i]);
+    }
+}
 
 // fn_2_F54D0. Vtable slot 2 (create) -- confirmed IDENTICAL in both classes' vtables (full
 // diff, not eyeballed) but NOT YET SCOUTED. FAKE STUB.
-int daMiddleBGForCastleLudwig_c::create() { return 1; }
+// fn_2_F54D0. Confirmed content: createModel() and vf29c() (both REAL virtual calls, compile
+// to the identical vtable dispatch the target's own raw offset calls use), then
+// changeState(...) on a still-unidentified 0x34-byte .bss object (NOT a name we can confirm --
+// `lbl_2_bss_C1AC`, uninitialized, passed by reference to `changeState(const sStateIDIf_c&)`;
+// too large for a plain `sStateID_c` and not independently confirmed as anything more specific
+// -- modelled as a raw same-size byte buffer, size confirmed exact from the target's own .bss
+// dump, content NOT confirmed), then a second raw virtual call through the SAME still-unnamed
+// object at offset 0x394 execute() also reaches, this time slot 0x1c instead of 0x10.
+static u8 s_bssUnk[0x34]; // lbl_2_bss_C1AC -- size confirmed, role NOT confirmed.
+
+int daMiddleBGForCastleLudwig_c::create() {
+    createModel();
+    vf29c();
+    changeState(*(const sStateIDIf_c *) s_bssUnk);
+
+    typedef void (*StateMgrFn_t)(void *);
+    (*(StateMgrFn_t *) ((const u8 *) *(void **) ((u8 *) this + 0x394) + 0x1c))((u8 *) this + 0x394);
+
+    return SUCCEEDED;
+}
 
 // fn_2_F5550 (vtable offset 0x298, MIDDLE_BG's OWN createModel override -- CORRECTED this
 // round, was mis-attached to BOTTOM_BG). Confirmed content: byte-for-byte the SAME
@@ -84,7 +139,28 @@ void daMiddleBGForCastleLudwig_c::createModel() {
 void daMiddleBGForCastleLudwig_c::vf29c() {}
 
 // fn_2_F5810. Vtable slot 8 (execute) -- FAKE STUB, same caveat as create.
-int daMiddleBGForCastleLudwig_c::execute() { return 1; }
+// fn_2_F5810. Confirmed content: a raw virtual call through a still-unnamed object at
+// offset 0x394 (slot 4 on ITS OWN vtable -- almost certainly dActorMultiState_c's own
+// mStateMgr, since #create's own changeState(...) forwards to something at the SAME offset
+// per dActorMultiState_c::changeState()'s own real body, but not independently confirmed by
+// field name -- modelled as a raw cast, matching the destructor's own precedent for an
+// unnamed base-class member elsewhere on this project), then vf2a0() (a REAL virtual call,
+// compiles to the identical vtable dispatch the target's own raw offset-0x2a0 call uses), then
+// dBg_ctr_c::calc() on both zones.
+int daMiddleBGForCastleLudwig_c::execute() {
+    // PARKED: three variants tried (inline expression; a named single local; two named locals
+    // matching the target's own two-step instruction order) -- all land on r5 for the adjusted
+    // "this" where the target reuses r3, a register-allocation wall, not a content problem.
+    typedef void (*StateMgrExecFn_t)(void *);
+    (*(StateMgrExecFn_t *) ((const u8 *) *(void **) ((u8 *) this + 0x394) + 0x10))((u8 *) this + 0x394);
+
+    vf2a0();
+
+    for (int i = 0; i < 2; i++) {
+        mBgCtr[i].calc();
+    }
+    return SUCCEEDED;
+}
 
 // fn_2_F5890 (vtable offset 0x2a0, shared). Confirmed content: a matrix update -- mMatrix.
 // trans(mPos); mModel.setLocalMtx(&mMatrix); mModel.setScale(mScale); -- no rotation, no calc.
@@ -95,10 +171,20 @@ void daMiddleBGForCastleLudwig_c::vf2a0() {
 }
 
 // fn_2_F58F0. Vtable slot 5 (doDelete) -- FAKE STUB, same caveat as create.
-int daMiddleBGForCastleLudwig_c::doDelete() { return 1; }
+// fn_2_F58F0. Confirmed content: releases both dBg_ctr_c zones.
+int daMiddleBGForCastleLudwig_c::doDelete() {
+    for (int i = 0; i < 2; i++) {
+        mBgCtr[i].release();
+    }
+    return SUCCEEDED;
+}
 
 // fn_2_F5940. Vtable slot 11 (draw) -- FAKE STUB, same caveat as create.
-int daMiddleBGForCastleLudwig_c::draw() { return 1; }
+// fn_2_F5940. Confirmed content: a single virtual call through mModel's own vtable.
+int daMiddleBGForCastleLudwig_c::draw() {
+    mModel.entry();
+    return SUCCEEDED;
+}
 
 // DemoWait, THIS ROUND'S STATE-MACHINE FIX. fn_2_F5980 (vtable offset 0x294) =
 // initializeState_DemoWait: confirmed content, empty body. fn_2_F5990 (offset 0x290) =

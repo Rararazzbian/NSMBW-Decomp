@@ -6,6 +6,13 @@
 #include <game/mLib/m_3d/mdl.hpp>
 #include <game/sLib/s_StateID.hpp>
 #include <game/sLib/s_State.hpp>
+#include <game/bases/d_game_com.hpp>
+
+// setNodeVisibility(m3d::bmdl_c*, int nodeId, int visible) -- not landed anywhere yet
+// (grepped include/game/mLib/m_3d/*.hpp, not found). Declared via its own real mangled
+// name so the linker resolves it directly, matching this project's own convention for an
+// undocumented cross-TU call.
+namespace d3d { void setNodeVisibility(m3d::bmdl_c *mdl, int nodeId, int visible); }
 
 /// @unofficial Background-layer controller for MIDDLE_BG_FOR_CASTLE_LUDWIG (used directly, no
 /// further subclass), base of #daBottomBGForCastleLudwig_c (BOTTOM_BG_FOR_CASTLE_LUDWIG).
@@ -58,8 +65,15 @@ public:
     // own bodies for those three are its OWN distinct implementation, confirmed NOT
     // byte-identical to the derived class's own override (different sizes: 0x98 vs 4 bytes,
     // 0x124 vs 0x124 -- see #createModel's own note -- and 0x18C vs 0x128).
-    virtual void vf280(); ///< fn_2_F5380 (0x98 bytes). NOT YET AUTHORED.
-    virtual void vf284(daMiddleBGForCastleLudwig_c *other); ///< fn_2_F5430. NOT YET AUTHORED.
+    // fn_2_F5380. Confirmed content: for each of the 2 node names (#sc_nodeNames),
+    // randomly rolls #m_764[i] (rndInt(100) < 10, a 10% chance -- exact bit-trick codegen
+    // not yet reproduced, semantics confirmed by hand-tracing the cntlzw/slw/srwi sequence),
+    // looks up the node via mModel's own ResMdl, and calls setNodeVisibility with the node's
+    // own id (0 if not found) and #m_764[i].
+    virtual void vf280();
+    // fn_2_F5430. Confirmed content: copies #m_764[i] from \p other (byte-for-byte, same
+    // index), then the SAME node-lookup/setNodeVisibility idiom as #vf280.
+    virtual void vf284(daMiddleBGForCastleLudwig_c *other);
     virtual void vf288(); ///< fn_2_F5C00. Real content: forwards to #vf2a0.
     // DemoWait -- a virtual state (STATE_VIRTUAL_FUNC_DECLARE/DEFINE), per the coordinator's
     // own relocation lookup: exactly one state name exists anywhere in this unit's .data
@@ -92,6 +106,12 @@ public:
     // mBgCtr[0].release();` -- touches ONLY zone 0, not #mBgCtr[1]. NOT in the vtable.
     void entryOrRelease(bool doEntry);
 
+    // fn_2_F52F0. Confirmed content: NOT a vtable slot. `mModel.setOption(1, arg?0:1);`
+    // then, on the SAME single bool arg, either `mBgCtr[1].entry(); mBgCtr[0].entry();` or
+    // `mBgCtr[1].release(); mBgCtr[0].release();` -- BOTH zones this time, unlike
+    // #entryOrRelease's own zone-0-only shape.
+    void activate(bool show);
+
     dHeapAllocator_c mAllocator; ///< @unofficial offset 0x524, size 0x1c.
     void *m_540; ///< @unofficial offset 0x540. Zeroed by the ctor; #createModel stores its own
                   ///< `getRes()` result here -- likely a cached resource-file handle.
@@ -101,7 +121,13 @@ public:
     // @unofficial offset 0x74c (compiler-computed -- #mBgCtr[2] ends there), size 0x1c. Both
     // classInits' own `li r3, 0x768` alloc size requires this trailing gap (0x768-0x74c);
     // content NOT YET confirmed.
-    u8 mPad74c[0x1c];
+    u8 mPad74c[0x18]; ///< @unofficial offset 0x74c, size 0x18 -- still unconfirmed.
+
+    // @unofficial offset 0x764, size 0x2. Per-node random/copied visibility flags read by
+    // #vf280/#vf284 and passed to setNodeVisibility.
+    u8 m_764[2];
+
+    u8 mPad766[0x2]; ///< @unofficial offset 0x766, size 0x2 -- still unconfirmed.
 };
 
 /// @unofficial Subclass for BOTTOM_BG_FOR_CASTLE_LUDWIG. **CORRECTED this round**: NOT a

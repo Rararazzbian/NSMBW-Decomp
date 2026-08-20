@@ -12490,3 +12490,51 @@ query answers it, and the answer here was two sites, both inside the unit.
 This is the same class of error as the `.data`-extent correction on CASTLE_BG: a
 range derived from what a draft currently reaches is a LOWER BOUND, and objects
 the draft has not yet learned to emit sit outside it looking foreign.
+
+## An "uninitialised `.bss` object needing a compile-time vtable" is a `__sinit`-CONSTRUCTED object
+
+CASTLE_BG reached **24/33** and flagged a genuine puzzle rather than guessing past
+it: `create()` passes a **0x34-byte UNINITIALISED `.bss` object by reference** to
+`changeState(const sStateIDIf_c &)`. Too big for a plain `sStateID_c`, about right
+for `sFStateID_c<T>` — but that type needs a compile-time vtable, **which does not
+sit well with living in `.bss`.** It declared a raw same-size buffer and left the
+question open.
+
+**The contradiction dissolves once you look at `__sinit`.** The object is
+`lbl_2_bss_C1AC`, size **0x34** exactly, and the unit's `__sinit`
+(`0xF5C80-0xF5DA4`) references it **four times** and makes exactly one external
+call:
+
+```
+0xF5D10 -> __ct__10sStateID_cFPCc      // sStateID_c::sStateID_c(const char *)
+```
+
+**It is a state-ID object CONSTRUCTED AT RUNTIME by `__sinit`.** That is precisely
+why it is uninitialised in `.bss` and still ends up with a vtable: the vtable is
+installed by the constructor, not stored statically. There is no contradiction and
+no raw buffer — it is a static object with dynamic initialisation.
+
+**This is the same shape FLOOR_JR_A hit**, where three state-ID `.bss` objects have
+their vtable pointers patched by `__sinit` and the patch target *looked* foreign.
+**Two units, one pattern: state-ID objects live in `.bss` and are built by
+`__sinit`.**
+
+### The consequence: `__sinit` is not a "leave until last" item here
+
+The standing guidance — hold `__sinit` until everything feeding it is correct — is
+right in general, and it is what let a sibling close its own with a **pure
+reordering**. But on a unit where **an open question in a normal function is
+answered by what `__sinit` constructs**, the two are the same problem. Declaring
+the state correctly should emit the `.bss` object, its `__sinit` construction, and
+the framework members together.
+
+That is now the **third** unit this session where declaring a state properly was
+the lever rather than authoring: CASTLE_BG's own `DemoWait` emitted **eight
+functions at once**, AC_NICE_COIN's byte-exact `__sinit` **certified its
+declarations**, and FLOOR_JR_A's blocker was a state-ID object it thought foreign.
+**Resolve the framework shape before hand-authoring anything that touches it.**
+
+Also confirmed this round, a lever newly re-established on this unit:
+`activate()`'s `setOption(1, arg ? 0 : 1)` compiled to a bit-trick under a
+**ternary** and to the target's real branches once rewritten as **if/else** — the
+recorded "ternary changes codegen shape" rule, independently reconfirmed.

@@ -9,7 +9,7 @@ bytes and the next symbol, a different unit's `g_profile_MINI_GAME_BALLOON`, sta
 machinery here) are invisible to a `.text`-reference scan. Object list in
 `build.py` covers all three dtk-split objects overlapping the range (`auto_00_000F4FB0_text.o`,
 `auto_fn_2_F5C80_text.o`, `auto_00_000F5DA4_text.o`) -- `check_target_objs.py` reports this unit
-clean. **Tally: 20/33 matched** (up from 12/33, see the state-machine section below). Not reachable to N/N this round -- a real `dEn_c`-derived
+clean. **Tally: 24/33 matched** (up from 12/33, see the state-machine section below). Not reachable to N/N this round -- a real `dEn_c`-derived
 class with a heap allocator, a model, two `dBg_ctr_c` zones, nine of its own new virtuals, AND
 (discovered this round) a state machine with at least two states.
 
@@ -105,9 +105,9 @@ themselves to EXACT. `executeState_DemoWait` (the old `vf290`, the `mModel`-vtab
 remains at 2/4 differing -- the SAME pre-existing register-allocation residual as before, unlated
 to the rename.
 
-Tally jumped 12/33 -> 20/33 from this one change.
+Tally jumped 12/33 -> 20/33 from this one change, then to 24/33 after authoring `activate`/`vf284`/`create`/`doDelete`/`draw` this same round (see below).
 
-## MATCHED (20/33)
+## MATCHED (24/33)
 
 | draft name | target | size | notes |
 |---|---|---|---|
@@ -132,46 +132,70 @@ Tally jumped 12/33 -> 20/33 from this one change.
 | `executeState__42sFStateID_c<...>CFR...` | `fn_2_F60F0` | 12/12 | EXACT. Compiler-generated trampoline, NEW this round |
 | `finalizeState__42sFStateID_c<...>CFR...` | `fn_2_F6120` | 12/12 | EXACT. Compiler-generated trampoline, NEW this round |
 
-## PARKED, real content, close (1)
+## PARKED, real content, close, register-allocation residual only (3)
 
-- **`executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv`** (`fn_2_F5990`, 4/4 lines --
-  renamed from `vf290` this round) -- 2/4 differing. Forwarding thunk into `mModel`'s own vtable
-  at offset 0x1c, target uses r12 exclusively via load-with-update addressing; two variants
-  tried, both land on r4. Register-allocation residual, not content -- park.
+- **`executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv`** (`fn_2_F5990`, 4/4 lines) --
+  2/4 differing. Forwarding thunk into `mModel`'s own vtable at offset 0x1c; target uses r12
+  exclusively via load-with-update addressing. Two variants tried, both land on r4/r5 instead.
+- **`execute__27daMiddleBGForCastleLudwig_cFv`** (`fn_2_F5810`, 31/31 lines, SAME size) --
+  27 differing but content and structure fully confirmed: a raw virtual call through a
+  still-unnamed object at offset 0x394 (see below), `vf2a0()`, then `dBg_ctr_c::calc()` on both
+  zones. Three variants tried (inline expression, one named local, two named locals matching
+  the target's own two-step instruction order) -- all land the adjusted "this" pointer in a
+  different register (r5) than the target's own reused r3. Same class of wall already on record
+  elsewhere on this project for raw-offset sub-object calls.
+- **`create__27daMiddleBGForCastleLudwig_cFv`** (`fn_2_F54D0`, 32/32 lines, EXACT size) -- only
+  4/32 differing, 2 of which are pure naming (`s_bssUnk` vs `lbl_2_bss_C1AC`, the SAME
+  naming-only precedent as every other still-unlanded cross-boundary symbol on this project) and
+  2 of which are the SAME `this+0x394` register-allocation wall as `execute()`. This is
+  essentially a MATCH modulo one already-documented wall -- not re-attempted separately since
+  it is provably the identical root cause.
 
-## SCOUTED, FAKE STUBS this round -- 8
+## Still-unnamed sub-object at offset 0x394 -- real, not guessed, name unconfirmed
 
-All placed at their correct address slot.
+`create()` and `execute()` both reach a polymorphic object at `this+0x394` via raw vtable-slot
+calls (slot 7/offset 0x1c from `create()`, slot 4/offset 0x10 from `execute()`). Strong
+circumstantial evidence this is `dActorMultiState_c`'s own inherited `mStateMgr` (a REAL,
+already-landed member: `sFStateStateMgr_c<dActorMultiState_c, sStateMethodUsr_FI_c,
+sStateMethodUsr_FI_c> mStateMgr;`, `d_actor_state.hpp`) -- `create()`'s own `changeState(...)`
+call, immediately before reaching this object, is `dActorMultiState_c::changeState()`'s own real
+inherited body (`{ mStateMgr.changeState(newState); }`), which is the SAME field. NOT
+independently confirmed by matching the exact byte offset against a compiled probe of
+`dActorMultiState_c` itself -- modelled as a raw cast (`(u8*)this + 0x394`), matching this
+project's own precedent for reaching an unnamed base-class member (the destructor's own `m_1fc`
+kind of case on other units).
+
+## Still-unidentified 0x34-byte `.bss` object (`s_bssUnk` / `lbl_2_bss_C1AC`)
+
+`create()` passes this by reference to `changeState(const sStateIDIf_c&)`. Uninitialized
+(`.bss`), 0x34 bytes -- too large for a plain `sStateID_c` (would be 0xc: vtable+name+number)
+and not confirmed as any specific richer type. Declared as a raw same-size byte buffer; content
+and real type NOT confirmed. Worth checking next round whether this is actually
+`sFStateID_c<daMiddleBGForCastleLudwig_c>`-shaped (vtable+name+number+3 PMFs = 0x30, plus
+alignment = 0x34) despite living in `.bss` rather than `.data` -- which would be strange for a
+type requiring a compile-time-initialized vtable pointer, unless something else in this unit
+(still unauthored) explicitly constructs it at runtime before `create()` runs.
+
+## SCOUTED but NOT YET AUTHORED -- 4 functions
 
 | draft name (class) | target | size | role |
 |---|---|---|---|
-| `create` (base, shared) | `fn_2_F54D0` | 32 | vtable slot 2. Confirmed identical in both vtables (full diff). Unscouted content. |
-| `doDelete` (base, shared) | `fn_2_F58F0` | 20 | vtable slot 5. Same caveat. |
-| `execute` (base, shared) | `fn_2_F5810` | 31 | vtable slot 8. Same caveat. |
-| `draw` (base, shared) | `fn_2_F5940` | 12 | vtable slot 11. Same caveat. |
-| `vf284` (base, shared) | `fn_2_F5430` | 38 | offset 0x284. PARTIALLY scouted: copies a 2-entry visibility byte array at `+0x764` from another instance of this class, then `GetResNode`/`setNodeVisibility` against the REAL, confirmed node-name table (`"window_left"`/`"window_right"`). Body still a stub. |
-| `vf280` (MIDDLE_BG's OWN) | `fn_2_F5380` | 42 | offset 0x280. Unscouted (0x98 bytes) -- **corrected this round to the right class**. |
-| `vf29c` (MIDDLE_BG's OWN) | `fn_2_F5680` | 99 | offset 0x29c. Unscouted (0x18C bytes -- LARGEST in unit) -- **corrected this round to the right class**. |
-| `vf29c` (BOTTOM_BG's OWN) | `fn_2_F5AD0` | 74 | offset 0x29c. Unscouted (0x128 bytes). |
+| `vf280` (MIDDLE_BG's OWN) | `fn_2_F5380` | 42/42, SAME size | 36 differing. Content and structure fully confirmed (loops 2 nodes, rolls a random visibility flag via `rndInt(100)`, looks up via `mModel`'s ResMdl, calls `setNodeVisibility`) -- residual is the target's own unusual `xori`/`slw`(by a LOOP-INVARIANT constant `0xa`)/`srwi` bit-trick for the random threshold test, which neither `rndInt(100) < 10` nor `== 10` reproduces (both compile to a DIFFERENT, more conventional bit-trick on this compiler). Semantically equivalent to the target (both give the same 10%-chance boolean), exact source expression not yet found. Two variants tried. |
+| `vf29c` (MIDDLE_BG's OWN) | `fn_2_F5680` | 99 | Unscouted (0x18C bytes -- LARGEST in unit). |
+| `vf29c` (BOTTOM_BG's OWN) | `fn_2_F5AD0` | 74 | SCOUTED this round, not yet authored: builds an un-landed `sBgSetInfo`-shaped stack struct from this unit's own `.rodata` (`lbl_2_rodata_5BC0`) constants and `mPos`, initializes 2 `mVec3_c`-shaped fields at `this+0x74c`/`this+0x758` (both to `mPos`) and `mScale` to a uniform rodata constant, then calls `dBg_ctr_c::set(dActor_c*, const sBgSetInfo*, u8, u8, mVec3_c*)` + `entry()` on EACH zone with slightly different rodata constants and a per-instance byte read from `this+0x38f` -- `sBgSetInfo` is not landed anywhere in `include/` (grepped). Real content, not yet written into the draft. |
+| `createModel` (both overrides) | `fn_2_F5550`/`fn_2_F59A0` | 73/73 each | Real structural content AND real strings (see above) already written, but BOTH still show 61/73 differing -- not yet investigated why; likely a register-allocation/scheduling class similar to what's already on record elsewhere, but not confirmed. Worth a closer diff next round rather than assumed. |
 
-`createModel` (both overrides, `fn_2_F5550`/`fn_2_F59A0`) now has REAL structural content and
-REAL strings (see above) but still shows as differing on the tally -- not re-verified
-byte-for-byte this round; likely just scheduling residual now that the pool references are the
-right kind.
-
-## NOT YET TOUCHED THIS ROUND -- 2 functions, absent (not stubbed in the wrong slot)
-
-All the state-machine template members are now matched (see above) -- only two genuinely
-unscouted functions remain untouched.
+## NOT YET TOUCHED -- 1 function
 
 | target | size | notes |
 |---|---|---|
-| `fn_2_F52F0` | 35 | Unscouted. |
-| `fn_2_F5C80` | 73 | `__sinit`, the `.ctors`-registered static initialiser. Now visible (object-list fixed a prior round) but not yet read. |
+| `fn_2_F5C80` | 73 | `__sinit`, the `.ctors`-registered static initialiser. Per the coordinator's own instruction, this is REQUIRED (not optional) and should be tackled LAST, once every declaration feeding it is correct -- a sibling unit closed its own to exact with a pure reordering, no content change, after everything else was right. Not yet attempted. |
 
 ## Gates
 
-- **Function order**: GREEN. `order_sweep.py` reports `ok agent_castle_bg 20/33`.
+## Gates
+
+- **Function order**: GREEN. `order_sweep.py` reports `ok agent_castle_bg 24/33`.
 - **`.ctors`**: GREEN. `0x288 -> __sinit at .text 0xf5c80` for BOTTOM_BG_FOR_CASTLE_LUDWIG,
   matching the coordinator's own citation exactly.
 - **Target-object coverage**: GREEN. `check_target_objs.py` does not flag this unit (fixed this
@@ -205,18 +229,23 @@ its own `target auto_fn_2_F5C80` object, not yet dumped to a standalone `.txt` -
 
 ## Plan for the next round
 
-State machine is RESOLVED (one state, `DemoWait`, declared once on the base class -- see above).
-Remaining work is now purely ordinary function authoring, smallest-first:
+State machine is RESOLVED. `fn_2_F52F0`/`vf284`/`create`/`doDelete`/`draw`/`execute` are now
+authored (5 MATCH exactly, `execute`/`create` are parked one register-allocation wall away).
+Remaining, smallest-first:
 
-1. `fn_2_F52F0` (35 lines) -- unscouted, smallest remaining real gap.
-2. `vf280` (MIDDLE_BG's own, `fn_2_F5380`, 42 lines) -- unscouted.
-3. `vf29c` (BOTTOM_BG's own, `fn_2_F5AD0`, 74 lines) -- unscouted.
-4. `create`/`doDelete`/`execute`/`draw` (shared between both classes, high-value since every
-   other `dEn_c` actor's own logic usually revolves around these) -- currently `return 1;`
-   stubs, unscouted.
-5. `vf29c` (MIDDLE_BG's own, `fn_2_F5680`, 99 lines -- the largest function in the unit).
-6. `fn_2_F5C80` (`__sinit`, 73 lines) -- now visible after the object-list fix; the `.ctors`
-   gate is already green without it being authored, so this is lower priority than the above.
-7. Once all `.text` is real, re-verify `vf284`'s own stub body (the node-visibility-copy
-   function) against the REAL confirmed node-name table, and try one more variant on
-   `executeState_DemoWait`'s own 2-line register-allocation residual.
+1. `vf29c` (BOTTOM_BG's own, `fn_2_F5AD0`, 74 lines) -- SCOUTED this round (see above), just
+   needs the `sBgSetInfo`-shaped struct/constants written into the draft.
+2. `createModel` (both overrides) -- investigate the 61/73 residual; real content and real
+   strings are already in place, so this should be a register/scheduling puzzle, not a content
+   gap. Check whether the SAME lever that fixed `activate()` this round (an if/else `setOption`
+   call compiling to real branches vs a ternary compiling to a bit-trick) applies anywhere in
+   here too.
+3. `vf29c` (MIDDLE_BG's own, `fn_2_F5680`, 99 lines -- the largest function in the unit) --
+   unscouted.
+4. `fn_2_F5C80` (`__sinit`) LAST, once every declaration feeding it is correct, per the
+   coordinator's own instruction -- expect a pure reordering fix once everything else is real,
+   not a content problem.
+5. Revisit `vf280`'s own random-visibility bit-trick, `execute()`/`create()`'s shared
+   `this+0x394` register wall, and `executeState_DemoWait`'s own thunk residual only if time
+   remains after the above -- all three are genuinely parked (multiple variants tried, real
+   content confirmed), not gaps.
