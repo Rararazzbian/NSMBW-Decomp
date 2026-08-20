@@ -26,11 +26,15 @@ Usage
     python order_sweep.py
 """
 
+import collections
 import glob
 import os
 import re
 import subprocess
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import verify_anon as V  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 UNITS = os.path.join(ROOT, "wip", "wm_units")
@@ -64,6 +68,34 @@ def unit_config(build_py):
         return None
     paths = re.findall(r"['\"]([^'\"]+\.o)['\"]", objs.group(1))
     return span.group(1), span.group(2), paths
+
+
+def duplicate_bodied(draft):
+    """Names of draft functions that have at least one byte-identical sibling.
+
+    The order gate pairs target to draft by instruction CONTENT, so when several
+    functions share a body the pairing is ambiguous and "did the matches come out
+    ascending?" can report an artefact of tie-breaking rather than a real defect.
+    And the complaint is void either way: swapping byte-identical functions emits
+    identical `.text`.
+
+    d_a_peach_castle_sequence.cpp reported an order violation for MULTIPLE ROUNDS
+    on exactly this -- four groups of identical bodies, one of them seven-way --
+    and then landed cleanly at 44/44.
+
+    CALIBRATION, and it limits what this function can tell you: that same landed
+    unit STILL flags seven functions with unique bodies, one of them a `global`
+    constructor. So "unique body" does NOT mean "real defect", and neither does
+    symbol binding. The ascending test is global -- ONE mis-pairing anywhere
+    shifts every later index and flags a cascade of innocent functions.
+
+    Treat a unique body as "not explained by ties", never as "confirmed real".
+    The only authority is `progress.py --verify-bin`.
+    """
+    groups = collections.defaultdict(list)
+    for name, instructions in V.functions(draft):
+        groups[tuple(V.norm(instructions))].append(name)
+    return {n for g in groups.values() if len(g) > 1 for n in g}
 
 
 def main():
@@ -102,23 +134,41 @@ def main():
         if "FUNCTION ORDER IS WRONG" in out:
             late = re.findall(r"^\s*(0x[0-9a-f]+)\s+(\S+)\s+<-- defined too late",
                               out, re.M)
-            wrong.append((unit, label, late))
+            shared = duplicate_bodied(draft)
+            real = [(a, n) for a, n in late if n not in shared]
+            wrong.append((unit, label, late, real))
         else:
             ok.append((unit, label))
 
     print("FUNCTION ORDER GATE -- the linker places .text in definition order,")
     print("so a unit failing this cannot link at ANY match count.\n")
 
-    for unit, label, late in wrong:
-        print("  ORDER WRONG  %-24s %-8s %d defined too late" % (unit, label, len(late)))
-        for addr, name in late[:6]:
-            print("               %s  %s" % (addr, name))
+    for unit, label, late, real in wrong:
+        if not real:
+            print("  order?       %-24s %-8s %d flagged, ALL have byte-identical"
+                  % (unit, label, len(late)))
+            print("               siblings -- tie artefact, NOT a defect. Swapping")
+            print("               identical functions emits identical .text.")
+        else:
+            print("  order?       %-24s %-8s %d flagged, %d not explained by ties"
+                  % (unit, label, len(late), len(real)))
+            for addr, name in real[:4]:
+                print("               %s  %s" % (addr, name))
     for unit, label in ok:
         print("  ok           %-24s %s" % (unit, label))
 
     print("")
-    print("%d wrong, %d ok, %d NOT CHECKED, %d already landed."
-          % (len(wrong), len(ok), len(skipped), len(landed)))
+    unexplained = sum(1 for _, _, _, real in wrong if real)
+    print("%d flagged with unexplained entries, %d tie-artefact only, %d ok, "
+          "%d NOT CHECKED, %d landed."
+          % (unexplained, len(wrong) - unexplained, len(ok), len(skipped), len(landed)))
+    if wrong:
+        print("")
+        print("A flag is NOT proof of a defect. The landed d_a_peach_castle_sequence.cpp")
+        print("still flags seven functions here, one of them a global constructor, and")
+        print("it links and verifies green. The ascending test is global, so one")
+        print("mis-pairing flags a cascade. If a unit is N/N on content and only order")
+        print("objects, LAND IT AND SEE -- progress.py --verify-bin is the authority.")
     if landed:
         print("")
         print("Already landed, so skipped -- their wip draft.txt is a stale")

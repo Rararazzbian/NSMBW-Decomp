@@ -12350,3 +12350,51 @@ confirmed** rather than asserted. That is the right way to leave a loose end.
 **My error was reasoning from a `.data` shape to a source construct without
 checking whether the construct is even expressible.** The macro's redefinition
 error is a fact about the framework that no amount of reading `.data` reveals.
+
+## The order gate CANNOT be made reliable by classifying its own output
+
+Three agents stalled on a watchdog, all three reporting `FUNCTION ORDER IS
+WRONG`, so I tried to make the gate self-classifying: flag as real only where the
+flagged function's body has **no byte-identical sibling**, since ties are what
+made `d_a_peach_castle_sequence.cpp` report a phantom violation for rounds.
+
+**The classifier immediately falsified itself on the best possible test case.**
+Run against the tree, it reports:
+
+```
+order?  agent_peach_castle_seq  44/44  7 flagged, 7 not explained by ties
+```
+
+**That unit is LANDED.** It links, and all five binaries match retail. And one of
+its seven flagged functions is `__ct__29daPeachCastleSequenceMgrObj_cFv`, a
+`global` constructor — so neither a unique body NOR strong binding makes a flag
+real.
+
+**The reason is structural: the ascending test is GLOBAL.** It asks whether the
+matched draft indices come out in increasing order, so **one mis-pairing anywhere
+shifts every later index and flags a cascade of innocent functions.** In a draft
+with 44 weak symbols and four groups of identical bodies, mis-pairings are
+likely, and a single one is enough.
+
+So the tool now says `order?` rather than `ORDER WRONG`, reports entries as
+**"not explained by ties"** rather than "real", and prints the calibration case
+in its own summary. **A gate that cannot separate its false positives from its
+true ones must not phrase either as a verdict.**
+
+**What still stands:** the gate caught three genuinely unlinkable units earlier
+today, and it remains worth running. What has changed is what a flag licenses —
+investigation, never a round of source-shape guessing, and **never a decision not
+to try landing.**
+
+### Current classification of the outstanding flags
+
+```
+agent_river        5 flagged, ALL tie-explained     -> almost certainly noise
+agent_water_move   1 flagged, unique global body    -> worth ONE look
+agent_floor_jr_a  15 flagged, 9 unexplained         -> worth investigating
+agent_antlion_mng 17 flagged, 13 unexplained        -> parked unit
+agent_hanachan    16 flagged, 13 unexplained        -> parked unit
+```
+
+Preserved with the stall: `agent_floor_jr_a` 20/29, `agent_river` 15/23,
+`agent_water_move` 12/27. Protected paths clean throughout.
