@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_castle_bg.cpp"
 
-# 0x00000000..0x00001630 | size: 0x1630
+# 0x00000000..0x000015E0 | size: 0x15E0
 .text
 .balign 16
 
@@ -355,15 +355,15 @@
 /* 00000460 000004A0  38 80 FF FF */	li r4, -0x1
 /* 00000464 000004A4  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
 /* 00000468 000004A8  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 0000046C 000004AC  3C A0 00 00 */	lis r5, "@16247"@ha
+/* 0000046C 000004AC  3C A0 00 00 */	lis r5, "@16227"@ha
 /* 00000470 000004B0  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000474 000004B4  3F E0 00 00 */	lis r31, "@16248"@ha
-/* 00000478 000004B8  38 A5 00 00 */	addi r5, r5, "@16247"@l
-/* 0000047C 000004BC  38 9F 00 00 */	addi r4, r31, "@16248"@l
+/* 00000474 000004B4  3F E0 00 00 */	lis r31, "@16228"@ha
+/* 00000478 000004B8  38 A5 00 00 */	addi r5, r5, "@16227"@l
+/* 0000047C 000004BC  38 9F 00 00 */	addi r4, r31, "@16228"@l
 /* 00000480 000004C0  38 63 00 04 */	addi r3, r3, 0x4
 /* 00000484 000004C4  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
 /* 00000488 000004C8  90 61 00 10 */	stw r3, 0x10(r1)
-/* 0000048C 000004CC  38 9F 00 00 */	addi r4, r31, "@16248"@l
+/* 0000048C 000004CC  38 9F 00 00 */	addi r4, r31, "@16228"@l
 /* 00000490 000004D0  90 7D 05 40 */	stw r3, 0x540(r29)
 /* 00000494 000004D4  38 61 00 10 */	addi r3, r1, 0x10
 /* 00000498 000004D8  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
@@ -727,15 +727,15 @@
 /* 00000930 00000970  38 80 FF FF */	li r4, -0x1
 /* 00000934 00000974  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
 /* 00000938 00000978  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 0000093C 0000097C  3C A0 00 00 */	lis r5, "@16348"@ha
+/* 0000093C 0000097C  3C A0 00 00 */	lis r5, "@16328"@ha
 /* 00000940 00000980  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000944 00000984  3F E0 00 00 */	lis r31, "@16349"@ha
-/* 00000948 00000988  38 A5 00 00 */	addi r5, r5, "@16348"@l
-/* 0000094C 0000098C  38 9F 00 00 */	addi r4, r31, "@16349"@l
+/* 00000944 00000984  3F E0 00 00 */	lis r31, "@16329"@ha
+/* 00000948 00000988  38 A5 00 00 */	addi r5, r5, "@16328"@l
+/* 0000094C 0000098C  38 9F 00 00 */	addi r4, r31, "@16329"@l
 /* 00000950 00000990  38 63 00 04 */	addi r3, r3, 0x4
 /* 00000954 00000994  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
 /* 00000958 00000998  90 61 00 10 */	stw r3, 0x10(r1)
-/* 0000095C 0000099C  38 9F 00 00 */	addi r4, r31, "@16349"@l
+/* 0000095C 0000099C  38 9F 00 00 */	addi r4, r31, "@16329"@l
 /* 00000960 000009A0  90 7D 05 40 */	stw r3, 0x540(r29)
 /* 00000964 000009A4  38 61 00 10 */	addi r3, r1, 0x10
 /* 00000968 000009A8  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
@@ -930,844 +930,804 @@
 /* 00000BF8 00000C38  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000BFC 00000C3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC00 | size: 0xC
-# const sStateIDIf_c& baseID_DemoWait<sStateID_c>()
-.fn "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c", local
-/* 00000C00 00000C40  3C 60 00 00 */	lis r3, null__8sStateID@ha
-/* 00000C04 00000C44  38 63 00 00 */	addi r3, r3, null__8sStateID@l
-/* 00000C08 00000C48  4E 80 00 20 */	blr
-.endfn "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"
+# .text:0xC00 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 00000C00 00000C40  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 00000C04 00000C44  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C08 00000C48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C0C 00000C4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC10 | size: 0x4
-# daBottomBGForCastleLudwig_c::initializeState_DemoWait()
-.fn initializeState_DemoWait__27daBottomBGForCastleLudwig_cFv, global
-/* 00000C10 00000C50  4E 80 00 20 */	blr
-.endfn initializeState_DemoWait__27daBottomBGForCastleLudwig_cFv
-/* 00000C14 00000C54  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0xC10 | size: 0x8
+# dBaseActor_c::GetActorType()
+.fn GetActorType__12dBaseActor_cFv, weak
+/* 00000C10 00000C50  38 60 00 08 */	li r3, 0x8
+/* 00000C14 00000C54  4E 80 00 20 */	blr
+.endfn GetActorType__12dBaseActor_cFv
 /* 00000C18 00000C58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C1C 00000C5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC20 | size: 0x10
-# daBottomBGForCastleLudwig_c::executeState_DemoWait()
-.fn executeState_DemoWait__27daBottomBGForCastleLudwig_cFv, global
-/* 00000C20 00000C60  84 83 05 44 */	lwzu r4, 0x544(r3)
-/* 00000C24 00000C64  81 84 00 1C */	lwz r12, 0x1c(r4)
-/* 00000C28 00000C68  7D 89 03 A6 */	mtctr r12
-/* 00000C2C 00000C6C  4E 80 04 20 */	bctr
-.endfn executeState_DemoWait__27daBottomBGForCastleLudwig_cFv
+# .text:0xC20 | size: 0x4
+# dActor_c::funsuiMoveX()
+.fn funsuiMoveX__8dActor_cFv, weak
+/* 00000C20 00000C60  4E 80 00 20 */	blr
+.endfn funsuiMoveX__8dActor_cFv
+/* 00000C24 00000C64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C28 00000C68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C2C 00000C6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0xC30 | size: 0x4
-# daBottomBGForCastleLudwig_c::finalizeState_DemoWait()
-.fn finalizeState_DemoWait__27daBottomBGForCastleLudwig_cFv, global
+# dActor_c::setCarryFall(dActor_c*, int)
+.fn setCarryFall__8dActor_cFP8dActor_ci, weak
 /* 00000C30 00000C70  4E 80 00 20 */	blr
-.endfn finalizeState_DemoWait__27daBottomBGForCastleLudwig_cFv
+.endfn setCarryFall__8dActor_cFP8dActor_ci
 /* 00000C34 00000C74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C38 00000C78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C3C 00000C7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC40 | size: 0x4
-# dBaseActor_c::finalUpdate()
-.fn finalUpdate__12dBaseActor_cFv, weak
-/* 00000C40 00000C80  4E 80 00 20 */	blr
-.endfn finalUpdate__12dBaseActor_cFv
-/* 00000C44 00000C84  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0xC40 | size: 0x8
+# dActor_c::isSpinLiftUpEnable()
+.fn isSpinLiftUpEnable__8dActor_cFv, weak
+/* 00000C40 00000C80  38 60 00 01 */	li r3, 0x1
+/* 00000C44 00000C84  4E 80 00 20 */	blr
+.endfn isSpinLiftUpEnable__8dActor_cFv
 /* 00000C48 00000C88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C4C 00000C8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0xC50 | size: 0x8
-# dBaseActor_c::GetActorType()
-.fn GetActorType__12dBaseActor_cFv, weak
-/* 00000C50 00000C90  38 60 00 08 */	li r3, 0x8
+# dActor_c::getPlrNo()
+.fn getPlrNo__8dActor_cFv, weak
+/* 00000C50 00000C90  38 63 03 8D */	addi r3, r3, 0x38d
 /* 00000C54 00000C94  4E 80 00 20 */	blr
-.endfn GetActorType__12dBaseActor_cFv
+.endfn getPlrNo__8dActor_cFv
 /* 00000C58 00000C98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C5C 00000C9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC60 | size: 0x4
-# dActor_c::funsuiMoveX()
-.fn funsuiMoveX__8dActor_cFv, weak
-/* 00000C60 00000CA0  4E 80 00 20 */	blr
-.endfn funsuiMoveX__8dActor_cFv
-/* 00000C64 00000CA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0xC60 | size: 0x8
+# dActor_c::vf68(dBg_ctr_c*)
+.fn vf68__8dActor_cFP9dBg_ctr_c, weak
+/* 00000C60 00000CA0  38 60 00 01 */	li r3, 0x1
+/* 00000C64 00000CA4  4E 80 00 20 */	blr
+.endfn vf68__8dActor_cFP9dBg_ctr_c
 /* 00000C68 00000CA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C6C 00000CAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC70 | size: 0x4
-# dActor_c::setCarryFall(dActor_c*, int)
-.fn setCarryFall__8dActor_cFP8dActor_ci, weak
-/* 00000C70 00000CB0  4E 80 00 20 */	blr
-.endfn setCarryFall__8dActor_cFP8dActor_ci
-/* 00000C74 00000CB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0xC70 | size: 0x8
+# dEn_c::isFunsui() const
+.fn isFunsui__5dEn_cCFv, weak
+/* 00000C70 00000CB0  38 60 00 00 */	li r3, 0x0
+/* 00000C74 00000CB4  4E 80 00 20 */	blr
+.endfn isFunsui__5dEn_cCFv
 /* 00000C78 00000CB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C7C 00000CBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC80 | size: 0x8
-# dActor_c::isSpinLiftUpEnable()
-.fn isSpinLiftUpEnable__8dActor_cFv, weak
-/* 00000C80 00000CC0  38 60 00 01 */	li r3, 0x1
-/* 00000C84 00000CC4  4E 80 00 20 */	blr
-.endfn isSpinLiftUpEnable__8dActor_cFv
+# .text:0xC80 | size: 0x4
+# dEn_c::endFunsui()
+.fn endFunsui__5dEn_cFv, weak
+/* 00000C80 00000CC0  4E 80 00 20 */	blr
+.endfn endFunsui__5dEn_cFv
+/* 00000C84 00000CC4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C88 00000CC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C8C 00000CCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xC90 | size: 0x8
-# dActor_c::getPlrNo()
-.fn getPlrNo__8dActor_cFv, weak
-/* 00000C90 00000CD0  38 63 03 8D */	addi r3, r3, 0x38d
-/* 00000C94 00000CD4  4E 80 00 20 */	blr
-.endfn getPlrNo__8dActor_cFv
+# .text:0xC90 | size: 0x4
+# dEn_c::beginFunsui()
+.fn beginFunsui__5dEn_cFv, weak
+/* 00000C90 00000CD0  4E 80 00 20 */	blr
+.endfn beginFunsui__5dEn_cFv
+/* 00000C94 00000CD4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C98 00000CD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000C9C 00000CDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
 # .text:0xCA0 | size: 0x8
-# dActor_c::vf68(dBg_ctr_c*)
-.fn vf68__8dActor_cFP9dBg_ctr_c, weak
-/* 00000CA0 00000CE0  38 60 00 01 */	li r3, 0x1
-/* 00000CA4 00000CE4  4E 80 00 20 */	blr
-.endfn vf68__8dActor_cFP9dBg_ctr_c
+# dEn_c::calcBoyonScale()
+.fn calcBoyonScale__5dEn_cFv, weak
+/* 00000CA0 00000CE0  38 63 04 64 */	addi r3, r3, 0x464
+/* 00000CA4 00000CE4  48 00 00 00 */	b execute__12dEnBoyoMng_cFv
+.endfn calcBoyonScale__5dEn_cFv
 /* 00000CA8 00000CE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00000CAC 00000CEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xCB0 | size: 0x8
-# dEn_c::isFunsui() const
-.fn isFunsui__5dEn_cCFv, weak
-/* 00000CB0 00000CF0  38 60 00 00 */	li r3, 0x0
-/* 00000CB4 00000CF4  4E 80 00 20 */	blr
-.endfn isFunsui__5dEn_cCFv
-/* 00000CB8 00000CF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000CBC 00000CFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xCC0 | size: 0x4
-# dEn_c::endFunsui()
-.fn endFunsui__5dEn_cFv, weak
-/* 00000CC0 00000D00  4E 80 00 20 */	blr
-.endfn endFunsui__5dEn_cFv
-/* 00000CC4 00000D04  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000CC8 00000D08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000CCC 00000D0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xCD0 | size: 0x4
-# dEn_c::beginFunsui()
-.fn beginFunsui__5dEn_cFv, weak
-/* 00000CD0 00000D10  4E 80 00 20 */	blr
-.endfn beginFunsui__5dEn_cFv
-/* 00000CD4 00000D14  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000CD8 00000D18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000CDC 00000D1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xCE0 | size: 0x8
-# dEn_c::calcBoyonScale()
-.fn calcBoyonScale__5dEn_cFv, weak
-/* 00000CE0 00000D20  38 63 04 64 */	addi r3, r3, 0x464
-/* 00000CE4 00000D24  48 00 00 00 */	b execute__12dEnBoyoMng_cFv
-.endfn calcBoyonScale__5dEn_cFv
-/* 00000CE8 00000D28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000CEC 00000D2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xCF0 | size: 0xC
+# .text:0xCB0 | size: 0xC
 # dEn_c::isQuakeDamage()
 .fn isQuakeDamage__5dEn_cFv, weak
-/* 00000CF0 00000D30  80 03 02 74 */	lwz r0, 0x274(r3)
-/* 00000CF4 00000D34  54 03 02 E4 */	rlwinm r3, r0, 0, 11, 18
-/* 00000CF8 00000D38  4E 80 00 20 */	blr
+/* 00000CB0 00000CF0  80 03 02 74 */	lwz r0, 0x274(r3)
+/* 00000CB4 00000CF4  54 03 02 E4 */	rlwinm r3, r0, 0, 11, 18
+/* 00000CB8 00000CF8  4E 80 00 20 */	blr
 .endfn isQuakeDamage__5dEn_cFv
-/* 00000CFC 00000D3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CBC 00000CFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xD00 | size: 0x1E4
+# .text:0xCC0 | size: 0x1E0
 .fn "__sinit_\d_a_castle_bg_cpp", local
-/* 00000D00 00000D40  94 21 FF 90 */	stwu r1, -0x70(r1)
-/* 00000D04 00000D44  7C 08 02 A6 */	mflr r0
-/* 00000D08 00000D48  90 01 00 74 */	stw r0, 0x74(r1)
-/* 00000D0C 00000D4C  39 61 00 70 */	addi r11, r1, 0x70
-/* 00000D10 00000D50  48 00 00 01 */	bl _savegpr_25
-/* 00000D14 00000D54  3F C0 00 00 */	lis r30, ...data.0@ha
-/* 00000D18 00000D58  3F A0 00 00 */	lis r29, ...bss.0@ha
-/* 00000D1C 00000D5C  3B DE 00 00 */	addi r30, r30, ...data.0@l
-/* 00000D20 00000D60  38 BE 05 DC */	addi r5, r30, 0x5dc
-/* 00000D24 00000D64  81 7E 05 DC */	lwz r11, 0x5dc(r30)
-/* 00000D28 00000D68  38 9E 05 E8 */	addi r4, r30, 0x5e8
-/* 00000D2C 00000D6C  38 7E 05 F4 */	addi r3, r30, 0x5f4
-/* 00000D30 00000D70  81 45 00 04 */	lwz r10, 0x4(r5)
-/* 00000D34 00000D74  3B BD 00 00 */	addi r29, r29, ...bss.0@l
-/* 00000D38 00000D78  81 25 00 08 */	lwz r9, 0x8(r5)
-/* 00000D3C 00000D7C  3B 9E 06 24 */	addi r28, r30, 0x624
-/* 00000D40 00000D80  81 1E 05 E8 */	lwz r8, 0x5e8(r30)
-/* 00000D44 00000D84  80 E4 00 04 */	lwz r7, 0x4(r4)
-/* 00000D48 00000D88  80 C4 00 08 */	lwz r6, 0x8(r4)
-/* 00000D4C 00000D8C  80 BE 05 F4 */	lwz r5, 0x5f4(r30)
-/* 00000D50 00000D90  80 83 00 04 */	lwz r4, 0x4(r3)
-/* 00000D54 00000D94  80 03 00 08 */	lwz r0, 0x8(r3)
-/* 00000D58 00000D98  91 61 00 2C */	stw r11, 0x2c(r1)
-/* 00000D5C 00000D9C  91 41 00 30 */	stw r10, 0x30(r1)
-/* 00000D60 00000DA0  91 21 00 34 */	stw r9, 0x34(r1)
-/* 00000D64 00000DA4  91 01 00 38 */	stw r8, 0x38(r1)
-/* 00000D68 00000DA8  90 E1 00 3C */	stw r7, 0x3c(r1)
-/* 00000D6C 00000DAC  90 C1 00 40 */	stw r6, 0x40(r1)
-/* 00000D70 00000DB0  90 A1 00 44 */	stw r5, 0x44(r1)
-/* 00000D74 00000DB4  90 81 00 48 */	stw r4, 0x48(r1)
-/* 00000D78 00000DB8  90 01 00 4C */	stw r0, 0x4c(r1)
-/* 00000D7C 00000DBC  48 00 00 01 */	bl "baseID_DemoWait<10sStateID_c>__Fv_RC12sStateIDIf_c"
-/* 00000D80 00000DC0  7C 79 1B 78 */	mr r25, r3
-/* 00000D84 00000DC4  7F 84 E3 78 */	mr r4, r28
-/* 00000D88 00000DC8  38 7D 00 0C */	addi r3, r29, 0xc
-/* 00000D8C 00000DCC  48 00 00 01 */	bl __ct__10sStateID_cFPCc
-/* 00000D90 00000DD0  3B FD 00 0C */	addi r31, r29, 0xc
-/* 00000D94 00000DD4  83 41 00 44 */	lwz r26, 0x44(r1)
-/* 00000D98 00000DD8  83 61 00 48 */	lwz r27, 0x48(r1)
-/* 00000D9C 00000DDC  3C C0 00 00 */	lis r6, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@ha
-/* 00000DA0 00000DE0  81 81 00 4C */	lwz r12, 0x4c(r1)
-/* 00000DA4 00000DE4  38 C6 00 00 */	addi r6, r6, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@l
-/* 00000DA8 00000DE8  81 61 00 38 */	lwz r11, 0x38(r1)
-/* 00000DAC 00000DEC  3C 80 00 00 */	lis r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@ha
-/* 00000DB0 00000DF0  81 41 00 3C */	lwz r10, 0x3c(r1)
-/* 00000DB4 00000DF4  7F E3 FB 78 */	mr r3, r31
-/* 00000DB8 00000DF8  81 21 00 40 */	lwz r9, 0x40(r1)
-/* 00000DBC 00000DFC  38 84 00 00 */	addi r4, r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@l
-/* 00000DC0 00000E00  81 01 00 2C */	lwz r8, 0x2c(r1)
-/* 00000DC4 00000E04  38 BD 00 00 */	addi r5, r29, 0x0
-/* 00000DC8 00000E08  80 E1 00 30 */	lwz r7, 0x30(r1)
-/* 00000DCC 00000E0C  80 01 00 34 */	lwz r0, 0x34(r1)
-/* 00000DD0 00000E10  93 5F 00 0C */	stw r26, 0xc(r31)
-/* 00000DD4 00000E14  93 7F 00 10 */	stw r27, 0x10(r31)
-/* 00000DD8 00000E18  91 9F 00 14 */	stw r12, 0x14(r31)
-/* 00000DDC 00000E1C  91 7F 00 18 */	stw r11, 0x18(r31)
-/* 00000DE0 00000E20  91 5F 00 1C */	stw r10, 0x1c(r31)
-/* 00000DE4 00000E24  91 3F 00 20 */	stw r9, 0x20(r31)
-/* 00000DE8 00000E28  91 1F 00 24 */	stw r8, 0x24(r31)
-/* 00000DEC 00000E2C  90 FF 00 28 */	stw r7, 0x28(r31)
-/* 00000DF0 00000E30  90 1F 00 2C */	stw r0, 0x2c(r31)
-/* 00000DF4 00000E34  90 DD 00 0C */	stw r6, 0xc(r29)
-/* 00000DF8 00000E38  93 3F 00 30 */	stw r25, 0x30(r31)
-/* 00000DFC 00000E3C  48 00 00 01 */	bl __register_global_object
-/* 00000E00 00000E40  38 7E 06 00 */	addi r3, r30, 0x600
-/* 00000E04 00000E44  38 DE 06 0C */	addi r6, r30, 0x60c
-/* 00000E08 00000E48  38 BE 06 18 */	addi r5, r30, 0x618
-/* 00000E0C 00000E4C  83 7E 06 00 */	lwz r27, 0x600(r30)
-/* 00000E10 00000E50  81 83 00 04 */	lwz r12, 0x4(r3)
-/* 00000E14 00000E54  7F 84 E3 78 */	mr r4, r28
-/* 00000E18 00000E58  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00000CC0 00000D00  94 21 FF 90 */	stwu r1, -0x70(r1)
+/* 00000CC4 00000D04  7C 08 02 A6 */	mflr r0
+/* 00000CC8 00000D08  90 01 00 74 */	stw r0, 0x74(r1)
+/* 00000CCC 00000D0C  39 61 00 70 */	addi r11, r1, 0x70
+/* 00000CD0 00000D10  48 00 00 01 */	bl _savegpr_26
+/* 00000CD4 00000D14  3F C0 00 00 */	lis r30, ...data.0@ha
+/* 00000CD8 00000D18  3F A0 00 00 */	lis r29, ...bss.0@ha
+/* 00000CDC 00000D1C  3B DE 00 00 */	addi r30, r30, ...data.0@l
+/* 00000CE0 00000D20  38 7E 05 DC */	addi r3, r30, 0x5dc
+/* 00000CE4 00000D24  83 5E 05 DC */	lwz r26, 0x5dc(r30)
+/* 00000CE8 00000D28  38 DE 05 E8 */	addi r6, r30, 0x5e8
+/* 00000CEC 00000D2C  38 BE 05 F4 */	addi r5, r30, 0x5f4
+/* 00000CF0 00000D30  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000CF4 00000D34  3B BD 00 00 */	addi r29, r29, ...bss.0@l
+/* 00000CF8 00000D38  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00000CFC 00000D3C  38 9E 06 24 */	addi r4, r30, 0x624
+/* 00000D00 00000D40  81 5E 05 E8 */	lwz r10, 0x5e8(r30)
+/* 00000D04 00000D44  38 7D 00 0C */	addi r3, r29, 0xc
+/* 00000D08 00000D48  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 00000D0C 00000D4C  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 00000D10 00000D50  80 FE 05 F4 */	lwz r7, 0x5f4(r30)
+/* 00000D14 00000D54  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 00000D18 00000D58  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 00000D1C 00000D5C  93 41 00 2C */	stw r26, 0x2c(r1)
+/* 00000D20 00000D60  91 81 00 30 */	stw r12, 0x30(r1)
+/* 00000D24 00000D64  91 61 00 34 */	stw r11, 0x34(r1)
+/* 00000D28 00000D68  91 41 00 38 */	stw r10, 0x38(r1)
+/* 00000D2C 00000D6C  91 21 00 3C */	stw r9, 0x3c(r1)
+/* 00000D30 00000D70  91 01 00 40 */	stw r8, 0x40(r1)
+/* 00000D34 00000D74  90 E1 00 44 */	stw r7, 0x44(r1)
+/* 00000D38 00000D78  90 C1 00 48 */	stw r6, 0x48(r1)
+/* 00000D3C 00000D7C  90 01 00 4C */	stw r0, 0x4c(r1)
+/* 00000D40 00000D80  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00000D44 00000D84  3B FD 00 0C */	addi r31, r29, 0xc
+/* 00000D48 00000D88  83 41 00 44 */	lwz r26, 0x44(r1)
+/* 00000D4C 00000D8C  83 61 00 48 */	lwz r27, 0x48(r1)
+/* 00000D50 00000D90  3C E0 00 00 */	lis r7, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@ha
+/* 00000D54 00000D94  83 81 00 4C */	lwz r28, 0x4c(r1)
+/* 00000D58 00000D98  3C C0 00 00 */	lis r6, null__8sStateID@ha
+/* 00000D5C 00000D9C  81 81 00 38 */	lwz r12, 0x38(r1)
+/* 00000D60 00000DA0  38 E7 00 00 */	addi r7, r7, "__vt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>"@l
+/* 00000D64 00000DA4  81 61 00 3C */	lwz r11, 0x3c(r1)
+/* 00000D68 00000DA8  38 C6 00 00 */	addi r6, r6, null__8sStateID@l
+/* 00000D6C 00000DAC  81 41 00 40 */	lwz r10, 0x40(r1)
+/* 00000D70 00000DB0  3C 80 00 00 */	lis r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@ha
+/* 00000D74 00000DB4  81 21 00 2C */	lwz r9, 0x2c(r1)
+/* 00000D78 00000DB8  7F E3 FB 78 */	mr r3, r31
+/* 00000D7C 00000DBC  81 01 00 30 */	lwz r8, 0x30(r1)
+/* 00000D80 00000DC0  38 84 00 00 */	addi r4, r4, "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"@l
+/* 00000D84 00000DC4  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 00000D88 00000DC8  38 BD 00 00 */	addi r5, r29, 0x0
+/* 00000D8C 00000DCC  93 5F 00 0C */	stw r26, 0xc(r31)
+/* 00000D90 00000DD0  93 7F 00 10 */	stw r27, 0x10(r31)
+/* 00000D94 00000DD4  93 9F 00 14 */	stw r28, 0x14(r31)
+/* 00000D98 00000DD8  91 9F 00 18 */	stw r12, 0x18(r31)
+/* 00000D9C 00000DDC  91 7F 00 1C */	stw r11, 0x1c(r31)
+/* 00000DA0 00000DE0  91 5F 00 20 */	stw r10, 0x20(r31)
+/* 00000DA4 00000DE4  91 3F 00 24 */	stw r9, 0x24(r31)
+/* 00000DA8 00000DE8  91 1F 00 28 */	stw r8, 0x28(r31)
+/* 00000DAC 00000DEC  90 1F 00 2C */	stw r0, 0x2c(r31)
+/* 00000DB0 00000DF0  90 FD 00 0C */	stw r7, 0xc(r29)
+/* 00000DB4 00000DF4  90 DF 00 30 */	stw r6, 0x30(r31)
+/* 00000DB8 00000DF8  48 00 00 01 */	bl __register_global_object
+/* 00000DBC 00000DFC  38 7E 06 00 */	addi r3, r30, 0x600
+/* 00000DC0 00000E00  38 DE 06 0C */	addi r6, r30, 0x60c
+/* 00000DC4 00000E04  38 BE 06 18 */	addi r5, r30, 0x618
+/* 00000DC8 00000E08  83 9E 06 00 */	lwz r28, 0x600(r30)
+/* 00000DCC 00000E0C  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000DD0 00000E10  38 9E 06 24 */	addi r4, r30, 0x624
+/* 00000DD4 00000E14  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00000DD8 00000E18  38 7D 00 4C */	addi r3, r29, 0x4c
+/* 00000DDC 00000E1C  81 5E 06 0C */	lwz r10, 0x60c(r30)
+/* 00000DE0 00000E20  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 00000DE4 00000E24  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 00000DE8 00000E28  80 FE 06 18 */	lwz r7, 0x618(r30)
+/* 00000DEC 00000E2C  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 00000DF0 00000E30  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 00000DF4 00000E34  93 81 00 08 */	stw r28, 0x8(r1)
+/* 00000DF8 00000E38  91 81 00 0C */	stw r12, 0xc(r1)
+/* 00000DFC 00000E3C  91 61 00 10 */	stw r11, 0x10(r1)
+/* 00000E00 00000E40  91 41 00 14 */	stw r10, 0x14(r1)
+/* 00000E04 00000E44  91 21 00 18 */	stw r9, 0x18(r1)
+/* 00000E08 00000E48  91 01 00 1C */	stw r8, 0x1c(r1)
+/* 00000E0C 00000E4C  90 E1 00 20 */	stw r7, 0x20(r1)
+/* 00000E10 00000E50  90 C1 00 24 */	stw r6, 0x24(r1)
+/* 00000E14 00000E54  90 01 00 28 */	stw r0, 0x28(r1)
+/* 00000E18 00000E58  48 00 00 01 */	bl __ct__10sStateID_cFPCc
 /* 00000E1C 00000E5C  38 7D 00 4C */	addi r3, r29, 0x4c
-/* 00000E20 00000E60  81 5E 06 0C */	lwz r10, 0x60c(r30)
-/* 00000E24 00000E64  81 26 00 04 */	lwz r9, 0x4(r6)
-/* 00000E28 00000E68  81 06 00 08 */	lwz r8, 0x8(r6)
-/* 00000E2C 00000E6C  80 FE 06 18 */	lwz r7, 0x618(r30)
-/* 00000E30 00000E70  80 C5 00 04 */	lwz r6, 0x4(r5)
-/* 00000E34 00000E74  80 05 00 08 */	lwz r0, 0x8(r5)
-/* 00000E38 00000E78  93 61 00 08 */	stw r27, 0x8(r1)
-/* 00000E3C 00000E7C  91 81 00 0C */	stw r12, 0xc(r1)
-/* 00000E40 00000E80  91 61 00 10 */	stw r11, 0x10(r1)
-/* 00000E44 00000E84  91 41 00 14 */	stw r10, 0x14(r1)
-/* 00000E48 00000E88  91 21 00 18 */	stw r9, 0x18(r1)
-/* 00000E4C 00000E8C  91 01 00 1C */	stw r8, 0x1c(r1)
-/* 00000E50 00000E90  90 E1 00 20 */	stw r7, 0x20(r1)
-/* 00000E54 00000E94  90 C1 00 24 */	stw r6, 0x24(r1)
-/* 00000E58 00000E98  90 01 00 28 */	stw r0, 0x28(r1)
-/* 00000E5C 00000E9C  48 00 00 01 */	bl __ct__10sStateID_cFPCc
-/* 00000E60 00000EA0  38 7D 00 4C */	addi r3, r29, 0x4c
-/* 00000E64 00000EA4  83 C1 00 20 */	lwz r30, 0x20(r1)
-/* 00000E68 00000EA8  83 81 00 24 */	lwz r28, 0x24(r1)
-/* 00000E6C 00000EAC  3C C0 00 00 */	lis r6, "__vt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>"@ha
-/* 00000E70 00000EB0  81 81 00 28 */	lwz r12, 0x28(r1)
-/* 00000E74 00000EB4  38 C6 00 00 */	addi r6, r6, "__vt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>"@l
-/* 00000E78 00000EB8  81 61 00 14 */	lwz r11, 0x14(r1)
-/* 00000E7C 00000EBC  3C 80 00 00 */	lis r4, "__dt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>Fv"@ha
-/* 00000E80 00000EC0  81 41 00 18 */	lwz r10, 0x18(r1)
-/* 00000E84 00000EC4  7F 68 DB 78 */	mr r8, r27
-/* 00000E88 00000EC8  81 21 00 1C */	lwz r9, 0x1c(r1)
-/* 00000E8C 00000ECC  38 84 00 00 */	addi r4, r4, "__dt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>Fv"@l
-/* 00000E90 00000ED0  80 E1 00 0C */	lwz r7, 0xc(r1)
-/* 00000E94 00000ED4  38 BD 00 40 */	addi r5, r29, 0x40
-/* 00000E98 00000ED8  80 01 00 10 */	lwz r0, 0x10(r1)
-/* 00000E9C 00000EDC  93 C3 00 0C */	stw r30, 0xc(r3)
-/* 00000EA0 00000EE0  93 83 00 10 */	stw r28, 0x10(r3)
-/* 00000EA4 00000EE4  91 83 00 14 */	stw r12, 0x14(r3)
-/* 00000EA8 00000EE8  91 63 00 18 */	stw r11, 0x18(r3)
-/* 00000EAC 00000EEC  91 43 00 1C */	stw r10, 0x1c(r3)
-/* 00000EB0 00000EF0  91 23 00 20 */	stw r9, 0x20(r3)
-/* 00000EB4 00000EF4  91 03 00 24 */	stw r8, 0x24(r3)
-/* 00000EB8 00000EF8  90 E3 00 28 */	stw r7, 0x28(r3)
-/* 00000EBC 00000EFC  90 03 00 2C */	stw r0, 0x2c(r3)
-/* 00000EC0 00000F00  90 DD 00 4C */	stw r6, 0x4c(r29)
-/* 00000EC4 00000F04  93 E3 00 30 */	stw r31, 0x30(r3)
-/* 00000EC8 00000F08  48 00 00 01 */	bl __register_global_object
-/* 00000ECC 00000F0C  39 61 00 70 */	addi r11, r1, 0x70
-/* 00000ED0 00000F10  48 00 00 01 */	bl _restgpr_25
-/* 00000ED4 00000F14  80 01 00 74 */	lwz r0, 0x74(r1)
-/* 00000ED8 00000F18  7C 08 03 A6 */	mtlr r0
-/* 00000EDC 00000F1C  38 21 00 70 */	addi r1, r1, 0x70
-/* 00000EE0 00000F20  4E 80 00 20 */	blr
+/* 00000E20 00000E60  83 81 00 20 */	lwz r28, 0x20(r1)
+/* 00000E24 00000E64  83 C1 00 24 */	lwz r30, 0x24(r1)
+/* 00000E28 00000E68  3C C0 00 00 */	lis r6, "__vt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>"@ha
+/* 00000E2C 00000E6C  81 81 00 28 */	lwz r12, 0x28(r1)
+/* 00000E30 00000E70  38 C6 00 00 */	addi r6, r6, "__vt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>"@l
+/* 00000E34 00000E74  81 61 00 14 */	lwz r11, 0x14(r1)
+/* 00000E38 00000E78  3C 80 00 00 */	lis r4, "__dt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>Fv"@ha
+/* 00000E3C 00000E7C  81 41 00 18 */	lwz r10, 0x18(r1)
+/* 00000E40 00000E80  38 84 00 00 */	addi r4, r4, "__dt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>Fv"@l
+/* 00000E44 00000E84  81 21 00 1C */	lwz r9, 0x1c(r1)
+/* 00000E48 00000E88  38 BD 00 40 */	addi r5, r29, 0x40
+/* 00000E4C 00000E8C  81 01 00 08 */	lwz r8, 0x8(r1)
+/* 00000E50 00000E90  80 E1 00 0C */	lwz r7, 0xc(r1)
+/* 00000E54 00000E94  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 00000E58 00000E98  93 83 00 0C */	stw r28, 0xc(r3)
+/* 00000E5C 00000E9C  93 C3 00 10 */	stw r30, 0x10(r3)
+/* 00000E60 00000EA0  91 83 00 14 */	stw r12, 0x14(r3)
+/* 00000E64 00000EA4  91 63 00 18 */	stw r11, 0x18(r3)
+/* 00000E68 00000EA8  91 43 00 1C */	stw r10, 0x1c(r3)
+/* 00000E6C 00000EAC  91 23 00 20 */	stw r9, 0x20(r3)
+/* 00000E70 00000EB0  91 03 00 24 */	stw r8, 0x24(r3)
+/* 00000E74 00000EB4  90 E3 00 28 */	stw r7, 0x28(r3)
+/* 00000E78 00000EB8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00000E7C 00000EBC  90 DD 00 4C */	stw r6, 0x4c(r29)
+/* 00000E80 00000EC0  93 E3 00 30 */	stw r31, 0x30(r3)
+/* 00000E84 00000EC4  48 00 00 01 */	bl __register_global_object
+/* 00000E88 00000EC8  39 61 00 70 */	addi r11, r1, 0x70
+/* 00000E8C 00000ECC  48 00 00 01 */	bl _restgpr_26
+/* 00000E90 00000ED0  80 01 00 74 */	lwz r0, 0x74(r1)
+/* 00000E94 00000ED4  7C 08 03 A6 */	mtlr r0
+/* 00000E98 00000ED8  38 21 00 70 */	addi r1, r1, 0x70
+/* 00000E9C 00000EDC  4E 80 00 20 */	blr
 .endfn "__sinit_\d_a_castle_bg_cpp"
-/* 00000EE4 00000F24  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000EE8 00000F28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000EEC 00000F2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xEF0 | size: 0x58
+# .text:0xEA0 | size: 0x58
 # sFStateID_c<daMiddleBGForCastleLudwig_c>::~sFStateID_c()
 .fn "__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv", weak
-/* 00000EF0 00000F30  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000EF4 00000F34  7C 08 02 A6 */	mflr r0
-/* 00000EF8 00000F38  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000EFC 00000F3C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000F00 00000F40  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000F04 00000F44  7C 9F 23 78 */	mr r31, r4
-/* 00000F08 00000F48  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000F0C 00000F4C  7C 7E 1B 78 */	mr r30, r3
-/* 00000F10 00000F50  41 82 00 1C */	beq .L_00000F2C
-/* 00000F14 00000F54  38 80 00 00 */	li r4, 0x0
-/* 00000F18 00000F58  48 00 00 01 */	bl __dt__10sStateID_cFv
-/* 00000F1C 00000F5C  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000F20 00000F60  40 81 00 0C */	ble .L_00000F2C
-/* 00000F24 00000F64  7F C3 F3 78 */	mr r3, r30
-/* 00000F28 00000F68  48 00 00 01 */	bl __dl__FPv
-.L_00000F2C:
-/* 00000F2C 00000F6C  7F C3 F3 78 */	mr r3, r30
-/* 00000F30 00000F70  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000F34 00000F74  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000F38 00000F78  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000F3C 00000F7C  7C 08 03 A6 */	mtlr r0
-/* 00000F40 00000F80  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000F44 00000F84  4E 80 00 20 */	blr
+/* 00000EA0 00000EE0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000EA4 00000EE4  7C 08 02 A6 */	mflr r0
+/* 00000EA8 00000EE8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000EAC 00000EEC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000EB0 00000EF0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000EB4 00000EF4  7C 9F 23 78 */	mr r31, r4
+/* 00000EB8 00000EF8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000EBC 00000EFC  7C 7E 1B 78 */	mr r30, r3
+/* 00000EC0 00000F00  41 82 00 1C */	beq .L_00000EDC
+/* 00000EC4 00000F04  38 80 00 00 */	li r4, 0x0
+/* 00000EC8 00000F08  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 00000ECC 00000F0C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000ED0 00000F10  40 81 00 0C */	ble .L_00000EDC
+/* 00000ED4 00000F14  7F C3 F3 78 */	mr r3, r30
+/* 00000ED8 00000F18  48 00 00 01 */	bl __dl__FPv
+.L_00000EDC:
+/* 00000EDC 00000F1C  7F C3 F3 78 */	mr r3, r30
+/* 00000EE0 00000F20  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000EE4 00000F24  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000EE8 00000F28  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000EEC 00000F2C  7C 08 03 A6 */	mtlr r0
+/* 00000EF0 00000F30  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000EF4 00000F34  4E 80 00 20 */	blr
 .endfn "__dt__42sFStateID_c<27daMiddleBGForCastleLudwig_c>Fv"
-/* 00000F48 00000F88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000F4C 00000F8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000EF8 00000F38  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000EFC 00000F3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xF50 | size: 0x5C
+# .text:0xF00 | size: 0x5C
 # sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::~sFStateVirtualID_c()
 .fn "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv", weak
-/* 00000F50 00000F90  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000F54 00000F94  7C 08 02 A6 */	mflr r0
-/* 00000F58 00000F98  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000F5C 00000F9C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000F60 00000FA0  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000F64 00000FA4  7C 9F 23 78 */	mr r31, r4
-/* 00000F68 00000FA8  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000F6C 00000FAC  7C 7E 1B 78 */	mr r30, r3
-/* 00000F70 00000FB0  41 82 00 20 */	beq .L_00000F90
-/* 00000F74 00000FB4  41 82 00 0C */	beq .L_00000F80
-/* 00000F78 00000FB8  38 80 00 00 */	li r4, 0x0
-/* 00000F7C 00000FBC  48 00 00 01 */	bl __dt__10sStateID_cFv
-.L_00000F80:
-/* 00000F80 00000FC0  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000F84 00000FC4  40 81 00 0C */	ble .L_00000F90
-/* 00000F88 00000FC8  7F C3 F3 78 */	mr r3, r30
-/* 00000F8C 00000FCC  48 00 00 01 */	bl __dl__FPv
-.L_00000F90:
-/* 00000F90 00000FD0  7F C3 F3 78 */	mr r3, r30
-/* 00000F94 00000FD4  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000F98 00000FD8  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000F9C 00000FDC  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000FA0 00000FE0  7C 08 03 A6 */	mtlr r0
-/* 00000FA4 00000FE4  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000FA8 00000FE8  4E 80 00 20 */	blr
+/* 00000F00 00000F40  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000F04 00000F44  7C 08 02 A6 */	mflr r0
+/* 00000F08 00000F48  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000F0C 00000F4C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000F10 00000F50  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000F14 00000F54  7C 9F 23 78 */	mr r31, r4
+/* 00000F18 00000F58  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000F1C 00000F5C  7C 7E 1B 78 */	mr r30, r3
+/* 00000F20 00000F60  41 82 00 20 */	beq .L_00000F40
+/* 00000F24 00000F64  41 82 00 0C */	beq .L_00000F30
+/* 00000F28 00000F68  38 80 00 00 */	li r4, 0x0
+/* 00000F2C 00000F6C  48 00 00 01 */	bl __dt__10sStateID_cFv
+.L_00000F30:
+/* 00000F30 00000F70  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000F34 00000F74  40 81 00 0C */	ble .L_00000F40
+/* 00000F38 00000F78  7F C3 F3 78 */	mr r3, r30
+/* 00000F3C 00000F7C  48 00 00 01 */	bl __dl__FPv
+.L_00000F40:
+/* 00000F40 00000F80  7F C3 F3 78 */	mr r3, r30
+/* 00000F44 00000F84  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000F48 00000F88  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000F4C 00000F8C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000F50 00000F90  7C 08 03 A6 */	mtlr r0
+/* 00000F54 00000F94  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000F58 00000F98  4E 80 00 20 */	blr
 .endfn "__dt__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>Fv"
-/* 00000FAC 00000FEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000F5C 00000F9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xFB0 | size: 0x58
+# .text:0xF60 | size: 0x58
 # sFStateID_c<daBottomBGForCastleLudwig_c>::~sFStateID_c()
 .fn "__dt__42sFStateID_c<27daBottomBGForCastleLudwig_c>Fv", weak
-/* 00000FB0 00000FF0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000FB4 00000FF4  7C 08 02 A6 */	mflr r0
-/* 00000FB8 00000FF8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000FBC 00000FFC  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000FC0 00001000  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000FC4 00001004  7C 9F 23 78 */	mr r31, r4
-/* 00000FC8 00001008  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000FCC 0000100C  7C 7E 1B 78 */	mr r30, r3
-/* 00000FD0 00001010  41 82 00 1C */	beq .L_00000FEC
-/* 00000FD4 00001014  38 80 00 00 */	li r4, 0x0
-/* 00000FD8 00001018  48 00 00 01 */	bl __dt__10sStateID_cFv
-/* 00000FDC 0000101C  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000FE0 00001020  40 81 00 0C */	ble .L_00000FEC
-/* 00000FE4 00001024  7F C3 F3 78 */	mr r3, r30
-/* 00000FE8 00001028  48 00 00 01 */	bl __dl__FPv
-.L_00000FEC:
-/* 00000FEC 0000102C  7F C3 F3 78 */	mr r3, r30
-/* 00000FF0 00001030  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000FF4 00001034  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000FF8 00001038  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000FFC 0000103C  7C 08 03 A6 */	mtlr r0
-/* 00001000 00001040  38 21 00 10 */	addi r1, r1, 0x10
-/* 00001004 00001044  4E 80 00 20 */	blr
+/* 00000F60 00000FA0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000F64 00000FA4  7C 08 02 A6 */	mflr r0
+/* 00000F68 00000FA8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000F6C 00000FAC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000F70 00000FB0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000F74 00000FB4  7C 9F 23 78 */	mr r31, r4
+/* 00000F78 00000FB8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000F7C 00000FBC  7C 7E 1B 78 */	mr r30, r3
+/* 00000F80 00000FC0  41 82 00 1C */	beq .L_00000F9C
+/* 00000F84 00000FC4  38 80 00 00 */	li r4, 0x0
+/* 00000F88 00000FC8  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 00000F8C 00000FCC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000F90 00000FD0  40 81 00 0C */	ble .L_00000F9C
+/* 00000F94 00000FD4  7F C3 F3 78 */	mr r3, r30
+/* 00000F98 00000FD8  48 00 00 01 */	bl __dl__FPv
+.L_00000F9C:
+/* 00000F9C 00000FDC  7F C3 F3 78 */	mr r3, r30
+/* 00000FA0 00000FE0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000FA4 00000FE4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000FA8 00000FE8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000FAC 00000FEC  7C 08 03 A6 */	mtlr r0
+/* 00000FB0 00000FF0  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000FB4 00000FF4  4E 80 00 20 */	blr
 .endfn "__dt__42sFStateID_c<27daBottomBGForCastleLudwig_c>Fv"
-/* 00001008 00001048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000100C 0000104C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000FB8 00000FF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000FBC 00000FFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1010 | size: 0x5C
+# .text:0xFC0 | size: 0x5C
 # sFStateVirtualID_c<daBottomBGForCastleLudwig_c>::~sFStateVirtualID_c()
 .fn "__dt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>Fv", weak
-/* 00001010 00001050  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001014 00001054  7C 08 02 A6 */	mflr r0
-/* 00001018 00001058  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000101C 0000105C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00001020 00001060  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001024 00001064  7C 9F 23 78 */	mr r31, r4
-/* 00001028 00001068  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 0000102C 0000106C  7C 7E 1B 78 */	mr r30, r3
-/* 00001030 00001070  41 82 00 20 */	beq .L_00001050
-/* 00001034 00001074  41 82 00 0C */	beq .L_00001040
-/* 00001038 00001078  38 80 00 00 */	li r4, 0x0
-/* 0000103C 0000107C  48 00 00 01 */	bl __dt__10sStateID_cFv
-.L_00001040:
-/* 00001040 00001080  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00001044 00001084  40 81 00 0C */	ble .L_00001050
-/* 00001048 00001088  7F C3 F3 78 */	mr r3, r30
-/* 0000104C 0000108C  48 00 00 01 */	bl __dl__FPv
-.L_00001050:
-/* 00001050 00001090  7F C3 F3 78 */	mr r3, r30
-/* 00001054 00001094  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00001058 00001098  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 0000105C 0000109C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00001060 000010A0  7C 08 03 A6 */	mtlr r0
-/* 00001064 000010A4  38 21 00 10 */	addi r1, r1, 0x10
-/* 00001068 000010A8  4E 80 00 20 */	blr
+/* 00000FC0 00001000  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000FC4 00001004  7C 08 02 A6 */	mflr r0
+/* 00000FC8 00001008  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000FCC 0000100C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000FD0 00001010  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000FD4 00001014  7C 9F 23 78 */	mr r31, r4
+/* 00000FD8 00001018  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000FDC 0000101C  7C 7E 1B 78 */	mr r30, r3
+/* 00000FE0 00001020  41 82 00 20 */	beq .L_00001000
+/* 00000FE4 00001024  41 82 00 0C */	beq .L_00000FF0
+/* 00000FE8 00001028  38 80 00 00 */	li r4, 0x0
+/* 00000FEC 0000102C  48 00 00 01 */	bl __dt__10sStateID_cFv
+.L_00000FF0:
+/* 00000FF0 00001030  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000FF4 00001034  40 81 00 0C */	ble .L_00001000
+/* 00000FF8 00001038  7F C3 F3 78 */	mr r3, r30
+/* 00000FFC 0000103C  48 00 00 01 */	bl __dl__FPv
+.L_00001000:
+/* 00001000 00001040  7F C3 F3 78 */	mr r3, r30
+/* 00001004 00001044  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00001008 00001048  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0000100C 0000104C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001010 00001050  7C 08 03 A6 */	mtlr r0
+/* 00001014 00001054  38 21 00 10 */	addi r1, r1, 0x10
+/* 00001018 00001058  4E 80 00 20 */	blr
 .endfn "__dt__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>Fv"
-/* 0000106C 000010AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000101C 0000105C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1070 | size: 0xDC
+# .text:0x1020 | size: 0xDC
 # sFStateVirtualID_c<daBottomBGForCastleLudwig_c>::number() const
 .fn "number__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv", weak
-/* 00001070 000010B0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001074 000010B4  7C 08 02 A6 */	mflr r0
-/* 00001078 000010B8  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000107C 000010BC  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001080 000010C0  7C 7F 1B 78 */	mr r31, r3
-/* 00001084 000010C4  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00001088 000010C8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000108C 000010CC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001090 000010D0  7D 89 03 A6 */	mtctr r12
-/* 00001094 000010D4  4E 80 04 21 */	bctrl
-/* 00001098 000010D8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000109C 000010DC  40 82 00 94 */	bne .L_00001130
-/* 000010A0 000010E0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000010A4 000010E4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000010A8 000010E8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000010AC 000010EC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000010B0 000010F0  7D 89 03 A6 */	mtctr r12
-/* 000010B4 000010F4  4E 80 04 21 */	bctrl
-/* 000010B8 000010F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000010BC 000010FC  40 82 00 74 */	bne .L_00001130
-/* 000010C0 00001100  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000010C4 00001104  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000010C8 00001108  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000010CC 0000110C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000010D0 00001110  7D 89 03 A6 */	mtctr r12
-/* 000010D4 00001114  4E 80 04 21 */	bctrl
-/* 000010D8 00001118  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000010DC 0000111C  40 82 00 54 */	bne .L_00001130
-/* 000010E0 00001120  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000010E4 00001124  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000010E8 00001128  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000010EC 0000112C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000010F0 00001130  7D 89 03 A6 */	mtctr r12
-/* 000010F4 00001134  4E 80 04 21 */	bctrl
-/* 000010F8 00001138  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000010FC 0000113C  40 82 00 34 */	bne .L_00001130
-/* 00001100 00001140  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001104 00001144  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001108 00001148  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000110C 0000114C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001110 00001150  7D 89 03 A6 */	mtctr r12
-/* 00001114 00001154  4E 80 04 21 */	bctrl
-/* 00001118 00001158  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000111C 0000115C  41 82 00 08 */	beq .L_00001124
-/* 00001120 00001160  48 00 00 10 */	b .L_00001130
-.L_00001124:
-/* 00001124 00001164  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001128 00001168  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv"
-/* 0000112C 0000116C  7C 7F 1B 78 */	mr r31, r3
-.L_00001130:
-/* 00001130 00001170  7F E3 FB 78 */	mr r3, r31
-/* 00001134 00001174  48 00 00 01 */	bl number__10sStateID_cCFv
-/* 00001138 00001178  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 0000113C 0000117C  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00001140 00001180  7C 08 03 A6 */	mtlr r0
-/* 00001144 00001184  38 21 00 10 */	addi r1, r1, 0x10
-/* 00001148 00001188  4E 80 00 20 */	blr
+/* 00001020 00001060  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001024 00001064  7C 08 02 A6 */	mflr r0
+/* 00001028 00001068  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000102C 0000106C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00001030 00001070  7C 7F 1B 78 */	mr r31, r3
+/* 00001034 00001074  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 00001038 00001078  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000103C 0000107C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001040 00001080  7D 89 03 A6 */	mtctr r12
+/* 00001044 00001084  4E 80 04 21 */	bctrl
+/* 00001048 00001088  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000104C 0000108C  40 82 00 94 */	bne .L_000010E0
+/* 00001050 00001090  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001054 00001094  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001058 00001098  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000105C 0000109C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001060 000010A0  7D 89 03 A6 */	mtctr r12
+/* 00001064 000010A4  4E 80 04 21 */	bctrl
+/* 00001068 000010A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000106C 000010AC  40 82 00 74 */	bne .L_000010E0
+/* 00001070 000010B0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001074 000010B4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001078 000010B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000107C 000010BC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001080 000010C0  7D 89 03 A6 */	mtctr r12
+/* 00001084 000010C4  4E 80 04 21 */	bctrl
+/* 00001088 000010C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000108C 000010CC  40 82 00 54 */	bne .L_000010E0
+/* 00001090 000010D0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001094 000010D4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001098 000010D8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000109C 000010DC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 000010A0 000010E0  7D 89 03 A6 */	mtctr r12
+/* 000010A4 000010E4  4E 80 04 21 */	bctrl
+/* 000010A8 000010E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000010AC 000010EC  40 82 00 34 */	bne .L_000010E0
+/* 000010B0 000010F0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 000010B4 000010F4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 000010B8 000010F8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000010BC 000010FC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 000010C0 00001100  7D 89 03 A6 */	mtctr r12
+/* 000010C4 00001104  4E 80 04 21 */	bctrl
+/* 000010C8 00001108  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000010CC 0000110C  41 82 00 08 */	beq .L_000010D4
+/* 000010D0 00001110  48 00 00 10 */	b .L_000010E0
+.L_000010D4:
+/* 000010D4 00001114  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 000010D8 00001118  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv"
+/* 000010DC 0000111C  7C 7F 1B 78 */	mr r31, r3
+.L_000010E0:
+/* 000010E0 00001120  7F E3 FB 78 */	mr r3, r31
+/* 000010E4 00001124  48 00 00 01 */	bl number__10sStateID_cCFv
+/* 000010E8 00001128  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000010EC 0000112C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000010F0 00001130  7C 08 03 A6 */	mtlr r0
+/* 000010F4 00001134  38 21 00 10 */	addi r1, r1, 0x10
+/* 000010F8 00001138  4E 80 00 20 */	blr
 .endfn "number__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv"
-/* 0000114C 0000118C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000010FC 0000113C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1150 | size: 0xE0
+# .text:0x1100 | size: 0xE0
 # sFStateVirtualID_c<daBottomBGForCastleLudwig_c>::superID() const
 .fn "superID__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv", weak
-/* 00001150 00001190  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001154 00001194  7C 08 02 A6 */	mflr r0
-/* 00001158 00001198  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000115C 0000119C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001160 000011A0  7C 7F 1B 78 */	mr r31, r3
-/* 00001164 000011A4  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00001168 000011A8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000116C 000011AC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001170 000011B0  7D 89 03 A6 */	mtctr r12
-/* 00001174 000011B4  4E 80 04 21 */	bctrl
-/* 00001178 000011B8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000117C 000011BC  40 82 00 9C */	bne .L_00001218
-/* 00001180 000011C0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001184 000011C4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001188 000011C8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000118C 000011CC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001190 000011D0  7D 89 03 A6 */	mtctr r12
-/* 00001194 000011D4  4E 80 04 21 */	bctrl
-/* 00001198 000011D8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000119C 000011DC  40 82 00 74 */	bne .L_00001210
-/* 000011A0 000011E0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000011A4 000011E4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000011A8 000011E8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000011AC 000011EC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000011B0 000011F0  7D 89 03 A6 */	mtctr r12
-/* 000011B4 000011F4  4E 80 04 21 */	bctrl
-/* 000011B8 000011F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000011BC 000011FC  40 82 00 54 */	bne .L_00001210
-/* 000011C0 00001200  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000011C4 00001204  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000011C8 00001208  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000011CC 0000120C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000011D0 00001210  7D 89 03 A6 */	mtctr r12
-/* 000011D4 00001214  4E 80 04 21 */	bctrl
-/* 000011D8 00001218  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000011DC 0000121C  40 82 00 34 */	bne .L_00001210
-/* 000011E0 00001220  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000011E4 00001224  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000011E8 00001228  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000011EC 0000122C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000011F0 00001230  7D 89 03 A6 */	mtctr r12
-/* 000011F4 00001234  4E 80 04 21 */	bctrl
-/* 000011F8 00001238  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000011FC 0000123C  41 82 00 08 */	beq .L_00001204
-/* 00001200 00001240  48 00 00 10 */	b .L_00001210
-.L_00001204:
-/* 00001204 00001244  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001208 00001248  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv"
-/* 0000120C 0000124C  7C 7F 1B 78 */	mr r31, r3
-.L_00001210:
-/* 00001210 00001250  7F E3 FB 78 */	mr r3, r31
-/* 00001214 00001254  48 00 00 08 */	b .L_0000121C
-.L_00001218:
-/* 00001218 00001258  7F E3 FB 78 */	mr r3, r31
-.L_0000121C:
-/* 0000121C 0000125C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00001220 00001260  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00001224 00001264  7C 08 03 A6 */	mtlr r0
-/* 00001228 00001268  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000122C 0000126C  4E 80 00 20 */	blr
+/* 00001100 00001140  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001104 00001144  7C 08 02 A6 */	mflr r0
+/* 00001108 00001148  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000110C 0000114C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00001110 00001150  7C 7F 1B 78 */	mr r31, r3
+/* 00001114 00001154  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 00001118 00001158  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000111C 0000115C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001120 00001160  7D 89 03 A6 */	mtctr r12
+/* 00001124 00001164  4E 80 04 21 */	bctrl
+/* 00001128 00001168  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000112C 0000116C  40 82 00 9C */	bne .L_000011C8
+/* 00001130 00001170  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001134 00001174  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001138 00001178  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000113C 0000117C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001140 00001180  7D 89 03 A6 */	mtctr r12
+/* 00001144 00001184  4E 80 04 21 */	bctrl
+/* 00001148 00001188  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000114C 0000118C  40 82 00 74 */	bne .L_000011C0
+/* 00001150 00001190  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001154 00001194  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001158 00001198  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000115C 0000119C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001160 000011A0  7D 89 03 A6 */	mtctr r12
+/* 00001164 000011A4  4E 80 04 21 */	bctrl
+/* 00001168 000011A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000116C 000011AC  40 82 00 54 */	bne .L_000011C0
+/* 00001170 000011B0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001174 000011B4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001178 000011B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000117C 000011BC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001180 000011C0  7D 89 03 A6 */	mtctr r12
+/* 00001184 000011C4  4E 80 04 21 */	bctrl
+/* 00001188 000011C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000118C 000011CC  40 82 00 34 */	bne .L_000011C0
+/* 00001190 000011D0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001194 000011D4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001198 000011D8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000119C 000011DC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 000011A0 000011E0  7D 89 03 A6 */	mtctr r12
+/* 000011A4 000011E4  4E 80 04 21 */	bctrl
+/* 000011A8 000011E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000011AC 000011EC  41 82 00 08 */	beq .L_000011B4
+/* 000011B0 000011F0  48 00 00 10 */	b .L_000011C0
+.L_000011B4:
+/* 000011B4 000011F4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 000011B8 000011F8  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv"
+/* 000011BC 000011FC  7C 7F 1B 78 */	mr r31, r3
+.L_000011C0:
+/* 000011C0 00001200  7F E3 FB 78 */	mr r3, r31
+/* 000011C4 00001204  48 00 00 08 */	b .L_000011CC
+.L_000011C8:
+/* 000011C8 00001208  7F E3 FB 78 */	mr r3, r31
+.L_000011CC:
+/* 000011CC 0000120C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000011D0 00001210  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000011D4 00001214  7C 08 03 A6 */	mtlr r0
+/* 000011D8 00001218  38 21 00 10 */	addi r1, r1, 0x10
+/* 000011DC 0000121C  4E 80 00 20 */	blr
 .endfn "superID__49sFStateVirtualID_c<27daBottomBGForCastleLudwig_c>CFv"
 
-# .text:0x1230 | size: 0xDC
+# .text:0x11E0 | size: 0xDC
 # sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::number() const
 .fn "number__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv", weak
-/* 00001230 00001270  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001234 00001274  7C 08 02 A6 */	mflr r0
-/* 00001238 00001278  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000123C 0000127C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001240 00001280  7C 7F 1B 78 */	mr r31, r3
-/* 00001244 00001284  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00001248 00001288  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000124C 0000128C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001250 00001290  7D 89 03 A6 */	mtctr r12
-/* 00001254 00001294  4E 80 04 21 */	bctrl
-/* 00001258 00001298  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000125C 0000129C  40 82 00 94 */	bne .L_000012F0
-/* 00001260 000012A0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001264 000012A4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001268 000012A8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000126C 000012AC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001270 000012B0  7D 89 03 A6 */	mtctr r12
-/* 00001274 000012B4  4E 80 04 21 */	bctrl
-/* 00001278 000012B8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000127C 000012BC  40 82 00 74 */	bne .L_000012F0
-/* 00001280 000012C0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001284 000012C4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001288 000012C8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000128C 000012CC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001290 000012D0  7D 89 03 A6 */	mtctr r12
-/* 00001294 000012D4  4E 80 04 21 */	bctrl
-/* 00001298 000012D8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000129C 000012DC  40 82 00 54 */	bne .L_000012F0
-/* 000012A0 000012E0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000012A4 000012E4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000012A8 000012E8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000012AC 000012EC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000012B0 000012F0  7D 89 03 A6 */	mtctr r12
-/* 000012B4 000012F4  4E 80 04 21 */	bctrl
-/* 000012B8 000012F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000012BC 000012FC  40 82 00 34 */	bne .L_000012F0
-/* 000012C0 00001300  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000012C4 00001304  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000012C8 00001308  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000012CC 0000130C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000012D0 00001310  7D 89 03 A6 */	mtctr r12
-/* 000012D4 00001314  4E 80 04 21 */	bctrl
-/* 000012D8 00001318  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000012DC 0000131C  41 82 00 08 */	beq .L_000012E4
-/* 000012E0 00001320  48 00 00 10 */	b .L_000012F0
-.L_000012E4:
-/* 000012E4 00001324  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000012E8 00001328  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
-/* 000012EC 0000132C  7C 7F 1B 78 */	mr r31, r3
-.L_000012F0:
-/* 000012F0 00001330  7F E3 FB 78 */	mr r3, r31
-/* 000012F4 00001334  48 00 00 01 */	bl number__10sStateID_cCFv
-/* 000012F8 00001338  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000012FC 0000133C  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00001300 00001340  7C 08 03 A6 */	mtlr r0
-/* 00001304 00001344  38 21 00 10 */	addi r1, r1, 0x10
-/* 00001308 00001348  4E 80 00 20 */	blr
+/* 000011E0 00001220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000011E4 00001224  7C 08 02 A6 */	mflr r0
+/* 000011E8 00001228  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000011EC 0000122C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000011F0 00001230  7C 7F 1B 78 */	mr r31, r3
+/* 000011F4 00001234  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 000011F8 00001238  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000011FC 0000123C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001200 00001240  7D 89 03 A6 */	mtctr r12
+/* 00001204 00001244  4E 80 04 21 */	bctrl
+/* 00001208 00001248  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000120C 0000124C  40 82 00 94 */	bne .L_000012A0
+/* 00001210 00001250  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001214 00001254  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001218 00001258  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000121C 0000125C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001220 00001260  7D 89 03 A6 */	mtctr r12
+/* 00001224 00001264  4E 80 04 21 */	bctrl
+/* 00001228 00001268  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000122C 0000126C  40 82 00 74 */	bne .L_000012A0
+/* 00001230 00001270  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001234 00001274  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001238 00001278  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000123C 0000127C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001240 00001280  7D 89 03 A6 */	mtctr r12
+/* 00001244 00001284  4E 80 04 21 */	bctrl
+/* 00001248 00001288  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000124C 0000128C  40 82 00 54 */	bne .L_000012A0
+/* 00001250 00001290  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001254 00001294  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001258 00001298  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000125C 0000129C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001260 000012A0  7D 89 03 A6 */	mtctr r12
+/* 00001264 000012A4  4E 80 04 21 */	bctrl
+/* 00001268 000012A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000126C 000012AC  40 82 00 34 */	bne .L_000012A0
+/* 00001270 000012B0  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001274 000012B4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001278 000012B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000127C 000012BC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001280 000012C0  7D 89 03 A6 */	mtctr r12
+/* 00001284 000012C4  4E 80 04 21 */	bctrl
+/* 00001288 000012C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000128C 000012CC  41 82 00 08 */	beq .L_00001294
+/* 00001290 000012D0  48 00 00 10 */	b .L_000012A0
+.L_00001294:
+/* 00001294 000012D4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001298 000012D8  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+/* 0000129C 000012DC  7C 7F 1B 78 */	mr r31, r3
+.L_000012A0:
+/* 000012A0 000012E0  7F E3 FB 78 */	mr r3, r31
+/* 000012A4 000012E4  48 00 00 01 */	bl number__10sStateID_cCFv
+/* 000012A8 000012E8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000012AC 000012EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000012B0 000012F0  7C 08 03 A6 */	mtlr r0
+/* 000012B4 000012F4  38 21 00 10 */	addi r1, r1, 0x10
+/* 000012B8 000012F8  4E 80 00 20 */	blr
 .endfn "number__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
-/* 0000130C 0000134C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000012BC 000012FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1310 | size: 0xE0
+# .text:0x12C0 | size: 0xE0
 # sFStateVirtualID_c<daMiddleBGForCastleLudwig_c>::superID() const
 .fn "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv", weak
-/* 00001310 00001350  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001314 00001354  7C 08 02 A6 */	mflr r0
-/* 00001318 00001358  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000131C 0000135C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001320 00001360  7C 7F 1B 78 */	mr r31, r3
-/* 00001324 00001364  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00001328 00001368  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000132C 0000136C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001330 00001370  7D 89 03 A6 */	mtctr r12
-/* 00001334 00001374  4E 80 04 21 */	bctrl
-/* 00001338 00001378  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000133C 0000137C  40 82 00 9C */	bne .L_000013D8
-/* 00001340 00001380  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001344 00001384  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001348 00001388  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000134C 0000138C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001350 00001390  7D 89 03 A6 */	mtctr r12
-/* 00001354 00001394  4E 80 04 21 */	bctrl
-/* 00001358 00001398  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000135C 0000139C  40 82 00 74 */	bne .L_000013D0
-/* 00001360 000013A0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001364 000013A4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001368 000013A8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000136C 000013AC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001370 000013B0  7D 89 03 A6 */	mtctr r12
-/* 00001374 000013B4  4E 80 04 21 */	bctrl
-/* 00001378 000013B8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000137C 000013BC  40 82 00 54 */	bne .L_000013D0
-/* 00001380 000013C0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00001384 000013C4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00001388 000013C8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 0000138C 000013CC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00001390 000013D0  7D 89 03 A6 */	mtctr r12
-/* 00001394 000013D4  4E 80 04 21 */	bctrl
-/* 00001398 000013D8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000139C 000013DC  40 82 00 34 */	bne .L_000013D0
-/* 000013A0 000013E0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 000013A4 000013E4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000013A8 000013E8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 000013AC 000013EC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 000013B0 000013F0  7D 89 03 A6 */	mtctr r12
-/* 000013B4 000013F4  4E 80 04 21 */	bctrl
-/* 000013B8 000013F8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 000013BC 000013FC  41 82 00 08 */	beq .L_000013C4
-/* 000013C0 00001400  48 00 00 10 */	b .L_000013D0
-.L_000013C4:
-/* 000013C4 00001404  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 000013C8 00001408  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
-/* 000013CC 0000140C  7C 7F 1B 78 */	mr r31, r3
-.L_000013D0:
-/* 000013D0 00001410  7F E3 FB 78 */	mr r3, r31
-/* 000013D4 00001414  48 00 00 08 */	b .L_000013DC
-.L_000013D8:
-/* 000013D8 00001418  7F E3 FB 78 */	mr r3, r31
-.L_000013DC:
-/* 000013DC 0000141C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000013E0 00001420  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 000013E4 00001424  7C 08 03 A6 */	mtlr r0
-/* 000013E8 00001428  38 21 00 10 */	addi r1, r1, 0x10
-/* 000013EC 0000142C  4E 80 00 20 */	blr
+/* 000012C0 00001300  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000012C4 00001304  7C 08 02 A6 */	mflr r0
+/* 000012C8 00001308  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000012CC 0000130C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000012D0 00001310  7C 7F 1B 78 */	mr r31, r3
+/* 000012D4 00001314  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 000012D8 00001318  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000012DC 0000131C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 000012E0 00001320  7D 89 03 A6 */	mtctr r12
+/* 000012E4 00001324  4E 80 04 21 */	bctrl
+/* 000012E8 00001328  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000012EC 0000132C  40 82 00 9C */	bne .L_00001388
+/* 000012F0 00001330  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 000012F4 00001334  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 000012F8 00001338  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 000012FC 0000133C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001300 00001340  7D 89 03 A6 */	mtctr r12
+/* 00001304 00001344  4E 80 04 21 */	bctrl
+/* 00001308 00001348  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000130C 0000134C  40 82 00 74 */	bne .L_00001380
+/* 00001310 00001350  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001314 00001354  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001318 00001358  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000131C 0000135C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001320 00001360  7D 89 03 A6 */	mtctr r12
+/* 00001324 00001364  4E 80 04 21 */	bctrl
+/* 00001328 00001368  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000132C 0000136C  40 82 00 54 */	bne .L_00001380
+/* 00001330 00001370  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001334 00001374  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001338 00001378  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000133C 0000137C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001340 00001380  7D 89 03 A6 */	mtctr r12
+/* 00001344 00001384  4E 80 04 21 */	bctrl
+/* 00001348 00001388  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000134C 0000138C  40 82 00 34 */	bne .L_00001380
+/* 00001350 00001390  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 00001354 00001394  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001358 00001398  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 0000135C 0000139C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 00001360 000013A0  7D 89 03 A6 */	mtctr r12
+/* 00001364 000013A4  4E 80 04 21 */	bctrl
+/* 00001368 000013A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000136C 000013AC  41 82 00 08 */	beq .L_00001374
+/* 00001370 000013B0  48 00 00 10 */	b .L_00001380
+.L_00001374:
+/* 00001374 000013B4  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 00001378 000013B8  48 00 00 01 */	bl "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
+/* 0000137C 000013BC  7C 7F 1B 78 */	mr r31, r3
+.L_00001380:
+/* 00001380 000013C0  7F E3 FB 78 */	mr r3, r31
+/* 00001384 000013C4  48 00 00 08 */	b .L_0000138C
+.L_00001388:
+/* 00001388 000013C8  7F E3 FB 78 */	mr r3, r31
+.L_0000138C:
+/* 0000138C 000013CC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001390 000013D0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00001394 000013D4  7C 08 03 A6 */	mtlr r0
+/* 00001398 000013D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000139C 000013DC  4E 80 00 20 */	blr
 .endfn "superID__49sFStateVirtualID_c<27daMiddleBGForCastleLudwig_c>CFv"
 
-# .text:0x13F0 | size: 0x88
+# .text:0x13A0 | size: 0x88
 # sFStateID_c<daMiddleBGForCastleLudwig_c>::isSameName(const char*) const
 .fn "isSameName__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFPCc", weak
-/* 000013F0 00001430  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000013F4 00001434  7C 08 02 A6 */	mflr r0
-/* 000013F8 00001438  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000013FC 0000143C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001400 00001440  7C 9F 23 78 */	mr r31, r4
-/* 00001404 00001444  38 80 00 3A */	li r4, 0x3a
-/* 00001408 00001448  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 0000140C 0000144C  7C 7E 1B 78 */	mr r30, r3
-/* 00001410 00001450  7F E3 FB 78 */	mr r3, r31
-/* 00001414 00001454  48 00 00 01 */	bl strrchr
-/* 00001418 00001458  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000141C 0000145C  41 82 00 08 */	beq .L_00001424
-/* 00001420 00001460  3B E3 00 01 */	addi r31, r3, 0x1
-.L_00001424:
-/* 00001424 00001464  81 9E 00 00 */	lwz r12, 0x0(r30)
-/* 00001428 00001468  7F C3 F3 78 */	mr r3, r30
-/* 0000142C 0000146C  81 8C 00 20 */	lwz r12, 0x20(r12)
-/* 00001430 00001470  7D 89 03 A6 */	mtctr r12
-/* 00001434 00001474  4E 80 04 21 */	bctrl
-/* 00001438 00001478  38 80 00 3A */	li r4, 0x3a
-/* 0000143C 0000147C  48 00 00 01 */	bl strrchr
-/* 00001440 00001480  7F E4 FB 78 */	mr r4, r31
-/* 00001444 00001484  38 63 00 01 */	addi r3, r3, 0x1
-/* 00001448 00001488  48 00 00 01 */	bl strcmp
-/* 0000144C 0000148C  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00001450 00001490  40 82 00 0C */	bne .L_0000145C
-/* 00001454 00001494  38 60 00 01 */	li r3, 0x1
-/* 00001458 00001498  48 00 00 08 */	b .L_00001460
-.L_0000145C:
-/* 0000145C 0000149C  38 60 00 00 */	li r3, 0x0
-.L_00001460:
-/* 00001460 000014A0  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00001464 000014A4  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00001468 000014A8  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 0000146C 000014AC  7C 08 03 A6 */	mtlr r0
-/* 00001470 000014B0  38 21 00 10 */	addi r1, r1, 0x10
-/* 00001474 000014B4  4E 80 00 20 */	blr
+/* 000013A0 000013E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000013A4 000013E4  7C 08 02 A6 */	mflr r0
+/* 000013A8 000013E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000013AC 000013EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000013B0 000013F0  7C 9F 23 78 */	mr r31, r4
+/* 000013B4 000013F4  38 80 00 3A */	li r4, 0x3a
+/* 000013B8 000013F8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000013BC 000013FC  7C 7E 1B 78 */	mr r30, r3
+/* 000013C0 00001400  7F E3 FB 78 */	mr r3, r31
+/* 000013C4 00001404  48 00 00 01 */	bl strrchr
+/* 000013C8 00001408  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000013CC 0000140C  41 82 00 08 */	beq .L_000013D4
+/* 000013D0 00001410  3B E3 00 01 */	addi r31, r3, 0x1
+.L_000013D4:
+/* 000013D4 00001414  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 000013D8 00001418  7F C3 F3 78 */	mr r3, r30
+/* 000013DC 0000141C  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 000013E0 00001420  7D 89 03 A6 */	mtctr r12
+/* 000013E4 00001424  4E 80 04 21 */	bctrl
+/* 000013E8 00001428  38 80 00 3A */	li r4, 0x3a
+/* 000013EC 0000142C  48 00 00 01 */	bl strrchr
+/* 000013F0 00001430  7F E4 FB 78 */	mr r4, r31
+/* 000013F4 00001434  38 63 00 01 */	addi r3, r3, 0x1
+/* 000013F8 00001438  48 00 00 01 */	bl strcmp
+/* 000013FC 0000143C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00001400 00001440  40 82 00 0C */	bne .L_0000140C
+/* 00001404 00001444  38 60 00 01 */	li r3, 0x1
+/* 00001408 00001448  48 00 00 08 */	b .L_00001410
+.L_0000140C:
+/* 0000140C 0000144C  38 60 00 00 */	li r3, 0x0
+.L_00001410:
+/* 00001410 00001450  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001414 00001454  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00001418 00001458  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0000141C 0000145C  7C 08 03 A6 */	mtlr r0
+/* 00001420 00001460  38 21 00 10 */	addi r1, r1, 0x10
+/* 00001424 00001464  4E 80 00 20 */	blr
 .endfn "isSameName__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFPCc"
-/* 00001478 000014B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000147C 000014BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00001428 00001468  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000142C 0000146C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x1480 | size: 0x30
+# .text:0x1430 | size: 0x30
 # sFStateID_c<daMiddleBGForCastleLudwig_c>::initializeState(daMiddleBGForCastleLudwig_c&) const
 .fn "initializeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
-/* 00001480 000014C0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001484 000014C4  7C 08 02 A6 */	mflr r0
-/* 00001488 000014C8  7C 65 1B 78 */	mr r5, r3
-/* 0000148C 000014CC  7C 83 23 78 */	mr r3, r4
-/* 00001490 000014D0  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00001494 000014D4  39 85 00 0C */	addi r12, r5, 0xc
-/* 00001498 000014D8  48 00 00 01 */	bl __ptmf_scall
-/* 0000149C 000014DC  60 00 00 00 */	nop
-/* 000014A0 000014E0  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000014A4 000014E4  7C 08 03 A6 */	mtlr r0
-/* 000014A8 000014E8  38 21 00 10 */	addi r1, r1, 0x10
-/* 000014AC 000014EC  4E 80 00 20 */	blr
+/* 00001430 00001470  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001434 00001474  7C 08 02 A6 */	mflr r0
+/* 00001438 00001478  7C 65 1B 78 */	mr r5, r3
+/* 0000143C 0000147C  7C 83 23 78 */	mr r3, r4
+/* 00001440 00001480  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00001444 00001484  39 85 00 0C */	addi r12, r5, 0xc
+/* 00001448 00001488  48 00 00 01 */	bl __ptmf_scall
+/* 0000144C 0000148C  60 00 00 00 */	nop
+/* 00001450 00001490  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001454 00001494  7C 08 03 A6 */	mtlr r0
+/* 00001458 00001498  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000145C 0000149C  4E 80 00 20 */	blr
 .endfn "initializeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
 
-# .text:0x14B0 | size: 0x30
+# .text:0x1460 | size: 0x30
 # sFStateID_c<daMiddleBGForCastleLudwig_c>::executeState(daMiddleBGForCastleLudwig_c&) const
 .fn "executeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
-/* 000014B0 000014F0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000014B4 000014F4  7C 08 02 A6 */	mflr r0
-/* 000014B8 000014F8  7C 65 1B 78 */	mr r5, r3
-/* 000014BC 000014FC  7C 83 23 78 */	mr r3, r4
-/* 000014C0 00001500  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000014C4 00001504  39 85 00 18 */	addi r12, r5, 0x18
-/* 000014C8 00001508  48 00 00 01 */	bl __ptmf_scall
-/* 000014CC 0000150C  60 00 00 00 */	nop
-/* 000014D0 00001510  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000014D4 00001514  7C 08 03 A6 */	mtlr r0
-/* 000014D8 00001518  38 21 00 10 */	addi r1, r1, 0x10
-/* 000014DC 0000151C  4E 80 00 20 */	blr
+/* 00001460 000014A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001464 000014A4  7C 08 02 A6 */	mflr r0
+/* 00001468 000014A8  7C 65 1B 78 */	mr r5, r3
+/* 0000146C 000014AC  7C 83 23 78 */	mr r3, r4
+/* 00001470 000014B0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00001474 000014B4  39 85 00 18 */	addi r12, r5, 0x18
+/* 00001478 000014B8  48 00 00 01 */	bl __ptmf_scall
+/* 0000147C 000014BC  60 00 00 00 */	nop
+/* 00001480 000014C0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001484 000014C4  7C 08 03 A6 */	mtlr r0
+/* 00001488 000014C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000148C 000014CC  4E 80 00 20 */	blr
 .endfn "executeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
 
-# .text:0x14E0 | size: 0x30
+# .text:0x1490 | size: 0x30
 # sFStateID_c<daMiddleBGForCastleLudwig_c>::finalizeState(daMiddleBGForCastleLudwig_c&) const
 .fn "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c", weak
-/* 000014E0 00001520  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000014E4 00001524  7C 08 02 A6 */	mflr r0
-/* 000014E8 00001528  7C 65 1B 78 */	mr r5, r3
-/* 000014EC 0000152C  7C 83 23 78 */	mr r3, r4
-/* 000014F0 00001530  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000014F4 00001534  39 85 00 24 */	addi r12, r5, 0x24
-/* 000014F8 00001538  48 00 00 01 */	bl __ptmf_scall
-/* 000014FC 0000153C  60 00 00 00 */	nop
-/* 00001500 00001540  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00001504 00001544  7C 08 03 A6 */	mtlr r0
-/* 00001508 00001548  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000150C 0000154C  4E 80 00 20 */	blr
+/* 00001490 000014D0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001494 000014D4  7C 08 02 A6 */	mflr r0
+/* 00001498 000014D8  7C 65 1B 78 */	mr r5, r3
+/* 0000149C 000014DC  7C 83 23 78 */	mr r3, r4
+/* 000014A0 000014E0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000014A4 000014E4  39 85 00 24 */	addi r12, r5, 0x24
+/* 000014A8 000014E8  48 00 00 01 */	bl __ptmf_scall
+/* 000014AC 000014EC  60 00 00 00 */	nop
+/* 000014B0 000014F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000014B4 000014F4  7C 08 03 A6 */	mtlr r0
+/* 000014B8 000014F8  38 21 00 10 */	addi r1, r1, 0x10
+/* 000014BC 000014FC  4E 80 00 20 */	blr
 .endfn "finalizeState__42sFStateID_c<27daMiddleBGForCastleLudwig_c>CFR27daMiddleBGForCastleLudwig_c"
 
-# .text:0x1510 | size: 0x88
+# .text:0x14C0 | size: 0x88
 # sFStateID_c<daBottomBGForCastleLudwig_c>::isSameName(const char*) const
 .fn "isSameName__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFPCc", weak
-/* 00001510 00001550  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001514 00001554  7C 08 02 A6 */	mflr r0
-/* 00001518 00001558  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000151C 0000155C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00001520 00001560  7C 9F 23 78 */	mr r31, r4
-/* 00001524 00001564  38 80 00 3A */	li r4, 0x3a
-/* 00001528 00001568  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 0000152C 0000156C  7C 7E 1B 78 */	mr r30, r3
-/* 00001530 00001570  7F E3 FB 78 */	mr r3, r31
-/* 00001534 00001574  48 00 00 01 */	bl strrchr
-/* 00001538 00001578  2C 03 00 00 */	cmpwi r3, 0x0
-/* 0000153C 0000157C  41 82 00 08 */	beq .L_00001544
-/* 00001540 00001580  3B E3 00 01 */	addi r31, r3, 0x1
-.L_00001544:
-/* 00001544 00001584  81 9E 00 00 */	lwz r12, 0x0(r30)
-/* 00001548 00001588  7F C3 F3 78 */	mr r3, r30
-/* 0000154C 0000158C  81 8C 00 20 */	lwz r12, 0x20(r12)
-/* 00001550 00001590  7D 89 03 A6 */	mtctr r12
-/* 00001554 00001594  4E 80 04 21 */	bctrl
-/* 00001558 00001598  38 80 00 3A */	li r4, 0x3a
-/* 0000155C 0000159C  48 00 00 01 */	bl strrchr
-/* 00001560 000015A0  7F E4 FB 78 */	mr r4, r31
-/* 00001564 000015A4  38 63 00 01 */	addi r3, r3, 0x1
-/* 00001568 000015A8  48 00 00 01 */	bl strcmp
-/* 0000156C 000015AC  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00001570 000015B0  40 82 00 0C */	bne .L_0000157C
-/* 00001574 000015B4  38 60 00 01 */	li r3, 0x1
-/* 00001578 000015B8  48 00 00 08 */	b .L_00001580
-.L_0000157C:
-/* 0000157C 000015BC  38 60 00 00 */	li r3, 0x0
-.L_00001580:
-/* 00001580 000015C0  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00001584 000015C4  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00001588 000015C8  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 0000158C 000015CC  7C 08 03 A6 */	mtlr r0
-/* 00001590 000015D0  38 21 00 10 */	addi r1, r1, 0x10
-/* 00001594 000015D4  4E 80 00 20 */	blr
+/* 000014C0 00001500  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000014C4 00001504  7C 08 02 A6 */	mflr r0
+/* 000014C8 00001508  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000014CC 0000150C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000014D0 00001510  7C 9F 23 78 */	mr r31, r4
+/* 000014D4 00001514  38 80 00 3A */	li r4, 0x3a
+/* 000014D8 00001518  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 000014DC 0000151C  7C 7E 1B 78 */	mr r30, r3
+/* 000014E0 00001520  7F E3 FB 78 */	mr r3, r31
+/* 000014E4 00001524  48 00 00 01 */	bl strrchr
+/* 000014E8 00001528  2C 03 00 00 */	cmpwi r3, 0x0
+/* 000014EC 0000152C  41 82 00 08 */	beq .L_000014F4
+/* 000014F0 00001530  3B E3 00 01 */	addi r31, r3, 0x1
+.L_000014F4:
+/* 000014F4 00001534  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 000014F8 00001538  7F C3 F3 78 */	mr r3, r30
+/* 000014FC 0000153C  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 00001500 00001540  7D 89 03 A6 */	mtctr r12
+/* 00001504 00001544  4E 80 04 21 */	bctrl
+/* 00001508 00001548  38 80 00 3A */	li r4, 0x3a
+/* 0000150C 0000154C  48 00 00 01 */	bl strrchr
+/* 00001510 00001550  7F E4 FB 78 */	mr r4, r31
+/* 00001514 00001554  38 63 00 01 */	addi r3, r3, 0x1
+/* 00001518 00001558  48 00 00 01 */	bl strcmp
+/* 0000151C 0000155C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00001520 00001560  40 82 00 0C */	bne .L_0000152C
+/* 00001524 00001564  38 60 00 01 */	li r3, 0x1
+/* 00001528 00001568  48 00 00 08 */	b .L_00001530
+.L_0000152C:
+/* 0000152C 0000156C  38 60 00 00 */	li r3, 0x0
+.L_00001530:
+/* 00001530 00001570  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001534 00001574  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00001538 00001578  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0000153C 0000157C  7C 08 03 A6 */	mtlr r0
+/* 00001540 00001580  38 21 00 10 */	addi r1, r1, 0x10
+/* 00001544 00001584  4E 80 00 20 */	blr
 .endfn "isSameName__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFPCc"
-/* 00001598 000015D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000159C 000015DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00001548 00001588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000154C 0000158C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x15A0 | size: 0x30
+# .text:0x1550 | size: 0x30
 # sFStateID_c<daBottomBGForCastleLudwig_c>::initializeState(daBottomBGForCastleLudwig_c&) const
 .fn "initializeState__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFR27daBottomBGForCastleLudwig_c", weak
-/* 000015A0 000015E0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000015A4 000015E4  7C 08 02 A6 */	mflr r0
-/* 000015A8 000015E8  7C 65 1B 78 */	mr r5, r3
-/* 000015AC 000015EC  7C 83 23 78 */	mr r3, r4
-/* 000015B0 000015F0  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000015B4 000015F4  39 85 00 0C */	addi r12, r5, 0xc
-/* 000015B8 000015F8  48 00 00 01 */	bl __ptmf_scall
-/* 000015BC 000015FC  60 00 00 00 */	nop
-/* 000015C0 00001600  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000015C4 00001604  7C 08 03 A6 */	mtlr r0
-/* 000015C8 00001608  38 21 00 10 */	addi r1, r1, 0x10
-/* 000015CC 0000160C  4E 80 00 20 */	blr
+/* 00001550 00001590  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001554 00001594  7C 08 02 A6 */	mflr r0
+/* 00001558 00001598  7C 65 1B 78 */	mr r5, r3
+/* 0000155C 0000159C  7C 83 23 78 */	mr r3, r4
+/* 00001560 000015A0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00001564 000015A4  39 85 00 0C */	addi r12, r5, 0xc
+/* 00001568 000015A8  48 00 00 01 */	bl __ptmf_scall
+/* 0000156C 000015AC  60 00 00 00 */	nop
+/* 00001570 000015B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00001574 000015B4  7C 08 03 A6 */	mtlr r0
+/* 00001578 000015B8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0000157C 000015BC  4E 80 00 20 */	blr
 .endfn "initializeState__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFR27daBottomBGForCastleLudwig_c"
 
-# .text:0x15D0 | size: 0x30
+# .text:0x1580 | size: 0x30
 # sFStateID_c<daBottomBGForCastleLudwig_c>::executeState(daBottomBGForCastleLudwig_c&) const
 .fn "executeState__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFR27daBottomBGForCastleLudwig_c", weak
-/* 000015D0 00001610  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000015D4 00001614  7C 08 02 A6 */	mflr r0
-/* 000015D8 00001618  7C 65 1B 78 */	mr r5, r3
-/* 000015DC 0000161C  7C 83 23 78 */	mr r3, r4
-/* 000015E0 00001620  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000015E4 00001624  39 85 00 18 */	addi r12, r5, 0x18
-/* 000015E8 00001628  48 00 00 01 */	bl __ptmf_scall
-/* 000015EC 0000162C  60 00 00 00 */	nop
-/* 000015F0 00001630  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000015F4 00001634  7C 08 03 A6 */	mtlr r0
-/* 000015F8 00001638  38 21 00 10 */	addi r1, r1, 0x10
-/* 000015FC 0000163C  4E 80 00 20 */	blr
+/* 00001580 000015C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00001584 000015C4  7C 08 02 A6 */	mflr r0
+/* 00001588 000015C8  7C 65 1B 78 */	mr r5, r3
+/* 0000158C 000015CC  7C 83 23 78 */	mr r3, r4
+/* 00001590 000015D0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00001594 000015D4  39 85 00 18 */	addi r12, r5, 0x18
+/* 00001598 000015D8  48 00 00 01 */	bl __ptmf_scall
+/* 0000159C 000015DC  60 00 00 00 */	nop
+/* 000015A0 000015E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000015A4 000015E4  7C 08 03 A6 */	mtlr r0
+/* 000015A8 000015E8  38 21 00 10 */	addi r1, r1, 0x10
+/* 000015AC 000015EC  4E 80 00 20 */	blr
 .endfn "executeState__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFR27daBottomBGForCastleLudwig_c"
 
-# .text:0x1600 | size: 0x30
+# .text:0x15B0 | size: 0x30
 # sFStateID_c<daBottomBGForCastleLudwig_c>::finalizeState(daBottomBGForCastleLudwig_c&) const
 .fn "finalizeState__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFR27daBottomBGForCastleLudwig_c", weak
-/* 00001600 00001640  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00001604 00001644  7C 08 02 A6 */	mflr r0
-/* 00001608 00001648  7C 65 1B 78 */	mr r5, r3
-/* 0000160C 0000164C  7C 83 23 78 */	mr r3, r4
-/* 00001610 00001650  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00001614 00001654  39 85 00 24 */	addi r12, r5, 0x24
-/* 00001618 00001658  48 00 00 01 */	bl __ptmf_scall
-/* 0000161C 0000165C  60 00 00 00 */	nop
-/* 00001620 00001660  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00001624 00001664  7C 08 03 A6 */	mtlr r0
-/* 00001628 00001668  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000162C 0000166C  4E 80 00 20 */	blr
+/* 000015B0 000015F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000015B4 000015F4  7C 08 02 A6 */	mflr r0
+/* 000015B8 000015F8  7C 65 1B 78 */	mr r5, r3
+/* 000015BC 000015FC  7C 83 23 78 */	mr r3, r4
+/* 000015C0 00001600  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000015C4 00001604  39 85 00 24 */	addi r12, r5, 0x24
+/* 000015C8 00001608  48 00 00 01 */	bl __ptmf_scall
+/* 000015CC 0000160C  60 00 00 00 */	nop
+/* 000015D0 00001610  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000015D4 00001614  7C 08 03 A6 */	mtlr r0
+/* 000015D8 00001618  38 21 00 10 */	addi r1, r1, 0x10
+/* 000015DC 0000161C  4E 80 00 20 */	blr
 .endfn "finalizeState__42sFStateID_c<27daBottomBGForCastleLudwig_c>CFR27daBottomBGForCastleLudwig_c"
 
 # 0x00000000..0x00000004 | size: 0x4
@@ -1783,12 +1743,12 @@
 .obj sc_nodeNames, local
 # .rodata:0x0 | size: 0x0
 .sym ...rodata.0, local
-	.4byte "@15313"
-	.4byte "@15314"
+	.4byte "@15311"
+	.4byte "@15312"
 .endobj sc_nodeNames
 
 # .rodata:0x8 | size: 0x1C
-.obj "@15397", local
+.obj "@15395", local
 	.4byte 0xC3500000
 	.4byte 0x43000000
 	.4byte 0xC3300000
@@ -1796,10 +1756,10 @@
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
-.endobj "@15397"
+.endobj "@15395"
 
 # .rodata:0x24 | size: 0x1C
-.obj "@15400", local
+.obj "@15398", local
 	.4byte 0x43300000
 	.4byte 0x43000000
 	.4byte 0x43500000
@@ -1807,15 +1767,15 @@
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
-.endobj "@15400"
+.endobj "@15398"
 
 # .rodata:0x40 | size: 0x4
-.obj "@16292", local
+.obj "@16272", local
 	.4byte 0x3F800000
-.endobj "@16292"
+.endobj "@16272"
 
 # .rodata:0x44 | size: 0x1C
-.obj "@15477", local
+.obj "@15475", local
 	.4byte 0xC3500000
 	.4byte 0x43000000
 	.4byte 0xC3300000
@@ -1823,10 +1783,10 @@
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
-.endobj "@15477"
+.endobj "@15475"
 
 # .rodata:0x60 | size: 0x1C
-.obj "@15480", local
+.obj "@15478", local
 	.4byte 0x43300000
 	.4byte 0x43000000
 	.4byte 0x43500000
@@ -1834,7 +1794,7 @@
 	.4byte 0x00000000
 	.4byte 0x00000000
 	.4byte 0x00000000
-.endobj "@15480"
+.endobj "@15478"
 
 # .rodata:0x7C | size: 0x4
 # daBottomBGForCastleLudwig_c::vf29c()::sc_1
@@ -1929,23 +1889,23 @@
 .endobj g_profile_BOTTOM_BG_FOR_CASTLE_LUDWIG
 
 # .data:0x18 | size: 0xC
-.obj "@15313", local
+.obj "@15311", local
 	.4byte 0x77696E64
 	.4byte 0x6F775F6C
 	.4byte 0x65667400
-.endobj "@15313"
+.endobj "@15311"
 
 # .data:0x24 | size: 0xD
-.obj "@15314", local
+.obj "@15312", local
 	.4byte 0x77696E64
 	.4byte 0x6F775F72
 	.4byte 0x69676874
 	.byte 0x00
-.endobj "@15314"
+.endobj "@15312"
 	.byte 0x00, 0x00, 0x00
 
 # .data:0x34 | size: 0x1C
-.obj "@16247", local
+.obj "@16227", local
 	.4byte 0x6733642F
 	.4byte 0x57375F73
 	.4byte 0x6869726F
@@ -1953,20 +1913,20 @@
 	.4byte 0x5F62675F
 	.4byte 0x4D2E6272
 	.4byte 0x72657300
-.endobj "@16247"
+.endobj "@16227"
 
 # .data:0x50 | size: 0x12
-.obj "@16248", local
+.obj "@16228", local
 	.4byte 0x57375F73
 	.4byte 0x6869726F
 	.4byte 0x626F7373
 	.4byte 0x5F62675F
 	.2byte 0x4D00
-.endobj "@16248"
+.endobj "@16228"
 	.2byte 0x0000
 
 # .data:0x64 | size: 0x1C
-.obj "@16348", local
+.obj "@16328", local
 	.4byte 0x6733642F
 	.4byte 0x57375F73
 	.4byte 0x6869726F
@@ -1974,16 +1934,16 @@
 	.4byte 0x5F62675F
 	.4byte 0x442E6272
 	.4byte 0x72657300
-.endobj "@16348"
+.endobj "@16328"
 
 # .data:0x80 | size: 0x12
-.obj "@16349", local
+.obj "@16329", local
 	.4byte 0x57375F73
 	.4byte 0x6869726F
 	.4byte 0x626F7373
 	.4byte 0x5F62675F
 	.2byte 0x4400
-.endobj "@16349"
+.endobj "@16329"
 	.2byte 0x0000
 
 # .data:0x94 | size: 0x2A4
@@ -2152,9 +2112,9 @@
 	.4byte vf280__27daBottomBGForCastleLudwig_cFv
 	.4byte vf284__27daMiddleBGForCastleLudwig_cFP27daMiddleBGForCastleLudwig_c
 	.4byte vf288__27daMiddleBGForCastleLudwig_cFv
-	.4byte initializeState_DemoWait__27daBottomBGForCastleLudwig_cFv
-	.4byte executeState_DemoWait__27daBottomBGForCastleLudwig_cFv
-	.4byte finalizeState_DemoWait__27daBottomBGForCastleLudwig_cFv
+	.4byte initializeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
+	.4byte executeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
+	.4byte finalizeState_DemoWait__27daMiddleBGForCastleLudwig_cFv
 	.4byte createModel__27daBottomBGForCastleLudwig_cFv
 	.4byte vf29c__27daBottomBGForCastleLudwig_cFv
 	.4byte vf2a0__27daMiddleBGForCastleLudwig_cFv
@@ -2335,49 +2295,49 @@
 .endobj __vt__27daMiddleBGForCastleLudwig_c
 
 # .data:0x5DC | size: 0xC
-.obj "@16389", local
+.obj "@16364", local
 	.4byte 0x00000000
 	.4byte 0x00000294
 	.4byte 0x00000060
-.endobj "@16389"
+.endobj "@16364"
 
 # .data:0x5E8 | size: 0xC
-.obj "@16390", local
+.obj "@16365", local
 	.4byte 0x00000000
 	.4byte 0x00000290
 	.4byte 0x00000060
-.endobj "@16390"
+.endobj "@16365"
 
 # .data:0x5F4 | size: 0xC
-.obj "@16391", local
+.obj "@16366", local
 	.4byte 0x00000000
 	.4byte 0x0000028C
 	.4byte 0x00000060
-.endobj "@16391"
+.endobj "@16366"
 
 # .data:0x600 | size: 0xC
-.obj "@16392", local
+.obj "@16367", local
 	.4byte 0x00000000
 	.4byte 0x00000294
 	.4byte 0x00000060
-.endobj "@16392"
+.endobj "@16367"
 
 # .data:0x60C | size: 0xC
-.obj "@16393", local
+.obj "@16368", local
 	.4byte 0x00000000
 	.4byte 0x00000290
 	.4byte 0x00000060
-.endobj "@16393"
+.endobj "@16368"
 
 # .data:0x618 | size: 0xC
-.obj "@16394", local
+.obj "@16369", local
 	.4byte 0x00000000
 	.4byte 0x0000028C
 	.4byte 0x00000060
-.endobj "@16394"
+.endobj "@16369"
 
 # .data:0x624 | size: 0x2E
-.obj "@16396", local
+.obj "@16371", local
 	.4byte 0x64614D69
 	.4byte 0x64646C65
 	.4byte 0x4247466F
@@ -2390,7 +2350,7 @@
 	.4byte 0x5F44656D
 	.4byte 0x6F576169
 	.2byte 0x7400
-.endobj "@16396"
+.endobj "@16371"
 	.2byte 0x0000
 
 # .data:0x654 | size: 0x34
@@ -2470,11 +2430,11 @@
 .balign 8
 
 # .bss:0x0 | size: 0xC
-.obj "@15503", local
+.obj "@15497", local
 # .bss:0x0 | size: 0x0
 .sym ...bss.0, local
 	.skip 0xC
-.endobj "@15503"
+.endobj "@15497"
 
 # .bss:0xC | size: 0x34
 # daMiddleBGForCastleLudwig_c::StateID_DemoWait
@@ -2483,9 +2443,9 @@
 .endobj StateID_DemoWait__27daMiddleBGForCastleLudwig_c
 
 # .bss:0x40 | size: 0xC
-.obj "@15520", local
+.obj "@15501", local
 	.skip 0xC
-.endobj "@15520"
+.endobj "@15501"
 
 # .bss:0x4C | size: 0x34
 # daBottomBGForCastleLudwig_c::StateID_DemoWait

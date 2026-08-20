@@ -12895,3 +12895,51 @@ sibling plus a trailing node-visibility-reset segment accounting for exactly the
 `create()` and both `createModel()` overrides closed to real content, both
 `vf29c` overrides size-exact. Remaining: four measured register walls plus
 `__sinit`.
+
+## CASTLE_BG parked at 24/33 — and the `__sinit` puzzle reframed for whoever returns
+
+The agent made three genuinely different attempts and stopped rather than guess a
+fourth. Its observation: **the target's `__sinit` calls `__ct__10sStateID_cFPCc`
+exactly ONCE (73 instructions); the draft calls it twice (120-121).** Its own
+diagnosis was that `sStateID_c`'s base constructor calls `sm_numberMemo.get()`, a
+stateful counter, which should force runtime construction on **every** such
+object — so it could not explain how the target's second object avoids it.
+
+**The premise is wrong, and the correction is checkable.** `lbl_2_data_30F34`
+(0x6C) is not two state objects. **It is TWO VTABLES** — by this project's own
+rule that vtable entries begin at offset `0x08`, the two structures start at
+`0x30F34` and `0x30F68`, `0x34` apart, each with `.text` entries into this unit
+and `.rodata` entries into the DOL:
+
+```
+0x30F3C -> .text 0xF5E10     |   0x30F70 -> .text 0xF5DB0
+0x30F50 -> .text 0xF6030     |   0x30F84 -> .text 0xF6030
+0x30F58 -> .text 0xF5E70     |   0x30F8C -> .rodata (DOL)
+0x30F5C/60/64 -> the three trampolines  |  0x30F90/94/98 -> the same three
+```
+
+Two `sFStateVirtualID_c<T>` instantiations, one vtable each. **The trailing
+triples are vtable slots, not object fields** — which also revises the earlier
+reading of those "two triples" as two state objects.
+
+**And the `.bss` side says there is only ONE state object.** The unit owns exactly
+two `.bss` objects: `0xC1A0` (`0xC` bytes) and `0xC1AC` (`0x34`). Only the second
+is state-object sized. **So the target constructs one object because only one
+exists** — which dissolves the `sm_numberMemo` paradox entirely: there is no second
+object skipping a stateful constructor.
+
+**The open question is therefore narrower and better posed:** what source shape
+gives a class its own `sFStateVirtualID_c<T>` vtable **without** a distinct state
+object? Most likely the second class's `StateID_DemoWait` resolves to the first's
+object while the template instantiation is still forced by the declaration. That
+is a question about the declaration, not about `__sinit`'s content.
+
+**Parked at 24/33** with both gates green and five walls documented:
+`vf280`'s bit-trick; `this+0x394` held in one reused register where the draft
+lands a second; `executeState_DemoWait`'s thunk using load-with-update addressing;
+both `vf29c` overrides size-exact with scheduling residual; and `__sinit` above.
+
+**Session result for this unit: 12/33 -> 24/33**, and it produced more transferable
+doctrine than any other — the macro hand-expansion, the two-sided size diagnostic,
+the "read fresh rather than vary" threshold, and the `.bss`-object-is-constructed-
+by-`__sinit` insight.

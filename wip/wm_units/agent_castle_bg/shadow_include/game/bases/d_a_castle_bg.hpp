@@ -170,7 +170,16 @@ public:
     // `daMiddleBGForCastleLudwig_c::StateID_DemoWait` directly as the base-state argument
     // (exactly what the macro's own `baseID_##name<StateIDBase_##name>()` would have resolved
     // to here, since the base class DOES declare this state).
-    STATE_VIRTUAL_FUNC_DECLARE(daBottomBGForCastleLudwig_c, DemoWait);
+    // Hand-declared (NOT the full STATE_VIRTUAL_FUNC_DECLARE macro): __sinit's own bytes
+    // show BOTTOM_BG's construction COPYING its 3 PMF values from
+    // daMiddleBGForCastleLudwig_c::StateID_DemoWait's own already-compiled fields at
+    // runtime, rather than taking fresh addresses of separately-declared BOTTOM_BG
+    // methods -- matching the standard C++ base-to-derived pointer-to-member conversion
+    // (&Base::method implicitly convertible to a Derived::* PMF, needing this exact
+    // runtime copy since the general PMF representation isn't a compile-time constant).
+    // So BOTTOM_BG does NOT declare its own separate initializeState_DemoWait/
+    // executeState_DemoWait/finalizeState_DemoWait at all -- just the static member.
+    static sFStateVirtualID_c<daBottomBGForCastleLudwig_c> StateID_DemoWait;
 
     // fn_2_F5C10 (0x280). Real content: empty body -- confirmed genuinely different from the
     // base's own #daMiddleBGForCastleLudwig_c::vf280 (0x98 bytes there), not the same function

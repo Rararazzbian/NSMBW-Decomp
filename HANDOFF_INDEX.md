@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12898 lines / 508 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12946 lines / 509 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -529,3 +529,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `12848-12854` `lha` vs `lhz` was the TYPE question, confirmed
   - `12855-12868` And two refusals worth as much as the fixes
 - `12869-12898` The size diagnostic works in BOTH directions — an OVERSIZED draft is also structural
+- `12899-12946` CASTLE_BG parked at 24/33 — and the `__sinit` puzzle reframed for whoever returns

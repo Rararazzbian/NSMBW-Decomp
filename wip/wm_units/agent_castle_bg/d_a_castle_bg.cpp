@@ -321,34 +321,32 @@ void daBottomBGForCastleLudwig_c::vf280() {}
 // pattern already landed on DUMMY_DOOR_CHILD/PARENT.
 daBottomBGForCastleLudwig_c::~daBottomBGForCastleLudwig_c() {}
 
-// STATE_VIRTUAL_DEFINE -- compiler-generated .data (the static StateID_DemoWait object and its
-// own template machinery), not .text, so not subject to the function-order gate.
-STATE_VIRTUAL_DEFINE(daMiddleBGForCastleLudwig_c, DemoWait);
+// Hand-expanded, passing `sStateID::null` LITERALLY (not through getNullState() or the
+// macro's own baseID_DemoWait<sStateID_c>() specialization -- both tried this round, both
+// still emit a real `bl` inside __sinit, which the target does NOT have for this object at
+// all). __sinit's own bytes construct ONLY ONE state object at runtime (BOTTOM_BG's own, one
+// `__ct__10sStateID_cFPCc` call) -- MIDDLE_BG's own is fully `.data`-resident with no runtime
+// construction, which requires every constructor argument to be a genuine compile-time
+// constant. `sStateID::null` (a real extern with static storage duration) referenced directly
+// by address qualifies; a function call to reach the same value does not.
+sFStateVirtualID_c<daMiddleBGForCastleLudwig_c> daMiddleBGForCastleLudwig_c::StateID_DemoWait(
+    sStateID::null,
+    "daMiddleBGForCastleLudwig_c::StateID_DemoWait",
+    &daMiddleBGForCastleLudwig_c::initializeState_DemoWait,
+    &daMiddleBGForCastleLudwig_c::executeState_DemoWait,
+    &daMiddleBGForCastleLudwig_c::finalizeState_DemoWait);
 
-// BOTTOM_BG's OWN DemoWait -- same bodies as the base's own (confirmed by __sinit copying the
-// SAME three PMF addresses), declared separately only because STATE_VIRTUAL_FUNC_DECLARE
-// requires it for the vtable-slot machinery; the actual behavior is identical.
-void daBottomBGForCastleLudwig_c::initializeState_DemoWait() {}
-
-void daBottomBGForCastleLudwig_c::executeState_DemoWait() {
-    typedef void (*Vtbl1CFn_t)(m3d::mdl_c *);
-    m3d::mdl_c *m = &mModel;
-    (*(Vtbl1CFn_t *) ((const u8 *) *(void **) m + 0x1c))(m);
-}
-
-void daBottomBGForCastleLudwig_c::finalizeState_DemoWait() {}
-
-// Hand-expansion of STATE_VIRTUAL_DEFINE's own object-definition line (NOT the macro itself --
-// see the header's own note on why the macro cannot be invoked a second time for this state
-// name). The base-state argument is `daMiddleBGForCastleLudwig_c::StateID_DemoWait` directly --
-// exactly what the macro's own `baseID_DemoWait<StateIDBase_DemoWait>()` would have resolved to,
-// since the base class DOES declare "DemoWait". The name string is confirmed from __sinit's own
-// bytes to be the SAME string as the base's own object uses (not a new
-// "daBottomBGForCastleLudwig_c::StateID_DemoWait" one) -- used as the bytes say, not as the
-// macro would have generated it.
+// BOTTOM_BG's OWN DemoWait. __sinit's own bytes show its 3 PMF fields COPIED at runtime from
+// daMiddleBGForCastleLudwig_c::StateID_DemoWait's own already-compiled fields, not fresh
+// addresses of separately-declared BOTTOM_BG methods -- matching the standard C++ base-to-
+// derived pointer-to-member conversion (&Base::method implicitly converts to a Derived::* PMF,
+// and the general PMF representation needs a runtime copy, not a compile-time constant, hence
+// this exact shape). So BOTTOM_BG does NOT declare its own separate initializeState_DemoWait/
+// executeState_DemoWait/finalizeState_DemoWait at all -- the base's own methods are passed
+// directly, implicitly converted.
 sFStateVirtualID_c<daBottomBGForCastleLudwig_c> daBottomBGForCastleLudwig_c::StateID_DemoWait(
     daMiddleBGForCastleLudwig_c::StateID_DemoWait,
     "daMiddleBGForCastleLudwig_c::StateID_DemoWait",
-    &daBottomBGForCastleLudwig_c::initializeState_DemoWait,
-    &daBottomBGForCastleLudwig_c::executeState_DemoWait,
-    &daBottomBGForCastleLudwig_c::finalizeState_DemoWait);
+    &daMiddleBGForCastleLudwig_c::initializeState_DemoWait,
+    &daMiddleBGForCastleLudwig_c::executeState_DemoWait,
+    &daMiddleBGForCastleLudwig_c::finalizeState_DemoWait);

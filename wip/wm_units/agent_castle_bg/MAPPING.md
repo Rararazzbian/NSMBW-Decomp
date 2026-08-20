@@ -303,3 +303,37 @@ Remaining, smallest-first:
    `this+0x394` register wall, and `executeState_DemoWait`'s own thunk residual only if time
    remains after the above -- all three are genuinely parked (multiple variants tried, real
    content confirmed), not gaps.
+
+## `__sinit` -- ATTEMPTED, NOT CLOSED. Real diagnosis, not a content gap in the usual sense.
+
+Target: 73 instructions, exactly ONE `bl __ct__10sStateID_cFPCc` (constructs only ONE state
+object at runtime -- confirmed by a full, direct count of every `bl` in the target dump, not
+inferred). Draft: 120-121 instructions, TWO such calls -- both `daMiddleBGForCastleLudwig_c::
+StateID_DemoWait` and `daBottomBGForCastleLudwig_c::StateID_DemoWait` get constructed at
+runtime in the draft, where the target only runtime-constructs BOTTOM_BG's own.
+
+Tried, in order: (1) the raw `STATE_VIRTUAL_DEFINE` macro for the base (its own
+`baseID_DemoWait<sStateID_c>()` specialization is a genuine function, called via `bl`, not
+inlined -- no size change). (2) Hand-expanding the base's own object, passing `getNullState()`
+directly instead of the macro's own specialization -- no size change, still a real `bl`. (3)
+Hand-expanding again, passing `sStateID::null` literally (bypassing every function call for the
+superState argument) -- still constructs at runtime (120 vs 121, essentially no change).
+
+Diagnosis: `sStateID_c`'s own base constructor is NOT trivial regardless of arguments passed to
+`sFStateVirtualID_c<T>` above it -- it calls `sm_numberMemo.get()` (a real, stateful,
+auto-incrementing counter, `s_StateID.hpp`), which cannot be constant-folded no matter what the
+name/PMF/superState arguments are. This should make EVERY `sStateID_c`-derived static object
+require runtime construction -- yet the target's own MIDDLE_BG object demonstrably does NOT (it
+sits in `.data`, fully pre-initialized, confirmed from the earlier full disassembly this round).
+**Not resolved: what mechanism lets the target's MIDDLE_BG object skip the stateful base ctor
+while BOTTOM_BG's own does not call it.** Possibly the "number" field for MIDDLE_BG's own object
+is simply never separately assigned (defaults into the `.data` blob's own zero/placeholder
+region) rather than genuinely computed via `sm_numberMemo.get()`, which would mean the ACTUAL
+source shape differs from a plain `sFStateVirtualID_c<T>` constructor call in a way not yet
+identified -- flagged rather than guessed further given time already spent (three genuinely
+different attempts, per this project's own rule).
+
+Reverted to the best of the three tried versions (attempt 3, `sStateID::null` literal --
+marginally smaller, 120 vs 121, and the most semantically defensible of the three) rather than
+leave a worse version in the draft. Tally and both gates confirmed unaffected by any of the
+three attempts (still 24/33, `ok agent_castle_bg 24/33`, `.ctors` still matching).
