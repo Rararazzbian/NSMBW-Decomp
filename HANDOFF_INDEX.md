@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13206 lines / 520 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13263 lines / 523 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -541,3 +541,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13155-13176` A vtable slot landing N slots EARLY means N missing declarations BEFORE it
   - `13177-13184` A misattribution caught BEFORE any code was written
 - `13185-13206` HEADER GAP CONFIRMED: `dBg_ctr_c::set` is missing a THIRD overload
+- `13207-13224` HEADER: `dBg_ctr_c::set()` third overload + `struct sBgSetInfo` — five binaries green
+- `13225-13246` Three typing lessons from the same round
+- `13247-13263` `verify_anon`'s positional count INFLATES on a length mismatch

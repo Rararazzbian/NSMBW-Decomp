@@ -13203,3 +13203,60 @@ The mangling gives the parameters exactly: **`(dActor_c *, const sBgSetInfo *, u
 u8, mVec3_c *)`**. Only the return type is open, as always. **A forward
 declaration `struct sBgSetInfo;` is sufficient for the overload**, since the
 parameter is a pointer — the struct's layout is not needed to declare the method.
+
+## HEADER: `dBg_ctr_c::set()` third overload + `struct sBgSetInfo` — five binaries green
+
+Eighth shared-header change of the session. `include/game/bases/d_bg_ctr.hpp` gains
+a forward declaration and `void set(dActor_c *, const sBgSetInfo *, u8, u8,
+mVec3_c *);`, plus a `syms.txt` entry for `0x8007FB10`.
+
+**The return-type evidence is the part worth copying.** Parameters were proven by
+the mangling; for the return the agent did not reason from the sibling overloads
+being `void` — it checked **that `r3` is immediately clobbered by the next
+instruction at BOTH call sites**, so the result is provably unused. It said
+explicitly that the sibling overloads are "suggestive on its own, but the clobber
+pattern is the actual evidence." **That is the right hierarchy: an observed
+clobber outranks an analogy.**
+
+**A forward declaration was sufficient and no fields were invented**, because the
+parameter is a pointer. Declaring an opaque struct is strictly better than
+guessing a layout you do not need.
+
+## Three typing lessons from the same round
+
+**1. A CONVERSION CALL in the output means a TYPE MISMATCH in the source.**
+`m_5b4`/`m_5bc` were typed `u32` — indistinguishable from `float` while only ever
+seen zeroed. Assigning `mPos.x`/`mPos.z` into them compiled real
+`__cvt_fp2unsigned` calls, inflating the function by **9 words**. Retyped to
+`float`, the calls vanished. **A `__cvt_*` helper you did not write is the
+compiler telling you a declared type is wrong.**
+
+**2. An all-constant AGGREGATE INITIALIZER is not equivalent to per-field
+assignment.** `sBgSetInfoLocal_t info = {-152.0f, ...}` made MWCC pool **the whole
+struct as a separate static object and copy it word by word**; the target does
+per-field stores off the shared pool base. Rewriting as individual assignments
+matched. **Same expression, same values, different code — and the aggregate form
+also creates a pool object that shifts everything after it.**
+
+**3. Persistent handles versus throwaway locals.** `m_540`/`m_584` were among the
+round-1 "unidentified, explicitly zeroed" fields; they are
+`nw4r::g3d::ResFile mRes` and `nw4r::g3d::ResAnmTexSrt mResAnmTexSrt` — persistent
+resource handles, not locals. **Retyping them alone took one `createModel()` from
+56/78 differing to 8/78.**
+
+## `verify_anon`'s positional count INFLATES on a length mismatch
+
+A refinement of the recorded "the diff is positional and unaligned" caveat, with a
+concrete case: one function reads as **"21 differing" purely because it is 49
+words against the target's 48** — the one-word offset cascades through the rest of
+the comparison. The actual content differs by a handful of symbols.
+
+**So a raw count is only comparable between drafts of the SAME length.** Once the
+sizes match, the count means what it says; while they differ, read the lines. This
+is why the size diagnostic comes first: **get the size exact, and only then is the
+number worth optimising.**
+
+**LEMMY: every function in the unit is now written.** `.rodata` bound `0x4A80-0x4AAC`
+is now FINAL rather than provisional — all 16 use sites across all four
+`lbl_2_rodata_*` symbols sit in authored, fully-read functions and none exceeds
+`+0x28`.

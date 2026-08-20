@@ -6,6 +6,8 @@
 #include <game/mLib/m_3d/mdl.hpp>
 #include <game/mLib/m_3d/anm_tex_srt.hpp>
 #include <game/sLib/s_State.hpp>
+#include <game/bases/d_res_mng.hpp>
+#include <game/mLib/m_heap.hpp>
 
 // @unofficial lbl_2_bss_A6C4 -- one of this unit's own 3 confirmed .bss
 // singletons (scout_unit.py: ".bss 3 distinct targets 0xA638..0xA6C4").
@@ -19,6 +21,19 @@
 extern u8 lbl_2_bss_A6C4;
 extern u8 lbl_2_bss_A648;
 typedef void (*daLemmyFootholdVFunc0xD4_t)(dEn_c *, void *);
+
+// @unofficial Local stand-in for the still-opaque `sBgSetInfo` (forward-
+// declared only, per the coordinator's own instruction not to invent
+// fields for a type reached solely by pointer). This is NOT a claim
+// about the real struct's layout -- it exists only so this TU can build
+// a temporary with the right BYTES and pass its address cast to
+// `const sBgSetInfo *`, matching the two call sites' own stack-store
+// pattern (4 floats read from `lbl_2_rodata_4A80+0x4/+0x8/+0xc/+0x10`,
+// then 3 zeroed words) as closely as an untyped stand-in can.
+struct sBgSetInfoLocal_t {
+    float a, b, c, d;
+    u32 e, f, g;
+};
 
 // @unofficial LEMMY_FOOTHOLD_MAIN's own class layout, read directly off its
 // constructor (fn_2_C5CC0) and cross-checked against the already-landed
@@ -131,11 +146,11 @@ public:
     virtual void calcModel();
 
     dHeapAllocator_c mAllocator;
-    u32 m_540;
+    nw4r::g3d::ResFile mRes;
     m3d::mdl_c mModel;
-    u32 m_584;
+    nw4r::g3d::ResAnmTexSrt mResAnmTexSrt;
     m3d::anmTexSrt_c mAnimTexSrt;
-    u32 m_5b4;
+    float m_5b4;
     // @unofficial +0x5b8. Confirmed a target/goal Y position, not just a
     // generic float: both executeState_DemoDown and executeState_DemoUp
     // compute `this[0x5b8] - mPos.y` as a distance-to-target and drive
@@ -144,12 +159,12 @@ public:
     // state bodies below). Real declared name not identified; named for
     // its confirmed role rather than left as a raw offset.
     float mTargetPosY;
-    u32 m_5bc;
+    float m_5bc;
     dBg_ctr_c mBgCtr;
     u8 mTail[0x4];
 };
 
-daLemmyFoothold_c::daLemmyFoothold_c() : m_540(0), m_584(0) {}
+daLemmyFoothold_c::daLemmyFoothold_c() {}
 ACTOR_PROFILE(LEMMY_FOOTHOLD, daLemmyFoothold_c, 0);
 
 // @unofficial State bodies -- STUBS for now (empty), not yet read against
@@ -227,7 +242,7 @@ void daLemmyFoothold_c::finalizeState_DemoUp() {}
 
 class daLemmyFootholdMain_c : public dEn_c {
 public:
-    daLemmyFootholdMain_c() : m_540(0), m_584(0) {}
+    daLemmyFootholdMain_c() {}
 
     // @unofficial Two states, read directly from .data: StateID_DemoWait,
     // StateID_Wait. Both genuinely NON-VIRTUAL -- confirmed via the state
@@ -259,9 +274,9 @@ public:
     virtual void calcModel();
 
     dHeapAllocator_c mAllocator;
-    u32 m_540;
+    nw4r::g3d::ResFile mRes;
     m3d::mdl_c mModel;
-    u32 m_584;
+    nw4r::g3d::ResAnmTexSrt mResAnmTexSrt;
     m3d::anmTexSrt_c mAnimTexSrt;
     dBg_ctr_c mBgCtr;
     u8 mTail[0x10];
@@ -367,10 +382,105 @@ void daLemmyFootholdMain_c::calcModel() {
     mModel.setLocalMtx(&mMatrix);
     mModel.setScale(mScale);
 }
-void daLemmyFoothold_c::vUnk2A4() {}
-void daLemmyFoothold_c::vUnk2A8() {}
-void daLemmyFootholdMain_c::vUnk2A4() {}
-void daLemmyFootholdMain_c::vUnk2A8() {}
+// @unofficial fn_2_C64D0 (48 words), read in full: snapshots mPos into
+// m_5b4/mTargetPosY/m_5bc, resets mScale to 1.0f, then calls the
+// still-header-missing `dBg_ctr_c::set(dActor_c*, const sBgSetInfo*,
+// u8, u8, mVec3_c*)` overload (now proposed as a shadow header change --
+// see shadow_include/game/bases/d_bg_ctr.hpp), sets a flag bit on
+// mBgCtr's own (already-declared) mFlags field, then calls
+// mBgCtr.entry(). The `u8` at `this+0x38f` is a real field read
+// directly off target, not yet identified by name -- raw offset cast
+// rather than guessed.
+void daLemmyFoothold_c::vUnk2A4() {
+    m_5b4 = mPos.x;
+    mTargetPosY = mPos.y;
+    m_5bc = mPos.z;
+    mScale.x = 1.0f;
+    mScale.y = 1.0f;
+    mScale.z = 1.0f;
+    sBgSetInfoLocal_t info;
+    info.a = -152.0f;
+    info.b = 16.0f;
+    info.c = 152.0f;
+    info.d = -48.0f;
+    info.e = 0;
+    info.f = 0;
+    info.g = 0;
+    mVec3_c v;
+    v.x = 1.0f;
+    v.y = 1.0f;
+    v.z = 1.0f;
+    u8 u = *((u8 *) this + 0x38f);
+    mBgCtr.set(this, (const sBgSetInfo *) &info, 3, u, &v);
+    mBgCtr.mFlags |= 4;
+    mBgCtr.entry();
+}
+// @unofficial fn_2_C6390 (78 words) -- this class's own createModel(),
+// matching the established d_a_wm_antlion.cpp idiom closely (heap
+// allocator, resource lookup, m3d::mdl_c create, setSoftLight_MapObj,
+// anmTexSrt_c create + setAnm). Archive strings ("g3d/
+// boss_lemmy_ashiba.brres" / "boss_lemmy_ashiba") read directly out of
+// .data and confirmed SHARED between both classes -- daLemmyFoothold_c's
+// own copy of this function reaches the identical two addresses via a
+// different base register (g_profile_LEMMY_FOOTHOLD+0x18/+0x34), not a
+// separate string.
+void daLemmyFoothold_c::vUnk2A8() {
+    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
+    mRes = dResMng_c::m_instance->getRes("boss_lemmy_ashiba", "g3d/boss_lemmy_ashiba.brres");
+    nw4r::g3d::ResMdl mdl = mRes.GetResMdl("boss_lemmy_ashiba");
+    mModel.create(mdl, &mAllocator, 0x24, 1, nullptr);
+    dActor_c::setSoftLight_MapObj(mModel);
+    mResAnmTexSrt = mRes.GetResAnmTexSrt("boss_lemmy_ashiba");
+    mAnimTexSrt.create(mdl, mResAnmTexSrt, &mAllocator, nullptr, 1);
+    mAnimTexSrt.setAnm(mModel, mResAnmTexSrt, 0, m3d::FORWARD_LOOP);
+    mModel.setAnm(mAnimTexSrt);
+    mAnimTexSrt.setRate(1.0f, 0);
+    mAllocator.adjustFrmHeap();
+}
+// @unofficial fn_2_C5F30 (50 words), read in full: same shape as
+// daLemmyFoothold_c's own vUnk2A4() above, but writes the mPos snapshot
+// into THIS class's own tail region (+0x698/+0x69c/+0x6a0, right after
+// mBgCtr which ends at +0x698 for this class -- confirmed the offset,
+// not assumed from symmetry with FOOTHOLD alone).
+void daLemmyFootholdMain_c::vUnk2A4() {
+    *(float *) ((u8 *) this + 0x698) = mPos.x;
+    *(float *) ((u8 *) this + 0x69c) = mPos.y;
+    *(float *) ((u8 *) this + 0x6a0) = mPos.z;
+    mScale.x = 1.0f;
+    mScale.y = 1.0f;
+    mScale.z = 1.0f;
+    sBgSetInfoLocal_t info;
+    info.a = -152.0f;
+    info.b = 16.0f;
+    info.c = 152.0f;
+    info.d = -48.0f;
+    info.e = 0;
+    info.f = 0;
+    info.g = 0;
+    mVec3_c v;
+    v.x = 1.0f;
+    v.y = 1.0f;
+    v.z = 1.0f;
+    u8 u = *((u8 *) this + 0x38f);
+    mBgCtr.set(this, (const sBgSetInfo *) &info, 3, u, &v);
+    mBgCtr.mFlags |= 4;
+    mBgCtr.entry();
+}
+// @unofficial fn_2_C5DF0 (78 words) -- MAIN's own createModel(), same
+// shape as daLemmyFoothold_c's own above.
+void daLemmyFootholdMain_c::vUnk2A8() {
+    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
+    mRes = dResMng_c::m_instance->getRes("boss_lemmy_ashiba", "g3d/boss_lemmy_ashiba.brres");
+    nw4r::g3d::ResMdl mdl = mRes.GetResMdl("boss_lemmy_ashiba");
+    mModel.create(mdl, &mAllocator, 0x24, 1, nullptr);
+    dActor_c::setSoftLight_MapObj(mModel);
+    mResAnmTexSrt = mRes.GetResAnmTexSrt("boss_lemmy_ashiba");
+    mAnimTexSrt.create(mdl, mResAnmTexSrt, &mAllocator, nullptr, 1);
+    mAnimTexSrt.setAnm(mModel, mResAnmTexSrt, 0, m3d::FORWARD_LOOP);
+    mModel.setAnm(mAnimTexSrt);
+    mAnimTexSrt.setRate(1.0f, 0);
+    mAllocator.adjustFrmHeap();
+}
 
 int daLemmyFoothold_c::create() {
     vUnk2A4();
