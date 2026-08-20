@@ -12630,3 +12630,56 @@ Same category of problem, same resolution, already verified green.
 **The general rule: when a framework macro cannot be invoked twice, the obstruction
 is usually a HELPER it emits, not the thing you are declaring.** Read the
 expansion, keep the parts you need once, and write the rest by hand.
+
+## LEMMY_FOOTHOLD: five states read straight out of `.data`, and the SAME name collision
+
+A `.data` ASCII scan of the unit's range gives its entire state inventory without
+compiling anything:
+
+```
+daLemmyFootholdMain_c::StateID_DemoWait     +0x283FF
+daLemmyFootholdMain_c::StateID_Wait         +0x28428
+daLemmyFoothold_c::StateID_DemoWait         +0x2844C
+daLemmyFoothold_c::StateID_DemoDown         +0x28470
+daLemmyFoothold_c::StateID_DemoUp           +0x28494
+```
+
+**Five states: two on `daLemmyFootholdMain_c`, three on `daLemmyFoothold_c`** —
+and **both classes declare `StateID_DemoWait`**.
+
+That is the identical collision CASTLE_BG hit an hour earlier, and it collides for
+a reason independent of inheritance: **`STATE_VIRTUAL_DEFINE` emits a file-scope
+helper named `baseID_##name`, so TWO CLASSES SHARING A STATE NAME IN ONE TU
+collide on the NAME alone.** The resolution is already recorded — declare with the
+macro, hand-expand the second definition, do not re-emit the `baseID_` template —
+with a landed precedent in `source/d_basesNP/bases/d_a_ac_switch.cpp`, which
+hand-expands `ACTOR_PROFILE` for the same category of reason.
+
+**The scan also bounds the unit's `.data`.** The next strings after `+0x28494`
+are `daLiftBalance_c::StateID_Wait/Move/End` at `+0x286D4` — those belong to
+`AC_LIFT_BALANCE`, the next profile at `.text 0xC7270`. So this unit's `.data`
+ends before `0x286D4`.
+
+**Reading state names out of `.data` is now the standard opening move on any
+state-framework unit.** `sStateID_c`'s constructor takes a `const char *`, so
+every state's fully-qualified name is sitting in the binary as plain ASCII. It
+gives the state COUNT, the state NAMES, and the owning CLASS names at once —
+before a line of source is written.
+
+### The round's own discipline is worth noting
+
+The agent **corrected my framing**: this is not the tiny-manager/real-object shape.
+Both are full `dEn_c`-derived classes of identical `sizeof 0x6A8`, differing by a
+0xC-byte member gap. `LEMMY_FOOTHOLD`'s classInit only *looks* like a manager —
+it calls a real, separate, non-trivial constructor.
+
+It also settled the layout with `STATIC_ASSERT`/`Probe<sizeof(...)>` **before
+writing any function body**, took the `m3d::` construction idiom from the landed
+`d_a_wm_antlion.cpp` in the same module rather than reverse-engineering it, and
+**avoided a misattribution by checking a dispatch offset instead of trusting
+proximity** — two thunks near the state trio dispatch through `+0x588`, which the
+confirmed layout says is `mAnimTexSrt`'s own vtable slot, not state machinery.
+
+**Both classes' constructor AND destructor pairs match. A destructor match is
+strong evidence the member layout is right**, because it is sensitive to the whole
+member list.
