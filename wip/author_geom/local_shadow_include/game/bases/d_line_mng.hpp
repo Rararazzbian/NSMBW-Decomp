@@ -16,6 +16,19 @@
 /// @ingroup bases
 class dLineMng_c {
 public:
+    // @unofficial TESTING-ONLY friend declaration, not a proposed header
+    // change. width_cross_chk's target calls an UNNAMED (`fn_800C1EE0`)
+    // helper that writes this->mPos and this->mUnitBasePos directly, and
+    // takes a `dLineMng_c*` in r3 that passes straight through unmodified
+    // from width_cross_chk's own incoming `this` -- i.e. it is a genuine
+    // file-scope `static` free function (per MAPPING.md's "Unnamed
+    // file-scope functions" list), not a class member (member statics in
+    // this unit, e.g. line_cross_chk1, DO carry real mangled names in the
+    // target). A free function needs `friend` to touch private members;
+    // this line exists ONLY so this round's draft compiles for comparison.
+    // Flagged in RESULT.md -- the real fix is the lead's call.
+    friend bool fn_800C1EE0(dLineMng_c *, f32, f32, const mVec2_c &, const mVec2_c &, const mVec2_c &, const mVec2_c &);
+
     dLineMng_c();
     // No destructor: `__dt__10dLineMng_cFv` does not exist in the symbol map,
     // so nothing in wiimj2d ever destroys a dLineMng_c. Do NOT declare one --
@@ -49,6 +62,21 @@ public:
     void init_term_ck_pos();
     void check_term();
 
+    // @unofficial CORRECTED from the shared header for this round's testing:
+    // (1) all five are STATIC -- proven by calling convention, not analogy.
+    // Each one's GPR/FPR registers are fully consumed by its OWN declared
+    // params (checked against the mangled arg list register-by-register);
+    // none has a spare leading GPR that could be an implicit `this`, and each
+    // one's "first" mVec2_c reference is read as a plain vector (offset 0/4 =
+    // x/y) rather than ever being used to reach a dLineMng_c field (mDirVec,
+    // mSpeed, etc. at those same low offsets). (2) all five return bool, not
+    // void -- each sets r3 to 0 or 1 on every path before blr; line_cross_chk1
+    // and line_cross_chk2 additionally branch on their own recursive/sibling
+    // calls' r3 with cmpwi/beq, which only makes sense if that callee returns
+    // a value. Externally confirmed too: every caller of the higher-level
+    // *_cross_chk predicates that use these (height_cross_chk, width_cross_chk,
+    // lineF/circle_*2/lineRH* -- see below) tests the callee's r3 with cmpwi
+    // immediately after the `bl`, never clobbers it.
     static bool line_cross_slope_check(const mVec2_c &, const mVec2_c &, f32 &, f32 &);
     static bool line_cross_range_check(f32, f32, f32);
     static bool line_cross_chk1(f32, f32, const mVec2_c &, mVec2_c, mVec2_c, mVec2_c &);
