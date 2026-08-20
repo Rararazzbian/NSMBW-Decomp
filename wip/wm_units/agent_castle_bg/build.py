@@ -21,6 +21,7 @@ if not ok2:
 
 objs = [
     'bin/dtkspl/d_basesNP/obj/auto_00_000F4FB0_text.o',
+    'bin/dtkspl/d_basesNP/obj/auto_fn_2_F5C80_text.o',
     'bin/dtkspl/d_basesNP/obj/auto_00_000F5DA4_text.o',
 ]
 cmd = 'python wip/wm_units/verify_anon.py {} 0xf5130 0xf6150 {}'.format(TXT, ' '.join(objs))

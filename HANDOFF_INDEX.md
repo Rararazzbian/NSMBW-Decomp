@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12269 lines / 478 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12314 lines / 480 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -499,3 +499,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `12201-12220` The two blockers are NOT guesses — the mangled names settle the parameters
 - `12221-12240` HEADER: `dBg_c::CoinGetBitCheck` / `CoinGetBitSet` — five binaries green
 - `12241-12269` `__sinit` closed by DECLARATION ORDER, and the re-verify that followed
+- `12270-12291` EYEBALLING A VTABLE PREFIX IS NOT A DIFF — second agent, same trap
+  - `12292-12314` Two facts I settled for that unit, from the binary

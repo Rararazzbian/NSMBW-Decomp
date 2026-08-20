@@ -12266,3 +12266,48 @@ round's numbers comparable.
 
 **45/49 is not landable**: four functions remain short on CONTENT, which is bytes,
 not an argument a build can settle.
+
+## EYEBALLING A VTABLE PREFIX IS NOT A DIFF — second agent, same trap
+
+CASTLE_BG compared the first ~70 of **169** vtable words by eye, saw
+create/doDelete/execute/draw match, and concluded the nine new virtuals were
+shared except the destructor. **A full programmatic slot-by-slot diff of both
+complete vtables found three more differ** (`0x280`/`0x298`/`0x29c`), and its
+draft had them **attached to the wrong class, backwards.**
+
+**They had been "matching" by byte-coincidence on trivial content, not by correct
+attribution.** That is the identical-code-folding lesson arriving independently at
+a second unit within the hour: **a byte-identical match proves CORRECTNESS, not
+IDENTITY.** Two agents, two units, same trap, both caught only by diffing
+programmatically rather than reading.
+
+The tally correctly held at 12/33 across the fix — the swapped functions had been
+counted as matching and still are, but the vtable is now actually right.
+**A tally can be stable across a real correctness fix**, which is worth knowing
+before treating an unchanged number as "no progress."
+
+Also corrected: the class is `daMiddleBGForCastleLudwig_c` — **capital `BG`** —
+read off a state-ID string in `.data`, not guessed.
+
+### Two facts I settled for that unit, from the binary
+
+**There is only ONE state name in the whole unit.** Scanning its `.data` for ASCII
+turns up exactly one state string:
+```
++0x30F03  daMiddleBGForCastleLudwig_c::StateID_DemoWait
+```
+and no second one anywhere in range. So the **two** trampoline triples found
+earlier (`.data 0x30F5C/60/64` and `0x30F90/94/98`) are **two CLASSES each having
+the one state**, not one class with two states. **Stop looking for a second state
+name — it does not exist.**
+
+**And the unit's `.data` extends further than the scout reported.** `scout_unit.py`
+gives `0x308F8..0x30F34` because that is what `.text` REFERENCES; but
+`lbl_2_data_30F34` is `0x6C` bytes and holds both state triples, and the next
+symbol is `g_profile_MINI_GAME_BALLOON` at `0x30FA0` — a different unit. **True
+extent: `0x308F8-0x30FA0`.**
+
+**A section range derived from what `.text` references is a LOWER BOUND.** Objects
+referenced only from other `.data` — state tables, vtable-adjacent structures —
+are invisible to that scan. For a slice range, walk the symbol list to the next
+foreign symbol.
