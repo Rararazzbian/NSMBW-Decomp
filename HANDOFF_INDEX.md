@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12044 lines / 468 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12080 lines / 469 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -489,3 +489,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12000-12012` LANDED: `d_a_floor_jr_b.cpp` — the "landing-order dependency" was NOT one either
   - `12013-12025` The general rule, now demonstrated twice in one hour
   - `12026-12044` Both objections retired today were CAREFUL, CONSISTENT, and WRONG
+- `12045-12080` A missing target OBJECT makes a function invisible — check the split list, not just the range

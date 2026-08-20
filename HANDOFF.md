@@ -12041,3 +12041,39 @@ showed it would otherwise be synthesised as a WEAK symbol inside our own TU; and
 three extra tail virtuals surfaced only when `check_vtable.py` reported
 **"SLOT COUNT DIFFERS by -3"** — a slot count is a precise statement of how many
 declarations are missing, and it points at the end of the class.
+
+## A missing target OBJECT makes a function invisible — check the split list, not just the range
+
+The CASTLE_BG agent flagged an anomaly instead of working around it: `fn_2_F5C80`
+is present in `d_basesNP_symbols.txt` at exactly that address, but did not appear
+in `verify_anon.py`'s target listing for the range — **32 functions listed, not
+33.** Flagging it was right, and the cause is mechanical.
+
+The unit's `build.py` passed **two** target objects. There are **three**:
+
+```
+auto_00_000F4FB0_text.o
+auto_fn_2_F5C80_text.o     <- MISSING; a separate object for the __sinit
+auto_00_000F5DA4_text.o
+```
+
+dtk splits some functions — `__sinit` among them — into their own
+`auto_fn_2_<ADDR>_text.o` object rather than folding them into the surrounding
+`auto_00_*` block. **A range can therefore be fully covered by address and still
+be missing a function, because the split list has a hole in it.** With the third
+object supplied the listing shows `0x000F5C80 fn_2_F5C80` (73 instructions) and
+the tally becomes **12/33**.
+
+**The failure mode is silent and it flatters you:** the missing function simply
+does not appear, the denominator is quietly too small, and every percentage looks
+better than it is. Both `auto_00_*` AND `auto_fn_2_*` objects overlapping a range
+must be passed. Check with:
+
+```
+ls bin/dtkspl/<module>/obj/ | grep -iE "^auto_(00_000)?<prefix>"
+```
+
+Worth noting the same pattern is already visible in units that got it right —
+WM_KOOPAJR passes `auto_fn_2_16E490_text.o` alongside its two `auto_00_*`
+objects, and WM_ANCHOR passes `auto_fn_2_15ABD0_text.o`. **The convention was
+established; the check for it was not.**
