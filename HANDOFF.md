@@ -12999,3 +12999,54 @@ referenced by nothing in this unit, so the gap is link-order-dependent rather th
 theirs); `unk_83B00` (55, a register-hoisting instruction-selection difference);
 and `__sinit` (21, tracing to one 192-byte solid-zero `.data` gap it could not
 attribute, with the obvious candidates ruled out rather than assumed).
+
+## CROSS-CONFIRMED within the hour: the PMF encoding difference IS the virtual/non-virtual distinction
+
+Two agents on unrelated units found the same phenomenon from opposite directions,
+and together they close it.
+
+**FLOOR_JR_A** found the encodings and what they mean:
+```
+{ -1, fn_addr, 0 }          -> NON-VIRTUAL pointer-to-member
+{ vtable_offset, 0x60, 0 }  -> VIRTUAL pointer-to-member
+```
+and used it to prove its `DieFall` state needed **plain virtuals plus an ordinary
+`STATE_DEFINE`**, not the virtual-state macro — taking `__sinit` 74 -> 21 with all
+159 words in order.
+
+**LEMMY_FOOTHOLD**, independently, observed that its two classes use **different
+PMF encodings** — `daLemmyFootholdMain_c`'s states store direct relocatable
+function addresses, while `daLemmyFoothold_c`'s store **vtable byte offsets with
+no relocation at all.** It resolved the addresses by reading FOOTHOLD's own vtable
+at those offsets, which worked, and **explicitly flagged that it could not explain
+why the two classes differ** — noting both use the identical macro shape and
+neither derives from the other.
+
+**The explanation is FLOOR_JR_A's finding.** The encoding is not arbitrary: it
+records whether the pointed-to method is virtual.
+
+- `daLemmyFootholdMain_c` -> direct addresses -> its state methods are
+  **NON-VIRTUAL** -> plain `STATE_FUNC_DECLARE` / `STATE_DEFINE`.
+- `daLemmyFoothold_c` -> vtable offsets -> its state methods are **VIRTUAL** ->
+  the virtual-state form.
+
+**So "both use the identical macro shape" is the defect, not the puzzle** — one of
+them should not.
+
+**The general rule, now confirmed on two units:** before choosing a state macro,
+**read the three PMF triples out of `.data` and let the encoding decide.** A
+vtable offset where you wrote a non-virtual method — or a direct address where you
+wrote a virtual one — is a declaration defect visible without compiling anything.
+This question has now cost rounds on three separate units.
+
+**LEMMY 30/51 -> 34/51**, with all 9 real state bodies attributed to exact target
+addresses **by reading each state object's own PMF fields** rather than trusting
+size-based pairing — the technique that also resolved another unit's three
+"unattributed" functions. Seven of nine authored and matching, including
+`mAnimTexSrt.play()` confirmed at vtable offset `0x14` **by a probe compile**
+rather than by size match.
+
+**Two bodies deliberately left unauthored rather than guessed**, both correctly
+triaged by the size diagnostic: one read in full with three genuine unknowns
+still open (an unnamed float field, an unnamed vtable-slot-`0xd4` method, an
+untyped `.bss` singleton), the other not yet read at all.

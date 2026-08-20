@@ -332,3 +332,118 @@ function-by-function, re-verifying each against target bytes directly
 rather than trusting proximity or size-based candidate pairing --
 exactly the discipline that has already caught two wrong attributions
 elsewhere today.
+
+## Round 3: state bodies attributed via PMF-pointer reads, 30/51 -> 34/51
+
+Per the coordinator's technique -- read each state object's own PMF
+fields (initialize/execute/finalize pointer-to-member-function triples)
+directly out of `.data`, rather than trusting `verify_anon`'s size-based
+candidate pairing -- all 9 real state-logic bodies were attributed to
+exact target addresses before writing anything.
+
+### Two different PMF encodings, discovered while doing the attribution -- one resolved, one open
+
+`daLemmyFootholdMain_c`'s states store their PMFs as **direct,
+relocatable addresses** (word0 = 0 in the file, patched to the real
+function address at REL-load time -- read via
+`wip/wm_units/profile_map.py`'s `relocations()`, the same tool the
+project uses for classInit resolution). `daLemmyFoothold_c`'s states,
+by contrast, store their PMFs as **vtable byte offsets** (word1 holds a
+small integer like `0x280`-`0x2a0`, word0/word2 are plain `0`, no
+relocation at all) -- a genuinely different, virtual-dispatch PMF
+representation for the *identical* `STATE_VIRTUAL_FUNC_DECLARE`/
+`STATE_VIRTUAL_DEFINE` macro shape. Resolved by reading FOOTHOLD's own
+vtable (`lbl_2_data_27E10`, confirmed via the classInit's own vtable-
+pointer store) at those exact byte offsets, giving the real function
+addresses just as reliably as MAIN's relocations did.
+
+**Why MAIN gets direct encoding and FOOTHOLD gets virtual encoding is
+NOT resolved.** Both classes use the identical macro invocation shape;
+neither derives from the other; nothing in this TU further overrides
+either class's state methods. Recorded as a genuine open question
+(flagged in the source comments), not chased further since it only
+affects whether `__sinit`'s own bytes match -- explicitly the LAST
+priority per the coordinator's own framing, and `__sinit` remains
+267/268 differing this round.
+
+### All 9 real bodies attributed; 7 authored and confirmed, 2 read but not yet authored
+
+| state · method | target addr | size | status |
+|---|---|---|---|
+| MAIN::DemoWait init/fin | 0xC6160/0xC6150 | 0x4 each | **MATCH** (trivial, empty) |
+| MAIN::DemoWait exec | 0xC6170 | 0x10 | **MATCH** -- `mAnimTexSrt.play();` |
+| MAIN::Wait init/fin | 0xC6190/0xC6180 | 0x4 each | **MATCH** (trivial, empty) |
+| MAIN::Wait exec | 0xC61A0 | 0x10 | **MATCH** -- `mAnimTexSrt.play();` |
+| FOOTHOLD::DemoWait init/fin | 0xC66B0/0xC66C0 | 0x4 each | **MATCH** (trivial, empty) |
+| FOOTHOLD::DemoWait exec | 0xC66D0 | 0x10 | **MATCH** -- `mAnimTexSrt.play();` |
+| FOOTHOLD::DemoDown init | 0xC66E0 | 0x24 | **MATCH** -- `mSpeed = mVec3_c(0,0,0); mAccelY = -0.185f;` |
+| FOOTHOLD::DemoDown exec | 0xC6720 | 0x84 | **read, not yet authored** -- see below |
+| FOOTHOLD::DemoDown fin | 0xC6710 | 0x4 | **MATCH** (trivial, empty) |
+| FOOTHOLD::DemoUp init/fin | 0xC67C0/0xC67B0 | 0x4 each | **MATCH** (trivial, empty) |
+| FOOTHOLD::DemoUp exec | 0xC67D0 | 0xBC | **not yet read** |
+
+`mAnimTexSrt.play()`'s attribution is independently cross-confirmed, not
+just size-matched: a probe compile of `m3d::anmTexSrt_c` showed `play()`
+lands at vtable byte offset `0x14` exactly, matching the dispatch thunk
+shape (`lwzu r12,0x588(r3); lwz r12,0x14(r12); mtctr; bctr`) seen at all
+three `exec` sites. `mSpeed`/`mAccelY` are confirmed pre-existing
+`dBaseActor_c` members (`STATIC_ASSERT`/`Probe` offsets `0xe8`/`0x114`
+respectively, matching the target's own store offsets exactly) -- no new
+members needed.
+
+### `executeState_DemoDown` (0xC6720, 0x84 bytes) -- read in full, NOT authored, per the size/confidence discipline
+
+Read completely before deciding not to author it yet:
+
+```
+mAnimTexSrt.play();               // same dispatch-through-+0x588 shape as the trivial exec states
+calcSpeedY();                      // dBaseActor_c method, already declared
+posMove();                         // dEn_c's own override, already declared
+float dist = this[0x5b8] - mPos.y; // 0x5b8 is INSIDE the still-unidentified mUnk5B4[0xc] gap
+                                    // (between mAnimTexSrt and mBgCtr) -- a real float field there,
+                                    // not yet named
+if (dist > lbl_2_rodata_4AA4) {
+    // virtual call through this's OWN vtable, slot 0xd4 (0xd4/4 = 53),
+    // argument &lbl_2_bss_A6C4 (one of this unit's own 3 confirmed
+    // .bss singletons, scout_unit.py's own ".bss 3 distinct targets
+    // 0xA638..0xA6C4" range -- the third, not yet typed)
+}
+```
+
+Not authored because three real unknowns remain (the `0x5b8` field's
+name/type, the vtable-slot-0xd4 method's name, and `lbl_2_bss_A6C4`'s
+type) and guessing any of them risks the exact "3-attempts-then-park"
+threshold being spent on a wrong shape rather than a genuine residual --
+per the coordinator's own size/diff diagnostic, a function this size
+with this many unresolved pieces needs more reading, not an attempt.
+Left as a clearly-flagged, unauthored stub (still returns nothing,
+current source has an empty body) rather than guessed at.
+
+### `executeState_DemoUp` (0xC67D0, 0xBC bytes) -- not yet read
+
+Largest of the two remaining real bodies (47 instructions). Not
+attempted this round -- ran out of time after the DemoDown read and the
+PMF-encoding investigation, which was itself substantial (see above).
+Flagged as the clear next item, same reading discipline as DemoDown
+(read in full before writing anything, no guessing from size or
+proximity).
+
+## Final result, this round: 34/51 byte-identical (up from 30/51)
+
+7 of 9 real state-logic bodies now authored and matching; 2 read-in-full-
+but-not-authored (DemoDown's exec, partially) or not-yet-read (DemoUp's
+exec) remain, both honestly flagged rather than guessed. `__sinit`
+itself: 267/268 differing, unchanged in practice (blocked on the
+FOOTHOLD virtual-PMF-encoding open question, which is `__sinit`-only and
+explicitly deprioritised). `.ctors` gate unaffected. Function order not
+re-examined this round (per the coordinator's own "leave it alone" this
+round).
+
+**Next round's clear priorities**: (1) finish reading `executeState_DemoUp`
+and complete `executeState_DemoDown`'s three remaining unknowns (the
+`0x5b8` field, the vtable-slot-`0xd4` method, `lbl_2_bss_A6C4`'s type) --
+the same `dEn_c`/`dActor_c`-family header search technique already used
+successfully elsewhere in this unit; (2) the FOOTHOLD virtual-PMF-
+encoding question, if a concrete new angle presents itself (not a repeat
+investigation); (3) the unit's own `.data`/`.rodata` slice, still not
+derived.

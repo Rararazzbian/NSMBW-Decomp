@@ -88,10 +88,28 @@ ACTOR_PROFILE(LEMMY_FOOTHOLD, daLemmyFoothold_c, 0);
 // isSameName()/three trampolines -- none hand-authored) to compile and
 // be positioned correctly; the REAL per-state behaviour is separate,
 // unauthored work for a later pass.
+// @unofficial Attributed by reading the PMF function-pointer values
+// directly out of the target's own vtable (per the coordinator's
+// technique), NOT from verify_anon's size-based candidate pairing.
+// daLemmyFoothold_c's states use the VIRTUAL (vtable-offset) PMF
+// encoding in target -- unlike daLemmyFootholdMain_c's own (direct
+// address) encoding -- so the state object's own PMF fields in .data
+// hold a vtable BYTE OFFSET, not a relocatable address; reading target's
+// own vtable (lbl_2_data_27E10) at those exact offsets gave the real
+// function addresses. WHY the two classes differ in PMF encoding is not
+// resolved (both use the identical STATE_VIRTUAL_FUNC_DECLARE/_DEFINE
+// shape) -- flagged as a genuine open question, not chased further this
+// round since it only affects __sinit's own bytes (explicitly
+// deprioritised, see MAPPING.md).
 void daLemmyFoothold_c::initializeState_DemoWait() {}
-void daLemmyFoothold_c::executeState_DemoWait() {}
+void daLemmyFoothold_c::executeState_DemoWait() { mAnimTexSrt.play(); }
 void daLemmyFoothold_c::finalizeState_DemoWait() {}
-void daLemmyFoothold_c::initializeState_DemoDown() {}
+void daLemmyFoothold_c::initializeState_DemoDown() {
+    mSpeed.x = 0.0f;
+    mSpeed.y = 0.0f;
+    mSpeed.z = 0.0f;
+    mAccelY = -0.1850000023841858f;
+}
 void daLemmyFoothold_c::executeState_DemoDown() {}
 void daLemmyFoothold_c::finalizeState_DemoDown() {}
 void daLemmyFoothold_c::initializeState_DemoUp() {}
@@ -123,11 +141,22 @@ ACTOR_PROFILE(LEMMY_FOOTHOLD_MAIN, daLemmyFootholdMain_c, 0);
 
 // @unofficial State bodies -- STUBS for now, see the note on
 // daLemmyFoothold_c's own state bodies above.
+// @unofficial Attributed by reading the PMF function-pointer relocations
+// directly out of the state objects' own .data fields (per the
+// coordinator's technique) -- daLemmyFootholdMain_c's states use DIRECT
+// (relocatable-address) PMF encoding, unlike daLemmyFoothold_c's own
+// (vtable-offset) encoding above. Confirmed: initializeState_DemoWait/
+// finalizeState_DemoWait/initializeState_Wait/finalizeState_Wait are all
+// genuinely trivial (target bodies are bare `blr`); executeState_DemoWait/
+// executeState_Wait both resolve to the mAnimTexSrt vtable dispatch thunk
+// (`lwzu r12,0x588(r3); lwz r12,0x14(r12); mtctr; bctr`) at
+// 0xC6170/0xC61A0 -- confirmed via a probe compile of m3d::anmTexSrt_c
+// showing play() lands at vtable byte offset 0x14 exactly.
 void daLemmyFootholdMain_c::initializeState_DemoWait() {}
-void daLemmyFootholdMain_c::executeState_DemoWait() {}
+void daLemmyFootholdMain_c::executeState_DemoWait() { mAnimTexSrt.play(); }
 void daLemmyFootholdMain_c::finalizeState_DemoWait() {}
 void daLemmyFootholdMain_c::initializeState_Wait() {}
-void daLemmyFootholdMain_c::executeState_Wait() {}
+void daLemmyFootholdMain_c::executeState_Wait() { mAnimTexSrt.play(); }
 void daLemmyFootholdMain_c::finalizeState_Wait() {}
 
 // @unofficial __sinit registers these five state objects in this exact

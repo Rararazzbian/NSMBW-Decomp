@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13002 lines / 511 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13053 lines / 512 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -532,3 +532,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `12899-12946` CASTLE_BG parked at 24/33 — and the `__sinit` puzzle reframed for whoever returns
 - `12947-12973` The `.data` PMF ENCODING tells you whether a state's methods are VIRTUAL
 - `12974-13002` An EIGHTH wrong return type, found by a NEW tell: full frame instead of tail branch
+- `13003-13053` CROSS-CONFIRMED within the hour: the PMF encoding difference IS the virtual/non-virtual distinction
