@@ -16,6 +16,23 @@
 // undocumented cross-TU call.
 namespace d3d { void setNodeVisibility(m3d::bmdl_c *mdl, int nodeId, int visible); }
 
+// sBgSetInfo -- an un-landed struct (grepped include/, not found) passed by const-pointer to
+// dBg_ctr_c's own (real, but not in the landed header) `set(dActor_c*, const sBgSetInfo*, u8,
+// u8, mVec3_c*)` overload. Layout confirmed from the target's own stack construction: 4 floats
+// then 3 zero-initialized ints, size 0x1c.
+struct sBgSetInfo {
+    float m_0, m_4, m_8, m_c;
+    int m_10, m_14, m_18;
+};
+
+// dBg_ctr_c::set(dActor_c*, const sBgSetInfo*, u8, u8, mVec3_c*) -- a REAL, already-compiled
+// dBg_ctr_c member (confirmed by its own real mangled name in the target disasm) but NOT one of
+// the two overloads in the landed d_bg_ctr.hpp. Declared via its exact mangled name so the
+// linker resolves it directly, matching this project's own convention for a real member not yet
+// in the landed header.
+extern "C" void set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c(
+    dBg_ctr_c *self, dActor_c *actor, const sBgSetInfo *info, u8 a, u8 b, mVec3_c *vec);
+
 /// @unofficial Background-layer controller for MIDDLE_BG_FOR_CASTLE_LUDWIG (used directly, no
 /// further subclass), base of #daBottomBGForCastleLudwig_c (BOTTOM_BG_FOR_CASTLE_LUDWIG).
 ///

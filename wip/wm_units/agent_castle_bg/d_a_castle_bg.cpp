@@ -145,7 +145,48 @@ void daMiddleBGForCastleLudwig_c::createModel() {
 // fn_2_F5680 (vtable offset 0x29c, MIDDLE_BG's OWN override -- CORRECTED this round, was
 // mis-attached to BOTTOM_BG). FAKE STUB -- unscouted this round (0x18C bytes target, the
 // LARGEST function in the whole unit).
-void daMiddleBGForCastleLudwig_c::vf29c() {}
+// fn_2_F5680 (vtable offset 0x29c, MIDDLE_BG's OWN override, 0x18C bytes -- the LARGEST
+// function in the unit). Read fresh rather than varied, per the coordinator's own threshold
+// (size/diff mismatch means missing content, not scheduling). Confirmed content: sets up BOTH
+// dBg_ctr_c zones via the real (un-landed-header) `set(dActor_c*, const sBgSetInfo*, u8, u8,
+// mVec3_c*)` overload plus `entry()`, using real constants read from this unit's own .rodata
+// (`lbl_2_rodata_5BC0`) -- two mVec3_c-shaped fields at `this+0x74c`/`this+0x758` both set to
+// mPos, mScale set to a uniform 1.0 constant -- then resets BOTH window nodes' visibility to
+// false via the SAME GetResNode/setNodeVisibility idiom vf280/vf284 use (real, confirmed node
+// name table).
+void daMiddleBGForCastleLudwig_c::vf29c() {
+    static const float sc_1 = 1.0f;       // lbl_2_rodata_5BC0+0x4
+    static const float sc_n208 = -208.0f; // lbl_2_rodata_5BC0+0x8
+    static const float sc_128 = 128.0f;   // lbl_2_rodata_5BC0+0xc
+    static const float sc_n176 = -176.0f; // lbl_2_rodata_5BC0+0x10
+    static const float sc_n128 = -128.0f; // lbl_2_rodata_5BC0+0x14
+    static const float sc_176 = 176.0f;   // lbl_2_rodata_5BC0+0x18
+    static const float sc_208 = 208.0f;   // lbl_2_rodata_5BC0+0x1c
+
+    ((mVec3_c *) ((u8 *) this + 0x74c))->set(mPos.x, mPos.y, mPos.z);
+    ((mVec3_c *) ((u8 *) this + 0x758))->set(mPos.x, mPos.y, mPos.z);
+    mScale.x = sc_1;
+    mScale.y = sc_1;
+    mScale.z = sc_1;
+
+    sBgSetInfo info0 = { sc_n208, sc_128, sc_n176, sc_n128, 0, 0, 0 };
+    mVec3_c vec0(sc_1, sc_1, sc_1);
+    set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c(
+        &mBgCtr[0], this, &info0, 3, *((const u8 *) this + 0x38f), &vec0);
+    mBgCtr[0].entry();
+
+    sBgSetInfo info1 = { sc_176, sc_128, sc_208, sc_n128, 0, 0, 0 };
+    set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c(
+        &mBgCtr[1], this, &info1, 3, *((const u8 *) this + 0x38f), &vec0);
+    mBgCtr[1].entry();
+
+    nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
+    for (int i = 0; i < 2; i++) {
+        m_764[i] = false;
+        nw4r::g3d::ResNode node = resMdl.GetResNode(sc_nodeNames[i]);
+        d3d::setNodeVisibility(&mModel, node.GetID(), 0);
+    }
+}
 
 // fn_2_F5810. Vtable slot 8 (execute) -- FAKE STUB, same caveat as create.
 // fn_2_F5810. Confirmed content: a raw virtual call through a still-unnamed object at
@@ -236,7 +277,35 @@ void daBottomBGForCastleLudwig_c::createModel() {
 
 // fn_2_F5AD0 (vtable offset 0x29c, BOTTOM_BG's OWN override). FAKE STUB -- unscouted this round
 // (0x128 bytes target).
-void daBottomBGForCastleLudwig_c::vf29c() {}
+// fn_2_F5AD0 (vtable offset 0x29c, BOTTOM_BG's OWN override, 0x128 bytes). Same shape as the
+// base's own vf29c above but WITHOUT the trailing node-visibility-reset loop (this class's own
+// target is 0x128 vs the base's 0x18C, exactly the size of that missing tail).
+void daBottomBGForCastleLudwig_c::vf29c() {
+    static const float sc_1 = 1.0f;
+    static const float sc_n208 = -208.0f;
+    static const float sc_128 = 128.0f;
+    static const float sc_n176 = -176.0f;
+    static const float sc_n128 = -128.0f;
+    static const float sc_176 = 176.0f;
+    static const float sc_208 = 208.0f;
+
+    ((mVec3_c *) ((u8 *) this + 0x74c))->set(mPos.x, mPos.y, mPos.z);
+    ((mVec3_c *) ((u8 *) this + 0x758))->set(mPos.x, mPos.y, mPos.z);
+    mScale.x = sc_1;
+    mScale.y = sc_1;
+    mScale.z = sc_1;
+
+    sBgSetInfo info0 = { sc_n208, sc_128, sc_n176, sc_n128, 0, 0, 0 };
+    mVec3_c vec0(sc_1, sc_1, sc_1);
+    set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c(
+        &mBgCtr[0], this, &info0, 3, *((const u8 *) this + 0x38f), &vec0);
+    mBgCtr[0].entry();
+
+    sBgSetInfo info1 = { sc_176, sc_128, sc_208, sc_n128, 0, 0, 0 };
+    set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c(
+        &mBgCtr[1], this, &info1, 3, *((const u8 *) this + 0x38f), &vec0);
+    mBgCtr[1].entry();
+}
 
 // fn_2_F5C00 (vtable offset 0x288, shared). Confirmed content: a pure forwarding thunk,
 // tail-calling THIS SAME object's own vf2a0.

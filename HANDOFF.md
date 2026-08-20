@@ -12865,3 +12865,33 @@ mismatch there is a declared-type defect, never a scheduling one.**
   entire rotation/wobble sequence. **That is the size-mismatch diagnostic applied
   correctly** — large gap plus wrong size means missing content, so it needs a
   dedicated read, not a partial hack.
+
+## The size diagnostic works in BOTH directions — an OVERSIZED draft is also structural
+
+The recorded threshold was "large diff plus wrong size means missing content."
+CASTLE_BG's `vf29c` pair shows the mirror case: the first pass came out
+**OVERSIZED** (108 against 99, 85 against 74), and the cause was equally
+structural — **two named locals (`pos0`, `uniform1`) where the target reuses ONE
+stack slot across both `set()` calls.** Collapsing them to a single `mVec3_c`
+local closed the size gap exactly: **99/99 and 74/74.**
+
+**So: a size mismatch in EITHER direction is a structure question, never a
+scheduling one.** Undersized means missing content; oversized usually means too
+many locals, or a temporary the target reuses. Only once the size is exact does a
+remaining diff deserve to be called a register-allocation residual.
+
+That also makes **"how many stack slots does the target use?"** a checkable
+constraint on the source, alongside the already-recorded stack-temp question
+(trace what is STORED in the slot to distinguish compound assignment from
+constructor-plus-assignment from a binary operator).
+
+The unit reached both `vf29c` overrides size-exact by reading the larger one
+fresh rather than varying it — the threshold applied correctly a second time, on
+a 0x18C function that turned out to share the shape of its already-scouted
+sibling plus a trailing node-visibility-reset segment accounting for exactly the
+0x18C-versus-0x128 difference.
+
+**CASTLE_BG this session: 12/33 -> 24/33**, state machine fully resolved,
+`create()` and both `createModel()` overrides closed to real content, both
+`vf29c` overrides size-exact. Remaining: four measured register walls plus
+`__sinit`.

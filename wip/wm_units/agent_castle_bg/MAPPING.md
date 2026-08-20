@@ -209,14 +209,35 @@ registers reused across the function, the draft's own DynamicCast expression nee
 one variant tried (removing an intermediate named local), no change, not chased further given
 the size of what was already recovered.
 
-## SCOUTED but NOT YET AUTHORED -- 4 functions
+## `vf29c` (both overrides) -- authored this round, real content, size exact, register residual
 
-| draft name (class) | target | size | role |
-|---|---|---|---|
-| `vf280` (MIDDLE_BG's OWN) | `fn_2_F5380` | 42/42, SAME size | 36 differing. Content and structure fully confirmed (loops 2 nodes, rolls a random visibility flag via `rndInt(100)`, looks up via `mModel`'s ResMdl, calls `setNodeVisibility`) -- residual is the target's own unusual `xori`/`slw`(by a LOOP-INVARIANT constant `0xa`)/`srwi` bit-trick for the random threshold test, which neither `rndInt(100) < 10` nor `== 10` reproduces (both compile to a DIFFERENT, more conventional bit-trick on this compiler). Semantically equivalent to the target (both give the same 10%-chance boolean), exact source expression not yet found. Two variants tried. |
-| `vf29c` (MIDDLE_BG's OWN) | `fn_2_F5680` | 99 | Unscouted (0x18C bytes -- LARGEST in unit). |
-| `vf29c` (BOTTOM_BG's OWN) | `fn_2_F5AD0` | 74 | SCOUTED this round, not yet authored: builds an un-landed `sBgSetInfo`-shaped stack struct from this unit's own `.rodata` (`lbl_2_rodata_5BC0`) constants and `mPos`, initializes 2 `mVec3_c`-shaped fields at `this+0x74c`/`this+0x758` (both to `mPos`) and `mScale` to a uniform rodata constant, then calls `dBg_ctr_c::set(dActor_c*, const sBgSetInfo*, u8, u8, mVec3_c*)` + `entry()` on EACH zone with slightly different rodata constants and a per-instance byte read from `this+0x38f` -- `sBgSetInfo` is not landed anywhere in `include/` (grepped). Real content, not yet written into the draft. |
-| `createModel` (both overrides) | `fn_2_F5550`/`fn_2_F59A0` | 73/73 each | Real structural content AND real strings (see above) already written, but BOTH still show 61/73 differing -- not yet investigated why; likely a register-allocation/scheduling class similar to what's already on record elsewhere, but not confirmed. Worth a closer diff next round rather than assumed. |
+Applied the coordinator's own threshold: MIDDLE_BG's `vf29c` (0x18C, the largest function in the
+unit) was entirely unscouted, so it was read fresh (not varied) before writing anything.
+
+Both are the SAME shape: set up BOTH `dBg_ctr_c` zones via the real (un-landed-header)
+`dBg_ctr_c::set(dActor_c*, const sBgSetInfo*, u8, u8, mVec3_c*)` overload (declared via its own
+exact mangled name, matching the destructor's own precedent for reaching a real member not in
+the landed header) plus `entry()`, using real constants read directly from this unit's own
+`.rodata` (`lbl_2_rodata_5BC0`) -- confirmed values, not placeholders. MIDDLE_BG's own version
+has an EXTRA trailing segment (confirmed present in the target, 0x18C vs BOTTOM_BG's 0x128 --
+exactly the size of the difference) resetting both window nodes' visibility to false via the
+same `GetResNode`/`setNodeVisibility` idiom `vf280`/`vf284` already use.
+
+`sBgSetInfo` is not landed anywhere (grepped `include/`) -- declared locally, 4 floats + 3 zero
+ints, size 0x1c, confirmed from the target's own stack construction.
+
+Real defect found and fixed while authoring: an early draft used TWO named locals
+(`mVec3_c pos0`/`mVec3_c uniform1`) plus two `sBgSetInfo` locals, which compiled 9-14 lines
+LARGER than target (108/99 and 85/74) -- reusing ONE `mVec3_c` local for both `set()` calls
+(matching the target's own single reused stack slot) closed the size gap exactly (99/99, 74/74).
+Confirms the coordinator's own diagnostic rule works in reverse too: when the DRAFT is larger
+than target, extra locals are usually the cause, not missing target content.
+
+Result: MIDDLE_BG's `vf29c` 99/99 (EXACT size), 96 differing -- BOTTOM_BG's `vf29c` 74/74
+(EXACT size), 71 differing. Both are genuine register-allocation/scheduling residuals now (the
+SAME class of wall already on record elsewhere in this unit for other multi-register functions)
+-- not content gaps. Not chased further this round given the size already recovered and time
+spent on other functions; a good candidate for a future round's own register-allocation pass.
 
 ## NOT YET TOUCHED -- 1 function
 
