@@ -1,7 +1,7 @@
 .include "macros.inc"
 .file "d_a_floor_jr_a.cpp"
 
-# 0x00000000..0x00000E00 | size: 0xE00
+# 0x00000000..0x00000DD0 | size: 0xDD0
 .text
 .balign 16
 
@@ -277,16 +277,16 @@
 /* 0000034C 0000038C  38 80 FF FF */	li r4, -0x1
 /* 00000350 00000390  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
 /* 00000354 00000394  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
-/* 00000358 00000398  3C A0 00 00 */	lis r5, "@15308"@ha
+/* 00000358 00000398  3C A0 00 00 */	lis r5, "@15210"@ha
 /* 0000035C 0000039C  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
-/* 00000360 000003A0  3F E0 00 00 */	lis r31, "@15309"@ha
-/* 00000364 000003A4  38 A5 00 00 */	addi r5, r5, "@15308"@l
-/* 00000368 000003A8  38 9F 00 00 */	addi r4, r31, "@15309"@l
+/* 00000360 000003A0  3F E0 00 00 */	lis r31, "@15211"@ha
+/* 00000364 000003A4  38 A5 00 00 */	addi r5, r5, "@15210"@l
+/* 00000368 000003A8  38 9F 00 00 */	addi r4, r31, "@15211"@l
 /* 0000036C 000003AC  38 63 00 04 */	addi r3, r3, 0x4
 /* 00000370 000003B0  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
 /* 00000374 000003B4  90 7E 05 40 */	stw r3, 0x540(r30)
 /* 00000378 000003B8  38 7E 05 40 */	addi r3, r30, 0x540
-/* 0000037C 000003BC  38 9F 00 00 */	addi r4, r31, "@15309"@l
+/* 0000037C 000003BC  38 9F 00 00 */	addi r4, r31, "@15211"@l
 /* 00000380 000003C0  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
 /* 00000384 000003C4  90 61 00 08 */	stw r3, 0x8(r1)
 /* 00000388 000003C8  38 7E 05 44 */	addi r3, r30, 0x544
@@ -309,867 +309,828 @@
 .endfn createMdl__12daFloorJrA_cFv
 /* 000003CC 0000040C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x3D0 | size: 0x24
+# .text:0x3D0 | size: 0x44
 # daFloorJrA_c::resetToBasePos()
 .fn resetToBasePos__12daFloorJrA_cFv, global
-/* 000003D0 00000410  C0 43 00 AC */	lfs f2, 0xac(r3)
-/* 000003D4 00000414  38 00 FF FF */	li r0, -0x1
-/* 000003D8 00000418  C0 23 00 B0 */	lfs f1, 0xb0(r3)
-/* 000003DC 0000041C  C0 03 00 B4 */	lfs f0, 0xb4(r3)
-/* 000003E0 00000420  D0 43 06 68 */	stfs f2, 0x668(r3)
-/* 000003E4 00000424  D0 23 06 6C */	stfs f1, 0x66c(r3)
-/* 000003E8 00000428  D0 03 06 70 */	stfs f0, 0x670(r3)
-/* 000003EC 0000042C  90 03 06 74 */	stw r0, 0x674(r3)
-/* 000003F0 00000430  48 00 00 00 */	b setupBgCtr__12daFloorJrA_cFv
+/* 000003D0 00000410  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000003D4 00000414  7C 08 02 A6 */	mflr r0
+/* 000003D8 00000418  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000003DC 0000041C  38 00 FF FF */	li r0, -0x1
+/* 000003E0 00000420  C0 43 00 AC */	lfs f2, 0xac(r3)
+/* 000003E4 00000424  C0 23 00 B0 */	lfs f1, 0xb0(r3)
+/* 000003E8 00000428  C0 03 00 B4 */	lfs f0, 0xb4(r3)
+/* 000003EC 0000042C  D0 43 06 68 */	stfs f2, 0x668(r3)
+/* 000003F0 00000430  D0 23 06 6C */	stfs f1, 0x66c(r3)
+/* 000003F4 00000434  D0 03 06 70 */	stfs f0, 0x670(r3)
+/* 000003F8 00000438  90 03 06 74 */	stw r0, 0x674(r3)
+/* 000003FC 0000043C  48 00 00 01 */	bl setupBgCtr__12daFloorJrA_cFv
+/* 00000400 00000440  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000404 00000444  38 60 00 01 */	li r3, 0x1
+/* 00000408 00000448  7C 08 03 A6 */	mtlr r0
+/* 0000040C 0000044C  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000410 00000450  4E 80 00 20 */	blr
 .endfn resetToBasePos__12daFloorJrA_cFv
-/* 000003F4 00000434  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003F8 00000438  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000003FC 0000043C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000414 00000454  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000418 00000458  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000041C 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x400 | size: 0x5C
+# .text:0x420 | size: 0x5C
 # daFloorJrA_c::execute()
 .fn execute__12daFloorJrA_cFv, global
-/* 00000400 00000440  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000404 00000444  7C 08 02 A6 */	mflr r0
-/* 00000408 00000448  90 01 00 14 */	stw r0, 0x14(r1)
-/* 0000040C 0000044C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000410 00000450  7C 7F 1B 78 */	mr r31, r3
-/* 00000414 00000454  81 83 03 94 */	lwz r12, 0x394(r3)
-/* 00000418 00000458  81 8C 00 10 */	lwz r12, 0x10(r12)
-/* 0000041C 0000045C  7D 89 03 A6 */	mtctr r12
-/* 00000420 00000460  38 63 03 94 */	addi r3, r3, 0x394
-/* 00000424 00000464  4E 80 04 21 */	bctrl
-/* 00000428 00000468  81 9F 00 60 */	lwz r12, 0x60(r31)
-/* 0000042C 0000046C  7F E3 FB 78 */	mr r3, r31
-/* 00000430 00000470  81 8C 02 88 */	lwz r12, 0x288(r12)
-/* 00000434 00000474  7D 89 03 A6 */	mtctr r12
-/* 00000438 00000478  4E 80 04 21 */	bctrl
-/* 0000043C 0000047C  38 7F 05 84 */	addi r3, r31, 0x584
-/* 00000440 00000480  48 00 00 01 */	bl calc__9dBg_ctr_cFv
-/* 00000444 00000484  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000448 00000488  38 60 00 01 */	li r3, 0x1
-/* 0000044C 0000048C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000450 00000490  7C 08 03 A6 */	mtlr r0
-/* 00000454 00000494  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000458 00000498  4E 80 00 20 */	blr
+/* 00000420 00000460  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000424 00000464  7C 08 02 A6 */	mflr r0
+/* 00000428 00000468  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000042C 0000046C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000430 00000470  7C 7F 1B 78 */	mr r31, r3
+/* 00000434 00000474  81 83 03 94 */	lwz r12, 0x394(r3)
+/* 00000438 00000478  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 0000043C 0000047C  7D 89 03 A6 */	mtctr r12
+/* 00000440 00000480  38 63 03 94 */	addi r3, r3, 0x394
+/* 00000444 00000484  4E 80 04 21 */	bctrl
+/* 00000448 00000488  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 0000044C 0000048C  7F E3 FB 78 */	mr r3, r31
+/* 00000450 00000490  81 8C 02 88 */	lwz r12, 0x288(r12)
+/* 00000454 00000494  7D 89 03 A6 */	mtctr r12
+/* 00000458 00000498  4E 80 04 21 */	bctrl
+/* 0000045C 0000049C  38 7F 05 84 */	addi r3, r31, 0x584
+/* 00000460 000004A0  48 00 00 01 */	bl calc__9dBg_ctr_cFv
+/* 00000464 000004A4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000468 000004A8  38 60 00 01 */	li r3, 0x1
+/* 0000046C 000004AC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000470 000004B0  7C 08 03 A6 */	mtlr r0
+/* 00000474 000004B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000478 000004B8  4E 80 00 20 */	blr
 .endfn execute__12daFloorJrA_cFv
-/* 0000045C 0000049C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x460 | size: 0x14
-# sStateStateMgr_c<dActorMultiState_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::executeState()
-.fn "executeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
-/* 00000460 000004A0  80 63 00 7C */	lwz r3, 0x7c(r3)
-/* 00000464 000004A4  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000468 000004A8  81 8C 00 10 */	lwz r12, 0x10(r12)
-/* 0000046C 000004AC  7D 89 03 A6 */	mtctr r12
-/* 00000470 000004B0  4E 80 04 20 */	bctr
-.endfn "executeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
-/* 00000474 000004B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000478 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000047C 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x480 | size: 0xA0
+# .text:0x480 | size: 0x14
+# sStateStateMgr_c<dActorMultiState_c, sFStateMgr_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>::executeState()
+.fn "executeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 00000480 000004C0  80 63 00 7C */	lwz r3, 0x7c(r3)
+/* 00000484 000004C4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 00000488 000004C8  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 0000048C 000004CC  7D 89 03 A6 */	mtctr r12
+/* 00000490 000004D0  4E 80 04 20 */	bctr
+.endfn "executeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv"
+/* 00000494 000004D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000498 000004D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000049C 000004DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x4A0 | size: 0xA0
 # daFloorJrA_c::setupBgCtr()
 .fn setupBgCtr__12daFloorJrA_cFv, global
-/* 00000480 000004C0  94 21 FF C0 */	stwu r1, -0x40(r1)
-/* 00000484 000004C4  7C 08 02 A6 */	mflr r0
-/* 00000488 000004C8  3C E0 00 00 */	lis r7, ...rodata.0@ha
-/* 0000048C 000004CC  38 C0 00 03 */	li r6, 0x3
-/* 00000490 000004D0  90 01 00 44 */	stw r0, 0x44(r1)
-/* 00000494 000004D4  38 E7 00 00 */	addi r7, r7, ...rodata.0@l
-/* 00000498 000004D8  C0 87 00 00 */	lfs f4, 0x0(r7)
-/* 0000049C 000004DC  38 00 00 00 */	li r0, 0x0
-/* 000004A0 000004E0  93 E1 00 3C */	stw r31, 0x3c(r1)
-/* 000004A4 000004E4  7C 7F 1B 78 */	mr r31, r3
-/* 000004A8 000004E8  C0 67 00 04 */	lfs f3, 0x4(r7)
-/* 000004AC 000004EC  7F E4 FB 78 */	mr r4, r31
-/* 000004B0 000004F0  D0 83 00 DC */	stfs f4, 0xdc(r3)
-/* 000004B4 000004F4  38 A1 00 14 */	addi r5, r1, 0x14
-/* 000004B8 000004F8  C0 47 00 08 */	lfs f2, 0x8(r7)
-/* 000004BC 000004FC  39 01 00 08 */	addi r8, r1, 0x8
-/* 000004C0 00000500  D0 83 00 E0 */	stfs f4, 0xe0(r3)
-/* 000004C4 00000504  C0 27 00 0C */	lfs f1, 0xc(r7)
-/* 000004C8 00000508  D0 83 00 E4 */	stfs f4, 0xe4(r3)
-/* 000004CC 0000050C  C0 07 00 10 */	lfs f0, 0x10(r7)
-/* 000004D0 00000510  D0 81 00 08 */	stfs f4, 0x8(r1)
-/* 000004D4 00000514  D0 81 00 0C */	stfs f4, 0xc(r1)
-/* 000004D8 00000518  D0 81 00 10 */	stfs f4, 0x10(r1)
-/* 000004DC 0000051C  D0 61 00 14 */	stfs f3, 0x14(r1)
-/* 000004E0 00000520  D0 41 00 18 */	stfs f2, 0x18(r1)
-/* 000004E4 00000524  D0 21 00 1C */	stfs f1, 0x1c(r1)
-/* 000004E8 00000528  D0 01 00 20 */	stfs f0, 0x20(r1)
-/* 000004EC 0000052C  90 01 00 24 */	stw r0, 0x24(r1)
-/* 000004F0 00000530  90 01 00 28 */	stw r0, 0x28(r1)
-/* 000004F4 00000534  90 01 00 2C */	stw r0, 0x2c(r1)
-/* 000004F8 00000538  88 E3 03 8F */	lbz r7, 0x38f(r3)
-/* 000004FC 0000053C  38 63 05 84 */	addi r3, r3, 0x584
-/* 00000500 00000540  48 00 00 01 */	bl set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c
-/* 00000504 00000544  38 7F 05 84 */	addi r3, r31, 0x584
-/* 00000508 00000548  48 00 00 01 */	bl entry__9dBg_ctr_cFv
-/* 0000050C 0000054C  80 01 00 44 */	lwz r0, 0x44(r1)
-/* 00000510 00000550  83 E1 00 3C */	lwz r31, 0x3c(r1)
-/* 00000514 00000554  7C 08 03 A6 */	mtlr r0
-/* 00000518 00000558  38 21 00 40 */	addi r1, r1, 0x40
-/* 0000051C 0000055C  4E 80 00 20 */	blr
+/* 000004A0 000004E0  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 000004A4 000004E4  7C 08 02 A6 */	mflr r0
+/* 000004A8 000004E8  3C E0 00 00 */	lis r7, ...rodata.0@ha
+/* 000004AC 000004EC  38 C0 00 03 */	li r6, 0x3
+/* 000004B0 000004F0  90 01 00 44 */	stw r0, 0x44(r1)
+/* 000004B4 000004F4  38 E7 00 00 */	addi r7, r7, ...rodata.0@l
+/* 000004B8 000004F8  C0 87 00 00 */	lfs f4, 0x0(r7)
+/* 000004BC 000004FC  38 00 00 00 */	li r0, 0x0
+/* 000004C0 00000500  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 000004C4 00000504  7C 7F 1B 78 */	mr r31, r3
+/* 000004C8 00000508  C0 67 00 04 */	lfs f3, 0x4(r7)
+/* 000004CC 0000050C  7F E4 FB 78 */	mr r4, r31
+/* 000004D0 00000510  D0 83 00 DC */	stfs f4, 0xdc(r3)
+/* 000004D4 00000514  38 A1 00 14 */	addi r5, r1, 0x14
+/* 000004D8 00000518  C0 47 00 08 */	lfs f2, 0x8(r7)
+/* 000004DC 0000051C  39 01 00 08 */	addi r8, r1, 0x8
+/* 000004E0 00000520  D0 83 00 E0 */	stfs f4, 0xe0(r3)
+/* 000004E4 00000524  C0 27 00 0C */	lfs f1, 0xc(r7)
+/* 000004E8 00000528  D0 83 00 E4 */	stfs f4, 0xe4(r3)
+/* 000004EC 0000052C  C0 07 00 10 */	lfs f0, 0x10(r7)
+/* 000004F0 00000530  D0 81 00 08 */	stfs f4, 0x8(r1)
+/* 000004F4 00000534  D0 81 00 0C */	stfs f4, 0xc(r1)
+/* 000004F8 00000538  D0 81 00 10 */	stfs f4, 0x10(r1)
+/* 000004FC 0000053C  D0 61 00 14 */	stfs f3, 0x14(r1)
+/* 00000500 00000540  D0 41 00 18 */	stfs f2, 0x18(r1)
+/* 00000504 00000544  D0 21 00 1C */	stfs f1, 0x1c(r1)
+/* 00000508 00000548  D0 01 00 20 */	stfs f0, 0x20(r1)
+/* 0000050C 0000054C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 00000510 00000550  90 01 00 28 */	stw r0, 0x28(r1)
+/* 00000514 00000554  90 01 00 2C */	stw r0, 0x2c(r1)
+/* 00000518 00000558  88 E3 03 8F */	lbz r7, 0x38f(r3)
+/* 0000051C 0000055C  38 63 05 84 */	addi r3, r3, 0x584
+/* 00000520 00000560  48 00 00 01 */	bl set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c
+/* 00000524 00000564  38 7F 05 84 */	addi r3, r31, 0x584
+/* 00000528 00000568  48 00 00 01 */	bl entry__9dBg_ctr_cFv
+/* 0000052C 0000056C  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 00000530 00000570  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 00000534 00000574  7C 08 03 A6 */	mtlr r0
+/* 00000538 00000578  38 21 00 40 */	addi r1, r1, 0x40
+/* 0000053C 0000057C  4E 80 00 20 */	blr
 .endfn setupBgCtr__12daFloorJrA_cFv
 
-# .text:0x520 | size: 0x80
+# .text:0x540 | size: 0x80
 # daFloorJrA_c::playCrumbleEffects()
 .fn playCrumbleEffects__12daFloorJrA_cFv, global
-/* 00000520 00000560  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000524 00000564  7C 08 02 A6 */	mflr r0
-/* 00000528 00000568  3C 80 00 00 */	lis r4, "@15331"@ha
-/* 0000052C 0000056C  38 C3 00 AC */	addi r6, r3, 0xac
-/* 00000530 00000570  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000534 00000574  38 84 00 00 */	addi r4, r4, "@15331"@l
-/* 00000538 00000578  38 A0 00 00 */	li r5, 0x0
-/* 0000053C 0000057C  38 E0 00 00 */	li r7, 0x0
-/* 00000540 00000580  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000544 00000584  7C 7F 1B 78 */	mr r31, r3
-/* 00000548 00000588  39 00 00 00 */	li r8, 0x0
-/* 0000054C 0000058C  81 83 06 78 */	lwz r12, 0x678(r3)
-/* 00000550 00000590  81 8C 00 A0 */	lwz r12, 0xa0(r12)
-/* 00000554 00000594  7D 89 03 A6 */	mtctr r12
-/* 00000558 00000598  38 63 06 78 */	addi r3, r3, 0x678
-/* 0000055C 0000059C  4E 80 04 21 */	bctrl
-/* 00000560 000005A0  81 9F 07 8C */	lwz r12, 0x78c(r31)
-/* 00000564 000005A4  3C 80 00 00 */	lis r4, "@15332"@ha
-/* 00000568 000005A8  38 7F 07 8C */	addi r3, r31, 0x78c
-/* 0000056C 000005AC  38 DF 00 AC */	addi r6, r31, 0xac
+/* 00000540 00000580  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000544 00000584  7C 08 02 A6 */	mflr r0
+/* 00000548 00000588  3C 80 00 00 */	lis r4, "@15233"@ha
+/* 0000054C 0000058C  38 C3 00 AC */	addi r6, r3, 0xac
+/* 00000550 00000590  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000554 00000594  38 84 00 00 */	addi r4, r4, "@15233"@l
+/* 00000558 00000598  38 A0 00 00 */	li r5, 0x0
+/* 0000055C 0000059C  38 E0 00 00 */	li r7, 0x0
+/* 00000560 000005A0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000564 000005A4  7C 7F 1B 78 */	mr r31, r3
+/* 00000568 000005A8  39 00 00 00 */	li r8, 0x0
+/* 0000056C 000005AC  81 83 06 78 */	lwz r12, 0x678(r3)
 /* 00000570 000005B0  81 8C 00 A0 */	lwz r12, 0xa0(r12)
-/* 00000574 000005B4  38 84 00 00 */	addi r4, r4, "@15332"@l
-/* 00000578 000005B8  38 A0 00 00 */	li r5, 0x0
-/* 0000057C 000005BC  38 E0 00 00 */	li r7, 0x0
-/* 00000580 000005C0  39 00 00 00 */	li r8, 0x0
-/* 00000584 000005C4  7D 89 03 A6 */	mtctr r12
-/* 00000588 000005C8  4E 80 04 21 */	bctrl
-/* 0000058C 000005CC  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000590 000005D0  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000594 000005D4  7C 08 03 A6 */	mtlr r0
-/* 00000598 000005D8  38 21 00 10 */	addi r1, r1, 0x10
-/* 0000059C 000005DC  4E 80 00 20 */	blr
+/* 00000574 000005B4  7D 89 03 A6 */	mtctr r12
+/* 00000578 000005B8  38 63 06 78 */	addi r3, r3, 0x678
+/* 0000057C 000005BC  4E 80 04 21 */	bctrl
+/* 00000580 000005C0  81 9F 07 8C */	lwz r12, 0x78c(r31)
+/* 00000584 000005C4  3C 80 00 00 */	lis r4, "@15234"@ha
+/* 00000588 000005C8  38 7F 07 8C */	addi r3, r31, 0x78c
+/* 0000058C 000005CC  38 DF 00 AC */	addi r6, r31, 0xac
+/* 00000590 000005D0  81 8C 00 A0 */	lwz r12, 0xa0(r12)
+/* 00000594 000005D4  38 84 00 00 */	addi r4, r4, "@15234"@l
+/* 00000598 000005D8  38 A0 00 00 */	li r5, 0x0
+/* 0000059C 000005DC  38 E0 00 00 */	li r7, 0x0
+/* 000005A0 000005E0  39 00 00 00 */	li r8, 0x0
+/* 000005A4 000005E4  7D 89 03 A6 */	mtctr r12
+/* 000005A8 000005E8  4E 80 04 21 */	bctrl
+/* 000005AC 000005EC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000005B0 000005F0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000005B4 000005F4  7C 08 03 A6 */	mtlr r0
+/* 000005B8 000005F8  38 21 00 10 */	addi r1, r1, 0x10
+/* 000005BC 000005FC  4E 80 00 20 */	blr
 .endfn playCrumbleEffects__12daFloorJrA_cFv
 
-# .text:0x5A0 | size: 0x4
+# .text:0x5C0 | size: 0x68
 # daFloorJrA_c::unk_83A90()
 .fn unk_83A90__12daFloorJrA_cFv, global
-/* 000005A0 000005E0  4E 80 00 20 */	blr
-.endfn unk_83A90__12daFloorJrA_cFv
-/* 000005A4 000005E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000005A8 000005E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000005AC 000005EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x5B0 | size: 0x4
-# daFloorJrA_c::unk_83B00()
-.fn unk_83B00__12daFloorJrA_cFv, global
-/* 000005B0 000005F0  4E 80 00 20 */	blr
-.endfn unk_83B00__12daFloorJrA_cFv
-/* 000005B4 000005F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000005B8 000005F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000005BC 000005FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x5C0 | size: 0x30
-# daFloorJrA_c::draw()
-.fn draw__12daFloorJrA_cFv, global
 /* 000005C0 00000600  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 000005C4 00000604  7C 08 02 A6 */	mflr r0
-/* 000005C8 00000608  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000005CC 0000060C  85 83 05 44 */	lwzu r12, 0x544(r3)
-/* 000005D0 00000610  81 8C 00 14 */	lwz r12, 0x14(r12)
-/* 000005D4 00000614  7D 89 03 A6 */	mtctr r12
-/* 000005D8 00000618  4E 80 04 21 */	bctrl
-/* 000005DC 0000061C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000005E0 00000620  38 60 00 01 */	li r3, 0x1
-/* 000005E4 00000624  7C 08 03 A6 */	mtlr r0
-/* 000005E8 00000628  38 21 00 10 */	addi r1, r1, 0x10
-/* 000005EC 0000062C  4E 80 00 20 */	blr
-.endfn draw__12daFloorJrA_cFv
-
-# .text:0x5F0 | size: 0x28
-# daFloorJrA_c::doDelete()
-.fn doDelete__12daFloorJrA_cFv, global
-/* 000005F0 00000630  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000005F4 00000634  7C 08 02 A6 */	mflr r0
-/* 000005F8 00000638  38 63 05 84 */	addi r3, r3, 0x584
-/* 000005FC 0000063C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000600 00000640  48 00 00 01 */	bl release__9dBg_ctr_cFv
-/* 00000604 00000644  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000608 00000648  38 60 00 01 */	li r3, 0x1
-/* 0000060C 0000064C  7C 08 03 A6 */	mtlr r0
-/* 00000610 00000650  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000614 00000654  4E 80 00 20 */	blr
-.endfn doDelete__12daFloorJrA_cFv
-/* 00000618 00000658  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000061C 0000065C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x620 | size: 0x4
-# daFloorJrA_c::finalizeState_DemoWait()
-.fn finalizeState_DemoWait__12daFloorJrA_cFv, global
-/* 00000620 00000660  4E 80 00 20 */	blr
-.endfn finalizeState_DemoWait__12daFloorJrA_cFv
-/* 00000624 00000664  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000005C8 00000608  38 83 00 AC */	addi r4, r3, 0xac
+/* 000005CC 0000060C  38 A0 00 00 */	li r5, 0x0
+/* 000005D0 00000610  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000005D4 00000614  38 C0 00 00 */	li r6, 0x0
+/* 000005D8 00000618  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000005DC 0000061C  7C 7F 1B 78 */	mr r31, r3
+/* 000005E0 00000620  81 83 06 78 */	lwz r12, 0x678(r3)
+/* 000005E4 00000624  81 8C 00 B0 */	lwz r12, 0xb0(r12)
+/* 000005E8 00000628  7D 89 03 A6 */	mtctr r12
+/* 000005EC 0000062C  38 63 06 78 */	addi r3, r3, 0x678
+/* 000005F0 00000630  4E 80 04 21 */	bctrl
+/* 000005F4 00000634  81 9F 07 8C */	lwz r12, 0x78c(r31)
+/* 000005F8 00000638  38 7F 07 8C */	addi r3, r31, 0x78c
+/* 000005FC 0000063C  38 9F 00 AC */	addi r4, r31, 0xac
+/* 00000600 00000640  38 A0 00 00 */	li r5, 0x0
+/* 00000604 00000644  81 8C 00 B0 */	lwz r12, 0xb0(r12)
+/* 00000608 00000648  38 C0 00 00 */	li r6, 0x0
+/* 0000060C 0000064C  7D 89 03 A6 */	mtctr r12
+/* 00000610 00000650  4E 80 04 21 */	bctrl
+/* 00000614 00000654  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000618 00000658  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0000061C 0000065C  7C 08 03 A6 */	mtlr r0
+/* 00000620 00000660  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000624 00000664  4E 80 00 20 */	blr
+.endfn unk_83A90__12daFloorJrA_cFv
 /* 00000628 00000668  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 0000062C 0000066C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x630 | size: 0x4
-# daFloorJrA_c::initializeState_DemoWait()
-.fn initializeState_DemoWait__12daFloorJrA_cFv, global
-/* 00000630 00000670  4E 80 00 20 */	blr
-.endfn initializeState_DemoWait__12daFloorJrA_cFv
-/* 00000634 00000674  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000638 00000678  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000063C 0000067C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x640 | size: 0x4
-# daFloorJrA_c::executeState_DemoWait()
-.fn executeState_DemoWait__12daFloorJrA_cFv, global
-/* 00000640 00000680  4E 80 00 20 */	blr
-.endfn executeState_DemoWait__12daFloorJrA_cFv
-/* 00000644 00000684  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000648 00000688  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000064C 0000068C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x650 | size: 0x4
-# daFloorJrA_c::finalizeState_Wait()
-.fn finalizeState_Wait__12daFloorJrA_cFv, global
-/* 00000650 00000690  4E 80 00 20 */	blr
-.endfn finalizeState_Wait__12daFloorJrA_cFv
-/* 00000654 00000694  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000658 00000698  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000065C 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x660 | size: 0x4
-# daFloorJrA_c::initializeState_Wait()
-.fn initializeState_Wait__12daFloorJrA_cFv, global
-/* 00000660 000006A0  4E 80 00 20 */	blr
-.endfn initializeState_Wait__12daFloorJrA_cFv
-/* 00000664 000006A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000668 000006A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000066C 000006AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x670 | size: 0x4
-# daFloorJrA_c::executeState_Wait()
-.fn executeState_Wait__12daFloorJrA_cFv, global
-/* 00000670 000006B0  4E 80 00 20 */	blr
-.endfn executeState_Wait__12daFloorJrA_cFv
-/* 00000674 000006B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000678 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000067C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x680 | size: 0x1C
-# daFloorJrA_c::initializeState_DieFall()
-.fn initializeState_DieFall__12daFloorJrA_cFv, global
-/* 00000680 000006C0  3C A0 00 00 */	lis r5, "@15347"@ha
-/* 00000684 000006C4  3C 80 00 00 */	lis r4, "@15348"@ha
-/* 00000688 000006C8  C0 25 00 00 */	lfs f1, "@15347"@l(r5)
-/* 0000068C 000006CC  C0 04 00 00 */	lfs f0, "@15348"@l(r4)
-/* 00000690 000006D0  D0 23 00 EC */	stfs f1, 0xec(r3)
-/* 00000694 000006D4  D0 03 01 14 */	stfs f0, 0x114(r3)
-/* 00000698 000006D8  48 00 00 00 */	b playCrumbleEffects__12daFloorJrA_cFv
-.endfn initializeState_DieFall__12daFloorJrA_cFv
-/* 0000069C 000006DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6A0 | size: 0x4
-# daFloorJrA_c::finalizeState_DieFall()
-.fn finalizeState_DieFall__12daFloorJrA_cFv, global
-/* 000006A0 000006E0  4E 80 00 20 */	blr
-.endfn finalizeState_DieFall__12daFloorJrA_cFv
-/* 000006A4 000006E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006A8 000006E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006AC 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6B0 | size: 0x3C
-# daFloorJrA_c::executeState_DieFall()
-.fn executeState_DieFall__12daFloorJrA_cFv, global
-/* 000006B0 000006F0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 000006B4 000006F4  7C 08 02 A6 */	mflr r0
-/* 000006B8 000006F8  90 01 00 14 */	stw r0, 0x14(r1)
-/* 000006BC 000006FC  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 000006C0 00000700  7C 7F 1B 78 */	mr r31, r3
-/* 000006C4 00000704  48 00 00 01 */	bl calcSpeedY__12dBaseActor_cFv
-/* 000006C8 00000708  7F E3 FB 78 */	mr r3, r31
-/* 000006CC 0000070C  48 00 00 01 */	bl posMove__5dEn_cFv
-/* 000006D0 00000710  7F E3 FB 78 */	mr r3, r31
-/* 000006D4 00000714  48 00 00 01 */	bl unk_83A90__12daFloorJrA_cFv
-/* 000006D8 00000718  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 000006DC 0000071C  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 000006E0 00000720  7C 08 03 A6 */	mtlr r0
-/* 000006E4 00000724  38 21 00 10 */	addi r1, r1, 0x10
-/* 000006E8 00000728  4E 80 00 20 */	blr
-.endfn executeState_DieFall__12daFloorJrA_cFv
-/* 000006EC 0000072C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x6F0 | size: 0x4
-# dBaseActor_c::finalUpdate()
-.fn finalUpdate__12dBaseActor_cFv, weak
-/* 000006F0 00000730  4E 80 00 20 */	blr
-.endfn finalUpdate__12dBaseActor_cFv
-/* 000006F4 00000734  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006F8 00000738  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 000006FC 0000073C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x700 | size: 0x8
-# dBaseActor_c::GetActorType()
-.fn GetActorType__12dBaseActor_cFv, weak
-/* 00000700 00000740  38 60 00 08 */	li r3, 0x8
-/* 00000704 00000744  4E 80 00 20 */	blr
-.endfn GetActorType__12dBaseActor_cFv
-/* 00000708 00000748  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000070C 0000074C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x710 | size: 0x4
-# dActor_c::funsuiMoveX()
-.fn funsuiMoveX__8dActor_cFv, weak
-/* 00000710 00000750  4E 80 00 20 */	blr
-.endfn funsuiMoveX__8dActor_cFv
-/* 00000714 00000754  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000718 00000758  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000071C 0000075C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x720 | size: 0x4
-# dActor_c::setCarryFall(dActor_c*, int)
-.fn setCarryFall__8dActor_cFP8dActor_ci, weak
-/* 00000720 00000760  4E 80 00 20 */	blr
-.endfn setCarryFall__8dActor_cFP8dActor_ci
-/* 00000724 00000764  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000728 00000768  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000072C 0000076C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x730 | size: 0x8
-# dActor_c::isSpinLiftUpEnable()
-.fn isSpinLiftUpEnable__8dActor_cFv, weak
-/* 00000730 00000770  38 60 00 01 */	li r3, 0x1
-/* 00000734 00000774  4E 80 00 20 */	blr
-.endfn isSpinLiftUpEnable__8dActor_cFv
-/* 00000738 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000073C 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x740 | size: 0x8
-# dActor_c::getPlrNo()
-.fn getPlrNo__8dActor_cFv, weak
-/* 00000740 00000780  38 63 03 8D */	addi r3, r3, 0x38d
-/* 00000744 00000784  4E 80 00 20 */	blr
-.endfn getPlrNo__8dActor_cFv
-/* 00000748 00000788  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000074C 0000078C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x750 | size: 0x8
-# dActor_c::vf68(dBg_ctr_c*)
-.fn vf68__8dActor_cFP9dBg_ctr_c, weak
-/* 00000750 00000790  38 60 00 01 */	li r3, 0x1
-/* 00000754 00000794  4E 80 00 20 */	blr
-.endfn vf68__8dActor_cFP9dBg_ctr_c
-/* 00000758 00000798  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000075C 0000079C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x760 | size: 0x8
-# dEn_c::isFunsui() const
-.fn isFunsui__5dEn_cCFv, weak
-/* 00000760 000007A0  38 60 00 00 */	li r3, 0x0
-/* 00000764 000007A4  4E 80 00 20 */	blr
-.endfn isFunsui__5dEn_cCFv
-/* 00000768 000007A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000076C 000007AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0x770 | size: 0x4
-# dEn_c::endFunsui()
-.fn endFunsui__5dEn_cFv, weak
-/* 00000770 000007B0  4E 80 00 20 */	blr
-.endfn endFunsui__5dEn_cFv
-/* 00000774 000007B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000778 000007B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+# .text:0x630 | size: 0x14C
+# daFloorJrA_c::unk_83B00()
+.fn unk_83B00__12daFloorJrA_cFv, global
+/* 00000630 00000670  94 21 FF 60 */	stwu r1, -0xa0(r1)
+/* 00000634 00000674  7C 08 02 A6 */	mflr r0
+/* 00000638 00000678  90 01 00 A4 */	stw r0, 0xa4(r1)
+/* 0000063C 0000067C  39 61 00 A0 */	addi r11, r1, 0xa0
+/* 00000640 00000680  48 00 00 01 */	bl _savegpr_26
+/* 00000644 00000684  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 00000648 00000688  7C 7F 1B 78 */	mr r31, r3
+/* 0000064C 0000068C  C0 43 00 B0 */	lfs f2, 0xb0(r3)
+/* 00000650 00000690  C0 63 00 B4 */	lfs f3, 0xb4(r3)
+/* 00000654 00000694  38 63 00 7C */	addi r3, r3, 0x7c
+/* 00000658 00000698  48 00 00 01 */	bl PSMTXTrans
+/* 0000065C 0000069C  A0 1F 01 02 */	lhz r0, 0x102(r31)
+/* 00000660 000006A0  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 00000664 000006A4  B0 01 00 10 */	sth r0, 0x10(r1)
+/* 00000668 000006A8  38 81 00 10 */	addi r4, r1, 0x10
+/* 0000066C 000006AC  48 00 00 01 */	bl YrotM__6mMtx_cF4mAng
+/* 00000670 000006B0  3F 40 00 00 */	lis r26, l_EnMuki@ha
+/* 00000674 000006B4  88 1F 03 48 */	lbz r0, 0x348(r31)
+/* 00000678 000006B8  3B 5A 00 00 */	addi r26, r26, l_EnMuki@l
+/* 0000067C 000006BC  3F 80 43 30 */	lis r28, 0x4330
+/* 00000680 000006C0  7C 1A 00 AE */	lbzx r0, r26, r0
+/* 00000684 000006C4  3F 60 00 00 */	lis r27, "@15280"@ha
+/* 00000688 000006C8  3F A0 00 00 */	lis r29, "@15229"@ha
+/* 0000068C 000006CC  3F C0 00 00 */	lis r30, "@15277"@ha
+/* 00000690 000006D0  7C 00 07 74 */	extsb r0, r0
+/* 00000694 000006D4  C0 5E 00 00 */	lfs f2, "@15277"@l(r30)
+/* 00000698 000006D8  6C 00 80 00 */	xoris r0, r0, 0x8000
+/* 0000069C 000006DC  90 01 00 7C */	stw r0, 0x7c(r1)
+/* 000006A0 000006E0  C8 9B 00 00 */	lfd f4, "@15280"@l(r27)
+/* 000006A4 000006E4  FC 60 10 90 */	fmr f3, f2
+/* 000006A8 000006E8  93 81 00 78 */	stw r28, 0x78(r1)
+/* 000006AC 000006EC  38 61 00 48 */	addi r3, r1, 0x48
+/* 000006B0 000006F0  C0 1D 00 00 */	lfs f0, "@15229"@l(r29)
+/* 000006B4 000006F4  C8 21 00 78 */	lfd f1, 0x78(r1)
+/* 000006B8 000006F8  EC 21 20 28 */	fsubs f1, f1, f4
+/* 000006BC 000006FC  EC 20 00 72 */	fmuls f1, f0, f1
+/* 000006C0 00000700  48 00 00 01 */	bl PSMTXTrans
+/* 000006C4 00000704  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 000006C8 00000708  38 81 00 48 */	addi r4, r1, 0x48
+/* 000006CC 0000070C  7C 65 1B 78 */	mr r5, r3
+/* 000006D0 00000710  48 00 00 01 */	bl PSMTXConcat
+/* 000006D4 00000714  A0 1F 01 00 */	lhz r0, 0x100(r31)
+/* 000006D8 00000718  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 000006DC 0000071C  B0 01 00 0C */	sth r0, 0xc(r1)
+/* 000006E0 00000720  38 81 00 0C */	addi r4, r1, 0xc
+/* 000006E4 00000724  48 00 00 01 */	bl XrotM__6mMtx_cF4mAng
+/* 000006E8 00000728  88 1F 03 48 */	lbz r0, 0x348(r31)
+/* 000006EC 0000072C  38 61 00 18 */	addi r3, r1, 0x18
+/* 000006F0 00000730  C0 5E 00 00 */	lfs f2, "@15277"@l(r30)
+/* 000006F4 00000734  7C 1A 00 AE */	lbzx r0, r26, r0
+/* 000006F8 00000738  93 81 00 80 */	stw r28, 0x80(r1)
+/* 000006FC 0000073C  FC 60 10 90 */	fmr f3, f2
+/* 00000700 00000740  7C 00 07 74 */	extsb r0, r0
+/* 00000704 00000744  C8 9B 00 00 */	lfd f4, "@15280"@l(r27)
+/* 00000708 00000748  7C 00 00 D0 */	neg r0, r0
+/* 0000070C 0000074C  C0 1D 00 00 */	lfs f0, "@15229"@l(r29)
+/* 00000710 00000750  6C 00 80 00 */	xoris r0, r0, 0x8000
+/* 00000714 00000754  90 01 00 84 */	stw r0, 0x84(r1)
+/* 00000718 00000758  C8 21 00 80 */	lfd f1, 0x80(r1)
+/* 0000071C 0000075C  EC 21 20 28 */	fsubs f1, f1, f4
+/* 00000720 00000760  EC 20 00 72 */	fmuls f1, f0, f1
+/* 00000724 00000764  48 00 00 01 */	bl PSMTXTrans
+/* 00000728 00000768  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 0000072C 0000076C  38 81 00 18 */	addi r4, r1, 0x18
+/* 00000730 00000770  7C 65 1B 78 */	mr r5, r3
+/* 00000734 00000774  48 00 00 01 */	bl PSMTXConcat
+/* 00000738 00000778  A0 1F 01 04 */	lhz r0, 0x104(r31)
+/* 0000073C 0000077C  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 00000740 00000780  B0 01 00 08 */	sth r0, 0x8(r1)
+/* 00000744 00000784  38 81 00 08 */	addi r4, r1, 0x8
+/* 00000748 00000788  48 00 00 01 */	bl ZrotM__6mMtx_cF4mAng
+/* 0000074C 0000078C  38 7F 05 44 */	addi r3, r31, 0x544
+/* 00000750 00000790  38 9F 00 7C */	addi r4, r31, 0x7c
+/* 00000754 00000794  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 00000758 00000798  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0000075C 0000079C  38 9F 00 DC */	addi r4, r31, 0xdc
+/* 00000760 000007A0  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 00000764 000007A4  39 61 00 A0 */	addi r11, r1, 0xa0
+/* 00000768 000007A8  48 00 00 01 */	bl _restgpr_26
+/* 0000076C 000007AC  80 01 00 A4 */	lwz r0, 0xa4(r1)
+/* 00000770 000007B0  7C 08 03 A6 */	mtlr r0
+/* 00000774 000007B4  38 21 00 A0 */	addi r1, r1, 0xa0
+/* 00000778 000007B8  4E 80 00 20 */	blr
+.endfn unk_83B00__12daFloorJrA_cFv
 /* 0000077C 000007BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x780 | size: 0x4
+# .text:0x780 | size: 0x30
+# daFloorJrA_c::draw()
+.fn draw__12daFloorJrA_cFv, global
+/* 00000780 000007C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000784 000007C4  7C 08 02 A6 */	mflr r0
+/* 00000788 000007C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0000078C 000007CC  85 83 05 44 */	lwzu r12, 0x544(r3)
+/* 00000790 000007D0  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 00000794 000007D4  7D 89 03 A6 */	mtctr r12
+/* 00000798 000007D8  4E 80 04 21 */	bctrl
+/* 0000079C 000007DC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000007A0 000007E0  38 60 00 01 */	li r3, 0x1
+/* 000007A4 000007E4  7C 08 03 A6 */	mtlr r0
+/* 000007A8 000007E8  38 21 00 10 */	addi r1, r1, 0x10
+/* 000007AC 000007EC  4E 80 00 20 */	blr
+.endfn draw__12daFloorJrA_cFv
+
+# .text:0x7B0 | size: 0x28
+# daFloorJrA_c::doDelete()
+.fn doDelete__12daFloorJrA_cFv, global
+/* 000007B0 000007F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000007B4 000007F4  7C 08 02 A6 */	mflr r0
+/* 000007B8 000007F8  38 63 05 84 */	addi r3, r3, 0x584
+/* 000007BC 000007FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000007C0 00000800  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 000007C4 00000804  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000007C8 00000808  38 60 00 01 */	li r3, 0x1
+/* 000007CC 0000080C  7C 08 03 A6 */	mtlr r0
+/* 000007D0 00000810  38 21 00 10 */	addi r1, r1, 0x10
+/* 000007D4 00000814  4E 80 00 20 */	blr
+.endfn doDelete__12daFloorJrA_cFv
+/* 000007D8 00000818  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007DC 0000081C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7E0 | size: 0x4
+# daFloorJrA_c::finalizeState_DemoWait()
+.fn finalizeState_DemoWait__12daFloorJrA_cFv, global
+/* 000007E0 00000820  4E 80 00 20 */	blr
+.endfn finalizeState_DemoWait__12daFloorJrA_cFv
+/* 000007E4 00000824  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007E8 00000828  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007EC 0000082C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x7F0 | size: 0x4
+# daFloorJrA_c::initializeState_DemoWait()
+.fn initializeState_DemoWait__12daFloorJrA_cFv, global
+/* 000007F0 00000830  4E 80 00 20 */	blr
+.endfn initializeState_DemoWait__12daFloorJrA_cFv
+/* 000007F4 00000834  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007F8 00000838  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000007FC 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x800 | size: 0x4
+# daFloorJrA_c::executeState_DemoWait()
+.fn executeState_DemoWait__12daFloorJrA_cFv, global
+/* 00000800 00000840  4E 80 00 20 */	blr
+.endfn executeState_DemoWait__12daFloorJrA_cFv
+/* 00000804 00000844  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000808 00000848  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000080C 0000084C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x810 | size: 0x4
+# daFloorJrA_c::finalizeState_Wait()
+.fn finalizeState_Wait__12daFloorJrA_cFv, global
+/* 00000810 00000850  4E 80 00 20 */	blr
+.endfn finalizeState_Wait__12daFloorJrA_cFv
+/* 00000814 00000854  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000818 00000858  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000081C 0000085C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x820 | size: 0x4
+# daFloorJrA_c::initializeState_Wait()
+.fn initializeState_Wait__12daFloorJrA_cFv, global
+/* 00000820 00000860  4E 80 00 20 */	blr
+.endfn initializeState_Wait__12daFloorJrA_cFv
+/* 00000824 00000864  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000828 00000868  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000082C 0000086C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x830 | size: 0x34
+# daFloorJrA_c::executeState_Wait()
+.fn executeState_Wait__12daFloorJrA_cFv, global
+/* 00000830 00000870  80 83 06 74 */	lwz r4, 0x674(r3)
+/* 00000834 00000874  2C 04 00 00 */	cmpwi r4, 0x0
+/* 00000838 00000878  40 82 00 1C */	bne .L_00000854
+/* 0000083C 0000087C  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 00000840 00000880  3C 80 00 00 */	lis r4, StateID_DemoWait__12daFloorJrA_c@ha
+/* 00000844 00000884  38 84 00 00 */	addi r4, r4, StateID_DemoWait__12daFloorJrA_c@l
+/* 00000848 00000888  81 8C 00 D4 */	lwz r12, 0xd4(r12)
+/* 0000084C 0000088C  7D 89 03 A6 */	mtctr r12
+/* 00000850 00000890  4E 80 04 20 */	bctr
+.L_00000854:
+/* 00000854 00000894  4C 81 00 20 */	blelr
+/* 00000858 00000898  38 04 FF FF */	subi r0, r4, 0x1
+/* 0000085C 0000089C  90 03 06 74 */	stw r0, 0x674(r3)
+/* 00000860 000008A0  4E 80 00 20 */	blr
+.endfn executeState_Wait__12daFloorJrA_cFv
+/* 00000864 000008A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000868 000008A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000086C 000008AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x870 | size: 0x1C
+# daFloorJrA_c::initializeState_DieFall()
+.fn initializeState_DieFall__12daFloorJrA_cFv, global
+/* 00000870 000008B0  3C A0 00 00 */	lis r5, "@15277"@ha
+/* 00000874 000008B4  3C 80 00 00 */	lis r4, "@15299"@ha
+/* 00000878 000008B8  C0 25 00 00 */	lfs f1, "@15277"@l(r5)
+/* 0000087C 000008BC  C0 04 00 00 */	lfs f0, "@15299"@l(r4)
+/* 00000880 000008C0  D0 23 00 EC */	stfs f1, 0xec(r3)
+/* 00000884 000008C4  D0 03 01 14 */	stfs f0, 0x114(r3)
+/* 00000888 000008C8  48 00 00 00 */	b playCrumbleEffects__12daFloorJrA_cFv
+.endfn initializeState_DieFall__12daFloorJrA_cFv
+/* 0000088C 000008CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x890 | size: 0x4
+# daFloorJrA_c::finalizeState_DieFall()
+.fn finalizeState_DieFall__12daFloorJrA_cFv, global
+/* 00000890 000008D0  4E 80 00 20 */	blr
+.endfn finalizeState_DieFall__12daFloorJrA_cFv
+/* 00000894 000008D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000898 000008D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000089C 000008DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x8A0 | size: 0x64
+# daFloorJrA_c::executeState_DieFall()
+.fn executeState_DieFall__12daFloorJrA_cFv, global
+/* 000008A0 000008E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000008A4 000008E4  7C 08 02 A6 */	mflr r0
+/* 000008A8 000008E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000008AC 000008EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000008B0 000008F0  7C 7F 1B 78 */	mr r31, r3
+/* 000008B4 000008F4  48 00 00 01 */	bl calcSpeedY__12dBaseActor_cFv
+/* 000008B8 000008F8  7F E3 FB 78 */	mr r3, r31
+/* 000008BC 000008FC  48 00 00 01 */	bl posMove__5dEn_cFv
+/* 000008C0 00000900  7F E3 FB 78 */	mr r3, r31
+/* 000008C4 00000904  48 00 00 01 */	bl unk_83A90__12daFloorJrA_cFv
+/* 000008C8 00000908  3C 60 00 00 */	lis r3, l_EnMuki@ha
+/* 000008CC 0000090C  88 1F 03 48 */	lbz r0, 0x348(r31)
+/* 000008D0 00000910  38 63 00 00 */	addi r3, r3, l_EnMuki@l
+/* 000008D4 00000914  A8 9F 01 04 */	lha r4, 0x104(r31)
+/* 000008D8 00000918  7C 03 00 AE */	lbzx r0, r3, r0
+/* 000008DC 0000091C  7C 00 07 74 */	extsb r0, r0
+/* 000008E0 00000920  1C 00 00 60 */	mulli r0, r0, 0x60
+/* 000008E4 00000924  7C 00 07 34 */	extsh r0, r0
+/* 000008E8 00000928  7C 04 02 14 */	add r0, r4, r0
+/* 000008EC 0000092C  B0 1F 01 04 */	sth r0, 0x104(r31)
+/* 000008F0 00000930  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000008F4 00000934  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000008F8 00000938  7C 08 03 A6 */	mtlr r0
+/* 000008FC 0000093C  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000900 00000940  4E 80 00 20 */	blr
+.endfn executeState_DieFall__12daFloorJrA_cFv
+/* 00000904 00000944  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000908 00000948  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000090C 0000094C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x910 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, weak
+/* 00000910 00000950  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+/* 00000914 00000954  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000918 00000958  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000091C 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x920 | size: 0x8
+# dBaseActor_c::GetActorType()
+.fn GetActorType__12dBaseActor_cFv, weak
+/* 00000920 00000960  38 60 00 08 */	li r3, 0x8
+/* 00000924 00000964  4E 80 00 20 */	blr
+.endfn GetActorType__12dBaseActor_cFv
+/* 00000928 00000968  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000092C 0000096C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x930 | size: 0x4
+# dActor_c::funsuiMoveX()
+.fn funsuiMoveX__8dActor_cFv, weak
+/* 00000930 00000970  4E 80 00 20 */	blr
+.endfn funsuiMoveX__8dActor_cFv
+/* 00000934 00000974  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000938 00000978  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000093C 0000097C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x940 | size: 0x4
+# dActor_c::setCarryFall(dActor_c*, int)
+.fn setCarryFall__8dActor_cFP8dActor_ci, weak
+/* 00000940 00000980  4E 80 00 20 */	blr
+.endfn setCarryFall__8dActor_cFP8dActor_ci
+/* 00000944 00000984  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000948 00000988  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000094C 0000098C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x950 | size: 0x8
+# dActor_c::isSpinLiftUpEnable()
+.fn isSpinLiftUpEnable__8dActor_cFv, weak
+/* 00000950 00000990  38 60 00 01 */	li r3, 0x1
+/* 00000954 00000994  4E 80 00 20 */	blr
+.endfn isSpinLiftUpEnable__8dActor_cFv
+/* 00000958 00000998  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000095C 0000099C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x960 | size: 0x8
+# dActor_c::getPlrNo()
+.fn getPlrNo__8dActor_cFv, weak
+/* 00000960 000009A0  38 63 03 8D */	addi r3, r3, 0x38d
+/* 00000964 000009A4  4E 80 00 20 */	blr
+.endfn getPlrNo__8dActor_cFv
+/* 00000968 000009A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000096C 000009AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x970 | size: 0x8
+# dActor_c::vf68(dBg_ctr_c*)
+.fn vf68__8dActor_cFP9dBg_ctr_c, weak
+/* 00000970 000009B0  38 60 00 01 */	li r3, 0x1
+/* 00000974 000009B4  4E 80 00 20 */	blr
+.endfn vf68__8dActor_cFP9dBg_ctr_c
+/* 00000978 000009B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000097C 000009BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x980 | size: 0x8
+# dEn_c::isFunsui() const
+.fn isFunsui__5dEn_cCFv, weak
+/* 00000980 000009C0  38 60 00 00 */	li r3, 0x0
+/* 00000984 000009C4  4E 80 00 20 */	blr
+.endfn isFunsui__5dEn_cCFv
+/* 00000988 000009C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000098C 000009CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x990 | size: 0x4
+# dEn_c::endFunsui()
+.fn endFunsui__5dEn_cFv, weak
+/* 00000990 000009D0  4E 80 00 20 */	blr
+.endfn endFunsui__5dEn_cFv
+/* 00000994 000009D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000998 000009D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000099C 000009DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x9A0 | size: 0x4
 # dEn_c::beginFunsui()
 .fn beginFunsui__5dEn_cFv, weak
-/* 00000780 000007C0  4E 80 00 20 */	blr
+/* 000009A0 000009E0  4E 80 00 20 */	blr
 .endfn beginFunsui__5dEn_cFv
-/* 00000784 000007C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000788 000007C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000078C 000007CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009A4 000009E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009A8 000009E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009AC 000009EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x790 | size: 0x8
+# .text:0x9B0 | size: 0x8
 # dEn_c::calcBoyonScale()
 .fn calcBoyonScale__5dEn_cFv, weak
-/* 00000790 000007D0  38 63 04 64 */	addi r3, r3, 0x464
-/* 00000794 000007D4  48 00 00 00 */	b execute__12dEnBoyoMng_cFv
+/* 000009B0 000009F0  38 63 04 64 */	addi r3, r3, 0x464
+/* 000009B4 000009F4  48 00 00 00 */	b execute__12dEnBoyoMng_cFv
 .endfn calcBoyonScale__5dEn_cFv
-/* 00000798 000007D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 0000079C 000007DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009B8 000009F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009BC 000009FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x7A0 | size: 0xC
+# .text:0x9C0 | size: 0xC
 # dEn_c::isQuakeDamage()
 .fn isQuakeDamage__5dEn_cFv, weak
-/* 000007A0 000007E0  80 03 02 74 */	lwz r0, 0x274(r3)
-/* 000007A4 000007E4  54 03 02 E4 */	rlwinm r3, r0, 0, 11, 18
-/* 000007A8 000007E8  4E 80 00 20 */	blr
+/* 000009C0 00000A00  80 03 02 74 */	lwz r0, 0x274(r3)
+/* 000009C4 00000A04  54 03 02 E4 */	rlwinm r3, r0, 0, 11, 18
+/* 000009C8 00000A08  4E 80 00 20 */	blr
 .endfn isQuakeDamage__5dEn_cFv
-/* 000007AC 000007EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000009CC 00000A0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0x7B0 | size: 0x298
+# .text:0x9D0 | size: 0x27C
 .fn "__sinit_\d_a_floor_jr_a_cpp", local
-/* 000007B0 000007F0  94 21 FF 70 */	stwu r1, -0x90(r1)
-/* 000007B4 000007F4  7C 08 02 A6 */	mflr r0
-/* 000007B8 000007F8  90 01 00 94 */	stw r0, 0x94(r1)
-/* 000007BC 000007FC  39 61 00 90 */	addi r11, r1, 0x90
-/* 000007C0 00000800  48 00 00 01 */	bl _savegpr_27
-/* 000007C4 00000804  3F A0 00 00 */	lis r29, ...data.0@ha
-/* 000007C8 00000808  3F 80 00 00 */	lis r28, ...bss.0@ha
-/* 000007CC 0000080C  3B BD 00 00 */	addi r29, r29, ...data.0@l
-/* 000007D0 00000810  38 7D 02 F4 */	addi r3, r29, 0x2f4
-/* 000007D4 00000814  83 7D 02 F4 */	lwz r27, 0x2f4(r29)
-/* 000007D8 00000818  38 DD 03 00 */	addi r6, r29, 0x300
-/* 000007DC 0000081C  38 BD 03 0C */	addi r5, r29, 0x30c
-/* 000007E0 00000820  81 83 00 04 */	lwz r12, 0x4(r3)
-/* 000007E4 00000824  3B 9C 00 00 */	addi r28, r28, ...bss.0@l
-/* 000007E8 00000828  81 63 00 08 */	lwz r11, 0x8(r3)
-/* 000007EC 0000082C  38 9D 03 60 */	addi r4, r29, 0x360
-/* 000007F0 00000830  81 5D 03 00 */	lwz r10, 0x300(r29)
-/* 000007F4 00000834  38 7C 00 10 */	addi r3, r28, 0x10
-/* 000007F8 00000838  81 26 00 04 */	lwz r9, 0x4(r6)
-/* 000007FC 0000083C  81 06 00 08 */	lwz r8, 0x8(r6)
-/* 00000800 00000840  80 FD 03 0C */	lwz r7, 0x30c(r29)
-/* 00000804 00000844  80 C5 00 04 */	lwz r6, 0x4(r5)
-/* 00000808 00000848  80 05 00 08 */	lwz r0, 0x8(r5)
-/* 0000080C 0000084C  93 61 00 50 */	stw r27, 0x50(r1)
-/* 00000810 00000850  91 81 00 54 */	stw r12, 0x54(r1)
-/* 00000814 00000854  91 61 00 58 */	stw r11, 0x58(r1)
-/* 00000818 00000858  91 41 00 5C */	stw r10, 0x5c(r1)
-/* 0000081C 0000085C  91 21 00 60 */	stw r9, 0x60(r1)
-/* 00000820 00000860  91 01 00 64 */	stw r8, 0x64(r1)
-/* 00000824 00000864  90 E1 00 68 */	stw r7, 0x68(r1)
-/* 00000828 00000868  90 C1 00 6C */	stw r6, 0x6c(r1)
-/* 0000082C 0000086C  90 01 00 70 */	stw r0, 0x70(r1)
-/* 00000830 00000870  48 00 00 01 */	bl __ct__10sStateID_cFPCc
-/* 00000834 00000874  3F C0 00 00 */	lis r30, "__vt__27sFStateID_c<12daFloorJrA_c>"@ha
-/* 00000838 00000878  38 7C 00 10 */	addi r3, r28, 0x10
-/* 0000083C 0000087C  83 61 00 68 */	lwz r27, 0x68(r1)
-/* 00000840 00000880  3B DE 00 00 */	addi r30, r30, "__vt__27sFStateID_c<12daFloorJrA_c>"@l
-/* 00000844 00000884  81 81 00 6C */	lwz r12, 0x6c(r1)
-/* 00000848 00000888  3F E0 00 00 */	lis r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@ha
-/* 0000084C 0000088C  81 61 00 70 */	lwz r11, 0x70(r1)
-/* 00000850 00000890  38 9F 00 00 */	addi r4, r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@l
-/* 00000854 00000894  81 41 00 5C */	lwz r10, 0x5c(r1)
-/* 00000858 00000898  38 BC 00 00 */	addi r5, r28, 0x0
-/* 0000085C 0000089C  81 21 00 60 */	lwz r9, 0x60(r1)
-/* 00000860 000008A0  81 01 00 64 */	lwz r8, 0x64(r1)
-/* 00000864 000008A4  80 E1 00 50 */	lwz r7, 0x50(r1)
-/* 00000868 000008A8  80 C1 00 54 */	lwz r6, 0x54(r1)
-/* 0000086C 000008AC  80 01 00 58 */	lwz r0, 0x58(r1)
-/* 00000870 000008B0  93 DC 00 10 */	stw r30, 0x10(r28)
-/* 00000874 000008B4  93 63 00 0C */	stw r27, 0xc(r3)
-/* 00000878 000008B8  91 83 00 10 */	stw r12, 0x10(r3)
-/* 0000087C 000008BC  91 63 00 14 */	stw r11, 0x14(r3)
-/* 00000880 000008C0  91 43 00 18 */	stw r10, 0x18(r3)
-/* 00000884 000008C4  91 23 00 1C */	stw r9, 0x1c(r3)
-/* 00000888 000008C8  91 03 00 20 */	stw r8, 0x20(r3)
-/* 0000088C 000008CC  90 E3 00 24 */	stw r7, 0x24(r3)
-/* 00000890 000008D0  90 C3 00 28 */	stw r6, 0x28(r3)
-/* 00000894 000008D4  90 03 00 2C */	stw r0, 0x2c(r3)
-/* 00000898 000008D8  48 00 00 01 */	bl __register_global_object
-/* 0000089C 000008DC  38 7D 03 18 */	addi r3, r29, 0x318
-/* 000008A0 000008E0  38 DD 03 24 */	addi r6, r29, 0x324
-/* 000008A4 000008E4  38 BD 03 30 */	addi r5, r29, 0x330
-/* 000008A8 000008E8  83 7D 03 18 */	lwz r27, 0x318(r29)
-/* 000008AC 000008EC  81 83 00 04 */	lwz r12, 0x4(r3)
-/* 000008B0 000008F0  38 9D 03 80 */	addi r4, r29, 0x380
-/* 000008B4 000008F4  81 63 00 08 */	lwz r11, 0x8(r3)
-/* 000008B8 000008F8  38 7C 00 50 */	addi r3, r28, 0x50
-/* 000008BC 000008FC  81 5D 03 24 */	lwz r10, 0x324(r29)
-/* 000008C0 00000900  81 26 00 04 */	lwz r9, 0x4(r6)
-/* 000008C4 00000904  81 06 00 08 */	lwz r8, 0x8(r6)
-/* 000008C8 00000908  80 FD 03 30 */	lwz r7, 0x330(r29)
-/* 000008CC 0000090C  80 C5 00 04 */	lwz r6, 0x4(r5)
-/* 000008D0 00000910  80 05 00 08 */	lwz r0, 0x8(r5)
-/* 000008D4 00000914  93 61 00 2C */	stw r27, 0x2c(r1)
-/* 000008D8 00000918  91 81 00 30 */	stw r12, 0x30(r1)
-/* 000008DC 0000091C  91 61 00 34 */	stw r11, 0x34(r1)
-/* 000008E0 00000920  91 41 00 38 */	stw r10, 0x38(r1)
-/* 000008E4 00000924  91 21 00 3C */	stw r9, 0x3c(r1)
-/* 000008E8 00000928  91 01 00 40 */	stw r8, 0x40(r1)
-/* 000008EC 0000092C  90 E1 00 44 */	stw r7, 0x44(r1)
-/* 000008F0 00000930  90 C1 00 48 */	stw r6, 0x48(r1)
-/* 000008F4 00000934  90 01 00 4C */	stw r0, 0x4c(r1)
-/* 000008F8 00000938  48 00 00 01 */	bl __ct__10sStateID_cFPCc
-/* 000008FC 0000093C  38 7C 00 50 */	addi r3, r28, 0x50
-/* 00000900 00000940  83 61 00 44 */	lwz r27, 0x44(r1)
-/* 00000904 00000944  81 81 00 48 */	lwz r12, 0x48(r1)
-/* 00000908 00000948  38 9F 00 00 */	addi r4, r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@l
-/* 0000090C 0000094C  81 61 00 4C */	lwz r11, 0x4c(r1)
-/* 00000910 00000950  38 BC 00 40 */	addi r5, r28, 0x40
-/* 00000914 00000954  81 41 00 38 */	lwz r10, 0x38(r1)
-/* 00000918 00000958  81 21 00 3C */	lwz r9, 0x3c(r1)
-/* 0000091C 0000095C  81 01 00 40 */	lwz r8, 0x40(r1)
-/* 00000920 00000960  80 E1 00 2C */	lwz r7, 0x2c(r1)
-/* 00000924 00000964  80 C1 00 30 */	lwz r6, 0x30(r1)
-/* 00000928 00000968  80 01 00 34 */	lwz r0, 0x34(r1)
-/* 0000092C 0000096C  93 DC 00 50 */	stw r30, 0x50(r28)
-/* 00000930 00000970  93 63 00 0C */	stw r27, 0xc(r3)
-/* 00000934 00000974  91 83 00 10 */	stw r12, 0x10(r3)
-/* 00000938 00000978  91 63 00 14 */	stw r11, 0x14(r3)
-/* 0000093C 0000097C  91 43 00 18 */	stw r10, 0x18(r3)
-/* 00000940 00000980  91 23 00 1C */	stw r9, 0x1c(r3)
-/* 00000944 00000984  91 03 00 20 */	stw r8, 0x20(r3)
-/* 00000948 00000988  90 E3 00 24 */	stw r7, 0x24(r3)
-/* 0000094C 0000098C  90 C3 00 28 */	stw r6, 0x28(r3)
-/* 00000950 00000990  90 03 00 2C */	stw r0, 0x2c(r3)
-/* 00000954 00000994  48 00 00 01 */	bl __register_global_object
-/* 00000958 00000998  38 BD 03 3C */	addi r5, r29, 0x33c
-/* 0000095C 0000099C  38 9D 03 48 */	addi r4, r29, 0x348
-/* 00000960 000009A0  38 7D 03 54 */	addi r3, r29, 0x354
-/* 00000964 000009A4  81 7D 03 3C */	lwz r11, 0x33c(r29)
-/* 00000968 000009A8  81 45 00 04 */	lwz r10, 0x4(r5)
-/* 0000096C 000009AC  3B 7D 03 9C */	addi r27, r29, 0x39c
-/* 00000970 000009B0  81 25 00 08 */	lwz r9, 0x8(r5)
-/* 00000974 000009B4  81 1D 03 48 */	lwz r8, 0x348(r29)
-/* 00000978 000009B8  80 E4 00 04 */	lwz r7, 0x4(r4)
-/* 0000097C 000009BC  80 C4 00 08 */	lwz r6, 0x8(r4)
-/* 00000980 000009C0  80 BD 03 54 */	lwz r5, 0x354(r29)
-/* 00000984 000009C4  80 83 00 04 */	lwz r4, 0x4(r3)
-/* 00000988 000009C8  80 03 00 08 */	lwz r0, 0x8(r3)
-/* 0000098C 000009CC  91 61 00 08 */	stw r11, 0x8(r1)
-/* 00000990 000009D0  91 41 00 0C */	stw r10, 0xc(r1)
-/* 00000994 000009D4  91 21 00 10 */	stw r9, 0x10(r1)
-/* 00000998 000009D8  91 01 00 14 */	stw r8, 0x14(r1)
-/* 0000099C 000009DC  90 E1 00 18 */	stw r7, 0x18(r1)
-/* 000009A0 000009E0  90 C1 00 1C */	stw r6, 0x1c(r1)
-/* 000009A4 000009E4  90 A1 00 20 */	stw r5, 0x20(r1)
-/* 000009A8 000009E8  90 81 00 24 */	stw r4, 0x24(r1)
-/* 000009AC 000009EC  90 01 00 28 */	stw r0, 0x28(r1)
-/* 000009B0 000009F0  48 00 00 01 */	bl "baseID_DieFall<5dEn_c>__Fv_RC12sStateIDIf_c"
-/* 000009B4 000009F4  7C 7F 1B 78 */	mr r31, r3
-/* 000009B8 000009F8  7F 64 DB 78 */	mr r4, r27
-/* 000009BC 000009FC  38 7C 00 8C */	addi r3, r28, 0x8c
-/* 000009C0 00000A00  48 00 00 01 */	bl __ct__10sStateID_cFPCc
-/* 000009C4 00000A04  38 7C 00 8C */	addi r3, r28, 0x8c
-/* 000009C8 00000A08  83 C1 00 20 */	lwz r30, 0x20(r1)
-/* 000009CC 00000A0C  83 A1 00 24 */	lwz r29, 0x24(r1)
-/* 000009D0 00000A10  3C C0 00 00 */	lis r6, "__vt__34sFStateVirtualID_c<12daFloorJrA_c>"@ha
-/* 000009D4 00000A14  81 81 00 28 */	lwz r12, 0x28(r1)
-/* 000009D8 00000A18  38 C6 00 00 */	addi r6, r6, "__vt__34sFStateVirtualID_c<12daFloorJrA_c>"@l
-/* 000009DC 00000A1C  81 61 00 14 */	lwz r11, 0x14(r1)
-/* 000009E0 00000A20  3C 80 00 00 */	lis r4, "__dt__34sFStateVirtualID_c<12daFloorJrA_c>Fv"@ha
-/* 000009E4 00000A24  81 41 00 18 */	lwz r10, 0x18(r1)
-/* 000009E8 00000A28  38 84 00 00 */	addi r4, r4, "__dt__34sFStateVirtualID_c<12daFloorJrA_c>Fv"@l
-/* 000009EC 00000A2C  81 21 00 1C */	lwz r9, 0x1c(r1)
-/* 000009F0 00000A30  38 BC 00 80 */	addi r5, r28, 0x80
-/* 000009F4 00000A34  81 01 00 08 */	lwz r8, 0x8(r1)
-/* 000009F8 00000A38  80 E1 00 0C */	lwz r7, 0xc(r1)
-/* 000009FC 00000A3C  80 01 00 10 */	lwz r0, 0x10(r1)
-/* 00000A00 00000A40  93 C3 00 0C */	stw r30, 0xc(r3)
-/* 00000A04 00000A44  93 A3 00 10 */	stw r29, 0x10(r3)
-/* 00000A08 00000A48  91 83 00 14 */	stw r12, 0x14(r3)
-/* 00000A0C 00000A4C  91 63 00 18 */	stw r11, 0x18(r3)
-/* 00000A10 00000A50  91 43 00 1C */	stw r10, 0x1c(r3)
-/* 00000A14 00000A54  91 23 00 20 */	stw r9, 0x20(r3)
-/* 00000A18 00000A58  91 03 00 24 */	stw r8, 0x24(r3)
-/* 00000A1C 00000A5C  90 E3 00 28 */	stw r7, 0x28(r3)
-/* 00000A20 00000A60  90 03 00 2C */	stw r0, 0x2c(r3)
-/* 00000A24 00000A64  90 DC 00 8C */	stw r6, 0x8c(r28)
-/* 00000A28 00000A68  93 E3 00 30 */	stw r31, 0x30(r3)
-/* 00000A2C 00000A6C  48 00 00 01 */	bl __register_global_object
-/* 00000A30 00000A70  39 61 00 90 */	addi r11, r1, 0x90
-/* 00000A34 00000A74  48 00 00 01 */	bl _restgpr_27
-/* 00000A38 00000A78  80 01 00 94 */	lwz r0, 0x94(r1)
-/* 00000A3C 00000A7C  7C 08 03 A6 */	mtlr r0
-/* 00000A40 00000A80  38 21 00 90 */	addi r1, r1, 0x90
-/* 00000A44 00000A84  4E 80 00 20 */	blr
+/* 000009D0 00000A10  94 21 FF 70 */	stwu r1, -0x90(r1)
+/* 000009D4 00000A14  7C 08 02 A6 */	mflr r0
+/* 000009D8 00000A18  90 01 00 94 */	stw r0, 0x94(r1)
+/* 000009DC 00000A1C  39 61 00 90 */	addi r11, r1, 0x90
+/* 000009E0 00000A20  48 00 00 01 */	bl _savegpr_27
+/* 000009E4 00000A24  3F A0 00 00 */	lis r29, ...data.0@ha
+/* 000009E8 00000A28  3F 80 00 00 */	lis r28, ...bss.0@ha
+/* 000009EC 00000A2C  3B BD 00 00 */	addi r29, r29, ...data.0@l
+/* 000009F0 00000A30  38 7D 02 F4 */	addi r3, r29, 0x2f4
+/* 000009F4 00000A34  83 7D 02 F4 */	lwz r27, 0x2f4(r29)
+/* 000009F8 00000A38  38 DD 03 00 */	addi r6, r29, 0x300
+/* 000009FC 00000A3C  38 BD 03 0C */	addi r5, r29, 0x30c
+/* 00000A00 00000A40  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000A04 00000A44  3B 9C 00 00 */	addi r28, r28, ...bss.0@l
+/* 00000A08 00000A48  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00000A0C 00000A4C  38 9D 03 60 */	addi r4, r29, 0x360
+/* 00000A10 00000A50  81 5D 03 00 */	lwz r10, 0x300(r29)
+/* 00000A14 00000A54  38 7C 00 10 */	addi r3, r28, 0x10
+/* 00000A18 00000A58  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 00000A1C 00000A5C  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 00000A20 00000A60  80 FD 03 0C */	lwz r7, 0x30c(r29)
+/* 00000A24 00000A64  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 00000A28 00000A68  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 00000A2C 00000A6C  93 61 00 50 */	stw r27, 0x50(r1)
+/* 00000A30 00000A70  91 81 00 54 */	stw r12, 0x54(r1)
+/* 00000A34 00000A74  91 61 00 58 */	stw r11, 0x58(r1)
+/* 00000A38 00000A78  91 41 00 5C */	stw r10, 0x5c(r1)
+/* 00000A3C 00000A7C  91 21 00 60 */	stw r9, 0x60(r1)
+/* 00000A40 00000A80  91 01 00 64 */	stw r8, 0x64(r1)
+/* 00000A44 00000A84  90 E1 00 68 */	stw r7, 0x68(r1)
+/* 00000A48 00000A88  90 C1 00 6C */	stw r6, 0x6c(r1)
+/* 00000A4C 00000A8C  90 01 00 70 */	stw r0, 0x70(r1)
+/* 00000A50 00000A90  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00000A54 00000A94  3F C0 00 00 */	lis r30, "__vt__27sFStateID_c<12daFloorJrA_c>"@ha
+/* 00000A58 00000A98  38 7C 00 10 */	addi r3, r28, 0x10
+/* 00000A5C 00000A9C  83 61 00 68 */	lwz r27, 0x68(r1)
+/* 00000A60 00000AA0  3B DE 00 00 */	addi r30, r30, "__vt__27sFStateID_c<12daFloorJrA_c>"@l
+/* 00000A64 00000AA4  81 81 00 6C */	lwz r12, 0x6c(r1)
+/* 00000A68 00000AA8  3F E0 00 00 */	lis r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@ha
+/* 00000A6C 00000AAC  81 61 00 70 */	lwz r11, 0x70(r1)
+/* 00000A70 00000AB0  38 9F 00 00 */	addi r4, r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@l
+/* 00000A74 00000AB4  81 41 00 5C */	lwz r10, 0x5c(r1)
+/* 00000A78 00000AB8  38 BC 00 00 */	addi r5, r28, 0x0
+/* 00000A7C 00000ABC  81 21 00 60 */	lwz r9, 0x60(r1)
+/* 00000A80 00000AC0  81 01 00 64 */	lwz r8, 0x64(r1)
+/* 00000A84 00000AC4  80 E1 00 50 */	lwz r7, 0x50(r1)
+/* 00000A88 00000AC8  80 C1 00 54 */	lwz r6, 0x54(r1)
+/* 00000A8C 00000ACC  80 01 00 58 */	lwz r0, 0x58(r1)
+/* 00000A90 00000AD0  93 DC 00 10 */	stw r30, 0x10(r28)
+/* 00000A94 00000AD4  93 63 00 0C */	stw r27, 0xc(r3)
+/* 00000A98 00000AD8  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00000A9C 00000ADC  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00000AA0 00000AE0  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00000AA4 00000AE4  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00000AA8 00000AE8  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00000AAC 00000AEC  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00000AB0 00000AF0  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00000AB4 00000AF4  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00000AB8 00000AF8  48 00 00 01 */	bl __register_global_object
+/* 00000ABC 00000AFC  38 7D 03 18 */	addi r3, r29, 0x318
+/* 00000AC0 00000B00  38 DD 03 24 */	addi r6, r29, 0x324
+/* 00000AC4 00000B04  38 BD 03 30 */	addi r5, r29, 0x330
+/* 00000AC8 00000B08  83 7D 03 18 */	lwz r27, 0x318(r29)
+/* 00000ACC 00000B0C  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000AD0 00000B10  38 9D 03 80 */	addi r4, r29, 0x380
+/* 00000AD4 00000B14  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00000AD8 00000B18  38 7C 00 50 */	addi r3, r28, 0x50
+/* 00000ADC 00000B1C  81 5D 03 24 */	lwz r10, 0x324(r29)
+/* 00000AE0 00000B20  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 00000AE4 00000B24  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 00000AE8 00000B28  80 FD 03 30 */	lwz r7, 0x330(r29)
+/* 00000AEC 00000B2C  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 00000AF0 00000B30  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 00000AF4 00000B34  93 61 00 2C */	stw r27, 0x2c(r1)
+/* 00000AF8 00000B38  91 81 00 30 */	stw r12, 0x30(r1)
+/* 00000AFC 00000B3C  91 61 00 34 */	stw r11, 0x34(r1)
+/* 00000B00 00000B40  91 41 00 38 */	stw r10, 0x38(r1)
+/* 00000B04 00000B44  91 21 00 3C */	stw r9, 0x3c(r1)
+/* 00000B08 00000B48  91 01 00 40 */	stw r8, 0x40(r1)
+/* 00000B0C 00000B4C  90 E1 00 44 */	stw r7, 0x44(r1)
+/* 00000B10 00000B50  90 C1 00 48 */	stw r6, 0x48(r1)
+/* 00000B14 00000B54  90 01 00 4C */	stw r0, 0x4c(r1)
+/* 00000B18 00000B58  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00000B1C 00000B5C  38 7C 00 50 */	addi r3, r28, 0x50
+/* 00000B20 00000B60  83 61 00 44 */	lwz r27, 0x44(r1)
+/* 00000B24 00000B64  81 81 00 48 */	lwz r12, 0x48(r1)
+/* 00000B28 00000B68  38 9F 00 00 */	addi r4, r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@l
+/* 00000B2C 00000B6C  81 61 00 4C */	lwz r11, 0x4c(r1)
+/* 00000B30 00000B70  38 BC 00 40 */	addi r5, r28, 0x40
+/* 00000B34 00000B74  81 41 00 38 */	lwz r10, 0x38(r1)
+/* 00000B38 00000B78  81 21 00 3C */	lwz r9, 0x3c(r1)
+/* 00000B3C 00000B7C  81 01 00 40 */	lwz r8, 0x40(r1)
+/* 00000B40 00000B80  80 E1 00 2C */	lwz r7, 0x2c(r1)
+/* 00000B44 00000B84  80 C1 00 30 */	lwz r6, 0x30(r1)
+/* 00000B48 00000B88  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 00000B4C 00000B8C  93 DC 00 50 */	stw r30, 0x50(r28)
+/* 00000B50 00000B90  93 63 00 0C */	stw r27, 0xc(r3)
+/* 00000B54 00000B94  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00000B58 00000B98  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00000B5C 00000B9C  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00000B60 00000BA0  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00000B64 00000BA4  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00000B68 00000BA8  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00000B6C 00000BAC  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00000B70 00000BB0  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00000B74 00000BB4  48 00 00 01 */	bl __register_global_object
+/* 00000B78 00000BB8  38 7D 03 3C */	addi r3, r29, 0x33c
+/* 00000B7C 00000BBC  38 DD 03 48 */	addi r6, r29, 0x348
+/* 00000B80 00000BC0  38 BD 03 54 */	addi r5, r29, 0x354
+/* 00000B84 00000BC4  83 7D 03 3C */	lwz r27, 0x33c(r29)
+/* 00000B88 00000BC8  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 00000B8C 00000BCC  38 9D 03 9C */	addi r4, r29, 0x39c
+/* 00000B90 00000BD0  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 00000B94 00000BD4  38 7C 00 90 */	addi r3, r28, 0x90
+/* 00000B98 00000BD8  81 5D 03 48 */	lwz r10, 0x348(r29)
+/* 00000B9C 00000BDC  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 00000BA0 00000BE0  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 00000BA4 00000BE4  80 FD 03 54 */	lwz r7, 0x354(r29)
+/* 00000BA8 00000BE8  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 00000BAC 00000BEC  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 00000BB0 00000BF0  93 61 00 08 */	stw r27, 0x8(r1)
+/* 00000BB4 00000BF4  91 81 00 0C */	stw r12, 0xc(r1)
+/* 00000BB8 00000BF8  91 61 00 10 */	stw r11, 0x10(r1)
+/* 00000BBC 00000BFC  91 41 00 14 */	stw r10, 0x14(r1)
+/* 00000BC0 00000C00  91 21 00 18 */	stw r9, 0x18(r1)
+/* 00000BC4 00000C04  91 01 00 1C */	stw r8, 0x1c(r1)
+/* 00000BC8 00000C08  90 E1 00 20 */	stw r7, 0x20(r1)
+/* 00000BCC 00000C0C  90 C1 00 24 */	stw r6, 0x24(r1)
+/* 00000BD0 00000C10  90 01 00 28 */	stw r0, 0x28(r1)
+/* 00000BD4 00000C14  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 00000BD8 00000C18  38 7C 00 90 */	addi r3, r28, 0x90
+/* 00000BDC 00000C1C  83 A1 00 20 */	lwz r29, 0x20(r1)
+/* 00000BE0 00000C20  81 81 00 24 */	lwz r12, 0x24(r1)
+/* 00000BE4 00000C24  7F 67 DB 78 */	mr r7, r27
+/* 00000BE8 00000C28  81 61 00 28 */	lwz r11, 0x28(r1)
+/* 00000BEC 00000C2C  38 9F 00 00 */	addi r4, r31, "__dt__27sFStateID_c<12daFloorJrA_c>Fv"@l
+/* 00000BF0 00000C30  81 41 00 14 */	lwz r10, 0x14(r1)
+/* 00000BF4 00000C34  38 BC 00 80 */	addi r5, r28, 0x80
+/* 00000BF8 00000C38  81 21 00 18 */	lwz r9, 0x18(r1)
+/* 00000BFC 00000C3C  81 01 00 1C */	lwz r8, 0x1c(r1)
+/* 00000C00 00000C40  80 C1 00 0C */	lwz r6, 0xc(r1)
+/* 00000C04 00000C44  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 00000C08 00000C48  93 DC 00 90 */	stw r30, 0x90(r28)
+/* 00000C0C 00000C4C  93 A3 00 0C */	stw r29, 0xc(r3)
+/* 00000C10 00000C50  91 83 00 10 */	stw r12, 0x10(r3)
+/* 00000C14 00000C54  91 63 00 14 */	stw r11, 0x14(r3)
+/* 00000C18 00000C58  91 43 00 18 */	stw r10, 0x18(r3)
+/* 00000C1C 00000C5C  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 00000C20 00000C60  91 03 00 20 */	stw r8, 0x20(r3)
+/* 00000C24 00000C64  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 00000C28 00000C68  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 00000C2C 00000C6C  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 00000C30 00000C70  48 00 00 01 */	bl __register_global_object
+/* 00000C34 00000C74  39 61 00 90 */	addi r11, r1, 0x90
+/* 00000C38 00000C78  48 00 00 01 */	bl _restgpr_27
+/* 00000C3C 00000C7C  80 01 00 94 */	lwz r0, 0x94(r1)
+/* 00000C40 00000C80  7C 08 03 A6 */	mtlr r0
+/* 00000C44 00000C84  38 21 00 90 */	addi r1, r1, 0x90
+/* 00000C48 00000C88  4E 80 00 20 */	blr
 .endfn "__sinit_\d_a_floor_jr_a_cpp"
-/* 00000A48 00000A88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000A4C 00000A8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000C4C 00000C8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xA50 | size: 0x58
+# .text:0xC50 | size: 0x58
 # sFStateID_c<daFloorJrA_c>::~sFStateID_c()
 .fn "__dt__27sFStateID_c<12daFloorJrA_c>Fv", weak
-/* 00000A50 00000A90  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000A54 00000A94  7C 08 02 A6 */	mflr r0
-/* 00000A58 00000A98  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000A5C 00000A9C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000A60 00000AA0  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000A64 00000AA4  7C 9F 23 78 */	mr r31, r4
-/* 00000A68 00000AA8  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000A6C 00000AAC  7C 7E 1B 78 */	mr r30, r3
-/* 00000A70 00000AB0  41 82 00 1C */	beq .L_00000A8C
-/* 00000A74 00000AB4  38 80 00 00 */	li r4, 0x0
-/* 00000A78 00000AB8  48 00 00 01 */	bl __dt__10sStateID_cFv
-/* 00000A7C 00000ABC  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000A80 00000AC0  40 81 00 0C */	ble .L_00000A8C
-/* 00000A84 00000AC4  7F C3 F3 78 */	mr r3, r30
-/* 00000A88 00000AC8  48 00 00 01 */	bl __dl__FPv
-.L_00000A8C:
-/* 00000A8C 00000ACC  7F C3 F3 78 */	mr r3, r30
-/* 00000A90 00000AD0  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000A94 00000AD4  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000A98 00000AD8  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000A9C 00000ADC  7C 08 03 A6 */	mtlr r0
-/* 00000AA0 00000AE0  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000AA4 00000AE4  4E 80 00 20 */	blr
+/* 00000C50 00000C90  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000C54 00000C94  7C 08 02 A6 */	mflr r0
+/* 00000C58 00000C98  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000C5C 00000C9C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000C60 00000CA0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000C64 00000CA4  7C 9F 23 78 */	mr r31, r4
+/* 00000C68 00000CA8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000C6C 00000CAC  7C 7E 1B 78 */	mr r30, r3
+/* 00000C70 00000CB0  41 82 00 1C */	beq .L_00000C8C
+/* 00000C74 00000CB4  38 80 00 00 */	li r4, 0x0
+/* 00000C78 00000CB8  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 00000C7C 00000CBC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 00000C80 00000CC0  40 81 00 0C */	ble .L_00000C8C
+/* 00000C84 00000CC4  7F C3 F3 78 */	mr r3, r30
+/* 00000C88 00000CC8  48 00 00 01 */	bl __dl__FPv
+.L_00000C8C:
+/* 00000C8C 00000CCC  7F C3 F3 78 */	mr r3, r30
+/* 00000C90 00000CD0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000C94 00000CD4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000C98 00000CD8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000C9C 00000CDC  7C 08 03 A6 */	mtlr r0
+/* 00000CA0 00000CE0  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000CA4 00000CE4  4E 80 00 20 */	blr
 .endfn "__dt__27sFStateID_c<12daFloorJrA_c>Fv"
-/* 00000AA8 00000AE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000AAC 00000AEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CA8 00000CE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000CAC 00000CEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xAB0 | size: 0x5C
-# sFStateVirtualID_c<daFloorJrA_c>::~sFStateVirtualID_c()
-.fn "__dt__34sFStateVirtualID_c<12daFloorJrA_c>Fv", weak
-/* 00000AB0 00000AF0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000AB4 00000AF4  7C 08 02 A6 */	mflr r0
-/* 00000AB8 00000AF8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000ABC 00000AFC  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000AC0 00000B00  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000AC4 00000B04  7C 9F 23 78 */	mr r31, r4
-/* 00000AC8 00000B08  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000ACC 00000B0C  7C 7E 1B 78 */	mr r30, r3
-/* 00000AD0 00000B10  41 82 00 20 */	beq .L_00000AF0
-/* 00000AD4 00000B14  41 82 00 0C */	beq .L_00000AE0
-/* 00000AD8 00000B18  38 80 00 00 */	li r4, 0x0
-/* 00000ADC 00000B1C  48 00 00 01 */	bl __dt__10sStateID_cFv
-.L_00000AE0:
-/* 00000AE0 00000B20  2C 1F 00 00 */	cmpwi r31, 0x0
-/* 00000AE4 00000B24  40 81 00 0C */	ble .L_00000AF0
-/* 00000AE8 00000B28  7F C3 F3 78 */	mr r3, r30
-/* 00000AEC 00000B2C  48 00 00 01 */	bl __dl__FPv
-.L_00000AF0:
-/* 00000AF0 00000B30  7F C3 F3 78 */	mr r3, r30
-/* 00000AF4 00000B34  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000AF8 00000B38  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000AFC 00000B3C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000B00 00000B40  7C 08 03 A6 */	mtlr r0
-/* 00000B04 00000B44  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000B08 00000B48  4E 80 00 20 */	blr
-.endfn "__dt__34sFStateVirtualID_c<12daFloorJrA_c>Fv"
-/* 00000B0C 00000B4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xB10 | size: 0xC
-# const sStateIDIf_c& baseID_DieFall<dEn_c>()
-.fn "baseID_DieFall<5dEn_c>__Fv_RC12sStateIDIf_c", local
-/* 00000B10 00000B50  3C 60 00 00 */	lis r3, StateID_DieFall__5dEn_c@ha
-/* 00000B14 00000B54  38 63 00 00 */	addi r3, r3, StateID_DieFall__5dEn_c@l
-/* 00000B18 00000B58  4E 80 00 20 */	blr
-.endfn "baseID_DieFall<5dEn_c>__Fv_RC12sStateIDIf_c"
-/* 00000B1C 00000B5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xB20 | size: 0xDC
-# sFStateVirtualID_c<daFloorJrA_c>::number() const
-.fn "number__34sFStateVirtualID_c<12daFloorJrA_c>CFv", weak
-/* 00000B20 00000B60  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000B24 00000B64  7C 08 02 A6 */	mflr r0
-/* 00000B28 00000B68  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000B2C 00000B6C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000B30 00000B70  7C 7F 1B 78 */	mr r31, r3
-/* 00000B34 00000B74  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00000B38 00000B78  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000B3C 00000B7C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000B40 00000B80  7D 89 03 A6 */	mtctr r12
-/* 00000B44 00000B84  4E 80 04 21 */	bctrl
-/* 00000B48 00000B88  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000B4C 00000B8C  40 82 00 94 */	bne .L_00000BE0
-/* 00000B50 00000B90  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000B54 00000B94  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000B58 00000B98  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000B5C 00000B9C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000B60 00000BA0  7D 89 03 A6 */	mtctr r12
-/* 00000B64 00000BA4  4E 80 04 21 */	bctrl
-/* 00000B68 00000BA8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000B6C 00000BAC  40 82 00 74 */	bne .L_00000BE0
-/* 00000B70 00000BB0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000B74 00000BB4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000B78 00000BB8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000B7C 00000BBC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000B80 00000BC0  7D 89 03 A6 */	mtctr r12
-/* 00000B84 00000BC4  4E 80 04 21 */	bctrl
-/* 00000B88 00000BC8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000B8C 00000BCC  40 82 00 54 */	bne .L_00000BE0
-/* 00000B90 00000BD0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000B94 00000BD4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000B98 00000BD8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000B9C 00000BDC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000BA0 00000BE0  7D 89 03 A6 */	mtctr r12
-/* 00000BA4 00000BE4  4E 80 04 21 */	bctrl
-/* 00000BA8 00000BE8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000BAC 00000BEC  40 82 00 34 */	bne .L_00000BE0
-/* 00000BB0 00000BF0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000BB4 00000BF4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000BB8 00000BF8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000BBC 00000BFC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000BC0 00000C00  7D 89 03 A6 */	mtctr r12
-/* 00000BC4 00000C04  4E 80 04 21 */	bctrl
-/* 00000BC8 00000C08  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000BCC 00000C0C  41 82 00 08 */	beq .L_00000BD4
-/* 00000BD0 00000C10  48 00 00 10 */	b .L_00000BE0
-.L_00000BD4:
-/* 00000BD4 00000C14  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000BD8 00000C18  48 00 00 01 */	bl "superID__34sFStateVirtualID_c<12daFloorJrA_c>CFv"
-/* 00000BDC 00000C1C  7C 7F 1B 78 */	mr r31, r3
-.L_00000BE0:
-/* 00000BE0 00000C20  7F E3 FB 78 */	mr r3, r31
-/* 00000BE4 00000C24  48 00 00 01 */	bl number__10sStateID_cCFv
-/* 00000BE8 00000C28  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000BEC 00000C2C  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000BF0 00000C30  7C 08 03 A6 */	mtlr r0
-/* 00000BF4 00000C34  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000BF8 00000C38  4E 80 00 20 */	blr
-.endfn "number__34sFStateVirtualID_c<12daFloorJrA_c>CFv"
-/* 00000BFC 00000C3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-
-# .text:0xC00 | size: 0xE0
-# sFStateVirtualID_c<daFloorJrA_c>::superID() const
-.fn "superID__34sFStateVirtualID_c<12daFloorJrA_c>CFv", weak
-/* 00000C00 00000C40  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000C04 00000C44  7C 08 02 A6 */	mflr r0
-/* 00000C08 00000C48  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000C0C 00000C4C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000C10 00000C50  7C 7F 1B 78 */	mr r31, r3
-/* 00000C14 00000C54  80 63 00 30 */	lwz r3, 0x30(r3)
-/* 00000C18 00000C58  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000C1C 00000C5C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000C20 00000C60  7D 89 03 A6 */	mtctr r12
-/* 00000C24 00000C64  4E 80 04 21 */	bctrl
-/* 00000C28 00000C68  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000C2C 00000C6C  40 82 00 9C */	bne .L_00000CC8
-/* 00000C30 00000C70  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000C34 00000C74  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000C38 00000C78  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000C3C 00000C7C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000C40 00000C80  7D 89 03 A6 */	mtctr r12
-/* 00000C44 00000C84  4E 80 04 21 */	bctrl
-/* 00000C48 00000C88  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000C4C 00000C8C  40 82 00 74 */	bne .L_00000CC0
-/* 00000C50 00000C90  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000C54 00000C94  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000C58 00000C98  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000C5C 00000C9C  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000C60 00000CA0  7D 89 03 A6 */	mtctr r12
-/* 00000C64 00000CA4  4E 80 04 21 */	bctrl
-/* 00000C68 00000CA8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000C6C 00000CAC  40 82 00 54 */	bne .L_00000CC0
-/* 00000C70 00000CB0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000C74 00000CB4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000C78 00000CB8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000C7C 00000CBC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000C80 00000CC0  7D 89 03 A6 */	mtctr r12
-/* 00000C84 00000CC4  4E 80 04 21 */	bctrl
-/* 00000C88 00000CC8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000C8C 00000CCC  40 82 00 34 */	bne .L_00000CC0
-/* 00000C90 00000CD0  83 FF 00 30 */	lwz r31, 0x30(r31)
-/* 00000C94 00000CD4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000C98 00000CD8  81 83 00 00 */	lwz r12, 0x0(r3)
-/* 00000C9C 00000CDC  81 8C 00 0C */	lwz r12, 0xc(r12)
-/* 00000CA0 00000CE0  7D 89 03 A6 */	mtctr r12
-/* 00000CA4 00000CE4  4E 80 04 21 */	bctrl
-/* 00000CA8 00000CE8  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000CAC 00000CEC  41 82 00 08 */	beq .L_00000CB4
-/* 00000CB0 00000CF0  48 00 00 10 */	b .L_00000CC0
-.L_00000CB4:
-/* 00000CB4 00000CF4  80 7F 00 30 */	lwz r3, 0x30(r31)
-/* 00000CB8 00000CF8  48 00 00 01 */	bl "superID__34sFStateVirtualID_c<12daFloorJrA_c>CFv"
-/* 00000CBC 00000CFC  7C 7F 1B 78 */	mr r31, r3
-.L_00000CC0:
-/* 00000CC0 00000D00  7F E3 FB 78 */	mr r3, r31
-/* 00000CC4 00000D04  48 00 00 08 */	b .L_00000CCC
-.L_00000CC8:
-/* 00000CC8 00000D08  7F E3 FB 78 */	mr r3, r31
-.L_00000CCC:
-/* 00000CCC 00000D0C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000CD0 00000D10  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000CD4 00000D14  7C 08 03 A6 */	mtlr r0
-/* 00000CD8 00000D18  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000CDC 00000D1C  4E 80 00 20 */	blr
-.endfn "superID__34sFStateVirtualID_c<12daFloorJrA_c>CFv"
-
-# .text:0xCE0 | size: 0x88
+# .text:0xCB0 | size: 0x88
 # sFStateID_c<daFloorJrA_c>::isSameName(const char*) const
 .fn "isSameName__27sFStateID_c<12daFloorJrA_c>CFPCc", weak
-/* 00000CE0 00000D20  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000CE4 00000D24  7C 08 02 A6 */	mflr r0
-/* 00000CE8 00000D28  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000CEC 00000D2C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 00000CF0 00000D30  7C 9F 23 78 */	mr r31, r4
-/* 00000CF4 00000D34  38 80 00 3A */	li r4, 0x3a
-/* 00000CF8 00000D38  93 C1 00 08 */	stw r30, 0x8(r1)
-/* 00000CFC 00000D3C  7C 7E 1B 78 */	mr r30, r3
-/* 00000D00 00000D40  7F E3 FB 78 */	mr r3, r31
-/* 00000D04 00000D44  48 00 00 01 */	bl strrchr
-/* 00000D08 00000D48  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000D0C 00000D4C  41 82 00 08 */	beq .L_00000D14
-/* 00000D10 00000D50  3B E3 00 01 */	addi r31, r3, 0x1
-.L_00000D14:
-/* 00000D14 00000D54  81 9E 00 00 */	lwz r12, 0x0(r30)
-/* 00000D18 00000D58  7F C3 F3 78 */	mr r3, r30
-/* 00000D1C 00000D5C  81 8C 00 20 */	lwz r12, 0x20(r12)
-/* 00000D20 00000D60  7D 89 03 A6 */	mtctr r12
-/* 00000D24 00000D64  4E 80 04 21 */	bctrl
-/* 00000D28 00000D68  38 80 00 3A */	li r4, 0x3a
-/* 00000D2C 00000D6C  48 00 00 01 */	bl strrchr
-/* 00000D30 00000D70  7F E4 FB 78 */	mr r4, r31
-/* 00000D34 00000D74  38 63 00 01 */	addi r3, r3, 0x1
-/* 00000D38 00000D78  48 00 00 01 */	bl strcmp
-/* 00000D3C 00000D7C  2C 03 00 00 */	cmpwi r3, 0x0
-/* 00000D40 00000D80  40 82 00 0C */	bne .L_00000D4C
-/* 00000D44 00000D84  38 60 00 01 */	li r3, 0x1
-/* 00000D48 00000D88  48 00 00 08 */	b .L_00000D50
-.L_00000D4C:
-/* 00000D4C 00000D8C  38 60 00 00 */	li r3, 0x0
-.L_00000D50:
-/* 00000D50 00000D90  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000D54 00000D94  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 00000D58 00000D98  83 C1 00 08 */	lwz r30, 0x8(r1)
-/* 00000D5C 00000D9C  7C 08 03 A6 */	mtlr r0
-/* 00000D60 00000DA0  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000D64 00000DA4  4E 80 00 20 */	blr
+/* 00000CB0 00000CF0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000CB4 00000CF4  7C 08 02 A6 */	mflr r0
+/* 00000CB8 00000CF8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000CBC 00000CFC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000CC0 00000D00  7C 9F 23 78 */	mr r31, r4
+/* 00000CC4 00000D04  38 80 00 3A */	li r4, 0x3a
+/* 00000CC8 00000D08  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00000CCC 00000D0C  7C 7E 1B 78 */	mr r30, r3
+/* 00000CD0 00000D10  7F E3 FB 78 */	mr r3, r31
+/* 00000CD4 00000D14  48 00 00 01 */	bl strrchr
+/* 00000CD8 00000D18  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000CDC 00000D1C  41 82 00 08 */	beq .L_00000CE4
+/* 00000CE0 00000D20  3B E3 00 01 */	addi r31, r3, 0x1
+.L_00000CE4:
+/* 00000CE4 00000D24  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 00000CE8 00000D28  7F C3 F3 78 */	mr r3, r30
+/* 00000CEC 00000D2C  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 00000CF0 00000D30  7D 89 03 A6 */	mtctr r12
+/* 00000CF4 00000D34  4E 80 04 21 */	bctrl
+/* 00000CF8 00000D38  38 80 00 3A */	li r4, 0x3a
+/* 00000CFC 00000D3C  48 00 00 01 */	bl strrchr
+/* 00000D00 00000D40  7F E4 FB 78 */	mr r4, r31
+/* 00000D04 00000D44  38 63 00 01 */	addi r3, r3, 0x1
+/* 00000D08 00000D48  48 00 00 01 */	bl strcmp
+/* 00000D0C 00000D4C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00000D10 00000D50  40 82 00 0C */	bne .L_00000D1C
+/* 00000D14 00000D54  38 60 00 01 */	li r3, 0x1
+/* 00000D18 00000D58  48 00 00 08 */	b .L_00000D20
+.L_00000D1C:
+/* 00000D1C 00000D5C  38 60 00 00 */	li r3, 0x0
+.L_00000D20:
+/* 00000D20 00000D60  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000D24 00000D64  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00000D28 00000D68  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00000D2C 00000D6C  7C 08 03 A6 */	mtlr r0
+/* 00000D30 00000D70  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000D34 00000D74  4E 80 00 20 */	blr
 .endfn "isSameName__27sFStateID_c<12daFloorJrA_c>CFPCc"
-/* 00000D68 00000DA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
-/* 00000D6C 00000DAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D38 00000D78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000D3C 00000D7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 
-# .text:0xD70 | size: 0x30
+# .text:0xD40 | size: 0x30
 # sFStateID_c<daFloorJrA_c>::initializeState(daFloorJrA_c&) const
 .fn "initializeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c", weak
+/* 00000D40 00000D80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000D44 00000D84  7C 08 02 A6 */	mflr r0
+/* 00000D48 00000D88  7C 65 1B 78 */	mr r5, r3
+/* 00000D4C 00000D8C  7C 83 23 78 */	mr r3, r4
+/* 00000D50 00000D90  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000D54 00000D94  39 85 00 0C */	addi r12, r5, 0xc
+/* 00000D58 00000D98  48 00 00 01 */	bl __ptmf_scall
+/* 00000D5C 00000D9C  60 00 00 00 */	nop
+/* 00000D60 00000DA0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00000D64 00000DA4  7C 08 03 A6 */	mtlr r0
+/* 00000D68 00000DA8  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000D6C 00000DAC  4E 80 00 20 */	blr
+.endfn "initializeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
+
+# .text:0xD70 | size: 0x30
+# sFStateID_c<daFloorJrA_c>::executeState(daFloorJrA_c&) const
+.fn "executeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c", weak
 /* 00000D70 00000DB0  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 00000D74 00000DB4  7C 08 02 A6 */	mflr r0
 /* 00000D78 00000DB8  7C 65 1B 78 */	mr r5, r3
 /* 00000D7C 00000DBC  7C 83 23 78 */	mr r3, r4
 /* 00000D80 00000DC0  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000D84 00000DC4  39 85 00 0C */	addi r12, r5, 0xc
+/* 00000D84 00000DC4  39 85 00 18 */	addi r12, r5, 0x18
 /* 00000D88 00000DC8  48 00 00 01 */	bl __ptmf_scall
 /* 00000D8C 00000DCC  60 00 00 00 */	nop
 /* 00000D90 00000DD0  80 01 00 14 */	lwz r0, 0x14(r1)
 /* 00000D94 00000DD4  7C 08 03 A6 */	mtlr r0
 /* 00000D98 00000DD8  38 21 00 10 */	addi r1, r1, 0x10
 /* 00000D9C 00000DDC  4E 80 00 20 */	blr
-.endfn "initializeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
+.endfn "executeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
 
 # .text:0xDA0 | size: 0x30
-# sFStateID_c<daFloorJrA_c>::executeState(daFloorJrA_c&) const
-.fn "executeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c", weak
+# sFStateID_c<daFloorJrA_c>::finalizeState(daFloorJrA_c&) const
+.fn "finalizeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c", weak
 /* 00000DA0 00000DE0  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 00000DA4 00000DE4  7C 08 02 A6 */	mflr r0
 /* 00000DA8 00000DE8  7C 65 1B 78 */	mr r5, r3
 /* 00000DAC 00000DEC  7C 83 23 78 */	mr r3, r4
 /* 00000DB0 00000DF0  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000DB4 00000DF4  39 85 00 18 */	addi r12, r5, 0x18
+/* 00000DB4 00000DF4  39 85 00 24 */	addi r12, r5, 0x24
 /* 00000DB8 00000DF8  48 00 00 01 */	bl __ptmf_scall
 /* 00000DBC 00000DFC  60 00 00 00 */	nop
 /* 00000DC0 00000E00  80 01 00 14 */	lwz r0, 0x14(r1)
 /* 00000DC4 00000E04  7C 08 03 A6 */	mtlr r0
 /* 00000DC8 00000E08  38 21 00 10 */	addi r1, r1, 0x10
 /* 00000DCC 00000E0C  4E 80 00 20 */	blr
-.endfn "executeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
-
-# .text:0xDD0 | size: 0x30
-# sFStateID_c<daFloorJrA_c>::finalizeState(daFloorJrA_c&) const
-.fn "finalizeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c", weak
-/* 00000DD0 00000E10  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 00000DD4 00000E14  7C 08 02 A6 */	mflr r0
-/* 00000DD8 00000E18  7C 65 1B 78 */	mr r5, r3
-/* 00000DDC 00000E1C  7C 83 23 78 */	mr r3, r4
-/* 00000DE0 00000E20  90 01 00 14 */	stw r0, 0x14(r1)
-/* 00000DE4 00000E24  39 85 00 24 */	addi r12, r5, 0x24
-/* 00000DE8 00000E28  48 00 00 01 */	bl __ptmf_scall
-/* 00000DEC 00000E2C  60 00 00 00 */	nop
-/* 00000DF0 00000E30  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 00000DF4 00000E34  7C 08 03 A6 */	mtlr r0
-/* 00000DF8 00000E38  38 21 00 10 */	addi r1, r1, 0x10
-/* 00000DFC 00000E3C  4E 80 00 20 */	blr
 .endfn "finalizeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
 
 # 0x00000000..0x00000004 | size: 0x4
@@ -1177,48 +1138,54 @@
 .balign 4
 	.4byte "__sinit_\d_a_floor_jr_a_cpp"
 
-# 0x00000000..0x0000001C | size: 0x1C
+# 0x00000000..0x00000024 | size: 0x24
 .rodata
 .balign 8
 
 # .rodata:0x0 | size: 0x4
-.obj "@15324", local
+.obj "@15226", local
 # .rodata:0x0 | size: 0x0
 .sym ...rodata.0, local
 	.4byte 0x3F800000
-.endobj "@15324"
+.endobj "@15226"
 
 # .rodata:0x4 | size: 0x4
-.obj "@15325", local
+.obj "@15227", local
 	.4byte 0xC2000000
-.endobj "@15325"
+.endobj "@15227"
 
 # .rodata:0x8 | size: 0x4
-.obj "@15326", local
+.obj "@15228", local
 	.4byte 0x41000000
-.endobj "@15326"
+.endobj "@15228"
 
 # .rodata:0xC | size: 0x4
-.obj "@15327", local
+.obj "@15229", local
 	.4byte 0x42000000
-.endobj "@15327"
+.endobj "@15229"
 
 # .rodata:0x10 | size: 0x4
-.obj "@15328", local
+.obj "@15230", local
 	.4byte 0xC1000000
-.endobj "@15328"
+.endobj "@15230"
 
 # .rodata:0x14 | size: 0x4
-.obj "@15347", local
+.obj "@15277", local
 	.4byte 0x00000000
-.endobj "@15347"
+.endobj "@15277"
 
-# .rodata:0x18 | size: 0x4
-.obj "@15348", local
+# .rodata:0x18 | size: 0x8
+.obj "@15280", local
+	.4byte 0x43300000
+	.4byte 0x80000000
+.endobj "@15280"
+
+# .rodata:0x20 | size: 0x4
+.obj "@15299", local
 	.4byte 0xBE19999A
-.endobj "@15348"
+.endobj "@15299"
 
-# 0x00000000..0x00000424 | size: 0x424
+# 0x00000000..0x000003F0 | size: 0x3F0
 .data
 .balign 8
 # .data:0x0 | size: 0x0
@@ -1232,7 +1199,7 @@
 .endobj g_profile_FLOOR_JR_A
 
 # .data:0xC | size: 0x22
-.obj "@15308", local
+.obj "@15210", local
 	.4byte 0x6733642F
 	.4byte 0x626F7373
 	.4byte 0x5F6B6F6F
@@ -1242,34 +1209,34 @@
 	.4byte 0x6962612E
 	.4byte 0x62727265
 	.2byte 0x7300
-.endobj "@15308"
+.endobj "@15210"
 	.2byte 0x0000
 
 # .data:0x30 | size: 0x18
-.obj "@15309", local
+.obj "@15211", local
 	.4byte 0x626F7373
 	.4byte 0x5F6B6F6F
 	.4byte 0x70614A72
 	.4byte 0x5F646F77
 	.4byte 0x6E5F6173
 	.4byte 0x69626100
-.endobj "@15309"
+.endobj "@15211"
 
 # .data:0x48 | size: 0x10
-.obj "@15331", local
+.obj "@15233", local
 	.4byte 0x576D5F6A
 	.4byte 0x725F6372
 	.4byte 0x756D626C
 	.4byte 0x65303100
-.endobj "@15331"
+.endobj "@15233"
 
 # .data:0x58 | size: 0x10
-.obj "@15332", local
+.obj "@15234", local
 	.4byte 0x576D5F6A
 	.4byte 0x725F6372
 	.4byte 0x756D626C
 	.4byte 0x65303200
-.endobj "@15332"
+.endobj "@15234"
 
 # .data:0x68 | size: 0x28C
 # daFloorJrA_c::__vtable
@@ -1440,70 +1407,70 @@
 .endobj __vt__12daFloorJrA_c
 
 # .data:0x2F4 | size: 0xC
-.obj "@15368", local
+.obj "@15323", local
 	.4byte 0x00000000
 	.4byte 0xFFFFFFFF
 	.4byte finalizeState_DemoWait__12daFloorJrA_cFv
-.endobj "@15368"
+.endobj "@15323"
 
 # .data:0x300 | size: 0xC
-.obj "@15369", local
+.obj "@15324", local
 	.4byte 0x00000000
 	.4byte 0xFFFFFFFF
 	.4byte executeState_DemoWait__12daFloorJrA_cFv
-.endobj "@15369"
+.endobj "@15324"
 
 # .data:0x30C | size: 0xC
-.obj "@15370", local
+.obj "@15325", local
 	.4byte 0x00000000
 	.4byte 0xFFFFFFFF
 	.4byte initializeState_DemoWait__12daFloorJrA_cFv
-.endobj "@15370"
+.endobj "@15325"
 
 # .data:0x318 | size: 0xC
-.obj "@15371", local
+.obj "@15326", local
 	.4byte 0x00000000
 	.4byte 0xFFFFFFFF
 	.4byte finalizeState_Wait__12daFloorJrA_cFv
-.endobj "@15371"
+.endobj "@15326"
 
 # .data:0x324 | size: 0xC
-.obj "@15372", local
+.obj "@15327", local
 	.4byte 0x00000000
 	.4byte 0xFFFFFFFF
 	.4byte executeState_Wait__12daFloorJrA_cFv
-.endobj "@15372"
+.endobj "@15327"
 
 # .data:0x330 | size: 0xC
-.obj "@15373", local
+.obj "@15328", local
 	.4byte 0x00000000
 	.4byte 0xFFFFFFFF
 	.4byte initializeState_Wait__12daFloorJrA_cFv
-.endobj "@15373"
+.endobj "@15328"
 
 # .data:0x33C | size: 0xC
-.obj "@15374", local
+.obj "@15329", local
 	.4byte 0x00000000
 	.4byte 0x00000180
 	.4byte 0x00000060
-.endobj "@15374"
+.endobj "@15329"
 
 # .data:0x348 | size: 0xC
-.obj "@15375", local
+.obj "@15330", local
 	.4byte 0x00000000
 	.4byte 0x0000017C
 	.4byte 0x00000060
-.endobj "@15375"
+.endobj "@15330"
 
 # .data:0x354 | size: 0xC
-.obj "@15376", local
+.obj "@15331", local
 	.4byte 0x00000000
 	.4byte 0x00000178
 	.4byte 0x00000060
-.endobj "@15376"
+.endobj "@15331"
 
 # .data:0x360 | size: 0x1F
-.obj "@15378", local
+.obj "@15333", local
 	.4byte 0x6461466C
 	.4byte 0x6F6F724A
 	.4byte 0x72415F63
@@ -1512,11 +1479,11 @@
 	.4byte 0x445F4465
 	.4byte 0x6D6F5761
 	.byte 0x69, 0x74, 0x00
-.endobj "@15378"
+.endobj "@15333"
 	.byte 0x00
 
 # .data:0x380 | size: 0x1B
-.obj "@15379", local
+.obj "@15334", local
 	.4byte 0x6461466C
 	.4byte 0x6F6F724A
 	.4byte 0x72415F63
@@ -1524,11 +1491,11 @@
 	.4byte 0x61746549
 	.4byte 0x445F5761
 	.byte 0x69, 0x74, 0x00
-.endobj "@15379"
+.endobj "@15334"
 	.byte 0x00
 
 # .data:0x39C | size: 0x1E
-.obj "@15380", local
+.obj "@15335", local
 	.4byte 0x6461466C
 	.4byte 0x6F6F724A
 	.4byte 0x72415F63
@@ -1537,28 +1504,10 @@
 	.4byte 0x445F4469
 	.4byte 0x6546616C
 	.2byte 0x6C00
-.endobj "@15380"
+.endobj "@15335"
 	.2byte 0x0000
 
 # .data:0x3BC | size: 0x34
-# sFStateVirtualID_c<daFloorJrA_c>::__vtable
-.obj "__vt__34sFStateVirtualID_c<12daFloorJrA_c>", weak
-	.4byte 0x00000000
-	.4byte 0x00000000
-	.4byte "__dt__34sFStateVirtualID_c<12daFloorJrA_c>Fv"
-	.4byte isNull__10sStateID_cCFv
-	.4byte isEqual__10sStateID_cCFRC12sStateIDIf_c
-	.4byte __eq__10sStateID_cCFRC12sStateIDIf_c
-	.4byte __ne__10sStateID_cCFRC12sStateIDIf_c
-	.4byte "isSameName__27sFStateID_c<12daFloorJrA_c>CFPCc"
-	.4byte name__10sStateID_cCFv
-	.4byte "number__34sFStateVirtualID_c<12daFloorJrA_c>CFv"
-	.4byte "initializeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
-	.4byte "executeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
-	.4byte "finalizeState__27sFStateID_c<12daFloorJrA_c>CFR12daFloorJrA_c"
-.endobj "__vt__34sFStateVirtualID_c<12daFloorJrA_c>"
-
-# .data:0x3F0 | size: 0x34
 # sFStateID_c<daFloorJrA_c>::__vtable
 .obj "__vt__27sFStateID_c<12daFloorJrA_c>", weak
 	.4byte 0x00000000
@@ -1581,11 +1530,11 @@
 .balign 8
 
 # .bss:0x0 | size: 0xC
-.obj "@14791", local
+.obj "@14789", local
 # .bss:0x0 | size: 0x0
 .sym ...bss.0, local
 	.skip 0xC
-.endobj "@14791"
+.endobj "@14789"
 	.skip 0x4
 
 # .bss:0x10 | size: 0x30
@@ -1595,9 +1544,9 @@
 .endobj StateID_DemoWait__12daFloorJrA_c
 
 # .bss:0x40 | size: 0xC
-.obj "@14795", local
+.obj "@14793", local
 	.skip 0xC
-.endobj "@14795"
+.endobj "@14793"
 	.skip 0x4
 
 # .bss:0x50 | size: 0x30
@@ -1607,12 +1556,13 @@
 .endobj StateID_Wait__12daFloorJrA_c
 
 # .bss:0x80 | size: 0xC
-.obj "@14803", local
+.obj "@14797", local
 	.skip 0xC
-.endobj "@14803"
+.endobj "@14797"
+	.skip 0x4
 
-# .bss:0x8C | size: 0x34
+# .bss:0x90 | size: 0x30
 # daFloorJrA_c::StateID_DieFall
 .obj StateID_DieFall__12daFloorJrA_c, global
-	.skip 0x34
+	.skip 0x30
 .endobj StateID_DieFall__12daFloorJrA_c

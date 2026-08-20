@@ -12943,3 +12943,59 @@ both `vf29c` overrides size-exact with scheduling residual; and `__sinit` above.
 doctrine than any other — the macro hand-expansion, the two-sided size diagnostic,
 the "read fresh rather than vary" threshold, and the `.bss`-object-is-constructed-
 by-`__sinit` insight.
+
+## The `.data` PMF ENCODING tells you whether a state's methods are VIRTUAL
+
+FLOOR_JR_A went **22/29 -> 26/29**, and its `__sinit` fix is the most reusable
+result: **the previous round had used the wrong macro.**
+
+`dEn_c` — the base class — already declares `STATE_VIRTUAL_FUNC_DECLARE(dEn_c,
+DieFall)`. So a derived class overriding the three `DieFall` methods as **ordinary
+virtuals** is enough; no `baseID_DieFall<T>` chaining is needed at all. The draft
+had used `STATE_VIRTUAL_FUNC_DECLARE`/`STATE_VIRTUAL_DEFINE` and compiled an extra
+`baseID_DieFall<dEn_c>` call the target does not have. Replacing it with a plain
+`virtual void ...;` plus `static sFStateID_c<daFloorJrA_c> StateID_DieFall;` and an
+ordinary `STATE_DEFINE` took `__sinit` **74 -> 21 differing, with all 159 words
+now lining up in order.**
+
+**And the discriminator is readable straight out of `.data`, independent of any
+disassembly-order argument:**
+
+```
+{ -1, fn_addr, 0 }                 -> NON-VIRTUAL pointer-to-member
+{ vtable_offset, 0x60, 0 }         -> VIRTUAL pointer-to-member
+```
+
+`DieFall`'s three slots use the **virtual** encoding; `DemoWait`/`Wait` use the
+non-virtual one. **So before choosing a state macro, read the three PMF triples in
+`.data` and let the encoding tell you which form the original used.** That is a
+one-look answer to a question that has now cost rounds on three separate units.
+
+## An EIGHTH wrong return type, found by a NEW tell: full frame instead of tail branch
+
+`resetToBasePos` was declared `void`; it returns `int` (`SUCCEEDED`). The evidence
+is not a call site consuming the value — it is the callee's own shape:
+
+**the target builds a full stack frame and performs a real `bl` plus return, where
+a `void` function would TAIL-BRANCH.** A compiler only keeps the frame alive
+across the call when something must survive it — here, the return value.
+
+**That is a new detection method for this project's most recurring defect class.**
+The seven previous wrong return types were all caught at CALL SITES (a consumed
+result, a spurious mask, a width narrowing). This one was caught in the FUNCTION
+ITSELF, which matters because a wrong `void` on a function whose callers ignore the
+result is invisible from every call site.
+
+Three more closed the same round: `unk_83A90` (two `mEf::effect_c::follow` calls,
+cross-checked against that class's own landed vtable dump), `executeState_Wait`,
+and `executeState_DieFall`'s tail. `unk_83B00` was authored content-complete and
+**size-exact at 84/84** using only already-landed inline helpers and named
+base-class fields — no raw offsets.
+
+**Three residuals remain, all evidenced:** `setupBgCtr` (5 differing, only a base
+offset into a shared rodata pool — and the agent applied the "who references it"
+ownership test **in the opposite direction** to show the extra leading bytes are
+referenced by nothing in this unit, so the gap is link-order-dependent rather than
+theirs); `unk_83B00` (55, a register-hoisting instruction-selection difference);
+and `__sinit` (21, tracing to one 192-byte solid-zero `.data` gap it could not
+attribute, with the obvious candidates ruled out rather than assumed).

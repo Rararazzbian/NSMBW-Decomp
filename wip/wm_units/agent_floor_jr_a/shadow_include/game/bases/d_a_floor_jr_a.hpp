@@ -50,7 +50,24 @@ public:
 
     STATE_FUNC_DECLARE(daFloorJrA_c, DemoWait);
     STATE_FUNC_DECLARE(daFloorJrA_c, Wait);
-    STATE_VIRTUAL_FUNC_DECLARE(daFloorJrA_c, DieFall);
+
+    // NOT STATE_VIRTUAL_FUNC_DECLARE: dEn_c already declares DieFall's three
+    // state methods virtual (STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieFall) in
+    // d_enemy.hpp), so overriding them here needs no re-statement of the
+    // sFStateVirtualID_c/baseID_DieFall<T> base-lookup machinery -- that
+    // machinery is for a DERIVED class that wants to CHAIN to an ancestor's
+    // existing StateID by name. This class instead builds its OWN fresh,
+    // ordinary sFStateID_c<daFloorJrA_c> (same shape as StateID_DemoWait/
+    // StateID_Wait, sharing their own vtable and destructor in .data/.text),
+    // confirmed directly from __sinit's target disassembly: all three state
+    // ctor blocks are byte-for-byte the SAME shape (9-word copy, plain
+    // __ct__10sStateID_cFPCc, vtable patch, __register_global_object) --
+    // none of the three calls a baseID_DieFall<T> lookup, which
+    // STATE_VIRTUAL_DEFINE's expansion would require if used here.
+    virtual void initializeState_DieFall();
+    virtual void executeState_DieFall();
+    virtual void finalizeState_DieFall();
+    static sFStateID_c<daFloorJrA_c> StateID_DieFall;
 
     // Three brand-new virtuals past dEn_c's own final slot
     // (`yoshifumiEffect`) -- confirmed by `check_vtable.py` SLOT COUNT
@@ -58,7 +75,7 @@ public:
     // names/signatures still placeholder; this unit's own body-authoring
     // pass is what should replace them once each is read.
     virtual void createMdl();
-    virtual void resetToBasePos();
+    virtual int resetToBasePos();
     virtual void unk_83B00();
 
     void setUnk_674_348(int val674, u8 val348);  ///< fn_2_83780

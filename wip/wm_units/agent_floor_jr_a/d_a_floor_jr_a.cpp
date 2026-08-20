@@ -18,7 +18,8 @@
 //   838C0  resetToBasePos
 //   83910  execute
 //   83970  setupBgCtr
-//   83A10/83A90  still unauthored
+//   83A10  playCrumbleEffects
+//   83A90  unk_83A90 (mEffects[0/1].follow(&mPos, 0, 0))
 //   83B00  unk_83B00 (own new virtual, vtable tail slot 2)
 //   83C50  draw
 //   83C80  doDelete
@@ -38,7 +39,7 @@
 
 STATE_DEFINE(daFloorJrA_c, DemoWait);
 STATE_DEFINE(daFloorJrA_c, Wait);
-STATE_VIRTUAL_DEFINE(daFloorJrA_c, DieFall);
+STATE_DEFINE(daFloorJrA_c, DieFall);
 
 ACTOR_PROFILE(FLOOR_JR_A, daFloorJrA_c, 0);
 
@@ -72,10 +73,11 @@ void daFloorJrA_c::createMdl() {
     mHeapAllocator.adjustFrmHeap();
 }
 
-void daFloorJrA_c::resetToBasePos() {
+int daFloorJrA_c::resetToBasePos() {
     mBasePos = mPos;
     m_674 = -1;
     setupBgCtr();
+    return SUCCEEDED;
 }
 
 int daFloorJrA_c::execute() {
@@ -86,9 +88,9 @@ int daFloorJrA_c::execute() {
 }
 
 void daFloorJrA_c::setupBgCtr() {
-    *(float *)((u8 *)this + 0xdc) = 1.0f;
-    *(float *)((u8 *)this + 0xe0) = 1.0f;
-    *(float *)((u8 *)this + 0xe4) = 1.0f;
+    mScale.x = 1.0f;
+    mScale.y = 1.0f;
+    mScale.z = 1.0f;
 
     mVec3_c scale;
     scale.x = 1.0f;
@@ -114,9 +116,23 @@ void daFloorJrA_c::playCrumbleEffects() {
 }
 
 void daFloorJrA_c::unk_83A90() {
+    mEffects[0].follow(&mPos, nullptr, nullptr);
+    mEffects[1].follow(&mPos, nullptr, nullptr);
 }
 
 void daFloorJrA_c::unk_83B00() {
+    mMatrix.trans(mPos);
+
+    mMatrix.YrotM(mAngle.y);
+    mMatrix.concat(mMtx_c::createTrans(l_EnMuki[mDirection] * 32.0f, 0.0f, 0.0f));
+
+    mMatrix.XrotM(mAngle.x);
+    mMatrix.concat(mMtx_c::createTrans(-l_EnMuki[mDirection] * 32.0f, 0.0f, 0.0f));
+
+    mMatrix.ZrotM(mAngle.z);
+
+    mModel.setLocalMtx(&mMatrix);
+    mModel.setScale(mScale);
 }
 
 int daFloorJrA_c::draw() {
@@ -135,7 +151,13 @@ void daFloorJrA_c::executeState_DemoWait() {}
 
 void daFloorJrA_c::finalizeState_Wait() {}
 void daFloorJrA_c::initializeState_Wait() {}
-void daFloorJrA_c::executeState_Wait() {}
+
+void daFloorJrA_c::executeState_Wait() {
+    if (m_674 == 0)
+        changeState(StateID_DemoWait);
+    else if (m_674 > 0)
+        m_674--;
+}
 
 void daFloorJrA_c::initializeState_DieFall() {
     *(float *)((u8 *)this + 0xec) = 0.0f;
@@ -149,5 +171,5 @@ void daFloorJrA_c::executeState_DieFall() {
     calcSpeedY();
     posMove();
     unk_83A90();
-    // TODO: angle-increment tail, raw offset 0x104/0x348 access -- parked
+    mAngle.z += l_EnMuki[mDirection] * 0x60;
 }
