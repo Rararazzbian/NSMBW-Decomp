@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 11677 lines / 448 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 11737 lines / 452 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -469,3 +469,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `11615-11626` Pooled STRING LITERALS name the class and its states outright
 - `11627-11653` A prediction that HELD: name the overrides before touching the constructor
 - `11654-11677` Tool fix: the trailing-`blr` forgiveness only fired for `bctr`, not for `b`
+- `11678-11687` LANDED: `d_a_peach_castle_sequence.cpp` — and the ORDER GATE WAS A FALSE POSITIVE
+  - `11688-11710` Why the gate lied, and how to tell next time
+  - `11711-11726` The rule that follows
+  - `11727-11737` The agent's own negatives still stand and are worth keeping

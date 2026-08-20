@@ -11674,3 +11674,63 @@ keep:** across every unit the sweep covers, exactly one number moved —
 `agent_peach_castle_seq` from `43/44` to `44/44`. **No other unit's tally changed
 at all.** A forgiveness rule that is too loose shows up as tallies rising
 everywhere; this one moved precisely where the artefact was.
+
+## LANDED: `d_a_peach_castle_sequence.cpp` — and the ORDER GATE WAS A FALSE POSITIVE
+
+**`.text 0x1204E0-0x120F00`, `.ctors 0x2E4-0x2E8`, `.data 0x39320-0x395F8`,
+`.bss 0xD8B8-0xD900`. 44/44. Five binaries verified green.**
+`d_basesNP` 2.373% -> 2.512%, total 11.477% -> 11.517%. Two landings this session.
+
+**The unit had been reported as failing the order gate for multiple rounds, with
+seven separate experiments run against it. The violation did not exist.** It
+links, and all five binaries match retail byte-for-byte.
+
+### Why the gate lied, and how to tell next time
+
+The draft contains **four groups of BYTE-IDENTICAL functions — twenty functions
+in total**:
+
+```
+7 functions with the same 16-instruction body  (incl. two of the flagged ones:
+                                                sFStateFct_c and sFState_c dtors)
+6 functions with the same  2-instruction body
+4 functions with the same  1-instruction body
+3 functions with the same 22-instruction body
+```
+
+`verify_anon` pairs target to draft on instruction CONTENT. With seven
+indistinguishable candidates for one target, the pairing is ambiguous, and the
+"matched indices must ascend" test then reports an order that is an artefact of
+tie-breaking rather than of the source.
+
+**And the violation is semantically void even if the pairing were arbitrary:
+swapping two byte-identical functions emits identical `.text`.** An ordering
+complaint that exists only among interchangeable functions cannot affect
+linking, by construction.
+
+### The rule that follows
+
+**The order gate is a PROXY. `progress.py --verify-bin` is the AUTHORITY.**
+
+When a unit is at N/N on content and the only remaining objection is an order
+violation, **check whether the flagged functions have byte-identical siblings —
+and if they do, try landing it.** The link settles in one command what cost this
+unit seven experiments and a round of file-shape guessing, and what I compounded
+by sending it after landed precedent for a problem it did not have.
+
+This does NOT weaken the gate. Three units were genuinely unlinkable today and it
+caught them, and WM_ANCHOR's earlier false positive was a two-way tie that a
+fix already addresses. But **a gate whose false positives look exactly like its
+true positives must be checked against ground truth before it drives a round of
+work** — and here the ground truth is cheap.
+
+### The agent's own negatives still stand and are worth keeping
+
+All proven, all recorded in its MAPPING.md: `STATE_DEFINE`'s position is
+conclusively not a lever (four positions, byte-identical output); the declaration
+order of `mStateMgr` versus `STATE_FUNC_DECLARE` does not matter (the landed files
+disagree with each other, which is itself the evidence); and forcing the
+destructor out-of-line in `Pausewindow_c`'s convention regressed the flag count
+7 -> 21, **proving the real source uses inline `{}` destructors** — established by
+elimination, not assumption. Those remain true and useful even though the gate
+they were aimed at was misfiring.
