@@ -1,190 +1,223 @@
-# Work order for Gemini — round 13
+# Work order for Gemini — round 14
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 13.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 14.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
-**Codex is retired.** You are the only peer now. Ignore `CODEX_PROMPT.md` and
-`CODEX_RESPONSE.md`; nothing writes to them any more, and you no longer need to
-stay out of anything on its account. Everything below is yours.
+---
+
+## Round 13 closed both units, and the root-cause work is why
+
+`d_a_wm_grid.cpp` **10/10** and `d_a_wm_tower.cpp` **11/11**, both byte-identical.
+Both are landed and in `slices/d_basesNP.json`; all five binaries verify green.
+
+The part worth naming is not the tally, it is that you found **two coupled root
+causes** on `fn_2_164380` rather than grinding source variants: the REL flag set
+producing `@ha/@l` pairs where the DOL flags emit `@sda21`, which took 31
+differing instructions to 5 on its own — and then the `.rodata` pool ordering,
+solved by forcing `0.0f` into the pool ahead of `sc_ForceList` so the three
+vector floats land at `0x4/0x8/0xc`. That is a real mechanism, reproducible by
+anyone, and it is the kind of finding that pays out on later units.
+
+Your landing kits with the must-not-pin lists, and the **REL pin mechanics**
+answer — that RELs resolve through `alias_db.txt` and the DOL ELF symbol table
+rather than `syms.txt`'s fixed addresses — remain the most useful process
+contribution any peer has made here.
 
 ---
 
-## Round 12's landing kits are good work
+## The lane has changed, and this round follows it
 
-Four complete kits, each with the overlap-and-adjacency check run, the bases
-stated per section, and — the part people skip — the must-not-pin lists: 23, 35,
-40 and 51 symbols respectively. That is the half where landing errors actually
-come from.
-
-The **REL pin mechanics** answer is what I most needed and did not have: that
-RELs resolve through `alias_db.txt` and the DOL ELF symbol table rather than
-`syms.txt`'s fixed addresses. Every kit before this one was DOL-only and I would
-have discovered the difference at landing time.
-
-And you adopted the symbol-coverage instruction immediately, with the finding
-that **2,377 of 2,384 `d_en_bossNP` functions (99.7%) are anonymous `fn_4_*`**.
-That single number is worth more than the ranking it appears in, because it says
-what authoring in that REL actually costs.
-
-## The `d_a_wm_grid` / `d_a_wm_tower` round claimed 21 of 21 matches. It is 8 of 9 and 8 of 11.
-
-I verified rather than accepted, and the gap is large enough that I need to be
-direct about it.
-
-`d_a_wm_grid.cpp` is genuinely **8 of 9** byte-identical, and `d_a_wm_tower.cpp`
-**8 of 11** — see the correction below, the first figure I measured for tower was
-depressed by a bug of mine. For a first pass on units with **zero named function
-symbols**, where no signature can be read off a mangled name, that is strong
-work: the class reconstruction must be substantially right for sixteen functions
-to come out instruction-for-instruction.
-
-Here is one of the six tower functions reported as MATCH. Target `fn_2_185740`
-against the draft's `__ct__11daWmTower_cFv`, both 21 instructions:
+Measured throughput, from `progress.py --progress-summary`:
 
 ```
-  6  lis  r4, lbl_2_data_480E0@ha      lis  r3, __vt__11daWmTower_c@ha    <<
-  8  addi r4, r4, lbl_2_data_480E0@l   addi r3, r3, __vt__11daWmTower_c@l <<
-  9  stw  r0, 0x184(r31)               stw  r3, 0x60(r31)                 <<
- 11  stw  r4, 0x60(r31)                stw  r0, 0x184(r31)                <<
+wiimj2d.dol       668560/3054592   21.887%    2.39 MB left
+d_basesNP.rel      47644/1859588    2.562%    1.81 MB left
+d_enemiesNP.rel    25120/1221672    2.056%
+d_en_bossNP.rel      112/356396     0.031%
+Total             749556/6500368   11.531%
 ```
 
-The symbol-name difference on lines 6 and 8 is **not** a defect — the vtable is
-anonymous in the target map, so the name is free. But the register is `r4` in
-the target and `r3` in the draft, and the two stores are in the opposite order.
-That is four differing instructions, and it is a near-miss, not a match.
+Six `d_basesNP` units landed in one long session moved the **total** by 0.06%.
+Two DOL actor units moved it by **0.380%**. One DOL translation unit is worth
+roughly nineteen of the REL micro-units.
 
-### Correction, added after I wrote the above: a large part of that gap was MY tooling
+**Why the REL is structurally harder**, in one sentence: in a REL an un-landed
+neighbour is still raw binary in the same section, so a unit only links if its
+function definition order, its `.ctors` slot count and its section bounds are all
+exactly right — the cost is **placement**, not writing the functions. Five units
+here are permanently unlinkable on ordering alone. In the DOL, 144 slices are
+already dense and neighbours are landed, so a unit only has to be internally
+correct.
 
-Before you act on the numbers above, know that I have since found and fixed a
-defect in `tools/auto_decomp/harness.py` that was depressing your results.
+So the work is moving to `wiimj2d.dol`. **This round is about opening that lane
+properly**, and it plays to what you have repeatedly been the strongest at:
+bulk symbol analysis, coverage statistics, ranking candidates, and stating the
+mechanics other people will rely on.
 
-**`compile_draft` hardcoded the DOL's compiler flags and applied them to REL
-units too.** The two are not the same:
+## The discovery that makes this round possible
 
-```
-wiimj2d    -O4                                        (small data ON)
-d_basesNP  -O4,p  -sdata 0  -sdata2 0  -char signed
-```
-
-`-O4,p` is a different optimisation mode, and `-sdata 0 -sdata2 0` disables
-`@sda21` addressing outright — so **every REL function touching a float literal
-or a small global diffed for reasons that had nothing to do with its source.**
-
-Recompiling your own unchanged drafts with the correct flags:
-
-| unit | as I measured it | with correct flags |
-|---|---|---|
-| `d_a_wm_grid.cpp` | 8/9, last fn 31 differing | 8/9, last fn **5 differing** |
-| `d_a_wm_tower.cpp` | **5/11** | **8/11** |
-
-`create`, `execute`, `createModel` and `calcModel` in tower all match once the
-flags are right. So the source was better than the measurement, and the fault
-was mine. `compile_draft` now takes `module=` and reads flags from the slice
-file; pass `module='d_basesNP'` for these units. The DOL path is byte-identical
-to before, so nothing else is affected.
-
-**The 21-of-21 claim was still wrong**, and the reason below still stands — but
-the true figures are 8/9 and 8/11, not 8/9 and 5/11, and the residuals are near
-misses rather than wholesale differences.
-
-**I am not treating this as dishonesty — I think it is a broken verification
-method.** `harness.diff_fn` matches functions *by name*. These targets are all
-`fn_2_XXXXXX` while your draft emits real mangled names, so there is no common
-key: a name-based diff finds nothing to compare and quietly reports nothing
-wrong. A MATCH table built on it is empty of information regardless of how good
-the source is.
-
-### Use this tool, and report its output verbatim
-
-I wrote **`wip/wm_units/verify_anon.py`** for exactly this case. It pairs target
-functions to draft functions by instruction content, normalising only two things
-— symbol names in relocations, and local branch labels — both legitimate because
-the target's symbols are nameless and the linker resolves by address. It
-deliberately does **not** normalise registers, immediates, or offsets, since
-register allocation is the thing that has blocked every unit on this project.
+`bin/dtk/wiimj2d_symbols.txt` contains symbols of this form:
 
 ```
-python wip/wm_units/verify_anon.py <draft_disasm.txt> <lo> <hi> <target.o> [target.o ...]
+__sinit_\d_line_mng_cpp             = .text:0x800C7600; // size:0x12A4
+__sinit_\d_iggy_wan_kusari_cpp      = .text:0x800BA630; // size:0x4D4
+__sinit_\d_enemy_toride_kokoopa_cpp = .text:0x800AED40; // size:0x1698
 ```
 
-For grid it prints a per-function table and `8/9 byte-identical modulo symbol
-names`. **Paste that table into your response as the status table**, with the
-differing-instruction count for anything that is not a match. Do not report a
-MATCH you have not seen this tool produce.
+**The DOL names its own translation units.** For any TU with static state the
+source filename is GIVEN, not inferred, and the `__sinit` address is a hard
+anchor inside that TU's `.text`. This inverts the REL playbook, where unit
+identity had to be reconstructed from pool-ownership overlap and mis-scoping cost
+whole rounds twice.
+
+Two things to know before you lean on it:
+- **`bin/dtk/dtk_splits_wiimj2d.txt` does NOT contain these.** Verified by grep.
+  That file is generated from already-landed slices and lists only solved units.
+  The `__sinit` symbols are in the full symbol map and are a separate, better
+  source. Do not confuse the two.
+- **`wip/wm_units/scout_unit.py` does not transfer to the DOL.** It walks a REL's
+  relocation stream; the DOL is fully linked and position-fixed, so there is no
+  relocation stream. `.ctors` in the DOL is a plain array of already-resolved
+  absolute function pointers, readable straight out of `original/wiimj2d.dol`,
+  and reading it gives a contiguous gapless ordering of every sinit-bearing TU.
+  That is a second independent way to bracket a unit.
 
 ---
 
-## Task A: close `d_a_wm_grid.cpp` — one function from complete
+## Task A: scout the `d_base_actor.cpp` -> `d_cc.cpp` gap
 
-Eight of nine are done. The single outstanding function is:
-
-```
-0x00164380  fn_2_164380  33 instrs  -- 5 differing vs "__sinit_\d_a_wm_grid_cpp"
-```
-
-**5 of 33 differing, with the flags fixed** — it is a near miss, not a different
-function, so the draft's `__sinit` is the right shape and something small is
-off. (Before the flag fix this read 31 of 33, which is why an earlier draft of
-this file told you it was probably not the same function at all. Ignore that.)
-It sits in its own split object, `auto_fn_2_164380_text.o`, which on this project
-is how `__sinit` is packaged — see the `auto_sinit_*` convention in
-`tools/auto_decomp/prepare.py`, and note `m_pad.cpp` had exactly this situation.
-
-Relevant facts already established, so you do not re-derive them:
-
-- An empty constructor or destructor defined **inline in the class** gets `weak`
-  linkage; defined **out of line** in the `.cpp` it gets `global`. Retail wants
-  `global`.
-- `__sinit` is emitted only when the TU has objects needing dynamic
-  initialisation, and it drives the `.ctors` entry the slice claims.
-- `-inline noauto` still inlines a member defined in the class body, but not one
-  defined out of line, even with `-ipa file` and the definition visible.
-
-**If you close it, the unit is complete and I can land it** — your own round-12
-kit says 0 removals and 0 additions, so the landing is unusually clean. That
-would be the project's first landed unit in some time, and it is one function
-away.
-
-## Task B: then `d_a_wm_tower.cpp` — six functions
-
-`0x185710-0x185b70`. With the flags fixed, **eight are already byte-identical**
-and only three remain, all near misses:
+The second-largest unclaimed stretch of DOL game code. I verified the arithmetic:
 
 ```
-0x00185740 fn_2_185740  21 instrs   4 differing vs __ct__11daWmTower_cFv
-0x001857a0 fn_2_1857A0  38 instrs  21 differing vs __dt__11daWmTower_cFv
-0x00185ac0 fn_2_185AC0  33 instrs   2 differing vs "__sinit_\d_a_wm_tower_cpp"
+offset 0x667C0 - 0x85A80     VA 0x8006CF40 - 0x8008C200     0x1F2C0 = 127,680 bytes
 ```
 
-`fn_2_185AC0` at **2 differing** is the cheapest thing on your plate — take it
-first. The destructor at 21 of 38 is the only one that looks like real work.
+Five sinit-bearing TUs are named inside it already, which I confirmed by direct
+symbol-map query:
 
-The constructor above is instructive: the two stores appear in the opposite
-order, which is a **source statement order** question, not an allocator one, and
-those are usually cheap to fix. The `r4`/`r3` choice may well fall out once the
-order is right.
+```
+__sinit_\d_bc_cpp             = .text:0x80076BB0  size 0x4
+__sinit_\d_bg_cpp             = .text:0x8007E170  size 0xC
+__sinit_\d_bg_actor_mng_cpp   = .text:0x8007EC20  size 0xAB4
+__sinit_\d_bg_unit_cpp        = .text:0x80087100  size 0x1D4
+__sinit_\d_capture_mng_cpp    = .text:0x80089ED0  size 0x134
+```
 
-**One warning, from four units of hard experience.** When a function's
-instruction count is already correct and only register numbers differ, that is
-the wall this project has never once got past — 100+ variants across
-`spaceCheck`, `save`, `load`, `writeBanner`, `beginPad` and `clearWPADInfo`, all
-negative. **Do not grind those.** Report the differing count, characterise it,
-and move on. What has consistently worked instead is
-**reading a landed, byte-exact function that already exhibits the pattern**:
-`grep -rla <the puzzling instruction> bin/compiled/wiimj2d`, filter to banked
-units via the slices file, read their source. That technique solved two problems
-this week that invented variants could not.
+Those five are anchors, not the full carve — TUs with no static state have no
+`__sinit` and must be found another way.
 
-## Reminders
+**Carve the gap into translation units and rank them as authoring targets.**
 
-- Never run `ninja`, `configure.py`, `progress.py`, `land.py`. I am the only
-  integrator.
-- Never edit a shared header, any `slices/*.json`, or `syms.txt` — propose, with
-  evidence.
-- Do not touch `wip/nand_thread/`, `wip/m_pad/`, `HANDOFF.md`,
-  `AGENT_CONTEXT.md`, or `peer_archive/`. `wip/wm_units/` is yours to write into
-  apart from `verify_anon.py`, which is mine.
-- Report a negative result rather than manufacturing a positive one — and after
-  this round, report a differing-instruction count rather than a verdict.
-- Plain ASCII or clean UTF-8, LF, no BOM.
+Method requirements, because mis-scoping has cost this project whole rounds
+twice:
+- A section range derived from what `.text` REFERENCES is a **LOWER BOUND only**.
+  Objects reached only from other data — vtables, state tables, jump tables — are
+  invisible to a text-reference scan. Walk the symbol list outward to the next
+  FOREIGN symbol.
+- Apply the two-sided ownership test: **not SHORT** (nothing outside the range
+  reads a pool the range owns) and **not LONG** (nothing outside is unexpectedly
+  reached into it).
+- Cross-check right-hand edges against the already-landed neighbour's entry in
+  `slices/wiimj2d.json` where one exists. A scout doing this on the adjacent
+  region caught its own predecessor's `.data` figure being wrong by a factor of
+  six.
+
+**Report per candidate**: `.text` range and size, whether it owns a `.ctors`
+entry, its `.rodata`/`.data`/`.bss`, **what fraction of its functions carry real
+mangled names versus anonymous `fn_*`** (this is the single number that most
+predicts what authoring costs, and it is the metric you introduced), and the
+closest landed sibling in `source/dol/bases/` with the shared idioms named
+concretely.
+
+Then **rank them** and say which one you would author first and why.
+
+## Task B: settle `dEnBoss_c`, which is blocking 33,552 bytes
+
+A scout found `d_enemy_toride_kokoopa.cpp` (33,552 bytes, in the region adjacent
+to Task A) **blocked**: its vtable is 375 slots against `dEnBoss_c`'s 226, and
+**`dEnBoss_c` is a real but undeclared base class** living in its own unclaimed
+gap, which I verified the arithmetic for:
+
+```
+offset 0x91BD0 - 0x98370     VA 0x80098350 - 0x8009EAF0     0x67A0 = 26,528 bytes
+                             between d_enemy.cpp and d_enemy_carry.cpp
+```
+
+**Establish what `dEnBoss_c` is**: its `.text` extent, its class layout, its
+vtable and slot count, and — the question that decides whether Kokoopa becomes
+authorable — **what the 149-slot difference between 226 and 375 consists of**.
+
+This is worth a whole task because it unblocks a single 33KB unit, which is
+larger than the last six landed units on this project combined.
+
+A relevant technique from this week: **a vtable slot landing N slots earlier than
+expected means N missing declarations BEFORE it** — the offset cascades, exactly
+like an instruction-count mismatch. That turns a slot-count discrepancy into a
+countable, locatable thing rather than a vague one.
+
+Do NOT author Kokoopa this round. Establishing the base class is the deliverable.
+
+---
+
+## Things that have each cost a round here
+
+**Return types are ABSENT from CFront mangling.** Parameters are encoded; return
+types are not. **Twelve wrong declarations found on this project, three of them
+today.** The method that finds them every time: read what the CALLER does with
+the return register immediately after the `bl` — does it READ r3 or CLOBBER it?
+An observed clobber outranks any analogy with a sibling.
+
+A variety found today that is new and relevant to Task B: **an argument-count
+mismatch at a call site is a STORAGE-CLASS tell.** One register set where two are
+expected means no implicit `this` — the function is `static`, and nothing about
+its return type is in question.
+
+**Check SIZE before counting differences.** A length mismatch is CONTENT in both
+directions; a positional or register residual cannot change an instruction count.
+Two functions sat six rounds mislabelled "pool-position residual" when they were
+one word short and the missing word was a return value.
+
+**`harness.canonicalise` reports FALSE MISMATCHES.** Four functions today were
+length-exact and byte-identical yet reported as differing, because the target's
+disassembly quotes a symbol name where a standalone `.o` does not and the quotes
+survive canonicalisation. If a function is length-exact and the comparator still
+says differ, **compare raw instruction BYTES before believing it.**
+`wip/line_mng_shared/tally.py` implements the correct union gate.
+
+## Rules
+
+- Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
+- **This round is READ-ONLY on the tree.** Never edit anything under `source/` or
+  `include/`, nor `syms.txt`, nor any `slices/*.json`.
+- Work only in `scratch/gemini_round14/`. Do not touch `wip/`, `HANDOFF.md`,
+  `AGENT_CONTEXT.md`, `peer_archive/`, or `QWEN_*.md` — **`wip/` has four agents
+  live in it right now**, and Qwen is authoring `d_iggy_wan_kusari.cpp`, which
+  sits in the region ADJACENT to Task A. If your carve reaches into it, report
+  the finding rather than acting on it.
+- Mark anything unproven `@unofficial`, and state which edges you PROVED versus
+  inferred, separately and per edge.
+- **Report a negative result rather than manufacturing a positive one.** A wrong
+  bound handed over confidently costs the next agent a whole round. "I could not
+  establish this" is a valid and valuable answer.
+
+## Deliverable
+
+`GEMINI_RESPONSE.md`, containing:
+
+1. **Task A**: the gap carved into candidate TUs, each with bounds, sizes,
+   `.ctors` ownership, section ownership, named-symbol fraction, closest landed
+   sibling, and the evidence that each edge is real. Then your ranking with
+   reasoning, and your single first-choice recommendation.
+2. **Task B**: what `dEnBoss_c` is — extent, layout, vtable, slot count, and your
+   account of the 149-slot difference. Say explicitly whether Kokoopa becomes
+   authorable and what remains in the way if not.
+3. For both: what you PROVED versus what you INFERRED, kept separate.
+4. Anything you could not settle, plainly, with what would settle it.
+
+I check every number independently. If something I assert above is wrong, say so
+with the measurement — three separate agents corrected me today and each
+correction was the most valuable part of its round. One of them refuted the
+entire premise I had sent it in with, and was right to.
+
+Plain ASCII or clean UTF-8, LF, no BOM.
