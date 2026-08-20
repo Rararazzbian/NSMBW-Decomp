@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13590 lines / 541 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13670 lines / 545 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -562,3 +562,7 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `13543-13559` Layout: `sizeof(dLineMng_c) == 0xEC`, verified by COMPILED assertion
   - `13560-13568` `__sinit` is OVERSIZED — that is STRUCTURAL, not scheduling
 - `13569-13590` The missing-return sweep across 31 parked units: a CLEAN NEGATIVE
+- `13591-13623` TOOLING DEFECT: `harness.canonicalise` reports FALSE MISMATCHES — use raw BYTES as the gate
+- `13624-13649` `d_line_mng`: `mov_to_*`/`mov_frm_*` 8/8 byte-exact, and THREE proven declaration fixes
+  - `13650-13660` A `.data` "constant table" may be a SWITCH JUMP TABLE
+  - `13661-13670` And a control-flow trap: re-read branch targets ARITHMETICALLY

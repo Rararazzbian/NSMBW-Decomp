@@ -13587,3 +13587,83 @@ run it again. Method detail preserved: a name-based diff is useless on the WM
 family (1638/1667 falsely "unauthored") because targets are anonymous
 `fn_2_XXXXXX` whose names bake in an address that differs between a standalone
 compile and the linked REL — use `verify_anon.py`'s content-based pairing.
+
+## TOOLING DEFECT: `harness.canonicalise` reports FALSE MISMATCHES — use raw BYTES as the gate
+
+Found on `d_line_mng`'s `mov_to_*` family. All four functions were **length-exact
+AND byte-identical** to target, and canonicalise called them differing.
+
+The cause: the target's disassembly QUOTES a symbol name
+(`"@49614_80359100"`) where a standalone `.o` shows the unresolved form
+(`...bss.0`). **The quote characters survive canonicalisation**, so the two sides
+never compare equal no matter how the symbol is renumbered.
+
+This is not academic. Counting with canonicalise alone **undercounted this unit
+by four functions** — 71 reported against 75 real — and those four are 1188 words,
+the single largest block authored that round. A round could easily have been
+spent "fixing" four functions that were already byte-perfect.
+
+**The correct gate is the UNION:**
+
+```
+matched  ==  raw instruction bytes equal   OR   canonicalised text equal
+```
+
+Bytes first, because byte equality IS the project's criterion; canonicalise is a
+convenience for the cases where relocation genuinely makes bytes differ in a
+standalone `.o`. Implemented as `wip/line_mng_shared/tally.py`, which also
+reports **byte-weighted** progress and labels every outstanding function
+`MISSING` / `LEN OK` / `STRUCTURAL` (a length mismatch) so the size diagnostic is
+applied automatically rather than by memory.
+
+Note the parsing trap it hit on the way: target disassembly lines use TWO spaces
+before the byte field and CRLF endings. A fixed-width byte regex silently matches
+nothing and yields an empty parse — which presents as "0 functions matched",
+not as an error.
+
+## `d_line_mng`: `mov_to_*`/`mov_frm_*` 8/8 byte-exact, and THREE proven declaration fixes
+
+1188 words authored, all eight byte-exact. Unit went **6.9% -> 22.5% by bytes**
+(75/182 functions).
+
+**Three declaration errors, every one proven from CALL-SITE register behaviour:**
+
+```
+mov_to_* x4       void -> bool      callers cmpwi r3,0 / bne;
+                                    bodies end every path li r3,0x1 / li r3,0x0
+getLineUnitNo     void -> u32       callers mr r31,r3 right after the bl
+                                    (width u32 vs u8 vs int still unsettled)
+is_unit_circle*   -> static         call sites set ONE register (r3 = the id),
+                                    never a this pointer; a non-static decl emits
+                                    an extra mr pair the target does not have
+```
+
+That is **ten, eleven and twelve** wrong declarations on this project. The method
+is always the same and always beats analogy: **read what the CALLER does with the
+return register immediately after the `bl` — read, or clobber.**
+
+The `static` case is a new variety worth naming: **an argument-count mismatch at
+the call site is a STORAGE-CLASS tell.** One register set where two are expected
+means no implicit `this`, so the function is static — nothing about the return
+type at all.
+
+### A `.data` "constant table" may be a SWITCH JUMP TABLE
+
+The four `.data` blocks the scout flagged as "per-`mov_to_*` constant lookup
+tables" are **MWCC-generated switch jump tables**. Writing the right
+`switch`/`case` structure reproduces them automatically; there is no hand-authored
+data to transcribe. The case->state mapping was recovered by decoding the jump
+tables out of `original/wiimj2d.dol`.
+
+**Suspect a `switch` before transcribing constants** — the shapes are easy to
+confuse and transcribing is the expensive mistake.
+
+### And a control-flow trap: re-read branch targets ARITHMETICALLY
+
+A real structural bug was caught only by computing branch target addresses by
+hand rather than trusting the disassembly's apparent flow: the first
+`id != threshold` check skips **the entire `change_dir()` + `changeState()`
+block**, not just the `change_dir()` call it appears to guard. Related:
+`change_dir()` polarity around the circle cases is NOT a clean rule — it inverts
+between right-side and left-side functions and one case breaks the pattern
+outright. Settled per-case from the actual `beq`/`bne` bytes.
