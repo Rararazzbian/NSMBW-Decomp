@@ -12077,3 +12077,51 @@ Worth noting the same pattern is already visible in units that got it right —
 WM_KOOPAJR passes `auto_fn_2_16E490_text.o` alongside its two `auto_00_*`
 objects, and WM_ANCHOR passes `auto_fn_2_15ABD0_text.o`. **The convention was
 established; the check for it was not.**
+
+## Individually diffing "known" boilerplate caught TWO wrong attributions
+
+MINI_GAME_GUN_BATTERY went **21/49 -> 41/49 individually diffed** (30 exact
+0-diff, 11 naming-only). The agent had previously reported 23 functions as
+believed-boilerplate whose content it had read and matched against known template
+source — an honest caveat, correctly excluded from its tally.
+
+**Diffing them individually confirmed 20 exact AND caught two real attribution
+errors that content-matching had missed:**
+
+- `F8CA0` is **`sStateIDChk_c`'s** destructor, not `sFStateID_c<T>`'s — the real
+  one is `F9A50`.
+- `F9740`/`F97A0` had **`initializeState` and `finalizeState` swapped.**
+
+Both corrected and verified. **"I read it and it matches the template" is not the
+same claim as "I diffed it and it is identical"**, and the gap between them was
+two wrong functions in a set of twenty-three. Template boilerplate is exactly
+where this slips through, because every member looks like every other member.
+
+### Three functions nothing in the draft produces
+
+`F9670`/`F9690`/`F96B0` remain unattributed. The agent chased the natural
+hypothesis — `sStateIDChk_c`'s remaining virtuals — **disproved it by diffing,
+and left it open rather than guessing further.**
+
+The useful framing it reached: **no code in the current draft produces these
+functions, which means something is not yet WRITTEN**, rather than something
+being written wrongly. That is a different search: look for a missing
+declaration whose instantiation would emit them, not for a mis-authored body.
+
+### Two more results from the same round
+
+- `F8E80` fully understood: it decrements a timer and tests
+  `dGameKey_c::m_instance->mRemocon[0]->mTriggeredButtons` against
+  `WPAD_BUTTON_A | WPAD_BUTTON_2` — **the exact combination precedented in
+  `source/dol/bases/d_s_boot.cpp:821`.** Parked at 16 differing after four
+  variants: the bit test compiles to a single `andi.` where the target uses
+  `rlwinm` plus a dot-form `rlwimi.`.
+- Both large state bodies authored — 5-case and 4-case machines calling
+  DOL-confirmed `dGameCom::MiniGameCannon*` functions and
+  `mFader_c::mFader->isStatus(HIDDEN)` (landed precedent
+  `source/dol/bases/d_WiiStrap.cpp:101`). Each parked on one narrow residual after
+  four and two variants.
+
+**41/49 is not landable** — eight functions still differ, so the slice's bytes
+cannot match retail. Unlike the three units that landed today against structural
+objections, this one is short on CONTENT, and no build will paper over that.

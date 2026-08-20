@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 12080 lines / 469 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 12128 lines / 472 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -490,3 +490,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `12013-12025` The general rule, now demonstrated twice in one hour
   - `12026-12044` Both objections retired today were CAREFUL, CONSISTENT, and WRONG
 - `12045-12080` A missing target OBJECT makes a function invisible — check the split list, not just the range
+- `12081-12099` Individually diffing "known" boilerplate caught TWO wrong attributions
+  - `12100-12110` Three functions nothing in the draft produces
+  - `12111-12128` Two more results from the same round

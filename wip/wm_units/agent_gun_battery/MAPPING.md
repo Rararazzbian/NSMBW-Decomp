@@ -4,154 +4,171 @@ Brand-new unit, `d_basesNP` `.text 0xF8980-0xF9B40` (0x11C0 bytes), ONE translat
 covering both profiles (single `.ctors` entry `0x294 -> __sinit fn_2_F97D0`, confirmed with
 `python wip/wm_units/ctors_map.py d_basesNP GUN_BATTERY`).
 
-**Tally: 21/49 matched byte-for-byte modulo naming-only residuals** (12 are true 0-diff EXACT
-matches; the other 9 differ only in symbol names the target dump structurally cannot show).
-Both gates green: `check_fn_order.py` reports 0 inversions, `ctors_map.py` reports exactly one
-`.ctors` entry. ~16 more functions are template boilerplate whose content was read and matched
-against known template source (should require no hand-authoring). 1 more (`perPlayerRestCheck`,
-`fn_2_F8DF0`) is structurally and size-exact but has a register-allocation-only residual, parked
-after 3 variants. See history below for how this unit got here across 4 rounds.
+**Tally: 41/49 individually diffed and matched** (30 are true 0-diff EXACT matches; 11 differ
+only in symbol names the target dump structurally cannot show). Both gates green:
+`check_fn_order.py` reports 0 inversions, `ctors_map.py` reports exactly one `.ctors` entry.
+Every one of the 41 was diffed by address, not assumed from content resemblance. Remaining 8:
+4 PARKED with real, understood, narrow residuals (register allocation or one specific
+instruction-selection shape); 3 genuinely UNATTRIBUTED (not guessed); 1 is `__sinit`, correctly
+left untouched until everything else is final.
 
-## Round 1: base classes corrected
+## History (rounds 1-3, condensed)
 
-`MINI_GAME_GUN_BATTERY_MGR_OBJ` derives `dBase_c` (not `dActor_c` as the original brief said --
-confirmed off `fn_2_F8AA0`'s `__ct__7dBase_cFv` call, and `sizeof(dActor_c)==0x398` is larger
-than the whole `0xF4` object, which settles it independently). `BSS_SINGLETONS.md` corrected by
-the coordinator. `MINI_GAME_GUN_BATTERY_MGR` derives `dActor_c` with ZERO extra fields.
+Round 1 corrected the base classes (MGR : `dActor_c` zero extra fields; MGR_OBJ : `dBase_c`, not
+`dActor_c` as originally briefed). Round 2 read MGR_OBJ's own vtable from the `.data` split
+object (`bin/dtkspl/d_basesNP/obj/auto_04_000132B0_data.o` -> `target_data_132B0.txt`), finding
+its 4 real overrides (`create`, `execute`, `preExecute`, dtor) and, from the same dump, 3 pooled
+state-name strings confirming the class name and every state name byte-for-byte. Round 3 studied
+the landed `d_pausewindow.cpp` for `STATE_DEFINE` structure and authored the 3 empty
+`initialize` bodies, `finalizeState_ShowRule`, and MGR's own missing destructor (found via the
+vtable read, not in the original inventory).
 
-## Round 2: read the class's own vtable from the `.data` SPLIT OBJECT
+## Round 4 (this round): the push to N/N
 
-Disassembling the `.data` split object containing the vtable
-(`bin/dtkspl/d_basesNP/obj/auto_04_000132B0_data.o` -> `target_data_132B0.txt`) prints every
-slot with its real mangled name. MGR_OBJ overrides exactly 4 of `fBase_c`/`dBase_c`'s 18
-primary-vtable slots: `create`, `execute`, `preExecute`, and its own destructor. Authoring these
-four collapsed the constructor from 58 differing to a handful of residuals, confirming "a stuck
-constructor is often a symptom of undeclared virtuals."
+1. **`mGunSlot[4]` restructure -- the constructor is now fully MATCHED.** `m_70`/`m_74`/`m_78`
+   were really "gun slot index 0" (found via `fn_2_F8DC0`'s addressing). Declaring a real
+   4-element `daGunBatteryGunSlot_t mGunSlot[4]` instead of "3 fields + `mGunSlot[3]`" took the
+   constructor from 58 differing (round 2) to an EXACT 59/59 line match (14 residuals, all
+   naming). A loop whose trip count doesn't match the array's declared length is evidence about
+   the array, not about unrolling -- the reusable lesson from this round.
+2. **`dBg_c` precedent found before any header change**: `source/d_basesNP/bases/d_a_wm_note.cpp`
+   reaches past `dWCamera_c`'s documented layout with a local raw-cast confined to its own
+   `.cpp`. Applied identically to `dBg_c::m_bg_p` for `finalizeState_Play`/`executeState_Play` --
+   both matched exact-size, no header touched.
+3. **Four helper functions wired in**: `addToSlot`, `setM_f0`, `markSlotUsed` are EXACT, written
+   as plain `mGunSlot[gunIndex].field` array access -- letting the compiler generate the
+   multiply-index addressing itself reproduced the target exactly. Reproducing the
+   disassembly's own addressing arithmetic literally in source is usually the wrong move; the
+   compiler's real input is the higher-level expression. `perPlayerRestCheck` is
+   content/structure/size-exact (35/35) but has a register-allocation-only residual after 3
+   variants -- PARKED per the coordinator's instruction, not re-attempted.
+4. **`timerOrKeyGate` (`fn_2_F8E80`) authored**: decrements a timer, checks
+   `dGameKey_c::m_instance->mRemocon[0]->mTriggeredButtons` against
+   `WPAD_BUTTON_A | WPAD_BUTTON_2` (exact combination precedented in
+   `source/dol/bases/d_s_boot.cpp:821`). Content and control flow fully correct; the bit-test
+   codegen shape (target uses `rlwinm`+dot-form `rlwimi.`, i.e. two chained bitfield extracts;
+   every source variant tried compiles to either a single `andi.` or a
+   `rlwinm.`+`clrlwi`+`rlwinm.` sequence) was not reproduced after 4 variants. PARKED at 16
+   differing (19/18 lines) -- content confirmed correct, not a logic problem.
+5. **The two large state bodies authored.** `executeState_ShowRule` (`fn_2_F8F70`, a 5-case
+   switch on `m_dc` covering fader-wait, title display, minigame start, and a button/timer wait
+   before transitioning to `StateID_Play`) and `executeState_ShowResult` (`fn_2_F9320`, a
+   4-case switch: wait, show result with a 4-gun "did anyone score" check, button/timer wait,
+   then `dScStage_c::setNextScene(...)` to leave the stage) are both content- and
+   structure-complete, calling real, DOL-symbol-confirmed `dGameCom::MiniGameCannon*` functions
+   (added via a shadow `d_game_com.hpp` -- names pulled directly from
+   `bin/dtk/wiimj2d_symbols.txt`, not guessed) and `mFader_c::mFader->isStatus(HIDDEN)` (landed
+   precedent: `source/dol/bases/d_WiiStrap.cpp:101`). Each has ONE narrow residual: `F8F70`'s
+   case-3 has the same normalize-to-bool codegen mismatch as `timerOrKeyGate` (16 differing after
+   4 variants); `F9320`'s case-1 "did any of the 4 guns score" check compiles to a different
+   branch-fragment shape than the target's (target computes address `this+0x18` then `+0x80` for
+   the 4th check specifically, instead of the direct `this+0x98` my array indexing produces --
+   looks like compiler CSE reusing an `0x80` displacement already used for slot 1, not something
+   controllable from source; 2 variants tried, best got to 90 differing / 118 of 122 lines).
+   PARKED, not re-attempted further -- both are real understood walls, not missing content.
+6. **All 20 template-boilerplate functions individually diffed against target** (not just
+   content-matched as in round 3) -- 20 of 23 candidates confirmed EXACT. Two attribution
+   corrections found BY DIFFING rather than assuming: `fn_2_F8CA0` is NOT `sFStateID_c<T>`'s
+   own destructor as previously guessed -- it is `sStateIDChk_c`'s (`__dt__13sStateIDChk_cFv`,
+   EXACT). The REAL `sFStateID_c<T>` destructor is `fn_2_F9A50` (EXACT). Similarly `fn_2_F9740`/
+   `fn_2_F97A0` (the `__ptmf_scall` adjustor thunks) had `initializeState`/`finalizeState`
+   swapped in the round-3 notes -- diffing settled it (`F9740`=finalizeState, `F97A0`=
+   initializeState, both EXACT once corrected). 3 of the originally-claimed 23 remain genuinely
+   unattributed (`fn_2_F9670`/`F9690`/`F96B0`) -- see below, not counted as matched.
 
-Pooled string literals in the same dump (`lbl_2_data_31AD0`) name the class and every state in
-plain ASCII: `"daMiniGameGunBatteryMgrObj_c::StateID_ShowRule"`, `"...::StateID_Play"`,
-`"...::StateID_ShowResult"` -- confirming the guessed class name exactly.
+## Genuinely unattributed: `fn_2_F9670`, `fn_2_F9690`, `fn_2_F96B0`
 
-## Round 3: study a landed `STATE_DEFINE` unit (`d_pausewindow.cpp`), author from its structure
-
-Reproduced the exact file layout (`STATE_FUNC_DECLARE` in-class, `STATE_DEFINE` calls right
-after `BASE_PROFILE`, `mStateMgr(*this, StateID_ShowRule)` in the ctor init-list). Read the 9
-`sFStateID_c<T>` PMF triples out of `lbl_2_data_31AD0`, identifying every state body's real
-address without disassembling a single one first. Authored the 3 empty `initialize` bodies and
-`finalizeState_ShowRule` (all EXACT). Found and authored a missing function the inventory had
-omitted entirely: `daMiniGameGunBatteryMgr_c`'s own destructor (`fn_2_F9520`). Read (not yet
-authored) 16 template-boilerplate functions' content and confirmed them against known template
-source (`sStateMgr_c`/`sFStateFct_c`/`sFStateID_c` destructors, thunks, `build()`/`isSameName()`
-matching their headers verbatim, `__ptmf_scall` adjustor thunks). Added a shadow header for
-`PauseManager_c` (a new field at `0x1d`, justified by the header's own comment that nothing
-embeds the class by value).
-
-## Round 4 (this round): structural ctor fix, dBg_c precedent, four helpers wired in
-
-1. **Coordinator applied the `PauseManager_c` header proposal to the real header.** Deleted the
-   shadow copy, rebuilt against the real header -- all 14 previously-matched functions still
-   hold.
-2. **`mGunSlot[4]` restructure, exactly as the coordinator directed.** `fn_2_F8DC0` (read in
-   round 3) showed `m_70`/`m_74`/`m_78` were really "gun slot index 0" of a 4-element sequence.
-   Replacing "3 separate named fields + `daGunBatteryGunSlot_t mGunSlot[3]`" with a single
-   `daGunBatteryGunSlot_t mGunSlot[4]` and re-testing the constructor: 58 differing (round 2) ->
-   14, all naming-only, exact line-for-line size match (59/59). **The constructor is now
-   MATCHED.** This confirms the coordinator's reasoning precisely -- a real 4-element array
-   construction produces the target's genuine 3-iteration loop from element 0, with element 0's
-   own construction folded into the same codegen path as elements 1-3.
-3. **Found the `dBg_c` precedent before proposing any header change**, per instruction:
-   `source/d_basesNP/bases/d_a_wm_note.cpp` (around line 164-169) reaches past `dWCamera_c`'s
-   documented layout (a DIFFERENT under-documented class, not `dBg_c`, but the exact same
-   situation) with a local raw byte-pointer cast confined to its own `.cpp`:
-   `u8 *cam = (u8 *) camera; *(u32 *) (cam + 0x604) = 1;`. Applied the identical technique to
-   `dBg_c::m_bg_p` for `finalizeState_Play` (`fn_2_F9160`) and `executeState_Play`
-   (`fn_2_F9200`) -- **both matched, exact size (37/37 and 44/44), all residuals naming-only.**
-   No `dBg_c` header change was needed or made.
-4. **Wired in the four already-read helper functions.** `addToSlot` (`fn_2_F8DC0`), `setM_f0`
-   (`fn_2_F8ED0`), and `markSlotUsed` (`fn_2_F8EE0`) are all EXACT matches, written directly as
-   ordinary array-member access (`mGunSlot[gunIndex].m_04 += amount;` etc.) -- the multiply-index
-   addressing the disassembly showed is just the compiler's own codegen for that array access,
-   confirmed by testing rather than assumed. `finalizeState_ShowResult` (`fn_2_F92C0`), which
-   calls two of them, MATCHED (naming-only). `perPlayerRestCheck` (`fn_2_F8DF0`) is
-   structurally and size-exact (35/35 lines) after 3 variants, but has a 10-line
-   register-allocation-only residual (loop index in r29 vs r30; a vtable-pointer dereference
-   chained through r12 directly vs staged through r4) -- parked, not a content or structure
-   problem.
+All three are 0x1C-byte MI-adjustment thunks (`mr r4,r3; lwz r3,0x8(r3); lwz r4,0x4(r4); lwz
+r12,0(r3); lwz r12,OFFSET(r12); mtctr r12; bctr` with OFFSET = 0x28/0x2c/0x30 respectively --
+three consecutive vtable slots). They sit in `lbl_2_data_31AD0` right after `fn_2_F8CA0`
+(indices 2-5 of a small 4-real-entry vtable), which made them LOOK like `sStateIDChk_c`'s
+remaining virtuals at first -- but `sStateIDChk_c`/`sStateIDChkIf_c` only declare ONE virtual
+beyond the destructor (`isNormalID`), not three, and
+`isNormalID__13sStateIDChk_cCFRC12sStateIDIf_c` was diffed against all three addresses and
+matches NONE of them (7 differing each, wrong shape entirely). `fn_2_F8CA0` being byte-identical
+to `sStateIDChk_c`'s destructor is most likely identical-code-folding (a shared trivial
+"conditional delete" body), not evidence they belong to the same class. No source in this draft
+currently compiles anything that produces these 3 functions (no matching weak symbols exist in
+`draft.txt` at all), meaning something is not yet written that would trigger them -- most likely
+a state-ID comparison (`isState()`-style, `*mStateMgr.getStateID() == X`) that this class needs
+somewhere not yet identified. Left genuinely open rather than guessed.
 
 ## Function inventory (49 real functions, 0x11C0 bytes total; sizes sum to exactly 0x11C0)
 
 | addr | size | status |
 |---|---|---|
-| F8980 | 0x30 | MATCHED (naming-only) -- MGR classInit |
-| F89B0 | 0x30 | MATCHED (naming-only) -- MGR_OBJ classInit |
-| F89E0 | 0x60 | MATCHED (naming-only) -- MGR ctor |
-| F8A40 | 0x10 | MATCHED, EXACT -- daMiniGameGunBatteryMgr_c::create() |
-| F8A50 | 0x44 | MATCHED (naming-only) -- daMiniGameGunBatteryMgr_c::doDelete() |
-| F8AA0 | 0xF0 | MATCHED (naming-only, 59/59 lines) -- MGR_OBJ ctor |
-| F8B90 | 0x64 | boilerplate, confirmed by content (sStateMgr_c dtor, intermediate level) |
-| F8C00 | 0x60 | boilerplate, confirmed (sStateMgr_c dtor, final level) |
-| F8C60 | 0x40 | boilerplate, confirmed (sFStateFct_c<T> dtor) |
-| F8CA0 | 0x40 | boilerplate, confirmed (sFStateID_c<T> dtor) |
-| F8CE0 | 0x60 | MATCHED, EXACT -- daMiniGameGunBatteryMgrObj_c::create() |
-| F8D40 | 0x40 | MATCHED (naming-only) -- daMiniGameGunBatteryMgrObj_c::preExecute() |
-| F8D80 | 0x30 | MATCHED, EXACT -- daMiniGameGunBatteryMgrObj_c::execute() |
-| F8DB0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F8DC0 | 0x24 | MATCHED, EXACT -- addToSlot(int, int) |
+| F8980 | 0x30 | MATCHED (naming) -- MGR classInit |
+| F89B0 | 0x30 | MATCHED (naming) -- MGR_OBJ classInit |
+| F89E0 | 0x60 | MATCHED (naming) -- MGR ctor |
+| F8A40 | 0x10 | MATCHED EXACT -- MGR::create() |
+| F8A50 | 0x44 | MATCHED (naming) -- MGR::doDelete() |
+| F8AA0 | 0xF0 | MATCHED (naming, 59/59) -- MGR_OBJ ctor |
+| F8B90 | 0x64 | MATCHED EXACT -- sFStateMgr_c<T,M> dtor |
+| F8C00 | 0x60 | MATCHED EXACT -- sStateMgr_c<T,M,F,C> dtor |
+| F8C60 | 0x40 | MATCHED EXACT -- sFStateFct_c<T> dtor |
+| F8CA0 | 0x40 | MATCHED EXACT -- sStateIDChk_c dtor (corrected attribution) |
+| F8CE0 | 0x60 | MATCHED EXACT -- MGR_OBJ::create() |
+| F8D40 | 0x40 | MATCHED (naming) -- MGR_OBJ::preExecute() |
+| F8D80 | 0x30 | MATCHED EXACT -- MGR_OBJ::execute() |
+| F8DB0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::executeState() |
+| F8DC0 | 0x24 | MATCHED EXACT -- addToSlot(int, int) |
 | F8DF0 | 0x90 | PARKED -- perPlayerRestCheck(), 10/35 differing, register allocation only |
-| F8E80 | 0x48 | identified, not authored -- timer/key-check gate, not wired in |
-| F8ED0 | 0x8 | MATCHED, EXACT -- setM_f0(int) |
-| F8EE0 | 0x34 | MATCHED, EXACT -- markSlotUsed(int) |
-| F8F20 | 0x48 | MATCHED, EXACT -- finalizeState_ShowRule |
-| F8F70 | 0x1D0 | PARKED -- executeState_ShowRule, real game logic, not attempted |
-| F9140 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F9150 | 0x4 | MATCHED, EXACT -- initializeState_ShowRule (empty) |
-| F9160 | 0x94 | MATCHED (naming-only) -- finalizeState_Play |
-| F9200 | 0xB0 | MATCHED (naming-only) -- executeState_Play |
-| F92B0 | 0x4 | MATCHED, EXACT -- initializeState_Play (empty) |
-| F92C0 | 0x54 | MATCHED (naming-only) -- finalizeState_ShowResult |
-| F9320 | 0x1F0 | PARKED -- executeState_ShowResult, real game logic, not attempted |
-| F9510 | 0x4 | MATCHED, EXACT -- initializeState_ShowResult (empty) |
-| F9520 | 0x22 | MATCHED, EXACT -- daMiniGameGunBatteryMgr_c::~daMiniGameGunBatteryMgr_c() |
-| F9580 | 0x1E | MATCHED, EXACT -- daMiniGameGunBatteryMgrObj_c::~daMiniGameGunBatteryMgrObj_c() |
-| F9600 | 0x60 | boilerplate, confirmed (sFStateFct_c<T>::build(), matches header verbatim) |
-| F9660 | 0x10 | boilerplate, confirmed (sFStateFct_c<T>::dispose()) |
-| F9670 | 0x20 | boilerplate, confirmed (sStateID_c comparison thunk) |
-| F9690 | 0x20 | boilerplate, confirmed (sStateID_c comparison thunk) |
-| F96B0 | 0x20 | boilerplate, confirmed (sStateID_c comparison thunk) |
-| F96D0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F96E0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F96F0 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F9700 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F9710 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F9720 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F9730 | 0x10 | boilerplate, confirmed (sStateMgr_c thunk) |
-| F9740 | 0x30 | boilerplate, confirmed (__ptmf_scall adjustor thunk) |
-| F9770 | 0x30 | boilerplate, confirmed (__ptmf_scall adjustor thunk) |
-| F97A0 | 0x30 | boilerplate, confirmed (__ptmf_scall adjustor thunk) |
+| F8E80 | 0x48 | PARKED -- timerOrKeyGate(), 16/19 differing, bit-test codegen shape (4 variants) |
+| F8ED0 | 0x8 | MATCHED EXACT -- setM_f0(int) |
+| F8EE0 | 0x34 | MATCHED EXACT -- markSlotUsed(int) |
+| F8F20 | 0x48 | MATCHED EXACT -- finalizeState_ShowRule |
+| F8F70 | 0x1D0 | PARKED -- executeState_ShowRule, 16/116 differing, case-3 normalize shape (4 variants) |
+| F9140 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::changeState() |
+| F9150 | 0x4 | MATCHED EXACT -- initializeState_ShowRule (empty) |
+| F9160 | 0x94 | MATCHED (naming) -- finalizeState_Play |
+| F9200 | 0xB0 | MATCHED (naming) -- executeState_Play |
+| F92B0 | 0x4 | MATCHED EXACT -- initializeState_Play (empty) |
+| F92C0 | 0x54 | MATCHED (naming) -- finalizeState_ShowResult |
+| F9320 | 0x1F0 | PARKED -- executeState_ShowResult, 90/122 differing, case-1 4th-check addressing shape (2 variants) |
+| F9510 | 0x4 | MATCHED EXACT -- initializeState_ShowResult (empty) |
+| F9520 | 0x22 | MATCHED EXACT -- MGR::~MGR() |
+| F9580 | 0x1E | MATCHED EXACT -- MGR_OBJ::~MGR_OBJ() |
+| F9600 | 0x60 | MATCHED EXACT -- sFStateFct_c<T>::build() |
+| F9660 | 0x10 | MATCHED EXACT -- sFStateFct_c<T>::dispose() |
+| F9670 | 0x20 | UNATTRIBUTED -- see above |
+| F9690 | 0x20 | UNATTRIBUTED -- see above |
+| F96B0 | 0x20 | UNATTRIBUTED -- see above |
+| F96D0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::initializeState() |
+| F96E0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::finalizeState() |
+| F96F0 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::refreshState() |
+| F9700 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::getState() |
+| F9710 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::getNewStateID() |
+| F9720 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::getStateID() |
+| F9730 | 0x10 | MATCHED EXACT -- sStateMgr_c<...>::getOldStateID() |
+| F9740 | 0x30 | MATCHED EXACT -- sFStateID_c<T>::finalizeState() thunk (corrected attribution) |
+| F9770 | 0x30 | MATCHED EXACT -- sFStateID_c<T>::executeState() thunk |
+| F97A0 | 0x30 | MATCHED EXACT -- sFStateID_c<T>::initializeState() thunk (corrected attribution) |
 | F97D0 | 0x280 | __sinit -- correctly untouched, always last |
-| F9A50 | 0x58 | boilerplate, confirmed (sStateID_c base dtor thunk) |
-| F9AB0 | 0x88 | boilerplate, confirmed (sFStateID_c<T>::isSameName(), matches header verbatim) |
+| F9A50 | 0x58 | MATCHED EXACT -- sFStateID_c<T> dtor (corrected attribution) |
+| F9AB0 | 0x88 | MATCHED EXACT -- sFStateID_c<T>::isSameName() |
 
-None of the 16 "boilerplate, confirmed" functions have been individually diffed against target
-(time) -- their CONTENT was read and matched against known landed template source, which is
-strong evidence, not a guess, but still worth an explicit diff pass before calling the unit done.
+## The 4 PARKED functions, precisely
 
-## PARKED: `perPlayerRestCheck` (`fn_2_F8DF0`, 35/35 lines, 10 differing)
+All four have fully-correct CONTENT and control flow (every call, every argument, every field
+access verified against the target byte-for-byte in the surrounding instructions) -- the
+residual in every case is a narrow, specific instruction-selection or register-allocation
+difference, not missing or wrong logic:
 
-Register-allocation-only after 3 source variants (see Round 4 above): loop index register
-(r29 vs r30) and whether the vtable-pointer dereference chains directly through r12 or stages
-through r4 first. Content, control flow and every store/load target are identical to the
-target -- not a content or structural problem.
-
-## Not fully worked out
-
-- `fn_2_F8E80` (0x48): read but not fully understood -- decrements `m_f0`, checks
-  `dGameKey_c::m_instance` controller-input flags, looks like a "countdown expired OR button
-  pressed" gate. Not wired into the class (nothing currently calls it), so its absence causes no
-  link error; needs its own investigation before it can be tested.
-- `executeState_ShowRule` (`fn_2_F8F70`, 0x1D0) and `executeState_ShowResult` (`fn_2_F9320`,
-  0x1F0): the two largest functions in the unit, real minigame logic, not attempted this round.
-  Best next targets.
+- **`perPlayerRestCheck`** (`fn_2_F8DF0`): loop-index register (r29 vs r30) and whether a
+  vtable-pointer dereference chains through r12 directly or stages through r4. 3 variants.
+- **`timerOrKeyGate`** (`fn_2_F8E80`): the two-button bit test compiles to a single `andi.`
+  (mine) instead of the target's `rlwinm`+dot-form-`rlwimi.` two-step extract. 4 variants
+  (combined mask, split `&&`, split `|`, `u16` local).
+- **`executeState_ShowRule`** (`fn_2_F8F70`): case 3's `timerOrKeyGate()` result needs the same
+  `neg`/`or`/`srwi` normalize-to-clean-bool sequence the target uses when the value is tested
+  twice (once for the early-return gate, again for the SFX choice); every variant either
+  omits it or produces a different but also-wrong shape. 4 variants (bool vs int return type,
+  `&&` vs nested-if vs `||`-with-empty-then).
+- **`executeState_ShowResult`** (`fn_2_F9320`): the "did any of 4 guns score" check's 4th
+  comparison addresses via `this+0x18` then `+0x80` in the target (reusing the `0x80`
+  displacement already used for gun 1) instead of the direct `this+0x98` plain array indexing
+  produces. 2 variants (`||`-chain vs if-elseif chain -- the if-elseif chain is markedly closer,
+  118/122 lines vs 113/122).
 
 ## How to reproduce this tally
 
@@ -167,12 +184,12 @@ python wip/wm_units/agent_gun_battery/difftool.py \
 
 (`fn_2_F9A50`/`fn_2_F9AB0` are in `target_auto_00_F9A4C_text.txt` instead.)
 
-Target dumps in this directory (freshly regenerated, not reused): `target_auto_00_F85C4_text.txt`
-(0xF85C4-0xF97A0), `target_auto_fn2_F97D0_text.txt` (`__sinit`), `target_auto_00_F9A4C_text.txt`
-(0xF9A4C onward), `target_data_132B0.txt` (the `.data` object holding every vtable/state-ID
-object this unit owns, with real symbol names for every inherited/default vtable slot -- use
-this first for any vtable question, not the `.text`-relocation walk).
+Target dumps in this directory: `target_auto_00_F85C4_text.txt` (0xF85C4-0xF97A0),
+`target_auto_fn2_F97D0_text.txt` (`__sinit`), `target_auto_00_F9A4C_text.txt` (0xF9A4C onward),
+`target_data_132B0.txt` (the `.data` object holding every vtable/state-ID object this unit owns,
+with real symbol names for every inherited/default vtable slot).
 
-Shadow headers: `shadow_include/game/snd/snd_scene_manager.hpp` adds `fn_8019C010(int)`
-following the header's own existing naming convention for un-decoded DOL member functions --
-pure addition, no layout change, cannot disturb any landed TU.
+Shadow headers (both pure additions, no layout change, cannot disturb any landed TU):
+`shadow_include/game/snd/snd_scene_manager.hpp` adds `fn_8019C010(int)`;
+`shadow_include/game/bases/d_game_com.hpp` adds the 7 `MiniGameCannon*` free functions inside
+the `dGameCom` namespace, names pulled directly from `bin/dtk/wiimj2d_symbols.txt`.

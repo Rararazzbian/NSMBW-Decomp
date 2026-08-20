@@ -12,6 +12,11 @@
 #include <game/snd/snd_audio_mgr.hpp>
 #include <game/snd/snd_scene_manager.hpp>
 #include <game/sLib/s_lib.hpp>
+#include <game/bases/d_game_key.hpp>
+#include <revolution/WPAD.h>
+#include <game/bases/d_game_com.hpp>
+#include <game/mLib/m_fader.hpp>
+#include <game/bases/d_s_stage.hpp>
 
 /// @unofficial `fn_2_420`, called from `preExecute()` -- outside our claim, not yet
 /// landed. Signature guessed as no-arg bool predicate (its call site never sets an
@@ -146,7 +151,7 @@ public:
     // fully understood), addresses fn_2_F8DC0/F8DF0/F8E80/F8ED0/F8EE0.
     void addToSlot(int gunIndex, int amount); ///< `fn_2_F8DC0`.
     void perPlayerRestCheck(); ///< `fn_2_F8DF0`. UNVERIFIED -- see definition comment.
-    bool timerOrKeyGate(); ///< `fn_2_F8E80`. PLACEHOLDER name -- not fully worked out, not wired up.
+    int timerOrKeyGate(); ///< `fn_2_F8E80`. PLACEHOLDER name.
     void setM_f0(int v); ///< `fn_2_F8ED0`.
     void markSlotUsed(int gunIndex); ///< `fn_2_F8EE0`.
 
@@ -265,6 +270,35 @@ void daMiniGameGunBatteryMgrObj_c::setM_f0(int v) {
     m_f0 = v;
 }
 
+/// @unofficial `fn_2_F8E80`. Decrements `m_f0`, then checks
+/// `dGameKey_c::m_instance->mRemocon[0]->mTriggeredButtons` for
+/// `WPAD_BUTTON_A | WPAD_BUTTON_2` -- the exact same combination used
+/// together in the landed `source/dol/bases/d_s_boot.cpp:821`
+/// (`mPad::g_currentCore->downTrigger(WPAD_BUTTON_A | WPAD_BUTTON_2)`).
+/// Returns true (and resets `m_f0` to 0) only once that combo has been
+/// pressed AND the timer has run out.
+/// @unofficial PARKED-ish: content and semantics confirmed (see comment
+/// above the declaration), but the exact bit-test codegen shape is not
+/// reproduced. Target uses `rlwinm r0,r4,0,20,20` then a dot-form
+/// `rlwimi. r0,r4,0,23,23` (extract-and-OR-in-place, then compare) --
+/// characteristic of a two-separate-bitfield-reads shape, not a single
+/// masked `andi.`. Three variants tried (combined mask `A|B`; split
+/// `!(x&A) && !(x&B)`; split `(x&A) | (x&B)`) all compile to either a
+/// single `andi.` or a `rlwinm.`+`clrlwi`+`rlwinm.` sequence -- neither
+/// matches. Close but not exact (16-21 lines differing depending on
+/// variant); content/structure/branch targets all otherwise correct.
+int daMiniGameGunBatteryMgrObj_c::timerOrKeyGate() {
+    m_f0--;
+    if (!(dGameKey_c::m_instance->mRemocon[0]->mTriggeredButtons & (WPAD_BUTTON_A | WPAD_BUTTON_2))) {
+        return false;
+    }
+    if (m_f0 > 0) {
+        return false;
+    }
+    m_f0 = 0;
+    return true;
+}
+
 /// @unofficial `fn_2_F8EE0` (0x34, EXACT content read).
 void daMiniGameGunBatteryMgrObj_c::markSlotUsed(int gunIndex) {
     if (gunIndex == -1) {
@@ -293,9 +327,72 @@ void daMiniGameGunBatteryMgrObj_c::finalizeState_ShowRule() {
     PauseManager_c::m_instance->m_1d = 1;
 }
 
-/// @unofficial PARKED -- not yet authored (0x1D0 bytes, real game logic).
-/// `fn_2_F8F70`.
+/// @unofficial `fn_2_F8F70`. A 5-state sub-machine on `m_dc`/`m_ec`
+/// (PLACEHOLDER names, already-established fields): wait for the screen
+/// fader to finish (`mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)`,
+/// landed precedent e.g. `source/dol/bases/d_WiiStrap.cpp:101`), show the
+/// minigame title, close it, start the minigame proper, wait for a
+/// button-or-timer trigger, then transition to `StateID_Play`.
 void daMiniGameGunBatteryMgrObj_c::executeState_ShowRule() {
+    switch (m_dc) {
+    case 0:
+        m_ec--;
+        if (m_ec > 0) {
+            break;
+        }
+        if (!mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
+            break;
+        }
+        dGameCom::MiniGameCannonTitle();
+        m_ec = 0x96;
+        m_dc = 1;
+        break;
+    case 1:
+        m_ec--;
+        if (m_ec > 0) {
+            break;
+        }
+        dGameCom::MiniGameCannonTitleCloseRequest();
+        m_ec = 0;
+        m_dc = 2;
+        break;
+    case 2:
+        if (dGameCom::MiniGameCannonEndCheck()) {
+            break;
+        }
+        dGameCom::MiniGameCannonStart();
+        SndSceneMgr::sInstance->fn_8019C010(2);
+        SndAudioMgr::sInstance->startSystemSe(0x5dcu, 1);
+        setM_f0(0x2d);
+        m_ec = 0x1e0;
+        m_dc = 3;
+        break;
+    case 3: {
+        m_ec--;
+        int triggered = timerOrKeyGate();
+        if (m_ec > 0) {
+            if (!triggered) {
+                break;
+            }
+        }
+        if (triggered) {
+            SndAudioMgr::sInstance->startSystemSe(0x5dau, 1);
+        } else {
+            SndAudioMgr::sInstance->startSystemSe(0x5dbu, 1);
+        }
+        dGameCom::MiniGameCannonOperateCloseRequest();
+        m_ec = 0;
+        m_dc = 4;
+        break;
+    }
+    case 4:
+        if (dGameCom::MiniGameCannonEndCheck()) {
+            break;
+        }
+        mStateMgr.changeState(StateID_Play);
+        m_dc = 5;
+        break;
+    }
 }
 
 /// @unofficial `fn_2_F9150` -- confirmed EMPTY (`blr`, 4 bytes), matches the
@@ -354,9 +451,74 @@ void daMiniGameGunBatteryMgrObj_c::finalizeState_ShowResult() {
     setM_f0(0x2d);
 }
 
-/// @unofficial PARKED -- not yet authored (0x1F0 bytes, real game logic).
-/// `fn_2_F9320`.
+/// @unofficial `fn_2_F9320`. Same shape as `executeState_ShowRule` -- a
+/// 4-state sub-machine on `m_dc`/`m_ec`: wait, show the result screen
+/// (checking if ANY of the 4 `mGunSlot[i].m_04` scores are positive, to
+/// pick a win/lose jingle), wait for a button-or-timer trigger, then
+/// transition the WHOLE STAGE via `dScStage_c::setNextScene`.
 void daMiniGameGunBatteryMgrObj_c::executeState_ShowResult() {
+    switch (m_dc) {
+    case 0:
+        m_ec--;
+        if (m_ec > 0) {
+            break;
+        }
+        m_dc = 1;
+        m_ec = 0x50;
+        break;
+    case 1: {
+        m_ec--;
+        if (m_ec > 0) {
+            break;
+        }
+        m_e0 = 0;
+        dGameCom::MiniGameCannonResult();
+        bool scored = false;
+        if (mGunSlot[0].m_04 > 0) {
+            scored = true;
+        } else if (mGunSlot[1].m_04 > 0) {
+            scored = true;
+        } else if (mGunSlot[2].m_04 > 0) {
+            scored = true;
+        } else if (mGunSlot[3].m_04 > 0) {
+            scored = true;
+        }
+        if (scored) {
+            SndAudioMgr::sInstance->startSystemSe(0x5ffu, 1);
+            SndSceneMgr::sInstance->fn_8019C010(0xa);
+        } else {
+            SndAudioMgr::sInstance->startSystemSe(0x5fdu, 1);
+            SndSceneMgr::sInstance->fn_8019C010(9);
+        }
+        m_dc = 2;
+        m_ec = 0x12c;
+        break;
+    }
+    case 2: {
+        m_ec--;
+        int triggered = timerOrKeyGate();
+        if (m_ec > 0) {
+            if (!triggered) {
+                break;
+            }
+        }
+        if (triggered) {
+            SndAudioMgr::sInstance->startSystemSe(0x5dau, 1);
+        } else {
+            SndAudioMgr::sInstance->startSystemSe(0x5dbu, 1);
+        }
+        dGameCom::MiniGameCannonResultCloseRequest();
+        m_dc = 3;
+        break;
+    }
+    case 3:
+        if (dGameCom::MiniGameCannonEndCheck()) {
+            break;
+        }
+        dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_MARIO);
+        m_dc = 4;
+        break;
+    }
 }
 
 /// @unofficial `fn_2_F9510` -- confirmed EMPTY (`blr`, 4 bytes).
