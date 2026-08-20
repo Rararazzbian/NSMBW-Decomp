@@ -87,6 +87,13 @@
 // semantic reconstruction of every field.
 class daWaterMove_c : public dActorState_c {
 public:
+    // Explicit (mResFile has no default ctor -- ResCommon<T> only takes a void*),
+    // but defined INLINE with a trivial body so MWCC inlines it into `new` at the
+    // call site -- matching classInit's own observed shape (no separate
+    // `bl __ct__13daWaterMove_cFv`, just the base ctor call then these two explicit
+    // zero-stores alongside the sub-object constructions).
+    daWaterMove_c() : mResFile(nullptr), mUnk434(0) {}
+
     virtual int create();
     virtual int doDelete();
     virtual int execute();
@@ -119,10 +126,22 @@ public:
     dHeapAllocator_c mAllocator; ///< +0x3d4
     nw4r::g3d::ResFile mResFile; ///< +0x3f0, zero-initialised only (ResCommon<T> is one ptr)
     m3d::mdl_c mModel; ///< +0x3f4
-    m3d::anmTexSrt_c mAnimTexSrt; ///< +0x438
-    mAllocator_c mAnimAllocator; ///< +0x444
+    u32 mUnk434; ///< @unofficial unidentified 4-byte field between mModel and
+                 ///< mAnimTexSrt -- found by diffing classInit against target, which
+                 ///< explicitly zeroes it (a real field, not filler -- see the class's
+                 ///< own explicit inline ctor below, required anyway since mResFile has
+                 ///< no default constructor).
+    m3d::anmTexSrt_c mAnimTexSrt; ///< +0x438 -- confirmed by experiment: an EARLIER
+                                 ///< draft added a separate `mAllocator_c mAnimAllocator`
+                                 ///< member here, believing anmTexSrt_c's own create()
+                                 ///< needed its own allocator distinct from mAllocator.
+                                 ///< Removing it made classInit's own `li r3, 0x4c0` match
+                                 ///< target EXACTLY and collapsed a spurious SECOND
+                                 ///< `bl __ct__12mAllocator_cFv` down to the genuine single
+                                 ///< one -- createMdl()'s own two create() calls both pass
+                                 ///< `&mAllocator` (the dHeapAllocator_c at +0x3d4, which
+                                 ///< IS-A mAllocator_c), never a second allocator.
 
-    u8 mUnk460[4]; ///< @unofficial padding to +0x464; zeroed by classInit, role unconfirmed.
     mVec3_c mHomePos; ///< +0x464, create()'s own copy of (mPos.x, mPos.y, 3000.0f)
     f32 mUnk470; ///< +0x470
     f32 mUnk474; ///< +0x474
@@ -171,6 +190,34 @@ extern "C" void fn_800EBC80(dWaterEntryMng_c *, mVec3_c *, u32);
 extern "C" void fn_800EBC40(dWaterEntryMng_c *, u32);
 extern "C" u32 fn_800EBBC0(daPlBase_c *, f32 *, f32 *, u32, u8);
 
+// Shared, file-scope constants pool. All FIVE of these `lbl_2_rodata_*` labels
+// (81C8/8210/8228/8240/824C/8250) are read by the various member functions below via
+// ADDRESSES RELATIVE TO lbl_2_rodata_81C8 ITSELF, well past that first object's own
+// 0x48-byte size (e.g. approach() reads lbl_2_rodata_81C8+0x7c, landing inside what
+// dtk separately labels lbl_2_rodata_8240) -- MWCC pools adjacent rodata into one
+// contiguous blob addressed off its FIRST symbol, the same anchor-relative pattern
+// already confirmed for g_profile_AC_WATER_MOVE's own STATE_DEFINE arguments. Declared
+// as raw bits (not `f32`) because not every slot is a float -- idx13 (0x00030000) and
+// idx30 (0x01020408, really 4 packed bytes) are not.
+static const u32 sWaterMoveConsts[] = {
+    0xFFFFFFFFu, 0x3F000000u, 0x41800000u, 0x3E000000u, 0x40000000u, 0x3F88F5C3u,
+    0x437A0000u, 0x3F83D70Au, 0x43160000u, 0x3F88F5C3u, 0x451F6000u, 0x3F83D70Au,
+    0x451F6000u, 0x00030000u, 0x43000000u, 0x43200000u, 0x43200000u, 0x453B8000u,
+    // lbl_2_rodata_8210 (+0x48)
+    0x00000000u, 0x43B40000u, 0x41800000u, 0x00000000u, 0x43300000u, 0x00000000u,
+    // lbl_2_rodata_8228 (+0x60)
+    0x3F800000u, 0x3CCCCCCDu, 0x3C23D70Au, 0x322BCC77u, 0x3F000000u, 0x3DCCCCCDu,
+    // lbl_2_rodata_8240 (+0x78)
+    0x01020408u, 0x3D800000u, 0x3E000000u,
+    // lbl_2_rodata_824C (+0x84)
+    0x3B800000u,
+    // lbl_2_rodata_8250 (+0x88)
+    0x40000000u,
+};
+static inline f32 wmConstF(int wordIdx) {
+    return *reinterpret_cast<const f32 *>(&sWaterMoveConsts[wordIdx]);
+}
+
 STATE_DEFINE(daWaterMove_c, Wait);
 STATE_DEFINE(daWaterMove_c, Udmove);
 STATE_DEFINE(daWaterMove_c, Lrmove);
@@ -188,114 +235,16 @@ fProfile::fActorProfile_c g_profile_AC_WATER_MOVE_REGULAR = {
     fProfile::DRAW_ORDER::AC_WATER_MOVE_REGULAR, 0
 };
 
-// fn_2_152C60. One-slot flag-argument destructor -- same ABI as
-// d_a_dummy_door.cpp's own. Destroys mAnimTexSrt, mModel, mAllocator (reverse of
-// construction order), then chains to dActorState_c's own dtor.
-daWaterMove_c::~daWaterMove_c() {}
+// ORDER (ground-truthed against bin/dtk/d_basesNP_symbols.txt): draw(), doDelete(), the
+// nine state functions, THEN the destructor -- not destructor-first as an earlier draft
+// had it. Fixed by reordering only.
 
-// fn_2_1524B0. doDelete() -- notifies dWaterEntryMng_c that this actor's slot
-// (mUnk4A4) is being freed.
-int daWaterMove_c::doDelete() {
-    fn_800EBC40(dWaterEntryMng_c::m_instance, mUnk4A4);
-    return true;
-}
-
-// fn_2_152480. draw() -- defers straight to mModel's own draw().
-int daWaterMove_c::draw() {
-    // Vtable slot 0x14/4 -- scnLeaf_c's 4th virtual (dtor,getType,remove,entry), NOT a
-    // "draw" method by that name; matches nw4r's own "entry into this frame's scene"
-    // idiom.
-    mModel.entry();
-    return true;
-}
-
-// fn_2_152B60/152B70/152BA0/152C10. Empty init/execute stubs for Wait/Udmove/Lrmove --
-// each of these is literally `blr` in the target.
-void daWaterMove_c::initializeState_Wait() {}
-void daWaterMove_c::executeState_Wait() {}
-void daWaterMove_c::initializeState_Udmove() {}
-void daWaterMove_c::initializeState_Lrmove() {}
-
-// fn_2_152B40/152B80/152BF0. All THREE states' finalize is the SAME body: reset the
-// mUnk47C/mUnk480/mUnk484 trio to lbl_2_rodata_8210's own first word (0.0f).
-void daWaterMove_c::finalizeState_Wait() {
-    mUnk47C = 0.0f;
-    mUnk480 = 0.0f;
-    mUnk484 = 0.0f;
-}
-void daWaterMove_c::finalizeState_Udmove() {
-    mUnk47C = 0.0f;
-    mUnk480 = 0.0f;
-    mUnk484 = 0.0f;
-}
-void daWaterMove_c::finalizeState_Lrmove() {
-    mUnk47C = 0.0f;
-    mUnk480 = 0.0f;
-    mUnk484 = 0.0f;
-}
-
-// fn_2_152BB0/152C20. Both states' execute() drive one axis (mPos.y / mPos.x) through
-// approach().
-void daWaterMove_c::executeState_Udmove() {
-    mPos.y = approach(mPos.y);
-}
-void daWaterMove_c::executeState_Lrmove() {
-    mPos.x = approach(mPos.x);
-}
-
-// fn_2_1529D0. "Approach" utility -- smoothly drives `value` toward whichever of
-// mUnk47C (low)/mUnk480 (high) it is not currently past, clamped by a per-frame step
-// derived from lbl_2_rodata_81C8's own trailing floats (+0x7c step scale, +0x80 max
-// step, +0x70 min... exact roles unconfirmed, transcribed literally from the target).
-// Flips field_348_ref's own direction byte when a clamp actually triggers.
-float daWaterMove_c::approach(float value) {
-    static const f32 lbl_2_rodata_81C8[] = {
-        0.5f, 16.0f, 0.125f, 2.0f, 1.0700000524520874f, 250.0f, 1.0299999713897705f, 150.0f,
-        1.0700000524520874f, 2550.0f, 1.0299999713897705f, 2550.0f, 0.0f, 128.0f, 160.0f,
-        160.0f, 3000.0f
-    };
-    int which;
-    f32 step;
-    if (mUnk484 >= value) {
-        step = (mUnk47C - value) * lbl_2_rodata_81C8[0x7c / 4 - 1];
-        which = 0;
-    } else {
-        step = (value - mUnk480) * lbl_2_rodata_81C8[0x7c / 4 - 1];
-        which = 1;
-    }
-    step += lbl_2_rodata_81C8[0x80 / 4 - 1];
-    if (step >= lbl_2_rodata_81C8[0x70 / 4 - 1]) {
-        step = lbl_2_rodata_81C8[0x70 / 4 - 1];
-    }
-    if (field_348_ref(this) == 1) {
-        step = -step;
-    }
-    value += step;
-    if (which == 0) {
-        if (value >= mUnk47C) {
-            return value;
-        }
-        field_348_ref(this) = 1;
-        return mUnk47C;
-    } else {
-        if (value <= mUnk480) {
-            return value;
-        }
-        field_348_ref(this) = 0;
-        return mUnk480;
-    }
-}
-
-// fn_2_152AA0. Advances mUnk4BA (a running angle, +0x400 per call -- a quarter turn in
-// the 0x10000-per-circle fixed-point convention) and writes its rate-scaled cos()/sin()
-// into mUnk498/mUnk49C.
-void daWaterMove_c::calcWave() {
-    static const f32 lbl_2_rodata_824C = 0.00390625f;
-    static const f32 lbl_2_rodata_8250 = 2.0f;
-    mUnk498 = nw4r::math::CosFIdx(mUnk4BA * lbl_2_rodata_824C) * lbl_2_rodata_8250;
-    mUnk49C = nw4r::math::SinFIdx(mUnk4BA * lbl_2_rodata_824C) * lbl_2_rodata_8250;
-    mUnk4BA += 0x400;
-}
+// FULL FUNCTION ORDER, ground-truthed against bin/dtk/d_basesNP_symbols.txt's own
+// addresses: create, execute, draw, doDelete, createMdl, calcModel, checkPlayers,
+// approach, calcWave, then the nine state functions (each state's own finalize
+// before its init/execute pair), and the destructor LAST -- not grouped by kind, and
+// not destructor-first. An earlier draft had several of these badly out of order;
+// fixed here by reordering only, no content change.
 
 // fn_2_152150. UNVERIFIED past the classInit-level shape -- best-effort literal
 // transcription of the target's own instructions, not yet round-tripped through
@@ -388,6 +337,22 @@ int daWaterMove_c::execute() {
     return true;
 }
 
+// fn_2_152480. draw() -- defers straight to mModel's own draw().
+int daWaterMove_c::draw() {
+    // Vtable slot 0x14/4 -- scnLeaf_c's 4th virtual (dtor,getType,remove,entry), NOT a
+    // "draw" method by that name; matches nw4r's own "entry into this frame's scene"
+    // idiom.
+    mModel.entry();
+    return true;
+}
+
+// fn_2_1524B0. doDelete() -- notifies dWaterEntryMng_c that this actor's slot
+// (mUnk4A4) is being freed.
+int daWaterMove_c::doDelete() {
+    fn_800EBC40(dWaterEntryMng_c::m_instance, mUnk4A4);
+    return true;
+}
+
 // fn_2_1524F0. UNVERIFIED -- literal transcription. Loads "obj_waterfloat" from
 // "g3d/obj_waterfloat.brres" (both strings read anchor-relative to
 // g_profile_AC_WATER_MOVE itself in the target -- an MWCC string-pooling detail this
@@ -398,11 +363,11 @@ void daWaterMove_c::createMdl() {
 
     mResFile = dResMng_c::m_instance->getRes("obj_waterfloat", "g3d/obj_waterfloat.brres");
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl((ulong)mUnk4B4);
-    mModel.create(resMdl, &mAnimAllocator, 0x224, 1, nullptr);
+    mModel.create(resMdl, &mAllocator, 0x224, 1, nullptr);
     setSoftLight_MapObj(mModel);
 
     nw4r::g3d::ResAnmTexSrt resAnmTexSrt = mResFile.GetResAnmTexSrt((ulong)mUnk4B4);
-    mAnimTexSrt.create(resMdl, resAnmTexSrt, &mAnimAllocator, nullptr, 1);
+    mAnimTexSrt.create(resMdl, resAnmTexSrt, &mAllocator, nullptr, 1);
     mAnimTexSrt.setAnm(mModel, resAnmTexSrt, 0, m3d::FORWARD_LOOP);
 
     static const f32 lbl_2_rodata_8228 = 1.0f;
@@ -476,3 +441,104 @@ void daWaterMove_c::checkPlayers() {
     }
     mUnk4B8 = (u8)result;
 }
+// fn_2_1529D0. "Approach" utility -- smoothly drives `value` toward whichever of
+// mUnk47C (low)/mUnk480 (high) it is not currently past, clamped by a per-frame step
+// derived from lbl_2_rodata_81C8's own trailing floats (+0x7c step scale, +0x80 max
+// step, +0x70 min... exact roles unconfirmed, transcribed literally from the target).
+// Flips field_348_ref's own direction byte when a clamp actually triggers.
+float daWaterMove_c::approach(float value) {
+    int which;
+    f32 step;
+    if (mUnk484 >= value) {
+        step = (mUnk47C - value) * wmConstF(31);
+        which = 0;
+    } else {
+        step = (value - mUnk480) * wmConstF(31);
+        which = 1;
+    }
+    step += wmConstF(32);
+    if (step >= wmConstF(28)) {
+        step = wmConstF(28);
+    }
+    if (field_348_ref(this) == 1) {
+        step = -step;
+    }
+    value += step;
+    if (which == 0) {
+        if (value >= mUnk47C) {
+            return value;
+        }
+        field_348_ref(this) = 1;
+        return mUnk47C;
+    } else {
+        if (value <= mUnk480) {
+            return value;
+        }
+        field_348_ref(this) = 0;
+        return mUnk480;
+    }
+}
+
+// fn_2_152AA0. Advances mUnk4BA (a running angle, +0x400 per call -- a quarter turn in
+// the 0x10000-per-circle fixed-point convention) and writes its rate-scaled cos()/sin()
+// into mUnk498/mUnk49C.
+void daWaterMove_c::calcWave() {
+    mUnk498 = nw4r::math::CosIdx(mUnk4BA) * wmConstF(34);
+    mUnk49C = nw4r::math::SinIdx(mUnk4BA) * wmConstF(34);
+    mUnk4BA += 0x400;
+}
+
+// ORDER, ground-truthed against bin/dtk/d_basesNP_symbols.txt's own addresses, NOT
+// grouped by function kind: finalizeState_Wait(0x152b40), initializeState_Wait(0x152b60),
+// executeState_Wait(0x152b70), finalizeState_Udmove(0x152b80),
+// initializeState_Udmove(0x152ba0), executeState_Udmove(0x152bb0),
+// finalizeState_Lrmove(0x152bf0), initializeState_Lrmove(0x152c10),
+// executeState_Lrmove(0x152c20) -- each state's own finalize precedes its init/execute
+// pair. The verify_anon order flag (a single function, executeState_Lrmove, "defined too
+// late") was real: my previous draft grouped all three init stubs, then all three
+// finalize bodies, then both non-trivial executes, which does not match this
+// per-state finalize/init/execute grouping. Fixed by reordering only -- no content
+// change.
+
+// fn_2_152B40. All THREE states' finalize is the SAME body: reset mUnk47C/mUnk480/
+// mUnk484 to lbl_2_rodata_8210's own first word (0.0f).
+void daWaterMove_c::finalizeState_Wait() {
+    mSpeed.x = 0.0f;
+    mSpeed.y = 0.0f;
+    mSpeed.z = 0.0f;
+}
+// fn_2_152B60/152B70. Empty stubs -- literally `blr` in the target.
+void daWaterMove_c::initializeState_Wait() {}
+void daWaterMove_c::executeState_Wait() {}
+
+// fn_2_152B80.
+void daWaterMove_c::finalizeState_Udmove() {
+    mSpeed.x = 0.0f;
+    mSpeed.y = 0.0f;
+    mSpeed.z = 0.0f;
+}
+// fn_2_152BA0.
+void daWaterMove_c::initializeState_Udmove() {}
+// fn_2_152BB0. execute() drives mPos.y through approach().
+void daWaterMove_c::executeState_Udmove() {
+    mPos.y = approach(mPos.y);
+}
+
+// fn_2_152BF0.
+void daWaterMove_c::finalizeState_Lrmove() {
+    mSpeed.x = 0.0f;
+    mSpeed.y = 0.0f;
+    mSpeed.z = 0.0f;
+}
+// fn_2_152C10.
+void daWaterMove_c::initializeState_Lrmove() {}
+// fn_2_152C20. execute() drives mPos.x through approach().
+void daWaterMove_c::executeState_Lrmove() {
+    mPos.x = approach(mPos.x);
+}
+
+// fn_2_152C60. One-slot flag-argument destructor -- same ABI as
+// d_a_dummy_door.cpp's own. Destroys mAnimTexSrt, mModel, mAllocator (reverse of
+// construction order), then chains to dActorState_c's own dtor.
+daWaterMove_c::~daWaterMove_c() {}
+

@@ -12538,3 +12538,50 @@ Also confirmed this round, a lever newly re-established on this unit:
 `activate()`'s `setOption(1, arg ? 0 : 1)` compiled to a bit-trick under a
 **ternary** and to the target's real branches once rewritten as **if/else** — the
 recorded "ternary changes codegen shape" rule, independently reconfirmed.
+
+## The state framework emits per-STATE, not per-KIND — AC_WATER_MOVE 12/27 -> 19/27
+
+**The order flag on this unit was REAL**, and the per-unit triage was right to
+call it "one unique global body, worth one look" rather than noise.
+
+The draft had grouped definitions by KIND — all `initializeState_*`, then all
+`finalizeState_*`, then the executes. **Ground-truthed against the real addresses
+in `bin/dtk/d_basesNP_symbols.txt`, the target emits per STATE:**
+
+```
+finalizeState_X, initializeState_X, executeState_X      (repeated per state)
+```
+
+and the class order is `create, execute, draw, doDelete, createMdl, calcModel,
+checkPlayers, approach, calcWave`, then the nine state functions, **destructor
+last.** Fixed by pure reordering; gate now green with no violation.
+
+**Grouping by kind is the natural way to write it and the wrong way to emit it.**
+Worth checking on every state-framework unit.
+
+Also confirmed here: **`STATE_FUNC_DECLARE`/`STATE_DEFINE` alone produces the five
+`sFStateID_c<T>` template members** — the same free-functions effect that gave
+CASTLE_BG eight at once.
+
+### Three real defects, and the first is the instructive one
+
+- **A phantom member, invented to explain a call.** The draft declared a
+  `mAllocator_c mAnimAllocator`; in fact `mModel.create()` and
+  `mAnimTexSrt.create()` both pass `&mAllocator` — **the existing
+  `dHeapAllocator_c`, which IS-A `mAllocator_c`.** Removing the invented member
+  made `sizeof == 0x4C0` match exactly. **When a call needs an object of type T,
+  check whether an existing member already IS-A T before adding one** — an
+  invented member is silent, plausible, and shifts every later offset.
+- A misread offset: `finalizeState_*`'s real target is `dBaseActor_c::mSpeed`, an
+  already-landed field, not a new member.
+- **`lbl_2_rodata_81C8` is ONE MWCC-merged blob spanning five `.rodata` labels,
+  addressed anchor-relative.** Consolidated into a single shared
+  `sWaterMoveConsts[]` rather than per-function duplicates — the same merged-pool
+  shape recorded for `d_a_wm_sandpillar.cpp`'s single 0x84-byte table, where
+  eleven per-function `static const` tables had to become one file-scope
+  aggregate.
+
+**19/27, order green, `.ctors` correct, both sweeps clean.** The eight remaining
+are itemised content gaps, not structural ones — and `__sinit` is already 138/159
+as a side effect of the rest being right, which is exactly the behaviour that
+justifies holding it until last on a unit where nothing is blocked on it.
