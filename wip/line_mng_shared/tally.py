@@ -65,10 +65,34 @@ def main():
         return 1
     harness.disasm(obj, txt)
     d, t = parse(txt), parse(TARGET)
+    paired_by_content = []
 
+    # Name-keyed pass.
     hit = [k for k in t if k in d and matched(d[k], t[k])]
+
+    # Content-keyed fallback. An UNNAMED target function (`fn_800C31C0`) never
+    # keys against a draft's mangled/static name, so the name pass reports it
+    # MISSING even when it is byte-perfect. Same defect class that verify_anon.py
+    # exists to solve for the RELs. Pair the leftovers on BYTE EQUALITY only --
+    # that is sound by definition (identical bytes IS a match) and cannot invent
+    # a pairing the way a fuzzy heuristic could.
+    used = set(hit)
+    spare = {k: v for k, v in d.items() if k not in t}
+    spare_by_bytes = {}
+    for k, v in spare.items():
+        spare_by_bytes.setdefault(tuple(b for b, _ in v), []).append(k)
+    for k in t:
+        if k in used:
+            continue
+        cand = spare_by_bytes.get(tuple(b for b, _ in t[k]))
+        if cand:
+            hit.append(k)
+            used.add(k)
+            paired_by_content.append((k, cand.pop(0)))
     words_all = sum(len(v) for v in t.values())
     words_hit = sum(len(t[k]) for k in hit)
+    if paired_by_content:
+        print(f'({len(paired_by_content)} paired by CONTENT -- unnamed target vs mangled draft name)')
     print(f'matched {len(hit)}/{len(t)} functions   '
           f'{words_hit}/{words_all} words = {100.0 * words_hit / words_all:.1f}% BY BYTES')
     print()

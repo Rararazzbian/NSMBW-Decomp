@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13940 lines / 558 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13998 lines / 561 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -579,3 +579,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13883-13905` `getLineUnitNo` is STATIC — a fourth storage-class error, and it hid behind CANCELLING ERRORS
   - `13906-13915` Why it survived four rounds of careful work
   - `13916-13940` The part that matters most: TWO ERRORS WERE CANCELLING
+- `13941-13966` `fn_800C31C0` 547/549 — and MY premise about the orphan function was wrong
+  - `13967-13982` The orphan `fn_800C15B0`: zero absolute references in the ENTIRE DOL
+- `13983-13998` `tally.py` name-key flaw FIXED — content-based fallback added

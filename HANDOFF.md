@@ -13937,3 +13937,61 @@ when two errors can offset.** The only trustworthy gate is bytes.
 Net effect of one word in a header: `start_line_move` from 74 differing to 4, and
 eight `executeState_*` functions now carrying an honest, newly-visible one-word
 gap instead of a hidden one.
+
+## `fn_800C31C0` 547/549 — and MY premise about the orphan function was wrong
+
+I dispatched the 549-word helper on the stated premise that it was the true
+caller of `fn_800C15B0`, the function that vanished from the first merge when its
+scaffold was removed. **It is not.** The agent enumerated all 23 of its callees
+from the target disassembly and grepped all 182 functions for any reference.
+There are none.
+
+Its real caller is `executeState_FallDown`, which the merge had left an empty
+stub — a tail call (`b fn_800C31C0`) at `0x800C562C`. The agent authored that too
+(15 words of gravity integration), which is what actually keeps the big function
+alive in the object.
+
+**Results, measured:** `fn_800C31C0` **547/549 words** with the full
+switch/loop/jump-table structure reproduced — and confirmed against the raw
+`.data` jump-table BYTES rather than transcribed as lookup data, which is the
+distinction recorded earlier today. `check_term` closed to exact length,
+`start_line_move` closed as a side effect, `line_cross_chk1` had a real sign bug
+(`-0.1f`, not `0.1f`), `init_term_ck_pos` needed static storage duration.
+
+**Fourteen more `lineN_cross_chk` functions must return `bool`, not `void`** —
+they had never been called by anything before, so nothing had exercised their
+declarations. That is the pattern of the day: **a declaration is only tested by a
+CALL SITE, so an uncalled function's declaration is unverified no matter how
+byte-exact its body is.**
+
+### The orphan `fn_800C15B0`: zero absolute references in the ENTIRE DOL
+
+I searched the whole `original/wiimj2d.dol` for `0x800C15B0` as a big-endian
+word. **Zero occurrences.** Nothing in `.text` calls it and no pointer anywhere
+in the image holds its address.
+
+**The resolution is that branches in a DOL are RELATIVE.** A `bl` from another
+translation unit encodes a displacement, not an address, so an absolute-word
+search structurally cannot find it. If the function has EXTERNAL linkage it is
+emitted whether or not this TU calls it; declared `static` with no caller, `-O4`
+strips it — which is exactly what happens now.
+
+Being under test. **The general point stands either way: absence of an absolute
+reference is NOT evidence a function is dead**, and on a fully-linked image it is
+barely evidence of anything.
+
+## `tally.py` name-key flaw FIXED — content-based fallback added
+
+An unnamed target function (`fn_800C31C0`) never keys against a draft's mangled
+or static name, so the name pass reported it `MISSING` while the authoring agent
+correctly reported 547/549. Same defect class `verify_anon.py` exists to solve for
+the RELs.
+
+The fallback pairs leftovers on **BYTE EQUALITY ONLY**. That is sound by
+definition — identical bytes IS a match — and cannot invent a pairing the way a
+fuzzy length-or-similarity heuristic could. It prints how many were paired by
+content so the number is never silently folded into the headline.
+
+It is currently INERT on this unit (nothing byte-identical is unnamed), so it
+changes no figure reported today. It matters for any unit with anonymous targets,
+which is most of the REL work.
