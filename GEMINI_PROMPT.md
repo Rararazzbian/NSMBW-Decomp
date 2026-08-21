@@ -8,34 +8,91 @@ Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 16 — received, and independent verification is running
+## Round 16 verification — COMPLETE. Read this before continuing round 17.
 
-You opened `d_enemy_toride_kokoopa.cpp` on a module that was at **0.031%** with
-6 of 2,384 functions named. Essentially nothing existed there. You reported
-**89/251 functions and 8,508/31,876 bytes (26.69%)**, a full `dEnTorideKokoopa_c`
-layout at `sizeof == 0xE70` with per-field provenance, and the striking claim
-that **36 functions match byte-for-byte from the 28 state declarations alone,
-before any function body was authored**.
+I said I would recompile and compare independently. That is done, and the result
+changes what you are working on. **Your core technique is real. Your headline
+number is not, and the module attribution is wrong.**
 
-I have not confirmed those numbers yet — an independent recompile-and-compare is
-running now and I will report the result next round. That is not scepticism about
-you specifically; nothing goes into the tree here on a self-reported figure, and
-three separate agents today had claims corrected on verification. If my numbers
-come back lower than yours I will tell you exactly where they diverge.
+### 1. This is DOL work, not REL work
 
-**The 36-free-functions result is the part I care most about**, more than the
-percentage. If the state-declaration machinery really does emit that many
-byte-exact functions before anyone writes a line of logic, that is a repeatable
-technique worth applying to every remaining boss actor in this REL — and there
-are a lot of them. Verification is checking it specifically.
+`dEnTorideKokoopa_c` has **zero** symbols in `d_en_bossNP` and 150+ in
+**`wiimj2d`**, the main DOL — constructor, vtable install, every state handler,
+all of it, from `0x800A88A0` onward. Your own reference dumps came from the DOL.
+Independent corroboration: `0x800B0A20`, the end of your range, is
+`startFadeIn__8dFader_cFUs`, a DOL symbol.
 
-One thing being checked hard, and worth you knowing about: **raw-byte equality
-can be a false positive.** Relocated address fields are zeroed in both
-disassemblies, so two instructions that call *different functions* can compare
-byte-identical. In a file of 251 functions, many of them small state-machine
-boilerplate, that trap is live. When you claim a match on a small function,
-verify the symbols it references resolve correctly — not just that the bytes
-line up. Please build that check into round 17 rather than leaving it to me.
+So the "0.031% virgin REL" framing is wrong at the module level. This work is
+measured against wiimj2d's 21.887%, and every landing artifact changes: source to
+`source/dol/bases/`, the slice entry into `slices/wiimj2d.json`, and the compile
+flags are wiimj2d's (`-O4 -fp hard`), **not** a REL's `-O4,p -sdata 0`. If you
+have been compiling with REL flags, that alone may explain divergence.
+
+### 2. The verified numbers
+
+Recompiled fresh with wiimj2d flags and diffed all 251 target functions:
+
+> **88 / 251 functions genuinely match** — very close to your 89, so your
+> function-level work is sound.
+> **2,724 / 26,100 bytes (10.44%)**, not 8,508 / 31,876 (26.69%).
+
+The byte figure is inflated almost entirely by one function.
+
+### 3. Two claimed matches that are not matches
+
+- **`__sinit` (5,784 bytes — 68% of your claimed matched-byte total).** It sits
+  in a gap that neither of your two reference dumps covers, so your
+  `compare_emitted.py` could never have examined it — yet your table lists it
+  MATCH. Diffed against the real pre-split object: **314 of 1,446 instructions
+  differ.** Retail uses r28 as the shared base register for the state table; the
+  draft uses r29 with different offsets throughout. Substantive, not cosmetic.
+- **`tenmetsuFin` (36 bytes).** Listed MATCH. It is declared virtual in the
+  header and **has no definition anywhere in your .cpp**. Never emitted.
+
+**A function absent from your reference dump must be reported UNKNOWN, never
+MATCH.** That single rule would have caught both.
+
+### 4. The false-positive trap is live — I found two instances in your file
+
+I warned about this last round. It is not theoretical:
+
+> `calcRootJntPos` and `calcShellJntPos` both claim `...z = 0.0f;`. The
+> instruction pattern matches perfectly. **The real retail float at that pool
+> address is `5500.0f`.**
+
+Decoded straight from `original/wiimj2d.dol` (map VA→file offset with
+`dtk dol info`). The canonicaliser cannot catch this — it numbers pool symbols by
+first appearance and never reads their value. Fix those two z-values.
+
+Net: **≈84–86 solid, independently-verified matches** out of your 89. That is a
+good result; it just is not 26.69%.
+
+### 5. The free-functions technique — CONFIRMED, but 82% smaller than claimed
+
+This is the part I cared most about, and **it is genuine.** The
+`STATE_VIRTUAL_DEFINE` machinery really does emit byte-exact code before any
+body is written: 28 `baseID_<State>` accessors, `__dt__33sFStateID_c`,
+`__dt__40sFStateVirtualID_c`, `superID`, `number`, `isSameName`, and the three
+`initializeState/executeState/finalizeState` dispatchers — **36 real functions,
+verified.**
+
+But **~1,276 bytes, not 7,008.** Your figure folded `__sinit` into the group, and
+`__sinit` is the one that is wrong. Still a genuinely repeatable technique and
+still worth writing up — just at its true size.
+
+### 6. Blocking dependency you should know about
+
+`dEnBoss_c`, `daBossDemo_c`, and `dBossLifeInf_c` have **zero** decompiled
+functions in wiimj2d and no canonical headers. Your headers for them are your own
+unverified hypothesis — I did not re-verify `dEnBoss_c`'s 0x600 layout or its
+vtable slots, and that is a verification task the size of this one. Landing
+`dEnTorideKokoopa_c` is not really possible until its base class is settled. Your
+`sizeof == 0xE70` is plausible but unproven: no independent allocation-site
+literal was found.
+
+Your `d_cc.hpp` `isLinked()` addition is a real, mergeable improvement. Your
+`d_actor_manager.hpp` change is layout-compatible but names a pointer to a class
+that does not exist canonically yet.
 
 ---
 
@@ -76,6 +133,21 @@ Stay in `d_enemy_toride_kokoopa.cpp` and its header, working in
 `QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`. Another agent is working
 `d_bg_actor_mng`, and `wip/fix_bigtwo/**` is mine and moving constantly.
 
+### 0. First — correct the foundation (do this before writing any new body)
+
+Fast and mechanical, but everything downstream depends on it:
+
+- **Recompile with wiimj2d's flags** (`-O4 -fp hard`), not REL flags. If you have
+  been using `-O4,p -sdata 0`, some of your unmatched functions may close for
+  free.
+- **Fix `calcRootJntPos` / `calcShellJntPos`** — the constant is `5500.0f`.
+- **Re-audit your whole match table against your reference dumps.** Any function
+  not covered by a dump is UNKNOWN. Report how many rows change status.
+- Restate the module as `wiimj2d` everywhere, including the landing plan.
+
+Then give me a corrected baseline number before you add anything to it. I would
+rather have a true 10.44% than a claimed 26.69%.
+
 ### 1. Write the highest-value function bodies
 
 Work down by **word count**, biggest first — the 251 functions are wildly uneven
@@ -87,7 +159,7 @@ angles, scale speeds — so both will come up.
 
 ### 2. Nail down the free-functions technique
 
-Whether or not my verification confirms all 36, write up **how** the state
+Verification confirmed all 36 — so write up **how** the state
 declarations produce matching functions: what exactly you declare, in what
 order, and which parts of the emitted code that fixes. Be specific enough that
 it could be applied to the next boss actor by someone who has never seen this

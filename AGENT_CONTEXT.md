@@ -915,3 +915,37 @@ Two other things confirmed while measuring this, worth knowing:
   bare `extern "C"` declaration changed MWCC's register scheduling** around the
   call site -- same statements, same order, 11 of 63 instructions differed. The
   call spelling is not neutral.
+
+## Byte-equality is a REAL false positive, and here is a confirmed live instance
+
+The matching gate is the UNION of raw-byte equality and canonicalised-text
+equality. **Both halves can lie.** The raw-byte half lies because *relocated
+address and pool-offset fields are zeroed in both disassemblies*: two
+instructions that reference completely different things compare byte-identical.
+
+This is not theoretical. Measured on `d_enemy_toride_kokoopa.cpp`:
+
+`calcRootJntPos` and `calcShellJntPos` were both claimed as matches on the
+strength of a single pooled-float store. The draft said `mRootJntPos.z = 0.0f;`
+The instruction pattern matched perfectly. **The actual retail float at that pool
+address is `5500.0f`.** Reading the IEEE-754 bytes straight out of
+`original/wiimj2d.dol` -- map VA to file offset with `dtk dol info` -- is what
+caught it. `harness.canonicalise` cannot catch this class of error: it numbers
+pool symbols by order of first appearance and never inspects their value.
+
+**So: any function small enough that its whole body is one pooled-constant
+reference is under suspicion until you have decoded the constant.** The smaller
+the function, the weaker the byte evidence, which is the opposite of the
+intuition.
+
+The same applies to `bl` targets. A call to the wrong function is byte-identical
+to a call to the right one. Resolve the symbol; do not trust the opcode.
+
+Corollary for anyone reporting a percentage: **check that every function you are
+counting was actually emitted.** In the same file, `tenmetsuFin` was reported as
+a match while having no definition anywhere in the source -- declared virtual in
+the header, never defined, never emitted. And `__sinit` was reported as a match
+while sitting in a gap that the reporter's own reference dump did not cover, so
+their comparison script had never looked at it; the real diff was 314 of 1,446
+instructions. **A function absent from your reference dump must be reported as
+UNKNOWN, never as MATCH.**
