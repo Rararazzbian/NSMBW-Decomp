@@ -622,6 +622,45 @@ variants.
     callee-saved `f31`; and do NOT extend it to a dependent half-product
     (`y = 0.5f * x`), which destroys two of the three matches.
 
+    **Corroborated against the matched corpus, not just by experiment.** A scan
+    of all 145 already-matching objects classified every `fmuls` pairing a
+    member load with an `.sdata2` literal: 77 CONST-IN-A vs 38 MEMBER-IN-A,
+    with a 100%-consistent source correlation and no exceptions. So when a
+    residual is this operand order, the source shape is DETERMINED -- read it
+    off the disassembly rather than guessing:
+
+    - `fmuls fD, fLIT, fMEM` (const first) <- plain `x = member * literal`.
+      A named `static const float` behaves identically to a literal here.
+    - `fmuls fD, fMEM, fLIT` (member first) <- one of exactly THREE routes:
+        1. compound assignment, `member *= literal`
+           (`mSpeedF *= 0.7f` in `d_a_player_base.cpp:1226`);
+        2. **division by a constant**, which is rewritten to a reciprocal
+           multiply (`mPos.y / 16.0f` in `d_a_en_shell.cpp:733`);
+        3. a factor that is a **variable at parse time** and only becomes a
+           literal after inlining/const-prop -- e.g. a `static inline` helper
+           taking a `float rate` parameter, called with `7.0f`
+           (`d_a_en_bigpile.cpp:33`).
+
+    Mechanism: MWCC's FRONT END canonicalises `expr * <syntactic float
+    literal>` by hoisting the literal into the first source slot. All three
+    routes bypass that canonicaliser because none of them presents a syntactic
+    literal to it. Note route 3 requires a real inline-function parameter -- a
+    plain `const float` local does NOT work, const-prop folds it before the
+    canonicaliser sees it, and it measured strictly worse.
+
+    Retail's own code contains the A/B proof of the commutative dead end
+    below: `d_actor.cpp:437` `mVisibleAreaSize.x * 0.5f` and
+    `d_a_en_jimen_pakkun_base.cpp:403` `0.5f * mVisibleAreaSize.x` are two
+    matched files spelling the same expression both ways, with identical
+    output.
+
+    **Known limit.** This rule addresses LOAD order into f0/f1. It cannot fix
+    slot choice between two operands that are ALREADY LIVE in registers. In
+    `executeState_Left30Right` retail wants const-first at one occurrence and
+    member-first at another *of the same source statement*; `/ 2.0f`, `*= 0.5f`
+    and `* 0.5f` each fix one and break the other. That last word is a
+    different phenomenon.
+
 ### Levers that are PROVEN NOT to work -- do not spend a round on these
 
 - **Commutative float operand order in the source.** `a * b` and `b * a` (and
