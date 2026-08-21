@@ -120,7 +120,7 @@ def main():
     print()
     todo = sorted(((len(v), k, len(d[k]) if k in d else None)
                    for k, v in t.items() if k not in hit), reverse=True)
-    for n, k, dn in todo[:25]:
+    for n, k, dn in todo[:int(os.environ.get('TALLY_TOP', '25'))]:
         state = 'MISSING' if dn is None else ('LEN OK' if dn == n else f'{dn}w vs {n}w  STRUCTURAL')
         print(f'{n:5d}w  {state:>18}  {k[:66]}')
     return 0
