@@ -96,9 +96,20 @@ void dLineMng_c::SetPos(const mVec2_c &pos)
 
 f32 dLineMng_c::CalcAdjustPosY(f32 a, f32 b)
 {
+    // DECLARE-EARLY / ASSIGN-LATE. The callee-saved FP registers f31..f28 are
+    // handed out in DECLARATION order, but the instruction schedule follows
+    // ASSIGNMENT order, and here retail needs the two to disagree: absB is
+    // f30 and x is f29 (declaration order absB-then-x), yet `fabs f0,f28` /
+    // `frsp f30,f0` are scheduled AFTER the first `bl GetPos` (assignment
+    // order x-then-absB). Writing `f32 absB = fabs(b);` above `f32 x` gets the
+    // registers right but hoists the fabs into the prologue, which then kills
+    // the `fmr f28, f2` that preserves `b` across the call and comes out
+    // 127w instead of 128w. Splitting the declaration from the assignment
+    // satisfies both rules and makes the function BYTE-EXACT (128/128).
     f32 origSpeed = mBaseSpeed;
+    f32 absB;
     f32 x = GetPos().x;
-    f32 absB = std::fabs(b);
+    absB = std::fabs(b);
     f32 y = GetPos().y;
     if (std::fabs(a - x) < 0.01f) {
         return y;
@@ -310,11 +321,29 @@ bool dLineMng_c::check_term()
         // pair right before the `bl getLineUnitNo` (writes to r1+0x8/+0xc,
         // never loaded back), which only happens when the value is first
         // assigned to a real local rather than passed as a bare expression.
-        // Y computed before X -- target's load/fadds/fdivs order processes
-        // the Y component first. From wip/fix_bighelper.
+        //
+        // The four leaf loads are split across TWO independent orderings and
+        // the shape below is the only one of ~25 tested that reproduces both
+        // at once (BYTE-EXACT, 73/73):
+        //   * mPos.y/mPos.x each get a DEF-POINT of their own (`by`/`bx`)
+        //     ahead of the adds (lever 12). Without them the fadds folds into
+        //     a compound accumulate and the result lands in the left operand's
+        //     register instead of the right's. Their register numbers ASCEND
+        //     in DEFINITION order -- by=f2, bx=f3 -- so `by` must be declared
+        //     FIRST even though the X component is used first.
+        //   * `p->x`/`p->y` stay BARE leaves (no def-point) and are numbered
+        //     DESCENDING in EVALUATION order, so the X add must be written
+        //     FIRST to give p->x=f1, p->y=f0.
+        // Hence: declare Y's base first, then compute X's sum first.
+        // The two quantise stores must then be X then Y, which is what puts
+        // X in the 0x10/0x18 conversion slot pair and stores it to r1+0x8.
+        f32 by = mPos.y;
+        f32 bx = mPos.x;
+        f32 sx = bx + p->x;
+        f32 sy = by + p->y;
         mVec2_c testPos;
-        testPos.y = (f32)(int)((mPos.y + p->y) / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
-        testPos.x = (f32)(int)((mPos.x + p->x) / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
+        testPos.x = (f32)(int)(sx / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
+        testPos.y = (f32)(int)(sy / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
         if (getLineUnitNo(testPos.x, testPos.y) == 0x22) {
             if (mLineType == 0) {
                 change_dir();

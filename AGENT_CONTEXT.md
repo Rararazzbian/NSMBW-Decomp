@@ -245,15 +245,43 @@ Each of these exists because something broke.
   `st**x` sites across 16 files, all load-first. So when a residual has no
   precedent in the entire matched corpus, that is itself evidence the shape is
   wrong, and worth checking before assuming the allocator is at fault.
-- **Declaration order does NOT drive MWCC's saved-register assignment.** Tested
-  exhaustively: all six orderings of three hoisted base pointers in `beginPad`
-  produced **byte-identical** output. So when a residual is "the right
-  instructions in the wrong registers", reordering declarations cannot fix it,
-  and roughly ten variants across two agents were spent on that assumption
-  before it was measured. The allocation is driven by something not exposed at
-  the C++ level -- live-range ordering or an internal numbering. **Treat a
-  pure register-permutation residual as not source-addressable** and spend the
-  effort on unit selection instead.
+- **Declaration order does not drive saved-register assignment for GPRs. It DOES
+  for FPRs.** The original measurement stands as far as it goes: all six
+  orderings of three hoisted base **pointers** in `beginPad` produced
+  byte-identical output.
+
+  **But this entry used to generalise from that to "treat a pure
+  register-permutation residual as not source-addressable", and that conclusion
+  was wrong and expensive.** Everything about it was measured on GPRs and it does
+  not transfer. Levers 12 and 13 both fix register permutations from source, and
+  `CalcAdjustPosY` (128w) turned out to have a residual of exactly one FP
+  register pair -- `x` and `fabs(b)` swapped between `f29` and `f30` -- fixed
+  purely by source shape.
+
+  The FPR rule, measured: **callee-saved `f31…f28` are handed out in DECLARATION
+  order, while the instruction schedule follows ASSIGNMENT order.** Retail
+  sometimes needs those to disagree, and you decouple them by splitting the
+  declaration from the assignment:
+
+        f32 absB;                    // declare here -- fixes which register
+        f32 x = GetPos().x;
+        absB = std::fabs(b);         // assign here -- fixes where it is computed
+
+  Merely moving `f32 absB = std::fabs(b);` above `f32 x` fixes the registers but
+  hoists the `fabs` into the prologue, killing the `fmr` that preserves `b`
+  across the first call, and the function comes out one word SHORT. The split
+  satisfies both constraints at once.
+
+  A second FPR rule from the same round, and it is genuinely counter-intuitive:
+  **a leaf WITH a def-point and a leaf WITHOUT one obey opposite numbering
+  directions.** Def-pointed values number ASCENDING in declaration order; bare
+  leaves number DESCENDING in evaluation order. So a statement pair with four
+  leaves can need its two orderings written backwards relative to each other --
+  in `check_term`, declare the Y base first, then compute the X sum first. That
+  was found by measuring ~25 variants, and the score went 12 → 8 → 0.
+
+  So: for a GPR permutation, believe the original finding. For an FP register
+  permutation, it is source-addressable and levers 12 and 13 are where to start.
 - **`r1+0x8` is the outgoing parameter save area, not where locals sit.** Stores
   there that are never read back are more likely argument space for a by-value
   struct, or a struct-return slot written through a hidden pointer, than a local
