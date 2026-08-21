@@ -362,6 +362,19 @@ bool dLineMng_c::check_term()
 // author_geom: collision/intersection geometry family
 // ===========================================================================
 
+// The literal 0.0f in the two fcmpu compares below (here and in line_cross_chk3)
+// canonicalises to the FIRST fcmpu operand slot when spelled as a bare token --
+// confirmed by testing every spelling (0.0f==x, x!=0.0f negated via if/else,
+// comparing against a live variable instead) with NO effect on operand order.
+// Passing it through this identity inline defeats that canonicalisation: at
+// parse time the argument is a plain parameter (not a syntactic float-literal
+// AST node), and only becomes the constant 0.0f after inlining/const-prop --
+// the same "route 3" mechanism AGENT_CONTEXT.md lever 11 documents for fmuls,
+// applied here to fcmpu. MEASURED to flip both residuals to variable-first,
+// matching target's fcmpu operand order exactly, with no other instruction
+// changed.
+static inline f32 zero_ref(f32 z) { return z; }
+
 bool dLineMng_c::line_cross_slope_check(const mVec2_c &a, const mVec2_c &b, f32 &slope, f32 &intercept) {
     // NAMED AGGREGATE local, not two scalar f32 temps -- target allocates a
     // real 0x10 stack frame here and has an unread stfs PAIR for dx/dy right
@@ -375,7 +388,7 @@ bool dLineMng_c::line_cross_slope_check(const mVec2_c &a, const mVec2_c &b, f32 
     mVec2_c d(b.x - a.x, b.y - a.y);
     // Branch polarity per target's beq/b-around shape (lever 5): the
     // success arm is the fallthrough `if`, not an early `return false`.
-    if (d.x != 0.0f) {
+    if (d.x != zero_ref(0.0f)) {
         slope = d.y / d.x;
         intercept = b.y - slope * b.x;
         return true;
@@ -385,14 +398,21 @@ bool dLineMng_c::line_cross_slope_check(const mVec2_c &a, const mVec2_c &b, f32 
 
 bool dLineMng_c::line_cross_range_check(f32 a, f32 b, f32 v) {
     f32 lo, hi;
-    if (b >= a) {
-        lo = a;
-        hi = b;
-    } else {
+    if (b < a) {
         lo = b;
         hi = a;
+    } else {
+        lo = a;
+        hi = b;
     }
-    return v >= lo - 0.1f && v <= hi + 0.1f;
+    lo -= 0.1f;
+    hi += 0.1f;
+    if (v >= lo) {
+        if (v <= hi) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool dLineMng_c::line_cross_chk1(f32 p1, f32 p2, const mVec2_c &p3, mVec2_c p4, mVec2_c p5, mVec2_c &out) {
@@ -494,7 +514,8 @@ bool dLineMng_c::line_cross_chk3(f32 p1, const mVec2_c &p2, const mVec2_c &p3) {
     f32 d3 = p3.x * p3.x;
     d3 += p3.y * p3.y;
     d3 -= p1;
-    if (d3 == 0.0f) {
+    // zero_ref() bypass -- see line_cross_slope_check's comment above it.
+    if (d3 == zero_ref(0.0f)) {
         return true;
     }
     f32 d2 = p2.x * p2.x;
@@ -1337,11 +1358,14 @@ void dLineMng_c::circle_nextpos_set(const mVec2_c &pos, f32 radius)
 /// on the upper side).
 static void fn_800C3B20(dLineMng_c *self)
 {
-    if (self->mUnitBasePos.x > self->mPos.x) {
-        self->mPos.x = self->mUnitBasePos.x;
+    f32 baseX = self->mUnitBasePos.x;
+    f32 posX = self->mPos.x;
+    if (posX < baseX) {
+        self->mPos.x = baseX;
     }
-    f32 upper = self->mUnitBasePos.x + 16.0f;
-    if (self->mPos.x < upper) {
+    f32 upper = baseX + 16.0f;
+    f32 posX2 = self->mPos.x;
+    if (!(posX2 >= upper)) {
         return;
     }
     self->mPos.x = upper - 0.1f;
@@ -1351,12 +1375,12 @@ static void fn_800C3B20(dLineMng_c *self)
 /// the Y axis.
 static void fn_800C3B60(dLineMng_c *self)
 {
-    if (!(self->mPos.y < self->mUnitBasePos.y)) {
-        self->mPos.y = self->mUnitBasePos.y - 0.1f;
+    f32 baseY = self->mUnitBasePos.y;
+    if (self->mPos.y >= baseY) {
+        self->mPos.y = baseY - 0.1f;
     }
-    f32 lower = self->mUnitBasePos.y - 16.0f;
-    if (self->mPos.y < lower) {
-        self->mPos.y = lower;
+    if (self->mPos.y < baseY - 16.0f) {
+        self->mPos.y = baseY - 16.0f;
     }
 }
 
@@ -1999,7 +2023,8 @@ void dLineMng_c::finalizeState_FallDown() {}
 // velocity clamp). From wip/fix_bighelper.
 void dLineMng_c::executeState_FallDown()
 {
-    f32 speedY = mSpeed.y + -0.0625f;
+    f32 speedY = mSpeed.y;
+    speedY += -0.0625f;
     mPos.x += mSpeed.x;
     if (speedY < -4.0f) {
         speedY = -4.0f;

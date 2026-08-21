@@ -1253,3 +1253,67 @@ Note the contrast with `line_cross_chk1`, its sibling, closed in the same round
 by exactly the axis that fails here: a bare `f32 zero;` declared and assigned
 later flipped both `fcmpu` operand slots and closed it byte-exact. Same file,
 same constant, same technique -- it governs the slot and not the schedule.
+
+## `fcmpu` operand order IS addressable -- and the scope of the "commutative dead end"
+
+The proven negative reads "commutative float operand order" and has been cited to
+close out reversed-`fcmpu` residuals three times. **Its real scope is narrower
+than the name suggests, and reading it broadly cost several functions.**
+
+What is genuinely immune: **flipping the comparison's TEXT.** `0.0f == d3` and
+`d3 == 0.0f` compile identically, as do the `!=` negations. MWCC canonicalises a
+comparison against a syntactic float literal to literal-first, exactly as it does
+for `fmuls`. Measured repeatedly; that half of the note stands.
+
+What is NOT immune: **the operand slot itself.** Two independent routes reach it:
+
+1. **Lever 11's route 3, applied to `fcmpu`.** Pass the constant through an
+   identity helper so it is not a syntactic literal at parse time:
+
+       static inline f32 zero_ref(f32 z) { return z; }
+       ...
+       if (d3 == zero_ref(0.0f)) { ... }
+
+   The argument is a plain parameter in the AST and only becomes `0.0f` after
+   inlining and const-prop, so the literal-first canonicaliser never sees it.
+   Flipped both residuals to variable-first with no other instruction changed.
+   Closed `line_cross_chk3` (32w) and `line_cross_slope_check` (22w).
+
+2. **The declaration/assignment split**, where what you need is control of which
+   REGISTER the constant occupies rather than bypassing the canonicaliser. A bare
+   `f32 zero;` declared and assigned later closed `line_cross_chk1` (121w) in the
+   same round.
+
+Reconciling this with the warning above that route 3 is not register-neutral:
+both are true. **Route 3 creates a def-point and re-ranks the statement.** Use it
+where the operand slot is what is wrong and the allocation is already right (or a
+def-point is wanted anyway); do not reach for it when the target's numbering is a
+plain descending run with no def-point in it.
+
+### Three smaller results from the same round
+
+- **`return A && B;` versus nested ifs is a CFG choice, not a style choice.** The
+  `&&` form compiled to a `bnelr` early-return shape; retail wanted a shared
+  `return false` label, which needs `if (A) { if (B) return true; } return false;`.
+- **Which block is "then" matters.** `if (b >= a)` emitted `cror`; swapping the
+  bodies to `if (b < a)` gave retail's plain `bge`. Same logic, different branch
+  polarity, different instruction.
+- **A named local is not always right, and the mirror pair proves it.**
+  `fn_800C3B20` needed named locals for BOTH reads of `mPos.x` (lever 13, fresh
+  second local after the branch join). Its Y-axis mirror `fn_800C3B60` needed the
+  OPPOSITE: naming the second `mPos.y` read, or naming the subtraction result,
+  each dropped `baseY` from `f2` to `f1`. Only leaving it as a repeated bare
+  expression -- relying on `-O4` CSE, no local at all -- reproduced retail. Two
+  functions that are line-for-line mirrors of each other, needing opposite
+  treatment. Do not assume a mirror takes the mirrored fix.
+
+## CONTRADICTION, unresolved: `fn_800C3B20` / `fn_800C3B60` linkage
+
+Both are declared `static` in the draft, on the strength of a source comment
+claiming dtk shows no symbol name for them in the target. **That comment is
+false.** `wip/line_mng_shared/target.txt` lines 3109 and 3128 read
+`.fn fn_800C3B20, global` and `.fn fn_800C3B60, global`.
+
+Both functions now match byte-for-byte as `static`, so this does not affect
+`.text` content -- but linkage affects the symbol table and relocations, and this
+needs settling before the unit lands. Recorded rather than reconciled, per rule 4.
