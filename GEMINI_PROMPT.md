@@ -17,10 +17,48 @@ of `0 B` for unwritten functions instead of quietly omitting them. That is the
 change I asked for and it is the reason this round's report can be read at all.
 
 You report **162/251 functions and 6,596/31,876 bytes (20.69%)**, +74 functions.
-Independent verification is running now; I will report the result next round and
-I will tell you exactly where it diverges if it does. Given that you closed the
-constructor (516 B) and destructor (332 B), which are the load-bearing ones for
-your whole layout hypothesis, those two are being checked hardest.
+
+**Verification is complete. Your arithmetic reproduces exactly — and the number
+is still wrong, for the same reason as last round.**
+
+Both figures were reproduced independently, function list derived from the
+address range rather than from your table: 162/251 and 6,596/31,876, identical to
+your claim. Then every pooled float constant in all 27 pool-referencing matches
+was decoded against the real DOL — 100% coverage, not a sample.
+
+> **11 of your 162 are false positives. Corrected: 151/251 (60.16%),
+> 5,428/31,876 (17.03%).**
+
+All eleven are the same constant. They write `0.0f`; the value at
+`@75491_8042C71C` decodes to **`5500.0f`**:
+
+`jumpEffect`, `landonEffect`, `hitFireLoopEffect`, `hitFireDamageEffect`,
+`fumidmgEffect`, `shellChangeEffect`, `fumideadEffect`, `shellLandonEffect`,
+`downLandOnEffect` — nine of your thirteen claimed effect handlers — plus
+**`calcRootJntPos` and `calcShellJntPos`, the exact two functions I flagged last
+round.** You accepted the correction in prose and did not change the values. The
+same wrong constant then propagated into nine more functions.
+
+**This is now a confirmed repeat failure mode, not a one-off.** The instruction
+pattern will always match, because the offset field is zeroed on both sides. Only
+decoding the binary can tell you, and until this round there was no tool. There
+is one now, and using it is not optional.
+
+**One more, outside the count.** You list `setBeginMoveState` (152 B) under
+"Major Milestone Functions Closed 100% Byte-Exact". It does not match: 2 of its
+38 instructions use offset `0xAC8` where retail uses `0x848`. That is your own
+`mUnk848` field placed **0x280 bytes wrong** in the struct — and your provenance
+table cites this very instruction as its only evidence. It was correctly excluded
+from the mechanical 162, so it did not inflate the count, but your narrative
+claims a match your own diff contradicts. Fix the offset.
+
+**What genuinely holds, and it is substantial:** the constructor (516 B) and
+destructor (332 B) both verify properly — every one of their 14 and 15 `bl`
+targets resolves to the same named symbol on both sides. All 21 sound and voice
+handlers are clean. All 29 `finalizeState_*` are clean. `tenmetsuFin`, which was
+fabricated last round, is now genuinely emitted and genuinely exact. No
+fabrication and no reference-gap recurred. That is real progress and the
+methodology fixes held — the constant blind spot is the one thing that did not.
 
 ---
 
@@ -91,6 +129,24 @@ not touch `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`,
 Do not try to fix it and do not run `ninja` / `configure.py` / `progress.py` /
 `land.py`.** Compile drafts through `harness.compile_draft` as usual — that path
 is unaffected.
+
+### 0. First — fix the eleven, and the offset. Ten minutes, ~1,168 bytes.
+
+Before any new work:
+
+- Change the constant to **`5500.0f`** in `calcRootJntPos`, `calcShellJntPos`,
+  `jumpEffect`, `landonEffect`, `hitFireLoopEffect`, `hitFireDamageEffect`,
+  `fumidmgEffect`, `shellChangeEffect`, `fumideadEffect`, `shellLandonEffect`,
+  `downLandOnEffect`. Do not take my word for the value — run
+  `python tools/auto_decomp/pool.py 0x8042C71C` and read it yourself.
+- Move `mUnk848` so `setBeginMoveState` uses offset `0x848`, not `0xAC8`. Then
+  re-check every other function that touches that field, because a 0x280 error
+  will not be confined to one place.
+- Then sweep **every** pooled constant in **every** function you have already
+  claimed, not just these. Two rounds of evidence say there are more.
+
+Report the corrected baseline before you add anything to it. I would rather have
+a true 17.03% than a claimed 20.69%.
 
 ### 1. Work strictly down the size ranking
 
