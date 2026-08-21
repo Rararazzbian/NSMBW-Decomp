@@ -108,10 +108,26 @@
     ],
     "slices": [
         {
-            "source": "d_basesNP/bases/d_a_ac_switch.cpp",
+            "source": "runtime/rel_init.cpp",
             "memoryRanges": {
-                ".text": "0x7d400-0x7d630",
-                ".data": "0x1bbd8-0x1bc30"
+                ".text": "0x0-0x70"
+            }
+        },
+        {
+            "source": "runtime/global_destructor_chain.c",
+            "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
+            "memoryRanges": {
+                ".text": "0x70-0xf0",
+                ".dtors": "0x0-0x4",
+                ".bss": "0x0-0x8"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_awa.cpp",
+            "memoryRanges": {
+                ".text": "0x4b0d0-0x4b730",
+                ".rodata": "0x1f98-0x1fe8",
+                ".data": "0x13190-0x132b0"
             }
         },
         {
@@ -126,6 +142,13 @@
             "memoryRanges": {
                 ".text": "0x77af0-0x77c50",
                 ".data": "0x1aa08-0x1abc8"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_a_ac_switch.cpp",
+            "memoryRanges": {
+                ".text": "0x7d400-0x7d630",
+                ".data": "0x1bbd8-0x1bc30"
             }
         },
         {
@@ -351,14 +374,6 @@
             }
         },
         {
-            "source": "d_basesNP/bases/d_awa.cpp",
-            "memoryRanges": {
-                ".text": "0x4b0d0-0x4b730",
-                ".rodata": "0x1f98-0x1fe8",
-                ".data": "0x13190-0x132b0"
-            }
-        },
-        {
             "source": "d_basesNP/bases/d_s_autoselect.cpp",
             "memoryRanges": {
                 ".text": "0x1b13f0-0x1b14a0",
@@ -370,21 +385,6 @@
             "memoryRanges": {
                 ".text": "0x1b63f0-0x1b64a0",
                 ".data": "0x4f1a8-0x4f200"
-            }
-        },
-        {
-            "source": "runtime/global_destructor_chain.c",
-            "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
-            "memoryRanges": {
-                ".text": "0x70-0xf0",
-                ".dtors": "0x0-0x4",
-                ".bss": "0x0-0x8"
-            }
-        },
-        {
-            "source": "runtime/rel_init.cpp",
-            "memoryRanges": {
-                ".text": "0x0-0x70"
             }
         }
     ]

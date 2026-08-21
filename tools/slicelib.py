@@ -156,7 +156,22 @@ def load_slice_file(src: Path) -> SliceFile:
             parsed_slice_section = SliceSection(section, section_info.index, begin, end, section_info.align)
             parsed_slice.sliceSecs.append(parsed_slice_section)
 
-            # Set memory range of filler slice
+            # Set memory range of filler slice.
+            #
+            # The filler is everything between the previous claim's end and this
+            # claim's start, so the slice list MUST be in ascending address order
+            # in every section at once. Out of order, this subtraction goes
+            # negative: a PROGBITS filler silently slices to zero bytes (and the
+            # region it should have covered gets emitted twice by a later
+            # filler), while a .bss filler gets a negative sh_size and blows up
+            # in struct.pack. Refuse the file instead -- the silent half of that
+            # corrupts the reassembled binary with no error at all.
+            if begin < curr_sec_positions[section]:
+                raise ValueError(
+                    f'{src}: slice "{slice.source}" claims {section} '
+                    f'{begin:#x}-{end:#x}, which starts below the previous '
+                    f'claim\'s end {curr_sec_positions[section]:#x}. Slices must '
+                    f'be listed in ascending address order.')
             filler_sec_range[section] = (curr_sec_positions[section], begin)
             curr_sec_positions[section] = end
 
