@@ -403,37 +403,38 @@ bool dLineMng_c::line_cross_chk1(f32 p1, f32 p2, const mVec2_c &p3, mVec2_c p4, 
 
     f32 slope, intercept;
     if (line_cross_slope_check(p4, p5, slope, intercept)) {
-        if (p1 - slope == 0.0f) {
+        f32 d = p1 - slope;
+        if (d != 0.0f) {
+            out.x = intercept / d;
+            out.y = p1 * out.x;
+        } else {
             if (intercept != 0.0f) {
                 return false;
             }
             out.x = p5.x;
             out.y = p5.y;
-        } else {
-            out.x = intercept / (p1 - slope);
-            out.y = p1 * out.x;
         }
 
-        if (!(out.x >= -0.1f && out.x <= p2 + 0.1f)) {
-            return false;
-        }
-        if (!line_cross_range_check(p4.x, p5.x, out.x)) {
-            return false;
+        if (out.x >= -0.1f && out.x <= p2 + 0.1f) {
+            if (line_cross_range_check(p4.x, p5.x, out.x)) {
+                out.x += p3.x;
+                out.y += p3.y;
+                return true;
+            }
         }
     } else {
-        if (!(p5.x >= 0.0f && p5.x < p2)) {
-            return false;
-        }
-        out.x = p5.x;
-        out.y = p1 * p5.x;
-        if (!line_cross_range_check(p4.y, p5.y, out.y)) {
-            return false;
+        if (p5.x >= 0.0f && p5.x < p2) {
+            f32 x5 = p5.x;
+            out.x = x5;
+            out.y = p1 * x5;
+            if (line_cross_range_check(p4.y, p5.y, out.y)) {
+                out.x += p3.x;
+                out.y += p3.y;
+                return true;
+            }
         }
     }
-
-    out.x += p3.x;
-    out.y += p3.y;
-    return true;
+    return false;
 }
 
 bool dLineMng_c::line_cross_chk2(f32 p1, const mVec2_c &p3, mVec2_c p4, mVec2_c p5, f32 &out) {
@@ -443,35 +444,29 @@ bool dLineMng_c::line_cross_chk2(f32 p1, const mVec2_c &p3, mVec2_c p4, mVec2_c 
     p5.y -= p3.y;
 
     if (p4.x != 0.0f && p5.x != 0.0f) {
-        if (p4.x >= 0.0f) {
-            if (!(p5.x >= 0.0f)) {
-                return false;
-            }
-        } else if (p5.x < 0.0f) {
+        if ((p4.x < 0.0f && p5.x < 0.0f) || (p4.x >= 0.0f && p5.x >= 0.0f)) {
             return false;
         }
     }
 
     f32 slope, intercept;
     if (line_cross_slope_check(p4, p5, slope, intercept)) {
-        if (!(intercept >= -0.1f && intercept <= 0.1f + p1)) {
-            return false;
+        f32 v = intercept;
+        if (v >= -0.1f && v <= 0.1f + p1) {
+            if (line_cross_range_check(p4.y, p5.y, v)) {
+                out = v;
+                return true;
+            }
         }
-        if (!line_cross_range_check(p4.y, p5.y, intercept)) {
-            return false;
-        }
-        out = intercept;
-        return true;
     } else {
-        if (p5.x != 0.0f) {
-            return false;
+        if (p5.x == 0.0f) {
+            if (p5.y >= 0.0f && p5.y < p1) {
+                out = p5.y;
+                return true;
+            }
         }
-        if (!(p5.y >= 0.0f && p5.y < p1)) {
-            return false;
-        }
-        out = p5.y;
-        return true;
     }
+    return false;
 }
 
 bool dLineMng_c::line_cross_chk3(f32 p1, const mVec2_c &p2, const mVec2_c &p3) {
