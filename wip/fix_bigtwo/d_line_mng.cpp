@@ -1685,8 +1685,10 @@ void dLineMng_c::mov_frm_leftupper(const mVec2_c &pos, bool reverse) {
 
 void dLineMng_c::move_on_circle_speedset(f32 radius, f32 speedScale)
 {
-    mAngle = (u16)(mAngle + mBaseSpeed * speedScale);
-    mSpeed.x = -mBaseSpeed * nw4r::math::SinIdx((short)mAngle);
+    f32 delta = mBaseSpeed;
+    delta *= speedScale;
+    mAngle = (u16)(mAngle + delta);
+    mSpeed.x = mBaseSpeed * -nw4r::math::SinIdx((short)mAngle);
     mSpeed.y = mBaseSpeed * nw4r::math::CosIdx((short)mAngle);
     mPos.x = mUnk58.x;
     mPos.y = mUnk58.y;
@@ -1696,9 +1698,7 @@ void dLineMng_c::move_on_circle_speedset(f32 radius, f32 speedScale)
 
 void dLineMng_c::move_on_circle1(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1708,12 +1708,9 @@ void dLineMng_c::move_on_circle1(f32 radius, f32 speedScale)
         mSpeed.x = -mSpeed.x;
         mSpeed.y = -mSpeed.y;
     } else if ((s16)mAngle < 0) {
-        mVec2_c dst;
-        dst.x = mUnitBasePos.x + radius - 16.0f;
-        dst.y = mUnitBasePos.y - radius + 16.0f;
         mSpeed.x = 0.0f;
         mSpeed.y = mBaseSpeed;
-        mov_frm_rightlower(dst, true);
+        mov_frm_rightlower(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y - radius + 16.0f), true);
     } else if ((s16)(mAngle - 0x4000) >= 0) {
         mSpeed.x = -mBaseSpeed;
         mSpeed.y = 0.0f;
@@ -1723,9 +1720,7 @@ void dLineMng_c::move_on_circle1(f32 radius, f32 speedScale)
 
 void dLineMng_c::move_on_circle2(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1737,28 +1732,21 @@ void dLineMng_c::move_on_circle2(f32 radius, f32 speedScale)
     } else {
         s16 rel = mAngle - 0x4000;
         if (rel < 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x + radius - 16.0f;
-            dst.y = mUnitBasePos.y;
             mSpeed.x = -mBaseSpeed;
             mSpeed.y = 0.0f;
-            mov_frm_rightupper(dst, true);
+            mov_frm_rightupper(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y), true);
         } else if ((s16)(rel - 0x4000) >= 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x;
-            dst.y = mUnitBasePos.y - radius + 16.0f;
+            f32 dstX = mUnitBasePos.x;
             mSpeed.x = 0.0f;
             mSpeed.y = -mBaseSpeed;
-            mov_frm_leftlower(dst, true);
+            mov_frm_leftlower(mVec2_c(dstX, mUnitBasePos.y - radius + 16.0f), true);
         }
     }
 }
 
 void dLineMng_c::move_on_circle3(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1774,21 +1762,16 @@ void dLineMng_c::move_on_circle3(f32 radius, f32 speedScale)
             mSpeed.y = -mBaseSpeed;
             mov_frm_leftupper(mUnitBasePos, false);
         } else if ((s16)(rel - 0x4000) >= 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x + radius - 16.0f;
-            dst.y = mUnitBasePos.y - radius + 16.0f;
             mSpeed.x = mBaseSpeed;
             mSpeed.y = 0.0f;
-            mov_frm_rightlower(dst, false);
+            mov_frm_rightlower(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y - radius + 16.0f), false);
         }
     }
 }
 
 void dLineMng_c::move_on_circle4(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1800,19 +1783,14 @@ void dLineMng_c::move_on_circle4(f32 radius, f32 speedScale)
     } else {
         s16 rel = mAngle + 0x4000;
         if (rel < 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x;
-            dst.y = mUnitBasePos.y - radius + 16.0f;
+            f32 dstX = mUnitBasePos.x;
             mSpeed.x = mBaseSpeed;
             mSpeed.y = 0.0f;
-            mov_frm_leftlower(dst, false);
+            mov_frm_leftlower(mVec2_c(dstX, mUnitBasePos.y - radius + 16.0f), false);
         } else if ((s16)(rel - 0x4000) >= 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x + radius - 16.0f;
-            dst.y = mUnitBasePos.y;
             mSpeed.x = 0.0f;
             mSpeed.y = mBaseSpeed;
-            mov_frm_rightupper(dst, false);
+            mov_frm_rightupper(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y), false);
         }
     }
 }
