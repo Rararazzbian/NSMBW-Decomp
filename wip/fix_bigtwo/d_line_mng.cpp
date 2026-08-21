@@ -454,9 +454,10 @@ bool dLineMng_c::height_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mV
 }
 
 bool dLineMng_c::width_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c origin;
-    origin.y = p1.y - 16.0f;
-    origin.x = p1.x;
+    // AGGREGATE COPY, not two scalar field writes -- lever 10. The member-wise
+    // form front-loads the `a` literal and reverses the store order.
+    mVec2_c origin = p1;
+    origin.y -= 16.0f;
     return fn_800C1EE0(this, 0.0f, 16.0f, p1, p2, p3, origin);
 }
 
@@ -510,6 +511,105 @@ bool dLineMng_c::line4_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVe
     return result;
 }
 
+bool dLineMng_c::line5_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    bool result = height_cross_chk(p1, p2, p3);
+    if (result) {
+        mStateMgr.changeState(StateID_Height);
+    }
+    return result;
+}
+
+bool dLineMng_c::line7_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    mVec2_c origin = p1;
+    origin.y -= 16.0f;
+    bool result = fn_800C1EE0(this, 0.5f, 16.0f, p1, p2, p3, origin);
+    if (result) {
+        mStateMgr.changeState(StateID_Left30Left);
+    }
+    return result;
+}
+
+bool dLineMng_c::line8_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    mVec2_c origin = p1;
+    origin.y -= 8.0f;
+    bool result = fn_800C1EE0(this, 0.5f, 16.0f, p1, p2, p3, origin);
+    if (result) {
+        mStateMgr.changeState(StateID_Left30Right);
+    }
+    return result;
+}
+
+bool dLineMng_c::line9_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    bool result = fn_800C1EE0(this, -0.5f, 16.0f, p1, p2, p3, p1);
+    if (result) {
+        mStateMgr.changeState(StateID_Right30Left);
+    }
+    return result;
+}
+
+bool dLineMng_c::lineA_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    mVec2_c origin = p1;
+    origin.y -= 8.0f;
+    bool result = fn_800C1EE0(this, -0.5f, 16.0f, p1, p2, p3, origin);
+    if (result) {
+        mStateMgr.changeState(StateID_Right30Right);
+    }
+    return result;
+}
+
+bool dLineMng_c::lineB_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    // AGGREGATE COPY (AGENT_CONTEXT lever 10) + compound assignment (lever 11):
+    // this is what puts BOTH the member-first fadds/fsubs operand order AND
+    // the clustered-then-computed load schedule the target shows. A plain
+    // `mVec2_c origin(p1.x + 8.0f, p1.y - 16.0f);` matches the load schedule
+    // but leaves the adds/subs literal-first (wrong); a field-by-field
+    // `origin.x = p1.x + 8.0f; origin.y = p1.y - 16.0f;` gets neither.
+    mVec2_c origin = p1;
+    origin.x += 8.0f;
+    origin.y -= 16.0f;
+    bool result = fn_800C1EE0(this, 2.0f, 8.0f, p1, p2, p3, origin);
+    if (result) {
+        mStateMgr.changeState(StateID_Left60Up);
+    }
+    return result;
+}
+
+bool dLineMng_c::lineC_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    // Here only Y needs an arithmetic op and X is a plain copy, so the
+    // ordinary two-argument constructor already produces the exact target
+    // shape (no lever-11 operand-order issue arises for a bare copy).
+    mVec2_c origin(p1.x, p1.y - 16.0f);
+    bool result = fn_800C1EE0(this, 2.0f, 8.0f, p1, p2, p3, origin);
+    if (result) {
+        mStateMgr.changeState(StateID_Left60Down);
+    }
+    return result;
+}
+
+bool dLineMng_c::lineD_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    // Mirror of lineB but only X is computed (+8.0f) and Y is a plain copy;
+    // needs the same aggregate-copy + compound-assignment shape as lineB for
+    // the member-first fadds.
+    mVec2_c origin = p1;
+    origin.x += 8.0f;
+    bool result = fn_800C1EE0(this, -2.0f, 8.0f, p1, p2, p3, origin);
+    if (result) {
+        mStateMgr.changeState(StateID_Right60Down);
+    }
+    return result;
+}
+
+bool dLineMng_c::lineE_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
+    // No origin computation at all -- p1 is passed straight through as both
+    // the p1 and origin arguments (confirmed by the target's r7 <- r4 `mr`
+    // and its smaller 0x10 stack frame; the three-argument versions above
+    // need 0x20 for a real local).
+    bool result = fn_800C1EE0(this, -2.0f, 8.0f, p1, p2, p3, p1);
+    if (result) {
+        mStateMgr.changeState(StateID_Right60Up);
+    }
+    return result;
+}
 bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
     origin.y = p1.y - 8.0f;

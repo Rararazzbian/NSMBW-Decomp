@@ -200,15 +200,15 @@ void dBgActorManager_c::ProcMain() {
     dBg_c *bg = dBg_c::m_bg_p;
     mVec3_c viewMin = mMin;
     mVec3_c viewMax = mMax;
-    u32 x0 = (u32)(bg->m_8fe64 * 0.0625f);
-    u32 y0 = (u32)(bg->m_8fe6c * 0.0625f);
+    int x0 = (int)(bg->m_8fe64 * 0.0625f);
+    int y0 = (int)(bg->m_8fe6c * 0.0625f);
     for (int i = 0; i < m_objNum; i++) {
         BgObj_c *obj = &m_pObjList[i];
         if (obj->mRailIdx == 0xFFFF) {
             continue;
         }
-        mVec3_c pos((f32)((u32)((x0 + obj->mX) << 4)),
-                    (f32)((u32)((y0 - obj->mY) << 4)), 0.0f);
+        mVec3_c pos((f32)((int)((x0 + obj->mX) << 4)),
+                    (f32)((int)((y0 - obj->mY) << 4)), 0.0f);
         pos.x += obj->getOffset().x;
         pos.y += obj->getOffset().y;
         mVec3_c mMin(pos.x - obj->getSize().x * 0.5f,
@@ -241,10 +241,10 @@ bool dBgActorManager_c::addObj(u16 a, u16 b, u16 c, u8 d) {
 
 int dBgActorManager_c::createObjList(bool add) {
     dBg_c *bg = dBg_c::m_bg_p;
-    u32 x0 = (u32)(bg->m_8fe64 * 0.0625f);
-    u32 y0 = (u32)(-(bg->m_8fe6c) * 0.0625f);
-    u32 x1 = (u32)(bg->m_8fe68 - bg->m_8fe64);
-    u32 y1 = (u32)(bg->m_8fe6c - bg->m_8fe70);
+    int x0 = (int)(bg->m_8fe64 * 0.0625f);
+    int y0 = (int)(-(bg->m_8fe6c) * 0.0625f);
+    int x1 = (int)(bg->m_8fe68 - bg->m_8fe64);
+    int y1 = (int)(bg->m_8fe6c - bg->m_8fe70);
     x1 = (x1 & 0xF) ? (x1 >> 4) + 1 : (x1 >> 4);
     y1 = (y1 & 0xF) ? (y1 >> 4) + 1 : (y1 >> 4);
     int count = 0;

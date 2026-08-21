@@ -65,7 +65,14 @@ public:
 
     f32 CalcAdjustPosY(f32, f32); ///< @unofficial f32, argued from dead-code-elimination behaviour. NO caller exists anywhere in this TU, so this could NOT be proven by the call-site method -- weaker evidence than every other return type here. Flagged.
     void SetBaseSpeed(f32 speed); ///< @unofficial Writes mBaseSpeed, negating it first if mReverse is set.
-    void acm_angle() const; ///< @unofficial Return type NOT YET PROVEN. Computes mAngle +/- 0x4000 depending on mReverse, masked to 16 bits.
+    /// @unofficial Return type changed from `void` to `u16` (gapA/d4_misc):
+    /// target.txt shows a `beqlr` (conditional RETURN) right after the value
+    /// is computed into r3 and masked to 16 bits -- a void function has no
+    /// reason to keep a value alive in r3 across a return point, and a bare
+    /// unused arithmetic expression would be dead-code-eliminated entirely
+    /// under -O4, not computed and masked on both paths. u16 matches mAngle's
+    /// own field type exactly.
+    u16 acm_angle() const;
 
     void start_line_move();
     static bool is_unit_circle2x2(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`.

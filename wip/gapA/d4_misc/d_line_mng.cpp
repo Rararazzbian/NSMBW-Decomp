@@ -78,6 +78,11 @@ void dLineMng_c::move()
     }
 }
 
+mVec2_c dLineMng_c::GetPos() const
+{
+    return mPos;
+}
+
 void dLineMng_c::SetPos(const mVec2_c &pos)
 {
     mPos.x = pos.x;
@@ -122,6 +127,18 @@ void dLineMng_c::SetBaseSpeed(f32 speed)
 {
     if (mReverse) speed = -speed;
     mBaseSpeed = speed;
+}
+
+/// @unofficial acm_angle (0x28 bytes, 10 words). Returns mAngle +/- 0x4000
+/// (masked to 16 bits) depending on mReverse. See shadow header for the
+/// return-type note: `void` was disproven by the `beqlr` shape.
+u16 dLineMng_c::acm_angle() const
+{
+    u16 angle = mAngle;
+    if (!mReverse) {
+        return angle + 0x4000;
+    }
+    return angle - 0x4000;
 }
 
 /// @unofficial fn_800C15B0 (0x1C bytes, 7 words). Shape: arr[idx] = *src for
@@ -905,6 +922,27 @@ found:
     return;
 }
 
+/// @unofficial circle_nextpos_set (0xb8 bytes, 46 words). Recomputes mUnk58
+/// as mUnitBasePos + pos, copies it into mPos, then advances mPos by
+/// `radius` along the direction given by mAngle (BAM units, via the
+/// standard `nw4r::math::CosIdx`/`SinIdx(short)` inlined
+/// U16ToF32-paired-single-load idiom -- confirmed by the `sth`+`psq_l
+/// ...,1,qr3`+`fmuls ...,(1/256)` shape matching CosIdx/SinIdx's inlined
+/// body in math_triangular.h/math_arithmetic.h exactly). mAngle is read
+/// directly (no cast needed in source): passing the u16 field to CosIdx's
+/// `short` parameter is what makes the compiler choose a sign-extending
+/// `lha` for this read, vs. the plain `lhz` acm_angle() uses for the same
+/// field when it needs the raw unsigned value.
+void dLineMng_c::circle_nextpos_set(const mVec2_c &pos, f32 radius)
+{
+    mUnk58.y = mUnitBasePos.y + pos.y;
+    mUnk58.x = mUnitBasePos.x + pos.x;
+    mPos.x = mUnk58.x;
+    mPos.y = mUnk58.y;
+    mPos.x = mPos.x + radius * nw4r::math::CosIdx(mAngle);
+    mPos.y = mPos.y + radius * nw4r::math::SinIdx(mAngle);
+}
+
 // ===========================================================================
 // author_core: fn_800C3B20 / fn_800C3B60 (unnamed file-scope helpers)
 // Renamed here from author_core's clampPosX_800C3B20/clampPosY_800C3B60 to
@@ -942,6 +980,59 @@ static void fn_800C3B60(dLineMng_c *self)
         return;
     }
     self->mPos.y = lower;
+}
+
+/// @unofficial fn_800C3BA0 (0x44 bytes, 17 words). Reduces a 16-bit BAM angle
+/// down by 0x4000 (a quarter turn) while it is >= 0x4000, wrapping through
+/// the natural u16 range -- the guard test (skip entirely if already
+/// < 0x4000) plus a duff's-device unrolled ctr loop is MWCC's standard
+/// transform for a `while` loop whose trip count it can bound (here, at
+/// most 3, since the field-typed argument's value never exceeds 0xFFFF).
+/// Not a class member: called with a single plain int argument (mAngle's
+/// value), no `this`.
+static short fn_800C3BA0(u16 angle)
+{
+    while (angle >= 0x4000) {
+        angle -= 0x4000;
+    }
+    return (short)angle;
+}
+
+/// @unofficial fn_800C3BF0 (0x1c bytes, 7 words). Mirrors fn_800C3BA0: adds a
+/// quarter turn (by repeated wrap-around subtraction of 0x4000) while the
+/// angle is < 0xC000. Compiled as a plain test-at-bottom loop rather than
+/// the unrolled/counted form -- MWCC did not find a closed-form trip count
+/// for this direction.
+static short fn_800C3BF0(u16 angle)
+{
+    while (angle < 0xC000) {
+        angle -= 0x4000;
+    }
+    return (short)angle;
+}
+
+/// @unofficial calc_rotate_to_circle_rev (0x6c bytes, 27 words). Advances
+/// mAngle toward `target`, choosing +fn_800C3BF0/-fn_800C3BA0 by `reverse`.
+void dLineMng_c::calc_rotate_to_circle_rev(u16 target, bool reverse)
+{
+    u16 angle = mAngle;
+    if (reverse) {
+        mAngle = target + (u16)fn_800C3BF0(angle);
+    } else {
+        mAngle = target - (u16)fn_800C3BA0(angle);
+    }
+}
+
+/// @unofficial calc_rotate_to_circle_prev (0x6c bytes, 27 words). Same shape
+/// as calc_rotate_to_circle_rev with the two helper calls' signs swapped.
+void dLineMng_c::calc_rotate_to_circle_prev(u16 target, bool reverse)
+{
+    u16 angle = mAngle;
+    if (reverse) {
+        mAngle = target - (u16)fn_800C3BF0(angle);
+    } else {
+        mAngle = target + (u16)fn_800C3BA0(angle);
+    }
 }
 
 // ===========================================================================
