@@ -1139,3 +1139,67 @@ four FP values in play can need all three at once, applied to different values.*
 When a residual survives every single-lever variant, try composing them before
 concluding the residual is not source-addressable -- especially now that the
 "not source-addressable" verdict is retired for FP registers.
+
+## A def-point is not free: it moves the value ABOVE the bare leaves
+
+This corrects an over-eager reading of levers 11-13 that cost a round, and it is
+the counterweight to the "the levers compose" section above. **Adding a def-point
+is not a neutral nudge to one value's register — it re-ranks the whole
+statement.**
+
+Measured on the `move_on_circle` family. The residual was a `+ 16.0f` that retail
+compiles VALUE-first (`fadds f0, f1, f0`) where a plain expression gives
+literal-first. Four different value-first routes were tried, each predicted to
+land the chain in `f1`:
+
+| route | measured |
+|---|---|
+| scalar local + `dstY += 16.0f` | value-first, but chain in **f3**; 1 -> 9 diffs |
+| two-arg ctor arg + `dst.y += 16.0f` | **f3**; 1 -> 6 |
+| `static inline addOff(a, b)` | **f3**; 1 -> 6 |
+| `mVec2_c::incY(16.0f)` member | **f3**; 1 -> 6 |
+
+Every route that creates a def-point flipped the def-pointed value ABOVE the bare
+leaves, where retail has it BELOW them. **Retail's numbering here is a clean
+descending run in evaluation order with no def-point anywhere.** So when the
+target's numbering is a plain descending run, a def-point is the wrong tool no
+matter how it is spelled -- you need value-first WITHOUT one.
+
+The route that achieves that was already in this file, in the byte-exact
+`lineB_cross_chk`:
+
+    mVec2_c dst = mUnitBasePos;   // lever 10 aggregate copy
+    dst.x += radius;              // lever 11 compound assignment ON THE MEMBER
+    dst.x -= 16.0f;
+
+The aggregate copy's own stores are dead-store-eliminated so the word count is
+unchanged, and the compound assignments land on struct MEMBERS -- which is lever
+11's stated constraint all along. A scalar temp was the thing failing.
+
+**Order the operations per COMPONENT, not per operation.** `x` fully, then `y`
+fully, measured 0 diffs; interleaving as `x+=r; y-=r; x-=16; y+=16` measured 6.
+
+### Three corrections and one new diagnostic from the same round
+
+- **Lever 11 route 3 is NOT register-neutral.** The `static inline` helper-parameter
+  route does bypass the literal-hoist canonicaliser, but it creates a def-point and
+  rotates the allocation exactly like a named local. Only use it where a def-point
+  is wanted anyway. (Confirmed in passing that `-inline noauto` still inlines a
+  free `static inline` helper.)
+- **An unnamed `mVec2_c(...)` temporary takes the LOW stack slot; a named local
+  takes the HIGH one** -- regardless of which branch comes first in the source.
+  That is the lever for a pure stack-slot swap with everything else correct.
+- **`lha` versus `lhz`+`extsh.` IS source-addressable**, previously written off.
+  Retail keeps an `s32` holding the ALREADY-sign-extended angle, so write
+  `s32 rel = (s16)mAngle;` and cast again at the condition (`if ((s16)rel < 0)`).
+  Declaring `s16 rel = mAngle - 0x4000;` forces MWCC to keep the extended value
+  as the variable; retail keeps the unextended difference in `r3` and extends
+  only into `r0` for the condition code.
+
+**The `- (-K)` diagnostic, worth knowing generally.** Rewriting `y - r + 16.0f`
+as `y - r - (-16.0f)` produced `fsubs f0, f1, f0` -- exactly the target's register
+topology with the wrong opcode. That **isolates "operand slot" from "register
+allocation" in a single compile**, which otherwise takes several variants to
+separate. It also self-checks the constant: the word count rose by one because
+`-16.0f` needs its own pool entry, independently confirming retail's constant is
+`+16.0f`.
