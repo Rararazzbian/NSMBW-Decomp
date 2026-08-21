@@ -15,6 +15,26 @@
 /// OWN layout only -- the owning class's member name/offset for it is unknown.
 /// @ingroup bases
 class dLineMng_c {
+    // MERGE-LOCAL, NOT IN THE SHARED HEADER -- proposed for lead review, see
+    // MERGE.md "local-header overrides not yet folded in".
+    //
+    // Three unnamed file-scope helpers write dLineMng_c's private mPos/
+    // mUnitBasePos directly through a passed-in pointer, so they need friend
+    // access:
+    //   fn_800C3B20/fn_800C3B60 (author_core): clamp mPos.x/mPos.y against
+    //     mUnitBasePos's unit cell. Evidence: both write this->mPos through
+    //     the incoming pointer with no accessor calls.
+    //   fn_800C1EE0 (author_geom): shared tail of width_cross_chk's
+    //     line_cross_chk1 call; writes this->mPos and this->mUnitBasePos.
+    //     Evidence: width_cross_chk passes its OWN incoming `this` straight
+    //     through unmodified (no `mr r3,...` before the `bl`), and the
+    //     target's disassembly shows NO mangled name for the callee at all --
+    //     unlike every named `static` member in this unit, which does carry
+    //     one -- so it cannot be a class member.
+    friend void fn_800C3B20(dLineMng_c *self);
+    friend void fn_800C3B60(dLineMng_c *self);
+    friend bool fn_800C1EE0(dLineMng_c *, f32, f32, const mVec2_c &, const mVec2_c &, const mVec2_c &, const mVec2_c &);
+
 public:
     dLineMng_c();
     // No destructor: `__dt__10dLineMng_cFv` does not exist in the symbol map,
@@ -45,7 +65,7 @@ public:
     static bool is_unit_circle2x2(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`.
     static bool is_unit_circle4x4(ulong unitID); ///< Confirmed bool: `li r3, 0x1/0x0; blr`.
     void change_dir(); ///< Negates mBaseSpeed and flips mReverse.
-    static u32 getLineUnitNo(f32, f32); ///< PROVEN static AND u32. Static: all NINETEEN call sites in target set NO r3 -- the draft emitted `mr r3, r29` exactly where target does `lfs f5, 0x44(r29)`. Its own body still byte-matches either way (26/26), because a body that never uses `this` compiles identically -- which is why this hid for four rounds.
+    u32 getLineUnitNo(f32, f32); ///< @unofficial PROVEN non-void: every mov_to_*/mov_frm_* caller reads r3 (`mr r31,r3`) right after the `bl`. Width u32 vs u8 vs int NOT yet settled -- author_core to nail it.
     void init_term_ck_pos();
     bool check_term(); ///< PROVEN bool, found independently by two agents: 12 call sites all consume the return value.
 
@@ -98,6 +118,16 @@ public:
     void move_on_circle2(f32, f32);
     void move_on_circle3(f32, f32);
     void move_on_circle4(f32, f32);
+
+    // MERGE-LOCAL, NOT IN THE SHARED HEADER -- proposed for lead review, see
+    // MERGE.md. Needed by init()/check_term()/start_line_move() (all
+    // author_core). Value 16.0f read directly from original/wiimj2d.dol at
+    // .sdata2:0x8042CB18 (raw bytes 41 80 00 00). Deliberately left WITHOUT a
+    // definition in this TU: giving it an initializer here lets -O4 fold
+    // init()'s `pos.x / smc_UNIT_SIZE_X` into a multiply-by-reciprocal
+    // (measured: zero `fdivs` emitted vs the target's two) -- so its real
+    // defining TU must be elsewhere, not yet decompiled.
+    static const float smc_UNIT_SIZE_X;
 
 private:
     // --- The 25 states, in .bss/.text declaration order (verified: both the

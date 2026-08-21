@@ -13879,3 +13879,61 @@ make a test built on it discriminating. The mechanism explains a difference; it
 does not predict which differences matter. I nearly shipped this as guidance to
 four agents on the strength of the mechanism alone — the negative control took
 two commands and stopped it.
+
+## `getLineUnitNo` is STATIC — a fourth storage-class error, and it hid behind CANCELLING ERRORS
+
+An agent measured that the target **never sets `r3` for a `getLineUnitNo` call**
+and concluded it was "a whole-TU MWCC decision, same class as the `_savegpr`
+finding, not fixable per-function." **That diagnosis was wrong, and the right one
+was already recorded above it in this file.**
+
+It is the storage-class tell, third instance today: **one register set at a call
+site where two are expected means no implicit `this`.**
+
+Verified here before applying, three ways:
+
+```
+1.  ALL NINETEEN call sites set no r3 in the preceding six instructions.
+2.  Instruction-level, in start_line_move:
+        draft  w23   7F A3 EB 78   mr  r3, r29
+        target w23   C0 BD 00 44   lfs f5, 0x44(r29)
+    The draft spends a word passing `this` exactly where the target loads a float.
+3.  A/B on the declaration alone:
+        start_line_move   95w -> 94w   (target 94)   74 differing -> 4 differing
+        getLineUnitNo     26w -> 26w   BYTE-MATCHES EITHER WAY
+```
+
+### Why it survived four rounds of careful work
+
+**A static member function whose body never touches `this` compiles BYTE-
+IDENTICALLY to the non-static version.** `getLineUnitNo` was reported byte-exact
+by its author and re-confirmed by me — correctly, both times. **The error is
+invisible in the function itself and only ever appears at its CALL SITES.**
+
+So: when a function matches but its callers do not, suspect its DECLARATION, not
+their bodies. Nothing about the callee can reveal this.
+
+### The part that matters most: TWO ERRORS WERE CANCELLING
+
+Before the fix, four `executeState_*` functions were **length-exact**. After it,
+they are one word SHORT:
+
+```
+                        target   before   after
+Left30Right               100      100      99
+Left60Down                102      102     101
+Right30Right              104      104     103
+Right60Down               104      104     103
+```
+
+Those four were exact **by cancellation** — a spurious `mr r3` masking a genuine
+one-word content gap. **A correct fix made the tally look worse**, and a round
+that trusted the length column would have reverted it.
+
+This is the sharpest example yet of why *"a differing count is meaningless when
+lengths differ"* has a partner rule: **a length that MATCHES is not proof either,
+when two errors can offset.** The only trustworthy gate is bytes.
+
+Net effect of one word in a header: `start_line_move` from 74 differing to 4, and
+eight `executeState_*` functions now carrying an honest, newly-visible one-word
+gap instead of a hidden one.

@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13882 lines / 555 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13940 lines / 558 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -576,3 +576,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `13825-13835` `tally.py` has a NAME-KEY flaw: unnamed target functions read as MISSING
 - `13836-13861` NEGATIVE CONTROL: a `_savegpr` regime mismatch is UBIQUITOUS and BENIGN — it does NOT predict a defect
   - `13862-13882` What the finding actually licenses, stated narrowly
+- `13883-13905` `getLineUnitNo` is STATIC — a fourth storage-class error, and it hid behind CANCELLING ERRORS
+  - `13906-13915` Why it survived four rounds of careful work
+  - `13916-13940` The part that matters most: TWO ERRORS WERE CANCELLING
