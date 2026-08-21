@@ -117,4 +117,9 @@ namespace dGameCom {
 
     void initGame();
     void AreaLanguageFolder(const char *, char *);
+
+    /// @unofficial Called by `d_a_peach_castle_sequence.cpp`. Confirmed against
+    /// retail: `ModelPlayMenuStart__8dGameComFv` at `.text:0x800B4FD0`, size
+    /// 0x24. Non-virtual, so it does not affect the vtable.
+    void ModelPlayMenuStart();
 }

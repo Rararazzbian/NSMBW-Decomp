@@ -98,6 +98,11 @@ public:
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 
+    /// @unofficial Read by `d_a_peach_castle_sequence.cpp`. Confirmed against
+    /// retail: `m_isOtehonReturn__10dScStage_c` at `.sbss:0x8042A4FE`, size 1.
+    /// A static data member, so it does not affect `dScStage_c`'s layout.
+    static bool m_isOtehonReturn;
+
     ACTOR_PARAM_CONFIG(File, 8, 4);
     ACTOR_PARAM_CONFIG(NextGotoID, 0, 8);
 };

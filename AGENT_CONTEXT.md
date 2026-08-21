@@ -1097,3 +1097,45 @@ Related, and worth preserving when you copy a matching sibling: in `0.5 * (a -
 b)` the literal is on the LEFT with the heavier subtree on the right. That
 interacts with lever 12's evaluation-order rule, so reproduce the operand order
 exactly rather than tidying it.
+
+## The register rules COMPOSE within one statement pair -- they are not alternatives
+
+Two agents independently failed to close the same 10-instruction residual, both
+concluding it was not source-addressable, and between them measured 12 negative
+variants. A third closed all three functions. The difference was not a new rule:
+it was applying **three known rules at once, to different values in the same two
+statements.**
+
+The shape, where BOTH fields are computed from the same literal (so the literal
+is CSE'd into one shared register):
+
+    origin.y = p1.y - 16.0f;
+    origin.x = p1.x + 16.0f;
+
+There are two independent register-priority groups here, and each was wrong for
+its own reason:
+
+1. **The RESULTS** (`origin.y`, `origin.x`). Written straight to the struct
+   member they number DESCENDING in evaluation order. Declaring two bare `f32`
+   locals and assigning them later -- same statement positions, same schedule --
+   flips them to ASCENDING declaration order, which is what retail has.
+2. **The LEAVES** (the shared literal and `p1.x`). Both bare, so both number
+   descending, putting the literal in the higher register. Giving `p1.x` a named
+   local fixes which register it gets, but NOT its operand slot.
+3. **The OPERAND SLOT.** One `fadds` still had its two live operands the wrong
+   way round. Fixed by the compound-assignment route from lever 11 --
+   `ox = px; ox += 16.0f;` rather than `ox = px + 16.0f;`.
+
+Measured, each step landing exactly what was predicted: 10 diffs -> 3 -> 1 -> 0.
+
+**Lever 11's compound-assignment route governs `+` exactly as it governs `*`.**
+That was the last instruction and the least obvious: getting two values into the
+right REGISTERS does not put them in the right ORDER within the instruction.
+
+The general lesson is the one the two failed rounds missed. Levers 11 (write-side
+def-point on the member), 12 (evaluation order) and 13 (read-side def-point into
+a local) read like a menu to choose from. They are not. **A statement pair with
+four FP values in play can need all three at once, applied to different values.**
+When a residual survives every single-lever variant, try composing them before
+concluding the residual is not source-addressable -- especially now that the
+"not source-addressable" verdict is retired for FP registers.

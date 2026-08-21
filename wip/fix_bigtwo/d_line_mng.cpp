@@ -742,8 +742,15 @@ bool dLineMng_c::lineE_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVe
 }
 bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 8.0f;
-    origin.x = p1.x + 8.0f;
+    f32 oy;
+    f32 ox;
+    f32 px;
+    oy = p1.y - 8.0f;
+    px = p1.x;
+    ox = px;
+    ox += 8.0f;
+    origin.y = oy;
+    origin.x = ox;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -761,8 +768,15 @@ bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
 
 bool dLineMng_c::circle_ul2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 16.0f;
-    origin.x = p1.x + 16.0f;
+    f32 oy;
+    f32 ox;
+    f32 px;
+    oy = p1.y - 16.0f;
+    px = p1.x;
+    ox = px;
+    ox += 16.0f;
+    origin.y = oy;
+    origin.x = ox;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -921,8 +935,15 @@ bool dLineMng_c::lineRHUR_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
 
 bool dLineMng_c::lineRHUL_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 32.0f;
-    origin.x = p1.x + 32.0f;
+    f32 oy;
+    f32 ox;
+    f32 px;
+    oy = p1.y - 32.0f;
+    px = p1.x;
+    ox = px;
+    ox += 32.0f;
+    origin.y = oy;
+    origin.x = ox;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
