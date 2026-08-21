@@ -719,6 +719,48 @@ variants.
     This closed `executeState_Left60Down` and `executeState_Right60Down`
     (102w + 104w, both to zero diffs) and their two `initializeState_` siblings.
 
+- **Lever 13: a member READ that is reused needs its own local -- and a SECOND
+  local after a call.** This is the counterpart to levers 11 and 12, and it
+  qualifies their "put the def-point on the MEMBER, never on a scalar temp" rule,
+  which is stated too absolutely for this shape.
+
+  The distinction is which side of the assignment the member is on:
+
+  - Levers 11/12 cover a member being **written** by an arithmetic statement.
+    There the def-point must be the member itself -- `mPos.x = a; mPos.x += b;`
+    -- and a temp actively breaks it.
+  - Lever 13 covers a member being **read** and then reused later in the same
+    function. There a bare re-read gets a low-priority scratch register. Hoisting
+    it into a named local (`f32 baseSpeed = mBaseSpeed;`) gives that value its own
+    def-point and elevates it to the register retail uses.
+
+  Same underlying mechanism -- a def-point raises register priority -- applied to
+  the read side rather than the write side.
+
+  **The second half is the non-obvious part.** When the value is needed again
+  after a call, do NOT reuse the outer local. MWCC does not keep a local live
+  across a call here; it re-reads the member from the object either way, and
+  reusing the outer local forces a spill that made the function THREE WORDS
+  LONGER. Declare a fresh second local inside the branch:
+
+        f32 baseSpeed = mBaseSpeed;
+        mSpeed.x = baseSpeed;
+        mPos.x += baseSpeed;
+        if (check_term()) {
+            mPos = old;
+            f32 baseSpeed2 = mBaseSpeed;   // fresh local, NOT baseSpeed
+            mSpeed.x = baseSpeed2;
+        }
+
+  Reads as redundant; it is not. It gives the post-call reload its own def-point
+  without requesting a cross-call live range.
+
+  Closed all four of `executeState_Side`, `executeState_Height`,
+  `executeState_CornerSideLine` and `executeState_CornerHeightLine` (51w, 51w,
+  54w, 54w) with the identical shape. Note these have no multiply at all, so
+  lever 11 does not apply to them -- if a same-length residual has no `fmuls` in
+  it, this is the lever to reach for. Both mirrored pairs behaved symmetrically.
+
 ### Levers that are PROVEN NOT to work -- do not spend a round on these
 
 - **Removing `mVec3_c`'s copy constructor to force a bitwise struct copy.**

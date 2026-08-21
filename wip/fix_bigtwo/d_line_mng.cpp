@@ -1904,12 +1904,14 @@ void dLineMng_c::initializeState_Side() {
 void dLineMng_c::finalizeState_Side() {}
 void dLineMng_c::executeState_Side() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed;
+    f32 baseSpeed = mBaseSpeed;
+    mSpeed.x = baseSpeed;
     mSpeed.y = 0.0f;
-    mPos.x += mBaseSpeed;
+    mPos.x += baseSpeed;
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed;
+        f32 baseSpeed2 = mBaseSpeed;
+        mSpeed.x = baseSpeed2;
         mSpeed.y = 0.0f;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftlower(mUnitBasePos, false);
@@ -1933,13 +1935,15 @@ void dLineMng_c::initializeState_Height() {
 void dLineMng_c::finalizeState_Height() {}
 void dLineMng_c::executeState_Height() {
     mVec2_c old = mPos;
+    f32 baseSpeed = mBaseSpeed;
     mSpeed.x = 0.0f;
-    mSpeed.y = mBaseSpeed;
-    mPos.y = mPos.y + mBaseSpeed;
+    mSpeed.y = baseSpeed;
+    mPos.y = mPos.y + baseSpeed;
     if (check_term()) {
         mPos = old;
+        f32 baseSpeed2 = mBaseSpeed;
         mSpeed.x = 0.0f;
-        mSpeed.y = mBaseSpeed;
+        mSpeed.y = baseSpeed2;
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mov_frm_rightlower(mUnitBasePos, true);
     } else if (mPos.y >= mUnitBasePos.y) {
@@ -1962,13 +1966,15 @@ void dLineMng_c::initializeState_CornerHeightLine() {
 void dLineMng_c::finalizeState_CornerHeightLine() {}
 void dLineMng_c::executeState_CornerHeightLine() {
     mVec2_c old = mPos;
+    f32 baseSpeed = mBaseSpeed;
     mSpeed.x = 0.0f;
-    mSpeed.y = mBaseSpeed;
-    mPos.y = mPos.y + mBaseSpeed;
+    mSpeed.y = baseSpeed;
+    mPos.y = mPos.y + baseSpeed;
     if (check_term()) {
         mPos = old;
+        f32 baseSpeed2 = mBaseSpeed;
         mSpeed.x = 0.0f;
-        mSpeed.y = mBaseSpeed;
+        mSpeed.y = baseSpeed2;
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mStateMgr.changeState(StateID_CornerSideLine);
     } else if (mPos.y >= mUnitBasePos.y) {
@@ -1984,12 +1990,14 @@ void dLineMng_c::initializeState_CornerSideLine() {
 void dLineMng_c::finalizeState_CornerSideLine() {}
 void dLineMng_c::executeState_CornerSideLine() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed;
+    f32 baseSpeed = mBaseSpeed;
+    mSpeed.x = baseSpeed;
     mSpeed.y = 0.0f;
-    mPos.x += mBaseSpeed;
+    mPos.x += baseSpeed;
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed;
+        f32 baseSpeed2 = mBaseSpeed;
+        mSpeed.x = baseSpeed2;
         mSpeed.y = 0.0f;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftlower(mUnitBasePos, false);
