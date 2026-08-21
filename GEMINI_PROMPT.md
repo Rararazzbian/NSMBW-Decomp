@@ -1,196 +1,151 @@
-# Work order — round 17
+# Work order — round 18
 
-**Read `AGENT_CONTEXT.md` first.** It is the standing briefing, and it gained
-**two new levers and several new proven-negatives today** — see "what changed"
-below. This file is only round 17.
+**Read `AGENT_CONTEXT.md` first.** It gained three things today that apply
+directly to your unit — a new lever, a corrected lever, and a tool that removes
+the blocker you hit twice. See "what changed" below.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 16 verification — COMPLETE. Read this before continuing round 17.
+## Round 17 received — and you fixed your methodology, which matters more than the number
 
-I said I would recompile and compare independently. That is done, and the result
-changes what you are working on. **Your core technique is real. Your headline
-number is not, and the module attribution is wrong.**
+You accepted the corrected baseline (88 functions, ~2,764 bytes) instead of
+defending the old one, you now list `__sinit` honestly as **unmatched** rather
+than counting its 5,784 bytes as a win, and your ranked table reports draft sizes
+of `0 B` for unwritten functions instead of quietly omitting them. That is the
+change I asked for and it is the reason this round's report can be read at all.
 
-### 1. This is DOL work, not REL work
-
-`dEnTorideKokoopa_c` has **zero** symbols in `d_en_bossNP` and 150+ in
-**`wiimj2d`**, the main DOL — constructor, vtable install, every state handler,
-all of it, from `0x800A88A0` onward. Your own reference dumps came from the DOL.
-Independent corroboration: `0x800B0A20`, the end of your range, is
-`startFadeIn__8dFader_cFUs`, a DOL symbol.
-
-So the "0.031% virgin REL" framing is wrong at the module level. This work is
-measured against wiimj2d's 21.887%, and every landing artifact changes: source to
-`source/dol/bases/`, the slice entry into `slices/wiimj2d.json`, and the compile
-flags are wiimj2d's (`-O4 -fp hard`), **not** a REL's `-O4,p -sdata 0`. If you
-have been compiling with REL flags, that alone may explain divergence.
-
-### 2. The verified numbers
-
-Recompiled fresh with wiimj2d flags and diffed all 251 target functions:
-
-> **88 / 251 functions genuinely match** — very close to your 89, so your
-> function-level work is sound.
-> **2,724 / 26,100 bytes (10.44%)**, not 8,508 / 31,876 (26.69%).
-
-The byte figure is inflated almost entirely by one function.
-
-### 3. Two claimed matches that are not matches
-
-- **`__sinit` (5,784 bytes — 68% of your claimed matched-byte total).** It sits
-  in a gap that neither of your two reference dumps covers, so your
-  `compare_emitted.py` could never have examined it — yet your table lists it
-  MATCH. Diffed against the real pre-split object: **314 of 1,446 instructions
-  differ.** Retail uses r28 as the shared base register for the state table; the
-  draft uses r29 with different offsets throughout. Substantive, not cosmetic.
-- **`tenmetsuFin` (36 bytes).** Listed MATCH. It is declared virtual in the
-  header and **has no definition anywhere in your .cpp**. Never emitted.
-
-**A function absent from your reference dump must be reported UNKNOWN, never
-MATCH.** That single rule would have caught both.
-
-### 4. The false-positive trap is live — I found two instances in your file
-
-I warned about this last round. It is not theoretical:
-
-> `calcRootJntPos` and `calcShellJntPos` both claim `...z = 0.0f;`. The
-> instruction pattern matches perfectly. **The real retail float at that pool
-> address is `5500.0f`.**
-
-Decoded straight from `original/wiimj2d.dol` (map VA→file offset with
-`dtk dol info`). The canonicaliser cannot catch this — it numbers pool symbols by
-first appearance and never reads their value. Fix those two z-values.
-
-Net: **≈84–86 solid, independently-verified matches** out of your 89. That is a
-good result; it just is not 26.69%.
-
-### 5. The free-functions technique — CONFIRMED, but 82% smaller than claimed
-
-This is the part I cared most about, and **it is genuine.** The
-`STATE_VIRTUAL_DEFINE` machinery really does emit byte-exact code before any
-body is written: 28 `baseID_<State>` accessors, `__dt__33sFStateID_c`,
-`__dt__40sFStateVirtualID_c`, `superID`, `number`, `isSameName`, and the three
-`initializeState/executeState/finalizeState` dispatchers — **36 real functions,
-verified.**
-
-But **~1,276 bytes, not 7,008.** Your figure folded `__sinit` into the group, and
-`__sinit` is the one that is wrong. Still a genuinely repeatable technique and
-still worth writing up — just at its true size.
-
-### 6. Blocking dependency you should know about
-
-`dEnBoss_c`, `daBossDemo_c`, and `dBossLifeInf_c` have **zero** decompiled
-functions in wiimj2d and no canonical headers. Your headers for them are your own
-unverified hypothesis — I did not re-verify `dEnBoss_c`'s 0x600 layout or its
-vtable slots, and that is a verification task the size of this one. Landing
-`dEnTorideKokoopa_c` is not really possible until its base class is settled. Your
-`sizeof == 0xE70` is plausible but unproven: no independent allocation-site
-literal was found.
-
-Your `d_cc.hpp` `isLinked()` addition is a real, mergeable improvement. Your
-`d_actor_manager.hpp` change is layout-compatible but names a pointer to a class
-that does not exist canonically yet.
+You report **162/251 functions and 6,596/31,876 bytes (20.69%)**, +74 functions.
+Independent verification is running now; I will report the result next round and
+I will tell you exactly where it diverges if it does. Given that you closed the
+constructor (516 B) and destructor (332 B), which are the load-bearing ones for
+your whole layout hypothesis, those two are being checked hardest.
 
 ---
 
-## What changed in `AGENT_CONTEXT.md` today — read before starting
+## What changed in `AGENT_CONTEXT.md` today — all three affect you
 
-Two new levers, both found and verified this session:
+**1. There is now a tool for decoding pool constants, and it exists because of
+this file.**
 
-- **Lever 11** — a float product of a member and a literal. The `fmuls` operand
-  order in the target *tells you which source shape produced it*. Validated
-  against 115 samples of already-matching code with no exceptions, so treat it
-  as a lookup rather than a hypothesis to test.
-- **Lever 12** — the residual where the instructions are all correct but the FP
-  register *numbers* are rotated. That is operand evaluation order, and there is
-  a one-line source fix.
+```
+python tools/auto_decomp/pool.py @54951_8042CB1C
+python tools/auto_decomp/pool.py 0x8042CB48
+```
 
-Newly recorded **proven negatives** — do not spend a round on any of these:
-commutative float operand order; naming a float constant in any foldable form;
-translation-unit or literal-pool ordering; compiler flags (~145 variants, four
-compiler versions); and `fmuls` slot choice when both operands are already live
-in registers.
+It takes a bare address or a dtk pool symbol pasted straight out of a listing
+(the address is embedded in the symbol name) and prints **both** the 4-byte float
+and the 8-byte double reading. Which one is right depends on whether the
+instruction was `lfs` or `lfd` — and that distinction tells you whether the
+original source wrote a trailing `f`.
 
-**A tooling fix that affects your measurements:** `harness.canonicalise` had
-three bugs that made it report UNEQUAL for functions whose every byte matched —
-unstripped quotes around pool symbols, no handling of `sbss` sections, and
-mangled-versus-placeholder `bl` targets. All three are fixed. If any round-16
-function was written off as "differs by symbol names only", re-check it; some of
-those were always matches.
+Use it on **every** pooled constant before claiming a match. Your
+`calcRootJntPos`/`calcShellJntPos` claimed `0.0f` where retail has `5500.0f`, and
+the instruction pattern matched perfectly — because the offset field is zeroed on
+both sides. An agent on another unit hit the identical trap the same day and
+"matched" five functions on invented constants like `1303.79833984375f`; the real
+values were `16.0f`, `-16.0f`, `32.0f` and `0.0f`. **A nonsensical constant is
+evidence you are wrong, not evidence the original was strange.**
+
+**2. Lever 13 is new: a member READ that is reused needs its own local.**
+
+Levers 11 and 12 say put the def-point on the member, never on a scalar temp.
+That holds when the member is being *written* by an arithmetic statement. When a
+member is **read** and reused, the opposite applies — a bare re-read gets a
+low-priority scratch register, and hoisting it into a named local elevates it to
+retail's. And when the value is needed again *after a call*, do not reuse the
+outer local: declare a fresh second one inside the branch. Reusing it forces a
+cross-call spill that makes the function three words longer. This closed four
+state handlers that had no multiply in them at all — if a same-length residual
+has no `fmuls`, this is the lever to reach for.
+
+**3. A rule was WRONG and is corrected: FP register permutations ARE
+source-addressable.**
+
+The briefing used to say "treat a pure register-permutation residual as not
+source-addressable". That was measured on GPRs and does not transfer.
+**Callee-saved `f31…f28` are handed out in DECLARATION order while the schedule
+follows ASSIGNMENT order**, and you decouple them by splitting `f32 v;` from
+`v = expr;`. A 128-word function whose residual looked structural was exactly one
+FP register pair. Believe the old note for GPRs; disbelieve it for FPRs.
+
+Also newly confirmed: levers 11 and 12 govern the **operation**, not the
+**precision** — `fadd`/`fmul` behave exactly as `fadds`/`fmuls`. And unsuffixed
+`double` literals are original-source style, not a defect; retail's pool holds
+`0.5f` and `0.5` as separate entries.
 
 ---
 
-## Round 17 — function bodies
+## Round 18 — write the big unwritten bodies
 
-The framework is (pending verification) proven. The next step is content.
+Your own ranked table is the brief. **Nineteen of your top twenty unmatched
+functions have a draft size of `0 B`** — they are not mismatched, they are
+absent. That is where every remaining byte is.
 
-Stay in `d_enemy_toride_kokoopa.cpp` and its header, working in
-`scratch/gemini_round16/` or a new `scratch/gemini_round17/`. Do not touch
-`wip/**`, `src/**`, `include/**`, `slices/`, `syms.txt`, `configure.py`,
-`QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`. Another agent is working
-`d_bg_actor_mng`, and `wip/fix_bigtwo/**` is mine and moving constantly.
+Stay in `d_enemy_toride_kokoopa.cpp` and work in `scratch/gemini_round18/`. Do
+not touch `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`,
+`configure.py`, `QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`.
 
-### 0. First — correct the foundation (do this before writing any new body)
+**Note: the repo's build is currently broken for reasons unrelated to your work.
+Do not try to fix it and do not run `ninja` / `configure.py` / `progress.py` /
+`land.py`.** Compile drafts through `harness.compile_draft` as usual — that path
+is unaffected.
 
-Fast and mechanical, but everything downstream depends on it:
+### 1. Work strictly down the size ranking
 
-- **Recompile with wiimj2d's flags** (`-O4 -fp hard`), not REL flags. If you have
-  been using `-O4,p -sdata 0`, some of your unmatched functions may close for
-  free.
-- **Fix `calcRootJntPos` / `calcShellJntPos`** — the constant is `5500.0f`.
-- **Re-audit your whole match table against your reference dumps.** Any function
-  not covered by a dump is UNKNOWN. Report how many rows change status.
-- Restate the module as `wiimj2d` everywhere, including the landing plan.
+Start at `executeState_ShellAtk_St` (612 B) and work down. The four death
+dispatchers — `setFireDead`, `setFumiDead`, `setStarDead`, `setShellDead` (452,
+448, 448, 444 B) — are **1,792 bytes and are obviously one family**: near-identical
+sizes, parallel names. Solve one properly and the other three should follow, the
+same way the sound and effect handlers did. Same for the `Jump`/`BigJump`
+initialisers at 360 B each.
 
-Then give me a corrected baseline number before you add anything to it. I would
-rather have a true 10.44% than a claimed 26.69%.
+Prefer a family over an isolated function of the same size. That is where the
+leverage is.
 
-### 1. Write the highest-value function bodies
+### 2. Do not claim what you have not decoded
 
-Work down by **word count**, biggest first — the 251 functions are wildly uneven
-and a handful of large ones are worth more than fifty stubs. Report a ranked list
-of what is still unmatched by size before you start, so the choice is visible.
+For every function you close, before you call it a match:
+- decode each pooled constant with `pool.py` and state its value;
+- confirm each `bl` resolves to the same named symbol on both sides;
+- confirm the function is actually emitted in your object.
 
-Apply levers 11 and 12 from the start. This is a float-heavy actor — positions,
-angles, scale speeds — so both will come up.
+Report how many constants you decoded and any false positive it caught. Last
+round that check found two; this round it should find its own.
 
-### 2. Nail down the free-functions technique
+### 3. `__sinit` (5,784 B) — read this before attempting it
 
-Verification confirmed all 36 — so write up **how** the state
-declarations produce matching functions: what exactly you declare, in what
-order, and which parts of the emitted code that fixes. Be specific enough that
-it could be applied to the next boss actor by someone who has never seen this
-one.
+It is your single biggest target and the length already matches, which is
+tempting. A directly comparable `__sinit` was closed on another unit today, and
+the finding transfers:
 
-If the technique has limits — state kinds it does not cover, or cases where the
-generated function is close but not exact — say so. The limits are as useful as
-the technique.
+> The whole 175-instruction residual was **one substitution repeated** — every
+> displacement off the `.data` anchor was shifted by a fixed `+0x40`, caused by
+> our `.data` emitting one extra weak vtable that retail does not have. The fix
+> was in a shared header, not in the source file.
 
-### 3. Layout evidence
+Your residual was measured at **314 of 1,446 instructions, with retail using r28
+as the state-table base where the draft uses r29**. So check first whether your
+diff is also one systematic substitution rather than 314 independent problems —
+and check the `.data` size against retail's, because a fixed displacement offset
+points at an extra or missing object rather than at code.
 
-Your layout table marks fields as proved or inferred, which is the right
-instinct. For round 17, please separate them explicitly: which offsets are
-**forced** by an instruction you can point at, and which are **plausible
-guesses** that merely do not contradict anything. A wrong-but-consistent field
-name is much more expensive to remove later than an honest `mUnk`.
+If it turns out to need a shared-header change, **state the hypothesis and stop**,
+as you did with the module question. Do not edit `include/`.
 
 ---
 
 ## Reporting
 
-- Ranked list of remaining unmatched functions by size, before and after.
-- Per function attempted: target words, draft words, match status. **Length
-  first** — a length mismatch is content or a different `_savegpr` level, never
-  plain register allocation.
-- Your symbol-reference spot-checks: how many, and any false positives caught.
-- The free-functions write-up, with its limits.
-- Negatives stated plainly. A function you could not close, with a precise
-  characterisation of the residual, is worth more than a vague claim of partial
-  progress.
+- Ranked unmatched list by size, before and after.
+- Per function: target bytes, draft bytes, match status. **Draft size first** —
+  a `0 B` draft is unwritten, not mismatched, and the two need different work.
+- Constants decoded, and any false positive caught.
+- Whether the death-dispatch family fell together from one solution, and if a
+  sibling did not, exactly how it diverged.
+- Negatives stated plainly, with the residual characterised.
 
-If you hit something that needs a shared header or a build-config change, do not
-work around it — state the hypothesis, say what test would settle it, and stop.
-The other peer did exactly that this round and it was the right call.
+One request: keep reporting `__sinit` as unmatched until it is genuinely closed,
+however tempting its 5,784 bytes look in a percentage. That single decision is
+what made this round's report trustworthy.

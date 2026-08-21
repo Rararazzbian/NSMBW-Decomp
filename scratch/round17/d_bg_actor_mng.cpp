@@ -185,7 +185,8 @@ void dBgActorManager_c::execute() {
     const f32 zero = 0.0f;
     f32 x = param->mPos.x;
     mMin.x = x;
-    mMin.y = param->mPos.y - param->mSize.y;
+    f32 sizeY = param->mSize.y;
+    mMin.y = param->mPos.y - sizeY;
     mMin.z = zero;
     mMax.x = x + param->mSize.x;
     mMax.y = param->mPos.y;
@@ -203,25 +204,24 @@ void dBgActorManager_c::ProcMain() {
     int x0 = (int)(bg->m_8fe64 * 0.0625f);
     int y0 = (int)(bg->m_8fe6c * 0.0625f);
     for (int i = 0; i < m_objNum; i++) {
-        BgObj_c *obj = &m_pObjList[i];
-        if (obj->mRailIdx == 0xFFFF) {
+        if (m_pObjList[i].mRailIdx == 0xFFFF) {
             continue;
         }
-        mVec3_c pos((f32)((int)((x0 + obj->mX) << 4)),
-                    (f32)((int)((y0 - obj->mY) << 4)), 0.0f);
-        pos.x += obj->getOffset().x;
-        pos.y += obj->getOffset().y;
-        mVec3_c mMin(pos.x - obj->getSize().x * 0.5f,
-                     pos.y - obj->getSize().y * 0.5f, 0.0f);
-        mVec3_c mMax(pos.x + obj->getSize().x * 0.5f,
-                     pos.y + obj->getSize().y * 0.5f, 0.0f);
-        if (obj->mActorId != 0) {
+        mVec3_c pos((f32)((int)((x0 + m_pObjList[i].mX) << 4)),
+                    (f32)((int)((y0 - m_pObjList[i].mY) << 4)), 0.0f);
+        pos.x += m_pObjList[i].getOffset().x;
+        pos.y += m_pObjList[i].getOffset().y;
+        mVec3_c mMin(pos.x - m_pObjList[i].getSize().x * 0.5f,
+                     pos.y - m_pObjList[i].getSize().y * 0.5f, 0.0f);
+        mVec3_c mMax(pos.x + m_pObjList[i].getSize().x * 0.5f,
+                     pos.y + m_pObjList[i].getSize().y * 0.5f, 0.0f);
+        if (m_pObjList[i].mActorId != 0) {
             if (!dGameCom::checkRectangleOverlap(&mMin, &mMax, &viewMin, &viewMax, 0.0f)) {
-                obj->deleteActor();
+                m_pObjList[i].deleteActor();
             }
         } else {
             if (dGameCom::checkRectangleOverlap(&mMin, &mMax, &viewMin, &viewMax, 0.0f)) {
-                obj->createActor(0u, pos);
+                m_pObjList[i].createActor(0u, pos);
             }
         }
     }
@@ -243,8 +243,8 @@ int dBgActorManager_c::createObjList(bool add) {
     dBg_c *bg = dBg_c::m_bg_p;
     u32 x0 = (u32)(bg->m_8fe64 * 0.0625f);
     u32 y0 = (u32)(-(bg->m_8fe6c) * 0.0625f);
-    u32 x1 = (u32)(bg->m_8fe68 - bg->m_8fe64);
-    u32 y1 = (u32)(bg->m_8fe6c - bg->m_8fe70);
+    int x1 = (int)(bg->m_8fe68 - bg->m_8fe64);
+    int y1 = (int)(bg->m_8fe6c - bg->m_8fe70);
     x1 = (x1 & 0xF) ? (x1 >> 4) + 1 : (x1 >> 4);
     y1 = (y1 & 0xF) ? (y1 >> 4) + 1 : (y1 >> 4);
     int count = 0;
