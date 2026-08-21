@@ -661,7 +661,50 @@ variants.
     and `* 0.5f` each fix one and break the other. That last word is a
     different phenomenon.
 
+12. **FP REGISTER NUMBERS ROTATED but the instructions are otherwise right?
+    That is EVALUATION ORDER, and the same def-point rule fixes it -- on `+`
+    and `-`, not just `*`.** The mechanism, measured:
+
+    - MWCC numbers a statement's FP leaves **descending from N-1 in
+      EVALUATION order**.
+    - Evaluation order is **heavier-subtree-first** (Sethi-Ullman). When the
+      two subtrees TIE, it falls back to source order.
+    - Retail numbers in **source order**.
+
+    So a balanced statement matches by accident and an unbalanced one does
+    not. `mPos.y = (mUnitBasePos.y - 16.0f) + (mPos.x - mUnitBasePos.x)` ties
+    and already matched; `mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x)`
+    has a heavier right subtree, so the draft evaluated it first and numbered
+    `mPos.x=f2, mUnitBasePos.x=f1, mUnitBasePos.y=f0` where retail has
+    `f2/f1/f0` over `mUnitBasePos.y, mPos.x, mUnitBasePos.x`.
+
+    **Fix: give the LIGHT LEFT operand a def-point of its own ahead of the
+    operator.**
+
+        mPos.y = mUnitBasePos.y;
+        mPos.y -= (mPos.x - mUnitBasePos.x);
+
+    Same constraint as lever 11: it must land on the **member**, not a scalar
+    temp. A named local for the left operand fixes an `initializeState_`
+    variant but takes its `executeState_` sibling to 13 diffs; the self-assign
+    form fixes both. The `+` form is identical:
+    `mPos.x = mUnitBasePos.x; mPos.x += 16.0f;`.
+
+    Closed five functions in `d_line_mng` in one round. Do NOT reach for it
+    when the residual is in a DOUBLE-precision `fadd`/`frsp` path -- that is a
+    different class and this does not touch it.
+
 ### Levers that are PROVEN NOT to work -- do not spend a round on these
+
+- **`fmuls` slot choice when BOTH operands are already live in registers.**
+  The def-point rule (levers 11 and 12) governs which register a value is
+  LOADED into. Once both operands are live, the slot is set by the front-end
+  canonicaliser alone and nothing in the source moves it: `mSpeed.x * 0.5f`
+  and `0.5f * mSpeed.x` are byte-identical in that position too. If retail
+  wants opposite slot orders at two occurrences of the SAME statement, that is
+  a source inconsistency in the original, not a context effect -- check the
+  sibling functions to confirm, then spell the two occurrences differently.
+  Forcing a member-first route at both just relocates the defect.
 
 - **Commutative float operand order in the source.** `a * b` and `b * a` (and
   the `+` equivalents) compile to BYTE-IDENTICAL code; MWCC canonicalises
