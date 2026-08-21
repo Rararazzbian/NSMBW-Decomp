@@ -14060,3 +14060,57 @@ exposes a separate pre-existing register-swap residual (`f0`/`f1` for
 `mBaseSpeed`/`0.8910065f`) unaffected by operand-order swapping — the documented
 "not source-addressable" pattern. **Correctly NOT shipped: a forcing hack with no
 net matching benefit is a worse artifact than an honest gap.**
+
+## Peer rounds verified: Qwen r17 and Gemini r15 both DELIVERED and both reproduce
+
+### Qwen round 17 — `d_bg_actor_mng.cpp`, 19/22 byte-exact
+
+Independently recompiled `scratch/round17/d_bg_actor_mng.cpp` against its own
+shadow headers (clean compile) and compared every function's length against the
+symbol map. **Its table reproduces exactly** — 16 named functions length-OK plus
+four `__arraydtor$` thunks, and `__sinit_\d_bg_actor_mng_cpp` **byte-exact at
+685 words**, which is the bulk of the unit.
+
+**But two of its three failures are MISLABELLED, and the label matters:**
+
+```
+ProcMain__17dBgActorManager_cFv        target 179   draft 160   -19 words
+createObjList__17dBgActorManager_cFb   target 116   draft 107   -9 words
+```
+
+Qwen called both *"register allocation in grid loops."* **A length mismatch is
+CONTENT — register allocation physically cannot change an instruction count.**
+Those two functions are 28 words of MISSING CODE between them, not a scheduling
+residual, and they are a concrete authoring target rather than a wall.
+
+**This is the fourth agent today to file a length mismatch under
+register-allocation or scheduling.** It is the single most common misdiagnosis on
+this project and it always costs the same thing: a real content gap gets parked
+as unfixable. The tell is mechanical and needs no judgement — **compare lengths
+before reading a single instruction.**
+
+### Gemini round 15 — `dEnBoss_c` declaration order, every number confirmed
+
+Re-derived the whole vtable arithmetic from `bin/dtk/wiimj2d_symbols.txt`:
+
+```
+__vt__8dActor_c            0x0D4  ->  51 slots
+__vt__5dEn_c               0x280  -> 158 slots
+__vt__9dEnBoss_c           0x390  -> 226 slots   ->  68 new over dEn_c
+__vt__18dEnTorideKokoopa_c 0x5E4  -> 375 slots   -> 149 new over dEnBoss_c
+```
+
+Exact, slot for slot. And it did not stop at argument: **it compiled the proposed
+header with the real CodeWarrior and matched all 226 slots against retail
+one-for-one**, then placed a derived Kokoopa test class and confirmed its first
+new slot lands at 226. That is verification, not reasoning, and it is the right
+standard for a declaration-order claim where being 42 slots out is invisible in
+prose.
+
+**Task B is a confirmed NEGATIVE and worth as much as the positive:**
+`include/game/bases/d_enemy.hpp` declares exactly **158** virtual slots and every
+one matches retail with zero divergence. That header sits under every enemy unit
+in the project; a defect there would have been latent everywhere. It is clean.
+
+**The 33,552-byte `d_enemy_toride_kokoopa.cpp` is therefore UNBLOCKED** — larger
+than the last six landed units on this project combined.

@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 14063 lines / 564 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14117 lines / 567 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -585,3 +585,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13999-14030` The `.fn <name>, global` tag answers LINKAGE, not the `static` MEMBER question — do not conflate them
 - `14031-14053` `d_line_mng` second merge: 101/182, 27.8% by bytes
   - `14054-14063` The eight `executeState_*` one-word gaps did NOT close — and are now honest
+- `14064-14065` Peer rounds verified: Qwen r17 and Gemini r15 both DELIVERED and both reproduce
+  - `14066-14091` Qwen round 17 — `d_bg_actor_mng.cpp`, 19/22 byte-exact
+  - `14092-14117` Gemini round 15 — `dEnBoss_c` declaration order, every number confirmed
