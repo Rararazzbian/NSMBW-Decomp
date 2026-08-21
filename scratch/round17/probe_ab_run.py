@@ -1,0 +1,27 @@
+import os
+import sys
+
+ROOT = r'C:\Users\Razz\Documents\Projects\NSMBW-Decomp'
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'auto_decomp'))
+import harness
+
+BASE = os.path.join(ROOT, 'scratch', 'round17')
+SRC = os.path.join(BASE, 'probe_ab.cpp')
+OBJ = os.path.join(BASE, 'probe_ab.o')
+DIS = os.path.join(BASE, 'probe_ab_disasm.txt')
+
+ok, log = harness.compile_draft(SRC, OBJ)
+print('COMPILE:', 'OK' if ok else 'FAILED')
+if not ok:
+    print(log)
+    sys.exit(1)
+harness.disasm(OBJ, DIS)
+txt = open(DIS, encoding='utf-8', errors='replace').read()
+print('bl __register_global_object:', txt.count('bl __register_global_object'))
+print('__construct_array:', txt.count('__construct_array'))
+print('__arraydtor:', txt.count('arraydtor'))
+# which arrays got registered? look for l_shapeA / l_shapeB in register context
+import re
+for line in txt.splitlines():
+    if 'register_global' in line or 'arraydtor' in line or 'l_shape' in line and 'lis' in line:
+        print(line)

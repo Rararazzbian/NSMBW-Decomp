@@ -1,0 +1,30 @@
+COMPILE: FAILED
+### mwcceppc.exe Compiler:
+#    File: scratch\round17\d_bg_actor_mng.cpp
+# -------------------------------------------
+#     167: llocator.createFrmHeapToCurrent(0x10000, EGG::Heap::sCurrentHeap, 
+#   Error:                                                                 ^
+#   (10381) illegal access from 'EGG::Heap' to protected/private member 
+#   'EGG::Heap::sCurrentHeap'
+### mwcceppc.exe Compiler:
+#     168:                        "dBgActorManager_c::m_allocator", 0x20, 0); 
+#   Error:                                                                 ^
+#   (10248) function call '[dHeapAllocator_c].createFrmHeapToCurrent(int, 
+#   {lval} EGG::Heap *, {lval} const char[31], int, int)' does not match
+#   'mHeapAllocator_c::createFrmHeapToCurrent(unsigned long, EGG::Heap *, 
+#   const char *, unsigned long, mHeap::AllocOptBit_t)' (non-static)
+### mwcceppc.exe Compiler:
+#     224:                 obj->createActor(0, &pos); 
+#   Error:                                         ^
+#   (10248) function call '[dBgActorManager_c::BgObj_c].createActor(int, 
+#   mVec3_c *)' does not match
+#   'dBgActorManager_c::BgObj_c::createActor(unsigned int, mVec3_c &)' (non-
+#   static)
+### mwcceppc.exe Compiler:
+#     321:     fBase_c *base = fManager_c::searchBaseByID(mActorId); 
+#   Error:                                                        ^
+#   (10209) illegal implicit conversion from 'unsigned int' to
+#   'fBaseID_e'
+
+Errors caused tool to abort.
+

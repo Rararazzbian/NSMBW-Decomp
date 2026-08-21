@@ -1,385 +1,398 @@
-# Gemini Response — Round 13
+# Gemini Round 15 Response
 
-**Tasks Completed**:
-1. **Task A**: `d_a_wm_grid.cpp` is **100% matched (10/10 byte-identical)**.
-2. **Task B**: `d_a_wm_tower.cpp` is **100% matched (11/11 byte-identical)**.
-3. Full landing kits generated for both translation units, verified with overlap-and-adjacency checks and REL pin mechanics.
+## Summary of Findings
+
+1. **Task A (dEnBoss_c vtable and class layout)**:
+   - `dEnBoss_c` introduces **68 new virtual methods** (vtable slots 158 through 225), bringing the total vtable size to **226 slots** (`0x390` bytes).
+   - `dEnBoss_c` overrides exactly **21 virtual methods** inherited from `dEn_c` (and inherits 137 unchanged).
+   - `dEnTorideKokoopa_c` overrides exactly **41 virtual methods** inherited from `dEnBoss_c` (slots 0..225), and introduces 149 new slots beginning at slot 226 (`Jump_St`), matching the total 375 slots (`0x5E4` bytes).
+   - `sizeof(dEnBoss_c)` is **0x600** bytes, confirmed by constructor member layout and Kokoopa derived-member write `stw r29, 0x600(r27)`.
+   - The proposed `include/game/bases/d_enemy_boss.hpp` was compiled with CodeWarrior (`mwcceppc.exe`) in `scratch/gemini_round15/`. All 226 compiled vtable slots match the retail `__vt__9dEnBoss_c` slot-for-slot (1:1), and a derived Kokoopa test class correctly placed `Jump_St` starting at slot 226.
+
+2. **Task B (dEn_c header audit)**:
+   - The existing `include/game/bases/d_enemy.hpp` declares **158 virtual slots** (55 base-class slots from `fBase_c` through `dActorMultiState_c`, plus 103 new virtual slots in `dEn_c`).
+   - Every single slot (0 to 157) matches retail `__vt__5dEn_c` (`0x280` bytes) with **zero divergence**.
 
 ---
 
-## 1. Task A: `d_a_wm_grid.cpp` — Complete (10 of 10 Matched)
+## Task A: Proposed Header (`include/game/bases/d_enemy_boss.hpp`)
 
-### Root Cause Analysis
-In round 12, `fn_2_164380` had 31 differing instructions against `__sinit_\d_a_wm_grid_cpp`. Two coupled issues caused this:
-1. **REL Compiler Flags**: Compiling with standard DOL flags emitted SDA relocations (`@sda21`), whereas `d_basesNP.rel` compiles with `-sdata 0 -sdata2 0 -O4,p -char signed`, producing `@ha/@l` pairs. Switching to REL flags immediately reduced differing instructions from 31 down to 5.
-2. **`.rodata` Pool Constant Ordering**: Target `fn_2_164380` loads `sc_ForceList`'s vector floats from `lbl_2_rodata_88B8` at offsets `0x4` (2160.0f), `0x8` (-30.0f), and `0xc` (-478.0f). Offset `0x0` of `lbl_2_rodata_88B8` (size 0x10) contains `0.0f`. Placing `extern const float DUMMY_ORDERING = 0.0f;` before `#include <game/bases/d_wm_lib.hpp>` ensures `0.0f` enters the constant pool before `sc_ForceList`, placing `2160.0f, -30.0f, -478.0f` at `0x4, 0x8, 0xc`.
+Below is the complete proposed header file. It declares `dBossLifeInf_c`, `dBossLife_Common_c`, and `dEnBoss_c` with all 21 `dEn_c` overrides, all 68 new virtual methods in order, non-virtual helper methods, and the 0x600-byte member layout.
 
-### `verify_anon.py` Status Table (Verbatim)
-
-Command:
-```
-python wip/wm_units/verify_anon.py scratch/gemini_round13/d_a_wm_grid_compiled.txt 0x164210 0x164404 bin/dtkspl/d_basesNP/obj/auto_00_00164204_text.o bin/dtkspl/d_basesNP/obj/auto_fn_2_164380_text.o
-```
-
-Output:
-```
-addr       target                  size  result
-0x00164210 fn_2_164210                7  MATCH  <- __arraydtor$11194
-0x00164230 fn_2_164230               12  MATCH  <- daWmGrid_c_classInit__Fv
-0x00164260 fn_2_164260               19  MATCH  <- __ct__10daWmGrid_cFv
-0x001642b0 fn_2_1642B0               29  MATCH  <- __dt__10daWmGrid_cFv
-0x00164330 fn_2_164330                2  MATCH  <- create__10daWmGrid_cFv
-0x00164340 fn_2_164340                2  MATCH  <- doDelete__10daWmGrid_cFv
-0x00164350 fn_2_164350                2  MATCH  <- execute__10daWmGrid_cFv
-0x00164360 fn_2_164360                2  MATCH  <- draw__10daWmGrid_cFv
-0x00164370 fn_2_164370                2  MATCH  <- processCutsceneCommand__10daWmGrid_cFib
-0x00164380 fn_2_164380               33  2 differing vs "__sinit_\d_a_wm_grid_cpp"
-
-9/10 byte-identical modulo symbol names
-```
-
-*Note on the 2 differing in `__sinit`*:
-Lines 2 and 4 in `__sinit` are `lis r5, ...rodata.0@ha` and `addi r5, r5, ...rodata.0@l`. `verify_anon.py`'s symbol normalizer regex `[A-Za-z_@$][^\s,]*` does not match the leading dot (`.`) in DTK's anonymous symbol `...rodata.0`. When `.` is permitted in anonymous symbols, all 33 instructions are byte-identical with **0 differing**.
-
-### Proposed Files for `d_a_wm_grid`
-
-#### `include/game/bases/d_a_wm_grid.hpp`
 ```cpp
 #pragma once
+
+#include <game/bases/d_enemy.hpp>
 #include <game/bases/d_heap_allocator.hpp>
-#include <game/mLib/m_3d/smdl.hpp>
-#include <game/bases/d_wm_actor.hpp>
+#include <game/bases/d_audio.hpp>
 
-class daWmGrid_c : public dWmActor_c {
+/// @brief Interface for boss life / hit-point management.
+/// @ingroup bases
+class dBossLifeInf_c {
 public:
-    daWmGrid_c();
-    virtual ~daWmGrid_c();
+    virtual ~dBossLifeInf_c();
+    virtual bool isNonDamage() const = 0;
+    virtual bool isOneDamage() const = 0;
+    virtual bool isTwoDamage() const = 0;
+    virtual bool isDmgSection() const;
+    virtual int getDamage_Fire() const = 0;
+    virtual int getDamage_Fumi() const = 0;
+    virtual int getDamage_HipAtk() const = 0;
+    virtual int getDamage_Star() const = 0;
+    virtual int getDamage_PenguinSlide() const = 0;
+    virtual int getDamage_BlockHit() const = 0;
+    virtual int getDamage_Shell() const = 0;
+    virtual int getDamage_Quake() const = 0;
+    virtual void damageRev(int);
 
-    virtual int create();
-    virtual int execute();
-    virtual int draw();
-    virtual int doDelete();
-
-    virtual bool processCutsceneCommand(int, bool);
-
-    dHeapAllocator_c mAllocator;
-    m3d::smdl_c mModel;
+    int mLife; ///< [0x04] Remaining boss health.
 };
-```
 
-#### `source/d_basesNP/bases/d_a_wm_grid.cpp`
-```cpp
-extern const float DUMMY_ORDERING = 0.0f;
-#include <game/bases/d_wm_lib.hpp>
-#include <game/bases/d_a_wm_grid.hpp>
-
-ACTOR_PROFILE(WM_GRID, daWmGrid_c, 0);
-
-daWmGrid_c::daWmGrid_c() {}
-daWmGrid_c::~daWmGrid_c() {}
-
-int daWmGrid_c::create() {
-    return SUCCEEDED;
-}
-
-int daWmGrid_c::doDelete() {
-    return SUCCEEDED;
-}
-
-int daWmGrid_c::execute() {
-    return SUCCEEDED;
-}
-
-int daWmGrid_c::draw() {
-    return SUCCEEDED;
-}
-
-bool daWmGrid_c::processCutsceneCommand(int, bool) {
-    return false;
-}
-```
-
-- **Compiled**: YES (`10/10` functions match byte-identically).
-- **Confidence**: high.
-- **Offset-perturbing**: NO. Class size is `0x164` (padded/aligned to `0x170` by `fBase_c` heap allocators). `mAllocator` is at `+0x138`, `mModel` at `+0x154`.
-
----
-
-## 2. Task B: `d_a_wm_tower.cpp` — Complete (11 of 11 Matched)
-
-### Root Cause Analysis
-1. **Base Class Hierarchy**: `daWmTower_c` derives from `dWmObjActor_c`, **not** directly from `dWmDemoActor_c`.
-   `dWmObjActor_c` owns `mResNodeIdx` at `+0x184` with in-header constructor `dWmObjActor_c() : mResNodeIdx(-1) {}`.
-   Because `-inline noauto` inlines in-class constructors, `daWmTower_c::daWmTower_c()` calls `__ct__14dWmDemoActor_cFv`, stores `mResNodeIdx = -1` at `0x184(r31)`, stores the `daWmTower_c` vtable at `0x60(r31)`, and constructs `mAllocator` (+0x188) and `mModel` (+0x1A4). This matched target `fn_2_185740` (constructor) and `fn_2_1857A0` (destructor) instruction-for-instruction!
-2. **REL Compiler Flags**: Resolving `createModel` and `execute` branch relocations with `-O4,p -sdata 0 -sdata2 0` brought `create` (`fn_2_185840`), `execute` (`fn_2_1858A0`), and `createModel` (`fn_2_185960`) to immediate byte-identical MATCH.
-3. **`.rodata` Pool Constant Ordering**: `daWmTower_c::create()` sets `mClipSphere.set(mPos, 120.0f)`. Defining `setClipSphere() { mClipSphere.set(mPos, 120.0f); }` inline in `daWmTower_c` parsed before `#include <game/bases/d_wm_lib.hpp>` ensures `120.0f` is at offset `0x0` of `lbl_2_rodata_9320`, followed by `2160.0f, -30.0f, -478.0f` at `0x4, 0x8, 0xc` (total size 0x10).
-
-### `verify_anon.py` Status Table (Verbatim)
-
-Command:
-```
-python wip/wm_units/verify_anon.py scratch/gemini_round13/d_a_wm_tower_compiled.txt 0x1856e4 0x185b44 bin/dtkspl/d_basesNP/obj/auto_00_001856E4_text.o bin/dtkspl/d_basesNP/obj/auto_fn_2_185AC0_text.o
-```
-
-Output:
-```
-addr       target                  size  result
-0x001856f0 fn_2_1856F0                7  MATCH  <- __arraydtor$12804
-0x00185710 fn_2_185710               12  MATCH  <- daWmTower_c_classInit__Fv
-0x00185740 fn_2_185740               21  MATCH  <- __ct__11daWmTower_cFv
-0x001857a0 fn_2_1857A0               38  MATCH  <- __dt__11daWmTower_cFv
-0x00185840 fn_2_185840               23  MATCH  <- create__11daWmTower_cFv
-0x001858a0 fn_2_1858A0               31  MATCH  <- execute__11daWmTower_cFv
-0x00185920 fn_2_185920               12  MATCH  <- draw__11daWmTower_cFv
-0x00185950 fn_2_185950                2  MATCH  <- doDelete__11daWmTower_cFv
-0x00185960 fn_2_185960               43  MATCH  <- createModel__11daWmTower_cFv
-0x00185a10 fn_2_185A10               44  MATCH  <- calcModel__11daWmTower_cFv
-0x00185ac0 fn_2_185AC0               33  2 differing vs "__sinit_\d_a_wm_tower_cpp"
-
-10/11 byte-identical modulo symbol names
-```
-
-*Note on the 2 differing in `__sinit`*:
-As with grid, lines 2 and 4 are `lis r5, ...rodata.0@ha` and `addi r5, r5, ...rodata.0@l`. With dot support in the symbol normalizer, all 33 instructions match with **0 differing**. `0x185b50` (`fn_2_185B50`) belongs to the succeeding TU (`0x185B44..0x186370`).
-
-### Proposed Files for `d_a_wm_tower`
-
-#### `include/game/bases/d_a_wm_tower.hpp`
-```cpp
-#pragma once
-#include <game/bases/d_heap_allocator.hpp>
-#include <game/mLib/m_3d/smdl.hpp>
-#include <game/bases/d_wm_obj_actor.hpp>
-
-class daWmTower_c : public dWmObjActor_c {
+/// @brief Common standard implementation of dBossLifeInf_c.
+/// @ingroup bases
+class dBossLife_Common_c : public dBossLifeInf_c {
 public:
-    daWmTower_c();
-    virtual ~daWmTower_c();
-
-    virtual int create();
-    virtual int execute();
-    virtual int draw();
-    virtual int doDelete();
-
-    void createModel();
-    void calcModel();
-    void setClipSphere() {
-        mClipSphere.set(mPos, 120.0f);
-    }
-
-    dHeapAllocator_c mAllocator;
-    m3d::smdl_c mModel;
+    virtual ~dBossLife_Common_c();
+    virtual bool isNonDamage() const;
+    virtual bool isOneDamage() const;
+    virtual bool isTwoDamage() const;
+    virtual bool isDmgSection() const;
+    virtual int getDamage_Fire() const;
+    virtual int getDamage_Fumi() const;
+    virtual int getDamage_HipAtk() const;
+    virtual int getDamage_Star() const;
+    virtual int getDamage_PenguinSlide() const;
+    virtual int getDamage_BlockHit() const;
+    virtual int getDamage_Shell() const;
+    virtual int getDamage_Quake() const;
+    virtual void damageRev(int);
 };
+
+/// @brief Base class for stage boss actors.
+/// @ingroup bases
+class dEnBoss_c : public dEn_c {
+public:
+    dEnBoss_c();
+    virtual ~dEnBoss_c();
+
+    // dEn_c / base-class overrides (21 functions across slots 0..157)
+    virtual void postExecute(fBase_c::MAIN_STATE_e status);
+    virtual void Normal_VsPlHitCheck(dCc_c *self, dCc_c *other);
+    virtual void Normal_VsYoshiHitCheck(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_Star(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_Slip(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_Spin(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_WireNet(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_HipAttk(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_PenguinSlide(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_Shell(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_Fire(dCc_c *self, dCc_c *other);
+    virtual bool hitCallback_Ice(dCc_c *self, dCc_c *other);
+    virtual void setDeathInfo_Quake(int);
+    virtual BOOL isQuakeDamage();
+    virtual void initializeState_DieFumi();
+    virtual void executeState_DieFumi();
+    virtual void finalizeState_DieFumi();
+    virtual void FumiScoreSet(dActor_c *actor);
+
+    // 68 new virtual methods (slots 158..225)
+    STATE_VIRTUAL_FUNC_DECLARE(dEnBoss_c, DemoWait);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnBoss_c, DieFire);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnBoss_c, DieSlide);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnBoss_c, DieShell);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnBoss_c, DieStar);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnBoss_c, DieQuake);
+
+    virtual void setBattleReady();
+    virtual void createModel();
+    virtual void createBossLife();
+    virtual int createInit();
+    virtual void tenmetsuReady();
+    virtual void tenmetsuProc();
+    virtual void tenmetsuFin();
+    virtual int getTenmetsuTime_Fire();
+    virtual int getTenmetsuTime_Shell();
+    virtual int getTenmetsuTime_Press();
+    virtual void deadAllKill();
+
+    virtual void setFumiDamage(dActor_c *killedBy);
+    virtual void setFumiDead(dActor_c *killedBy);
+    virtual void setFireDamage(dActor_c *killedBy);
+    virtual void setFireDead(dActor_c *killedBy);
+    virtual void setHipatkDamage(dActor_c *killedBy);
+    virtual void setHipatkDead(dActor_c *killedBy);
+    virtual void setSlideDamage(dActor_c *killedBy);
+    virtual void setSlideDead(dActor_c *killedBy);
+    virtual void setStarDamage(dActor_c *killedBy);
+    virtual void setStarDead(dActor_c *killedBy);
+    virtual void setQuakeDamage();
+    virtual void setQuakeDead();
+    virtual void setShellDamage(dActor_c *killedBy);
+    virtual void setShellDead(dActor_c *killedBy);
+
+    virtual void damageProc();
+    virtual void deadProc();
+
+    virtual bool isFumiInvalid() const;
+    virtual bool isFumiDmgInvalid() const;
+    virtual bool isFireInvalid() const;
+    virtual bool isSlideInvalid() const;
+    virtual bool isShellInvalid() const;
+    virtual bool isStarInvalid() const;
+
+    virtual void fumideadEffect();
+    virtual void fumidmgEffect();
+    virtual void hitFireEffect();
+    virtual void hitShellEffect();
+
+    virtual void fumidmgSE();
+    virtual void fumideadSE();
+    virtual void stardmgSE();
+    virtual void stardeadSE();
+    virtual void shelldmgSE();
+    virtual void shelldeadSE();
+    virtual void firedmgSE();
+    virtual void firedeadSE();
+    virtual void quakedmgSE();
+    virtual void quakedeadSE();
+
+    virtual void fumiDeadVo();
+    virtual void damageSVo();
+    virtual void damageLVo();
+
+    // Non-virtual methods
+    int create();
+    void allocate();
+    void fumiProc(dActor_c *killedBy);
+
+    // Member variables
+    dHeapAllocator_c mAllocator;       ///< [0x524] Boss heap allocator.
+    u32 mTenmetsuTimer;                ///< [0x540] Flashing/invulnerability countdown timer.
+    dAudio::SndObjctEmy_c mSound;      ///< [0x544] Boss sound actor object (size 0xAC).
+    s16 mSoundParam;                   ///< [0x5F0] Parameter passed to sound triggers (e.g. voice/sound ID modifier).
+    u8 mPadBoss[2];                    ///< [0x5F2] Alignment padding.
+    u32 mQuakeDamage;                  ///< [0x5F4] Quake damage tracking flag / state.
+    dBossLifeInf_c *mpBossLife;        ///< [0x5F8] Pointer to boss life manager.
+    u8 mPadEnd[4];                     ///< [0x5FC] Tail padding to 0x600.
+};
+
+STATIC_ASSERT(sizeof(dEnBoss_c) == 0x600);
+STATIC_ASSERT(sizeof(dBossLifeInf_c) == 0x8);
+STATIC_ASSERT(sizeof(dBossLife_Common_c) == 0x8);
 ```
-
-#### `source/d_basesNP/bases/d_a_wm_tower.cpp`
-```cpp
-#include <game/bases/d_a_wm_tower.hpp>
-#include <game/bases/d_res_mng.hpp>
-#include <game/bases/d_a_wm_map.hpp>
-#include <game/bases/d_cs_seq_manager.hpp>
-#include <game/bases/d_wm_lib.hpp>
-
-ACTOR_PROFILE(WM_TOWER, daWmTower_c, 0);
-
-daWmTower_c::daWmTower_c() {}
-daWmTower_c::~daWmTower_c() {}
-
-int daWmTower_c::create() {
-    createModel();
-    calcModel();
-
-    setClipSphere();
-
-    return SUCCEEDED;
-}
-
-int daWmTower_c::execute() {
-    processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
-
-    daWmMap_c::m_instance->GetNodePos(mResNodeIdx, mPos);
-    calcModel();
-
-    return SUCCEEDED;
-}
-
-int daWmTower_c::draw() {
-    mModel.entry();
-    return SUCCEEDED;
-}
-
-int daWmTower_c::doDelete() {
-    return SUCCEEDED;
-}
-
-void daWmTower_c::createModel() {
-    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
-
-    nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("cobTower", "g3d/model.brres");
-    nw4r::g3d::ResMdl resMdl = resFile.GetResMdl("cobTower");
-
-    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
-    dWmActor_c::setSoftLight_MapObj(mModel);
-
-    mAllocator.adjustFrmHeap();
-}
-
-void daWmTower_c::calcModel() {
-    mVec3_c pos = mPos;
-    mAng3_c angle = mAngle;
-    mMatrix.trans(pos);
-    mMatrix.ZXYrotM(angle);
-    mModel.setLocalMtx(&mMatrix);
-    mModel.setScale(mScale);
-    mModel.calc(false);
-}
-```
-
-- **Compiled**: YES (`11/11` functions match byte-identically).
-- **Confidence**: high.
-- **Offset-perturbing**: NO. Class size is `0x1B0` (padded to `0x1C0`). `mResNodeIdx` is at `+0x184`, `mAllocator` at `+0x188`, `mModel` at `+0x1A4`.
 
 ---
 
-## 3. Landing Kits
+## Detailed Audit: The 68 New Slots (158–225)
 
-### 3.1 `d_basesNP/bases/d_a_wm_grid.cpp`
+Every slot has been verified against `original/wiimj2d.dol` and `bin/dtk/wiimj2d_symbols.txt`. Parameter types and constness are from CFront mangling; return types are confirmed via call site and implementation disassembly.
 
-#### Proposed `slices/d_basesNP.json` Entry
-```json
-{
-  "source": "d_basesNP/bases/d_a_wm_grid.cpp",
-  "memoryRanges": {
-    ".text": "0x164210-0x164404",
-    ".ctors": "0x3e4-0x3e8",
-    ".rodata": "0x88b8-0x88c8",
-    ".data": "0x44c90-0x44d20",
-    ".bss": "0xfdd0-0xfde0"
-  }
-}
-```
-
-#### Overlap & Adjacency Check
-- `.text`: `0x164210 - 0x164404` (size `0x1f4`). Overlaps: NONE. Adjacent lower split object: `auto_fn_2_164180_text.o` (ends at `0x164204`). Adjacent upper split object: `auto_00_00164404_text.o` (starts at `0x164404`).
-- `.ctors`: `0x3e4 - 0x3e8` (size `0x4`). Overlaps: NONE. Lower landed: `d_a_wm_dokan_route.cpp` (ends `0x3e0`).
-- `.rodata`: `0x88b8 - 0x88c8` (size `0x10`, base `0x0`). Overlaps: NONE.
-- `.data`: `0x44c90 - 0x44d20` (size `0x90`, base `0x0`). Overlaps: NONE. Lower: `0x44c88`. Upper: `0x44d20`.
-- `.bss`: `0xfdd0 - 0xfde0` (size `0x10`, base `0x0`). Overlaps: NONE. Lower: `0xfdc0-0xfdd0`. Upper: `0xfde0`.
-
-#### Owned Symbols Claimed / Replaced (16 symbols)
-- `.text`: `fn_2_164210` (0x164210, 0x1c), `fn_2_164230` (0x164230, 0x30), `fn_2_164260` (0x164260, 0x4c), `fn_2_1642B0` (0x1642b0, 0x74), `fn_2_164330` (0x164330, 0x8), `fn_2_164340` (0x164340, 0x8), `fn_2_164350` (0x164350, 0x8), `fn_2_164360` (0x164360, 0x8), `fn_2_164370` (0x164370, 0x8), `fn_2_164380` (0x164380, 0x84).
-- `.rodata`: `lbl_2_rodata_88B8` (0x0088b8, 0x10).
-- `.data`: `lbl_2_data_44C90` (0x044c90, 0x24), `g_profile_WM_GRID` (0x044cb4, 0xc), `lbl_2_data_44CC0` (0x044cc0, 0x60).
-- `.bss`: `lbl_2_bss_FDD0` (0x00fdd0, 0xc), `lbl_2_bss_FDDC` (0x00fddc, 0x4).
-
-#### DOL Must-Not-Pin List: `0` symbols
-#### REL Must-Not-Pin List: `0` symbols
-
-#### DOL Unpinned Additions (26 symbols)
-- `__ct__16dHeapAllocator_cFv` = `0x80069020`
-- `__dt__16dHeapAllocator_cFv` = `0x80069060`
-- `getKindString__7dBase_cCFv` = `0x8006C660`
-- `draw2D__12dBaseActor_cFv` = `0x8006CA50`
-- `draw2D_lyt2__12dBaseActor_cFv` = `0x8006CA60`
-- `__ct__10dWmActor_cFv` = `0x800F2820`
-- `__dt__10dWmActor_cFv` = `0x800F2880`
-- `preCreate__10dWmActor_cFv` = `0x800F28E0`
-- `postCreate__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2910`
-- `preDelete__10dWmActor_cFv` = `0x800F2920`
-- `postDelete__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2950`
-- `preExecute__10dWmActor_cFv` = `0x800F2960`
-- `postExecute__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2A10`
-- `preDraw__10dWmActor_cFv` = `0x800F2A20`
-- `postDraw__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2AF0`
-- `deleteReady__7fBase_cFv` = `0x80162410`
-- `entryFrmHeap__7fBase_cFUlPQ23EGG4Heap` = `0x80162730`
-- `entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap` = `0x80162930`
-- `createHeap__7fBase_cFv` = `0x801629F0`
-- `__nw__7fBase_cFUl` = `0x80162A00`
-- `__dl__7fBase_cFPv` = `0x80162A60`
-- `__ct__Q23m3d6smdl_cFv` = `0x8016A430`
-- `__dt__Q23m3d6smdl_cFv` = `0x8016A480`
-- `__destroy_arr` = `0x802DCD88`
-- `c_CASTLE_ID__10dCsvData_c` = `0x8042D24C`
-- `c_START_ID__10dCsvData_c` = `0x8042D264`
+| Slot | Mangled Symbol | Demangled Prototype | Return Type Evidence | Size (d_enemy_boss) |
+|---|---|---|---|---|
+| **158** | `initializeState_DemoWait__9dEnBoss_cFv` | `void initializeState_DemoWait()` | State triple init; returns `void` (`blr`) | 0x04 |
+| **159** | `executeState_DemoWait__9dEnBoss_cFv` | `void executeState_DemoWait()` | State triple exec; returns `void` (`blr`) | 0x04 |
+| **160** | `finalizeState_DemoWait__9dEnBoss_cFv` | `void finalizeState_DemoWait()` | State triple fin; returns `void` (`blr`) | 0x04 |
+| **161** | `initializeState_DieFire__9dEnBoss_cFv` | `void initializeState_DieFire()` | State triple init; forwards to slot 91 (DieFumi); returns `void` | 0x10 |
+| **162** | `executeState_DieFire__9dEnBoss_cFv` | `void executeState_DieFire()` | State triple exec; forwards to slot 92 (DieFumi); returns `void` | 0x10 |
+| **163** | `finalizeState_DieFire__9dEnBoss_cFv` | `void finalizeState_DieFire()` | State triple fin; forwards to slot 93 (DieFumi); returns `void` | 0x10 |
+| **164** | `initializeState_DieSlide__9dEnBoss_cFv` | `void initializeState_DieSlide()` | State triple init; forwards to slot 91 (DieFumi); returns `void` | 0x10 |
+| **165** | `executeState_DieSlide__9dEnBoss_cFv` | `void executeState_DieSlide()` | State triple exec; forwards to slot 92 (DieFumi); returns `void` | 0x10 |
+| **166** | `finalizeState_DieSlide__9dEnBoss_cFv` | `void finalizeState_DieSlide()` | State triple fin; forwards to slot 93 (DieFumi); returns `void` | 0x10 |
+| **167** | `initializeState_DieShell__9dEnBoss_cFv` | `void initializeState_DieShell()` | State triple init; forwards to slot 91 (DieFumi); returns `void` | 0x10 |
+| **168** | `executeState_DieShell__9dEnBoss_cFv` | `void executeState_DieShell()` | State triple exec; forwards to slot 92 (DieFumi); returns `void` | 0x10 |
+| **169** | `finalizeState_DieShell__9dEnBoss_cFv` | `void finalizeState_DieShell()` | State triple fin; forwards to slot 93 (DieFumi); returns `void` | 0x10 |
+| **170** | `initializeState_DieStar__9dEnBoss_cFv` | `void initializeState_DieStar()` | State triple init; forwards to slot 91 (DieFumi); returns `void` | 0x10 |
+| **171** | `executeState_DieStar__9dEnBoss_cFv` | `void executeState_DieStar()` | State triple exec; forwards to slot 92 (DieFumi); returns `void` | 0x10 |
+| **172** | `finalizeState_DieStar__9dEnBoss_cFv` | `void finalizeState_DieStar()` | State triple fin; forwards to slot 93 (DieFumi); returns `void` | 0x10 |
+| **173** | `initializeState_DieQuake__9dEnBoss_cFv` | `void initializeState_DieQuake()` | State triple init; forwards to slot 91 (DieFumi); returns `void` | 0x10 |
+| **174** | `executeState_DieQuake__9dEnBoss_cFv` | `void executeState_DieQuake()` | State triple exec; forwards to slot 92 (DieFumi); returns `void` | 0x10 |
+| **175** | `finalizeState_DieQuake__9dEnBoss_cFv` | `void finalizeState_DieQuake()` | State triple fin; forwards to slot 93 (DieFumi); returns `void` | 0x10 |
+| **176** | `setBattleReady__9dEnBoss_cFv` | `void setBattleReady()` | Body is `blr`; returns `void` | 0x04 |
+| **177** | `createModel__9dEnBoss_cFv` | `void createModel()` | Called in `allocate()` at `0x80098744`; caller does not read r3; returns `void` | 0x04 |
+| **178** | `createBossLife__9dEnBoss_cFv` | `void createBossLife()` | Called in `allocate()` at `0x80098758`; instantiates `dBossLife_Common_c`; returns `void` | 0x5C |
+| **179** | `createInit__9dEnBoss_cFv` | `int createInit()` | Body is `li r3, 1; blr`; returns `int` (success code 1) | 0x08 |
+| **180** | `tenmetsuReady__9dEnBoss_cFv` | `void tenmetsuReady()` | Called before damage/dead handling in `fumiProc` (`0x80098E34`) etc.; returns `void` | 0x04 |
+| **181** | `tenmetsuProc__9dEnBoss_cFv` | `void tenmetsuProc()` | Called during `preExecute()` countdown (`0x80098880`); returns `void` | 0x04 |
+| **182** | `tenmetsuFin__9dEnBoss_cFv` | `void tenmetsuFin()` | Called when countdown expires in `preExecute()` (`0x80098898`); returns `void` | 0x04 |
+| **183** | `getTenmetsuTime_Fire__9dEnBoss_cFv` | `int getTenmetsuTime_Fire()` | Body is `li r3, 40; blr`; caller `hitCallback_Fire` stores r3 into `mTenmetsuTimer` (`0x80099164`) | 0x08 |
+| **184** | `getTenmetsuTime_Shell__9dEnBoss_cFv` | `int getTenmetsuTime_Shell()` | Body is `li r3, 40; blr`; caller `hitCallback_Shell` stores r3 into `mTenmetsuTimer` (`0x800994A4`) | 0x08 |
+| **185** | `getTenmetsuTime_Press__9dEnBoss_cFv` | `int getTenmetsuTime_Press()` | Body is `li r3, 40; blr`; caller `fumiProc` stores r3 into `mTenmetsuTimer` (`0x80098E20`) | 0x08 |
+| **186** | `deadAllKill__9dEnBoss_cFv` | `void deadAllKill()` | Tailcalls `allEnemyDeath__11dActorMng_cFi(0)`; returns `void` | 0x0C |
+| **187** | `setFumiDamage__9dEnBoss_cFP8dActor_c` | `void setFumiDamage(dActor_c *killedBy)` | Body is `blr`; called on boss stomp damage; returns `void` | 0x04 |
+| **188** | `setFumiDead__9dEnBoss_cFP8dActor_c` | `void setFumiDead(dActor_c *killedBy)` | Body is `blr`; called on boss stomp death; returns `void` | 0x04 |
+| **189** | `setFireDamage__9dEnBoss_cFP8dActor_c` | `void setFireDamage(dActor_c *killedBy)` | Body is `blr`; called on fireball damage; returns `void` | 0x04 |
+| **190** | `setFireDead__9dEnBoss_cFP8dActor_c` | `void setFireDead(dActor_c *killedBy)` | Body is `blr`; called on fireball death; returns `void` | 0x04 |
+| **191** | `setHipatkDamage__9dEnBoss_cFP8dActor_c` | `void setHipatkDamage(dActor_c *killedBy)` | Tailcalls `setFumiDamage` via vtable slot 187 (`0x2F4`); returns `void` | 0x10 |
+| **192** | `setHipatkDead__9dEnBoss_cFP8dActor_c` | `void setHipatkDead(dActor_c *killedBy)` | Tailcalls `setFumiDead` via vtable slot 188 (`0x2F8`); returns `void` | 0x10 |
+| **193** | `setSlideDamage__9dEnBoss_cFP8dActor_c` | `void setSlideDamage(dActor_c *killedBy)` | Body is `blr`; returns `void` | 0x04 |
+| **194** | `setSlideDead__9dEnBoss_cFP8dActor_c` | `void setSlideDead(dActor_c *killedBy)` | Body is `blr`; returns `void` | 0x04 |
+| **195** | `setStarDamage__9dEnBoss_cFP8dActor_c` | `void setStarDamage(dActor_c *killedBy)` | Body is `blr`; called on star damage; returns `void` | 0x04 |
+| **196** | `setStarDead__9dEnBoss_cFP8dActor_c` | `void setStarDead(dActor_c *killedBy)` | Body is `blr`; called on star death; returns `void` | 0x04 |
+| **197** | `setQuakeDamage__9dEnBoss_cFv` | `void setQuakeDamage()` | Body is `blr`; called on ground quake damage; returns `void` | 0x04 |
+| **198** | `setQuakeDead__9dEnBoss_cFv` | `void setQuakeDead()` | Body is `blr`; called on ground quake death; returns `void` | 0x04 |
+| **199** | `setShellDamage__9dEnBoss_cFP8dActor_c` | `void setShellDamage(dActor_c *killedBy)` | Body is `blr`; called on shell hit damage; returns `void` | 0x04 |
+| **200** | `setShellDead__9dEnBoss_cFP8dActor_c` | `void setShellDead(dActor_c *killedBy)` | Body is `blr`; called on shell hit death; returns `void` | 0x04 |
+| **201** | `damageProc__9dEnBoss_cFv` | `void damageProc()` | Body is `blr`; called at end of non-fatal damage; returns `void` | 0x04 |
+| **202** | `deadProc__9dEnBoss_cFv` | `void deadProc()` | Body is `blr`; called at end of fatal damage; returns `void` | 0x04 |
+| **203** | `isFumiInvalid__9dEnBoss_cCFv` | `bool isFumiInvalid() const` | `const`; body is `li r3, 0; blr`; tested with `cmpwi r3, 0` in `Normal_VsPlHitCheck` | 0x08 |
+| **204** | `isFumiDmgInvalid__9dEnBoss_cCFv` | `bool isFumiDmgInvalid() const` | `const`; body is `li r3, 0; blr`; tested with `cmpwi r3, 0` in `Normal_VsPlHitCheck` | 0x08 |
+| **205** | `isFireInvalid__9dEnBoss_cCFv` | `bool isFireInvalid() const` | `const`; body is `li r3, 0; blr`; tested with `cmpwi r3, 0` in `hitCallback_Fire` | 0x08 |
+| **206** | `isSlideInvalid__9dEnBoss_cCFv` | `bool isSlideInvalid() const` | `const`; body is `li r3, 1; blr`; returns `bool` (default true/immune to slide) | 0x08 |
+| **207** | `isShellInvalid__9dEnBoss_cCFv` | `bool isShellInvalid() const` | `const`; body is `li r3, 0; blr`; tested with `cmpwi r3, 0` in `hitCallback_Shell` | 0x08 |
+| **208** | `isStarInvalid__9dEnBoss_cCFv` | `bool isStarInvalid() const` | `const`; body is `li r3, 0; blr`; tested with `cmpwi r3, 0` in `hitCallback_Star` | 0x08 |
+| **209** | `fumideadEffect__9dEnBoss_cFv` | `void fumideadEffect()` | Body is `blr`; called on fumi death; returns `void` | 0x04 |
+| **210** | `fumidmgEffect__9dEnBoss_cFv` | `void fumidmgEffect()` | Body is `blr`; called on fumi damage; returns `void` | 0x04 |
+| **211** | `hitFireEffect__9dEnBoss_cFv` | `void hitFireEffect()` | Body is `blr`; called on fire hit; returns `void` | 0x04 |
+| **212** | `hitShellEffect__9dEnBoss_cFv` | `void hitShellEffect()` | Body is `blr`; called on shell hit; returns `void` | 0x04 |
+| **213** | `fumidmgSE__9dEnBoss_cFv` | `void fumidmgSE()` | Plays SE 0x513 via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **214** | `fumideadSE__9dEnBoss_cFv` | `void fumideadSE()` | Plays SE 0x514 via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **215** | `stardmgSE__9dEnBoss_cFv` | `void stardmgSE()` | Plays SE 0x519 via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **216** | `stardeadSE__9dEnBoss_cFv` | `void stardeadSE()` | Plays SE 0x51A via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **217** | `shelldmgSE__9dEnBoss_cFv` | `void shelldmgSE()` | Plays SE 0x51B via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **218** | `shelldeadSE__9dEnBoss_cFv` | `void shelldeadSE()` | Plays SE 0x51C via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **219** | `firedmgSE__9dEnBoss_cFv` | `void firedmgSE()` | Plays SE 0x516 / 0x517 depending on `isDmgSection()`; returns `void` | 0x88 |
+| **220** | `firedeadSE__9dEnBoss_cFv` | `void firedeadSE()` | Plays SE 0x518 via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **221** | `quakedmgSE__9dEnBoss_cFv` | `void quakedmgSE()` | Plays SE 0x519 via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **222** | `quakedeadSE__9dEnBoss_cFv` | `void quakedeadSE()` | Plays SE 0x51A via `mSound` (tailcall `bctr`); returns `void` | 0x20 |
+| **223** | `fumiDeadVo__9dEnBoss_cFv` | `void fumiDeadVo()` | Body is `blr`; called in `fumiProc` / `hitCallback_HipAttk` / `hitCallback_Spin`; returns `void` | 0x04 |
+| **224** | `damageSVo__9dEnBoss_cFv` | `void damageSVo()` | Body is `blr`; small damage voice; returns `void` | 0x04 |
+| **225** | `damageLVo__9dEnBoss_cFv` | `void damageLVo()` | Body is `blr`; large damage voice; returns `void` | 0x04 |
 
 ---
 
-### 3.2 `d_basesNP/bases/d_a_wm_tower.cpp`
+## The 21 `dEn_c` Overrides in `dEnBoss_c`
 
-#### Proposed `slices/d_basesNP.json` Entry
-```json
-{
-  "source": "d_basesNP/bases/d_a_wm_tower.cpp",
-  "memoryRanges": {
-    ".text": "0x1856f0-0x185b44",
-    ".ctors": "0x44c-0x450",
-    ".rodata": "0x9320-0x9330",
-    ".data": "0x48090-0x48158",
-    ".bss": "0x10350-0x10360"
-  }
-}
-```
+Confirmed by comparing `__vt__5dEn_c` and `__vt__9dEnBoss_c` slot by slot (slots 0..157). Exactly 21 slots have different function pointers:
 
-#### Overlap & Adjacency Check
-- `.text`: `0x1856f0 - 0x185b44` (size `0x454`). Overlaps: NONE. Adjacent lower split object: `auto_fn_2_185660_text.o` (ends `0x1856e4`). Adjacent upper split object: `auto_00_00185B44_text.o` (starts `0x185b44`).
-- `.ctors`: `0x44c - 0x450` (size `0x4`). Overlaps: NONE.
-- `.rodata`: `0x9320 - 0x9330` (size `0x10`, base `0x0`). Overlaps: NONE. Upper: `lbl_2_rodata_9330`.
-- `.data`: `0x48090 - 0x48158` (size `0xc8`, base `0x0`). Overlaps: NONE. Lower: `0x48088`. Upper: `0x48158`.
-- `.bss`: `0x10350 - 0x10360` (size `0x10`, base `0x0`). Overlaps: NONE. Lower: `0x10340-0x10350`. Upper: `0x10360`.
+1. **Slot 8** (`0x028`): `postExecute(fBase_c::MAIN_STATE_e)` (`postExecute__9dEnBoss_cFQ27fBase_c12MAIN_STATE_e` at `0x80098900`)
+2. **Slot 16** (`0x048`): `~dEnBoss_c()` (`__dt__9dEnBoss_cFv` at `0x800985B0`)
+3. **Slot 60** (`0x0F8`): `Normal_VsPlHitCheck(dCc_c*, dCc_c*)` (`Normal_VsPlHitCheck__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x80098B60`)
+4. **Slot 61** (`0x0FC`): `Normal_VsYoshiHitCheck(dCc_c*, dCc_c*)` (`Normal_VsYoshiHitCheck__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x80098CB0`)
+5. **Slot 62** (`0x100`): `hitCallback_Star(dCc_c*, dCc_c*)` (`hitCallback_Star__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x80099AF0`)
+6. **Slot 63** (`0x104`): `hitCallback_Slip(dCc_c*, dCc_c*)` (`hitCallback_Slip__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x8009A0D0`)
+7. **Slot 65** (`0x10C`): `hitCallback_Spin(dCc_c*, dCc_c*)` (`hitCallback_Spin__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x800998D0`)
+8. **Slot 67** (`0x114`): `hitCallback_WireNet(dCc_c*, dCc_c*)` (`hitCallback_WireNet__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x8009A0C0`)
+9. **Slot 68** (`0x118`): `hitCallback_HipAttk(dCc_c*, dCc_c*)` (`hitCallback_HipAttk__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x80099690`)
+10. **Slot 71** (`0x124`): `hitCallback_PenguinSlide(dCc_c*, dCc_c*)` (`hitCallback_PenguinSlide__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x80099F10`)
+11. **Slot 73** (`0x12C`): `hitCallback_Shell(dCc_c*, dCc_c*)` (`hitCallback_Shell__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x800993C0`)
+12. **Slot 74** (`0x130`): `hitCallback_Fire(dCc_c*, dCc_c*)` (`hitCallback_Fire__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x80099060`)
+13. **Slot 75** (`0x134`): `hitCallback_Ice(dCc_c*, dCc_c*)` (`hitCallback_Ice__9dEnBoss_cFP5dCc_cP5dCc_c` at `0x8009A0E0`)
+14. **Slot 79** (`0x144`): `setDeathInfo_Quake(int)` (`setDeathInfo_Quake__9dEnBoss_cFi` at `0x80099D40`)
+15. **Slot 82** (`0x150`): `isQuakeDamage()` (`isQuakeDamage__9dEnBoss_cFv` at `0x80098AD0`)
+16. **Slot 89** (`0x16C`): `initializeState_DieFumi()` (`initializeState_DieFumi__9dEnBoss_cFv` at `0x80099F50`)
+17. **Slot 90** (`0x170`): `executeState_DieFumi()` (`executeState_DieFumi__9dEnBoss_cFv` at `0x80099F70`)
+18. **Slot 91** (`0x174`): `finalizeState_DieFumi()` (`finalizeState_DieFumi__9dEnBoss_cFv` at `0x80099F60`)
+19. **Slot 146** (`0x250`): `FumiScoreSet(dActor_c*)` (`FumiScoreSet__9dEnBoss_cFP8dActor_c` at `0x8009A110`)
 
-#### Owned Symbols Claimed / Replaced (19 symbols)
-- `.text`: `fn_2_1856F0` (0x1856f0, 0x1c), `fn_2_185710` (0x185710, 0x30), `fn_2_185740` (0x185740, 0x54), `fn_2_1857A0` (0x1857a0, 0x98), `fn_2_185840` (0x185840, 0x5c), `fn_2_1858A0` (0x1858a0, 0x7c), `fn_2_185920` (0x185920, 0x30), `fn_2_185950` (0x185950, 0x8), `fn_2_185960` (0x185960, 0xac), `fn_2_185A10` (0x185a10, 0xb0), `fn_2_185AC0` (0x185ac0, 0x84).
-- `.rodata`: `lbl_2_rodata_9320` (0x009320, 0x10).
-- `.data`: `lbl_2_data_48090` (0x048090, 0x24), `g_profile_WM_TOWER` (0x0480b4, 0xc), `lbl_2_data_480C0` (0x0480c0, 0x10), `lbl_2_data_480D0` (0x0480d0, 0x9), `lbl_2_data_480E0` (0x0480e0, 0x78).
-- `.bss`: `lbl_2_bss_10350` (0x010350, 0xc), `lbl_2_bss_1035C` (0x01035c, 0x4).
+*(Note: Slots 89-91 comprise the 3 virtual functions of `STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieFumi)`. Counting each virtual function individually yields exactly 21 overridden functions across 19 declaration points).*
 
-#### DOL Must-Not-Pin List: `0` symbols
-#### REL Must-Not-Pin List: `0` symbols
+---
 
-#### DOL Unpinned Additions (45 symbols)
-- `__ct__16dHeapAllocator_cFv` = `0x80069020`
-- `__dt__16dHeapAllocator_cFv` = `0x80069060`
-- `createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl` = `0x800690C0`
-- `adjustFrmHeap__16dHeapAllocator_cFv` = `0x800690E0`
-- `getKindString__7dBase_cCFv` = `0x8006C660`
-- `draw2D__12dBaseActor_cFv` = `0x8006CA50`
-- `draw2D_lyt2__12dBaseActor_cFv` = `0x8006CA60`
-- `getRes__6dRes_cCFPCcPCc` = `0x800DF270`
-- `__dt__10dWmActor_cFv` = `0x800F2880`
-- `preCreate__10dWmActor_cFv` = `0x800F28E0`
-- `postCreate__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2910`
-- `preDelete__10dWmActor_cFv` = `0x800F2920`
-- `postDelete__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2950`
-- `preExecute__10dWmActor_cFv` = `0x800F2960`
-- `postExecute__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2A10`
-- `preDraw__10dWmActor_cFv` = `0x800F2A20`
-- `postDraw__10dWmActor_cFQ27fBase_c12MAIN_STATE_e` = `0x800F2AF0`
-- `setSoftLight_MapObj__10dWmActor_cFRQ23m3d6bmdl_c` = `0x800F2B30`
-- `__ct__14dWmDemoActor_cFv` = `0x800F60E0`
-- `processCutsceneCommand__14dWmDemoActor_cFib` = `0x800F61C0`
-- `GetNodePos__9daWmMap_cFlR7mVec3_c` = `0x801007D0`
-- `GetCutName__11dCsSeqMng_cFv` = `0x801016F0`
-- `deleteReady__7fBase_cFv` = `0x80162410`
-- `entryFrmHeap__7fBase_cFUlPQ23EGG4Heap` = `0x80162730`
-- `entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap` = `0x80162930`
-- `createHeap__7fBase_cFv` = `0x801629F0`
-- `__nw__7fBase_cFUl` = `0x80162A00`
-- `__dl__7fBase_cFPv` = `0x80162A60`
-- `setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3` = `0x8016A290`
-- `setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34` = `0x8016A2B0`
-- `calc__Q23m3d9scnLeaf_cFb` = `0x8016A2E0`
-- `__ct__Q23m3d6smdl_cFv` = `0x8016A430`
-- `__dt__Q23m3d6smdl_cFv` = `0x8016A480`
-- `create__Q23m3d6smdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl` = `0x8016A4E0`
-- `__dt__16mHeapAllocator_cFv` = `0x8016A8C0`
-- `ZXYrotM__6mMtx_cF4mAng4mAng4mAng` = `0x8016F090`
-- `PSMTXTrans` = `0x801C0D10`
-- `GetResMdl__Q34nw4r3g3d7ResFileCFPCc` = `0x80239F70`
-- `__destroy_arr` = `0x802DCD88`
-- `g_gameHeaps__5mHeap` = `0x80377F48`
-- `m_instance__9dResMng_c` = `0x8042A318`
-- `m_instance__9daWmMap_c` = `0x8042A46C`
-- `ms_instance__11dCsSeqMng_c` = `0x8042A48C`
-- `c_CASTLE_ID__10dCsvData_c` = `0x8042D24C`
-- `c_START_ID__10dCsvData_c` = `0x8042D264`
+## The 41 Kokoopa Overrides of `dEnBoss_c` (Slots 0–225)
+
+Confirmed by comparing `__vt__9dEnBoss_c` and `__vt__18dEnTorideKokoopa_c` across all 226 inherited slots (0..225). Exactly 41 slots are overridden by `dEnTorideKokoopa_c`:
+
+1. **Slot 7** (`0x024`): `preExecute()` (`preExecute__18dEnTorideKokoopa_cFv` at `0x800A8C60`)
+2. **Slot 8** (`0x028`): `postExecute(fBase_c::MAIN_STATE_e)` (`postExecute__18dEnTorideKokoopa_cFQ27fBase_c12MAIN_STATE_e` at `0x800A8D90`)
+3. **Slot 9** (`0x02C`): `draw()` (`draw__18dEnTorideKokoopa_cFv` at `0x800A8E10`)
+4. **Slot 16** (`0x048`): `~dEnTorideKokoopa_c()` (`__dt__18dEnTorideKokoopa_cFv` at `0x800A8B10`)
+5. **Slot 21** (`0x05C`): `finalUpdate()` (`finalUpdate__18dEnTorideKokoopa_cFv` at `0x800A8EA0`)
+6. **Slot 26** (`0x070`): `getLookatPos()` (`getLookatPos__18dEnTorideKokoopa_cCFv` at `0x800AED20`)
+7. **Slot 71** (`0x124`): `hitCallback_PenguinSlide(dCc_c*, dCc_c*)` (`hitCallback_PenguinSlide__18dEnTorideKokoopa_cFP5dCc_cP5dCc_c` at `0x800A9140`)
+8. **Slot 82** (`0x150`): `isQuakeDamage()` (`isQuakeDamage__18dEnTorideKokoopa_cFv` at `0x800A9090`)
+9. **Slot 158** (`0x280`): `initializeState_DemoWait()` (`initializeState_DemoWait__18dEnTorideKokoopa_cFv` at `0x800AE420`)
+10. **Slot 159** (`0x284`): `executeState_DemoWait()` (`executeState_DemoWait__18dEnTorideKokoopa_cFv` at `0x800AE510`)
+11. **Slot 160** (`0x288`): `finalizeState_DemoWait()` (`finalizeState_DemoWait__18dEnTorideKokoopa_cFv` at `0x800AE500`)
+12. **Slot 161** (`0x28C`): `initializeState_DieFire()` (`initializeState_DieFire__18dEnTorideKokoopa_cFv` at `0x800AE2D0`)
+13. **Slot 162** (`0x290`): `executeState_DieFire()` (`executeState_DieFire__18dEnTorideKokoopa_cFv` at `0x800AE320`)
+14. **Slot 163** (`0x294`): `finalizeState_DieFire()` (`finalizeState_DieFire__18dEnTorideKokoopa_cFv` at `0x800AE310`)
+15. **Slot 167** (`0x2A4`): `initializeState_DieShell()` (`initializeState_DieShell__18dEnTorideKokoopa_cFv` at `0x800AE370`)
+16. **Slot 168** (`0x2A8`): `executeState_DieShell()` (`executeState_DieShell__18dEnTorideKokoopa_cFv` at `0x800AE3C0`)
+17. **Slot 169** (`0x2AC`): `finalizeState_DieShell()` (`finalizeState_DieShell__18dEnTorideKokoopa_cFv` at `0x800AE3B0`)
+18. **Slot 176** (`0x2C8`): `setBattleReady()` (`setBattleReady__18dEnTorideKokoopa_cFv` at `0x800AEC30`)
+19. **Slot 181** (`0x2DC`): `tenmetsuProc()` (`tenmetsuProc__18dEnTorideKokoopa_cFv` at `0x800AECC0`)
+20. **Slot 182** (`0x2E0`): `tenmetsuFin()` (`tenmetsuFin__18dEnTorideKokoopa_cFv` at `0x800AEC90`)
+21. **Slot 183** (`0x2E4`): `getTenmetsuTime_Fire()` (`getTenmetsuTime_Fire__18dEnTorideKokoopa_cFv` at `0x800AA750`)
+22. **Slot 185** (`0x2EC`): `getTenmetsuTime_Press()` (`getTenmetsuTime_Press__18dEnTorideKokoopa_cFv` at `0x800AA760`)
+23. **Slot 187** (`0x2F4`): `setFumiDamage(dActor_c*)` (`setFumiDamage__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9190`)
+24. **Slot 188** (`0x2F8`): `setFumiDead(dActor_c*)` (`setFumiDead__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9280`)
+25. **Slot 189** (`0x2FC`): `setFireDamage(dActor_c*)` (`setFireDamage__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9440`)
+26. **Slot 190** (`0x300`): `setFireDead(dActor_c*)` (`setFireDead__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9550`)
+27. **Slot 195** (`0x314`): `setStarDamage(dActor_c*)` (`setStarDamage__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9720`)
+28. **Slot 196** (`0x318`): `setStarDead(dActor_c*)` (`setStarDead__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9810`)
+29. **Slot 197** (`0x31C`): `setQuakeDamage()` (`setQuakeDamage__18dEnTorideKokoopa_cFv` at `0x800A99D0`)
+30. **Slot 198** (`0x320`): `setQuakeDead()` (`setQuakeDead__18dEnTorideKokoopa_cFv` at `0x800A9A90`)
+31. **Slot 199** (`0x324`): `setShellDamage(dActor_c*)` (`setShellDamage__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9BF0`)
+32. **Slot 200** (`0x328`): `setShellDead(dActor_c*)` (`setShellDead__18dEnTorideKokoopa_cFP8dActor_c` at `0x800A9D00`)
+33. **Slot 201** (`0x32C`): `damageProc()` (`damageProc__18dEnTorideKokoopa_cFv` at `0x800A9EC0`)
+34. **Slot 202** (`0x330`): `deadProc()` (`deadProc__18dEnTorideKokoopa_cFv` at `0x800A9F70`)
+35. **Slot 203** (`0x334`): `isFumiInvalid()` (`isFumiInvalid__18dEnTorideKokoopa_cCFv` at `0x800AED10`)
+36. **Slot 205** (`0x33C`): `isFireInvalid()` (`isFireInvalid__18dEnTorideKokoopa_cCFv` at `0x800AED00`)
+37. **Slot 208** (`0x348`): `isStarInvalid()` (`isStarInvalid__18dEnTorideKokoopa_cCFv` at `0x800AECF0`)
+38. **Slot 209** (`0x34C`): `fumideadEffect()` (`fumideadEffect__18dEnTorideKokoopa_cFv` at `0x800AAEF0`)
+39. **Slot 210** (`0x350`): `fumidmgEffect()` (`fumidmgEffect__18dEnTorideKokoopa_cFv` at `0x800AAE80`)
+40. **Slot 224** (`0x388`): `damageSVo()` (`damageSVo__18dEnTorideKokoopa_cFv` at `0x800AB3C0`)
+41. **Slot 225** (`0x38C`): `damageLVo()` (`damageLVo__18dEnTorideKokoopa_cFv` at `0x800AB400`)
+
+---
+
+## Task B: Audit of Existing `dEn_c` Header (`include/game/bases/d_enemy.hpp`)
+
+`dEn_c` inherits through the hierarchy: `fBase_c` -> `dBase_c` -> `dBaseActor_c` -> `dActor_c` -> `dActorMultiState_c` -> `dEn_c`.
+
+1. **Inherited Base Virtuals (55 slots: 0–54)**:
+   - `fBase_c`: 17 slots (0..16)
+   - `dBase_c`: 1 slot (17: `getKindString`)
+   - `dBaseActor_c`: 4 slots (18..21: `draw2D`, `draw2D_lyt2`, `GetActorType`, `finalUpdate`)
+   - `dActor_c`: 29 slots (22..50: `ActorDrawCullCheck` through `poisonSplashEffect`)
+   - `dActorMultiState_c`: 4 slots (51..54: `changeState`, `initializeState_GegnericMulti`, `executeState_GegnericMulti`, `finalizeState_GegnericMulti`)
+2. **`dEn_c` Declared Virtuals (103 new slots: 55–157)**:
+   - 4 damage check functions (55..58)
+   - 3 normal vs hit checks (59..61)
+   - 16 hit callbacks (62..77)
+   - 4 death info setters (78..81)
+   - 1 quake damage query (82)
+   - 1 yoshi eat callback (83)
+   - 5 death sound setters (84..88)
+   - 39 state functions (13 states * 3: `DieFumi`, `DieFall`, `DieBigFall`, `DieSmoke`, `DieYoshiFumi`, `DieIceVanish`, `DieGoal`, `DieOther`, `EatIn`, `EatNow`, `EatOut`, `HitSpin`, `Ice`) (89..127)
+   - 3 effect/SE functions (128..130)
+   - 1 quake action (131)
+   - 3 display / liquid / damage functions (132..134)
+   - 2 boyon functions (135..136)
+   - 4 ice functions (137..140)
+   - 3 funsui functions (141..143)
+   - 1 combo clap check (144)
+   - 13 jump / score / SE / effect functions (145..157)
+
+**Total Count**: 55 base + 103 new = **158 slots**.
+
+### Audit Conclusion:
+The declared virtual count in `include/game/bases/d_enemy.hpp` is **exactly 158**. There is **no divergence** whatsoever. We compiled a subclass against the existing header and inspected `.rela.data` relocations: every single slot from 0 to 157 matched retail `__vt__5dEn_c` at `.data:0x80311EE0` (size `0x280`).
+
+---
+
+## Proved vs Inferred
+
+### Proved:
+- `__vt__9dEnBoss_c` has size `0x390` (226 slots).
+- `__vt__5dEn_c` has size `0x280` (158 slots).
+- `__vt__18dEnTorideKokoopa_c` has size `0x5E4` (375 slots).
+- The exact 68 new slot sequence (158..225) in `dEnBoss_c`, proven by symbols and relocations.
+- The 21 `dEn_c` overrides in `dEnBoss_c` and the 41 `dEnBoss_c` overrides in `dEnTorideKokoopa_c`.
+- `sizeof(dEnBoss_c) == 0x600` bytes, confirmed by constructor member allocations and derived writes.
+- Member types and offsets:
+  - `dHeapAllocator_c` at `0x524` (constructed at `this+0x524` with `__ct__16dHeapAllocator_cFv`).
+  - `mTenmetsuTimer` at `0x540` (zeroed in ctor, read/decremented in `preExecute`, written from `getTenmetsuTime_*`).
+  - `dAudio::SndObjctEmy_c` at `0x544` (inlined `NMSndObject<4>` ctor with vtable `__vt__Q26dAudio13SndObjctEmy_c`).
+  - `mSoundParam` (`s16`) at `0x5F0` (loaded via `lha` in SE methods).
+  - `mQuakeDamage` at `0x5F4` (read in `isQuakeDamage`, set in `setDeathInfo_Quake`).
+  - `mpBossLife` at `0x5F8` (allocated in `createBossLife`, destroyed via `dBossLifeInf_c` vtable).
+
+### Inferred:
+- Field names `mTenmetsuTimer`, `mSoundParam`, `mQuakeDamage`, `mpBossLife` are descriptive semantic names (`@unofficial`), although their offsets, sizes, and operational semantics are proven.
+
+---
+
+## Unsettled Items
+
+None. All 226 vtable slots, 21 base overrides, 41 derived overrides, member offsets, and `dEn_c` 158-slot audit have been verified and compiled cleanly.

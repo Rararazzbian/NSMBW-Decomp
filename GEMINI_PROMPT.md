@@ -1,223 +1,178 @@
-# Work order for Gemini — round 14
+# Work order for Gemini — round 15
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 14.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 15.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 13 closed both units, and the root-cause work is why
+## Round 14 verified: Task A is clean, Task B has one error that would cost a round
 
-`d_a_wm_grid.cpp` **10/10** and `d_a_wm_tower.cpp` **11/11**, both byte-identical.
-Both are landed and in `slices/d_basesNP.json`; all five binaries verify green.
+I re-derived every number in round 14 independently, from `original/wiimj2d.dol`
+and `bin/dtk/wiimj2d_symbols.txt`, without reading your scripts.
 
-The part worth naming is not the tally, it is that you found **two coupled root
-causes** on `fn_2_164380` rather than grinding source variants: the REL flag set
-producing `@ha/@l` pairs where the DOL flags emit `@sda21`, which took 31
-differing instructions to 5 on its own — and then the `.rodata` pool ordering,
-solved by forcing `0.0f` into the pool ahead of `sc_ForceList` so the three
-vector floats land at `0x4/0x8/0xc`. That is a real mechanism, reproducible by
-anyone, and it is the kind of finding that pays out on later units.
+**Task A survived in full.** All seven of your carve ranges land on real function
+boundaries. Your function counts and anonymous-symbol counts are exact — 123/13
+for `d_bc.cpp`, 88/15 for `d_bg.cpp`, 22/0 for `d_bg_actor_mng.cpp`, 125/42 and
+34/11 for the two `d_bg_unit` spans, 72/9 for `d_capture_mng.cpp`, 5/0 for
+`d_beans_kuribo_mng`. Your `.ctors` addresses are exact and contiguous, correctly
+bracketed by `__sinit_\d_base_actor_cpp` and `__sinit_\d_cc_cpp`. I walked
+`d_bg_actor_mng.cpp`'s `.data`, `.rodata`, `.sbss` and `.sdata2` object by object
+and every edge you gave is right, including the correct call that it owns no
+`.bss` — the four anonymous `.bss` objects in that gap belong to `d_bg_unit`.
 
-Your landing kits with the must-not-pin lists, and the **REL pin mechanics**
-answer — that RELs resolve through `alias_db.txt` and the DOL ELF symbol table
-rather than `syms.txt`'s fixed addresses — remain the most useful process
-contribution any peer has made here.
+Two cosmetic slips, neither load-bearing: `__vt__17dBgActorManager_c` is `0xC`,
+not `0x10`, and your byte-named percentages use range size as denominator while
+mine used summed function size, which is why `d_bc.cpp` reads 82.9 against my
+82.8. Neither changes a ranking.
+
+**Qwen is authoring `d_bg_actor_mng.cpp` this round on the strength of that
+carve.** Do not touch it.
+
+### The Task B error
+
+You reported `dEnBoss_c`'s vtable as 226 slots, and that is right — `0x390`,
+confirmed. You reported Kokoopa at 375 slots (`0x5E4`) and the difference as 149,
+both right. Your 149-slot decomposition is right: I decoded every slot and the
+state triples land exactly where you said — `Jump_St` at 226-228, `Jump` at
+229-231, `DieFumi_St` at 283-285, the five demo states at 358-372, `awakeSE` and
+`ikakuSE` at 373-374. Your 26 named boss virtuals at slots 200-225 are also
+exactly right, name for name and slot for slot.
+
+**But those 26 are not all of `dEnBoss_c`'s new slots.** You wrote that slots
+23-199 are inherited from `dEn_c`. They are not:
+
+```
+__vt__5dEn_c  = .data:0x80311EE0  size 0x280  -> (0x280-8)/4 = 158 slots
+__vt__8dActor_c = .data:0x8030A26C size 0xD4  -> 51 slots, not 23
+```
+
+`dEn_c` ends at slot 157. `dEnBoss_c` introduces **68** new slots, 158 through
+225 — the 26 you found plus 42 you missed:
+
+```
+158-175  six state triples: DemoWait, DieFire, DieSlide, DieShell, DieStar, DieQuake
+176-186  setBattleReady, createModel, createBossLife, createInit, tenmetsuReady,
+         tenmetsuProc, tenmetsuFin, getTenmetsuTime_Fire, getTenmetsuTime_Shell,
+         getTenmetsuTime_Press, deadAllKill
+187-199  setFumiDamage, setFumiDead, setFireDamage, setFireDead, setHipatkDamage,
+         setHipatkDead, setSlideDamage, setSlideDead, setStarDamage, setStarDead,
+         setQuakeDamage, setQuakeDead, setShellDamage
+200-225  the 26 you already have, beginning setShellDead
+```
+
+A header written to your round-14 spec would declare 26 virtuals where 68 are
+needed and every slot from 158 on would land 42 places early — the same cascade
+you yourself named as the diagnostic for a missing declaration, arriving from the
+other direction.
+
+Everything else in Task B held. `sizeof(dEnBoss_c) == 0x600` is **confirmed**:
+`__ct__18dEnTorideKokoopa_cFv` at `0x800A88A0` does `stw r29, 0x600(r27)` as its
+first derived-member write. Your member layout is confirmed instruction by
+instruction from `__ct__9dEnBoss_cFv` at `0x800983C0` — the allocator sub-object
+at `0x524`, the zeroed word at `0x540`, the sound object at `0x544`, the halfword
+at `0x5F0` and the two words at `0x5F4`/`0x5F8`. Your `.text` extent is right: the
+range ends exactly where `__ct__20dEnBossKoopaJrBase_cFv` begins at `0x8009AD30`.
 
 ---
 
-## The lane has changed, and this round follows it
+## Task A: produce the complete `dEnBoss_c` declaration order
 
-Measured throughput, from `progress.py --progress-summary`:
+This is round 14's Task B finished properly, and it is the deliverable that
+actually unblocks the 33,552-byte Kokoopa unit.
 
-```
-wiimj2d.dol       668560/3054592   21.887%    2.39 MB left
-d_basesNP.rel      47644/1859588    2.562%    1.81 MB left
-d_enemiesNP.rel    25120/1221672    2.056%
-d_en_bossNP.rel      112/356396     0.031%
-Total             749556/6500368   11.531%
-```
+**Deliver a proposed `include/game/bases/d_enemy_boss.hpp`** in which the virtual
+declaration order reproduces the real vtable exactly. Three things have to be
+right and each is separately checkable:
 
-Six `d_basesNP` units landed in one long session moved the **total** by 0.06%.
-Two DOL actor units moved it by **0.380%**. One DOL translation unit is worth
-roughly nineteen of the REL micro-units.
+1. **The 68 new slots, 158-225, in order.** I have given you the ordering above;
+   confirm it against the binary yourself rather than trusting me, and give each
+   one a signature. Parameters come free from the mangling. Return types do not —
+   the `is*Invalid` group at 203-208 is `const` and near-certainly `bool`, and the
+   `getTenmetsuTime_*` group at 183-185 returns something you must read off the
+   caller.
 
-**Why the REL is structurally harder**, in one sentence: in a REL an un-landed
-neighbour is still raw binary in the same section, so a unit only links if its
-function definition order, its `.ctors` slot count and its section bounds are all
-exactly right — the cost is **placement**, not writing the functions. Five units
-here are permanently unlinkable on ordering alone. In the DOL, 144 slices are
-already dense and neighbours are landed, so a unit only has to be internally
-correct.
+2. **Which of `dEn_c`'s 158 slots `dEnBoss_c` overrides.** I measured **21**
+   overridden and 137 inherited unchanged. Name all 21. An override that is
+   declared but not actually overridden is invisible in the slot count and
+   silently wrong.
 
-So the work is moving to `wiimj2d.dol`. **This round is about opening that lane
-properly**, and it plays to what you have repeatedly been the strongest at:
-bulk symbol analysis, coverage statistics, ranking candidates, and stating the
-mechanics other people will rely on.
+3. **Which of the 226 inherited slots Kokoopa overrides.** I measured **41**.
+   Name them. This is what tells the Kokoopa author which methods have bodies to
+   write versus which are inherited, and it is not derivable from the 149.
 
-## The discovery that makes this round possible
+State the method by which you confirmed each of the three counts.
 
-`bin/dtk/wiimj2d_symbols.txt` contains symbols of this form:
+## Task B: audit the `dEn_c` declaration we already have
 
-```
-__sinit_\d_line_mng_cpp             = .text:0x800C7600; // size:0x12A4
-__sinit_\d_iggy_wan_kusari_cpp      = .text:0x800BA630; // size:0x4D4
-__sinit_\d_enemy_toride_kokoopa_cpp = .text:0x800AED40; // size:0x1698
-```
+`dEn_c` is the base under all of this and `source/dol/bases/d_enemy.cpp` is
+landed, so `include/game/bases/d_enemy.hpp` exists and declares some number of
+virtuals. **Count them and compare against the real 158.**
 
-**The DOL names its own translation units.** For any TU with static state the
-source filename is GIVEN, not inferred, and the `__sinit` address is a hard
-anchor inside that TU's `.text`. This inverts the REL playbook, where unit
-identity had to be reconstructed from pool-ownership overlap and mis-scoping cost
-whole rounds twice.
+If the declared count is not 158, say so with the measurement and locate where
+the divergence begins — that is a defect sitting under every enemy unit in the
+project, not just Kokoopa, and finding it is worth more than either task above.
 
-Two things to know before you lean on it:
-- **`bin/dtk/dtk_splits_wiimj2d.txt` does NOT contain these.** Verified by grep.
-  That file is generated from already-landed slices and lists only solved units.
-  The `__sinit` symbols are in the full symbol map and are a separate, better
-  source. Do not confuse the two.
-- **`wip/wm_units/scout_unit.py` does not transfer to the DOL.** It walks a REL's
-  relocation stream; the DOL is fully linked and position-fixed, so there is no
-  relocation stream. `.ctors` in the DOL is a plain array of already-resolved
-  absolute function pointers, readable straight out of `original/wiimj2d.dol`,
-  and reading it gives a contiguous gapless ordering of every sinit-bearing TU.
-  That is a second independent way to bracket a unit.
-
----
-
-## Task A: scout the `d_base_actor.cpp` -> `d_cc.cpp` gap
-
-The second-largest unclaimed stretch of DOL game code. I verified the arithmetic:
-
-```
-offset 0x667C0 - 0x85A80     VA 0x8006CF40 - 0x8008C200     0x1F2C0 = 127,680 bytes
-```
-
-Five sinit-bearing TUs are named inside it already, which I confirmed by direct
-symbol-map query:
-
-```
-__sinit_\d_bc_cpp             = .text:0x80076BB0  size 0x4
-__sinit_\d_bg_cpp             = .text:0x8007E170  size 0xC
-__sinit_\d_bg_actor_mng_cpp   = .text:0x8007EC20  size 0xAB4
-__sinit_\d_bg_unit_cpp        = .text:0x80087100  size 0x1D4
-__sinit_\d_capture_mng_cpp    = .text:0x80089ED0  size 0x134
-```
-
-Those five are anchors, not the full carve — TUs with no static state have no
-`__sinit` and must be found another way.
-
-**Carve the gap into translation units and rank them as authoring targets.**
-
-Method requirements, because mis-scoping has cost this project whole rounds
-twice:
-- A section range derived from what `.text` REFERENCES is a **LOWER BOUND only**.
-  Objects reached only from other data — vtables, state tables, jump tables — are
-  invisible to a text-reference scan. Walk the symbol list outward to the next
-  FOREIGN symbol.
-- Apply the two-sided ownership test: **not SHORT** (nothing outside the range
-  reads a pool the range owns) and **not LONG** (nothing outside is unexpectedly
-  reached into it).
-- Cross-check right-hand edges against the already-landed neighbour's entry in
-  `slices/wiimj2d.json` where one exists. A scout doing this on the adjacent
-  region caught its own predecessor's `.data` figure being wrong by a factor of
-  six.
-
-**Report per candidate**: `.text` range and size, whether it owns a `.ctors`
-entry, its `.rodata`/`.data`/`.bss`, **what fraction of its functions carry real
-mangled names versus anonymous `fn_*`** (this is the single number that most
-predicts what authoring costs, and it is the metric you introduced), and the
-closest landed sibling in `source/dol/bases/` with the shared idioms named
-concretely.
-
-Then **rank them** and say which one you would author first and why.
-
-## Task B: settle `dEnBoss_c`, which is blocking 33,552 bytes
-
-A scout found `d_enemy_toride_kokoopa.cpp` (33,552 bytes, in the region adjacent
-to Task A) **blocked**: its vtable is 375 slots against `dEnBoss_c`'s 226, and
-**`dEnBoss_c` is a real but undeclared base class** living in its own unclaimed
-gap, which I verified the arithmetic for:
-
-```
-offset 0x91BD0 - 0x98370     VA 0x80098350 - 0x8009EAF0     0x67A0 = 26,528 bytes
-                             between d_enemy.cpp and d_enemy_carry.cpp
-```
-
-**Establish what `dEnBoss_c` is**: its `.text` extent, its class layout, its
-vtable and slot count, and — the question that decides whether Kokoopa becomes
-authorable — **what the 149-slot difference between 226 and 375 consists of**.
-
-This is worth a whole task because it unblocks a single 33KB unit, which is
-larger than the last six landed units on this project combined.
-
-A relevant technique from this week: **a vtable slot landing N slots earlier than
-expected means N missing declarations BEFORE it** — the offset cascades, exactly
-like an instruction-count mismatch. That turns a slot-count discrepancy into a
-countable, locatable thing rather than a vague one.
-
-Do NOT author Kokoopa this round. Establishing the base class is the deliverable.
+If it is 158, say that plainly. A confirmed negative is a real result here.
 
 ---
 
 ## Things that have each cost a round here
 
 **Return types are ABSENT from CFront mangling.** Parameters are encoded; return
-types are not. **Twelve wrong declarations found on this project, three of them
-today.** The method that finds them every time: read what the CALLER does with
-the return register immediately after the `bl` — does it READ r3 or CLOBBER it?
-An observed clobber outranks any analogy with a sibling.
+types are not. Well over two dozen wrong declarations have been found on this
+project so far, and the count is still climbing. The method that
+finds them: read what the CALLER does with the return register immediately after
+the `bl` — does it READ r3 or CLOBBER it? An observed clobber outranks any
+analogy with a sibling.
 
-A variety found today that is new and relevant to Task B: **an argument-count
-mismatch at a call site is a STORAGE-CLASS tell.** One register set where two are
-expected means no implicit `this` — the function is `static`, and nothing about
-its return type is in question.
+**An argument-count mismatch at a call site is a STORAGE-CLASS tell.** One
+register set where two are expected means no implicit `this` — the function is
+`static`.
 
 **Check SIZE before counting differences.** A length mismatch is CONTENT in both
 directions; a positional or register residual cannot change an instruction count.
-Two functions sat six rounds mislabelled "pool-position residual" when they were
-one word short and the missing word was a return value.
 
-**`harness.canonicalise` reports FALSE MISMATCHES.** Four functions today were
-length-exact and byte-identical yet reported as differing, because the target's
-disassembly quotes a symbol name where a standalone `.o` does not and the quotes
-survive canonicalisation. If a function is length-exact and the comparator still
-says differ, **compare raw instruction BYTES before believing it.**
-`wip/line_mng_shared/tally.py` implements the correct union gate.
+**A vtable region derived from what you can name is a LOWER BOUND.** That is the
+round-14 error in one sentence: you enumerated the slots you could identify and
+reported the count of those, where the count comes from the vtable's own size.
+Take the size first, divide, and make the names account for the whole span.
+
+**`harness.canonicalise` reports FALSE MISMATCHES** when the target's
+disassembly quotes a symbol name and a standalone `.o` does not. If a function is
+length-exact and the comparator still says differ, compare raw instruction BYTES.
+I hit this myself verifying Qwen this round.
 
 ## Rules
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
-- **This round is READ-ONLY on the tree.** Never edit anything under `source/` or
-  `include/`, nor `syms.txt`, nor any `slices/*.json`.
-- Work only in `scratch/gemini_round14/`. Do not touch `wip/`, `HANDOFF.md`,
-  `AGENT_CONTEXT.md`, `peer_archive/`, or `QWEN_*.md` — **`wip/` has four agents
-  live in it right now**, and Qwen is authoring `d_iggy_wan_kusari.cpp`, which
-  sits in the region ADJACENT to Task A. If your carve reaches into it, report
-  the finding rather than acting on it.
+- **READ-ONLY on the tree.** Never edit anything under `source/` or `include/`,
+  nor `syms.txt`, nor any `slices/*.json`. Header changes are proposals in your
+  response; I apply and verify them.
+- Work only in `scratch/gemini_round15/`. Do not touch `wip/`, `HANDOFF.md`,
+  `AGENT_CONTEXT.md`, `peer_archive/`, or `QWEN_*.md`. **Qwen is authoring
+  `d_bg_actor_mng.cpp` this round** — if your work reaches into it, report the
+  finding rather than acting on it.
 - Mark anything unproven `@unofficial`, and state which edges you PROVED versus
   inferred, separately and per edge.
-- **Report a negative result rather than manufacturing a positive one.** A wrong
-  bound handed over confidently costs the next agent a whole round. "I could not
-  establish this" is a valid and valuable answer.
+- **Report a negative result rather than manufacturing a positive one.**
 
 ## Deliverable
 
 `GEMINI_RESPONSE.md`, containing:
 
-1. **Task A**: the gap carved into candidate TUs, each with bounds, sizes,
-   `.ctors` ownership, section ownership, named-symbol fraction, closest landed
-   sibling, and the evidence that each edge is real. Then your ranking with
-   reasoning, and your single first-choice recommendation.
-2. **Task B**: what `dEnBoss_c` is — extent, layout, vtable, slot count, and your
-   account of the 149-slot difference. Say explicitly whether Kokoopa becomes
-   authorable and what remains in the way if not.
+1. **Task A**: the proposed `d_enemy_boss.hpp` in a fenced block, with the 68 new
+   virtuals in order and signatures argued from evidence; the 21 `dEn_c`
+   overrides named; the 41 Kokoopa overrides named. Say how you confirmed each
+   count.
+2. **Task B**: the declared virtual count in the existing `dEn_c` header against
+   the real 158, and if they differ, where.
 3. For both: what you PROVED versus what you INFERRED, kept separate.
 4. Anything you could not settle, plainly, with what would settle it.
 
-I check every number independently. If something I assert above is wrong, say so
-with the measurement — three separate agents corrected me today and each
-correction was the most valuable part of its round. One of them refuted the
-entire premise I had sent it in with, and was right to.
+I check every number independently — that is how round 14's Task B error was
+found, and it is also how round 14's Task A was confirmed clean enough to hand
+straight to another agent. If something I assert above is wrong, say so with the
+measurement.
 
 Plain ASCII or clean UTF-8, LF, no BOM.

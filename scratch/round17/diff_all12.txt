@@ -1,0 +1,100 @@
+=== __ct__17dBgActorManager_cFv [MATCH] ===
+  MATCHING (20 instructions)
+
+=== __dt__17dBgActorManager_cFv [MATCH] ===
+  MATCHING (59 instructions)
+
+=== initialize__17dBgActorManager_cFv [DIFFER] ===
+  size: target 66, draft 66
+      4 | want: lis r31, l_object_name@ha                    got: lis r31, SYM0@ha
+      5 | want: addi r31, r31, l_object_name@l               got: addi r31, r31, SYM0@l
+
+=== create__17dBgActorManager_cFv [MATCH] ===
+  MATCHING (22 instructions)
+    NOTE: this function references pooled literals. Their names cannot be
+    compared directly, so the check is on the PATTERN of references, not on
+    the values -- a lone 0.0f and a lone 8.0f compare equal here. Read the
+    emitted value out of your object and check it against the target slot.
+
+=== CreateHeap__17dBgActorManager_cFv [MATCH] ===
+  MATCHING (44 instructions)
+
+=== execute__17dBgActorManager_cFv [DIFFER] ===
+  size: target 16, draft 17
+      1 | want: lfs f1, "SYM0"@sda21(r0)                     got: lfs f2, "SYM0"@sda21(r0)
+      2 | want: lfs f2, 0x38(r4)                             got: lfs f0, 0x38(r4)
+      3 | want: stfs f2, 0x20(r3)                            got: stfs f0, 0x20(r3)
+      4 | want: lfs f0, 0x44(r4)                             got: lfs f1, 0x3c(r4)
+      5 | want: lfs f3, 0x3c(r4)                             got: lfs f0, 0x44(r4)
+      6 | want: fsubs f0, f3, f0                             got: fsubs f0, f1, f0
+      7 | want: stfs f1, 0x28(r3)                            got: stfs f2, 0x28(r3)
+      9 | want: lfs f0, 0x40(r4)                             got: lfs f1, 0x38(r4)
+     10 | want: fadds f0, f2, f0                             got: lfs f0, 0x40(r4)
+     11 | want: stfs f0, 0x2c(r3)                            got: fadds f0, f1, f0
+     12 | want: lfs f0, 0x3c(r4)                             got: stfs f0, 0x2c(r3)
+     13 | want: stfs f0, 0x30(r3)                            got: lfs f0, 0x3c(r4)
+     14 | want: stfs f1, 0x34(r3)                            got: stfs f0, 0x30(r3)
+  ... (2 more lines)
+
+=== ProcMain__17dBgActorManager_cFv [DIFFER] ===
+  size: target 179, draft 160
+     10 | want: bl _savegpr_26                               got: bl _savegpr_25
+     12 | want: mr r26, r3                                   got: mr r31, r3
+     14 | want: beq .L |41820264|                            got: beq .L |41820218|
+     15 | want: lwz r5, m_bg_p__5dBg_c@sda21(r0)             got: lfs f0, 0x28(r3)
+     16 | want: li r27, 0x0                                  got: lfs f1, 0x24(r3)
+     17 | want: lwz r4, 0x20(r3)                             got: lfs f2, 0x20(r3)
+     18 | want: li r30, 0x0                                  got: stfs f2, 0x70(r1)
+     19 | want: addis r5, r5, 0x9                            got: lwz r27, m_bg_p__5dBg_c@sda21(r0)
+     20 | want: lwz r0, 0x24(r3)                             got: stfs f1, 0x74(r1)
+     21 | want: lfs f1, -0x19c(r5)                           got: addis r4, r27, 0x9
+     22 | want: lis r31, 0x4330                              got: lfs f1, "SYM0"@sda21(r0)
+     23 | want: lfs f2, -0x194(r5)                           got: stfs f0, 0x78(r1)
+     24 | want: lfs f0, "SYM0"@sda21(r0)                     got: lfs f0, 0x34(r3)
+  ... (28 more lines)
+
+=== addObj__17dBgActorManager_cFUsUsUsUc [MATCH] ===
+  MATCHING (27 instructions)
+
+=== createObjList__17dBgActorManager_cFb [DIFFER] ===
+  size: target 116, draft 99
+      0 | want: stwu r1, -0x60(r1)                           got: stwu r1, -0x50(r1)
+      2 | want: stw r0, 0x64(r1)                             got: stw r0, 0x54(r1)
+      3 | want: addi r11, r1, 0x60                           got: addi r11, r1, 0x50
+      4 | want: bl _savegpr_17                               got: bl _savegpr_19
+      5 | want: lwz r28, m_bg_p__5dBg_c@sda21(r0)            got: lwz r29, m_bg_p__5dBg_c@sda21(r0)
+      6 | want: mr r19, r3                                   got: mr r21, r3
+      7 | want: lfs f0, "SYM0"@sda21(r0)                     got: lfs f1, "SYM0"@sda21(r0)
+      8 | want: mr r20, r4                                   got: mr r22, r4
+      9 | want: addis r17, r28, 0x9                          got: addis r19, r29, 0x9
+     10 | want: lfs f1, -0x19c(r17)                          got: lfs f0, -0x19c(r19)
+     13 | want: lfs f1, -0x194(r17)                          got: lfs f1, -0x194(r19)
+     14 | want: mr r18, r17                                  got: mr r20, r19
+     16 | want: mr r29, r3                                   got: mr r30, r3
+  ... (28 more lines)
+
+=== init__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (8 instructions)
+
+=== clear__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (1 instructions)
+
+=== set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc [MATCH] ===
+  MATCHING (5 instructions)
+
+=== createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c [MATCH] ===
+  MATCHING (60 instructions)
+    NOTE: this function references pooled literals. Their names cannot be
+    compared directly, so the check is on the PATTERN of references, not on
+    the values -- a lone 0.0f and a lone 8.0f compare equal here. Read the
+    emitted value out of your object and check it against the target slot.
+
+=== deleteActor__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (17 instructions)
+
+=== getOffset__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (11 instructions)
+
+=== getSize__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (9 instructions)
+

@@ -1,0 +1,147 @@
+=== __ct__17dBgActorManager_cFv [MATCH] ===
+  MATCHING (20 instructions)
+
+=== __dt__17dBgActorManager_cFv [DIFFER] ===
+  size: target 59, draft 58
+      2 | want: cmpwi r3, 0x0                                got: stw r0, 0x24(r1)
+      3 | want: stw r0, 0x24(r1)                             got: addi r11, r1, 0x20
+      4 | want: stw r31, 0x1c(r1)                            got: bl _savegpr_27
+      5 | want: stw r30, 0x18(r1)                            got: cmpwi r3, 0x0
+      6 | want: stw r29, 0x14(r1)                            got: mr r27, r3
+      7 | want: mr r29, r4                                   got: mr r28, r4
+      8 | want: stw r28, 0x10(r1)                            got: beq .L |418200AC|
+      9 | want: mr r28, r3                                   got: lis r4, __vt__17dBgActorManager_c@ha
+     10 | want: beq .L |418200A0|                            got: li r30, 0x0
+     11 | want: lis r4, __vt__17dBgActorManager_c@ha         got: addi r4, r4, __vt__17dBgActorManager_c@l
+     12 | want: li r30, 0x0                                  got: stw r4, 0x0(r3)
+     13 | want: addi r4, r4, __vt__17dBgActorManager_c@l     got: li r31, 0x0
+     14 | want: stw r4, 0x0(r3)                              got: b .L |4800003C|
+  ... (28 more lines)
+
+=== initialize__17dBgActorManager_cFv [DIFFER] ===
+  size: target 66, draft 66
+      4 | want: lis r31, l_object_name@ha                    got: lis r31, SYM0@ha
+      5 | want: addi r31, r31, l_object_name@l               got: addi r31, r31, SYM0@l
+     16 | want: beq .L |41820008|                            got: bne .L |40820008|
+     17 | want: b .L |48000008|                              got: li r3, 0x0
+     18 | want: li r3, 0x0                                   got: lwz r3, 0x8(r3)
+     19 | want: lwz r30, 0x8(r3)                             got: addi r4, r31, 0x7d4
+     20 | want: addi r4, r31, 0x7d4                          got: addi r30, r3, 0x60
+     21 | want: addi r3, r30, 0x60                           got: mr r3, r30
+     28 | want: addi r3, r30, 0x60                           got: mr r3, r30
+     36 | want: addi r3, r30, 0x60                           got: mr r3, r30
+     44 | want: addi r3, r30, 0x60                           got: mr r3, r30
+
+=== create__17dBgActorManager_cFv [MATCH] ===
+  MATCHING (22 instructions)
+    NOTE: this function references pooled literals. Their names cannot be
+    compared directly, so the check is on the PATTERN of references, not on
+    the values -- a lone 0.0f and a lone 8.0f compare equal here. Read the
+    emitted value out of your object and check it against the target slot.
+
+=== CreateHeap__17dBgActorManager_cFv [DIFFER] ===
+  size: target 44, draft 44
+     11 | want: ble .L |40810064|                            got: beq .L |41820064|
+     31 | want: cmpw r30, r0                                 got: cmplw r30, r0
+
+=== execute__17dBgActorManager_cFv [DIFFER] ===
+  size: target 16, draft 17
+      1 | want: lfs f1, "SYM0"@sda21(r0)                     got: lfs f2, "SYM0"@sda21(r0)
+      2 | want: lfs f2, 0x38(r4)                             got: lfs f0, 0x38(r4)
+      3 | want: stfs f2, 0x20(r3)                            got: stfs f0, 0x20(r3)
+      4 | want: lfs f0, 0x44(r4)                             got: lfs f1, 0x3c(r4)
+      5 | want: lfs f3, 0x3c(r4)                             got: lfs f0, 0x44(r4)
+      6 | want: fsubs f0, f3, f0                             got: fsubs f0, f1, f0
+      7 | want: stfs f1, 0x28(r3)                            got: stfs f2, 0x28(r3)
+      9 | want: lfs f0, 0x40(r4)                             got: lfs f1, 0x38(r4)
+     10 | want: fadds f0, f2, f0                             got: lfs f0, 0x40(r4)
+     11 | want: stfs f0, 0x2c(r3)                            got: fadds f0, f1, f0
+     12 | want: lfs f0, 0x3c(r4)                             got: stfs f0, 0x2c(r3)
+     13 | want: stfs f0, 0x30(r3)                            got: lfs f0, 0x3c(r4)
+     14 | want: stfs f1, 0x34(r3)                            got: stfs f0, 0x30(r3)
+  ... (2 more lines)
+
+=== ProcMain__17dBgActorManager_cFv [DIFFER] ===
+  size: target 179, draft 142
+      0 | want: stwu r1, -0xe0(r1)                           got: stwu r1, -0xc0(r1)
+      2 | want: stw r0, 0xe4(r1)                             got: stw r0, 0xc4(r1)
+      3 | want: addi r11, r1, 0xb0                           got: addi r11, r1, 0x90
+      4 | want: stfd f31, 0xd0(r1)                           got: stfd f31, 0xb0(r1)
+      5 | want: psq_st f31, 0xd8(r1), 0, qr0                 got: psq_st f31, 0xb8(r1), 0, qr0
+      6 | want: stfd f30, 0xc0(r1)                           got: stfd f30, 0xa0(r1)
+      7 | want: psq_st f30, 0xc8(r1), 0, qr0                 got: psq_st f30, 0xa8(r1), 0, qr0
+      8 | want: stfd f29, 0xb0(r1)                           got: stfd f29, 0x90(r1)
+      9 | want: psq_st f29, 0xb8(r1), 0, qr0                 got: psq_st f29, 0x98(r1), 0, qr0
+     10 | want: bl _savegpr_26                               got: bl _savegpr_25
+     12 | want: mr r26, r3                                   got: mr r31, r3
+     14 | want: beq .L |41820264|                            got: beq .L |418201D0|
+     15 | want: lwz r5, m_bg_p__5dBg_c@sda21(r0)             got: lwz r27, m_bg_p__5dBg_c@sda21(r0)
+  ... (28 more lines)
+
+=== addObj__17dBgActorManager_cFUsUsUsUc [DIFFER] ===
+  size: target 27, draft 24
+      2 | want: li r10, 0x0                                  got: li r8, 0x0
+      3 | want: li r8, 0x0                                   got: stw r0, 0x14(r1)
+      4 | want: stw r0, 0x14(r1)                             got: lwz r0, 0x3c(r3)
+      5 | want: lwz r0, 0x3c(r3)                             got: mtctr r0
+      6 | want: mtctr r0                                     got: cmpwi r0, 0x0
+      7 | want: cmpwi r0, 0x0                                got: ble .L |40810030|
+      8 | want: ble .L |40810038|                            got: lwz r0, 0x38(r3)
+      9 | want: nop                                          got: add r9, r0, r8
+     10 | want: lwz r9, 0x38(r3)                             got: lhzx r0, r8, r0
+     11 | want: lhzx r0, r9, r8                              got: cmplwi r0, 0xffff
+     12 | want: cmplwi r0, 0xffff                            got: bne .L |40820014|
+     13 | want: bne .L |40820018|                            got: mr r3, r9
+     14 | want: mulli r0, r10, 0xc                           got: bl set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc
+  ... (12 more lines)
+
+=== createObjList__17dBgActorManager_cFb [DIFFER] ===
+  size: target 116, draft 103
+      0 | want: stwu r1, -0x60(r1)                           got: stwu r1, -0x50(r1)
+      2 | want: stw r0, 0x64(r1)                             got: stw r0, 0x54(r1)
+      3 | want: addi r11, r1, 0x60                           got: addi r11, r1, 0x50
+      4 | want: bl _savegpr_17                               got: bl _savegpr_19
+      6 | want: mr r19, r3                                   got: mr r20, r3
+      7 | want: lfs f0, "SYM0"@sda21(r0)                     got: lfs f1, "SYM0"@sda21(r0)
+      8 | want: mr r20, r4                                   got: mr r21, r4
+      9 | want: addis r17, r28, 0x9                          got: addis r19, r28, 0x9
+     10 | want: lfs f1, -0x19c(r17)                          got: lfs f0, -0x19c(r19)
+     13 | want: lfs f1, -0x194(r17)                          got: lfs f1, -0x194(r19)
+     14 | want: mr r18, r17                                  got: mr r22, r19
+     16 | want: mr r29, r3                                   got: mr r30, r3
+     18 | want: fmuls f1, f1, f0                             got: fmuls f1, f0, f1
+  ... (28 more lines)
+
+=== init__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (8 instructions)
+
+=== clear__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (1 instructions)
+
+=== set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc [MATCH] ===
+  MATCHING (5 instructions)
+
+=== createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c [DIFFER] ===
+  size: target 60, draft 58
+     47 | want: beq .L |41820010|                            got: beq .L |4182000C|
+     49 | want: stw r0, 0x8(r30)                             got: b .L |48000008|
+     50 | want: b .L |4800000C|                              got: li r0, 0x0
+     51 | want: li r0, 0x0                                   got: stw r0, 0x8(r30)
+     52 | want: stw r0, 0x8(r30)                             got: lwz r31, 0x3c(r1)
+     53 | want: lwz r3, 0x8(r30)                             got: lwz r30, 0x38(r1)
+     54 | want: lwz r31, 0x3c(r1)                            got: lwz r0, 0x44(r1)
+     55 | want: lwz r30, 0x38(r1)                            got: mtlr r0
+     56 | want: lwz r0, 0x44(r1)                             got: addi r1, r1, 0x40
+     57 | want: mtlr r0                                      got: blr
+     58 | want: addi r1, r1, 0x40                            got: <none>
+     59 | want: blr                                          got: <none>
+
+=== deleteActor__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (17 instructions)
+
+=== getOffset__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (11 instructions)
+
+=== getSize__Q217dBgActorManager_c7BgObj_cFv [MATCH] ===
+  MATCHING (9 instructions)
+
