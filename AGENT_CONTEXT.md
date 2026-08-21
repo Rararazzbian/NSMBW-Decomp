@@ -1473,3 +1473,49 @@ So a cast at the point of use does not reach this; the variable's declared type
 does. Where one value needs two roles -- an `int` to receive an `fctiwz`
 conversion and an unsigned for the shift-and-mask -- **use two variables**, do not
 cast one. Costs +1 word for the truncation and saves the extra shift instruction.
+
+## The wrong-constant hole is CLOSED — `tools/auto_decomp/poolcheck.py`
+
+The byte-equality false positive documented above has a second half that was not
+documented, and it is worse: **canonicalised text is blind to a wrong constant
+too.** Canonicalisation renumbers pool symbols by order of appearance, so a draft
+loading `0.0f` against a retail `1.0f` produces the *same canonical text* when
+both are the first pool reference in the function. Both halves of the union gate,
+the same hole. This produced false positives in three separate rounds across two
+units before anyone noticed.
+
+**It is now checked automatically.** `poolcheck.py` resolves every pooled load on
+both sides to its actual VALUE — retail's out of `original/wiimj2d.dol` via the
+address dtk embeds in the symbol name, the draft's through its own object symbol
+table into the section bytes — and compares them position by position.
+`tally.py` calls it, and **a function with a disagreeing constant no longer
+counts as matched**; it is listed explicitly under `WRONG CONSTANT(S)`.
+
+    python tools/auto_decomp/poolcheck.py <draft.cpp> <shadow_include> <target.txt>
+
+Run it standalone on any unit whose eval script is not `tally.py`. It caught the
+known `1.0f`/`0.0f` constructor false positive on an unrelated unit on its first
+run, and two of its own in `d_line_mng`.
+
+### The `lfd` trap it found: `-0.1` is not `-0.1f`
+
+`start_line_move` compares a `double` (the return of `fmod`) against a literal.
+Both `-0.1` and `-0.1f` widen to double and are loaded with `lfd`, so the
+instruction is identical either way — but the eight bytes are not:
+
+| source | pool bytes | value |
+|---|---|---|
+| `-0.1f` (retail) | `BFB99999A0000000` | `(double)(-0.1f)` — the float's trailing zeros |
+| `-0.1` (was in the draft) | `BFB999999999999A` | the exact double |
+
+An `lfd`'s offset field is zeroed in the disassembly exactly like `lfs`, so this
+was invisible. **When a float literal is compared against a `double`, keep the
+`f` suffix** — the widening of a float is not the same constant as the double.
+Note this does not contradict the "unsuffixed doubles are original-source style"
+note: that is about which literals retail *wrote*; this is about not silently
+changing one into the other.
+
+**Widths are taken from the opcode**, `lfs` -> 4 bytes, `lfd` -> 8. Comparing at
+the wrong width invents disagreements; an `lfs` opposite an `lfd` is skipped,
+because that is an instruction-selection difference the ordinary gate already
+sees.

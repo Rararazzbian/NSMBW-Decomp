@@ -116,5 +116,24 @@ entirely — a per-function diff cannot see a deleted body, because there is
 nothing left to compare. Your round-21 table is already whole-unit, so this is a
 small addition for you, but I want it explicit.
 
+**Run the new constant checker before you report, every round:**
+
+    python tools/auto_decomp/poolcheck.py <draft.cpp> <shadow_include> <target.txt>
+
+Your unit was verified clean on constants last round, so this is insurance rather
+than a correction — but the reason it exists is worth knowing, because it changes
+what a "match" means. **Both halves of the match gate are blind to a wrong
+pooled constant.** Raw bytes are blind because an `lfs`/`lfd` offset field is
+zeroed. Canonicalised text is blind because it renumbers pool symbols by order of
+appearance, so a draft loading `0.0f` against a retail `1.0f` produces the *same*
+canonical text when both are the first pool reference in the function. The value
+only exists in the binaries. The checker reads it from both sides and compares.
+
+It found a false positive in my own unit that had been counted as matched for
+days: retail loaded `(double)(-0.1f)` — bytes `BFB99999A0000000` — where the
+draft had the exact double `-0.1`, `BFB999999999999A`. Both are `lfd`, both
+assemble identically. **When a float literal is compared against a `double`, keep
+the `f` suffix**; widening a float is not the same constant as the double.
+
 Keep doing the two things that made this round work: **measure the variant you
 expect to fail**, and **check the arithmetic before attributing a gap**.

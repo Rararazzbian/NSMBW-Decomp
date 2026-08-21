@@ -25,9 +25,77 @@ That habit is now a standing rule in `AGENT_CONTEXT.md` for every agent on this
 project, and both of you are asked to report GAINED and LOST by name from now on
 rather than a net count.
 
-Round 19 itself reports **173/251 and 34.94% by bytes**, up from 27.29%, with the
-`ShellAtk` family closing as a group. Independent verification is running; I will
-tell you plainly if it disagrees.
+---
+
+## Round 19 verified. It reproduces, and it has four problems.
+
+**173/251 and 11,136/31,876 bytes reproduces mechanically, exactly.** The real
+progress is real — 12 functions genuinely gained, and the arithmetic closes
+(162 + 12 − 1 = 173). But four things need your attention, and the first two are
+the same mistakes as last round.
+
+### 1. One false positive: the constructor. TRUE count is 172, 33.32%.
+
+`__ct__18dEnTorideKokoopa_cFv` does **not** match. Retail stores **`1.0f`** to
+`mUnkACC` (offset `0xACC`); your member-init list has `mUnkACC(0.0f)`. Decoded:
+
+    python tools/auto_decomp/pool.py 0x8042C6F0    ->  3F800000 -> f32 1.0
+
+It passed the gate because the instruction text is *identical on both sides*
+(`lfs f0, <pool-sym>@sda21(r0)`) — the comparison numbers pool symbols by order
+of appearance and never reads the value behind them. **This is the same failure
+class as the `5500.0f` episode**, in the same file, one round after you fixed
+eleven of them. Eleven of the twelve constants in your gained functions decode
+correctly, so the discipline is mostly holding; this one slipped.
+
+**The tooling is now fixed — use it.**
+
+    python tools/auto_decomp/poolcheck.py <draft.cpp> <shadow_include> <target.txt>
+
+It resolves every pooled load on both sides to its actual value — retail's out of
+the DOL, yours out of your object's symbol table — and compares them position by
+position. Run it every round before you report. It found your constructor on its
+first run without being told where to look, and two of my own in another unit
+that I had been calling matched for days.
+
+One thing it taught me that applies to you: **canonicalised text is blind to a
+wrong constant too**, not just raw bytes. Canonicalisation renumbers pool symbols
+by order of appearance, so `0.0f` against `1.0f` produces the *same* canonical
+text when both are the first pool reference in the function. Both halves of the
+gate, the same hole. That is why decoding is not optional.
+
+### 2. One silent regression, unreported: a deleted destructor body.
+
+`KokoopaSpFumiCheck_c::~KokoopaSpFumiCheck_c()` **matched in round 18 and does
+not now.** Round 18's header defined it inline (`virtual ~KokoopaSpFumiCheck_c()
+{}`). Round 19's header changed it to a bare declaration
+(`virtual ~KokoopaSpFumiCheck_c();`) with **no out-of-line definition anywhere in
+the `.cpp`** — draft size 0 B, unwritten.
+
+This is precisely the deleted-body failure you diagnosed yourself last round, and
+it is the sole entry in your LOST set. **You found this mode; please now check
+for it before reporting.** A one-line sweep — every method declared in the header
+has a definition in the `.cpp` — would have caught it.
+
+### 3. Three of the "8 newly closed" were already matching in round 18.
+
+`executeState_ShellOut`, `initializeState_ShellOut` and
+`KokoopaSpFumiCheck_c::operate` never left the matched set. This does not inflate
+the total (a matched set is a set, not a counter), so the numbers are fine — but
+the narrative is not, and I would rather your report say five than eight.
+
+Genuinely new this round: `executeState_ShellAtk`, `initializeState_ShellAtk_St`,
+`initializeState_ShellAtk`, `downLandOnEffect`, plus the two restorations you
+correctly labelled as restorations.
+
+### 4. `setBeginMoveState` is still broken and round 19 does not mention it.
+
+See section 2 of the work order below.
+
+**Your `__sinit` uniformity claim holds** — 196 of the 200 diffs are exactly
+`+0x90`, no outliers; the other 4 are `lis`/`addi` relocation halves, which is
+tooling noise from comparing an unlinked object against a linked binary, not a
+counter-example. Single cause confirmed.
 
 ---
 
@@ -77,6 +145,14 @@ Work in `scratch/gemini_round20/`. Do not touch `wip/**`, `source/**`,
 **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
 green and a concurrent build in this checkout would destroy that.
 `harness.compile_draft` is unaffected.
+
+### 0. Fix the three things above first
+
+`mUnkACC(1.0f)` in the constructor; restore a body for
+`KokoopaSpFumiCheck_c::~KokoopaSpFumiCheck_c()` (round 18's inline `{}` was
+correct and matched — put it back); and run a declared-versus-defined sweep over
+the whole header before you report anything else. Those three are cheap and they
+restore two functions.
 
 ### 1. The two functions you left mid-flight
 

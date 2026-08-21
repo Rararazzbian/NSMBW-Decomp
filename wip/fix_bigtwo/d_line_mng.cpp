@@ -209,7 +209,14 @@ void dLineMng_c::start_line_move()
     double t = std::fmod(mPos.x, 16.0);
     int triggerFallDown = 0;
     mUnk6a = triggerFallDown;
-    if (t > -0.1 && t < 0.1) {
+    // `-0.1f`/`0.1f`, NOT `-0.1`/`0.1`. `t` is a double, so both literals widen
+    // and the pool entries are `lfd`-loaded either way -- but the BYTES differ:
+    // retail's are BFB99999A0000000 / 3FB99999A0000000, which is `(double)(0.1f)`
+    // with the float's trailing zeros, not the exact double 0.1
+    // (BFB999999999999A). An `lfd`'s offset field is zeroed in the disassembly,
+    // so the wrong constant is byte-identical to the right one and the match gate
+    // cannot see it; `tools/auto_decomp/poolcheck.py` is what caught this.
+    if (t > -0.1f && t < 0.1f) {
         mVec2_c snap;
         // SAME REGISTER-CHOICE LEVER as the executeState_* mBaseSpeed fix, applied
         // to a fdivs instead of a fmuls: mPos.x/mPos.y only land in the SAME

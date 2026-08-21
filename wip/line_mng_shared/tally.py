@@ -22,6 +22,7 @@ Usage:  python tally.py <draft.cpp> <shadow_include_dir>
 import os, re, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools', 'auto_decomp'))
 import harness
+import poolcheck
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TARGET = os.path.join(HERE, 'target.txt')
@@ -45,12 +46,34 @@ def parse(path):
     return fns
 
 
-def matched(draft_fn, target_fn):
-    """The union gate. Bytes first -- it is the real criterion."""
+# Set once by main(); a (draft_pool, dol) pair. Left as None only if the object
+# could not be read, in which case the value check is skipped rather than
+# silently passing everything -- see the warning main() prints.
+POOLS = None
+POOL_FAILURES = []
+
+
+def matched(draft_fn, target_fn, name='?'):
+    """The union gate, plus a check BOTH halves of the union are blind to.
+
+    Bytes first -- it is the real criterion. But neither half of the union can
+    see a wrong pooled CONSTANT: an `lfs`/`lfd` offset field is zeroed, so the
+    bytes agree, and canonicalisation renumbers pool symbols by order of
+    appearance, so the text agrees too. A draft loading 0.0f where retail loads
+    1.0f passes both. That has produced false positives in three separate rounds,
+    so the value is now read out of the binaries and compared as well.
+    """
     if [b for b, _ in draft_fn] == [b for b, _ in target_fn]:
+        pass
+    elif (harness.canonicalise([t for _, t in draft_fn])
+            != harness.canonicalise([t for _, t in target_fn])):
+        return False
+    if POOLS is None:
         return True
-    return (harness.canonicalise([t for _, t in draft_fn])
-            == harness.canonicalise([t for _, t in target_fn]))
+    bad = poolcheck.compare_pools(target_fn, draft_fn, *POOLS)
+    for i, va, tv, dv in bad:
+        POOL_FAILURES.append((name, i, va, tv, dv))
+    return not bad
 
 
 def main():
@@ -67,8 +90,19 @@ def main():
     d, t = parse(txt), parse(TARGET)
     paired_by_content = []
 
+    # Read both sides' literal pools once, so `matched` can check constants by
+    # VALUE. Without this the gate counts a draft loading 0.0f against a retail
+    # 1.0f as a match -- the instruction bytes and the canonical text both agree.
+    global POOLS
+    try:
+        POOLS = (poolcheck.object_pool(obj), poolcheck.pool.load())
+    except Exception as e:                                   # noqa: BLE001
+        POOLS = None
+        print(f'WARNING: pooled constants NOT value-checked ({e}). '
+              f'A wrong float constant will pass as a match.')
+
     # Name-keyed pass.
-    hit = [k for k in t if k in d and matched(d[k], t[k])]
+    hit = [k for k in t if k in d and matched(d[k], t[k], k)]
 
     # Mangled-name pass. CFront mangling appends `__<classinfo>` to function names.
     # A retail placeholder `fn_800C31C0` never matches a draft's `fn_800C31C0__FP10dLineMng_c`.
@@ -86,7 +120,7 @@ def main():
                 unmangled = dk.split('__')[0]
                 if unmangled == k:
                     # Pair by name. Add synthetic entry for reporting so the draft length is visible.
-                    if matched(d[dk], t[k]):
+                    if matched(d[dk], t[k], k):
                         hit.append(k)
                     d[k] = d[dk]  # Allow reporting logic to find the draft
                     used.add(k)
@@ -117,6 +151,13 @@ def main():
         print(f'({len(paired_by_content)} paired by CONTENT -- unnamed target vs mangled draft name)')
     print(f'matched {len(hit)}/{len(t)} functions   '
           f'{words_hit}/{words_all} words = {100.0 * words_hit / words_all:.1f}% BY BYTES')
+    if POOL_FAILURES:
+        print()
+        print(f'{len(POOL_FAILURES)} WRONG CONSTANT(S) -- these functions would '
+              f'otherwise have counted as matched:')
+        for name, i, va, tv, dv in POOL_FAILURES:
+            print(f'  {name[:56]}')
+            print(f'    instruction {i}: retail 0x{va:08X} = {tv!r}, draft = {dv!r}')
     print()
     todo = sorted(((len(v), k, len(d[k]) if k in d else None)
                    for k, v in t.items() if k not in hit), reverse=True)
