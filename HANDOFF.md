@@ -14284,3 +14284,124 @@ result, but now uncontaminated by the Gap A gap that was sitting next to it.
 Experiment rig kept at `wip/gapA/` — `try.py` (newBase shapes), `try2.py`
 (operand order), `try3.py` (`fn_800C31C0`), `apply.py` (sweep all eight sites).
 Each compiles one variant of the real TU and diffs one function against retail.
+
+## GAP B IS ANSWERED: a multiply operand needs its OWN DEF to reach f1, and `*=` escapes MWCC's literal-first slot rule
+
+**Result: 101/182 -> 104/182 functions, 2122 -> 2426 words, 27.8% -> 31.8% BY BYTES.**
+Verified with `python wip/line_mng_shared/tally.py wip/fix_bigtwo/d_line_mng.cpp wip/fix_bigtwo/shadow_include`
+both before and after. Three functions went from LEN OK to byte-exact:
+`executeState_Left30Left` (99w), `executeState_Right30Right` (104w), `executeState_Right60Up` (101w).
+All eight `executeState_*` siblings improved; none regressed.
+
+### The one-line answer
+
+    mSpeed.x = mBaseSpeed;          // NOT `mSpeed.x = mBaseSpeed * 0.8910065f;`
+    mSpeed.x *= 0.8910065f;
+
+### The residual this closes
+
+After the Gap A fix the nine `executeState_*` functions were all LEN OK but none byte-exact.
+In `executeState_Left30Left` (99 insns) the ENTIRE real residual was four lines -- everything
+else in the raw diff was symbol-name and branch-label noise:
+
+    idx  TARGET                                DRAFT
+    2    lfs f0, "@56309_8042CBA8"@sda21(r0)   lfs f1, "@7869"@sda21(r0)
+    10   lfs f1, 0x60(r3)                      lfs f0, 0x60(r3)
+    33   lfs f1, 0x60(r30)                     lfs f1, "@7869"@sda21(r0)
+    34   lfs f0, "@56309_8042CBA8"@sda21(r0)   lfs f0, 0x60(r30)
+
+Retail materialises the MEMBER first, into f1, and the CONSTANT second, into f0. The draft did
+the reverse. Same permutation at two independently-scheduled sites (function head via r3, and
+inside the `check_term()` branch via r30).
+
+### It was TWO STACKED RULES, which is why one-shot attempts kept failing
+
+**Rule 1 -- REGISTER CHOICE.** A multiply's variable operand only lands in f1 if it has a
+def-point of its own ahead of the multiply. Written as a single expression, `mBaseSpeed` has no
+def, is materialised as a bare operand, and lands in f0. Giving it ANY separate def flips both
+sites to retail's registers and retail's load order. A short local at the site does it:
+`f32 bs = mBaseSpeed; mSpeed.x = bs * 0.8910065f;` -> residual 4/99 drops to 2/99.
+
+**Rule 2 -- fmuls SLOT ORDER.** MWCC canonically places a float LITERAL operand in the FIRST
+source slot of `fmuls`, regardless of how the source is written. This is the mechanism behind the
+already-known dead end that commutative operand swaps compile byte-identical -- the canonicalisation
+happens before register allocation, so the source order never survives. After Rule 1 the draft
+still emitted `fmuls f6, f0, f1` against retail's `fmuls f6, f1, f0`.
+
+**The compound assignment satisfies both at once.** `x *= k` is not a binary expression, so
+Rule 2 does not apply -- the destination IS the first operand by construction -- and the
+assignment `mSpeed.x = mBaseSpeed;` supplies the def Rule 1 needs. 0/99.
+
+Decisive evidence for Rule 2 being "const first" rather than "earlier-defined first": at the
+branch site under the short-local form the constant is loaded SECOND yet still occupies slot 1.
+
+### Scope -- what to rewrite and what NOT to
+
+Rewrite ONLY the `mBaseSpeed * <literal>` products: 16 sites, `mSpeed.x` and `mSpeed.y`,
+both the head and the `check_term()` branch of each of the eight 30/60-degree state functions.
+
+**MEASURED strictly worse, do not retry:**
+- Extending the compound form to the HALF-products (`mSpeed.y = 0.5f * mSpeed.x`) breaks
+  Left30Left (0 -> 2), and destroys Right30Right (0 -> 79) and Right60Up (0 -> 78).
+- Applying `*=` to a scalar TEMP rather than to the member directly
+  (`f32 sx = mBaseSpeed; sx *= k; mSpeed.x = sx;`) re-schedules the prologue and loses the match.
+- Hoisting the member into a local at FUNCTION TOP rather than at the site: +3 instructions,
+  it forces the callee-saved f31. The def must be short-lived and adjacent.
+- `mSpeed.y = mBaseSpeed * 0.44550325f` (folding the half into the constant) is WRONG: retail
+  computes y from the x product register (`fmuls f6,f1,f0` then `fmuls f4,f5,f6`), so
+  `mSpeed.y = 0.5f * mSpeed.x` is the correct dependency and was already right.
+- Line 1351 (`mSpeed.x = -mBaseSpeed * nw4r::math::SinIdx(...)`) is deliberately NOT rewritten:
+  the right operand is not a literal, so Rule 2 does not apply there.
+
+### Four clean negatives established alongside it -- do not spend rounds on these
+
+**1. The constants are NOT named in the original source.** `bin/dtk/wiimj2d_symbols.txt` shows
+`smc_UNIT_SIZE_X__10dLineMng_c` at .sdata2:0x8042CB18 as a NAMED object, while the two values in
+question sit beside it as anonymous `scope:local` 4-byte literal-pool entries (`@55305` = 0.5f at
+0x8042CB5C, `@56309` = 0.8910065f at 0x8042CBA8). Anonymous pool entries are what an inline literal
+compiles to and nothing else does. Every named spelling emits a user-visible symbol the retail map
+proves is absent. Seven foldable named forms (file-scope const, anon namespace, class static defined
+in-TU, #define, const local, function-scope static, address-taken) all compile BYTE-IDENTICAL to the
+inline literal -- MWCC re-folds them. Non-foldable forms (extern, array element, struct member) DO
+flip the registers, but only by adding symbols retail does not have. Evidence, not a fix.
+
+**2. NOT translation-unit-order sensitive.** 17 variants: dummy earlier uses of each constant,
+injecting the statement into an earlier member function, moving the function to the head/tail of the
+file, reversing the eight state triples, deleting a function to shrink the pool. All 99 insns, all
+four lines unchanged. Verified non-null by dumping `.sdata2` each time and confirming the pool
+actually moved (one variant shifts the constants 17 slots earlier; another reproduces retail's exact
+relative pool order). Pool-order mismatch and the register permutation are INDEPENDENT facts.
+
+**3. NOT flag-sensitive.** ~145 command-line variants -- every optimisation level and `-opt`
+sub-keyword, every scheduling setting, every accepted `-fp`/IEEE/fsel/fmadd option, all inlining and
+IPA modes, small-data thresholds, assorted codegen knobs. Not one flipped the four lines. The
+project's current flags are the joint best (88/182 in that agent's partial-TU scoring); nothing beat
+them. `-schedule off` was the only variant to touch those indices at length 99, and direct inspection
+showed it merely RELOCATES the draft's ordering rather than changing it -- the permutation is decided
+upstream of scheduling. Also stable byte-for-byte across compiler versions 1.0, 1.3 and 1.7.
+
+**4. Aggregate/temporary store shapes do NOT help here.** `mSpeed = mVec2_c(...)` (103), an
+uninitialised `mVec2_c` temp (103), the literal Gap A copy-then-adjust shape on mSpeed (103),
+`.set()` (99 but moves 0.5f f5->f4), y-before-x (99, also flips the store order the wrong way).
+The Gap A lever is real but does not generalise to this statement.
+
+### A REAL INFRASTRUCTURE BUG found on the way, still open
+
+`harness.canonicalise` reports UNEQUAL for `executeState_Left30Left` even though all 99 raw bytes
+are identical to retail. It renumbers pool symbols but does not strip the surrounding QUOTES, so
+retail's `lis r31, "@49614_80359100"@ha` never compares equal to a draft's `lis r31, ...bss.0@ha`.
+Any function in this TU that references the .bss base fails the canonical gate permanently.
+Two independent agents hit this. The byte gate is the honest one and `tally.py` uses it, so no
+result in this file is affected -- but the canonicaliser should be fixed centrally before anyone
+trusts a canonical-only verdict elsewhere.
+
+### Secondary finding worth keeping for whoever fills in the remaining 78 functions
+
+Our float literal pool order genuinely differs from retail's:
+- retail: 16.0f(0x8042CB48) < 0.5f(CB5C) < 0.5 double(CBA0) < 0.8910065f(CBA8)
+- ours:   16.0f < 0.5 double < 0.8910065f < 0.5f
+
+MWCC lays literals into the pool in order of first use across the TU, so retail first-uses float
+`0.5f` EARLIER in the file than we do -- a fingerprint of a function still missing from our draft.
+It does not cause the register permutation (proven above), but it is a free completeness check:
+when the pool order matches retail's, the missing early function has been found.

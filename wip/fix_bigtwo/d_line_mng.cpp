@@ -1656,13 +1656,31 @@ void dLineMng_c::initializeState_Left30Left() {
 void dLineMng_c::finalizeState_Left30Left() {}
 void dLineMng_c::executeState_Left30Left() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed * 0.8910065f;
+    // SPLIT ASSIGNMENT, not `mSpeed.x = mBaseSpeed * 0.8910065f;`. Two separate
+    // rules are at work and the split satisfies both at once.
+    //   1. REGISTER CHOICE: a multiply's variable operand only lands in f1 if it
+    //      has a def-point of its own ahead of the multiply. Written as one
+    //      expression the member has no def and lands in f0, so the pair comes
+    //      out permuted against retail. Any separate def fixes this -- a short
+    //      local works too -- but a local hoisted to function top is worse (+3,
+    //      it forces the callee-saved f31).
+    //   2. fmuls SLOT ORDER: MWCC canonically puts the literal operand in the
+    //      FIRST source slot regardless of how the source is written, which is
+    //      why swapping the operands compiles byte-identical. `x *= k` escapes
+    //      the rule entirely because the destination IS the first operand.
+    // Applies ONLY to the mBaseSpeed products. Extending the same form to the
+    // half-products (`mSpeed.y = 0.5f * mSpeed.x`) is MEASURED strictly worse:
+    // it breaks Left30Left and destroys Right30Right and Right60Up.
+    // See "Gap B" in HANDOFF.md.
+    mSpeed.x = mBaseSpeed;
+    mSpeed.x *= 0.8910065f;
     mSpeed.y = 0.5f * mSpeed.x;
     mPos.x += mSpeed.x;
     mPos.y = (mUnitBasePos.y - 16.0f) + 0.5f * (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed * 0.8910065f;
+        mSpeed.x = mBaseSpeed;
+        mSpeed.x *= 0.8910065f;
         mSpeed.y = 0.5f * mSpeed.x;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftlower(mUnitBasePos, false);
@@ -1698,13 +1716,15 @@ void dLineMng_c::initializeState_Left30Right() {
 void dLineMng_c::finalizeState_Left30Right() {}
 void dLineMng_c::executeState_Left30Right() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed * 0.8910065f;
+    mSpeed.x = mBaseSpeed;
+    mSpeed.x *= 0.8910065f;
     mSpeed.y = 0.5f * mSpeed.x;
     mPos.x += mSpeed.x;
     mPos.y = (mUnitBasePos.y - 8.0f) + 0.5f * (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed * 0.8910065f;
+        mSpeed.x = mBaseSpeed;
+        mSpeed.x *= 0.8910065f;
         mSpeed.y = 0.5f * mSpeed.x;
     } else if (mPos.x < mUnitBasePos.x) {
         mVec2_c newBase = mUnitBasePos;
@@ -1732,13 +1752,15 @@ void dLineMng_c::initializeState_Right30Left() {
 void dLineMng_c::finalizeState_Right30Left() {}
 void dLineMng_c::executeState_Right30Left() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed * 0.8910065f;
+    mSpeed.x = mBaseSpeed;
+    mSpeed.x *= 0.8910065f;
     mSpeed.y = -(0.5f * mSpeed.x);
     mPos.x += mSpeed.x;
     mPos.y = mUnitBasePos.y - 0.5f * (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed * 0.8910065f;
+        mSpeed.x = mBaseSpeed;
+        mSpeed.x *= 0.8910065f;
         mSpeed.y = -(0.5f * mSpeed.x);
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftupper(mUnitBasePos, false);
@@ -1766,13 +1788,15 @@ void dLineMng_c::initializeState_Right30Right() {
 void dLineMng_c::finalizeState_Right30Right() {}
 void dLineMng_c::executeState_Right30Right() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed * 0.8910065f;
+    mSpeed.x = mBaseSpeed;
+    mSpeed.x *= 0.8910065f;
     mSpeed.y = -(0.5f * mSpeed.x);
     mPos.x += mSpeed.x;
     mPos.y = (mUnitBasePos.y - 8.0f) - 0.5f * (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed * 0.8910065f;
+        mSpeed.x = mBaseSpeed;
+        mSpeed.x *= 0.8910065f;
         mSpeed.y = -(0.5f * mSpeed.x);
     } else if (mPos.x < mUnitBasePos.x) {
         mVec2_c newBase = mUnitBasePos;
@@ -1800,13 +1824,15 @@ void dLineMng_c::initializeState_Left60Up() {
 void dLineMng_c::finalizeState_Left60Up() {}
 void dLineMng_c::executeState_Left60Up() {
     mVec2_c old = mPos;
-    mSpeed.y = mBaseSpeed * 0.8910065f;
+    mSpeed.y = mBaseSpeed;
+    mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
     mPos.x = (mUnitBasePos.x + 16.0f) - 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
-        mSpeed.y = mBaseSpeed * 0.8910065f;
+        mSpeed.y = mBaseSpeed;
+        mSpeed.y *= 0.8910065f;
         mSpeed.x = 0.5f * mSpeed.y;
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mVec2_c newBase = mUnitBasePos;
@@ -1835,14 +1861,16 @@ void dLineMng_c::initializeState_Left60Down() {
 void dLineMng_c::finalizeState_Left60Down() {}
 void dLineMng_c::executeState_Left60Down() {
     mVec2_c old = mPos;
-    mSpeed.y = mBaseSpeed * 0.8910065f;
+    mSpeed.y = mBaseSpeed;
+    mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
     f32 t = mUnitBasePos.x + 8.0;
     mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
-        mSpeed.y = mBaseSpeed * 0.8910065f;
+        mSpeed.y = mBaseSpeed;
+        mSpeed.y *= 0.8910065f;
         mSpeed.x = 0.5f * mSpeed.y;
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mov_frm_leftlower(mUnitBasePos, false);
@@ -1871,14 +1899,16 @@ void dLineMng_c::initializeState_Right60Down() {
 void dLineMng_c::finalizeState_Right60Down() {}
 void dLineMng_c::executeState_Right60Down() {
     mVec2_c old = mPos;
-    mSpeed.y = mBaseSpeed * -0.8910065f;
+    mSpeed.y = mBaseSpeed;
+    mSpeed.y *= -0.8910065f;
     mSpeed.x = -(0.5f * mSpeed.y);
     mPos.y += mSpeed.y;
     f32 t = mUnitBasePos.x + 8.0;
     mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
-        mSpeed.y = mBaseSpeed * -0.8910065f;
+        mSpeed.y = mBaseSpeed;
+        mSpeed.y *= -0.8910065f;
         mSpeed.x = -(0.5f * mSpeed.y);
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mov_frm_rightlower(mUnitBasePos, false);
@@ -1906,13 +1936,15 @@ void dLineMng_c::initializeState_Right60Up() {
 void dLineMng_c::finalizeState_Right60Up() {}
 void dLineMng_c::executeState_Right60Up() {
     mVec2_c old = mPos;
-    mSpeed.y = mBaseSpeed * -0.8910065f;
+    mSpeed.y = mBaseSpeed;
+    mSpeed.y *= -0.8910065f;
     mSpeed.x = -(0.5f * mSpeed.y);
     mPos.y += mSpeed.y;
     mPos.x = mUnitBasePos.x + 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
-        mSpeed.y = mBaseSpeed * -0.8910065f;
+        mSpeed.y = mBaseSpeed;
+        mSpeed.y *= -0.8910065f;
         mSpeed.x = -(0.5f * mSpeed.y);
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mVec2_c newBase = mUnitBasePos;

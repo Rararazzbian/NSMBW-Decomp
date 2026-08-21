@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 14287 lines / 575 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14408 lines / 583 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -596,3 +596,11 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `14236-14255` It also RETIRES the `volatile` hack in `fn_800C31C0`
   - `14256-14264` READ THE MATCHED COUNT HONESTLY: it did not move
   - `14265-14287` Clean negative: commutative float operand order is CANONICALISED before allocation
+- `14288-14295` GAP B IS ANSWERED: a multiply operand needs its OWN DEF to reach f1, and `*=` escapes MWCC's literal-first slot rule
+  - `14296-14300` The one-line answer
+  - `14301-14316` The residual this closes
+  - `14317-14337` It was TWO STACKED RULES, which is why one-shot attempts kept failing
+  - `14338-14355` Scope -- what to rewrite and what NOT to
+  - `14356-14387` Four clean negatives established alongside it -- do not spend rounds on these
+  - `14388-14397` A REAL INFRASTRUCTURE BUG found on the way, still open
+  - `14398-14408` Secondary finding worth keeping for whoever fills in the remaining 78 functions
