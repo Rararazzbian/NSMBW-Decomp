@@ -1,0 +1,114 @@
+.include "macros.inc"
+.file "probe.cpp"
+
+# 0x00000000..0x00000108 | size: 0x108
+.text
+.balign 16
+
+# .text:0x0 | size: 0x108
+# dEnTorideKokoopa_c::initializeState_ShellAtk()
+.fn initializeState_ShellAtk__18dEnTorideKokoopa_cFv, global
+/* 00000000 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0000000C 0000004C  DB E1 00 10 */	stfd f31, 0x10(r1)
+/* 00000010 00000050  F3 E1 00 18 */	psq_st f31, 0x18(r1), 0, qr0
+/* 00000014 00000054  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000018 00000058  7C 7F 1B 78 */	mr r31, r3
+/* 0000001C 0000005C  48 00 00 01 */	bl getDispCenterX__8dGameComFv
+/* 00000020 00000060  C0 1F 08 40 */	lfs f0, 0x840(r31)
+/* 00000024 00000064  EF E0 08 2A */	fadds f31, f0, f1
+/* 00000028 00000068  48 00 00 01 */	bl getDispCenterX__8dGameComFv
+/* 0000002C 0000006C  C0 5F 08 44 */	lfs f2, 0x844(r31)
+/* 00000030 00000070  C0 00 00 00 */	lfs f0, "@22172"@sda21(r0)
+/* 00000034 00000074  EC A2 08 2A */	fadds f5, f2, f1
+/* 00000038 00000078  C0 9F 00 AC */	lfs f4, 0xac(r31)
+/* 0000003C 0000007C  EC 3F 28 2A */	fadds f1, f31, f5
+/* 00000040 00000080  EC 00 00 72 */	fmuls f0, f0, f1
+/* 00000044 00000084  FC 04 00 40 */	fcmpo cr0, f4, f0
+/* 00000048 00000088  4C 41 13 82 */	cror eq, gt, eq
+/* 0000004C 0000008C  7C 00 00 26 */	mfcr r0
+/* 00000050 00000090  C0 20 00 00 */	lfs f1, "@22174"@sda21(r0)
+/* 00000054 00000094  54 00 1F FE */	extrwi r0, r0, 1, 2
+/* 00000058 00000098  C0 60 00 00 */	lfs f3, "@22173"@sda21(r0)
+/* 0000005C 0000009C  7C 03 00 34 */	cntlzw r3, r0
+/* 00000060 000000A0  80 1F 01 20 */	lwz r0, 0x120(r31)
+/* 00000064 000000A4  EC 04 08 28 */	fsubs f0, f4, f1
+/* 00000068 000000A8  54 65 DE 3E */	extrwi r5, r3, 8, 19
+/* 0000006C 000000AC  54 04 05 EA */	rlwinm r4, r0, 0, 23, 21
+/* 00000070 000000B0  54 60 ED BA */	rlwinm r0, r3, 29, 22, 29
+/* 00000074 000000B4  38 60 00 00 */	li r3, l_shellatk_speed@sda21
+/* 00000078 000000B8  98 BF 03 48 */	stb r5, 0x348(r31)
+/* 0000007C 000000BC  7C 43 04 2E */	lfsx f2, r3, r0
+/* 00000080 000000C0  38 00 00 05 */	li r0, 0x5
+/* 00000084 000000C4  FC 00 28 40 */	fcmpo cr0, f0, f5
+/* 00000088 000000C8  90 9F 01 20 */	stw r4, 0x120(r31)
+/* 0000008C 000000CC  90 1F 0A C8 */	stw r0, 0xac8(r31)
+/* 00000090 000000D0  D0 7F 01 1C */	stfs f3, 0x11c(r31)
+/* 00000094 000000D4  D0 5F 00 E8 */	stfs f2, 0xe8(r31)
+/* 00000098 000000D8  40 80 00 1C */	bge .L_000000B4
+/* 0000009C 000000DC  EC 01 28 2A */	fadds f0, f1, f5
+/* 000000A0 000000E0  38 00 00 06 */	li r0, 0x6
+/* 000000A4 000000E4  D0 5F 00 F4 */	stfs f2, 0xf4(r31)
+/* 000000A8 000000E8  D0 1F 0A C4 */	stfs f0, 0xac4(r31)
+/* 000000AC 000000EC  90 1F 0A C8 */	stw r0, 0xac8(r31)
+/* 000000B0 000000F0  48 00 00 3C */	b .L_000000EC
+.L_000000B4:
+/* 000000B4 000000F4  EC 01 20 2A */	fadds f0, f1, f4
+/* 000000B8 000000F8  FC 00 F8 40 */	fcmpo cr0, f0, f31
+/* 000000BC 000000FC  40 81 00 1C */	ble .L_000000D8
+/* 000000C0 00000100  EC 1F 08 28 */	fsubs f0, f31, f1
+/* 000000C4 00000104  38 00 00 06 */	li r0, 0x6
+/* 000000C8 00000108  D0 5F 00 F4 */	stfs f2, 0xf4(r31)
+/* 000000CC 0000010C  D0 1F 0A C4 */	stfs f0, 0xac4(r31)
+/* 000000D0 00000110  90 1F 0A C8 */	stw r0, 0xac8(r31)
+/* 000000D4 00000114  48 00 00 18 */	b .L_000000EC
+.L_000000D8:
+/* 000000D8 00000118  68 A0 00 01 */	xori r0, r5, 0x1
+/* 000000DC 0000011C  D0 9F 0A C4 */	stfs f4, 0xac4(r31)
+/* 000000E0 00000120  54 00 10 3A */	slwi r0, r0, 2
+/* 000000E4 00000124  7C 03 04 2E */	lfsx f0, r3, r0
+/* 000000E8 00000128  D0 1F 00 F4 */	stfs f0, 0xf4(r31)
+.L_000000EC:
+/* 000000EC 0000012C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 000000F0 00000130  E3 E1 00 18 */	psq_l f31, 0x18(r1), 0, qr0
+/* 000000F4 00000134  CB E1 00 10 */	lfd f31, 0x10(r1)
+/* 000000F8 00000138  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000000FC 0000013C  7C 08 03 A6 */	mtlr r0
+/* 00000100 00000140  38 21 00 20 */	addi r1, r1, 0x20
+/* 00000104 00000144  4E 80 00 20 */	blr
+.endfn initializeState_ShellAtk__18dEnTorideKokoopa_cFv
+
+# 0x00000000..0x00000001 | size: 0x1
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | size: 0x1
+.obj sizeof_dEnTorideKokoopa_c, global
+	.skip 0x1
+.endobj sizeof_dEnTorideKokoopa_c
+
+# 0x00000000..0x00000014 | size: 0x14
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | size: 0x8
+.obj l_shellatk_speed, local
+	.4byte 0x40800000
+	.4byte 0xC0800000
+.endobj l_shellatk_speed
+
+# .sdata2:0x8 | size: 0x4
+.obj "@22172", local
+	.4byte 0x3F000000
+.endobj "@22172"
+
+# .sdata2:0xC | size: 0x4
+.obj "@22173", local
+	.4byte 0x3E99999A
+.endobj "@22173"
+
+# .sdata2:0x10 | size: 0x4
+.obj "@22174", local
+	.4byte 0x42000000
+.endobj "@22174"
