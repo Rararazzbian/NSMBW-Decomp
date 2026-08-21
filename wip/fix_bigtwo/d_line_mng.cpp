@@ -726,8 +726,9 @@ bool dLineMng_c::circle_ul2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             mUnitBasePos.y = p1.y;
             change_dir();
             mStateMgr.changeState(StateID_Circle2x2Leftup);
+            return result;
         } else {
-            result = false;
+            return false;
         }
     }
     return result;
@@ -735,8 +736,8 @@ bool dLineMng_c::circle_ul2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
 
 bool dLineMng_c::circle_ur2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 16.0f;
     origin.x = p1.x;
+    origin.y = p1.y - 16.0f;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -758,8 +759,9 @@ bool dLineMng_c::circle_ur2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             mUnitBasePos.y = p1.y;
             change_dir();
             mStateMgr.changeState(StateID_Circle2x2Rightup);
+            return result;
         } else {
-            result = false;
+            return false;
         }
     }
     return result;
@@ -768,7 +770,8 @@ bool dLineMng_c::circle_ur2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
 bool dLineMng_c::circle_dl2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
     origin.y = p1.y;
-    origin.x = p1.x + 16.0f;
+    origin.x = p1.x;
+    origin.x += 16.0f;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -789,8 +792,9 @@ bool dLineMng_c::circle_dl2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             mUnitBasePos.x = p1.x;
             mUnitBasePos.y = p1.y;
             mStateMgr.changeState(StateID_Circle2x2LeftDown);
+            return result;
         } else {
-            result = false;
+            return false;
         }
     }
     return result;
@@ -812,11 +816,12 @@ bool dLineMng_c::circle_dr2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             } else if (angle >= 0x4100) {
                 angle = 0x40ff;
             }
-            angle -= 0x4100;
+            angle += 0xbf00;
             mAngle = angle;
             mUnitBasePos.x = p1.x;
             mUnitBasePos.y = p1.y;
             mStateMgr.changeState(StateID_Circle2x2RightDown);
+            return result;
         } else {
             return false;
         }
