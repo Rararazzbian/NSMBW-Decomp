@@ -284,16 +284,17 @@ u32 dLineMng_c::getLineUnitNo(f32 x, f32 y)
 // "function-local static -> file scope" lever, confirmed by the symbol shape
 // itself rather than assumed. From wip/fix_bighelper.
 static mVec2_POD_c s_dDir[4];
-static u8 s_dDirInit = 0;
+static s8 s_dDirInit = 0;  // s8, not u8 -- gives retail's extsb. test rather than lbz+cmpwi
 
 void dLineMng_c::init_term_ck_pos()
 {
     mVec2_c *p = mDirVec;
+    mVec2_c *end0 = p + 3;
     do {
         p->x = 0.0f;
         p->y = 0.0f;
         p++;
-    } while (p != mDirVec + 3);
+    } while ((u32)p < (u32)end0);
 
     if (!s_dDirInit) {
         s_dDir[0].set(-0.1f, 0.1f);
@@ -304,12 +305,13 @@ void dLineMng_c::init_term_ck_pos()
     }
 
     const mVec2_POD_c *q = s_dDir;
+    mVec2_c *end1 = end0 + 4;
     do {
         p->x = q->x;
         p->y = q->y;
         q++;
         p++;
-    } while (p != mDirVec + 7);
+    } while ((u32)p < (u32)end1);
 }
 
 bool dLineMng_c::check_term()
@@ -361,14 +363,24 @@ bool dLineMng_c::check_term()
 // ===========================================================================
 
 bool dLineMng_c::line_cross_slope_check(const mVec2_c &a, const mVec2_c &b, f32 &slope, f32 &intercept) {
-    f32 dx = b.x - a.x;
-    f32 dy = b.y - a.y;
-    if (dx == 0.0f) {
-        return false;
+    // NAMED AGGREGATE local, not two scalar f32 temps -- target allocates a
+    // real 0x10 stack frame here and has an unread stfs PAIR for dx/dy right
+    // before the dx==0.0f branch (both fields stored, neither ever reloaded,
+    // since the register copies stay live for the rest of the function).
+    // That is the same "store a real local, then keep using the live
+    // register copy" idiom as check_term()'s testPos -- a bare pair of f32
+    // locals never gets memory-backed at all (0 frame, exactly what a plain
+    // `f32 dx/dy` compiled to here), so the vector needs to be one genuine
+    // mVec2_c object for the stack slot to exist.
+    mVec2_c d(b.x - a.x, b.y - a.y);
+    // Branch polarity per target's beq/b-around shape (lever 5): the
+    // success arm is the fallthrough `if`, not an early `return false`.
+    if (d.x != 0.0f) {
+        slope = d.y / d.x;
+        intercept = b.y - slope * b.x;
+        return true;
     }
-    slope = dy / dx;
-    intercept = b.y - slope * b.x;
-    return true;
+    return false;
 }
 
 bool dLineMng_c::line_cross_range_check(f32 a, f32 b, f32 v) {
@@ -463,23 +475,54 @@ bool dLineMng_c::line_cross_chk2(f32 p1, const mVec2_c &p3, mVec2_c p4, mVec2_c 
 }
 
 bool dLineMng_c::line_cross_chk3(f32 p1, const mVec2_c &p2, const mVec2_c &p3) {
-    f32 d3 = p3.x * p3.x + p3.y * p3.y - p1;
+    // d3 = p3.x*p3.x, THEN accumulated via += / -=, not one flat expression --
+    // this keeps d3 pinned in its own dedicated register (f4 in target) across
+    // both the y^2 add and the p1 subtract, matching target's stable
+    // accumulator; a flat `a*a + b*b - c` expression lets -O4 fold it into
+    // whichever register the y^2 term happened to land in instead.
+    f32 d3 = p3.x * p3.x;
+    d3 += p3.y * p3.y;
+    d3 -= p1;
     if (d3 == 0.0f) {
         return true;
     }
-    f32 d2 = p2.x * p2.x + p2.y * p2.y - p1;
+    f32 d2 = p2.x * p2.x;
+    d2 += p2.y * p2.y;
+    d2 -= p1;
+    // First block: plain `if (d3 < 0.0f) { ... }`, no else -- the fallthrough
+    // (d3>=0) needs no explicit branch of its own, it just falls into the
+    // second block below. Lever: direct `<`/`>` (or its negation) lowers to
+    // a bare hardware flag branch (bge here); it's only a literal `>=`/`<=`
+    // that MWCC lowers via cror.
     if (d3 < 0.0f) {
         if (d2 >= 0.0f) {
             goto ok;
         }
-        return false;
     }
-    if (d2 < 0.0f) {
-        goto ok;
+    // Second block re-tests d3's sign -- this is a genuinely redundant
+    // retest reached both by falling through the first block's fallthrough
+    // (d3>=0) AND by falling OUT of it (d3<0 but d2<0 too). Both `goto ok;`
+    // sites share the SAME physical return-true block in target (one is a
+    // forward branch into it, the other a plain fallthrough) -- a bare
+    // `return true;` written twice does NOT get tail-merged by MWCC the
+    // same way; it has to be one label both paths jump/fall into.
+    if (d3 >= 0.0f) {
+        // Negated-LT (`!(d2<0.0f)`) so this specific occurrence lowers to a
+        // plain bge (matches target's un-cror'd final compare), with the
+        // return-true block sitting BEFORE return-false in address order --
+        // reorder the two labels to put `ok:` first, `fail:` last.
+        if (!(d2 < 0.0f)) {
+            goto fail;
+        }
+    } else {
+        // Only reached via d3<0 && d2<0 (the first block's fallthrough) --
+        // that combination is a genuine failure, not an implicit "ok".
+        goto fail;
     }
-    return false;
 ok:
     return true;
+fail:
+    return false;
 }
 
 // @unofficial unnamed file-scope helper (target `fn_800C1EE0`, author_geom).
@@ -491,9 +534,15 @@ ok:
 // touch mPos/mUnitBasePos -- see the MERGE-LOCAL header addition.
 bool fn_800C1EE0(dLineMng_c *pThis, f32 a, f32 b, const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3, const mVec2_c &origin) {
     mVec2_c out;
-    mVec2_c p2c = p2;
-    mVec2_c p3c = p3;
-    bool result = dLineMng_c::line_cross_chk1(a, b, origin, p2c, p3c, out);
+    // Pass p2/p3 straight through as the by-value args -- NOT via a named
+    // p2c/p3c local first. line_cross_chk1's p4/p5 are by-value copies; a
+    // named intermediate local gets its own stack slot AND the compiler
+    // still separately materialises the outgoing-argument copy for the
+    // call, doubling the four stfs stores and costing 0x10 bytes of frame.
+    // Passing p2/p3 directly lets the by-value parameter construct straight
+    // into the argument save area, one store each, matching the target's
+    // single stfs sequence and its 0x30 frame (this fn_800C1EE0 was 0x40).
+    bool result = dLineMng_c::line_cross_chk1(a, b, origin, p2, p3, out);
     if (result) {
         pThis->mPos.x = out.x;
         pThis->mPos.y = out.y;
@@ -504,12 +553,26 @@ bool fn_800C1EE0(dLineMng_c *pThis, f32 a, f32 b, const mVec2_c &p1, const mVec2
 }
 
 bool dLineMng_c::height_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c pt(p1.x + 16.0f, p1.y - 16.0f);
+    // AGGREGATE COPY + compound assignment (levers 10/11), same as
+    // lineB_cross_chk's origin -- both fields need an arithmetic op here, so
+    // the plain 2-arg constructor leaves the fadds/fsubs operands
+    // literal-first and swaps the p1.y/p1.x load order vs target.
+    mVec2_c pt = p1;
+    pt.x += 16.0f;
+    pt.y -= 16.0f;
     f32 outY;
     bool result = line_cross_chk2(16.0f, pt, p2, p3, outY);
     if (result) {
         mPos.x = pt.x;
-        mPos.y = outY + pt.y;
+        // Write the sum BACK into outY itself, not a fresh local -- outY is
+        // address-taken (passed by reference into line_cross_chk2), so it
+        // already has real stack storage, and target has an unread stfs to
+        // exactly that slot right after the add (write-only, never
+        // reloaded back, since mPos.y's store below uses the live register
+        // copy directly). A fresh separate local optimises away entirely
+        // with nothing to spill.
+        outY += pt.y;
+        mPos.y = outY;
         mUnitBasePos.x = p1.x;
         mUnitBasePos.y = p1.y;
         if (mSpeed.y < 0.0f) {

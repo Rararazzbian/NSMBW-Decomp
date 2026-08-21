@@ -16,6 +16,15 @@ detectable CONFLICT rather than a silent last-writer-wins.
 
 Normalises line endings on read, and writes back with the live file's own
 convention, because MWCC does not care but `patch` and `git` both do.
+
+KNOWN LIMITATION, and it has bitten once: this merges FUNCTION BODIES ONLY.
+Anything at file scope -- an include, a static declaration, a file-scope object
+feeding `__sinit` -- is deliberately left at the baseline's version, so that one
+agent's stray reformat cannot leak into the merge. The cost is that a real
+file-scope change must be applied by hand. `init_term_ck_pos` needed its
+`s_dDirInit` flag retyped from `u8` to `s8` and the merge silently dropped it.
+So: always diff the agent's file-scope region separately, and treat a report that
+mentions a static, a global, or an include as needing manual follow-up.
 """
 import os
 import re
