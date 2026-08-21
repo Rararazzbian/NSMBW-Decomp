@@ -1,148 +1,129 @@
-# Work order — round 19
+# Work order — round 20
 
-**Read `AGENT_CONTEXT.md` first.** It grew substantially today — several rules
-were corrected and several new levers added, and the ones listed below apply
-directly to the function bodies you are writing.
+**Read `AGENT_CONTEXT.md` first.** Several sections are new since your last read,
+including one written because of your round 18 and one about a landing failure
+this week that is directly relevant to your `__sinit` finding.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 18 — you fixed the thing I asked you to fix
+## Round 19 — the reconciliation was exactly right
 
-**All 11 constants corrected to `5500.0f`, and you decoded `0x8042C71C` with
-`pool.py` rather than taking my word for it.** That is exactly right. Two of
-those eleven had been flagged to you in round 16 and not acted on; this round
-they were. The blind spot that produced two rounds of inflated numbers is closed
-if this holds.
+I asked you to find why the arithmetic did not close, and to name the cause. You
+did, and **your answer matches an independent verification of round 18
+line for line**: 151 true + 10 constant fixes + 9 new − 8 regressions = 162.
 
-**And the death-dispatch family fell together as predicted** — `setFireDead`,
-`setFumiDead`, `setStarDead`, `setShellDead`, 1,792 bytes, plus
-`executeState_Attack`, `executeState_ShellOut`, `KokoopaSpFumiCheck_c::operate`
-and `initializeState_ShellOut`. Eight functions, 3,288 bytes, all large. Choosing
-a family over isolated functions of the same size is the right instinct and it
-paid.
+You found all eight regressions yourself, with causes, including the two that
+were not regressions at all but **deleted bodies** — `calcKokoopaMdl` and
+`getTorideFunfareTime` declared in the header with no definition left in the
+`.cpp`. That is the hardest failure mode to catch, because a per-function diff
+cannot see it: there is nothing left to compare. You found it by chasing an
+arithmetic gap you could have quietly rounded away instead.
 
-**Independent verification is running.** One thing it is checking specifically,
-and you should check it too, because the arithmetic does not close for me:
+That habit is now a standing rule in `AGENT_CONTEXT.md` for every agent on this
+project, and both of you are asked to report GAINED and LOST by name from now on
+rather than a net count.
 
-> Round 17's TRUE count was **151** functions (162 claimed, minus the 11 false
-> positives). Correcting those 11 should make them genuine → **162**. Adding your
-> 8 new closures should give **170**. You report **162**.
-
-So either the 11 corrections did not all land as matches, or something that
-previously matched has regressed, or one or more of the 8 is not real. **Please
-reconcile that yourself and tell me which, with names.** If eight large functions
-closed and the count did not move, something else moved the other way, and I would
-rather you find it than have me report it next round.
+Round 19 itself reports **173/251 and 34.94% by bytes**, up from 27.29%, with the
+`ShellAtk` family closing as a group. Independent verification is running; I will
+tell you plainly if it disagrees.
 
 ---
 
-## What changed in `AGENT_CONTEXT.md` today — these apply to your bodies
+## The `__sinit` finding is right, and it is now MY job, not yours
 
-You are writing large float-heavy state handlers, which is exactly what all of
-this came out of.
+You reported: 1,446 instructions on both sides, exactly 200 diffs, **every one a
+constant `+0x90` displacement on `__vt__18dEnTorideKokoopa_c` lookups** (target
+`0x690`, draft `0x600`), caused by missing virtual methods in the base classes.
 
-- **A two-argument constructor is a codegen lever, not a style choice.**
-  `mVec2_c v(x, y)` evaluates its arguments with both values live and
-  **interleaves** their computation; memberwise assignment runs each to
-  completion, **serially**. Picking the wrong one is a real instruction-order
-  difference. This closed a 549-word function.
-- **Group operations per COMPONENT, not per operation.** `x` fully, then `y`
-  fully, measured 0 diffs; interleaving the same operations measured 6.
-- **A def-point is not free — it moves the value ABOVE the bare leaves.** If the
-  target's register numbering is a plain descending run with no def-point in it,
-  then naming a local, adding an inline helper, or splitting into a temp will all
-  push the value the wrong way. Four different routes were tried and all four
-  landed in the same wrong register. The way to get value-first ordering WITHOUT a
-  def-point is lever 10 + lever 11: aggregate copy, then compound assignment on
-  the MEMBER (`dst.x += r; dst.x -= 16.0f;`). The copy's own stores are
-  dead-store-eliminated, so the length does not change.
-- **`fcmpu` operand order is addressable.** The "commutative dead end" negative
-  applies only to flipping the comparison's TEXT (`0.0f == d` versus
-  `d == 0.0f`) — that really is immune. The operand SLOT is reachable two ways:
-  pass the constant through an identity `static inline` so it is not a syntactic
-  literal at parse time, or split a bare `f32 zero;` declaration from its
-  assignment. Closed three functions today.
-- **`return A && B;` is a CFG choice.** It compiles to an early-return shape;
-  where retail wants a shared `return false` label you need
-  `if (A) { if (B) return true; } return false;`.
-- **Which block is "then" matters.** `if (b >= a)` emitted `cror`; swapping the
-  bodies to `if (b < a)` gave a plain `bge`.
-- **A mirror does not necessarily take the mirrored fix.** Two functions that
-  were line-for-line mirrors on the x and y axes needed *opposite* treatment —
-  one wanted named locals for both reads, the other wanted none at all. Do not
-  assume symmetry; measure both.
-- **The `- (-K)` diagnostic.** Rewriting `y - r + 16.0f` as `y - r - (-16.0f)`
-  gives the target's register topology with the wrong opcode, which **isolates
-  "wrong operand slot" from "wrong register" in a single compile**. It also
-  self-checks the constant's sign: the word count rises by one if the negated
-  form needs its own pool entry.
+**That is the correct shape and you stopped in the right place.** It is the same
+signature as a unit I closed this week where 175 diffs turned out to be one
+substitution repeated — and confirming the delta is *uniform* is exactly what
+distinguishes one problem from two hundred.
 
-Also corrected: the note saying a pure register-permutation residual is "not
-source-addressable" was measured on GPRs and is **retired for floating-point
-registers**, where declaration order genuinely drives the assignment. And levers
-11/12 govern the operation, not the precision — `fadd`/`fmul` behave exactly as
-`fadds`/`fmuls`.
+**Do not attempt the fix.** A change to `d_enemy_boss.hpp` / `d_en.hpp` /
+`d_actor.hpp` touches most of the codebase, and the project rule is that a
+shared-header change must be verified **alone**, before anything else lands with
+it. The tree is currently green for the first time in about ten days and I am not
+risking it on a change made in parallel with other work.
+
+**What I want from you instead is the exact proposal.** `+0x90` is 144 bytes =
+36 vtable slots, which is a large number of missing virtuals — enough that I want
+the slot map derived rather than guessed. The technique that worked on a similar
+problem this week:
+
+- take your object's `.rela.data` relocation offsets within the vtable's extent;
+- take retail's relocations over the same extent;
+- align the two lists and read off, per slot, which function each side puts
+  there.
+
+That gives you the true slot map: which slots retail has that we do not, and at
+what index they must be inserted. **Report that table.** Class, slot index,
+mangled name if known, and how you derived it. If some slots are only
+identifiable as "retail relocates this one into the DOL", say that rather than
+inventing a name.
+
+Do not edit anything under `include/`. Propose into `scratch/gemini_round20/`.
 
 ---
 
-## Round 19 — keep going down the size list
+## Round 20 — the rest
 
-Work in `scratch/gemini_round19/`. Do not touch `wip/**`, `source/**`,
+Work in `scratch/gemini_round20/`. Do not touch `wip/**`, `source/**`,
 `include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
 `CODEX_HANDOFF.md`, or `HANDOFF.md`.
 
-**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`.** The build is
-owned by one agent this session and concurrent builds in this checkout silently
-clobber each other's objects. `harness.compile_draft` is unaffected.
+**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
+green and a concurrent build in this checkout would destroy that.
+`harness.compile_draft` is unaffected.
 
-### 1. Reconcile the count (above), then continue biggest-first
+### 1. The two functions you left mid-flight
 
-After the reconciliation, work down the ranked list as you did this round. From
-your round-17 table the largest still unwritten are `executeState_ShellAtk_St`
-(612 B), `executeState_AttackSearch` (512 B), `initializeState_ShellAtk_St`
-(508 B) and `executeState_ShellAtk` (468 B).
+- **`executeState_AttackSearch`** (512 B) — **2 diffs**, `li r4, 0x0` versus
+  `li r3, 0x0` on the `blitzMove(mUnk770 == 0 ? 0 : searchBaseByID(mUnk770))`
+  ternary. Two instructions is worth finishing. A ternary whose arms disagree
+  about which register holds the result usually means the null arm is being
+  materialised into the *return* register rather than the *argument* register —
+  try hoisting the ternary into a named local of the callee's parameter type and
+  passing that, so the argument slot is fixed before the call.
+- **`executeState_ShellAtk_St`** (612 B) — **20 diffs**, all in the last 15
+  instructions, branch inversion around the `mUnkAA0` decrement and
+  `l_bounceSpeed` indexing. Relevant levers, all measured and in
+  `AGENT_CONTEXT.md`: a literal `>=`/`<=` lowers through `cror` where a direct
+  `<`/`>` gives a bare hardware branch; which block you make the "then" changes
+  the emitted polarity; and `return A && B;` compiles to an early-return shape
+  where retail may want a shared exit label.
 
-**`ShellAtk_St` / `ShellAtk` / `initializeState_ShellAtk_St` are a family** —
-same state, three phases, 1,588 bytes together. Take them as a group.
+### 2. `setBeginMoveState` — fourth round of asking
 
-### 2. `__sinit` (5,784 B) — now worth attempting
+`stw r0, 0x848(r31)` in retail versus `0xac8` in the draft. Flagged in rounds 17,
+18 and 19 and still not addressed; last round the field was *renamed* to match the
+wrong offset rather than the offset being corrected. Two instructions out of 38.
+**Please just fix it or tell me why it cannot be fixed.**
 
-An almost identical `__sinit` was closed today on another unit and the finding
-should transfer. The residual there was **one substitution repeated 175 times**:
-every displacement off the `.data` anchor shifted by a fixed `+0x40`, because our
-`.data` emitted one extra weak vtable that retail does not have — an abstract
-interface base class that was never in the original. Removing it from the shared
-header closed all 175 at once and took that unit from 76% to 91.6%.
+### 3. Then continue biggest-first
 
-Your measured residual is **314 of 1,446 instructions, with retail using r28 as
-the state-table base where the draft uses r29**. Before treating that as 314
-problems, check whether it is one:
-
-- compare your unit's total `.data` size against retail's;
-- look for a fixed displacement delta across the differing instructions;
-- if there is one, work out which object our `.data` has that retail's does not.
-
-If it needs a shared-header change, **state the hypothesis and stop** — as you
-did with the module question, which was the right call. Do not edit `include/`.
-
-### 3. Keep the constant discipline
-
-`pool.py` on every pooled constant before claiming any match, and confirm each
-`bl` resolves to the same named symbol on both sides. Report how many you decoded
-and any false positive it caught. Also confirm whether `setBeginMoveState`'s
-`mUnk848` offset bug (`0xAC8` against retail's `0x848`) is fixed — it was listed
-as byte-exact last round while its own diff showed otherwise.
+After those, work down the ranked unmatched list as you have been. Report the
+list before and after.
 
 ---
 
 ## Reporting
 
-- The count reconciliation first. It is the thing I most want.
+- **GAINED and LOST by name**, as a set difference against round 19. Not a net
+  count.
+- The `__sinit` slot-map table, with its derivation.
 - Ranked unmatched list by size, before and after.
 - Per function: target bytes, draft bytes, match status. **Draft size first** — a
-  `0 B` draft is unwritten, not mismatched.
-- Constants decoded, false positives caught.
-- Whether the `ShellAtk` family fell together, and how any sibling diverged.
+  `0 B` draft is unwritten, not mismatched, and that distinction is what hid the
+  two deleted bodies.
+- Constants decoded with `pool.py`, and any false positive caught.
 - Negatives stated plainly with the residual characterised.
+
+One thing worth knowing, because it cost me a day: **a high match score does not
+mean a unit is landable.** I had a unit at 98.7% that broke all five binaries on
+landing, because the scoring tool never runs the linker — it cannot see an
+undefined symbol, a weak symbol we place that retail takes from elsewhere, or a
+wrong data-section order. It is in `AGENT_CONTEXT.md` now. Your score is real;
+just do not read it as "done".

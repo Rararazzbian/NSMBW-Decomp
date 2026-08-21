@@ -1,116 +1,120 @@
-# Work order — round 21
+# Work order — round 22
 
-**Read `AGENT_CONTEXT.md` first.** It gained a great deal today, including
-several corrections to rules you have been relying on. Two of the new entries
-speak directly to your `ProcMain` measurement.
+**Read `AGENT_CONTEXT.md` first.** Two new sections went in because of your round
+21, one of them correcting a rule I had given you.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 20 verified. Two good calls, and one of them was yours to make.
+## Round 21 — you disproved my lever and found the right one
 
-**`execute` is CLOSED.** The declare-early / assign-late split worked exactly as
-predicted, and you tested the axis properly by trying the reverse order and
-reporting that it put the registers the wrong way round. That is the correct way
-to establish a rule rather than a coincidence.
+**`ProcMain`'s length gap is CLOSED, 179/179.** And the way you got there is the
+part worth keeping.
 
-**And you applied the arithmetic check to your own previous conclusion.** You
-wrote that the struct copy is 12 instructions either way, therefore it cannot
-explain a 9-instruction gap, therefore your round-19 attribution was wrong. That
-is exactly right, and it is the single most useful habit in this work.
+I told you the fix was to stop building `mMin`/`mMax` as aggregates and write
+serial member assignments. **You tested that first and it moved nothing** — a
+three-argument `mVec3_c` constructor already serialises, so the rule I gave you
+(which was measured on the *two*-argument `mVec2_c` case) does not extend to it.
+You then found the shape that does work: **copy the aggregate, then compound-
+assign the members.** That is levers 10 and 11 composing, and it closed all five
+of your round-20 line items at once — including both `.z` stores, which you never
+had to address directly, because copying a `pos` whose `z` is zero writes them.
 
-The result is a `ProcMain` breakdown that is now concrete and, I think, largely
-solvable. Your table says the biggest contributor is:
+I have corrected `AGENT_CONTEXT.md` accordingly. The generalisation now reads:
+**when the target stores a base value and then modifies it in place, the source
+shape is a copy followed by compound assignment, not a construction from
+computed arguments.**
 
-> **Target computes `mMin.x`, `mMin.y` separately, stores, then `mMax.x`,
-> `mMax.y`, stores. Our draft computes `mMin.y` and `mMin.x` together, then
-> `mMax.y` and `mMax.x` together.** +4 instructions.
+**`createObjList` reached `extrwi`,** 111 → 113. Your variant table is the reason
+I can trust it: you included the *disproof* — `(u16)` cast at the use site,
+measured, unchanged — which is what turns "this worked" into "this is the rule".
+That table is now in `AGENT_CONTEXT.md` as a confirmed lever.
 
-You concluded this is compiler scheduling and not source-addressable. **It is
-source-addressable, and we closed a 549-word function on exactly this axis
-today.** Two findings, both measured:
-
-1. **A two-argument constructor is a codegen lever, not a style choice.**
-   `mVec2_c v(x, y)` evaluates its argument list with both values live and
-   **interleaves** their computation. Memberwise assignment (`v.x = ...;
-   v.y = ...;`) runs each to completion, **serially**. Your target is serial and
-   your draft is interleaved — so retail almost certainly used memberwise
-   assignment where we are using a constructor or a `set()`, and the fix is to
-   stop building these as aggregates.
-
-2. **Group operations per COMPONENT, not per operation.** Finishing `x` entirely
-   and then `y` entirely measured 0 diffs on the function where this was found;
-   interleaving as `x += r; y -= r; x -= 16; y += 16;` measured 6. Same
-   operations, same count, different grouping.
-
-Your other two line items look like the same cause: the explicit `stfs` of zero
-to `mMin.z`/`mMax.z` that retail has and we replace with a later dead store
-suggests retail writes `.z` **explicitly, in place, as part of the same serial
-sequence** rather than getting it from an aggregate initialisation.
-
-So for round 21, item 1 is: **rewrite the `mMin`/`mMax` construction as plain
-serial member assignments, per component, with `.z` written explicitly**, and
-measure. If that closes the +4 and the two `.z` items, the `neg`+`add` versus
-`subf` difference is the only piece left and is worth its own look.
-
-### One correction to your reasoning
-
-You wrote that reordering declarations "may not be addressable" for the
-`mMin`/`mMax` grouping, citing the note that declaration order does not drive GPR
-assignment. **That note is about which register the allocator picks. It says
-nothing about the ORDER IN WHICH STATEMENTS ARE EMITTED**, which is what you are
-actually trying to change here. Those are different questions and the note does
-not apply. (For the record the note has also been split today: it stands for
-GPRs, and is retired for floating-point registers, where declaration order
-genuinely does drive the assignment — which is what closed your `execute`.)
+Both remaining gaps are correctly attributed. The `_savegpr_17`/`_savegpr_19`
+difference is genuinely the GPR note's territory and I am not asking you to
+fight it.
 
 ---
 
-## Round 21 — three items
+## Round 22 — finish this unit, then take a new one
 
-### 1. `ProcMain` (179 / 170, −9) — serial member assignment
+Work in `scratch/round17/` as before (or move to a cleanly named directory of
+your own — see the warning below). Do not touch `wip/**`, `source/**`,
+`include/**`, `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`,
+`CODEX_HANDOFF.md`, or `HANDOFF.md`.
 
-Covered above. Rewrite the `mMin`/`mMax` construction as serial per-component
-member assignments with `.z` written explicitly. Report the word count and the
-per-item table again after the change so we can see which of your five line items
-moved.
+**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`.** The tree is
+currently GREEN — all five binaries byte-exact, for the first time in about ten
+days — and a concurrent build in this checkout would destroy that.
+`harness.compile_draft` is unaffected and is what you have been using.
 
-### 2. `createObjList` (116 / 111, −5) — chase the `extrwi`
+**A warning about your working file.** `scratch/round17/d_bg_actor_mng.cpp` has
+twice been swept into unrelated commits by a concurrent `git add -A` — mine, not
+yours. Nothing was lost, but if you want a snapshot you can trust, copy your
+draft to a fresh path at the start of the round and work there.
 
-You have localised this well and your signedness reading is the right instinct:
-retail's `extrwi` is an unsigned extract; our `srawi`+`clrlwi` is the signed path.
-You noted that `x1`/`y1` must stay `int` for the `fctiwz` conversion but that the
-shift-and-mask wants unsigned, and that a straight `u32` cast did not produce it.
+### 1. `ProcMain` — the `neg`+`add` versus `subf` residual
 
-Try separating the two roles into **two different variables** rather than casting
-one: keep the `int` that receives the conversion, then assign it into a separate
-`u32` (or `u16`) local that the shift-and-mask uses. A cast at the use site does
-not change the variable's declared type, and MWCC picks the shift from the type,
-not from the expression. That is 2 of your 5 words if it works.
+Your own suggestion is the right next move and I would like you to take it:
+reshape the preamble so `y0` is negated before the conversion, giving the loop a
+ready-made negative operand so `add` does the work. You noted the statement-order
+axis is still open here, and it is.
 
-Do not spend the round on the `_savegpr_17` versus `_savegpr_19` difference — the
-GPR note genuinely does apply there.
+One caution learned the hard way this week: **an instruction-selection difference
+that is count-neutral cannot be closed by anything that changes the count.**
+Before adopting a variant, check the word count is still 179. A fix that closes
+the `subf` and costs a word has not helped.
 
-### 3. `initialize` — closed, do not revisit
+The `lwz`/`stw` versus `lfs`/`stfs` struct copy is the other same-count residual.
+Retail copying `viewMin`/`viewMax` through the *integer* path suggests the
+original copies a POD struct wholesale (`memcpy`-like, or plain `=` on a type
+with no float members declared), where we are assigning float fields one by one.
+Worth one variant: copy the whole struct in a single assignment rather than
+field-by-field.
 
-Agreed and confirmed: `l_object_name` versus `SYM0` is a naming gap in an unsplit
-data section, every byte matches. **Treat it as matched.** I will fix the
-tooling. Do not spend time on it again.
+### 2. `initialize` — leave it
+
+66/66, symbol naming only. Confirmed closed twice now. Do not spend time on it.
+
+### 3. Then start a new unit: `dol/bases/d_bg_ctr.cpp`
+
+`d_bg_actor_mng` is essentially finished — two same-count residuals and a GPR
+difference that is off-limits. Rather than grind those, take the neighbouring
+unit, which is unclaimed and which you are already primed for by having read
+`d_bg.hpp`.
+
+    class dBg_ctr_c, .text 0x8007F7A0 .. roughly 0x80081070
+    include/game/bases/d_bg_ctr.hpp already exists
+
+Seed it with:
+
+    python tools/auto_decomp/prepare.py --unit dol/bases/d_bg_ctr.cpp \
+        --range 0x8007F7A0-0x80081070
+
+**Check the end boundary yourself before trusting it** — `prepare.py`'s own
+docstring warns that a TU does not end at its `__sinit`, and getting the end
+wrong has been this project's most common single error. The next class after it
+is `dBgGlobal_c` at `0x80081070`. Confirm the last function in your `target.txt`
+belongs to `dBg_ctr_c` and the next one does not.
+
+Start with the largest functions, and report the ranked list before you write
+anything so we can both see the shape of the unit.
 
 ---
 
 ## Reporting
 
-Per function: target length, draft length, `_savegpr` level and frame size for
-both, then match status — length and save level first, as before.
+Per function: target length, draft length, `_savegpr` level and frame size, then
+match status — length and save level first, as before.
 
-Keep applying the arithmetic check before attributing any gap: **if a proposed
-cause does not change the instruction count, it cannot explain a length
-difference.** It has now caught two of your attributions and one of mine.
+**New requirement, and it applies from this round on.** Report your matched set
+as a **set difference against last round: GAINED and LOST, both by name.** Not a
+net count. The other peer reported eight closures in one round while silently
+breaking eight unrelated functions, two of which had their bodies deleted
+entirely — a per-function diff cannot see a deleted body, because there is
+nothing left to compare. Your round-21 table is already whole-unit, so this is a
+small addition for you, but I want it explicit.
 
-And when you find yourself about to write "this is compiler scheduling, not
-source-addressable" — check whether you are talking about *which register* or
-*what order the statements are emitted in*. The first is sometimes genuinely out
-of reach. The second has been reachable every single time it has been tested
-properly today.
+Keep doing the two things that made this round work: **measure the variant you
+expect to fail**, and **check the arithmetic before attributing a gap**.

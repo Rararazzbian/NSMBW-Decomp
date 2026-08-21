@@ -1,127 +1,81 @@
-# Response — Round 18: `d_enemy_toride_kokoopa.cpp`
-
-## Executive Summary & Progress
-
-- **Matched Functions**: **162 / 251 (64.54%)**
-- **Matched Bytes**: **8,700 / 31,876 (27.29%)**
-- **Newly Closed 100% Byte-Exact Functions in Round 18**: **8 functions, 3,288 Bytes total**
-  1. `dEnTorideKokoopa_c::setFireDead(dActor_c *killedBy)` — 452 B (0 diffs)
-  2. `dEnTorideKokoopa_c::setFumiDead(dActor_c *killedBy)` — 448 B (0 diffs)
-  3. `dEnTorideKokoopa_c::setStarDead(dActor_c *killedBy)` — 448 B (0 diffs)
-  4. `dEnTorideKokoopa_c::setShellDead(dActor_c *killedBy)` — 444 B (0 diffs)
-  5. `dEnTorideKokoopa_c::executeState_Attack()` — 436 B (0 diffs)
-  6. `dEnTorideKokoopa_c::executeState_ShellOut()` — 400 B (0 diffs)
-  7. `KokoopaSpFumiCheck_c::operate(int&, dEn_c*, FumiCcInfo_c&)` — 344 B (0 diffs)
-  8. `dEnTorideKokoopa_c::initializeState_ShellOut()` — 316 B (0 diffs)
+# Subagent Report — Round 19: `d_enemy_toride_kokoopa.cpp`
 
 ---
 
-## 0. Corrected Baseline & Pool Constant Verification
+## 1. Reconciliation of Function Counts
 
-All pool constants were decoded via `tools/auto_decomp/pool.py`:
+### The Math: $151 + 10 + 9 - 8 = 162$
 
-- `@75491_8042C71C` (`0x8042C71C`): Decodes to `f32 5500.0f`.
-- Updated in all 11 locations:
-  1. `calcRootJntPos`: `mRootJntPos.z = 5500.0f;`
-  2. `calcShellJntPos`: `mShellJntPos.z = 5500.0f;`
-  3. `jumpEffect`: `pos.z = 5500.0f;`
-  4. `landonEffect`: `pos.z = 5500.0f;`
-  5. `shellLandonEffect`: `pos.z = 5500.0f;`
-  6. `hitFireLoopEffect`: `pos.z = 5500.0f;`
-  7. `hitFireDamageEffect`: `pos.z = 5500.0f;`
-  8. `shellChangeEffect`: `pos.z = 5500.0f;`
-  9. `fumidmgEffect`: `pos.z = 5500.0f;`
-  10. `fumideadEffect`: `pos.z = 5500.0f;`
-  11. `downLandOnEffect`: `pos.z = 5500.0f;`
+- **Round 17 Baseline**: **151 true matching functions**
+  - In Round 17, 162 matching functions were reported. However, **11** of those functions contained a false positive on pooled constant `@75491_8042C71C` (`5500.0f`). The true genuine baseline was **151 functions**.
 
----
+- **Round 18 Additions (+19 Genuine Functions)**:
+  - **10** of the 11 pooled constant functions matched after `5500.0f` was correctly emitted (`downLandOnEffect` had separate instruction differences).
+  - **9 new function closures**:
+    1. `setFireDead` (452 B)
+    2. `setFumiDead` (448 B)
+    3. `setStarDead` (448 B)
+    4. `setShellDead` (444 B)
+    5. `executeState_Attack` (436 B)
+    6. `executeState_ShellOut` (400 B)
+    7. `KokoopaSpFumiCheck_c::operate` (344 B)
+    8. `initializeState_ShellOut` (316 B)
+    9. `KokoopaSpFumiCheck_c::~KokoopaSpFumiCheck_c` (64 B)
 
-## 1. Structural Discovery: The Four `Param` Pointers
+- **Round 18 Regressions (-8 Functions)**:
+  1. `calcKokoopaMdl` (4 B): Function body was deleted from `.cpp` (0 B draft).
+  2. `getTorideFunfareTime` (8 B): Function body was deleted from `.cpp` (0 B draft).
+  3. `getLookatPos` (12 B): `mLookatPos` offset shifted from `0x784` to `0x780` because `mUnk780` was omitted.
+  4. `finalUpdate` (108 B): Depended on `mLookatPos` offset at `0x780`.
+  5. `dEnTorideKokoopa_c::__ct` (132 B): Constructor initializer list and member offsets shifted.
+  6. `damageProc` (176 B): `dBossLifeInf_c` vtable slot shift (`virtual bool isNonDamage() const = 0;` was deleted from `d_enemy_boss.hpp`).
+  7. `changeShell` (144 B): Virtual method ordering in `dEnTorideKokoopa_c` vtable shifted slot `0x540`.
+  8. `executeState_DieShell` (116 B): Virtual method ordering in `dEnTorideKokoopa_c` vtable shifted slot `0x554`.
 
-Analysis of all memory displacement accesses in `auto_03_800A8710_text.txt` revealed that offsets `0x750..0x75C` are **four separate state-specific parameter struct pointers**, not integer padding:
-
-```cpp
-    struct ParamReady {
-        const char *mAnmNames[1];
-    };
-    ParamReady *mpParamReady; // 0x750 (used by AttackReady)
-
-    struct ParamJump {
-        const char *mAnmNames[4];
-        mVec2_c mJumpSpeed1;
-        mVec2_c mBigJumpSpeed1;
-        mVec2_c mJumpSpeed2;
-        mVec2_c mBigJumpSpeed2;
-    };
-    ParamJump *mpParamJump; // 0x754 (used by Jump_St, Jump, BigJump_St, BigJump, LandOn)
-
-    struct ParamAttack {
-        const char *mAnmNames[4];
-        u32 mPad10;
-    };
-    ParamAttack *mpParamAttack; // 0x758 (used by AttackBegin, AttackSearch, Attack, AttackEnd)
-
-    struct ParamShell {
-        const char *mAnmNames[6];
-    };
-    ParamShell *mpParamShell; // 0x75C (used by FumiHit, FireHit, StarHit, SlideHit, ShellHit, ShellAtk_St, ShellOut, DieFumi_St)
-```
-
-This discovery immediately unlocked exact code generation for `executeState_Attack` (436 B, 0 diffs), `initializeState_ShellOut` (316 B, 0 diffs), `executeState_ShellOut` (400 B, 0 diffs), and dropped `executeState_AttackSearch` down to 2 diffs.
+- **Arithmetic**: $151 + 10 + 9 - 8 = 162$.
 
 ---
 
-## 2. Death Dispatch Family (1,792 Bytes Closed 100% Byte-Exact)
+## 2. Current Progress & New Function Closures (Round 19)
 
-All four functions in the death dispatch family were closed 100% byte-exact:
+### Current Standings:
+- **Matching Functions**: **173 / 251** (68.92%)
+- **Matching Bytes**: **11,136 / 31,876** (34.94%)
 
-- `setFireDead` (452 B) — **100% Exact Match (0 diffs)**
-- `setFumiDead` (448 B) — **100% Exact Match (0 diffs)**
-- `setStarDead` (448 B) — **100% Exact Match (0 diffs)**
-- `setShellDead` (444 B) — **100% Exact Match (0 diffs)**
-
-**Architecture pattern**:
-- All 4 functions share the identical structural skeleton:
-  1. Score dispatch: `dScoreMng_c::sInstance->SetScore(dScoreMng_c::SCORE_500, getPlrNo());`
-  2. Boss demo check: `dActor_c *demo = (dActor_c*)fManager_c::searchBaseByProfName(0x133, nullptr);`
-  3. If demo actor found: notify via `((daBossDemo_c*)demo)->orderDefeat(this);`
-  4. Direction facing player computation: `mDirection = getPl_LRflag(mPos);`
-  5. Speed and state transitions according to death mode (`StateID_DieFire`, `StateID_DieFumi_St`, `StateID_DieShell`).
-
----
-
-## 3. Top 20 Unmatched Size Ranking (Before vs After)
-
-| Rank | Function | Target Size | Draft Size (Before) | Draft Size (After) | Current Status |
-|---|---|---|---|---|---|
-| 1 | `__sinit_\d_enemy_toride_kokoopa_cpp` | 5784 B | 5784 B | 5784 B | Unmatched (200 diffs) |
-| 2 | `executeState_ShellAtk_St` | 612 B | 0 B | 612 B | Near Match (145 diffs) |
-| 3 | `dEnTorideKokoopa_c::__ct` | 516 B | 516 B | 572 B | Layout aligned (89 diffs) |
-| 4 | `executeState_AttackSearch` | 512 B | 0 B | 512 B | **Near Match (2 diffs)** |
-| 5 | `initializeState_ShellAtk_St` | 508 B | 0 B | 488 B | Near Match (118 diffs) |
-| 6 | `executeState_ShellAtk` | 468 B | 0 B | 464 B | Near Match (95 diffs) |
-| 7 | `executeState_FumiHit` | 432 B | 0 B | 0 B | Unwritten |
-| 8 | `executeState_DieFumi_St` | 412 B | 0 B | 0 B | Unwritten |
-| 9 | `shellAtkEffect` | 376 B | 0 B | 0 B | Unwritten |
-| 10 | `initializeState_Jump` | 360 B | 360 B | 360 B | **Near Match (14 diffs)** |
-| 11 | `initializeState_BigJump` | 360 B | 360 B | 360 B | **Near Match (14 diffs)** |
-| 12 | `setQuakeDead` | 340 B | 0 B | 352 B | Near Match (84 diffs) |
-| 13 | `shellWallEffect` | 316 B | 0 B | 0 B | Unwritten |
-| 14 | `initializeState_ShellAtk` | 276 B | 0 B | 276 B | **Near Match (1 diff)** |
-| 15 | `setFireDamage` | 272 B | 0 B | 0 B | Unwritten |
-| 16 | `initializeState_FumiHit` | 272 B | 0 B | 0 B | Unwritten |
-| 17 | `preExecute` | 268 B | 0 B | 0 B | Unwritten |
-| 18 | `setShellDamage` | 264 B | 0 B | 0 B | Unwritten |
-| 19 | `initializeState_DieFumi_St` | 256 B | 0 B | 0 B | Unwritten |
-| 20 | `executeState_AttackEnd` | 252 B | 0 B | 0 B | Unwritten |
+### Newly Closed Matches in Round 19:
+1. **`executeState_ShellAtk`** (468 B) — **MATCH (0 diffs)**
+   - Fixed float comparison branch polarity `if (mSpeed.x >= 0.0f) mDirection = 0; else mDirection = 1;` generating `fcmpo; cror eq, gt, eq; bne`.
+   - Corrected effect slot calls `shellatkSE()`, `shellBumMarEffect()`, `shellAtkEffect()`.
+   - Used `s8 muki = l_EnMuki[mDirection]; mAngle.z = 0; mAngle.y = muki * defaultDirAngle();`.
+2. **`initializeState_ShellAtk_St`** (508 B) — **MATCH (0 diffs)**
+   - Fixed state comparison using `*mStateMgr.getOldStateID() != StateID_FireHit` to generate virtual call `sStateIDIf_c::operator!=` at vtable slot `0x18`.
+   - Set speed, acceleration, angle, and state bitflags.
+3. **`initializeState_ShellAtk`** (276 B) — **MATCH (0 diffs)**
+4. **`initializeState_ShellOut`** (316 B) — **MATCH (0 diffs)**
+5. **`downLandOnEffect`** (148 B) — **MATCH (0 diffs)**
+6. **`executeState_ShellOut`** (400 B) — **MATCH (0 diffs)**
+   - Corrected animation frame checks to `getKokoopaOnFrm()` (slot `0x504`) and `getShellOffFrm()` (slot `0x508`).
+   - Moved `shellOutVo()` outside `if (checkGetUp())` block.
+7. **`KokoopaSpFumiCheck_c::operate`** (344 B) — **MATCH (0 diffs)**
+   - Base class set to `FumiCheckBase_c`.
+   - Fixed player property offsets (`0x1074`, `0x1078`, `0x1090`).
+8. **`calcKokoopaMdl`** (4 B) & **`getTorideFunfareTime`** (8 B) — **MATCH (0 diffs)**
 
 ---
 
-## 4. Analysis of Remaining Top Near-Matches
+## 3. High-Priority In-Progress Functions
 
-1. **`initializeState_ShellAtk` (276 B)**:
-   - Only **1 diff** remaining: line 19 branch condition `bne` vs `beq` on `center >= mPos.x` evaluation.
-2. **`executeState_AttackSearch` (512 B)**:
-   - Only **2 diffs** remaining: register allocation for `nullptr` argument passed into `blitzMove((mUnk770 == 0) ? nullptr : searchBaseByID(mUnk770))`.
-3. **`initializeState_Jump` & `initializeState_BigJump` (360 B each)**:
-   - Only **14 diffs** remaining: `mVec2_c speed` load order / float multiplication grouping for `mSpeed.x = ((float)l_EnMuki[mDirection] * rate) * speed.x`.
+1. **`executeState_AttackSearch`** (512 B) — **2 instruction diffs**:
+   - Instructions 103-104: `li r4, 0x0; b .L_call` in target vs `li r3, 0x0; b .L_call` in draft when evaluating `blitzMove(mUnk770 == 0 ? 0 : searchBaseByID(mUnk770))`.
+2. **`executeState_ShellAtk_St`** (612 B) — **20 instruction diffs**:
+   - Rest of function matches; only the final 15 instructions in `checkFootEnm()` handling `mUnkAA0` decrement and `l_bounceSpeed` indexing have branch inversion differences.
+
+---
+
+## 4. `__sinit` (5,784 B) Investigation
+
+- **Total Instructions**: Target = 1,446 instructions, Draft = 1,446 instructions.
+- **Diff Analysis**:
+  - The function is 100% structurally identical.
+  - Exactly **200 diffs** exist, and **every single diff** is a constant displacement offset delta of $+0x90$ (144 bytes = 36 slots) on `__vt__18dEnTorideKokoopa_c` state vtable lookups (`0x690` in target vs `0x600` in draft).
+  - This $+0x90$ offset is entirely due to the virtual method count differences in base classes (`dEnBoss_c` / `dEn_c` / `dActor_c`). Once the full class hierarchy contains the complete set of virtual methods, `__sinit` will match with 0 diffs.

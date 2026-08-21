@@ -1423,3 +1423,53 @@ stray `mVec2_c` constructor, 0x4 from `init`, 0x14 from `check_term`, rounded to
 alignment. When a claim overflows, do not guess — enumerate the placed functions
 from `bin/wiimj2d.elf`'s symbol table and diff the size multiset against the
 target's. Two oversized functions and one extra symbol fell straight out.
+
+## CORRECTION: the constructor-vs-memberwise lever is about the TWO-argument case
+
+The rule as written -- "a two-argument constructor interleaves its arguments;
+memberwise assignment serialises" -- was generalised too far, and a peer
+disproved the generalisation by measuring rather than accepting it.
+
+Briefed to fix a 9-word gap by replacing an aggregate build with serial member
+assignments, it tested that first and got **no change at all**: a
+**three-argument `mVec3_c` constructor already serialises**, so converting it to
+`v.x = ...; v.y = ...; v.z = ...;` moved nothing. The 2-arg `mVec2_c` result does
+not extend to the 3-arg case.
+
+**What actually closed it was lever 10 + lever 11 -- aggregate copy, then
+compound assignment on the members:**
+
+    mVec3_c mMin = pos;          // copy writes pos.x, pos.y and 0.0f into place
+    mMin.x -= size.x * 0.5f;
+    mMin.y -= size.y * 0.5f;
+    mVec3_c mMax = pos;          // copy again, fresh base values
+    mMax.x += size.x * 0.5f;
+    mMax.y += size.y * 0.5f;
+
++9 words, closing all five line items at once. The copy reproduces retail's
+"store the base value, then overwrite it" schedule, and the `.z = 0.0f` store
+falls out of copying a `pos` whose `z` is already zero -- so two separate
+"missing explicit `.z` store" diffs closed for free without either being
+addressed directly.
+
+**Generalisable point:** when the target stores a base value and then modifies it
+in place, the source shape is a COPY followed by compound assignment, not a
+construction from computed arguments. Reach for the copy before reaching for
+serialisation.
+
+## Confirmed: MWCC picks an integer shift from the DECLARED TYPE, not the expression
+
+Measured properly, with the disproof included, on a `srawi`+`clrlwi` residual
+where retail had a single `extrwi`:
+
+| shift variable declared | emitted |
+|---|---|
+| `int` | `srawi` + `clrlwi` (signed path) |
+| `u32` | `srwi` (logical, unmasked) |
+| `u16` | **`extrwi rA, rA, 12, 16`** -- retail's instruction |
+| `int`, with `(u16)` cast at the USE site | `srawi` + `clrlwi` -- unchanged |
+
+So a cast at the point of use does not reach this; the variable's declared type
+does. Where one value needs two roles -- an `int` to receive an `fctiwz`
+conversion and an unsigned for the shift-and-mask -- **use two variables**, do not
+cast one. Costs +1 word for the truncation and saves the extra shift instruction.

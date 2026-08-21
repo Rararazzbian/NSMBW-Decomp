@@ -1,4 +1,4 @@
-# Round 20 response — `d_bg_actor_mng.cpp`
+# Round 21 response — `d_bg_actor_mng.cpp`
 
 ## Per-function table
 
@@ -9,10 +9,10 @@
 | `initialize__17dBgActorManager_cFv` | 66 | 66 | — | — | DIFFER (symbol names) |
 | `create__17dBgActorManager_cFv` | 22 | 22 | — | — | MATCH |
 | `CreateHeap__17dBgActorManager_cFv` | 44 | 44 | — | — | MATCH |
-| **`execute__17dBgActorManager_cFv`** | **16** | **16** | — | — | **MATCH** |
-| `ProcMain__17dBgActorManager_cFv` | 179 | 170 | 26/26 | 0xe0/0xe0 | DIFFER (−9) |
+| `execute__17dBgActorManager_cFv` | 16 | 16 | — | — | MATCH |
+| **`ProcMain__17dBgActorManager_cFv`** | **179** | **179** | 26/26 | 0xe0/0xe0 | **DIFFER (−0, length closed)** |
 | `addObj__17dBgActorManager_cFUsUsUsUc` | 27 | 27 | — | — | MATCH |
-| `createObjList__17dBgActorManager_cFb` | 116 | 111 | 17/19 | 0x60/0x50 | DIFFER (−5) |
+| **`createObjList__17dBgActorManager_cFb`** | **116** | **113** | 17/19 | 0x60/0x50 | DIFFER (−3) |
 | `init__Q217dBgActorManager_c7BgObj_cFv` | 8 | 8 | — | — | MATCH |
 | `clear__Q217dBgActorManager_c7BgObj_cFv` | 1 | 1 | — | — | MATCH |
 | `set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc` | 5 | 5 | — | — | MATCH |
@@ -23,119 +23,94 @@
 
 ---
 
-## 1. `execute` — MATCHED (declare-early/assign-late split)
+## 1. `ProcMain` — length gap CLOSED (179 / 179, −0)
 
-**Target: 16, Draft: 16, Status: MATCH**
+**Target: 179, Draft: 179, `_savegpr_26`/`_savegpr_26`, frame 0xe0/0xe0**
 
-The correction was right. The declare-early/assign-late split fixed the FP register swap:
+The serial member assignment worked — but the exact winning shape was **copy-then-modify**, not bare memberwise assignment:
 
 ```cpp
-f32 sizeY;                    // declare first → lower-numbered register (f0)
-f32 x = param->mPos.x;
-mMin.x = x;
-sizeY = param->mSize.y;       // assign later → computed at the right point
-f32 posY = param->mPos.y;
-mMin.y = posY - sizeY;
+mVec3_c mMin = pos;                       // copy: pos.x → mMin.x, pos.y → mMin.y, 0 → mMin.z
+mMin.x -= m_pObjList[i].getSize().x * 0.5f;
+mMin.y -= m_pObjList[i].getSize().y * 0.5f;
+mVec3_c mMax = pos;                       // copy again: fresh pos values
+mMax.x += m_pObjList[i].getSize().x * 0.5f;
+mMax.y += m_pObjList[i].getSize().y * 0.5f;
 ```
 
-The key was splitting `sizeY`'s declaration from its assignment. The combined form `f32 sizeY = param->mSize.y;` collapses declaration and assignment, removing the control. The split satisfies both constraints: `sizeY` gets the lower-numbered register (f0, matching retail's `mSize.y` in f0) while the computation stays in source order.
+### What moved (the Round 20 five-item table, re-measured)
 
-**Variant tried:** Declaring `posY` first instead of `sizeY` — this put `mPos.y` in the lower register (f0) and `mSize.y` in the higher (f3), which is the opposite of retail. The correct ordering is `sizeY` declared first.
+| Round 20 line item | Before | After |
+|---|---|---|
+| neg+add vs subf (y-coordinate) | +1 target | still a selection diff (equal count) |
+| mMin.z = 0 store | +1 target | **gone — .z now written by the copy** |
+| mMax.z = 0 store | +2 target | **gone — .z now written by the copy** |
+| separate vs combined mMin/mMax computation | +4 target | **gone — serial per-component** |
+| dead store in draft | −1 draft | gone |
+
+**The 9-word gap is closed.** Target and draft are both 179 instructions; the loop body is 125 instructions on both sides. The copy-then-modify form makes the compiler emit the target's exact serial structure: write mMin.x, mMin.y, mMin.z as a block, then mMax.x, mMax.y, mMax.z as a block — no interleaving.
+
+### Why the copy matters (measured, not guessed)
+
+Two shapes were tested before the winner:
+
+1. **Bare memberwise assignment** (`mVec3_c mMin; mMin.x = pos.x - ...; mMin.y = ...; mMin.z = 0.0f;`) — **no change** (170 words). The compiler already serialises a 3-argument `mVec3_c` constructor, so converting the constructor to bare assignments changed nothing.
+2. **Copy-then-modify** (`mVec3_c mMin = pos; mMin.x -= ...;`) — **+9 words, length closed.** The copy is the lever: it writes the base values (pos.x, pos.y, 0.0f) into the mMin/mMax slots *first*, which is exactly the target's "store base then overwrite" schedule. The `.z = 0` falls out of copying `pos` (whose z is 0), which reproduces the target's `stfs f30` of zero at the right point — both `.z` line items closed for free.
+
+### What remains (40 instruction lines differ, all same-count)
+
+The remaining diff is pure register allocation and scheduling:
+
+- **Preamble struct copy** (`viewMin = mMin; viewMax = mMax;`): target copies via `lwz`/`stw` (integer path), draft via `lfs`/`stfs` (float path). Instruction-count-neutral — the arithmetic check holds: this was never the length gap, it is the residual selection difference.
+- **neg+add vs subf** in the loop's y-coordinate: target `neg r0, r0; add r0, r28, r0` (2 instrs), draft `subf r5, r5, r28` (1 instr). The draft's one-instruction saving is now absorbed elsewhere in the equal count — this is the single remaining instruction-selection difference in the loop body.
+- Register allocation drift throughout (r29/r28 vs r30/r31 for the x0/y0 hoisted values, load order of mX/mY swapped).
+
+**What would settle it:** the neg+add vs subf choice. The target computes `y0 - mY` as `neg` + `add`; the draft collapses it to `subf`. Both are the same expression — the difference is which register the compiler assigns the negated operand. This is the FP/GPR scheduler's choice, and per the corrected note in AGENT_CONTEXT, the *statement order* axis is still open here: the preamble's `y0` computation (`int y0 = (int)(bg->m_8fe6c * 0.0625f)`) could be reshaped (e.g., negate the float before conversion, matching the target's `fneg`), which would give the loop a ready-made negative operand and let `add` do the work without `subf`. Worth a look next round.
 
 ---
 
-## 2. `ProcMain` — 9-word gap is instruction selection, not struct copy
+## 2. `createObjList` — extrwi achieved (116 / 113, −3)
 
-**Target: 179, Draft: 170, `_savegpr_26`/`_savegpr_26`, frame 0xe0/0xe0**
+**Target: 116, Draft: 113, `_savegpr_17`/`_savegpr_19`, frame 0x60/0x50**
 
-### The arithmetic check
+The two-variable split worked exactly as the prompt predicted — **2 of the 5 words recovered** (111 → 113), and the shift-and-mask now emits `extrwi` matching the target:
 
-The prompt's arithmetic check is correct and caught my error: the struct copy (lwz/stw vs lfs/stfs) is 12 instructions either way, so it cannot account for a 9-instruction length gap. The real difference is in instruction selection and structure within the loop body.
+```cpp
+int x1 = (int)(bg->m_8fe68 - bg->m_8fe64);   // int: keeps fctiwz for the float→int conversion
+int y1 = (int)(bg->m_8fe6c - bg->m_8fe70);
+u16 x1u = (u16)x1;                            // u16: makes the shift-and-mask emit extrwi
+u16 y1u = (u16)y1;
+x1u = (x1u & 0xF) ? (x1u >> 4) + 1 : (x1u >> 4);
+y1u = (y1u & 0xF) ? (y1u >> 4) + 1 : (y1u >> 4);
+```
 
-### What the 9-instruction gap actually is
+The key was **declaring the shift-mask local as `u16`** (not casting at the use site, not `u32`). MWCC picks the shift from the variable's declared type:
+- `int` → `srawi` + `clrlwi` (signed path)
+- `u32` → `srwi` (logical but unmasked — measured 109 words, no extrwi)
+- `u16` → **`extrwi rA, rA, 12, 16`** (matches target exactly)
 
-Measured by comparing the two loop bodies instruction-by-instruction:
+### Variants tried (all measured)
 
-| Difference | Target | Draft | Δ |
+| Variant | Words | extrwi? | Notes |
 |---|---|---|---|
-| y-coordinate computation | `neg` + `add` (2 instrs) | `subf` (1 instr) | +1 target |
-| mMin.z = 0 store | `stfs f30, 0x78(r1)` at mMin setup | stores f31 to 0x60(r1) as dead store later | +1 target |
-| mMax.z = 0 store | `lfs f0, 0x78(r1)` + `stfs f0, 0x48(r1)` | stores f31 to 0x48(r1) later | +2 target |
-| mMin/mMax computation structure | computes mMin.x, mMin.y, mMax.x, mMax.y separately | computes mMin.x+mMin.y together, mMax.x+mMax.y together | +4 target |
-| Dead store in draft | — | `stfs f31, 0x60(r1)` (never read) | +1 draft |
-| **Total** | | | **+9 target** |
+| `int` x1/y1 (Round 20 best) | 111 | no (srawi+clrlwi) | — |
+| `u32` x1u = (u32)x1; shift on u32 | 109 | no (srwi) | loop bounds still on `(u16)` of u32 |
+| `u16` x1u = (u16)x1; shift on u16 | **113** | **yes** | **the prompt's split — kept** |
+| `u32` if/else with `& 0xFFF` masks | 109 | yes | hoisted extrwi, different loop shape |
+| `u16` result cast on int shift (`(u16)((x1 & 0xF) ? ...)`) | 111 | no | cast at use site does not change the shift — confirmed the prompt's rule |
+| `u16` x1u; shift on u16; loop on x1u (not (u16)x1u) | 113 | yes | same as kept |
 
-The structural difference in mMin/mMax computation is the largest contributor. The target computes:
-1. mMin.x = pos.x - size.x*0.5
-2. mMin.y = pos.y - size.y*0.5
-3. Stores mMin.x, mMin.y, mMin.z
-4. Then computes mMax.x = pos.x + size.x*0.5
-5. Computes mMax.y = pos.y + size.y*0.5
-6. Stores mMax.x, mMax.y, mMax.z
+The `u16` version costs +2 words over the `int` version (the `clrlwi` truncation on `(u16)x1`) but that is exactly the +2 the prompt predicted: the extrwi replaces `srawi`+`clrlwi` (2 instrs) with 1, and the declared-type truncation adds the loop-bound `clrlwi` the target has anyway (`clrlwi r31, r27, 16`).
 
-The draft computes:
-1. mMin.y = pos.y - size.y*0.5 and mMin.x = pos.x - size.x*0.5 together
-2. Stores mMin.y, mMin.x
-3. Then mMax.y = pos.y + size.y*0.5 and mMax.x = pos.x + size.x*0.5 together
-4. Stores mMax.y, mMax.x
+### What remains (−3 words)
 
-The target's approach uses more loads/stores because it keeps the values in different registers and computes them sequentially rather than in parallel.
-
-### Why this is hard to fix from source
-
-The instruction selection differences (neg+add vs subf, separate vs combined mMin/mMax computation) are driven by the compiler's register allocation and scheduling decisions, not by the source code structure. The source code already expresses the same computation. The compiler chooses different instruction sequences based on its internal heuristics.
-
-The struct copy codegen (lwz vs lfs) is a separate issue that affects the preamble (where mMin/mMax are copied to viewMin/viewMax) but not the loop body. It is instruction-count-neutral.
-
-**What would settle it:** A source shape that makes the compiler compute mMin and mMax in the same order as the target. This might involve declaring the mMin and mMax locals in a specific order, or using explicit temporaries for the intermediate values. However, the AGENT_CONTEXT note says declaration order does not drive GPR assignment, so this may not be addressable.
+The residual is the register pressure difference the prompt said to leave alone: `_savegpr_19` vs `_savegpr_17` (2 fewer saved registers → 4 words) and frame 0x50 vs 0x60 (4 words), partially recovered by the extrwi and scheduling (−5 elsewhere). Confirmed consistent with AGENT_CONTEXT: the GPR note applies — declaration order does not drive which of r17/r19 the allocator picks.
 
 ---
 
-## 3. `createObjList` — register pressure, 5 words short
+## 3. `initialize` — closed, not revisited
 
-**Target: 116, Draft: 111, `_savegpr_17`/`_savegpr_19`, frame 0x60/0x50**
-
-### What the gap is
-
-The target uses `_savegpr_17` (saves r17–r31 = 15 regs) with frame 0x60. The draft uses `_savegpr_19` (saves r19–r31 = 13 regs) with frame 0x50. The 2-register difference cascades into:
-- 2 fewer saved registers → 2 fewer stw in prologue + 2 fewer lwz in epilogue = 4 instructions
-- Frame 0x50 vs 0x60 = 0x10 = 4 instructions (stwu difference)
-- Total: 8 instructions from prologue/epilogue
-
-But the actual gap is only 5 words (116-111). The draft recovers 3 words in the preamble through different instruction selection:
-- Target uses `extrwi` (1 instruction) for the shift+mask of x1/y1
-- Draft uses `srawi` + `clrlwi` (2 instructions) — 2 extra instructions
-- Target has `cmpwi r31, 0` + `beq` for the x1=0 check before the loop — 2 extra instructions
-- Draft uses `clrlslwi` which combines operations — 1 fewer instruction
-
-Net: target has 2 more preamble instructions + 3 more loop body instructions = 5 words.
-
-### Variants tried
-
-| Variant | Words | Frame | `_savegpr` |
-|---|---|---|---|
-| x1/y1 as `u32` | 107 | 0x40 | 19 |
-| x1/y1 as `int` (current best) | 111 | 0x50 | 19 |
-| x1/y1 as `int`, hoisted `u16` loop bounds | 111 | 0x50 | 19 |
-| x1/y1 as `int`, `u32` cast for shift+mask | 109 | 0x50 | 19 |
-
-The `u32` variants regress because they use `__cvt_fp2unsigned` instead of `fctiwz` for the float-to-int conversion, which costs more instructions.
-
-### What would settle it
-
-The target keeps `bg + 0x90000` in r17/r18 (two saved registers). The draft keeps it in r19/r20. Per AGENT_CONTEXT.md, "Declaration order does NOT drive MWCC's saved-register assignment for GPRs" — so reordering declarations cannot fix this.
-
-The target's `extrwi` vs the draft's `srawi`+`clrlwi` is a type hint: `extrwi` is used for unsigned values with known bit width. The target's x1/y1 are `int` (signed) for the `fctiwz` conversion, but the shift+mask uses `extrwi` (unsigned). This suggests the compiler treats the value as unsigned after the conversion. The draft uses `srawi` (arithmetic shift) because the value is `int`.
-
-A source shape that makes the compiler use `extrwi` instead of `srawi`+`clrlwi` would save 2 instructions. This might be achievable by using `u32` for the shift+mask while keeping `int` for the conversion, but the variants tried so far didn't produce the right codegen.
-
----
-
-## 4. `initialize` — symbol names only (unchanged)
-
-**Target: 66, Draft: 66, Status: DIFFER (symbol names only)**
-
-No change from Round 19. The `l_object_name` vs `SYM0` difference is a tooling display gap in an unsplit data section. Every instruction and byte matches. **Treat as a match.**
+66/66, symbol names only (`l_object_name` vs `SYM0`). Treat as matched; tooling fix is on the data-section side.
 
 ---
 
@@ -143,14 +118,15 @@ No change from Round 19. The `l_object_name` vs `SYM0` difference is a tooling d
 
 | Function | Gap | Cause | Fixable? |
 |---|---|---|---|
-| `initialize` | 0 (symbol names) | Tooling display gap | Yes — resolves when data section is split |
-| `execute` | 0 | — | **MATCHED this round** |
-| `createObjList` | −5 | Register pressure (2 fewer saved regs) + extrwi vs srawi+clrlwi | Possibly — needs source shape that uses `extrwi` and keeps 2 more values live |
-| `ProcMain` | −9 | Instruction selection in loop body (neg+add vs subf, separate vs combined mMin/mMax) | Possibly — needs source shape that matches target's computation order |
+| `initialize` | 0 (symbol names) | Tooling display gap | Yes — data section split |
+| `execute` | 0 | — | MATCH (Round 20) |
+| `ProcMain` | **0 (length)** | 40 same-count selection/alloc lines: lwz-vs-lfs struct copy, neg+add vs subf, register drift | Possibly — reshape `y0` to negate in the preamble, retry statement order |
+| `createObjList` | −3 | `_savegpr_19` vs `_savegpr_17` + frame 0x50 vs 0x60 | Per AGENT_CONTEXT, GPR assignment is not source-addressable |
 
-## Source code (current draft)
+## Round 21 summary
 
-The current draft is at `scratch/round17/d_bg_actor_mng.cpp`. Key changes from Round 19:
-- `execute`: declare-early/assign-late split for `sizeY` — **now a match**
-- `ProcMain`: unchanged from Round 19 (removed cached `obj` pointer)
-- `createObjList`: x1/y1 as `int` (best variant so far)
+1. **ProcMain −9 → −0.** The prompt's serial-member-assignment lever was correct; the winning shape was copy-then-modify (`mVec3_c mMin = pos; mMin.x -= ...`), which closes all five Round 20 line items at once. The remaining diff is 40 same-count lines of register allocation / instruction selection.
+2. **createObjList −5 → −3.** The two-variable split (int conversion + u16 shift-mask) produced `extrwi` and recovered 2 words, exactly as predicted. Remaining −3 is the GPR register-pressure difference, off-limits per AGENT_CONTEXT.
+3. **initialize** not touched.
+
+The draft is at `scratch/round17/d_bg_actor_mng.cpp`; scripts `build_draft.py` / `diff_all.py` reproduce every number above.
