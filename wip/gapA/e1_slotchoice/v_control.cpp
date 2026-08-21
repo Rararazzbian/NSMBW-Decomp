@@ -460,56 +460,6 @@ bool dLineMng_c::width_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVe
     return fn_800C1EE0(this, 0.0f, 16.0f, p1, p2, p3, origin);
 }
 
-// author_geom: line0..line4 (batch d1_lines_a). All-const-ref signature per
-// shadow header (game/bases/d_line_mng.hpp:91-95) -- distinct from the
-// lineF/circle/lineRH family below, which takes p2/p3 BY VALUE because they
-// mutate them (subtract an origin) before use. line0-line4 never mutate p2/p3
-// themselves -- they only ever forward them untouched into fn_800C1EE0/
-// width_cross_chk/height_cross_chk, so a const ref suffices and the mangled
-// name in target.txt confirms it (RC7mVec2_cRC7mVec2_cRC7mVec2_c, all three
-// reference-qualified).
-bool dLineMng_c::line0_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c origin = p1;
-    origin.y -= 16.0f;
-    bool result = fn_800C1EE0(this, 1.0f, 16.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Left45);
-    }
-    return result;
-}
-
-bool dLineMng_c::line1_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    bool result = fn_800C1EE0(this, -1.0f, 16.0f, p1, p2, p3, p1);
-    if (result) {
-        mStateMgr.changeState(StateID_Right45);
-    }
-    return result;
-}
-
-bool dLineMng_c::line3h_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    bool result = width_cross_chk(p1, p2, p3);
-    if (result) {
-        mStateMgr.changeState(StateID_CornerSideLine);
-    }
-    return result;
-}
-
-bool dLineMng_c::line3v_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    bool result = height_cross_chk(p1, p2, p3);
-    if (result) {
-        mStateMgr.changeState(StateID_CornerHeightLine);
-    }
-    return result;
-}
-
-bool dLineMng_c::line4_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    bool result = width_cross_chk(p1, p2, p3);
-    if (result) {
-        mStateMgr.changeState(StateID_Side);
-    }
-    return result;
-}
-
 bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
     origin.y = p1.y - 8.0f;

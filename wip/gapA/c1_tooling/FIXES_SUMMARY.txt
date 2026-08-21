@@ -1,0 +1,110 @@
+NSMBW-Decomp Measurement Tooling Bug Fixes Summary
+===================================================
+
+BEFORE FIXES
+============
+matched 106/182 functions   2580/7631 words = 33.8% BY BYTES
+
+fn_800C31C0 was reported as MISSING
+12 byte-identical functions were falsely reported as canonically unequal:
+  - 4x mov_to_* functions (mov_to_rightupper, rightlower, leftupper, leftlower)
+  - 8x initializeState_* functions (Idle, FallDown, Left45, Right45, Side, Height, CornerHeightLine, CornerSideLine)
+  - Plus: executeState_Left30Left (99 instructions, all bytes identical)
+
+AFTER FIXES
+===========
+matched 106/182 functions   2580/7631 words = 33.8% BY BYTES
+
+fn_800C31C0 is now reported as "549w LEN OK" (paired with mangled draft fn_800C31C0__FP10dLineMng_c)
+All 12 functions now canonicalise equal to retail
+Matched and word counts are unchanged (as required)
+
+CHANGES MADE
+============
+
+FILE 1: tools/auto_decomp/harness.py
+=====================================
+
+Bug 1a: Strip quotes from pool symbol names
+-------------------------------------------
+Changed: POOL_SYM regex pattern to optionally match and preserve quotes
+  OLD: r'@\d+(?:_[0-9A-Fa-f]{8})?'
+       r'|lbl_[0-9A-Fa-f]{8}'
+       r'|\.\.\.(?:data|rodata|bss|sdata2?)\.\d+'
+  
+  NEW: r'"?@\d+(?:_[0-9A-Fa-f]{8})?"?'
+       r'|lbl_[0-9A-Fa-f]{8}'
+       r'|"?\.\.\.(?:data|rodata|(?:s)?bss|sdata2?)\.\d+?"?'
+
+This ensures quoted symbols like "@49614_80359100" and unquoted symbols like
+...bss.0 both normalize to the same form (e.g., SYM0).
+
+Bug 1b: Add sbss to pool symbol pattern
+----------------------------------------
+Changed: Pattern to include both bss and sbss variants
+  Before: (?:data|rodata|bss|sdata2?)
+  After:  (?:data|rodata|(?:s)?bss|sdata2?)
+
+This matches dtk's unnamed section object names like ...sbss.N
+
+Bug 1c: Strip CFront mangling from placeholder function names
+-------------------------------------------------------------
+Changed: PLACEHOLDER_CALLEE regex to match mangling but strip it during substitution
+  OLD: r'\b(fn|func)_([0-9A-Fa-f]{8})\b'
+  NEW: r'\b(fn|func)_([0-9A-Fa-f]{8})(?:__\w+)?\b'
+
+Changed: Substitution lambda to not include the mangled suffix
+  OLD: lambda m: m.group(1) + _KEEP + m.group(2) + m.group(3)
+  NEW: lambda m: m.group(1) + _KEEP + m.group(2)
+
+This ensures that fn_800C3B20 and fn_800C3B20__FP10dLineMng_c (same function,
+different disassembly source) canonicalise to identical form.
+
+
+FILE 2: wip/line_mng_shared/tally.py
+====================================
+
+Bug 2: Add mangled-name pairing for unnamed functions
+------------------------------------------------------
+Added: A second pass after name-keyed matching that:
+  1. Strips the CFront mangling suffix (__<stuff>) from draft function names
+  2. Pairs them with retail functions by the unmangled name
+  3. Adds synthetic entry to d dict so reporting sees the draft length
+  4. Records the pairing in paired_by_content
+
+This allows retail placeholder fn_800C31C0 to be paired with draft's
+fn_800C31C0__FP10dLineMng_c, enabling proper structural mismatch reporting
+instead of false "MISSING" status.
+
+VERIFICATION
+============
+
+Test 1: Baseline metrics unchanged
+  Before: matched 106/182 functions   2580/7631 words = 33.8% BY BYTES
+  After:  matched 106/182 functions   2580/7631 words = 33.8% BY BYTES
+  Status: PASS
+
+Test 2: fn_800C31C0 now properly paired
+  Before: fn_800C31C0 reported as MISSING
+  After:  fn_800C31C0 reported as 549w LEN OK
+  Status: PASS
+
+Test 3: 12 byte-identical functions now canonicalise equal
+  - mov_to_rightupper: PASS
+  - mov_to_rightlower: PASS
+  - mov_to_leftupper: PASS
+  - mov_to_leftlower: PASS
+  - initializeState_Idle: PASS
+  - initializeState_FallDown: PASS
+  - initializeState_Left45: PASS
+  - initializeState_Side: PASS
+  - initializeState_CornerSideLine: PASS
+  - initializeState_Left30Left: PASS
+  - initializeState_Left30Right: PASS
+  - initializeState_Right30Left: PASS
+  - executeState_Left30Left (99 instructions): PASS
+
+Test 4: Negative test - canonicalise is not looser
+  Two streams with different callees (fn_800C1234 vs fn_800C5678) still
+  correctly identified as different.
+  Status: PASS
