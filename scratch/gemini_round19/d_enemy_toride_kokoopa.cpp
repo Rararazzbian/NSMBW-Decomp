@@ -870,7 +870,6 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
 static const float l_shellatk_speed[2] = { 4.0f, -4.0f };
 
 void dEnTorideKokoopa_c::executeState_AttackSearch() {
-    dActor_c *blitz;
     mMdlKokoopa.play();
     if (mpParamAttack->mPad10 != 0) {
         mAnmMatClr.play(1);
@@ -982,10 +981,10 @@ void dEnTorideKokoopa_c::executeState_ShellAtk() {
     if (mBc.checkFootEnm()) {
         mSpeed.y = 0.0f;
     }
-    if (mSpeed.x < 0.0f) {
-        mDirection = 1;
-    } else {
+    if (mSpeed.x >= 0.0f) {
         mDirection = 0;
+    } else {
+        mDirection = 1;
     }
     s16 targetAngle = 0;
     mAngle.y += mUnkAC0;
@@ -1003,8 +1002,9 @@ void dEnTorideKokoopa_c::executeState_ShellAtk() {
             mSpeed.x = 0.0f;
             mDirection = getPl_LRflag(mPos);
             s32 dir = defaultDirAngle();
+            s8 muki = l_EnMuki[mDirection];
             mAngle.z = 0;
-            mAngle.y = (s8)l_EnMuki[mDirection] * dir;
+            mAngle.y = muki * dir;
             changeState(StateID_ShellOut);
         }
     }
@@ -1047,17 +1047,17 @@ void dEnTorideKokoopa_c::executeState_ShellOut() {
     }
     if (checkGetUp()) {
         getupSE();
-        shellOutVo();
     }
+    shellOutVo();
     switch (m_23b) {
     case 1:
         if (!(mUnk794 & 1)) {
-            if (mAnmChrKokoopa.checkFrame(getKokoopaOffFrm())) {
+            if (mAnmChrKokoopa.checkFrame(getKokoopaOnFrm())) {
                 mUnk794 |= 1;
             }
         }
         if (mUnk794 & 2) {
-            if (mAnmChrKokoopa.checkFrame(getShellOnFrm())) {
+            if (mAnmChrKokoopa.checkFrame(getShellOffFrm())) {
                 mUnk794 &= ~2;
             }
         }
@@ -1077,14 +1077,14 @@ void dEnTorideKokoopa_c::executeState_ShellOut() {
 bool KokoopaSpFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
     result = 0;
     daPlBase_c *player = (daPlBase_c*)fumi.mCc2->mpOwner;
-    if ((player->mBgPressActive | player->mBgPressFlags) != 0) {
+    if ((*(u32*)((char*)player + 0x1074) | *(u32*)((char*)player + 0x1078)) != 0) {
         if (player->mSpeed.y > 0.0f) {
             result = 0;
             return true;
         }
     }
     if (!player->mBc.isFoot() && en->mSpeed.y > 0.0f) {
-        if (player->mDokanMode == 3) {
+        if (*(s32*)((char*)player + 0x1090) == 3) {
             if (player->mPos.y >= en->mPos.y + 4.0f) {
                 int plrNo = player->getPlrNo();
                 en->mNoHitPlayer.mTimer[plrNo] = 24;

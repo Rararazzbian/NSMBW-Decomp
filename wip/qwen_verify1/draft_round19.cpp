@@ -183,12 +183,10 @@ int dBgActorManager_c::CreateHeap() {
 void dBgActorManager_c::execute() {
     dBgParameter_c *param = dBgParameter_c::ms_Instance_p;
     const f32 zero = 0.0f;
-    f32 sizeY;
     f32 x = param->mPos.x;
     mMin.x = x;
-    sizeY = param->mSize.y;
-    f32 posY = param->mPos.y;
-    mMin.y = posY - sizeY;
+    f32 sizeY = param->mSize.y;
+    mMin.y = param->mPos.y - sizeY;
     mMin.z = zero;
     mMax.x = x + param->mSize.x;
     mMax.y = param->mPos.y;
