@@ -1,5 +1,4 @@
-size: target 179, draft 170
-   14 | want: beq .L |41820264|                            got: beq .L |41820240|
+size: target 179, draft 179
    15 | want: lwz r5, m_bg_p__5dBg_c@sda21(r0)             got: lfs f0, 0x28(r3)
    17 | want: lwz r4, 0x20(r3)                             got: lfs f1, 0x24(r3)
    19 | want: addis r5, r5, 0x9                            got: lfs f2, 0x20(r3)
@@ -10,14 +9,13 @@ size: target 179, draft 170
    24 | want: lfs f0, SYM0@sda21(r0)                       got: addis r4, r4, 0x9
    25 | want: stw r4, 0x64(r1)                             got: lfs f2, SYM0@sda21(r0)
    26 | want: fmuls f1, f1, f0                             got: stfs f0, 0x78(r1)
-   27 | want: lfd f29, SYM1@sda21(r0)                      got: lfs f31, SYM1@sda21(r0)
    28 | want: stw r0, 0x68(r1)                             got: lfs f0, 0x34(r3)
    29 | want: fmuls f0, f2, f0                             got: lfs f1, 0x30(r3)
    30 | want: lfs f30, SYM2@sda21(r0)                      got: lfs f3, 0x2c(r3)
    31 | want: lwz r0, 0x28(r3)                             got: stfs f3, 0x64(r1)
-   32 | want: stw r0, 0x6c(r1)                             got: lfd f30, SYM2@sda21(r0)
+   32 | want: stw r0, 0x6c(r1)                             got: lfs f30, SYM2@sda21(r0)
    33 | want: fctiwz f1, f1                                got: stfs f1, 0x68(r1)
-   34 | want: fctiwz f0, f0                                got: lfs f29, SYM3@sda21(r0)
+   34 | want: fctiwz f0, f0                                got: lfs f31, SYM3@sda21(r0)
    35 | want: lfs f31, SYM3@sda21(r0)                      got: stfs f0, 0x6c(r1)
    36 | want: stfd f1, 0x80(r1)                            got: lfs f1, -0x19c(r4)
    37 | want: lwz r4, 0x2c(r3)                             got: lfs f0, -0x194(r4)
@@ -29,8 +27,6 @@ size: target 179, draft 170
    43 | want: stw r0, 0x5c(r1)                             got: stfd f0, 0x88(r1)
    44 | want: lwz r0, 0x34(r3)                             got: lwz r29, 0x84(r1)
    45 | want: stw r0, 0x60(r1)                             got: lwz r28, 0x8c(r1)
-   46 | want: b .L |480001D8|                              got: b .L |480001B4|
-   51 | want: beq .L |418201BC|                            got: beq .L |41820198|
    52 | want: lhz r0, 0x2(r4)                              got: lhz r5, 0x4(r4)
    54 | want: stw r31, 0x88(r1)                            got: lhz r0, 0x2(r4)
    55 | want: add r0, r29, r0                              got: subf r5, r5, r28
@@ -39,4 +35,8 @@ size: target 179, draft 170
    58 | want: xoris r0, r0, 0x8000                         got: slwi r5, r5, 4
    59 | want: stw r0, 0x8c(r1)                             got: stw r31, 0x80(r1)
    60 | want: lfd f0, 0x88(r1)                             got: slwi r0, r0, 4
+   61 | want: fsubs f0, f0, f29                            got: xoris r5, r5, 0x8000
+   62 | want: stfs f0, 0x70(r1)                            got: stw r5, 0x8c(r1)
+   63 | want: lhz r0, 0x4(r4)                              got: xoris r0, r0, 0x8000
+   64 | want: neg r0, r0                                   got: stw r0, 0x84(r1)
   ... truncated

@@ -742,8 +742,15 @@ bool dLineMng_c::lineE_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVe
 }
 bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 8.0f;
-    origin.x = p1.x + 8.0f;
+    f32 oy;
+    f32 ox;
+    f32 px;
+    oy = p1.y - 8.0f;
+    px = p1.x;
+    ox = px;
+    ox += 8.0f;
+    origin.y = oy;
+    origin.x = ox;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -761,8 +768,15 @@ bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
 
 bool dLineMng_c::circle_ul2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 16.0f;
-    origin.x = p1.x + 16.0f;
+    f32 oy;
+    f32 ox;
+    f32 px;
+    oy = p1.y - 16.0f;
+    px = p1.x;
+    ox = px;
+    ox += 16.0f;
+    origin.y = oy;
+    origin.x = ox;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -921,8 +935,15 @@ bool dLineMng_c::lineRHUR_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
 
 bool dLineMng_c::lineRHUL_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 32.0f;
-    origin.x = p1.x + 32.0f;
+    f32 oy;
+    f32 ox;
+    f32 px;
+    oy = p1.y - 32.0f;
+    px = p1.x;
+    ox = px;
+    ox += 32.0f;
+    origin.y = oy;
+    origin.x = ox;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -1037,151 +1058,213 @@ bool dLineMng_c::lineRHLR_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
 // order and diff every byte from the first case onward.
 static void fn_800C31C0(dLineMng_c *self)
 {
-    mVec2_c posOld;
-    posOld.x = (f32)(int)self->mOldPos.x;
-    posOld.y = (f32)(int)self->mOldPos.y;
-
-    mVec2_c posNew;
-    posNew.x = (f32)(int)self->mPos.x;
-    posNew.y = (f32)(int)self->mPos.y;
-
-    // Grid-snap mPos down to its UNIT_SIZE cell, then step back one more
-    // cell so the 3x3 scan below is centred on the unit mPos sits in.
-    // `base` is initialised by AGGREGATE COPY and then rewritten field by
-    // field, rather than being filled from `self->mPos.x`/`self->mPos.y`
-    // directly. That is not a stylistic choice: MEASURED, the field loads
-    // MWCC emits for an aggregate copy are NOT common-subexpression-eliminated
-    // against the earlier scalar reads of the same members in posNew's
-    // construction above, so both fields are genuinely reloaded -- which is
-    // what the target does. Written the direct way, -O4 reuses the live
-    // registers and the function lands 2 words short (1 per field, confirmed
-    // additively). See "Gap A" in HANDOFF.md.
+    // The two-argument mVec2_c constructor, NOT two memberwise assignments.
+    // MEASURED: memberwise (`posOld.x = ...; posOld.y = ...;`) runs each
+    // float->int->float conversion to completion before starting the next;
+    // the target INTERLEAVES the pair -- both fctiwz, both stfd, both xoris --
+    // which is what an argument list produces, because MWCC evaluates
+    // arguments RIGHT-TO-LEFT and both are live at once. Closing this also
+    // moved `self` from r31 to r30 and the outer loop counter from r29 to
+    // r31 on its own; that GPR rotation was never an independent defect.
     //
-    // An earlier round forced the same reload with `*(volatile f32 *)&...` and
-    // that was correctly rejected as inauthentic. The two forms compile to
-    // BYTE-IDENTICAL code, so nothing is lost by preferring this one.
-    mVec2_c base = self->mPos;
-    base.x = dLineMng_c::smc_UNIT_SIZE_X * (f32)(int)(base.x / dLineMng_c::smc_UNIT_SIZE_X) - 16.0f;
-    base.y = dLineMng_c::smc_UNIT_SIZE_X * (f32)(int)(base.y / dLineMng_c::smc_UNIT_SIZE_X) - 16.0f;
+    // The Y-then-X local declarations are load-bearing twice over, and the
+    // two effects are separable (measured: 62 -> 45 -> 25 differing):
+    //   * ORDER: they fix the evaluation order to y-first, matching the
+    //     target's `lfs 0x4c` before `lfs 0x48`.
+    //   * DIRECTION: a bare member read is a leaf and MWCC numbers leaves
+    //     DESCENDING from N-1 in evaluation order (y=f1, x=f0). The target
+    //     numbers them ASCENDING (y=f0, x=f1), which is the signature of a
+    //     leaf that has a DEF-POINT -- see AGENT_CONTEXT.md lever 12. An
+    //     f32 local supplies that def-point. `int` locals give the ORDER but
+    //     not the DIRECTION (the int result is the def, the float leaf is
+    //     still bare) and stall at 45.
+    f32 oy = self->mOldPos.y;
+    f32 ox = self->mOldPos.x;
+    mVec2_c posOld((f32)(int)ox, (f32)(int)oy);
+    f32 ny = self->mPos.y;
+    f32 nx = self->mPos.x;
+    mVec2_c posNew((f32)(int)nx, (f32)(int)ny);
 
-    mVec2_c pos;
+    // Grid-snap mPos down to its UNIT_SIZE cell, then step back one more cell
+    // so the 3x3 scan below is centred on the unit mPos sits in.
+    //
+    // Three things here are load-bearing and they were the LAST four differing
+    // words in the function. This is the exact shape of the byte-exact
+    // `start_line_move` above (see its comment at the `f32 px = mPos.x;`
+    // line) plus one addition, the reference:
+    //
+    //  1. `mp` -- a const REFERENCE to mPos, not a copy. Retail reloads mPos.x
+    //     and mPos.y here even though posNew read them 18 words earlier (retail
+    //     loads y-then-x for posNew and x-then-y here, so they are genuinely
+    //     two separate reads). Reading `self->mPos.x` directly lets -O4 reuse
+    //     the live `nx`/`ny` and the function comes out 547 words, 2 SHORT.
+    //     An aggregate copy (`mVec2_c base = self->mPos;`) also defeats that
+    //     CSE and gives the right LENGTH -- it is what this line used to be --
+    //     but it folds each load into its own quotient register, and retail
+    //     keeps them separate. The reference defeats the CSE without folding.
+    //  2. `bx`/`by` -- the f32 locals give each dividend a DEF-POINT. Without
+    //     them the dividend is a bare leaf, numbered descending and fused with
+    //     the quotient: `lfs f1,0x40; fdivs f1,f1,f2`. With them retail's
+    //     ascending four-value allocation appears: `lfs f0,0x40; fdivs f1,f0,f2`
+    //     then `lfs f4,0x44` (f4, not f1, because f2 and f3 are still live)
+    //     and `fdivs f0,f4,f2`. AGENT_CONTEXT.md lever 12, on a fdivs.
+    //     NOTE the locals only work on top of (1): with the aggregate copy in
+    //     place they are copy-propagated away and change nothing at all.
+    //  3. The declarations are INTERLEAVED with their statements, matching the
+    //     sibling. (Measured: both-up-front also reaches zero here, but the
+    //     interleaved form is the one the original demonstrably uses.)
+    mVec2_c base;
+    const mVec2_c &mp = self->mPos;
+    f32 bx = mp.x;
+    base.x = (f32)(int)(bx / dLineMng_c::smc_UNIT_SIZE_X) * dLineMng_c::smc_UNIT_SIZE_X - 16.0f;
+    f32 by = mp.y;
+    base.y = (f32)(int)(by / dLineMng_c::smc_UNIT_SIZE_X) * dLineMng_c::smc_UNIT_SIZE_X - 16.0f;
+
+    // Declaration ORDER sets the stack slots: corner lands at r1+0x120 and
+    // pos at r1+0x118, which is what the target has. Declared the other way
+    // round they swap and every `addi r4,r1,0x118` in the switch diffs (64
+    // words, the single largest cause in the original 221-word residual).
     mVec2_c corner;
+    mVec2_c pos;
     pos.x = base.x;
     pos.y = base.y;
     for (int j = 0; j < 3; j++) {
         pos.x = base.x;
         for (int i = 0; i < 3; i++) {
             u32 id = dLineMng_c::getLineUnitNo(pos.x, pos.y);
+            // The `else` on every `break` below is NOT redundant. Written as
+            // `if (X) goto found; break;` MWCC inverts the test and emits
+            // `bne found; b <inc>`; the target has the uninverted
+            // `beq <inc>; b found`. The explicit else suppresses the
+            // inversion and closed all 28 sites at once (157 -> 101). The
+            // proof it is the right shape was already in the file: case 4's
+            // `||` pair matched from the start, and the LAST test of an `||`
+            // chain emits exactly `beq <inc>; b found`.
+            // Do NOT reach for `if (!X) break;` instead -- these return
+            // `bool`, so the negation costs a `cntlzw`/`srwi.` pair and the
+            // function grows to 566 words. Measured.
             switch (id) {
                 case 1:
                     if (self->line0_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 2:
                     if (self->line1_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 4:
                     if (self->line3h_cross_chk(pos, posOld, posNew) ||
                         self->line3v_cross_chk(pos, posOld, posNew)) goto found;
                     break;
                 case 5:
                     if (self->line4_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 6:
                     if (self->line5_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 9:
                     if (self->line7_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 8:
                     if (self->line8_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 11:
                     if (self->line9_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 10:
                     if (self->lineA_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 12:
                     if (self->lineB_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 13:
                     if (self->lineC_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 14:
                     if (self->lineD_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 15:
                     if (self->lineE_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 16:
                     if (self->lineF_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 18:
                     if (self->circle_ul2_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 17:
                     if (self->circle_ur2_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 20:
                     if (self->circle_dl2_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 19:
                     if (self->circle_dr2_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 26:
-                    corner.x = pos.x - 16.0f;
-                    corner.y = pos.y + 16.0f;
-                    if (self->lineRHUR_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
-                case 24:
-                    corner.x = pos.x - 16.0f;
+                    corner.x = pos.x;
                     corner.y = pos.y;
+                    corner.x -= 16.0f;
+                    corner.y += 16.0f;
                     if (self->lineRHUR_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
+                    else break;
+                case 24:
+                    corner.x = pos.x;
+                    corner.y = pos.y;
+                    corner.x -= 16.0f;
+                    if (self->lineRHUR_cross_chk(corner, posOld, posNew)) goto found;
+                    else break;
                 case 23:
                     if (self->lineRHUR_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 22:
-                    corner.x = pos.x - 16.0f;
+                    corner.x = pos.x;
                     corner.y = pos.y;
+                    corner.x -= 16.0f;
                     if (self->lineRHUL_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 21:
                     if (self->lineRHUL_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 25:
                     corner.x = pos.x;
-                    corner.y = pos.y + 16.0f;
+                    corner.y = pos.y;
+                    corner.y += 16.0f;
                     if (self->lineRHUL_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 27:
                     if (self->lineRHLL_cross_chk(pos, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 29:
                     corner.x = pos.x;
-                    corner.y = pos.y + 16.0f;
+                    corner.y = pos.y;
+                    corner.y += 16.0f;
                     if (self->lineRHLL_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 30:
-                    corner.x = pos.x - 16.0f;
-                    corner.y = pos.y + 16.0f;
+                    corner.x = pos.x;
+                    corner.y = pos.y;
+                    corner.x -= 16.0f;
+                    corner.y += 16.0f;
                     if (self->lineRHLL_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
+                    else break;
                 case 31:
                     corner.x = pos.x;
-                    corner.y = pos.y + 16.0f;
-                    if (self->lineRHLR_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
-                case 32:
-                    corner.x = pos.x - 16.0f;
-                    corner.y = pos.y + 16.0f;
-                    if (self->lineRHLR_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
-                case 28:
-                    corner.x = pos.x - 16.0f;
                     corner.y = pos.y;
+                    corner.y += 16.0f;
                     if (self->lineRHLR_cross_chk(corner, posOld, posNew)) goto found;
-                    break;
+                    else break;
+                case 32:
+                    corner.x = pos.x;
+                    corner.y = pos.y;
+                    corner.x -= 16.0f;
+                    corner.y += 16.0f;
+                    if (self->lineRHLR_cross_chk(corner, posOld, posNew)) goto found;
+                    else break;
+                case 28:
+                    corner.x = pos.x;
+                    corner.y = pos.y;
+                    corner.x -= 16.0f;
+                    if (self->lineRHLR_cross_chk(corner, posOld, posNew)) goto found;
+                    else break;
             }
             pos.x += 16.0f;
         }

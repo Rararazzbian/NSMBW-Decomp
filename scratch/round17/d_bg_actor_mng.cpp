@@ -213,10 +213,12 @@ void dBgActorManager_c::ProcMain() {
                     (f32)((int)((y0 - m_pObjList[i].mY) << 4)), 0.0f);
         pos.x += m_pObjList[i].getOffset().x;
         pos.y += m_pObjList[i].getOffset().y;
-        mVec3_c mMin(pos.x - m_pObjList[i].getSize().x * 0.5f,
-                     pos.y - m_pObjList[i].getSize().y * 0.5f, 0.0f);
-        mVec3_c mMax(pos.x + m_pObjList[i].getSize().x * 0.5f,
-                     pos.y + m_pObjList[i].getSize().y * 0.5f, 0.0f);
+        mVec3_c mMin = pos;
+        mMin.x -= m_pObjList[i].getSize().x * 0.5f;
+        mMin.y -= m_pObjList[i].getSize().y * 0.5f;
+        mVec3_c mMax = pos;
+        mMax.x += m_pObjList[i].getSize().x * 0.5f;
+        mMax.y += m_pObjList[i].getSize().y * 0.5f;
         if (m_pObjList[i].mActorId != 0) {
             if (!dGameCom::checkRectangleOverlap(&mMin, &mMax, &viewMin, &viewMax, 0.0f)) {
                 m_pObjList[i].deleteActor();
@@ -247,8 +249,10 @@ int dBgActorManager_c::createObjList(bool add) {
     u32 y0 = (u32)(-(bg->m_8fe6c) * 0.0625f);
     int x1 = (int)(bg->m_8fe68 - bg->m_8fe64);
     int y1 = (int)(bg->m_8fe6c - bg->m_8fe70);
-    x1 = (x1 & 0xF) ? (x1 >> 4) + 1 : (x1 >> 4);
-    y1 = (y1 & 0xF) ? (y1 >> 4) + 1 : (y1 >> 4);
+    u32 x1u = (u32)x1;
+    u32 y1u = (u32)y1;
+    x1u = (x1u & 0xF) ? (x1u >> 4) + 1 : (x1u >> 4);
+    y1u = (y1u & 0xF) ? (y1u >> 4) + 1 : (y1u >> 4);
     int count = 0;
     for (u16 j = 0; j < (u16)y1; j++) {
         u16 gridY = (u16)((j + y0) << 4);

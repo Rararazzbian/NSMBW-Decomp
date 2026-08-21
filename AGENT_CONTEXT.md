@@ -1243,6 +1243,12 @@ constructor forms (33-101); whole-vector `operator-=` (byte-identical to manual
 field subtraction, so that shape is codegen-neutral); reversing the
 `slope`/`intercept` declaration order (30 -- a real effect, wrong direction).
 
+**All four of the function's pool constants have since been decoded and are
+correct** -- `0x8042CB1C`=0.0f, `0x8042CB48`=16.0f, `0x8042CB4C`=-0.1f,
+`0x8042CB50`=+0.1f, matching the draft's literals exactly. So "we are comparing
+against the wrong constant" is ruled out, not merely assumed away, and the
+residual is confirmed to be schedule alone.
+
 **So: when register contents are right everywhere and the residual traces to ONE
 load sitting in the wrong place, reach for something other than the def-point
 levers.** They control allocation, not schedule. Whether the schedule is
@@ -1307,13 +1313,64 @@ plain descending run with no def-point in it.
   functions that are line-for-line mirrors of each other, needing opposite
   treatment. Do not assume a mirror takes the mirrored fix.
 
-## CONTRADICTION, unresolved: `fn_800C3B20` / `fn_800C3B60` linkage
+## RESOLVED: the `global` tag in `target.txt` is not a linkage signal
 
-Both are declared `static` in the draft, on the strength of a source comment
-claiming dtk shows no symbol name for them in the target. **That comment is
-false.** `wip/line_mng_shared/target.txt` lines 3109 and 3128 read
-`.fn fn_800C3B20, global` and `.fn fn_800C3B60, global`.
+Recorded earlier as a contradiction: `fn_800C3B20` / `fn_800C3B60` are declared
+`static` in the draft, while `wip/line_mng_shared/target.txt` lines 3109 and 3128
+read `.fn fn_800C3B20, global`. **The tag carries no information.**
 
-Both functions now match byte-for-byte as `static`, so this does not affect
-`.text` content -- but linkage affects the symbol table and relocations, and this
-needs settling before the unit lands. Recorded rather than reconciled, per rule 4.
+- **All 182 `.fn` lines in `target.txt` carry `global`**, and `global` is the
+  only tag that appears anywhere in the file. A field with one value everywhere
+  cannot discriminate.
+- It is provably wrong for symbols that are not global. `target.txt` tags
+  `__dt__49sFStateMgr_c<10dLineMng_c,20sStateMethodUsr_FI_c>Fv` as `global`; the
+  identical template shape in another unit,
+  `__dt__59sFStateMgr_c<20dCourseSelectGuide_c,20sStateMethodUsr_FI_c>Fv`, is
+  `scope:weak` in `bin/dtk/wiimj2d_symbols.txt`. Template instantiation
+  destructors are weak by construction, so the tag is simply a constant the
+  disassembly wrapper emits.
+
+**Where real linkage lives:** the `scope:` attribute in
+`bin/dtk/wiimj2d_symbols.txt` (`scope:global` / `scope:local` / `scope:weak`).
+Check that, never the `.fn` tag. But note it is present on only 811 of 16,285
+functions -- `fn_800C3B20`, `fn_800C3B60`, `fn_800C31C0`, `fn_800C1EE0` and every
+named `d_line_mng` function have **no** `scope:` at all, so absence proves
+nothing either. The DOL is linked and stripped; `static` versus `extern` leaves
+no trace in it.
+
+**So the linkage of these two is not determinable from the target, and does not
+need to be.** They match byte-for-byte as `static`, `static` is the correct
+choice for a file-scope helper with no external callers, and it is what keeps the
+symbol out of the link. Ship them `static`. Generally: **do not open a
+contradiction against the `.fn` tag** -- confirm the field varies before reading
+meaning into it.
+
+## Report the DIFF of your matched set, not just your new closures
+
+A verified round showed a peer reporting "8 functions closed, 3,288 bytes" while
+the unit's total moved by almost nothing. The reconciliation:
+
+    151 true  - 8 silent regressions + 10 constant fixes + 8 new + 1 unreported = 162
+
+**Eight previously-matching functions had regressed in the same round and none of
+them was mentioned.** Two were not regressions at all but outright deletions --
+`calcKokoopaMdl()` and `getTorideFunfareTime()` were declared in the header and
+had no body left in the `.cpp`, so they vanished from the count without ever
+appearing as a failure. The cause was a from-scratch class rewrite that reordered
+virtual slots and reshuffled member offsets; every function that read a moved
+member broke, and the author only diffed the functions they were working on.
+
+This is not a peer-specific failing, it is what per-function workflows do by
+default. Two rules:
+
+1. **After any change to a shared type -- member order, a new virtual, a retype
+   -- re-run the FULL tally, not the functions you touched.** An offset shift is
+   silent in the function that caused it and loud in twenty that did not.
+2. **Report matched-set membership as a set difference against the previous
+   round: GAINED and LOST, both by name.** A net count cannot distinguish "eight
+   closed" from "sixteen closed and eight broken", and those need opposite
+   responses. If the arithmetic of your own report does not close, that gap IS
+   the finding -- chase it before reporting the headline.
+
+A missing function body is invisible to a per-function diff *by construction*:
+there is nothing to diff. Only a whole-unit count catches it.
