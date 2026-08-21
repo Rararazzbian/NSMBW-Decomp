@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13998 lines / 561 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14063 lines / 564 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -582,3 +582,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `13941-13966` `fn_800C31C0` 547/549 — and MY premise about the orphan function was wrong
   - `13967-13982` The orphan `fn_800C15B0`: zero absolute references in the ENTIRE DOL
 - `13983-13998` `tally.py` name-key flaw FIXED — content-based fallback added
+- `13999-14030` The `.fn <name>, global` tag answers LINKAGE, not the `static` MEMBER question — do not conflate them
+- `14031-14053` `d_line_mng` second merge: 101/182, 27.8% by bytes
+  - `14054-14063` The eight `executeState_*` one-word gaps did NOT close — and are now honest

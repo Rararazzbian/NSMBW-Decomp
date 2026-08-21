@@ -13995,3 +13995,68 @@ content so the number is never silently folded into the headline.
 It is currently INERT on this unit (nothing byte-identical is unnamed), so it
 changes no figure reported today. It matters for any unit with anonymous targets,
 which is most of the REL work.
+
+## The `.fn <name>, global` tag answers LINKAGE, not the `static` MEMBER question — do not conflate them
+
+`fn_800C15B0`'s linkage was settled by evidence sitting in the disassembly all
+along: `target.txt`'s own `.fn fn_800C15B0, global` tag. Declaring it non-`static`
+is sufficient — MWCC emits it unconditionally as an external symbol and it is
+byte-identical at 7 words. **Positive result, and the tag is direct evidence
+rather than inference.**
+
+**But it does NOT generalise to the question it looks like it answers.** Checked
+here across the whole unit: **every one of the 156 named functions is tagged
+`global`**, including both functions PROVEN today to be static members:
+
+```
+.fn fn_800C15B0, global                      <- file-scope, EXTERNAL linkage
+.fn getLineUnitNo__10dLineMng_cFff, global   <- PROVEN static member (no `this`)
+.fn is_unit_circle2x2__10dLineMng_cFUl, global <- PROVEN static member (no `this`)
+```
+
+**C++ uses one keyword for two unrelated things:**
+- `static` on a FILE-SCOPE function means INTERNAL linkage. The tag sees this —
+  such a function would be `local`.
+- `static` on a MEMBER function means NO IMPLICIT `this`. Linkage is still
+  external, so the tag reads `global` and is silent on it.
+
+**So:** use the tag to decide file-scope `static`. **Never** use it to decide
+whether a member function is static — that question is answered ONLY by the
+call-site register count (one register where two are expected), which is the tell
+that has now found four instances.
+
+Getting this backwards would produce confident, wrong answers on exactly the
+class of bug that has cost the most rounds today.
+
+## `d_line_mng` second merge: 101/182, 27.8% by bytes
+
+```
+(1 paired by CONTENT -- unnamed target vs mangled draft name)
+matched 101/182 functions   2122/7631 words = 27.8% BY BYTES
+```
+
+The content-based fallback added to `tally.py` an hour ago **paid off immediately**
+— `fn_800C15B0` is the one function it correctly counts that the name-keyed pass
+would have called MISSING.
+
+**Zero regressions**, verified by exact set difference against the prior merge's
+100, not by comparing totals. **No collisions**, but one near-miss worth the
+technique: two `executeState_*` functions LOOKED like they already carried the
+better `mVec2_c` shape and actually recomputed an offset inside each branch
+instead of once before the call. **Caught by direct diff, not by visual
+similarity** — which is the only way that class of thing is ever caught.
+
+**The 14 `bool` return-type changes are now load-bearing for COMPILATION itself:**
+reverting them to `void` makes the file fail to compile, because `fn_800C31C0`'s
+switch tests every one of those return values. A declaration that started as an
+unverifiable guess is now pinned by a caller.
+
+### The eight `executeState_*` one-word gaps did NOT close — and are now honest
+
+With the spurious `mr r3` gone, all eight show a clean, uncancelled shortfall.
+The residual is the target reloading `mUnitBasePos.x + 16.0f` a second time
+rather than reusing the live register. A `volatile`-forcing trick closes it but
+exposes a separate pre-existing register-swap residual (`f0`/`f1` for
+`mBaseSpeed`/`0.8910065f`) unaffected by operand-order swapping — the documented
+"not source-addressable" pattern. **Correctly NOT shipped: a forcing hack with no
+net matching benefit is a worse artifact than an honest gap.**
