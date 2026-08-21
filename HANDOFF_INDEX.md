@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 13835 lines / 553 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 13882 lines / 555 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -574,3 +574,5 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `13772-13799` What this means, and it is not small
 - `13800-13824` `d_line_mng` MERGED: 100/182 functions, 27.7% BY BYTES
   - `13825-13835` `tally.py` has a NAME-KEY flaw: unnamed target functions read as MISSING
+- `13836-13861` NEGATIVE CONTROL: a `_savegpr` regime mismatch is UBIQUITOUS and BENIGN — it does NOT predict a defect
+  - `13862-13882` What the finding actually licenses, stated narrowly

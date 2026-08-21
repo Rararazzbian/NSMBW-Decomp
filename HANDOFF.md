@@ -13832,3 +13832,50 @@ name never matches a mangled draft name. Same defect class as the one
 It does not change this headline (none of the three would have matched anyway),
 but **the tool undercounts any unit with anonymous target functions** and needs
 content-based pairing as a fallback before it is trusted on one.
+
+## NEGATIVE CONTROL: a `_savegpr` regime mismatch is UBIQUITOUS and BENIGN — it does NOT predict a defect
+
+Immediately after establishing that `_savegpr_N`/`_restgpr_N` versus inlined
+register stores is a whole-TU decision, I proposed the obvious diagnostic:
+compare helper counts between a standalone draft and its target, and treat a
+mismatch as an explanation for unexplained length residuals.
+
+**I tested it across every parked unit before recommending it. It does not hold
+up as a defect predictor, and the control is decisive.**
+
+Sixteen units show a mismatch. **Six of them are ALREADY LANDED and
+byte-perfect:**
+
+```
+agent_manta       target=36  draft=0    LANDED  d_a_wm_manta.cpp
+agent_ac_switch   target=6   draft=0    LANDED  d_a_ac_switch.cpp
+agent_castle      target=0   draft=2    LANDED  d_a_peach_castle_sequence.cpp
+agent_dummy_door  target=2   draft=0    LANDED  d_a_dummy_door.cpp
+agent_floor_jr_b  target=2   draft=0    LANDED  d_a_floor_jr_b.cpp
+agent_sandpillar  target=2   draft=4    LANDED  d_a_wm_sandpillar.cpp
+```
+
+`manta` has the **largest mismatch on the board** — 36 helper calls in target
+against zero in the draft — and it landed byte-perfect. That single row is enough
+to kill the diagnostic as a predictor.
+
+### What the finding actually licenses, stated narrowly
+
+The whole-TU behaviour is REAL and the `__sinit` measurement stands: identical
+source, 1220 words isolated versus 1193 merged, and the merge matched target.
+What is wrong is the inference I drew from it.
+
+- **A regime mismatch between a standalone draft and a linked target is the
+  NORMAL state of affairs.** Standalone objects routinely differ here and resolve
+  at real build time. It is not evidence of anything.
+- The finding is an **available EXPLANATION for a length residual that is
+  otherwise unexplained**, not a test to run over a tree. Reach for it when a
+  function's length is off and every source-level avenue is exhausted — not
+  before, and never as a screen.
+- **Do not re-run this sweep.** It is recorded here so nobody pays for it twice.
+
+**The general lesson is the one worth keeping:** a mechanism being real does not
+make a test built on it discriminating. The mechanism explains a difference; it
+does not predict which differences matter. I nearly shipped this as guidance to
+four agents on the strength of the mechanism alone — the negative control took
+two commands and stopped it.
