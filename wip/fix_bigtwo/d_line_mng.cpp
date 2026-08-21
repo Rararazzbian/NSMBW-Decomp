@@ -402,13 +402,29 @@ bool dLineMng_c::line_cross_chk1(f32 p1, f32 p2, const mVec2_c &p3, mVec2_c p4, 
     p5.y -= p3.y;
 
     f32 slope, intercept;
+    // Residual was 2 instructions: both fcmpu's had their two operands
+    // (the computed value and the 0.0f literal) in the SAME two registers as
+    // target, just encoded in the opposite order (literal-first here vs
+    // value-first in target), even though the source already spelled
+    // `d != 0.0f` / `intercept != 0.0f` with the value on the left --
+    // confirming this is not a source-text-order effect (that axis was
+    // already tested and correctly found immune). The declaration-order axis
+    // WAS the lever: a bare `f32 zero;` declared here, assigned 0.0f only at
+    // first use just inside the branch, makes both compares byte-exact.
+    // A syntactic `0.0f` literal is folded through MWCC's literal-hoisting
+    // canonicaliser BEFORE the fcmpu operand-order decision is made (same
+    // canonicaliser lever 11 documents for fmuls); a value that is only a
+    // literal after const-prop (this local) bypasses it, exactly like lever
+    // 11's route 3. Gets the function BYTE-EXACT (121/121).
+    f32 zero;
     if (line_cross_slope_check(p4, p5, slope, intercept)) {
         f32 d = p1 - slope;
-        if (d != 0.0f) {
+        zero = 0.0f;
+        if (d != zero) {
             out.x = intercept / d;
             out.y = p1 * out.x;
         } else {
-            if (intercept != 0.0f) {
+            if (intercept != zero) {
                 return false;
             }
             out.x = p5.x;

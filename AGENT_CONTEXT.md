@@ -1203,3 +1203,53 @@ allocation" in a single compile**, which otherwise takes several variants to
 separate. It also self-checks the constant: the word count rose by one because
 `-16.0f` needs its own pool entry, independently confirming retail's constant is
 `+16.0f`.
+
+## The LIMIT of the declaration-order rule: it does not move a SCHEDULING position
+
+The FPR declaration-order rule has been unusually productive today, so here is
+where it stops -- established by ~35 measured variants on `line_cross_chk2`, not
+by giving up early.
+
+**What it governs:** which register a value lands in, and which operand slot it
+occupies within an instruction.
+
+**What it does NOT govern:** *where in the instruction stream a load is
+scheduled.*
+
+`line_cross_chk2` is 100/100 words with 27 differing instructions and a single
+root cause. Retail's first `0.0f` pool load lands in the register freed once
+`p4.x`'s raw value is consumed, mid-subtraction. Our draft hoists that same load
+to position 8 -- immediately after the prologue's `fmr f31, f1`, before the
+`f30`/`r31`/`r30`/`r29` spills have even happened. Every downstream difference is
+that one instruction's position cascading into renumbering. **Register CONTENTS
+are already correct on both sides throughout; only the numbering differs.**
+
+Two diagnostic probes pinned the trigger exactly:
+- a **single** `0.0f` comparison placed anywhere BEFORE the first call reproduces
+  the full early hoist;
+- a `0.0f` comparison placed ONLY AFTER the call does not hoist at all.
+
+So the effect is tied to "compared before the first call, in a prologue that must
+save `f30`+`f31` for two calls" -- not to how many times the constant occurs, nor
+to its textual position within the guard.
+
+Measured and rejected, all worse or neutral, none landed: guard restructuring in
+six forms (29-90 diffs); a named `f32 zero` local in four scopes and orders
+(84-90 diffs, and one variant promoted `zero` into `f30` where `intercept`
+legitimately lives, pushing the function to 99w); named write-side results for
+`p4.x`/`p5.x` (neutral at 27 alone, 33-34 combined with a named constant); named
+leaves used directly as the compared values (94); aggregate-copy and two-argument
+constructor forms (33-101); whole-vector `operator-=` (byte-identical to manual
+field subtraction, so that shape is codegen-neutral); reversing the
+`slope`/`intercept` declaration order (30 -- a real effect, wrong direction).
+
+**So: when register contents are right everywhere and the residual traces to ONE
+load sitting in the wrong place, reach for something other than the def-point
+levers.** They control allocation, not schedule. Whether the schedule is
+reachable from source at all in this shape is still open -- what is settled is
+that naming, scoping and reordering the values does not reach it.
+
+Note the contrast with `line_cross_chk1`, its sibling, closed in the same round
+by exactly the axis that fails here: a bare `f32 zero;` declared and assigned
+later flipped both `fcmpu` operand slots and closed it byte-exact. Same file,
+same constant, same technique -- it governs the slot and not the schedule.
