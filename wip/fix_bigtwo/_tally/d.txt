@@ -1,5 +1,5 @@
 .include "macros.inc"
-.file "d_line_mng.cpp"
+.file "_probe.cpp"
 
 # 0x00000000..0x00007E68 | size: 0x7E68
 .text
@@ -8180,7 +8180,7 @@
 .endfn "initializeState__25sFStateID_c<10dLineMng_c>CFR10dLineMng_c"
 
 # .text:0x6AD0 | size: 0x12A4
-.fn "__sinit_\d_line_mng_cpp", local
+.fn "__sinit_\_probe_cpp", local
 /* 00006AD0 00006B10  94 21 FC 50 */	stwu r1, -0x3b0(r1)
 /* 00006AD4 00006B14  7C 08 02 A6 */	mflr r0
 /* 00006AD8 00006B18  90 01 03 B4 */	stw r0, 0x3b4(r1)
@@ -9374,7 +9374,7 @@
 /* 00007D68 00007DA8  7C 08 03 A6 */	mtlr r0
 /* 00007D6C 00007DAC  38 21 03 B0 */	addi r1, r1, 0x3b0
 /* 00007D70 00007DB0  4E 80 00 20 */	blr
-.endfn "__sinit_\d_line_mng_cpp"
+.endfn "__sinit_\_probe_cpp"
 /* 00007D74 00007DB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00007D78 00007DB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
 /* 00007D7C 00007DBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
@@ -9454,7 +9454,7 @@
 # 0x00000000..0x00000004 | size: 0x4
 .section .ctors, "a"
 .balign 4
-	.4byte "__sinit_\d_line_mng_cpp"
+	.4byte "__sinit_\_probe_cpp"
 
 # 0x00000000..0x00000030 | size: 0x30
 .rodata
@@ -10981,7 +10981,7 @@
 	.skip 0x1
 .endobj s_dDirInit
 
-# 0x00000000..0x000000BC | size: 0xBC
+# 0x00000000..0x000000C0 | size: 0xC0
 .section .sdata2, "a"
 .balign 8
 
@@ -11171,3 +11171,9 @@
 .obj "@8732", local
 	.4byte 0x43A2F98C
 .endobj "@8732"
+
+# .sdata2:0xBC | size: 0x4
+# dLineMng_c::smc_UNIT_SIZE_X
+.obj smc_UNIT_SIZE_X__10dLineMng_c, global
+	.4byte 0x41800000
+.endobj smc_UNIT_SIZE_X__10dLineMng_c

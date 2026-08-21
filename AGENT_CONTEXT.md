@@ -1374,3 +1374,52 @@ default. Two rules:
 
 A missing function body is invisible to a per-function diff *by construction*:
 there is nothing to diff. Only a whole-unit count catches it.
+
+## A high tally score does NOT mean a unit is landable — the tally never links
+
+`d_line_mng` measured 181/182, 98.7% by bytes, and the landing attempt still
+broke all five binaries. Nothing was wrong with the measurement; the measurement
+simply cannot see the class of defect that stopped it.
+
+`tally.py` compiles one `.o` and compares disassembled text. It never runs the
+linker. So it is blind to, at minimum:
+
+- **Undefined symbols.** `dLineMng_c::smc_UNIT_SIZE_X` is declared
+  `static const float` in the header and was never defined anywhere. Every
+  function using it compiled and matched perfectly — because an unresolved
+  external produces exactly the `lfs ...@sda21(r0)` retail has. The link is the
+  first thing that ever objected.
+- **Weak symbols the link places that retail resolves elsewhere.** Our object
+  defines `__ct__7mVec2_cFv`; retail resolves it to `0x8007F800` in an un-landed
+  unit. Ours got placed inside our claim and pushed `.text` out by 0x10. Same
+  failure class as `d_a_wm_sandpillar`.
+- **Data section ORDER within the unit.** Canonicalisation normalises the pool
+  symbol name, so two different `.sdata2` layouts compare equal.
+
+**So treat the tally as necessary and not sufficient.** Before claiming a unit is
+ready, additionally check: every symbol it references resolves; no weak symbol it
+defines is one retail takes from elsewhere; and its data-section object order
+matches retail's addresses.
+
+### The static-const-float trap, unresolved
+
+`smc_UNIT_SIZE_X__10dLineMng_c` is at `.sdata2:0x8042CB18` in retail — the FIRST
+object in `d_line_mng`'s `.sdata2`, with the compiler's literal pool following it
+from `0x8042CB1C`. Reproducing that runs into two requirements that fight:
+
+| definition placed | `.sdata2` order | codegen |
+|---|---|---|
+| before all uses | correct (symbol first) | **WRONG** — MWCC folds 16.0f and strength-reduces `pos.x / smc_UNIT_SIZE_X` into a multiply-by-reciprocal. `init` grows 0x118 -> 0x11c, `check_term` 0x124 -> 0x138 |
+| after all uses | **WRONG** (symbol last) | correct — 181/182 restored |
+| not defined at all | n/a | correct, but the link fails |
+
+Retail has it first AND unfolded, so the original source achieves both and we do
+not yet know how. Do not land this unit until that is settled. Note the header's
+own comment already anticipated the reciprocal: the fold is the documented
+failure mode, now measured.
+
+**The `.text` overflow was exactly 0x20 and fully accounted for:** 0x10 from the
+stray `mVec2_c` constructor, 0x4 from `init`, 0x14 from `check_term`, rounded to
+alignment. When a claim overflows, do not guess — enumerate the placed functions
+from `bin/wiimj2d.elf`'s symbol table and diff the size multiset against the
+target's. Two oversized functions and one extra symbol fell straight out.

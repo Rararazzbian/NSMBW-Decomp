@@ -50,7 +50,42 @@ claiming through to `0xc2220` follows the file's own convention. If a build
 rejects it, `0xc2218` (VA 0x800C8998, our last instruction only) is the
 conservative alternative.
 
-## 4. Every other section — BOUNDED, NOT PINNED
+## 3a. ATTEMPTED AND REVERTED — every slice range is CONFIRMED CORRECT
+
+The landing was attempted and reverted; the tree is green. **The slice arithmetic
+in this document was proven right and needs no further work.** All seven ranges
+below were computed independently and every one of the six shared with
+`d_lytbase` abuts its start exactly — a coincidence across six sections is not
+possible:
+
+    ".text":   "0xba640-0xc2220"     VA 0x800C0DC0-0x800C89A0
+    ".ctors":  "0x118-0x11c"         VA 0x802EDDF8-0x802EDDFC
+    ".rodata": "0x3308-0x3338"       VA 0x802F12E8-0x802F1318
+    ".data":   "0x18600-0x19098"     VA 0x80316CA0-0x80317738
+    ".sbss":   "0x3d0-0x3d1"         VA 0x8042A270-0x8042A271
+    ".bss":    "0x7780-0x7de0"       VA 0x80359100-0x80359760
+    ".sdata2": "0x17b8-0x1878"       VA 0x8042CB18-0x8042CBD8
+
+How each was pinned, so none of this has to be redone:
+- `.text` — enumerated all 7,631 instruction addresses.
+- `.ctors` — 11 `__sinit` functions in the un-landed hole for exactly 11 free
+  4-byte slots; `.ctors` follows link order, and `d_line_mng` is last.
+- `.rodata` — the two static `d_unit` arrays from `is_unit_circle2x2` /
+  `is_unit_circle4x4` were found byte-for-byte in the retail DOL at 0x802F12E8.
+- `.data`, `.bss`, `.sbss`, `.sdata2` — from the addresses embedded in
+  `target.txt`'s own symbol names, cross-checked against the emitted sizes.
+
+**What actually blocked it:** `dLineMng_c::smc_UNIT_SIZE_X` is declared but never
+defined, and adding the definition changes codegen. See AGENT_CONTEXT,
+"the static-const-float trap". That is the only remaining blocker, and it is a
+source question, not a slice question.
+
+Also needed once that is solved: `__ct__7mVec2_cFv` must not be placed from this
+object — retail takes it from 0x8007F800 in an un-landed unit. Expect a
+`deadstrip` entry plus a `syms.txt` pin, the DOL analogue of the `alias_db.txt`
+line that rescued `d_a_ac_switch`.
+
+## 4. Every other section — superseded by 3a, kept for the derivation
 
 `d_line_mng` is **not** the only un-landed unit in its region. The `.text` hole
 between `d_enemy_state.cpp` and `d_lytbase.cpp` is 0x20290 bytes and also
