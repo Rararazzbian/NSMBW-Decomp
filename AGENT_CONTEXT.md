@@ -580,6 +580,34 @@ variants.
    fixed a function stuck at 5/7 through six other permutations -- and
    REGRESSED a different unit 10 -> 18 by pulling a table out of a merged
    `.rodata` pool. Unit-specific; measure.
+10. **AGGREGATE COPY defeats CSE -- use it when the target RELOADS a field.**
+    The field loads MWCC emits for `local = obj;` are *not*
+    common-subexpression-eliminated against earlier scalar reads of the same
+    members. So when the target re-reads a field the compiler would rather keep
+    live in a register, write:
+
+    ```cpp
+    mVec2_c newBase = mUnitBasePos;   // both fields reload here
+    newBase.x += 16.0f;               // ...and the add is recomputed
+    ```
+
+    not the equivalent-looking `mVec2_c newBase(mUnitBasePos.x + 16.0f,
+    mUnitBasePos.y)`, which lets `-O4` reuse a sum computed a line earlier.
+    This closed the reload, the re-add *and* the store order on nine functions
+    in `d_line_mng`, and took `fn_800C31C0` from 547 to 549. **It is the
+    authentic replacement for a `volatile` cast** -- the two compile to
+    byte-identical code, so never ship the `volatile`.
+
+### Levers that are PROVEN NOT to work -- do not spend a round on these
+
+- **Commutative float operand order in the source.** `a * b` and `b * a` (and
+  the `+` equivalents) compile to BYTE-IDENTICAL code; MWCC canonicalises
+  commutative FP operands before register allocation. Four spellings were
+  tested side by side on one function. If an `f0`/`f1` permutation is your
+  residual, source operand order will not move it.
+- **Hoisting a repeated product into a named local** to fix such a permutation.
+  Tested on the same function: it perturbed register assignment across the
+  whole body and made the diff strictly worse.
 
 
 ## A misaligned diff invents structural conclusions
