@@ -1,0 +1,1700 @@
+TARGET 0x800AED40-0x800B0678  (6456 bytes, module wiimj2d)
+Functions in range: __sinit_\d_enemy_toride_kokoopa_cpp, __dt__33sFStateID_c<18dEnTorideKokoopa_c>Fv, __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv, baseID_DemoWait<9dEnBoss_c>__Fv_RC12sStateIDIf_c, baseID_DieShell<9dEnBoss_c>__Fv_RC12sStateIDIf_c, baseID_DieFire<9dEnBoss_c>__Fv_RC12sStateIDIf_c, number__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv, superID__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv
+
+SUGGESTED SLICE memoryRanges:
+{
+    ".text": "0xa85c0-0xa9ef8",
+    ".ctors": "0xf0-0x11c",
+    ".rodata": "0x2ae0-0x3338",
+    ".data": "0x15cc0-0x19098",
+    ".bss": "0x6ab8-0x7de0",
+    ".sdata": "0x390-0x588",
+    ".sbss": "0x350-0x3d8",
+    ".sdata2": "0x1388-0x1878"
+}
+NOTE: Non-.text ranges are the *whole* gap between the neighbouring decompiled slices. If other undecompiled TUs share that gap, claim only the part your code actually emits, or the build will fail.
+
+REFERENCED SYMBOLS (declare or include these):
+  data reference     @70159
+  data reference     @70379
+  data reference     @70382
+  data reference     @70384
+  data reference     @70386
+  data reference     @71987
+  data reference     @72162
+  data reference     @72163
+  data reference     @72164
+  data reference     @72216
+  data reference     @72312
+  data reference     @72794
+  data reference     @72797
+  data reference     @72798
+  data reference     @8662
+  data reference     @8665
+  data reference     StateID_DemoWait__9dEnBoss_c
+  data reference     StateID_DieFire__9dEnBoss_c
+  data reference     StateID_DieShell__9dEnBoss_c
+  call               __ct__10sStateID_cFPCc
+  call               __dl__FPv
+  call               __dt__10sStateID_cFv
+  data reference     __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  call               __register_global_object
+  data reference     __sinit_\d_enemy_toride_kokoopa_cpp
+  data reference     __vt__13dCaptureMng_c
+  data reference     __vt__18dEnTorideKokoopa_c
+  data reference     __vt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>
+  data reference     __vt__6dDOF_c
+  call               _restgpr_25
+  call               _savegpr_25
+  call               baseID_Attack<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_AttackBegin<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_AttackEnd<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_AttackReady<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_AttackSearch<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_BigJump<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_BigJump_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DemoAwake<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DemoAwake_Wait<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DemoEscape_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DemoIkaku<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DemoIkaku_Wait<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DemoWait<9dEnBoss_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DieFire<9dEnBoss_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DieFumi_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_DieShell<9dEnBoss_c>__Fv_RC12sStateIDIf_c
+  call               baseID_FireHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_FumiHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_Jump<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_Jump_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_LandOn<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_QuakeHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_ShellAtk<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_ShellAtk_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_ShellHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_ShellOut<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_SlideHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  call               baseID_StarHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  data reference     l_tmpSave__27@unnamed@d_nand_thread_cpp@
+
+DISASSEMBLY
+  800AED40  9421FBE0  stwu       r1, -0x420(r1)
+  800AED44  7C0802A6  mflr       r0
+  800AED48  90010424  stw        r0, 0x424(r1)
+  800AED4C  39610420  addi       r11, r1, 0x420
+  800AED50  4822E30D  bl         0x802dd05c                      # -> _savegpr_25
+  800AED54  3F808031  lis        r28, -0x7fcf
+  800AED58  3FA08036  lis        r29, -0x7fca
+  800AED5C  3B9C4360  addi       r28, r28, 0x4360                # __vt__18dEnTorideKokoopa_c
+  800AED60  38BC0690  addi       r5, r28, 0x690                  # @71987+0x48
+  800AED64  817C0690  lwz        r11, 0x690(r28)                 # @71987+0x48
+  800AED68  389C069C  addi       r4, r28, 0x69c                  # @72216+0x4
+  800AED6C  387C06A8  addi       r3, r28, 0x6a8                  # @72216+0x10
+  800AED70  81450004  lwz        r10, 4(r5)
+  800AED74  3BBD8438  addi       r29, r29, -0x7bc8               # @70159
+  800AED78  81250008  lwz        r9, 8(r5)
+  800AED7C  3B3C0A80  addi       r25, r28, 0xa80                 # @72312+0x8
+  800AED80  811C069C  lwz        r8, 0x69c(r28)                  # @72216+0x4
+  800AED84  80E40004  lwz        r7, 4(r4)
+  800AED88  80C40008  lwz        r6, 8(r4)
+  800AED8C  80BC06A8  lwz        r5, 0x6a8(r28)                  # @72216+0x10
+  800AED90  80830004  lwz        r4, 4(r3)
+  800AED94  80030008  lwz        r0, 8(r3)
+  800AED98  916103D4  stw        r11, 0x3d4(r1)
+  800AED9C  914103D8  stw        r10, 0x3d8(r1)
+  800AEDA0  912103DC  stw        r9, 0x3dc(r1)
+  800AEDA4  910103E0  stw        r8, 0x3e0(r1)
+  800AEDA8  90E103E4  stw        r7, 0x3e4(r1)
+  800AEDAC  90C103E8  stw        r6, 0x3e8(r1)
+  800AEDB0  90A103EC  stw        r5, 0x3ec(r1)
+  800AEDB4  908103F0  stw        r4, 0x3f0(r1)
+  800AEDB8  900103F4  stw        r0, 0x3f4(r1)
+  800AEDBC  4BFF9955  bl         0x800a8710                      # -> baseID_Jump_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AEDC0  7C7A1B78  mr         r26, r3
+  800AEDC4  7F24CB78  mr         r4, r25
+  800AEDC8  387D000C  addi       r3, r29, 0xc                    # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x204C
+  800AEDCC  480B0B35  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AEDD0  387D000C  addi       r3, r29, 0xc                    # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x204C
+  800AEDD4  832103EC  lwz        r25, 0x3ec(r1)
+  800AEDD8  818103F0  lwz        r12, 0x3f0(r1)
+  800AEDDC  3FC08031  lis        r30, -0x7fcf
+  800AEDE0  816103F4  lwz        r11, 0x3f4(r1)
+  800AEDE4  3BDE5230  addi       r30, r30, 0x5230                # __vt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>
+  800AEDE8  814103E0  lwz        r10, 0x3e0(r1)
+  800AEDEC  3FE0800B  lis        r31, -0x7ff5
+  800AEDF0  812103E4  lwz        r9, 0x3e4(r1)
+  800AEDF4  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AEDF8  810103E8  lwz        r8, 0x3e8(r1)
+  800AEDFC  38BD0000  addi       r5, r29, 0                      # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2040
+  800AEE00  80E103D4  lwz        r7, 0x3d4(r1)
+  800AEE04  80C103D8  lwz        r6, 0x3d8(r1)
+  800AEE08  800103DC  lwz        r0, 0x3dc(r1)
+  800AEE0C  9323000C  stw        r25, 0xc(r3)
+  800AEE10  91830010  stw        r12, 0x10(r3)
+  800AEE14  91630014  stw        r11, 0x14(r3)
+  800AEE18  91430018  stw        r10, 0x18(r3)
+  800AEE1C  9123001C  stw        r9, 0x1c(r3)
+  800AEE20  91030020  stw        r8, 0x20(r3)
+  800AEE24  90E30024  stw        r7, 0x24(r3)
+  800AEE28  90C30028  stw        r6, 0x28(r3)
+  800AEE2C  9003002C  stw        r0, 0x2c(r3)
+  800AEE30  93DD000C  stw        r30, 0xc(r29)                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x204C
+  800AEE34  93430030  stw        r26, 0x30(r3)
+  800AEE38  4822DC39  bl         0x802dca70                      # -> __register_global_object
+  800AEE3C  38BC06B4  addi       r5, r28, 0x6b4                  # @72216+0x1C
+  800AEE40  389C06C0  addi       r4, r28, 0x6c0                  # @72216+0x28
+  800AEE44  387C06CC  addi       r3, r28, 0x6cc                  # @72216+0x34
+  800AEE48  817C06B4  lwz        r11, 0x6b4(r28)                 # @72216+0x1C
+  800AEE4C  81450004  lwz        r10, 4(r5)
+  800AEE50  3B7C0AA4  addi       r27, r28, 0xaa4                 # @72312+0x2C
+  800AEE54  81250008  lwz        r9, 8(r5)
+  800AEE58  811C06C0  lwz        r8, 0x6c0(r28)                  # @72216+0x28
+  800AEE5C  80E40004  lwz        r7, 4(r4)
+  800AEE60  80C40008  lwz        r6, 8(r4)
+  800AEE64  80BC06CC  lwz        r5, 0x6cc(r28)                  # @72216+0x34
+  800AEE68  80830004  lwz        r4, 4(r3)
+  800AEE6C  80030008  lwz        r0, 8(r3)
+  800AEE70  916103B0  stw        r11, 0x3b0(r1)
+  800AEE74  914103B4  stw        r10, 0x3b4(r1)
+  800AEE78  912103B8  stw        r9, 0x3b8(r1)
+  800AEE7C  910103BC  stw        r8, 0x3bc(r1)
+  800AEE80  90E103C0  stw        r7, 0x3c0(r1)
+  800AEE84  90C103C4  stw        r6, 0x3c4(r1)
+  800AEE88  90A103C8  stw        r5, 0x3c8(r1)
+  800AEE8C  908103CC  stw        r4, 0x3cc(r1)
+  800AEE90  900103D0  stw        r0, 0x3d0(r1)
+  800AEE94  4BFF988D  bl         0x800a8720                      # -> baseID_Jump<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AEE98  7C7A1B78  mr         r26, r3
+  800AEE9C  7F64DB78  mr         r4, r27
+  800AEEA0  387D004C  addi       r3, r29, 0x4c                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x208C
+  800AEEA4  480B0A5D  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AEEA8  387D004C  addi       r3, r29, 0x4c                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x208C
+  800AEEAC  832103C8  lwz        r25, 0x3c8(r1)
+  800AEEB0  818103CC  lwz        r12, 0x3cc(r1)
+  800AEEB4  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AEEB8  816103D0  lwz        r11, 0x3d0(r1)
+  800AEEBC  38BD0040  addi       r5, r29, 0x40                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2080
+  800AEEC0  814103BC  lwz        r10, 0x3bc(r1)
+  800AEEC4  812103C0  lwz        r9, 0x3c0(r1)
+  800AEEC8  810103C4  lwz        r8, 0x3c4(r1)
+  800AEECC  80E103B0  lwz        r7, 0x3b0(r1)
+  800AEED0  80C103B4  lwz        r6, 0x3b4(r1)
+  800AEED4  800103B8  lwz        r0, 0x3b8(r1)
+  800AEED8  9323000C  stw        r25, 0xc(r3)
+  800AEEDC  91830010  stw        r12, 0x10(r3)
+  800AEEE0  91630014  stw        r11, 0x14(r3)
+  800AEEE4  91430018  stw        r10, 0x18(r3)
+  800AEEE8  9123001C  stw        r9, 0x1c(r3)
+  800AEEEC  91030020  stw        r8, 0x20(r3)
+  800AEEF0  90E30024  stw        r7, 0x24(r3)
+  800AEEF4  90C30028  stw        r6, 0x28(r3)
+  800AEEF8  9003002C  stw        r0, 0x2c(r3)
+  800AEEFC  93DD004C  stw        r30, 0x4c(r29)                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x208C
+  800AEF00  93430030  stw        r26, 0x30(r3)
+  800AEF04  4822DB6D  bl         0x802dca70                      # -> __register_global_object
+  800AEF08  38BC06D8  addi       r5, r28, 0x6d8                  # @72216+0x40
+  800AEF0C  389C06E4  addi       r4, r28, 0x6e4                  # @72216+0x4C
+  800AEF10  387C06F0  addi       r3, r28, 0x6f0                  # lbl_803106E8+0x8
+  800AEF14  817C06D8  lwz        r11, 0x6d8(r28)                 # @72216+0x40
+  800AEF18  81450004  lwz        r10, 4(r5)
+  800AEF1C  3B7C0AC8  addi       r27, r28, 0xac8                 # @72312+0x50
+  800AEF20  81250008  lwz        r9, 8(r5)
+  800AEF24  811C06E4  lwz        r8, 0x6e4(r28)                  # @72216+0x4C
+  800AEF28  80E40004  lwz        r7, 4(r4)
+  800AEF2C  80C40008  lwz        r6, 8(r4)
+  800AEF30  80BC06F0  lwz        r5, 0x6f0(r28)                  # lbl_803106E8+0x8
+  800AEF34  80830004  lwz        r4, 4(r3)
+  800AEF38  80030008  lwz        r0, 8(r3)
+  800AEF3C  9161038C  stw        r11, 0x38c(r1)
+  800AEF40  91410390  stw        r10, 0x390(r1)
+  800AEF44  91210394  stw        r9, 0x394(r1)
+  800AEF48  91010398  stw        r8, 0x398(r1)
+  800AEF4C  90E1039C  stw        r7, 0x39c(r1)
+  800AEF50  90C103A0  stw        r6, 0x3a0(r1)
+  800AEF54  90A103A4  stw        r5, 0x3a4(r1)
+  800AEF58  908103A8  stw        r4, 0x3a8(r1)
+  800AEF5C  900103AC  stw        r0, 0x3ac(r1)
+  800AEF60  4BFF97D1  bl         0x800a8730                      # -> baseID_BigJump_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AEF64  7C7A1B78  mr         r26, r3
+  800AEF68  7F64DB78  mr         r4, r27
+  800AEF6C  387D008C  addi       r3, r29, 0x8c                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x20CC
+  800AEF70  480B0991  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AEF74  387D008C  addi       r3, r29, 0x8c                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x20CC
+  800AEF78  832103A4  lwz        r25, 0x3a4(r1)
+  800AEF7C  818103A8  lwz        r12, 0x3a8(r1)
+  800AEF80  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AEF84  816103AC  lwz        r11, 0x3ac(r1)
+  800AEF88  38BD0080  addi       r5, r29, 0x80                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x20C0
+  800AEF8C  81410398  lwz        r10, 0x398(r1)
+  800AEF90  8121039C  lwz        r9, 0x39c(r1)
+  800AEF94  810103A0  lwz        r8, 0x3a0(r1)
+  800AEF98  80E1038C  lwz        r7, 0x38c(r1)
+  800AEF9C  80C10390  lwz        r6, 0x390(r1)
+  800AEFA0  80010394  lwz        r0, 0x394(r1)
+  800AEFA4  9323000C  stw        r25, 0xc(r3)
+  800AEFA8  91830010  stw        r12, 0x10(r3)
+  800AEFAC  91630014  stw        r11, 0x14(r3)
+  800AEFB0  91430018  stw        r10, 0x18(r3)
+  800AEFB4  9123001C  stw        r9, 0x1c(r3)
+  800AEFB8  91030020  stw        r8, 0x20(r3)
+  800AEFBC  90E30024  stw        r7, 0x24(r3)
+  800AEFC0  90C30028  stw        r6, 0x28(r3)
+  800AEFC4  9003002C  stw        r0, 0x2c(r3)
+  800AEFC8  93DD008C  stw        r30, 0x8c(r29)                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x20CC
+  800AEFCC  93430030  stw        r26, 0x30(r3)
+  800AEFD0  4822DAA1  bl         0x802dca70                      # -> __register_global_object
+  800AEFD4  38BC06FC  addi       r5, r28, 0x6fc                  # lbl_803106E8+0x14
+  800AEFD8  389C0708  addi       r4, r28, 0x708                  # lbl_803106E8+0x20
+  800AEFDC  387C0714  addi       r3, r28, 0x714                  # lbl_803106E8+0x2C
+  800AEFE0  817C06FC  lwz        r11, 0x6fc(r28)                 # lbl_803106E8+0x14
+  800AEFE4  81450004  lwz        r10, 4(r5)
+  800AEFE8  3B7C0AF0  addi       r27, r28, 0xaf0                 # @72312+0x78
+  800AEFEC  81250008  lwz        r9, 8(r5)
+  800AEFF0  811C0708  lwz        r8, 0x708(r28)                  # lbl_803106E8+0x20
+  800AEFF4  80E40004  lwz        r7, 4(r4)
+  800AEFF8  80C40008  lwz        r6, 8(r4)
+  800AEFFC  80BC0714  lwz        r5, 0x714(r28)                  # lbl_803106E8+0x2C
+  800AF000  80830004  lwz        r4, 4(r3)
+  800AF004  80030008  lwz        r0, 8(r3)
+  800AF008  91610368  stw        r11, 0x368(r1)
+  800AF00C  9141036C  stw        r10, 0x36c(r1)
+  800AF010  91210370  stw        r9, 0x370(r1)
+  800AF014  91010374  stw        r8, 0x374(r1)
+  800AF018  90E10378  stw        r7, 0x378(r1)
+  800AF01C  90C1037C  stw        r6, 0x37c(r1)
+  800AF020  90A10380  stw        r5, 0x380(r1)
+  800AF024  90810384  stw        r4, 0x384(r1)
+  800AF028  90010388  stw        r0, 0x388(r1)
+  800AF02C  4BFF9715  bl         0x800a8740                      # -> baseID_BigJump<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF030  7C7A1B78  mr         r26, r3
+  800AF034  7F64DB78  mr         r4, r27
+  800AF038  387D00CC  addi       r3, r29, 0xcc                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x210C
+  800AF03C  480B08C5  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF040  387D00CC  addi       r3, r29, 0xcc                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x210C
+  800AF044  83210380  lwz        r25, 0x380(r1)
+  800AF048  81810384  lwz        r12, 0x384(r1)
+  800AF04C  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF050  81610388  lwz        r11, 0x388(r1)
+  800AF054  38BD00C0  addi       r5, r29, 0xc0                   # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2100
+  800AF058  81410374  lwz        r10, 0x374(r1)
+  800AF05C  81210378  lwz        r9, 0x378(r1)
+  800AF060  8101037C  lwz        r8, 0x37c(r1)
+  800AF064  80E10368  lwz        r7, 0x368(r1)
+  800AF068  80C1036C  lwz        r6, 0x36c(r1)
+  800AF06C  80010370  lwz        r0, 0x370(r1)
+  800AF070  9323000C  stw        r25, 0xc(r3)
+  800AF074  91830010  stw        r12, 0x10(r3)
+  800AF078  91630014  stw        r11, 0x14(r3)
+  800AF07C  91430018  stw        r10, 0x18(r3)
+  800AF080  9123001C  stw        r9, 0x1c(r3)
+  800AF084  91030020  stw        r8, 0x20(r3)
+  800AF088  90E30024  stw        r7, 0x24(r3)
+  800AF08C  90C30028  stw        r6, 0x28(r3)
+  800AF090  9003002C  stw        r0, 0x2c(r3)
+  800AF094  93DD00CC  stw        r30, 0xcc(r29)                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x210C
+  800AF098  93430030  stw        r26, 0x30(r3)
+  800AF09C  4822D9D5  bl         0x802dca70                      # -> __register_global_object
+  800AF0A0  38BC0720  addi       r5, r28, 0x720                  # lbl_803106E8+0x38
+  800AF0A4  389C072C  addi       r4, r28, 0x72c                  # lbl_803106E8+0x44
+  800AF0A8  387C0738  addi       r3, r28, 0x738                  # lbl_803106E8+0x50
+  800AF0AC  817C0720  lwz        r11, 0x720(r28)                 # lbl_803106E8+0x38
+  800AF0B0  81450004  lwz        r10, 4(r5)
+  800AF0B4  3B7C0B14  addi       r27, r28, 0xb14                 # @72312+0x9C
+  800AF0B8  81250008  lwz        r9, 8(r5)
+  800AF0BC  811C072C  lwz        r8, 0x72c(r28)                  # lbl_803106E8+0x44
+  800AF0C0  80E40004  lwz        r7, 4(r4)
+  800AF0C4  80C40008  lwz        r6, 8(r4)
+  800AF0C8  80BC0738  lwz        r5, 0x738(r28)                  # lbl_803106E8+0x50
+  800AF0CC  80830004  lwz        r4, 4(r3)
+  800AF0D0  80030008  lwz        r0, 8(r3)
+  800AF0D4  91610344  stw        r11, 0x344(r1)
+  800AF0D8  91410348  stw        r10, 0x348(r1)
+  800AF0DC  9121034C  stw        r9, 0x34c(r1)
+  800AF0E0  91010350  stw        r8, 0x350(r1)
+  800AF0E4  90E10354  stw        r7, 0x354(r1)
+  800AF0E8  90C10358  stw        r6, 0x358(r1)
+  800AF0EC  90A1035C  stw        r5, 0x35c(r1)
+  800AF0F0  90810360  stw        r4, 0x360(r1)
+  800AF0F4  90010364  stw        r0, 0x364(r1)
+  800AF0F8  4BFF9659  bl         0x800a8750                      # -> baseID_LandOn<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF0FC  7C7A1B78  mr         r26, r3
+  800AF100  7F64DB78  mr         r4, r27
+  800AF104  387D010C  addi       r3, r29, 0x10c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x214C
+  800AF108  480B07F9  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF10C  387D010C  addi       r3, r29, 0x10c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x214C
+  800AF110  8321035C  lwz        r25, 0x35c(r1)
+  800AF114  81810360  lwz        r12, 0x360(r1)
+  800AF118  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF11C  81610364  lwz        r11, 0x364(r1)
+  800AF120  38BD0100  addi       r5, r29, 0x100                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2140
+  800AF124  81410350  lwz        r10, 0x350(r1)
+  800AF128  81210354  lwz        r9, 0x354(r1)
+  800AF12C  81010358  lwz        r8, 0x358(r1)
+  800AF130  80E10344  lwz        r7, 0x344(r1)
+  800AF134  80C10348  lwz        r6, 0x348(r1)
+  800AF138  8001034C  lwz        r0, 0x34c(r1)
+  800AF13C  9323000C  stw        r25, 0xc(r3)
+  800AF140  91830010  stw        r12, 0x10(r3)
+  800AF144  91630014  stw        r11, 0x14(r3)
+  800AF148  91430018  stw        r10, 0x18(r3)
+  800AF14C  9123001C  stw        r9, 0x1c(r3)
+  800AF150  91030020  stw        r8, 0x20(r3)
+  800AF154  90E30024  stw        r7, 0x24(r3)
+  800AF158  90C30028  stw        r6, 0x28(r3)
+  800AF15C  9003002C  stw        r0, 0x2c(r3)
+  800AF160  93DD010C  stw        r30, 0x10c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x214C
+  800AF164  93430030  stw        r26, 0x30(r3)
+  800AF168  4822D909  bl         0x802dca70                      # -> __register_global_object
+  800AF16C  38BC0744  addi       r5, r28, 0x744                  # lbl_803106E8+0x5C
+  800AF170  389C0750  addi       r4, r28, 0x750                  # lbl_803106E8+0x68
+  800AF174  387C075C  addi       r3, r28, 0x75c                  # lbl_803106E8+0x74
+  800AF178  817C0744  lwz        r11, 0x744(r28)                 # lbl_803106E8+0x5C
+  800AF17C  81450004  lwz        r10, 4(r5)
+  800AF180  3B7C0B38  addi       r27, r28, 0xb38                 # @72312+0xC0
+  800AF184  81250008  lwz        r9, 8(r5)
+  800AF188  811C0750  lwz        r8, 0x750(r28)                  # lbl_803106E8+0x68
+  800AF18C  80E40004  lwz        r7, 4(r4)
+  800AF190  80C40008  lwz        r6, 8(r4)
+  800AF194  80BC075C  lwz        r5, 0x75c(r28)                  # lbl_803106E8+0x74
+  800AF198  80830004  lwz        r4, 4(r3)
+  800AF19C  80030008  lwz        r0, 8(r3)
+  800AF1A0  91610320  stw        r11, 0x320(r1)
+  800AF1A4  91410324  stw        r10, 0x324(r1)
+  800AF1A8  91210328  stw        r9, 0x328(r1)
+  800AF1AC  9101032C  stw        r8, 0x32c(r1)
+  800AF1B0  90E10330  stw        r7, 0x330(r1)
+  800AF1B4  90C10334  stw        r6, 0x334(r1)
+  800AF1B8  90A10338  stw        r5, 0x338(r1)
+  800AF1BC  9081033C  stw        r4, 0x33c(r1)
+  800AF1C0  90010340  stw        r0, 0x340(r1)
+  800AF1C4  4BFF959D  bl         0x800a8760                      # -> baseID_AttackReady<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF1C8  7C7A1B78  mr         r26, r3
+  800AF1CC  7F64DB78  mr         r4, r27
+  800AF1D0  387D014C  addi       r3, r29, 0x14c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x218C
+  800AF1D4  480B072D  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF1D8  387D014C  addi       r3, r29, 0x14c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x218C
+  800AF1DC  83210338  lwz        r25, 0x338(r1)
+  800AF1E0  8181033C  lwz        r12, 0x33c(r1)
+  800AF1E4  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF1E8  81610340  lwz        r11, 0x340(r1)
+  800AF1EC  38BD0140  addi       r5, r29, 0x140                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2180
+  800AF1F0  8141032C  lwz        r10, 0x32c(r1)
+  800AF1F4  81210330  lwz        r9, 0x330(r1)
+  800AF1F8  81010334  lwz        r8, 0x334(r1)
+  800AF1FC  80E10320  lwz        r7, 0x320(r1)
+  800AF200  80C10324  lwz        r6, 0x324(r1)
+  800AF204  80010328  lwz        r0, 0x328(r1)
+  800AF208  9323000C  stw        r25, 0xc(r3)
+  800AF20C  91830010  stw        r12, 0x10(r3)
+  800AF210  91630014  stw        r11, 0x14(r3)
+  800AF214  91430018  stw        r10, 0x18(r3)
+  800AF218  9123001C  stw        r9, 0x1c(r3)
+  800AF21C  91030020  stw        r8, 0x20(r3)
+  800AF220  90E30024  stw        r7, 0x24(r3)
+  800AF224  90C30028  stw        r6, 0x28(r3)
+  800AF228  9003002C  stw        r0, 0x2c(r3)
+  800AF22C  93DD014C  stw        r30, 0x14c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x218C
+  800AF230  93430030  stw        r26, 0x30(r3)
+  800AF234  4822D83D  bl         0x802dca70                      # -> __register_global_object
+  800AF238  38BC0768  addi       r5, r28, 0x768                  # lbl_80310760+0x8
+  800AF23C  389C0774  addi       r4, r28, 0x774                  # lbl_80310760+0x14
+  800AF240  387C0780  addi       r3, r28, 0x780                  # lbl_80310760+0x20
+  800AF244  817C0768  lwz        r11, 0x768(r28)                 # lbl_80310760+0x8
+  800AF248  81450004  lwz        r10, 4(r5)
+  800AF24C  3B7C0B60  addi       r27, r28, 0xb60                 # @72312+0xE8
+  800AF250  81250008  lwz        r9, 8(r5)
+  800AF254  811C0774  lwz        r8, 0x774(r28)                  # lbl_80310760+0x14
+  800AF258  80E40004  lwz        r7, 4(r4)
+  800AF25C  80C40008  lwz        r6, 8(r4)
+  800AF260  80BC0780  lwz        r5, 0x780(r28)                  # lbl_80310760+0x20
+  800AF264  80830004  lwz        r4, 4(r3)
+  800AF268  80030008  lwz        r0, 8(r3)
+  800AF26C  916102FC  stw        r11, 0x2fc(r1)
+  800AF270  91410300  stw        r10, 0x300(r1)
+  800AF274  91210304  stw        r9, 0x304(r1)
+  800AF278  91010308  stw        r8, 0x308(r1)
+  800AF27C  90E1030C  stw        r7, 0x30c(r1)
+  800AF280  90C10310  stw        r6, 0x310(r1)
+  800AF284  90A10314  stw        r5, 0x314(r1)
+  800AF288  90810318  stw        r4, 0x318(r1)
+  800AF28C  9001031C  stw        r0, 0x31c(r1)
+  800AF290  4BFF94E1  bl         0x800a8770                      # -> baseID_AttackBegin<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF294  7C7A1B78  mr         r26, r3
+  800AF298  7F64DB78  mr         r4, r27
+  800AF29C  387D018C  addi       r3, r29, 0x18c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x21CC
+  800AF2A0  480B0661  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF2A4  387D018C  addi       r3, r29, 0x18c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x21CC
+  800AF2A8  83210314  lwz        r25, 0x314(r1)
+  800AF2AC  81810318  lwz        r12, 0x318(r1)
+  800AF2B0  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF2B4  8161031C  lwz        r11, 0x31c(r1)
+  800AF2B8  38BD0180  addi       r5, r29, 0x180                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x21C0
+  800AF2BC  81410308  lwz        r10, 0x308(r1)
+  800AF2C0  8121030C  lwz        r9, 0x30c(r1)
+  800AF2C4  81010310  lwz        r8, 0x310(r1)
+  800AF2C8  80E102FC  lwz        r7, 0x2fc(r1)
+  800AF2CC  80C10300  lwz        r6, 0x300(r1)
+  800AF2D0  80010304  lwz        r0, 0x304(r1)
+  800AF2D4  9323000C  stw        r25, 0xc(r3)
+  800AF2D8  91830010  stw        r12, 0x10(r3)
+  800AF2DC  91630014  stw        r11, 0x14(r3)
+  800AF2E0  91430018  stw        r10, 0x18(r3)
+  800AF2E4  9123001C  stw        r9, 0x1c(r3)
+  800AF2E8  91030020  stw        r8, 0x20(r3)
+  800AF2EC  90E30024  stw        r7, 0x24(r3)
+  800AF2F0  90C30028  stw        r6, 0x28(r3)
+  800AF2F4  9003002C  stw        r0, 0x2c(r3)
+  800AF2F8  93DD018C  stw        r30, 0x18c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x21CC
+  800AF2FC  93430030  stw        r26, 0x30(r3)
+  800AF300  4822D771  bl         0x802dca70                      # -> __register_global_object
+  800AF304  38BC078C  addi       r5, r28, 0x78c                  # lbl_80310760+0x2C
+  800AF308  389C0798  addi       r4, r28, 0x798                  # lbl_80310760+0x38
+  800AF30C  387C07A4  addi       r3, r28, 0x7a4                  # lbl_80310760+0x44
+  800AF310  817C078C  lwz        r11, 0x78c(r28)                 # lbl_80310760+0x2C
+  800AF314  81450004  lwz        r10, 4(r5)
+  800AF318  3B7C0B88  addi       r27, r28, 0xb88                 # @72312+0x110
+  800AF31C  81250008  lwz        r9, 8(r5)
+  800AF320  811C0798  lwz        r8, 0x798(r28)                  # lbl_80310760+0x38
+  800AF324  80E40004  lwz        r7, 4(r4)
+  800AF328  80C40008  lwz        r6, 8(r4)
+  800AF32C  80BC07A4  lwz        r5, 0x7a4(r28)                  # lbl_80310760+0x44
+  800AF330  80830004  lwz        r4, 4(r3)
+  800AF334  80030008  lwz        r0, 8(r3)
+  800AF338  916102D8  stw        r11, 0x2d8(r1)
+  800AF33C  914102DC  stw        r10, 0x2dc(r1)
+  800AF340  912102E0  stw        r9, 0x2e0(r1)
+  800AF344  910102E4  stw        r8, 0x2e4(r1)
+  800AF348  90E102E8  stw        r7, 0x2e8(r1)
+  800AF34C  90C102EC  stw        r6, 0x2ec(r1)
+  800AF350  90A102F0  stw        r5, 0x2f0(r1)
+  800AF354  908102F4  stw        r4, 0x2f4(r1)
+  800AF358  900102F8  stw        r0, 0x2f8(r1)
+  800AF35C  4BFF9425  bl         0x800a8780                      # -> baseID_AttackSearch<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF360  7C7A1B78  mr         r26, r3
+  800AF364  7F64DB78  mr         r4, r27
+  800AF368  387D01CC  addi       r3, r29, 0x1cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x220C
+  800AF36C  480B0595  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF370  387D01CC  addi       r3, r29, 0x1cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x220C
+  800AF374  832102F0  lwz        r25, 0x2f0(r1)
+  800AF378  818102F4  lwz        r12, 0x2f4(r1)
+  800AF37C  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF380  816102F8  lwz        r11, 0x2f8(r1)
+  800AF384  38BD01C0  addi       r5, r29, 0x1c0                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2200
+  800AF388  814102E4  lwz        r10, 0x2e4(r1)
+  800AF38C  812102E8  lwz        r9, 0x2e8(r1)
+  800AF390  810102EC  lwz        r8, 0x2ec(r1)
+  800AF394  80E102D8  lwz        r7, 0x2d8(r1)
+  800AF398  80C102DC  lwz        r6, 0x2dc(r1)
+  800AF39C  800102E0  lwz        r0, 0x2e0(r1)
+  800AF3A0  9323000C  stw        r25, 0xc(r3)
+  800AF3A4  91830010  stw        r12, 0x10(r3)
+  800AF3A8  91630014  stw        r11, 0x14(r3)
+  800AF3AC  91430018  stw        r10, 0x18(r3)
+  800AF3B0  9123001C  stw        r9, 0x1c(r3)
+  800AF3B4  91030020  stw        r8, 0x20(r3)
+  800AF3B8  90E30024  stw        r7, 0x24(r3)
+  800AF3BC  90C30028  stw        r6, 0x28(r3)
+  800AF3C0  9003002C  stw        r0, 0x2c(r3)
+  800AF3C4  93DD01CC  stw        r30, 0x1cc(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x220C
+  800AF3C8  93430030  stw        r26, 0x30(r3)
+  800AF3CC  4822D6A5  bl         0x802dca70                      # -> __register_global_object
+  800AF3D0  38BC07B0  addi       r5, r28, 0x7b0                  # lbl_80310760+0x50
+  800AF3D4  389C07BC  addi       r4, r28, 0x7bc                  # lbl_80310760+0x5C
+  800AF3D8  387C07C8  addi       r3, r28, 0x7c8                  # lbl_80310760+0x68
+  800AF3DC  817C07B0  lwz        r11, 0x7b0(r28)                 # lbl_80310760+0x50
+  800AF3E0  81450004  lwz        r10, 4(r5)
+  800AF3E4  3B7C0BB4  addi       r27, r28, 0xbb4                 # lbl_80310BB0+0x4
+  800AF3E8  81250008  lwz        r9, 8(r5)
+  800AF3EC  811C07BC  lwz        r8, 0x7bc(r28)                  # lbl_80310760+0x5C
+  800AF3F0  80E40004  lwz        r7, 4(r4)
+  800AF3F4  80C40008  lwz        r6, 8(r4)
+  800AF3F8  80BC07C8  lwz        r5, 0x7c8(r28)                  # lbl_80310760+0x68
+  800AF3FC  80830004  lwz        r4, 4(r3)
+  800AF400  80030008  lwz        r0, 8(r3)
+  800AF404  916102B4  stw        r11, 0x2b4(r1)
+  800AF408  914102B8  stw        r10, 0x2b8(r1)
+  800AF40C  912102BC  stw        r9, 0x2bc(r1)
+  800AF410  910102C0  stw        r8, 0x2c0(r1)
+  800AF414  90E102C4  stw        r7, 0x2c4(r1)
+  800AF418  90C102C8  stw        r6, 0x2c8(r1)
+  800AF41C  90A102CC  stw        r5, 0x2cc(r1)
+  800AF420  908102D0  stw        r4, 0x2d0(r1)
+  800AF424  900102D4  stw        r0, 0x2d4(r1)
+  800AF428  4BFF9369  bl         0x800a8790                      # -> baseID_Attack<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF42C  7C7A1B78  mr         r26, r3
+  800AF430  7F64DB78  mr         r4, r27
+  800AF434  387D020C  addi       r3, r29, 0x20c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x224C
+  800AF438  480B04C9  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF43C  387D020C  addi       r3, r29, 0x20c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x224C
+  800AF440  832102CC  lwz        r25, 0x2cc(r1)
+  800AF444  818102D0  lwz        r12, 0x2d0(r1)
+  800AF448  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF44C  816102D4  lwz        r11, 0x2d4(r1)
+  800AF450  38BD0200  addi       r5, r29, 0x200                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2240
+  800AF454  814102C0  lwz        r10, 0x2c0(r1)
+  800AF458  812102C4  lwz        r9, 0x2c4(r1)
+  800AF45C  810102C8  lwz        r8, 0x2c8(r1)
+  800AF460  80E102B4  lwz        r7, 0x2b4(r1)
+  800AF464  80C102B8  lwz        r6, 0x2b8(r1)
+  800AF468  800102BC  lwz        r0, 0x2bc(r1)
+  800AF46C  9323000C  stw        r25, 0xc(r3)
+  800AF470  91830010  stw        r12, 0x10(r3)
+  800AF474  91630014  stw        r11, 0x14(r3)
+  800AF478  91430018  stw        r10, 0x18(r3)
+  800AF47C  9123001C  stw        r9, 0x1c(r3)
+  800AF480  91030020  stw        r8, 0x20(r3)
+  800AF484  90E30024  stw        r7, 0x24(r3)
+  800AF488  90C30028  stw        r6, 0x28(r3)
+  800AF48C  9003002C  stw        r0, 0x2c(r3)
+  800AF490  93DD020C  stw        r30, 0x20c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x224C
+  800AF494  93430030  stw        r26, 0x30(r3)
+  800AF498  4822D5D9  bl         0x802dca70                      # -> __register_global_object
+  800AF49C  38BC07D4  addi       r5, r28, 0x7d4                  # lbl_80310760+0x74
+  800AF4A0  389C07E0  addi       r4, r28, 0x7e0                  # lbl_803107D8+0x8
+  800AF4A4  387C07EC  addi       r3, r28, 0x7ec                  # lbl_803107D8+0x14
+  800AF4A8  817C07D4  lwz        r11, 0x7d4(r28)                 # lbl_80310760+0x74
+  800AF4AC  81450004  lwz        r10, 4(r5)
+  800AF4B0  3B7C0BD8  addi       r27, r28, 0xbd8                 # lbl_80310BB0+0x28
+  800AF4B4  81250008  lwz        r9, 8(r5)
+  800AF4B8  811C07E0  lwz        r8, 0x7e0(r28)                  # lbl_803107D8+0x8
+  800AF4BC  80E40004  lwz        r7, 4(r4)
+  800AF4C0  80C40008  lwz        r6, 8(r4)
+  800AF4C4  80BC07EC  lwz        r5, 0x7ec(r28)                  # lbl_803107D8+0x14
+  800AF4C8  80830004  lwz        r4, 4(r3)
+  800AF4CC  80030008  lwz        r0, 8(r3)
+  800AF4D0  91610290  stw        r11, 0x290(r1)
+  800AF4D4  91410294  stw        r10, 0x294(r1)
+  800AF4D8  91210298  stw        r9, 0x298(r1)
+  800AF4DC  9101029C  stw        r8, 0x29c(r1)
+  800AF4E0  90E102A0  stw        r7, 0x2a0(r1)
+  800AF4E4  90C102A4  stw        r6, 0x2a4(r1)
+  800AF4E8  90A102A8  stw        r5, 0x2a8(r1)
+  800AF4EC  908102AC  stw        r4, 0x2ac(r1)
+  800AF4F0  900102B0  stw        r0, 0x2b0(r1)
+  800AF4F4  4BFF92AD  bl         0x800a87a0                      # -> baseID_AttackEnd<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF4F8  7C7A1B78  mr         r26, r3
+  800AF4FC  7F64DB78  mr         r4, r27
+  800AF500  387D024C  addi       r3, r29, 0x24c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x228C
+  800AF504  480B03FD  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF508  387D024C  addi       r3, r29, 0x24c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x228C
+  800AF50C  832102A8  lwz        r25, 0x2a8(r1)
+  800AF510  818102AC  lwz        r12, 0x2ac(r1)
+  800AF514  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF518  816102B0  lwz        r11, 0x2b0(r1)
+  800AF51C  38BD0240  addi       r5, r29, 0x240                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2280
+  800AF520  8141029C  lwz        r10, 0x29c(r1)
+  800AF524  812102A0  lwz        r9, 0x2a0(r1)
+  800AF528  810102A4  lwz        r8, 0x2a4(r1)
+  800AF52C  80E10290  lwz        r7, 0x290(r1)
+  800AF530  80C10294  lwz        r6, 0x294(r1)
+  800AF534  80010298  lwz        r0, 0x298(r1)
+  800AF538  9323000C  stw        r25, 0xc(r3)
+  800AF53C  91830010  stw        r12, 0x10(r3)
+  800AF540  91630014  stw        r11, 0x14(r3)
+  800AF544  91430018  stw        r10, 0x18(r3)
+  800AF548  9123001C  stw        r9, 0x1c(r3)
+  800AF54C  91030020  stw        r8, 0x20(r3)
+  800AF550  90E30024  stw        r7, 0x24(r3)
+  800AF554  90C30028  stw        r6, 0x28(r3)
+  800AF558  9003002C  stw        r0, 0x2c(r3)
+  800AF55C  93DD024C  stw        r30, 0x24c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x228C
+  800AF560  93430030  stw        r26, 0x30(r3)
+  800AF564  4822D50D  bl         0x802dca70                      # -> __register_global_object
+  800AF568  38BC07F8  addi       r5, r28, 0x7f8                  # lbl_803107D8+0x20
+  800AF56C  389C0804  addi       r4, r28, 0x804                  # lbl_803107D8+0x2C
+  800AF570  387C0810  addi       r3, r28, 0x810                  # lbl_803107D8+0x38
+  800AF574  817C07F8  lwz        r11, 0x7f8(r28)                 # lbl_803107D8+0x20
+  800AF578  81450004  lwz        r10, 4(r5)
+  800AF57C  3B7C0C00  addi       r27, r28, 0xc00                 # lbl_80310BF8+0x8
+  800AF580  81250008  lwz        r9, 8(r5)
+  800AF584  811C0804  lwz        r8, 0x804(r28)                  # lbl_803107D8+0x2C
+  800AF588  80E40004  lwz        r7, 4(r4)
+  800AF58C  80C40008  lwz        r6, 8(r4)
+  800AF590  80BC0810  lwz        r5, 0x810(r28)                  # lbl_803107D8+0x38
+  800AF594  80830004  lwz        r4, 4(r3)
+  800AF598  80030008  lwz        r0, 8(r3)
+  800AF59C  9161026C  stw        r11, 0x26c(r1)
+  800AF5A0  91410270  stw        r10, 0x270(r1)
+  800AF5A4  91210274  stw        r9, 0x274(r1)
+  800AF5A8  91010278  stw        r8, 0x278(r1)
+  800AF5AC  90E1027C  stw        r7, 0x27c(r1)
+  800AF5B0  90C10280  stw        r6, 0x280(r1)
+  800AF5B4  90A10284  stw        r5, 0x284(r1)
+  800AF5B8  90810288  stw        r4, 0x288(r1)
+  800AF5BC  9001028C  stw        r0, 0x28c(r1)
+  800AF5C0  4BFF91F1  bl         0x800a87b0                      # -> baseID_FumiHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF5C4  7C7A1B78  mr         r26, r3
+  800AF5C8  7F64DB78  mr         r4, r27
+  800AF5CC  387D028C  addi       r3, r29, 0x28c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x22CC
+  800AF5D0  480B0331  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF5D4  387D028C  addi       r3, r29, 0x28c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x22CC
+  800AF5D8  83210284  lwz        r25, 0x284(r1)
+  800AF5DC  81810288  lwz        r12, 0x288(r1)
+  800AF5E0  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF5E4  8161028C  lwz        r11, 0x28c(r1)
+  800AF5E8  38BD0280  addi       r5, r29, 0x280                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x22C0
+  800AF5EC  81410278  lwz        r10, 0x278(r1)
+  800AF5F0  8121027C  lwz        r9, 0x27c(r1)
+  800AF5F4  81010280  lwz        r8, 0x280(r1)
+  800AF5F8  80E1026C  lwz        r7, 0x26c(r1)
+  800AF5FC  80C10270  lwz        r6, 0x270(r1)
+  800AF600  80010274  lwz        r0, 0x274(r1)
+  800AF604  9323000C  stw        r25, 0xc(r3)
+  800AF608  91830010  stw        r12, 0x10(r3)
+  800AF60C  91630014  stw        r11, 0x14(r3)
+  800AF610  91430018  stw        r10, 0x18(r3)
+  800AF614  9123001C  stw        r9, 0x1c(r3)
+  800AF618  91030020  stw        r8, 0x20(r3)
+  800AF61C  90E30024  stw        r7, 0x24(r3)
+  800AF620  90C30028  stw        r6, 0x28(r3)
+  800AF624  9003002C  stw        r0, 0x2c(r3)
+  800AF628  93DD028C  stw        r30, 0x28c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x22CC
+  800AF62C  93430030  stw        r26, 0x30(r3)
+  800AF630  4822D441  bl         0x802dca70                      # -> __register_global_object
+  800AF634  38BC081C  addi       r5, r28, 0x81c                  # lbl_803107D8+0x44
+  800AF638  389C0828  addi       r4, r28, 0x828                  # lbl_803107D8+0x50
+  800AF63C  387C0834  addi       r3, r28, 0x834                  # lbl_803107D8+0x5C
+  800AF640  817C081C  lwz        r11, 0x81c(r28)                 # lbl_803107D8+0x44
+  800AF644  81450004  lwz        r10, 4(r5)
+  800AF648  3B7C0C24  addi       r27, r28, 0xc24                 # @72162+0x4
+  800AF64C  81250008  lwz        r9, 8(r5)
+  800AF650  811C0828  lwz        r8, 0x828(r28)                  # lbl_803107D8+0x50
+  800AF654  80E40004  lwz        r7, 4(r4)
+  800AF658  80C40008  lwz        r6, 8(r4)
+  800AF65C  80BC0834  lwz        r5, 0x834(r28)                  # lbl_803107D8+0x5C
+  800AF660  80830004  lwz        r4, 4(r3)
+  800AF664  80030008  lwz        r0, 8(r3)
+  800AF668  91610248  stw        r11, 0x248(r1)
+  800AF66C  9141024C  stw        r10, 0x24c(r1)
+  800AF670  91210250  stw        r9, 0x250(r1)
+  800AF674  91010254  stw        r8, 0x254(r1)
+  800AF678  90E10258  stw        r7, 0x258(r1)
+  800AF67C  90C1025C  stw        r6, 0x25c(r1)
+  800AF680  90A10260  stw        r5, 0x260(r1)
+  800AF684  90810264  stw        r4, 0x264(r1)
+  800AF688  90010268  stw        r0, 0x268(r1)
+  800AF68C  4BFF9135  bl         0x800a87c0                      # -> baseID_FireHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF690  7C7A1B78  mr         r26, r3
+  800AF694  7F64DB78  mr         r4, r27
+  800AF698  387D02CC  addi       r3, r29, 0x2cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x230C
+  800AF69C  480B0265  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF6A0  387D02CC  addi       r3, r29, 0x2cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x230C
+  800AF6A4  83210260  lwz        r25, 0x260(r1)
+  800AF6A8  81810264  lwz        r12, 0x264(r1)
+  800AF6AC  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF6B0  81610268  lwz        r11, 0x268(r1)
+  800AF6B4  38BD02C0  addi       r5, r29, 0x2c0                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2300
+  800AF6B8  81410254  lwz        r10, 0x254(r1)
+  800AF6BC  81210258  lwz        r9, 0x258(r1)
+  800AF6C0  8101025C  lwz        r8, 0x25c(r1)
+  800AF6C4  80E10248  lwz        r7, 0x248(r1)
+  800AF6C8  80C1024C  lwz        r6, 0x24c(r1)
+  800AF6CC  80010250  lwz        r0, 0x250(r1)
+  800AF6D0  9323000C  stw        r25, 0xc(r3)
+  800AF6D4  91830010  stw        r12, 0x10(r3)
+  800AF6D8  91630014  stw        r11, 0x14(r3)
+  800AF6DC  91430018  stw        r10, 0x18(r3)
+  800AF6E0  9123001C  stw        r9, 0x1c(r3)
+  800AF6E4  91030020  stw        r8, 0x20(r3)
+  800AF6E8  90E30024  stw        r7, 0x24(r3)
+  800AF6EC  90C30028  stw        r6, 0x28(r3)
+  800AF6F0  9003002C  stw        r0, 0x2c(r3)
+  800AF6F4  93DD02CC  stw        r30, 0x2cc(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x230C
+  800AF6F8  93430030  stw        r26, 0x30(r3)
+  800AF6FC  4822D375  bl         0x802dca70                      # -> __register_global_object
+  800AF700  38BC0840  addi       r5, r28, 0x840                  # lbl_803107D8+0x68
+  800AF704  389C084C  addi       r4, r28, 0x84c                  # lbl_803107D8+0x74
+  800AF708  387C0858  addi       r3, r28, 0x858                  # lbl_803107D8+0x80
+  800AF70C  817C0840  lwz        r11, 0x840(r28)                 # lbl_803107D8+0x68
+  800AF710  81450004  lwz        r10, 4(r5)
+  800AF714  3B7C0C48  addi       r27, r28, 0xc48                 # @72163+0x4
+  800AF718  81250008  lwz        r9, 8(r5)
+  800AF71C  811C084C  lwz        r8, 0x84c(r28)                  # lbl_803107D8+0x74
+  800AF720  80E40004  lwz        r7, 4(r4)
+  800AF724  80C40008  lwz        r6, 8(r4)
+  800AF728  80BC0858  lwz        r5, 0x858(r28)                  # lbl_803107D8+0x80
+  800AF72C  80830004  lwz        r4, 4(r3)
+  800AF730  80030008  lwz        r0, 8(r3)
+  800AF734  91610224  stw        r11, 0x224(r1)
+  800AF738  91410228  stw        r10, 0x228(r1)
+  800AF73C  9121022C  stw        r9, 0x22c(r1)
+  800AF740  91010230  stw        r8, 0x230(r1)
+  800AF744  90E10234  stw        r7, 0x234(r1)
+  800AF748  90C10238  stw        r6, 0x238(r1)
+  800AF74C  90A1023C  stw        r5, 0x23c(r1)
+  800AF750  90810240  stw        r4, 0x240(r1)
+  800AF754  90010244  stw        r0, 0x244(r1)
+  800AF758  4BFF9079  bl         0x800a87d0                      # -> baseID_StarHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF75C  7C7A1B78  mr         r26, r3
+  800AF760  7F64DB78  mr         r4, r27
+  800AF764  387D030C  addi       r3, r29, 0x30c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x234C
+  800AF768  480B0199  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF76C  387D030C  addi       r3, r29, 0x30c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x234C
+  800AF770  8321023C  lwz        r25, 0x23c(r1)
+  800AF774  81810240  lwz        r12, 0x240(r1)
+  800AF778  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF77C  81610244  lwz        r11, 0x244(r1)
+  800AF780  38BD0300  addi       r5, r29, 0x300                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2340
+  800AF784  81410230  lwz        r10, 0x230(r1)
+  800AF788  81210234  lwz        r9, 0x234(r1)
+  800AF78C  81010238  lwz        r8, 0x238(r1)
+  800AF790  80E10224  lwz        r7, 0x224(r1)
+  800AF794  80C10228  lwz        r6, 0x228(r1)
+  800AF798  8001022C  lwz        r0, 0x22c(r1)
+  800AF79C  9323000C  stw        r25, 0xc(r3)
+  800AF7A0  91830010  stw        r12, 0x10(r3)
+  800AF7A4  91630014  stw        r11, 0x14(r3)
+  800AF7A8  91430018  stw        r10, 0x18(r3)
+  800AF7AC  9123001C  stw        r9, 0x1c(r3)
+  800AF7B0  91030020  stw        r8, 0x20(r3)
+  800AF7B4  90E30024  stw        r7, 0x24(r3)
+  800AF7B8  90C30028  stw        r6, 0x28(r3)
+  800AF7BC  9003002C  stw        r0, 0x2c(r3)
+  800AF7C0  93DD030C  stw        r30, 0x30c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x234C
+  800AF7C4  93430030  stw        r26, 0x30(r3)
+  800AF7C8  4822D2A9  bl         0x802dca70                      # -> __register_global_object
+  800AF7CC  38BC0864  addi       r5, r28, 0x864                  # lbl_803107D8+0x8C
+  800AF7D0  389C0870  addi       r4, r28, 0x870                  # lbl_803107D8+0x98
+  800AF7D4  387C087C  addi       r3, r28, 0x87c                  # lbl_803107D8+0xA4
+  800AF7D8  817C0864  lwz        r11, 0x864(r28)                 # lbl_803107D8+0x8C
+  800AF7DC  81450004  lwz        r10, 4(r5)
+  800AF7E0  3B7C0C6C  addi       r27, r28, 0xc6c                 # @72164+0x4
+  800AF7E4  81250008  lwz        r9, 8(r5)
+  800AF7E8  811C0870  lwz        r8, 0x870(r28)                  # lbl_803107D8+0x98
+  800AF7EC  80E40004  lwz        r7, 4(r4)
+  800AF7F0  80C40008  lwz        r6, 8(r4)
+  800AF7F4  80BC087C  lwz        r5, 0x87c(r28)                  # lbl_803107D8+0xA4
+  800AF7F8  80830004  lwz        r4, 4(r3)
+  800AF7FC  80030008  lwz        r0, 8(r3)
+  800AF800  91610200  stw        r11, 0x200(r1)
+  800AF804  91410204  stw        r10, 0x204(r1)
+  800AF808  91210208  stw        r9, 0x208(r1)
+  800AF80C  9101020C  stw        r8, 0x20c(r1)
+  800AF810  90E10210  stw        r7, 0x210(r1)
+  800AF814  90C10214  stw        r6, 0x214(r1)
+  800AF818  90A10218  stw        r5, 0x218(r1)
+  800AF81C  9081021C  stw        r4, 0x21c(r1)
+  800AF820  90010220  stw        r0, 0x220(r1)
+  800AF824  4BFF8FBD  bl         0x800a87e0                      # -> baseID_SlideHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF828  7C7A1B78  mr         r26, r3
+  800AF82C  7F64DB78  mr         r4, r27
+  800AF830  387D034C  addi       r3, r29, 0x34c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x238C
+  800AF834  480B00CD  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF838  387D034C  addi       r3, r29, 0x34c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x238C
+  800AF83C  83210218  lwz        r25, 0x218(r1)
+  800AF840  8181021C  lwz        r12, 0x21c(r1)
+  800AF844  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF848  81610220  lwz        r11, 0x220(r1)
+  800AF84C  38BD0340  addi       r5, r29, 0x340                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2380
+  800AF850  8141020C  lwz        r10, 0x20c(r1)
+  800AF854  81210210  lwz        r9, 0x210(r1)
+  800AF858  81010214  lwz        r8, 0x214(r1)
+  800AF85C  80E10200  lwz        r7, 0x200(r1)
+  800AF860  80C10204  lwz        r6, 0x204(r1)
+  800AF864  80010208  lwz        r0, 0x208(r1)
+  800AF868  9323000C  stw        r25, 0xc(r3)
+  800AF86C  91830010  stw        r12, 0x10(r3)
+  800AF870  91630014  stw        r11, 0x14(r3)
+  800AF874  91430018  stw        r10, 0x18(r3)
+  800AF878  9123001C  stw        r9, 0x1c(r3)
+  800AF87C  91030020  stw        r8, 0x20(r3)
+  800AF880  90E30024  stw        r7, 0x24(r3)
+  800AF884  90C30028  stw        r6, 0x28(r3)
+  800AF888  9003002C  stw        r0, 0x2c(r3)
+  800AF88C  93DD034C  stw        r30, 0x34c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x238C
+  800AF890  93430030  stw        r26, 0x30(r3)
+  800AF894  4822D1DD  bl         0x802dca70                      # -> __register_global_object
+  800AF898  38BC0888  addi       r5, r28, 0x888                  # lbl_803107D8+0xB0
+  800AF89C  389C0894  addi       r4, r28, 0x894                  # lbl_803107D8+0xBC
+  800AF8A0  387C08A0  addi       r3, r28, 0x8a0                  # lbl_803107D8+0xC8
+  800AF8A4  817C0888  lwz        r11, 0x888(r28)                 # lbl_803107D8+0xB0
+  800AF8A8  81450004  lwz        r10, 4(r5)
+  800AF8AC  3B7C0C94  addi       r27, r28, 0xc94                 # lbl_80310C89+0xB
+  800AF8B0  81250008  lwz        r9, 8(r5)
+  800AF8B4  811C0894  lwz        r8, 0x894(r28)                  # lbl_803107D8+0xBC
+  800AF8B8  80E40004  lwz        r7, 4(r4)
+  800AF8BC  80C40008  lwz        r6, 8(r4)
+  800AF8C0  80BC08A0  lwz        r5, 0x8a0(r28)                  # lbl_803107D8+0xC8
+  800AF8C4  80830004  lwz        r4, 4(r3)
+  800AF8C8  80030008  lwz        r0, 8(r3)
+  800AF8CC  916101DC  stw        r11, 0x1dc(r1)
+  800AF8D0  914101E0  stw        r10, 0x1e0(r1)
+  800AF8D4  912101E4  stw        r9, 0x1e4(r1)
+  800AF8D8  910101E8  stw        r8, 0x1e8(r1)
+  800AF8DC  90E101EC  stw        r7, 0x1ec(r1)
+  800AF8E0  90C101F0  stw        r6, 0x1f0(r1)
+  800AF8E4  90A101F4  stw        r5, 0x1f4(r1)
+  800AF8E8  908101F8  stw        r4, 0x1f8(r1)
+  800AF8EC  900101FC  stw        r0, 0x1fc(r1)
+  800AF8F0  4BFF8F01  bl         0x800a87f0                      # -> baseID_QuakeHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF8F4  7C7A1B78  mr         r26, r3
+  800AF8F8  7F64DB78  mr         r4, r27
+  800AF8FC  387D038C  addi       r3, r29, 0x38c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x23CC
+  800AF900  480B0001  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF904  387D038C  addi       r3, r29, 0x38c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x23CC
+  800AF908  832101F4  lwz        r25, 0x1f4(r1)
+  800AF90C  818101F8  lwz        r12, 0x1f8(r1)
+  800AF910  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF914  816101FC  lwz        r11, 0x1fc(r1)
+  800AF918  38BD0380  addi       r5, r29, 0x380                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x23C0
+  800AF91C  814101E8  lwz        r10, 0x1e8(r1)
+  800AF920  812101EC  lwz        r9, 0x1ec(r1)
+  800AF924  810101F0  lwz        r8, 0x1f0(r1)
+  800AF928  80E101DC  lwz        r7, 0x1dc(r1)
+  800AF92C  80C101E0  lwz        r6, 0x1e0(r1)
+  800AF930  800101E4  lwz        r0, 0x1e4(r1)
+  800AF934  9323000C  stw        r25, 0xc(r3)
+  800AF938  91830010  stw        r12, 0x10(r3)
+  800AF93C  91630014  stw        r11, 0x14(r3)
+  800AF940  91430018  stw        r10, 0x18(r3)
+  800AF944  9123001C  stw        r9, 0x1c(r3)
+  800AF948  91030020  stw        r8, 0x20(r3)
+  800AF94C  90E30024  stw        r7, 0x24(r3)
+  800AF950  90C30028  stw        r6, 0x28(r3)
+  800AF954  9003002C  stw        r0, 0x2c(r3)
+  800AF958  93DD038C  stw        r30, 0x38c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x23CC
+  800AF95C  93430030  stw        r26, 0x30(r3)
+  800AF960  4822D111  bl         0x802dca70                      # -> __register_global_object
+  800AF964  38BC08AC  addi       r5, r28, 0x8ac                  # lbl_803107D8+0xD4
+  800AF968  389C08B8  addi       r4, r28, 0x8b8                  # lbl_803107D8+0xE0
+  800AF96C  387C08C4  addi       r3, r28, 0x8c4                  # lbl_803107D8+0xEC
+  800AF970  817C08AC  lwz        r11, 0x8ac(r28)                 # lbl_803107D8+0xD4
+  800AF974  81450004  lwz        r10, 4(r5)
+  800AF978  3B7C0CBC  addi       r27, r28, 0xcbc                 # @72794+0x8
+  800AF97C  81250008  lwz        r9, 8(r5)
+  800AF980  811C08B8  lwz        r8, 0x8b8(r28)                  # lbl_803107D8+0xE0
+  800AF984  80E40004  lwz        r7, 4(r4)
+  800AF988  80C40008  lwz        r6, 8(r4)
+  800AF98C  80BC08C4  lwz        r5, 0x8c4(r28)                  # lbl_803107D8+0xEC
+  800AF990  80830004  lwz        r4, 4(r3)
+  800AF994  80030008  lwz        r0, 8(r3)
+  800AF998  916101B8  stw        r11, 0x1b8(r1)
+  800AF99C  914101BC  stw        r10, 0x1bc(r1)
+  800AF9A0  912101C0  stw        r9, 0x1c0(r1)
+  800AF9A4  910101C4  stw        r8, 0x1c4(r1)
+  800AF9A8  90E101C8  stw        r7, 0x1c8(r1)
+  800AF9AC  90C101CC  stw        r6, 0x1cc(r1)
+  800AF9B0  90A101D0  stw        r5, 0x1d0(r1)
+  800AF9B4  908101D4  stw        r4, 0x1d4(r1)
+  800AF9B8  900101D8  stw        r0, 0x1d8(r1)
+  800AF9BC  4BFF8E45  bl         0x800a8800                      # -> baseID_ShellHit<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AF9C0  7C7A1B78  mr         r26, r3
+  800AF9C4  7F64DB78  mr         r4, r27
+  800AF9C8  387D03CC  addi       r3, r29, 0x3cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x240C
+  800AF9CC  480AFF35  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AF9D0  387D03CC  addi       r3, r29, 0x3cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x240C
+  800AF9D4  832101D0  lwz        r25, 0x1d0(r1)
+  800AF9D8  818101D4  lwz        r12, 0x1d4(r1)
+  800AF9DC  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AF9E0  816101D8  lwz        r11, 0x1d8(r1)
+  800AF9E4  38BD03C0  addi       r5, r29, 0x3c0                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2400
+  800AF9E8  814101C4  lwz        r10, 0x1c4(r1)
+  800AF9EC  812101C8  lwz        r9, 0x1c8(r1)
+  800AF9F0  810101CC  lwz        r8, 0x1cc(r1)
+  800AF9F4  80E101B8  lwz        r7, 0x1b8(r1)
+  800AF9F8  80C101BC  lwz        r6, 0x1bc(r1)
+  800AF9FC  800101C0  lwz        r0, 0x1c0(r1)
+  800AFA00  9323000C  stw        r25, 0xc(r3)
+  800AFA04  91830010  stw        r12, 0x10(r3)
+  800AFA08  91630014  stw        r11, 0x14(r3)
+  800AFA0C  91430018  stw        r10, 0x18(r3)
+  800AFA10  9123001C  stw        r9, 0x1c(r3)
+  800AFA14  91030020  stw        r8, 0x20(r3)
+  800AFA18  90E30024  stw        r7, 0x24(r3)
+  800AFA1C  90C30028  stw        r6, 0x28(r3)
+  800AFA20  9003002C  stw        r0, 0x2c(r3)
+  800AFA24  93DD03CC  stw        r30, 0x3cc(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x240C
+  800AFA28  93430030  stw        r26, 0x30(r3)
+  800AFA2C  4822D045  bl         0x802dca70                      # -> __register_global_object
+  800AFA30  38BC08D0  addi       r5, r28, 0x8d0                  # lbl_803107D8+0xF8
+  800AFA34  389C08DC  addi       r4, r28, 0x8dc                  # lbl_803107D8+0x104
+  800AFA38  387C08E8  addi       r3, r28, 0x8e8                  # lbl_803107D8+0x110
+  800AFA3C  817C08D0  lwz        r11, 0x8d0(r28)                 # lbl_803107D8+0xF8
+  800AFA40  81450004  lwz        r10, 4(r5)
+  800AFA44  3B7C0CE8  addi       r27, r28, 0xce8                 # @72797
+  800AFA48  81250008  lwz        r9, 8(r5)
+  800AFA4C  811C08DC  lwz        r8, 0x8dc(r28)                  # lbl_803107D8+0x104
+  800AFA50  80E40004  lwz        r7, 4(r4)
+  800AFA54  80C40008  lwz        r6, 8(r4)
+  800AFA58  80BC08E8  lwz        r5, 0x8e8(r28)                  # lbl_803107D8+0x110
+  800AFA5C  80830004  lwz        r4, 4(r3)
+  800AFA60  80030008  lwz        r0, 8(r3)
+  800AFA64  91610194  stw        r11, 0x194(r1)
+  800AFA68  91410198  stw        r10, 0x198(r1)
+  800AFA6C  9121019C  stw        r9, 0x19c(r1)
+  800AFA70  910101A0  stw        r8, 0x1a0(r1)
+  800AFA74  90E101A4  stw        r7, 0x1a4(r1)
+  800AFA78  90C101A8  stw        r6, 0x1a8(r1)
+  800AFA7C  90A101AC  stw        r5, 0x1ac(r1)
+  800AFA80  908101B0  stw        r4, 0x1b0(r1)
+  800AFA84  900101B4  stw        r0, 0x1b4(r1)
+  800AFA88  4BFF8D89  bl         0x800a8810                      # -> baseID_ShellAtk_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AFA8C  7C7A1B78  mr         r26, r3
+  800AFA90  7F64DB78  mr         r4, r27
+  800AFA94  387D040C  addi       r3, r29, 0x40c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x244C
+  800AFA98  480AFE69  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFA9C  387D040C  addi       r3, r29, 0x40c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x244C
+  800AFAA0  832101AC  lwz        r25, 0x1ac(r1)
+  800AFAA4  818101B0  lwz        r12, 0x1b0(r1)
+  800AFAA8  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFAAC  816101B4  lwz        r11, 0x1b4(r1)
+  800AFAB0  38BD0400  addi       r5, r29, 0x400                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2440
+  800AFAB4  814101A0  lwz        r10, 0x1a0(r1)
+  800AFAB8  812101A4  lwz        r9, 0x1a4(r1)
+  800AFABC  810101A8  lwz        r8, 0x1a8(r1)
+  800AFAC0  80E10194  lwz        r7, 0x194(r1)
+  800AFAC4  80C10198  lwz        r6, 0x198(r1)
+  800AFAC8  8001019C  lwz        r0, 0x19c(r1)
+  800AFACC  9323000C  stw        r25, 0xc(r3)
+  800AFAD0  91830010  stw        r12, 0x10(r3)
+  800AFAD4  91630014  stw        r11, 0x14(r3)
+  800AFAD8  91430018  stw        r10, 0x18(r3)
+  800AFADC  9123001C  stw        r9, 0x1c(r3)
+  800AFAE0  91030020  stw        r8, 0x20(r3)
+  800AFAE4  90E30024  stw        r7, 0x24(r3)
+  800AFAE8  90C30028  stw        r6, 0x28(r3)
+  800AFAEC  9003002C  stw        r0, 0x2c(r3)
+  800AFAF0  93DD040C  stw        r30, 0x40c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x244C
+  800AFAF4  93430030  stw        r26, 0x30(r3)
+  800AFAF8  4822CF79  bl         0x802dca70                      # -> __register_global_object
+  800AFAFC  38BC08F4  addi       r5, r28, 0x8f4                  # lbl_803107D8+0x11C
+  800AFB00  389C0900  addi       r4, r28, 0x900                  # lbl_803107D8+0x128
+  800AFB04  387C090C  addi       r3, r28, 0x90c                  # lbl_803107D8+0x134
+  800AFB08  817C08F4  lwz        r11, 0x8f4(r28)                 # lbl_803107D8+0x11C
+  800AFB0C  81450004  lwz        r10, 4(r5)
+  800AFB10  3B7C0D10  addi       r27, r28, 0xd10                 # @72798+0x10
+  800AFB14  81250008  lwz        r9, 8(r5)
+  800AFB18  811C0900  lwz        r8, 0x900(r28)                  # lbl_803107D8+0x128
+  800AFB1C  80E40004  lwz        r7, 4(r4)
+  800AFB20  80C40008  lwz        r6, 8(r4)
+  800AFB24  80BC090C  lwz        r5, 0x90c(r28)                  # lbl_803107D8+0x134
+  800AFB28  80830004  lwz        r4, 4(r3)
+  800AFB2C  80030008  lwz        r0, 8(r3)
+  800AFB30  91610170  stw        r11, 0x170(r1)
+  800AFB34  91410174  stw        r10, 0x174(r1)
+  800AFB38  91210178  stw        r9, 0x178(r1)
+  800AFB3C  9101017C  stw        r8, 0x17c(r1)
+  800AFB40  90E10180  stw        r7, 0x180(r1)
+  800AFB44  90C10184  stw        r6, 0x184(r1)
+  800AFB48  90A10188  stw        r5, 0x188(r1)
+  800AFB4C  9081018C  stw        r4, 0x18c(r1)
+  800AFB50  90010190  stw        r0, 0x190(r1)
+  800AFB54  4BFF8CCD  bl         0x800a8820                      # -> baseID_ShellAtk<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AFB58  7C7A1B78  mr         r26, r3
+  800AFB5C  7F64DB78  mr         r4, r27
+  800AFB60  387D044C  addi       r3, r29, 0x44c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x248C
+  800AFB64  480AFD9D  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFB68  387D044C  addi       r3, r29, 0x44c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x248C
+  800AFB6C  83210188  lwz        r25, 0x188(r1)
+  800AFB70  8181018C  lwz        r12, 0x18c(r1)
+  800AFB74  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFB78  81610190  lwz        r11, 0x190(r1)
+  800AFB7C  38BD0440  addi       r5, r29, 0x440                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2480
+  800AFB80  8141017C  lwz        r10, 0x17c(r1)
+  800AFB84  81210180  lwz        r9, 0x180(r1)
+  800AFB88  81010184  lwz        r8, 0x184(r1)
+  800AFB8C  80E10170  lwz        r7, 0x170(r1)
+  800AFB90  80C10174  lwz        r6, 0x174(r1)
+  800AFB94  80010178  lwz        r0, 0x178(r1)
+  800AFB98  9323000C  stw        r25, 0xc(r3)
+  800AFB9C  91830010  stw        r12, 0x10(r3)
+  800AFBA0  91630014  stw        r11, 0x14(r3)
+  800AFBA4  91430018  stw        r10, 0x18(r3)
+  800AFBA8  9123001C  stw        r9, 0x1c(r3)
+  800AFBAC  91030020  stw        r8, 0x20(r3)
+  800AFBB0  90E30024  stw        r7, 0x24(r3)
+  800AFBB4  90C30028  stw        r6, 0x28(r3)
+  800AFBB8  9003002C  stw        r0, 0x2c(r3)
+  800AFBBC  93DD044C  stw        r30, 0x44c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x248C
+  800AFBC0  93430030  stw        r26, 0x30(r3)
+  800AFBC4  4822CEAD  bl         0x802dca70                      # -> __register_global_object
+  800AFBC8  38BC0918  addi       r5, r28, 0x918                  # lbl_803107D8+0x140
+  800AFBCC  389C0924  addi       r4, r28, 0x924                  # lbl_803107D8+0x14C
+  800AFBD0  387C0930  addi       r3, r28, 0x930                  # lbl_803107D8+0x158
+  800AFBD4  817C0918  lwz        r11, 0x918(r28)                 # lbl_803107D8+0x140
+  800AFBD8  81450004  lwz        r10, 4(r5)
+  800AFBDC  3B7C0D38  addi       r27, r28, 0xd38
+  800AFBE0  81250008  lwz        r9, 8(r5)
+  800AFBE4  811C0924  lwz        r8, 0x924(r28)                  # lbl_803107D8+0x14C
+  800AFBE8  80E40004  lwz        r7, 4(r4)
+  800AFBEC  80C40008  lwz        r6, 8(r4)
+  800AFBF0  80BC0930  lwz        r5, 0x930(r28)                  # lbl_803107D8+0x158
+  800AFBF4  80830004  lwz        r4, 4(r3)
+  800AFBF8  80030008  lwz        r0, 8(r3)
+  800AFBFC  9161014C  stw        r11, 0x14c(r1)
+  800AFC00  91410150  stw        r10, 0x150(r1)
+  800AFC04  91210154  stw        r9, 0x154(r1)
+  800AFC08  91010158  stw        r8, 0x158(r1)
+  800AFC0C  90E1015C  stw        r7, 0x15c(r1)
+  800AFC10  90C10160  stw        r6, 0x160(r1)
+  800AFC14  90A10164  stw        r5, 0x164(r1)
+  800AFC18  90810168  stw        r4, 0x168(r1)
+  800AFC1C  9001016C  stw        r0, 0x16c(r1)
+  800AFC20  4BFF8C11  bl         0x800a8830                      # -> baseID_ShellOut<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AFC24  7C7A1B78  mr         r26, r3
+  800AFC28  7F64DB78  mr         r4, r27
+  800AFC2C  387D048C  addi       r3, r29, 0x48c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x24CC
+  800AFC30  480AFCD1  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFC34  387D048C  addi       r3, r29, 0x48c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x24CC
+  800AFC38  83210164  lwz        r25, 0x164(r1)
+  800AFC3C  81810168  lwz        r12, 0x168(r1)
+  800AFC40  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFC44  8161016C  lwz        r11, 0x16c(r1)
+  800AFC48  38BD0480  addi       r5, r29, 0x480                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x24C0
+  800AFC4C  81410158  lwz        r10, 0x158(r1)
+  800AFC50  8121015C  lwz        r9, 0x15c(r1)
+  800AFC54  81010160  lwz        r8, 0x160(r1)
+  800AFC58  80E1014C  lwz        r7, 0x14c(r1)
+  800AFC5C  80C10150  lwz        r6, 0x150(r1)
+  800AFC60  80010154  lwz        r0, 0x154(r1)
+  800AFC64  9323000C  stw        r25, 0xc(r3)
+  800AFC68  91830010  stw        r12, 0x10(r3)
+  800AFC6C  91630014  stw        r11, 0x14(r3)
+  800AFC70  91430018  stw        r10, 0x18(r3)
+  800AFC74  9123001C  stw        r9, 0x1c(r3)
+  800AFC78  91030020  stw        r8, 0x20(r3)
+  800AFC7C  90E30024  stw        r7, 0x24(r3)
+  800AFC80  90C30028  stw        r6, 0x28(r3)
+  800AFC84  9003002C  stw        r0, 0x2c(r3)
+  800AFC88  93DD048C  stw        r30, 0x48c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x24CC
+  800AFC8C  93430030  stw        r26, 0x30(r3)
+  800AFC90  4822CDE1  bl         0x802dca70                      # -> __register_global_object
+  800AFC94  38BC093C  addi       r5, r28, 0x93c                  # lbl_803107D8+0x164
+  800AFC98  389C0948  addi       r4, r28, 0x948                  # lbl_803107D8+0x170
+  800AFC9C  387C0954  addi       r3, r28, 0x954                  # lbl_803107D8+0x17C
+  800AFCA0  817C093C  lwz        r11, 0x93c(r28)                 # lbl_803107D8+0x164
+  800AFCA4  81450004  lwz        r10, 4(r5)
+  800AFCA8  3B7C0D60  addi       r27, r28, 0xd60
+  800AFCAC  81250008  lwz        r9, 8(r5)
+  800AFCB0  811C0948  lwz        r8, 0x948(r28)                  # lbl_803107D8+0x170
+  800AFCB4  80E40004  lwz        r7, 4(r4)
+  800AFCB8  80C40008  lwz        r6, 8(r4)
+  800AFCBC  80BC0954  lwz        r5, 0x954(r28)                  # lbl_803107D8+0x17C
+  800AFCC0  80830004  lwz        r4, 4(r3)
+  800AFCC4  80030008  lwz        r0, 8(r3)
+  800AFCC8  91610128  stw        r11, 0x128(r1)
+  800AFCCC  9141012C  stw        r10, 0x12c(r1)
+  800AFCD0  91210130  stw        r9, 0x130(r1)
+  800AFCD4  91010134  stw        r8, 0x134(r1)
+  800AFCD8  90E10138  stw        r7, 0x138(r1)
+  800AFCDC  90C1013C  stw        r6, 0x13c(r1)
+  800AFCE0  90A10140  stw        r5, 0x140(r1)
+  800AFCE4  90810144  stw        r4, 0x144(r1)
+  800AFCE8  90010148  stw        r0, 0x148(r1)
+  800AFCEC  4BFF8B55  bl         0x800a8840                      # -> baseID_DieFumi_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800AFCF0  7C7A1B78  mr         r26, r3
+  800AFCF4  7F64DB78  mr         r4, r27
+  800AFCF8  387D04CC  addi       r3, r29, 0x4cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x250C
+  800AFCFC  480AFC05  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFD00  387D04CC  addi       r3, r29, 0x4cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x250C
+  800AFD04  83210140  lwz        r25, 0x140(r1)
+  800AFD08  81810144  lwz        r12, 0x144(r1)
+  800AFD0C  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFD10  81610148  lwz        r11, 0x148(r1)
+  800AFD14  38BD04C0  addi       r5, r29, 0x4c0                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2500
+  800AFD18  81410134  lwz        r10, 0x134(r1)
+  800AFD1C  81210138  lwz        r9, 0x138(r1)
+  800AFD20  8101013C  lwz        r8, 0x13c(r1)
+  800AFD24  80E10128  lwz        r7, 0x128(r1)
+  800AFD28  80C1012C  lwz        r6, 0x12c(r1)
+  800AFD2C  80010130  lwz        r0, 0x130(r1)
+  800AFD30  9323000C  stw        r25, 0xc(r3)
+  800AFD34  91830010  stw        r12, 0x10(r3)
+  800AFD38  91630014  stw        r11, 0x14(r3)
+  800AFD3C  91430018  stw        r10, 0x18(r3)
+  800AFD40  9123001C  stw        r9, 0x1c(r3)
+  800AFD44  91030020  stw        r8, 0x20(r3)
+  800AFD48  90E30024  stw        r7, 0x24(r3)
+  800AFD4C  90C30028  stw        r6, 0x28(r3)
+  800AFD50  9003002C  stw        r0, 0x2c(r3)
+  800AFD54  93DD04CC  stw        r30, 0x4cc(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x250C
+  800AFD58  93430030  stw        r26, 0x30(r3)
+  800AFD5C  4822CD15  bl         0x802dca70                      # -> __register_global_object
+  800AFD60  38BC0960  addi       r5, r28, 0x960                  # lbl_803107D8+0x188
+  800AFD64  389C096C  addi       r4, r28, 0x96c                  # lbl_803107D8+0x194
+  800AFD68  387C0978  addi       r3, r28, 0x978                  # lbl_803107D8+0x1A0
+  800AFD6C  817C0960  lwz        r11, 0x960(r28)                 # lbl_803107D8+0x188
+  800AFD70  81450004  lwz        r10, 4(r5)
+  800AFD74  3B7C0D88  addi       r27, r28, 0xd88                 # lbl_80310D88
+  800AFD78  81250008  lwz        r9, 8(r5)
+  800AFD7C  811C096C  lwz        r8, 0x96c(r28)                  # lbl_803107D8+0x194
+  800AFD80  80E40004  lwz        r7, 4(r4)
+  800AFD84  80C40008  lwz        r6, 8(r4)
+  800AFD88  80BC0978  lwz        r5, 0x978(r28)                  # lbl_803107D8+0x1A0
+  800AFD8C  80830004  lwz        r4, 4(r3)
+  800AFD90  80030008  lwz        r0, 8(r3)
+  800AFD94  91610104  stw        r11, 0x104(r1)
+  800AFD98  91410108  stw        r10, 0x108(r1)
+  800AFD9C  9121010C  stw        r9, 0x10c(r1)
+  800AFDA0  91010110  stw        r8, 0x110(r1)
+  800AFDA4  90E10114  stw        r7, 0x114(r1)
+  800AFDA8  90C10118  stw        r6, 0x118(r1)
+  800AFDAC  90A1011C  stw        r5, 0x11c(r1)
+  800AFDB0  90810120  stw        r4, 0x120(r1)
+  800AFDB4  90010124  stw        r0, 0x124(r1)
+  800AFDB8  48000709  bl         0x800b04c0                      # -> baseID_DieFire<9dEnBoss_c>__Fv_RC12sStateIDIf_c
+  800AFDBC  7C7A1B78  mr         r26, r3
+  800AFDC0  7F64DB78  mr         r4, r27
+  800AFDC4  387D050C  addi       r3, r29, 0x50c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x254C
+  800AFDC8  480AFB39  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFDCC  387D050C  addi       r3, r29, 0x50c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x254C
+  800AFDD0  8321011C  lwz        r25, 0x11c(r1)
+  800AFDD4  81810120  lwz        r12, 0x120(r1)
+  800AFDD8  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFDDC  81610124  lwz        r11, 0x124(r1)
+  800AFDE0  38BD0500  addi       r5, r29, 0x500                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2540
+  800AFDE4  81410110  lwz        r10, 0x110(r1)
+  800AFDE8  81210114  lwz        r9, 0x114(r1)
+  800AFDEC  81010118  lwz        r8, 0x118(r1)
+  800AFDF0  80E10104  lwz        r7, 0x104(r1)
+  800AFDF4  80C10108  lwz        r6, 0x108(r1)
+  800AFDF8  8001010C  lwz        r0, 0x10c(r1)
+  800AFDFC  9323000C  stw        r25, 0xc(r3)
+  800AFE00  91830010  stw        r12, 0x10(r3)
+  800AFE04  91630014  stw        r11, 0x14(r3)
+  800AFE08  91430018  stw        r10, 0x18(r3)
+  800AFE0C  9123001C  stw        r9, 0x1c(r3)
+  800AFE10  91030020  stw        r8, 0x20(r3)
+  800AFE14  90E30024  stw        r7, 0x24(r3)
+  800AFE18  90C30028  stw        r6, 0x28(r3)
+  800AFE1C  9003002C  stw        r0, 0x2c(r3)
+  800AFE20  93DD050C  stw        r30, 0x50c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x254C
+  800AFE24  93430030  stw        r26, 0x30(r3)
+  800AFE28  4822CC49  bl         0x802dca70                      # -> __register_global_object
+  800AFE2C  38BC0984  addi       r5, r28, 0x984                  # lbl_803107D8+0x1AC
+  800AFE30  389C0990  addi       r4, r28, 0x990                  # lbl_803107D8+0x1B8
+  800AFE34  387C099C  addi       r3, r28, 0x99c                  # lbl_803107D8+0x1C4
+  800AFE38  817C0984  lwz        r11, 0x984(r28)                 # lbl_803107D8+0x1AC
+  800AFE3C  81450004  lwz        r10, 4(r5)
+  800AFE40  3B7C0DAC  addi       r27, r28, 0xdac                 # lbl_80310D88+0x24
+  800AFE44  81250008  lwz        r9, 8(r5)
+  800AFE48  811C0990  lwz        r8, 0x990(r28)                  # lbl_803107D8+0x1B8
+  800AFE4C  80E40004  lwz        r7, 4(r4)
+  800AFE50  80C40008  lwz        r6, 8(r4)
+  800AFE54  80BC099C  lwz        r5, 0x99c(r28)                  # lbl_803107D8+0x1C4
+  800AFE58  80830004  lwz        r4, 4(r3)
+  800AFE5C  80030008  lwz        r0, 8(r3)
+  800AFE60  916100E0  stw        r11, 0xe0(r1)
+  800AFE64  914100E4  stw        r10, 0xe4(r1)
+  800AFE68  912100E8  stw        r9, 0xe8(r1)
+  800AFE6C  910100EC  stw        r8, 0xec(r1)
+  800AFE70  90E100F0  stw        r7, 0xf0(r1)
+  800AFE74  90C100F4  stw        r6, 0xf4(r1)
+  800AFE78  90A100F8  stw        r5, 0xf8(r1)
+  800AFE7C  908100FC  stw        r4, 0xfc(r1)
+  800AFE80  90010100  stw        r0, 0x100(r1)
+  800AFE84  4800062D  bl         0x800b04b0                      # -> baseID_DieShell<9dEnBoss_c>__Fv_RC12sStateIDIf_c
+  800AFE88  7C7A1B78  mr         r26, r3
+  800AFE8C  7F64DB78  mr         r4, r27
+  800AFE90  387D054C  addi       r3, r29, 0x54c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x258C
+  800AFE94  480AFA6D  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFE98  387D054C  addi       r3, r29, 0x54c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x258C
+  800AFE9C  832100F8  lwz        r25, 0xf8(r1)
+  800AFEA0  818100FC  lwz        r12, 0xfc(r1)
+  800AFEA4  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFEA8  81610100  lwz        r11, 0x100(r1)
+  800AFEAC  38BD0540  addi       r5, r29, 0x540                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2580
+  800AFEB0  814100EC  lwz        r10, 0xec(r1)
+  800AFEB4  812100F0  lwz        r9, 0xf0(r1)
+  800AFEB8  810100F4  lwz        r8, 0xf4(r1)
+  800AFEBC  80E100E0  lwz        r7, 0xe0(r1)
+  800AFEC0  80C100E4  lwz        r6, 0xe4(r1)
+  800AFEC4  800100E8  lwz        r0, 0xe8(r1)
+  800AFEC8  9323000C  stw        r25, 0xc(r3)
+  800AFECC  91830010  stw        r12, 0x10(r3)
+  800AFED0  91630014  stw        r11, 0x14(r3)
+  800AFED4  91430018  stw        r10, 0x18(r3)
+  800AFED8  9123001C  stw        r9, 0x1c(r3)
+  800AFEDC  91030020  stw        r8, 0x20(r3)
+  800AFEE0  90E30024  stw        r7, 0x24(r3)
+  800AFEE4  90C30028  stw        r6, 0x28(r3)
+  800AFEE8  9003002C  stw        r0, 0x2c(r3)
+  800AFEEC  93DD054C  stw        r30, 0x54c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x258C
+  800AFEF0  93430030  stw        r26, 0x30(r3)
+  800AFEF4  4822CB7D  bl         0x802dca70                      # -> __register_global_object
+  800AFEF8  38BC09A8  addi       r5, r28, 0x9a8                  # lbl_803107D8+0x1D0
+  800AFEFC  389C09B4  addi       r4, r28, 0x9b4                  # lbl_803107D8+0x1DC
+  800AFF00  387C09C0  addi       r3, r28, 0x9c0                  # lbl_803109B8+0x8
+  800AFF04  817C09A8  lwz        r11, 0x9a8(r28)                 # lbl_803107D8+0x1D0
+  800AFF08  81450004  lwz        r10, 4(r5)
+  800AFF0C  3B7C0DD4  addi       r27, r28, 0xdd4                 # @70379+0xC
+  800AFF10  81250008  lwz        r9, 8(r5)
+  800AFF14  811C09B4  lwz        r8, 0x9b4(r28)                  # lbl_803107D8+0x1DC
+  800AFF18  80E40004  lwz        r7, 4(r4)
+  800AFF1C  80C40008  lwz        r6, 8(r4)
+  800AFF20  80BC09C0  lwz        r5, 0x9c0(r28)                  # lbl_803109B8+0x8
+  800AFF24  80830004  lwz        r4, 4(r3)
+  800AFF28  80030008  lwz        r0, 8(r3)
+  800AFF2C  916100BC  stw        r11, 0xbc(r1)
+  800AFF30  914100C0  stw        r10, 0xc0(r1)
+  800AFF34  912100C4  stw        r9, 0xc4(r1)
+  800AFF38  910100C8  stw        r8, 0xc8(r1)
+  800AFF3C  90E100CC  stw        r7, 0xcc(r1)
+  800AFF40  90C100D0  stw        r6, 0xd0(r1)
+  800AFF44  90A100D4  stw        r5, 0xd4(r1)
+  800AFF48  908100D8  stw        r4, 0xd8(r1)
+  800AFF4C  900100DC  stw        r0, 0xdc(r1)
+  800AFF50  48000551  bl         0x800b04a0                      # -> baseID_DemoWait<9dEnBoss_c>__Fv_RC12sStateIDIf_c
+  800AFF54  7C7A1B78  mr         r26, r3
+  800AFF58  7F64DB78  mr         r4, r27
+  800AFF5C  387D058C  addi       r3, r29, 0x58c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x25CC
+  800AFF60  480AF9A1  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800AFF64  387D058C  addi       r3, r29, 0x58c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x25CC
+  800AFF68  832100D4  lwz        r25, 0xd4(r1)
+  800AFF6C  818100D8  lwz        r12, 0xd8(r1)
+  800AFF70  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800AFF74  816100DC  lwz        r11, 0xdc(r1)
+  800AFF78  38BD0580  addi       r5, r29, 0x580                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x25C0
+  800AFF7C  814100C8  lwz        r10, 0xc8(r1)
+  800AFF80  812100CC  lwz        r9, 0xcc(r1)
+  800AFF84  810100D0  lwz        r8, 0xd0(r1)
+  800AFF88  80E100BC  lwz        r7, 0xbc(r1)
+  800AFF8C  80C100C0  lwz        r6, 0xc0(r1)
+  800AFF90  800100C4  lwz        r0, 0xc4(r1)
+  800AFF94  9323000C  stw        r25, 0xc(r3)
+  800AFF98  91830010  stw        r12, 0x10(r3)
+  800AFF9C  91630014  stw        r11, 0x14(r3)
+  800AFFA0  91430018  stw        r10, 0x18(r3)
+  800AFFA4  9123001C  stw        r9, 0x1c(r3)
+  800AFFA8  91030020  stw        r8, 0x20(r3)
+  800AFFAC  90E30024  stw        r7, 0x24(r3)
+  800AFFB0  90C30028  stw        r6, 0x28(r3)
+  800AFFB4  9003002C  stw        r0, 0x2c(r3)
+  800AFFB8  93DD058C  stw        r30, 0x58c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x25CC
+  800AFFBC  93430030  stw        r26, 0x30(r3)
+  800AFFC0  4822CAB1  bl         0x802dca70                      # -> __register_global_object
+  800AFFC4  38BC09CC  addi       r5, r28, 0x9cc                  # lbl_803109B8+0x14
+  800AFFC8  389C09D8  addi       r4, r28, 0x9d8                  # lbl_803109B8+0x20
+  800AFFCC  387C09E4  addi       r3, r28, 0x9e4                  # lbl_803109B8+0x2C
+  800AFFD0  817C09CC  lwz        r11, 0x9cc(r28)                 # lbl_803109B8+0x14
+  800AFFD4  81450004  lwz        r10, 4(r5)
+  800AFFD8  3B7C0DFC  addi       r27, r28, 0xdfc                 # @70382+0x4
+  800AFFDC  81250008  lwz        r9, 8(r5)
+  800AFFE0  811C09D8  lwz        r8, 0x9d8(r28)                  # lbl_803109B8+0x20
+  800AFFE4  80E40004  lwz        r7, 4(r4)
+  800AFFE8  80C40008  lwz        r6, 8(r4)
+  800AFFEC  80BC09E4  lwz        r5, 0x9e4(r28)                  # lbl_803109B8+0x2C
+  800AFFF0  80830004  lwz        r4, 4(r3)
+  800AFFF4  80030008  lwz        r0, 8(r3)
+  800AFFF8  91610098  stw        r11, 0x98(r1)
+  800AFFFC  9141009C  stw        r10, 0x9c(r1)
+  800B0000  912100A0  stw        r9, 0xa0(r1)
+  800B0004  910100A4  stw        r8, 0xa4(r1)
+  800B0008  90E100A8  stw        r7, 0xa8(r1)
+  800B000C  90C100AC  stw        r6, 0xac(r1)
+  800B0010  90A100B0  stw        r5, 0xb0(r1)
+  800B0014  908100B4  stw        r4, 0xb4(r1)
+  800B0018  900100B8  stw        r0, 0xb8(r1)
+  800B001C  4BFF8835  bl         0x800a8850                      # -> baseID_DemoAwake<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800B0020  7C7A1B78  mr         r26, r3
+  800B0024  7F64DB78  mr         r4, r27
+  800B0028  387D05CC  addi       r3, r29, 0x5cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x260C
+  800B002C  480AF8D5  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800B0030  387D05CC  addi       r3, r29, 0x5cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x260C
+  800B0034  832100B0  lwz        r25, 0xb0(r1)
+  800B0038  818100B4  lwz        r12, 0xb4(r1)
+  800B003C  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800B0040  816100B8  lwz        r11, 0xb8(r1)
+  800B0044  38BD05C0  addi       r5, r29, 0x5c0                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2600
+  800B0048  814100A4  lwz        r10, 0xa4(r1)
+  800B004C  812100A8  lwz        r9, 0xa8(r1)
+  800B0050  810100AC  lwz        r8, 0xac(r1)
+  800B0054  80E10098  lwz        r7, 0x98(r1)
+  800B0058  80C1009C  lwz        r6, 0x9c(r1)
+  800B005C  800100A0  lwz        r0, 0xa0(r1)
+  800B0060  9323000C  stw        r25, 0xc(r3)
+  800B0064  91830010  stw        r12, 0x10(r3)
+  800B0068  91630014  stw        r11, 0x14(r3)
+  800B006C  91430018  stw        r10, 0x18(r3)
+  800B0070  9123001C  stw        r9, 0x1c(r3)
+  800B0074  91030020  stw        r8, 0x20(r3)
+  800B0078  90E30024  stw        r7, 0x24(r3)
+  800B007C  90C30028  stw        r6, 0x28(r3)
+  800B0080  9003002C  stw        r0, 0x2c(r3)
+  800B0084  93DD05CC  stw        r30, 0x5cc(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x260C
+  800B0088  93430030  stw        r26, 0x30(r3)
+  800B008C  4822C9E5  bl         0x802dca70                      # -> __register_global_object
+  800B0090  38BC09F0  addi       r5, r28, 0x9f0                  # lbl_803109B8+0x38
+  800B0094  389C09FC  addi       r4, r28, 0x9fc                  # lbl_803109B8+0x44
+  800B0098  387C0A08  addi       r3, r28, 0xa08                  # lbl_803109B8+0x50
+  800B009C  817C09F0  lwz        r11, 0x9f0(r28)                 # lbl_803109B8+0x38
+  800B00A0  81450004  lwz        r10, 4(r5)
+  800B00A4  3B7C0E24  addi       r27, r28, 0xe24                 # @70384+0x8
+  800B00A8  81250008  lwz        r9, 8(r5)
+  800B00AC  811C09FC  lwz        r8, 0x9fc(r28)                  # lbl_803109B8+0x44
+  800B00B0  80E40004  lwz        r7, 4(r4)
+  800B00B4  80C40008  lwz        r6, 8(r4)
+  800B00B8  80BC0A08  lwz        r5, 0xa08(r28)                  # lbl_803109B8+0x50
+  800B00BC  80830004  lwz        r4, 4(r3)
+  800B00C0  80030008  lwz        r0, 8(r3)
+  800B00C4  91610074  stw        r11, 0x74(r1)
+  800B00C8  91410078  stw        r10, 0x78(r1)
+  800B00CC  9121007C  stw        r9, 0x7c(r1)
+  800B00D0  91010080  stw        r8, 0x80(r1)
+  800B00D4  90E10084  stw        r7, 0x84(r1)
+  800B00D8  90C10088  stw        r6, 0x88(r1)
+  800B00DC  90A1008C  stw        r5, 0x8c(r1)
+  800B00E0  90810090  stw        r4, 0x90(r1)
+  800B00E4  90010094  stw        r0, 0x94(r1)
+  800B00E8  4BFF8779  bl         0x800a8860                      # -> baseID_DemoAwake_Wait<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800B00EC  7C7A1B78  mr         r26, r3
+  800B00F0  7F64DB78  mr         r4, r27
+  800B00F4  387D060C  addi       r3, r29, 0x60c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x264C
+  800B00F8  480AF809  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800B00FC  387D060C  addi       r3, r29, 0x60c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x264C
+  800B0100  8321008C  lwz        r25, 0x8c(r1)
+  800B0104  81810090  lwz        r12, 0x90(r1)
+  800B0108  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800B010C  81610094  lwz        r11, 0x94(r1)
+  800B0110  38BD0600  addi       r5, r29, 0x600                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2640
+  800B0114  81410080  lwz        r10, 0x80(r1)
+  800B0118  81210084  lwz        r9, 0x84(r1)
+  800B011C  81010088  lwz        r8, 0x88(r1)
+  800B0120  80E10074  lwz        r7, 0x74(r1)
+  800B0124  80C10078  lwz        r6, 0x78(r1)
+  800B0128  8001007C  lwz        r0, 0x7c(r1)
+  800B012C  9323000C  stw        r25, 0xc(r3)
+  800B0130  91830010  stw        r12, 0x10(r3)
+  800B0134  91630014  stw        r11, 0x14(r3)
+  800B0138  91430018  stw        r10, 0x18(r3)
+  800B013C  9123001C  stw        r9, 0x1c(r3)
+  800B0140  91030020  stw        r8, 0x20(r3)
+  800B0144  90E30024  stw        r7, 0x24(r3)
+  800B0148  90C30028  stw        r6, 0x28(r3)
+  800B014C  9003002C  stw        r0, 0x2c(r3)
+  800B0150  93DD060C  stw        r30, 0x60c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x264C
+  800B0154  93430030  stw        r26, 0x30(r3)
+  800B0158  4822C919  bl         0x802dca70                      # -> __register_global_object
+  800B015C  38BC0A14  addi       r5, r28, 0xa14                  # lbl_803109B8+0x5C
+  800B0160  389C0A20  addi       r4, r28, 0xa20                  # lbl_803109B8+0x68
+  800B0164  387C0A2C  addi       r3, r28, 0xa2c                  # lbl_803109B8+0x74
+  800B0168  817C0A14  lwz        r11, 0xa14(r28)                 # lbl_803109B8+0x5C
+  800B016C  81450004  lwz        r10, 4(r5)
+  800B0170  3B7C0E50  addi       r27, r28, 0xe50                 # @70386+0x8
+  800B0174  81250008  lwz        r9, 8(r5)
+  800B0178  811C0A20  lwz        r8, 0xa20(r28)                  # lbl_803109B8+0x68
+  800B017C  80E40004  lwz        r7, 4(r4)
+  800B0180  80C40008  lwz        r6, 8(r4)
+  800B0184  80BC0A2C  lwz        r5, 0xa2c(r28)                  # lbl_803109B8+0x74
+  800B0188  80830004  lwz        r4, 4(r3)
+  800B018C  80030008  lwz        r0, 8(r3)
+  800B0190  91610050  stw        r11, 0x50(r1)
+  800B0194  91410054  stw        r10, 0x54(r1)
+  800B0198  91210058  stw        r9, 0x58(r1)
+  800B019C  9101005C  stw        r8, 0x5c(r1)
+  800B01A0  90E10060  stw        r7, 0x60(r1)
+  800B01A4  90C10064  stw        r6, 0x64(r1)
+  800B01A8  90A10068  stw        r5, 0x68(r1)
+  800B01AC  9081006C  stw        r4, 0x6c(r1)
+  800B01B0  90010070  stw        r0, 0x70(r1)
+  800B01B4  4BFF86BD  bl         0x800a8870                      # -> baseID_DemoIkaku<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800B01B8  7C791B78  mr         r25, r3
+  800B01BC  7F64DB78  mr         r4, r27
+  800B01C0  387D064C  addi       r3, r29, 0x64c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x268C
+  800B01C4  480AF73D  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800B01C8  387D064C  addi       r3, r29, 0x64c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x268C
+  800B01CC  83410068  lwz        r26, 0x68(r1)
+  800B01D0  8181006C  lwz        r12, 0x6c(r1)
+  800B01D4  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800B01D8  81610070  lwz        r11, 0x70(r1)
+  800B01DC  38BD0640  addi       r5, r29, 0x640                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2680
+  800B01E0  8141005C  lwz        r10, 0x5c(r1)
+  800B01E4  81210060  lwz        r9, 0x60(r1)
+  800B01E8  81010064  lwz        r8, 0x64(r1)
+  800B01EC  80E10050  lwz        r7, 0x50(r1)
+  800B01F0  80C10054  lwz        r6, 0x54(r1)
+  800B01F4  80010058  lwz        r0, 0x58(r1)
+  800B01F8  9343000C  stw        r26, 0xc(r3)
+  800B01FC  91830010  stw        r12, 0x10(r3)
+  800B0200  91630014  stw        r11, 0x14(r3)
+  800B0204  91430018  stw        r10, 0x18(r3)
+  800B0208  9123001C  stw        r9, 0x1c(r3)
+  800B020C  91030020  stw        r8, 0x20(r3)
+  800B0210  90E30024  stw        r7, 0x24(r3)
+  800B0214  90C30028  stw        r6, 0x28(r3)
+  800B0218  9003002C  stw        r0, 0x2c(r3)
+  800B021C  93DD064C  stw        r30, 0x64c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x268C
+  800B0220  93230030  stw        r25, 0x30(r3)
+  800B0224  4822C84D  bl         0x802dca70                      # -> __register_global_object
+  800B0228  38BC0A38  addi       r5, r28, 0xa38                  # lbl_803109B8+0x80
+  800B022C  389C0A44  addi       r4, r28, 0xa44                  # lbl_803109B8+0x8C
+  800B0230  387C0A50  addi       r3, r28, 0xa50                  # lbl_803109B8+0x98
+  800B0234  817C0A38  lwz        r11, 0xa38(r28)                 # lbl_803109B8+0x80
+  800B0238  81450004  lwz        r10, 4(r5)
+  800B023C  3B7C0E78  addi       r27, r28, 0xe78                 # __vt__13dCaptureMng_c+0x8
+  800B0240  81250008  lwz        r9, 8(r5)
+  800B0244  811C0A44  lwz        r8, 0xa44(r28)                  # lbl_803109B8+0x8C
+  800B0248  80E40004  lwz        r7, 4(r4)
+  800B024C  80C40008  lwz        r6, 8(r4)
+  800B0250  80BC0A50  lwz        r5, 0xa50(r28)                  # lbl_803109B8+0x98
+  800B0254  80830004  lwz        r4, 4(r3)
+  800B0258  80030008  lwz        r0, 8(r3)
+  800B025C  9161002C  stw        r11, 0x2c(r1)
+  800B0260  91410030  stw        r10, 0x30(r1)
+  800B0264  91210034  stw        r9, 0x34(r1)
+  800B0268  91010038  stw        r8, 0x38(r1)
+  800B026C  90E1003C  stw        r7, 0x3c(r1)
+  800B0270  90C10040  stw        r6, 0x40(r1)
+  800B0274  90A10044  stw        r5, 0x44(r1)
+  800B0278  90810048  stw        r4, 0x48(r1)
+  800B027C  9001004C  stw        r0, 0x4c(r1)
+  800B0280  4BFF8601  bl         0x800a8880                      # -> baseID_DemoIkaku_Wait<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800B0284  7C7A1B78  mr         r26, r3
+  800B0288  7F64DB78  mr         r4, r27
+  800B028C  387D068C  addi       r3, r29, 0x68c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x26CC
+  800B0290  480AF671  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800B0294  387D068C  addi       r3, r29, 0x68c                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x26CC
+  800B0298  83610044  lwz        r27, 0x44(r1)
+  800B029C  81810048  lwz        r12, 0x48(r1)
+  800B02A0  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800B02A4  8161004C  lwz        r11, 0x4c(r1)
+  800B02A8  38BD0680  addi       r5, r29, 0x680                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x26C0
+  800B02AC  81410038  lwz        r10, 0x38(r1)
+  800B02B0  8121003C  lwz        r9, 0x3c(r1)
+  800B02B4  81010040  lwz        r8, 0x40(r1)
+  800B02B8  80E1002C  lwz        r7, 0x2c(r1)
+  800B02BC  80C10030  lwz        r6, 0x30(r1)
+  800B02C0  80010034  lwz        r0, 0x34(r1)
+  800B02C4  9363000C  stw        r27, 0xc(r3)
+  800B02C8  91830010  stw        r12, 0x10(r3)
+  800B02CC  91630014  stw        r11, 0x14(r3)
+  800B02D0  91430018  stw        r10, 0x18(r3)
+  800B02D4  9123001C  stw        r9, 0x1c(r3)
+  800B02D8  91030020  stw        r8, 0x20(r3)
+  800B02DC  90E30024  stw        r7, 0x24(r3)
+  800B02E0  90C30028  stw        r6, 0x28(r3)
+  800B02E4  9003002C  stw        r0, 0x2c(r3)
+  800B02E8  93DD068C  stw        r30, 0x68c(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x26CC
+  800B02EC  93430030  stw        r26, 0x30(r3)
+  800B02F0  4822C781  bl         0x802dca70                      # -> __register_global_object
+  800B02F4  38BC0A5C  addi       r5, r28, 0xa5c                  # lbl_803109B8+0xA4
+  800B02F8  389C0A68  addi       r4, r28, 0xa68                  # lbl_803109B8+0xB0
+  800B02FC  387C0A74  addi       r3, r28, 0xa74                  # lbl_803109B8+0xBC
+  800B0300  817C0A5C  lwz        r11, 0xa5c(r28)                 # lbl_803109B8+0xA4
+  800B0304  81450004  lwz        r10, 4(r5)
+  800B0308  3B7C0EA4  addi       r27, r28, 0xea4                 # __vt__6dDOF_c+0x24
+  800B030C  81250008  lwz        r9, 8(r5)
+  800B0310  811C0A68  lwz        r8, 0xa68(r28)                  # lbl_803109B8+0xB0
+  800B0314  80E40004  lwz        r7, 4(r4)
+  800B0318  80C40008  lwz        r6, 8(r4)
+  800B031C  80BC0A74  lwz        r5, 0xa74(r28)                  # lbl_803109B8+0xBC
+  800B0320  80830004  lwz        r4, 4(r3)
+  800B0324  80030008  lwz        r0, 8(r3)
+  800B0328  91610008  stw        r11, 8(r1)
+  800B032C  9141000C  stw        r10, 0xc(r1)
+  800B0330  91210010  stw        r9, 0x10(r1)
+  800B0334  91010014  stw        r8, 0x14(r1)
+  800B0338  90E10018  stw        r7, 0x18(r1)
+  800B033C  90C1001C  stw        r6, 0x1c(r1)
+  800B0340  90A10020  stw        r5, 0x20(r1)
+  800B0344  90810024  stw        r4, 0x24(r1)
+  800B0348  90010028  stw        r0, 0x28(r1)
+  800B034C  4BFF8545  bl         0x800a8890                      # -> baseID_DemoEscape_St<10sStateID_c>__Fv_RC12sStateIDIf_c
+  800B0350  7C7C1B78  mr         r28, r3
+  800B0354  7F64DB78  mr         r4, r27
+  800B0358  387D06CC  addi       r3, r29, 0x6cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x270C
+  800B035C  480AF5A5  bl         0x8015f900                      # -> __ct__10sStateID_cFPCc
+  800B0360  387D06CC  addi       r3, r29, 0x6cc                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x270C
+  800B0364  83610020  lwz        r27, 0x20(r1)
+  800B0368  81810024  lwz        r12, 0x24(r1)
+  800B036C  389F0440  addi       r4, r31, 0x440                  # __dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv
+  800B0370  81610028  lwz        r11, 0x28(r1)
+  800B0374  38BD06C0  addi       r5, r29, 0x6c0                  # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x2700
+  800B0378  81410014  lwz        r10, 0x14(r1)
+  800B037C  81210018  lwz        r9, 0x18(r1)
+  800B0380  8101001C  lwz        r8, 0x1c(r1)
+  800B0384  80E10008  lwz        r7, 8(r1)
+  800B0388  80C1000C  lwz        r6, 0xc(r1)
+  800B038C  80010010  lwz        r0, 0x10(r1)
+  800B0390  9363000C  stw        r27, 0xc(r3)
+  800B0394  91830010  stw        r12, 0x10(r3)
+  800B0398  91630014  stw        r11, 0x14(r3)
+  800B039C  91430018  stw        r10, 0x18(r3)
+  800B03A0  9123001C  stw        r9, 0x1c(r3)
+  800B03A4  91030020  stw        r8, 0x20(r3)
+  800B03A8  90E30024  stw        r7, 0x24(r3)
+  800B03AC  90C30028  stw        r6, 0x28(r3)
+  800B03B0  9003002C  stw        r0, 0x2c(r3)
+  800B03B4  93DD06CC  stw        r30, 0x6cc(r29)                 # l_tmpSave__27@unnamed@d_nand_thread_cpp@+0x270C
+  800B03B8  93830030  stw        r28, 0x30(r3)
+  800B03BC  4822C6B5  bl         0x802dca70                      # -> __register_global_object
+  800B03C0  39610420  addi       r11, r1, 0x420
+  800B03C4  4822CCE5  bl         0x802dd0a8                      # -> _restgpr_25
+  800B03C8  80010424  lwz        r0, 0x424(r1)
+  800B03CC  7C0803A6  mtlr       r0
+  800B03D0  38210420  addi       r1, r1, 0x420
+  800B03D4  4E800020  blr
+  800B03D8  00000000  .4byte     0x00000000
+  800B03DC  00000000  .4byte     0x00000000
+  800B03E0  9421FFF0  stwu       r1, -0x10(r1)
+  800B03E4  7C0802A6  mflr       r0
+  800B03E8  2C030000  cmpwi      r3, 0
+  800B03EC  90010014  stw        r0, 0x14(r1)
+  800B03F0  93E1000C  stw        r31, 0xc(r1)
+  800B03F4  7C9F2378  mr         r31, r4
+  800B03F8  93C10008  stw        r30, 8(r1)
+  800B03FC  7C7E1B78  mr         r30, r3
+  800B0400  4182001C  beq        .L0
+  800B0404  38800000  li         r4, 0
+  800B0408  480AF539  bl         0x8015f940                      # -> __dt__10sStateID_cFv
+  800B040C  2C1F0000  cmpwi      r31, 0
+  800B0410  4081000C  ble        .L0
+  800B0414  7FC3F378  mr         r3, r30
+  800B0418  48208FA9  bl         0x802b93c0                      # -> __dl__FPv
+.L0:
+  800B041C  7FC3F378  mr         r3, r30
+  800B0420  83E1000C  lwz        r31, 0xc(r1)
+  800B0424  83C10008  lwz        r30, 8(r1)
+  800B0428  80010014  lwz        r0, 0x14(r1)
+  800B042C  7C0803A6  mtlr       r0
+  800B0430  38210010  addi       r1, r1, 0x10
+  800B0434  4E800020  blr
+  800B0438  00000000  .4byte     0x00000000
+  800B043C  00000000  .4byte     0x00000000
+  800B0440  9421FFF0  stwu       r1, -0x10(r1)
+  800B0444  7C0802A6  mflr       r0
+  800B0448  2C030000  cmpwi      r3, 0
+  800B044C  90010014  stw        r0, 0x14(r1)
+  800B0450  93E1000C  stw        r31, 0xc(r1)
+  800B0454  7C9F2378  mr         r31, r4
+  800B0458  93C10008  stw        r30, 8(r1)
+  800B045C  7C7E1B78  mr         r30, r3
+  800B0460  41820020  beq        .L2
+  800B0464  4182000C  beq        .L1
+  800B0468  38800000  li         r4, 0
+  800B046C  480AF4D5  bl         0x8015f940                      # -> __dt__10sStateID_cFv
+.L1:
+  800B0470  2C1F0000  cmpwi      r31, 0
+  800B0474  4081000C  ble        .L2
+  800B0478  7FC3F378  mr         r3, r30
+  800B047C  48208F45  bl         0x802b93c0                      # -> __dl__FPv
+.L2:
+  800B0480  7FC3F378  mr         r3, r30
+  800B0484  83E1000C  lwz        r31, 0xc(r1)
+  800B0488  83C10008  lwz        r30, 8(r1)
+  800B048C  80010014  lwz        r0, 0x14(r1)
+  800B0490  7C0803A6  mtlr       r0
+  800B0494  38210010  addi       r1, r1, 0x10
+  800B0498  4E800020  blr
+  800B049C  00000000  .4byte     0x00000000
+  800B04A0  3C608035  lis        r3, -0x7fcb
+  800B04A4  386379B4  addi       r3, r3, 0x79b4                  # StateID_DemoWait__9dEnBoss_c
+  800B04A8  4E800020  blr
+  800B04AC  00000000  .4byte     0x00000000
+  800B04B0  3C608035  lis        r3, -0x7fcb
+  800B04B4  38637AB4  addi       r3, r3, 0x7ab4                  # StateID_DieShell__9dEnBoss_c
+  800B04B8  4E800020  blr
+  800B04BC  00000000  .4byte     0x00000000
+  800B04C0  3C608035  lis        r3, -0x7fcb
+  800B04C4  38637A34  addi       r3, r3, 0x7a34                  # StateID_DieFire__9dEnBoss_c
+  800B04C8  4E800020  blr
+  800B04CC  00000000  .4byte     0x00000000
+  800B04D0  9421FFF0  stwu       r1, -0x10(r1)
+  800B04D4  7C0802A6  mflr       r0
+  800B04D8  90010014  stw        r0, 0x14(r1)
+  800B04DC  93E1000C  stw        r31, 0xc(r1)
+  800B04E0  7C7F1B78  mr         r31, r3
+  800B04E4  80630030  lwz        r3, 0x30(r3)                    # @8665+0x4
+  800B04E8  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B04EC  818C000C  lwz        r12, 0xc(r12)
+  800B04F0  7D8903A6  mtctr      r12
+  800B04F4  4E800421  bctrl                                      # virtual / indirect call
+  800B04F8  2C030000  cmpwi      r3, 0
+  800B04FC  40820094  bne        .L4
+  800B0500  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0504  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0508  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B050C  818C000C  lwz        r12, 0xc(r12)
+  800B0510  7D8903A6  mtctr      r12
+  800B0514  4E800421  bctrl                                      # virtual / indirect call
+  800B0518  2C030000  cmpwi      r3, 0
+  800B051C  40820074  bne        .L4
+  800B0520  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0524  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0528  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B052C  818C000C  lwz        r12, 0xc(r12)
+  800B0530  7D8903A6  mtctr      r12
+  800B0534  4E800421  bctrl                                      # virtual / indirect call
+  800B0538  2C030000  cmpwi      r3, 0
+  800B053C  40820054  bne        .L4
+  800B0540  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0544  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0548  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B054C  818C000C  lwz        r12, 0xc(r12)
+  800B0550  7D8903A6  mtctr      r12
+  800B0554  4E800421  bctrl                                      # virtual / indirect call
+  800B0558  2C030000  cmpwi      r3, 0
+  800B055C  40820034  bne        .L4
+  800B0560  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0564  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0568  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B056C  818C000C  lwz        r12, 0xc(r12)
+  800B0570  7D8903A6  mtctr      r12
+  800B0574  4E800421  bctrl                                      # virtual / indirect call
+  800B0578  2C030000  cmpwi      r3, 0
+  800B057C  41820008  beq        .L3
+  800B0580  48000010  b          .L4
+.L3:
+  800B0584  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0588  48000029  bl         0x800b05b0                      # -> superID__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv
+  800B058C  7C7F1B78  mr         r31, r3
+.L4:
+  800B0590  7FE3FB78  mr         r3, r31
+  800B0594  480AF4DD  bl         0x8015fa70                      # -> number__10sStateID_cCFv
+  800B0598  80010014  lwz        r0, 0x14(r1)
+  800B059C  83E1000C  lwz        r31, 0xc(r1)
+  800B05A0  7C0803A6  mtlr       r0
+  800B05A4  38210010  addi       r1, r1, 0x10
+  800B05A8  4E800020  blr
+  800B05AC  00000000  .4byte     0x00000000
+  800B05B0  9421FFF0  stwu       r1, -0x10(r1)
+  800B05B4  7C0802A6  mflr       r0
+  800B05B8  90010014  stw        r0, 0x14(r1)
+  800B05BC  93E1000C  stw        r31, 0xc(r1)
+  800B05C0  7C7F1B78  mr         r31, r3
+  800B05C4  80630030  lwz        r3, 0x30(r3)                    # @8665+0x4
+  800B05C8  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B05CC  818C000C  lwz        r12, 0xc(r12)
+  800B05D0  7D8903A6  mtctr      r12
+  800B05D4  4E800421  bctrl                                      # virtual / indirect call
+  800B05D8  2C030000  cmpwi      r3, 0
+  800B05DC  4082009C  bne        0x800b0678                      # -> superID__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv+0xC8
+  800B05E0  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B05E4  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B05E8  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B05EC  818C000C  lwz        r12, 0xc(r12)
+  800B05F0  7D8903A6  mtctr      r12
+  800B05F4  4E800421  bctrl                                      # virtual / indirect call
+  800B05F8  2C030000  cmpwi      r3, 0
+  800B05FC  40820074  bne        .L6
+  800B0600  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0604  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0608  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B060C  818C000C  lwz        r12, 0xc(r12)
+  800B0610  7D8903A6  mtctr      r12
+  800B0614  4E800421  bctrl                                      # virtual / indirect call
+  800B0618  2C030000  cmpwi      r3, 0
+  800B061C  40820054  bne        .L6
+  800B0620  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0624  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0628  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B062C  818C000C  lwz        r12, 0xc(r12)
+  800B0630  7D8903A6  mtctr      r12
+  800B0634  4E800421  bctrl                                      # virtual / indirect call
+  800B0638  2C030000  cmpwi      r3, 0
+  800B063C  40820034  bne        .L6
+  800B0640  83FF0030  lwz        r31, 0x30(r31)                  # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0644  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0648  81830000  lwz        r12, 0(r3)                      # @8662+0x28
+  800B064C  818C000C  lwz        r12, 0xc(r12)
+  800B0650  7D8903A6  mtctr      r12
+  800B0654  4E800421  bctrl                                      # virtual / indirect call
+  800B0658  2C030000  cmpwi      r3, 0
+  800B065C  41820008  beq        .L5
+  800B0660  48000010  b          .L6
+.L5:
+  800B0664  807F0030  lwz        r3, 0x30(r31)                   # __sinit_\d_enemy_toride_kokoopa_cpp+0x12F0
+  800B0668  4BFFFF49  bl         0x800b05b0                      # -> superID__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv
+  800B066C  7C7F1B78  mr         r31, r3
+.L6:
+  800B0670  7FE3FB78  mr         r3, r31
+  800B0674  48000008  b          0x800b067c                      # -> superID__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv+0xCC

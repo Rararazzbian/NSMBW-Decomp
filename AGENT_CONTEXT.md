@@ -696,6 +696,19 @@ variants.
 
 ### Levers that are PROVEN NOT to work -- do not spend a round on these
 
+- **Removing `mVec3_c`'s copy constructor to force a bitwise struct copy.**
+  The diagnosis is CORRECT: `include/game/mLib/m_vec.hpp:140`'s user-declared
+  copy constructor is exactly what suppresses MWCC's bitwise copy, and removing
+  it flips a struct copy from float `lfs`/`stfs` to retail's integer
+  `lwz`/`stw`. Measured and confirmed. The destructor (line 128) and the
+  `(const&, float)` constructor (line 146) are red herrings; neither matters.
+  **Do not land it anyway.** Blast radius measured across all 66 landed sources
+  that use `mVec3_c`: **160 currently-matching functions regress**, across 49
+  files, including a `__sinit_*` / `__arraydtor$*` pair per TU. Nothing is
+  gained -- the instruction COUNT is identical either way (6 loads + 6 stores),
+  so the copy shape alone never closes a length gap. If retail really was built
+  with a POD `mVec3_c`, matching it is a whole-project migration, not a header
+  tweak, and it must not be attempted one file at a time.
 - **`fmuls` slot choice when BOTH operands are already live in registers.**
   The def-point rule (levers 11 and 12) governs which register a value is
   LOADED into. Once both operands are live, the slot is set by the front-end

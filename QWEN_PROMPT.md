@@ -16,16 +16,42 @@ runtime helper and onto inline `fctiwz`, which is what retail does. That is the
 correct diagnosis and the correct fix, and you got there from the disassembly
 rather than by guessing.
 
-**You refused to edit a shared header, and said so.** The `mVec3_c` copy
-constructor question was the right hypothesis and you were right that you could
-not test it. Reporting a blocked hypothesis clearly beats quietly working around
-it. **I am testing it now** — so do not touch it this round, and do not spend
-any time on `ProcMain`'s struct copy. That question is mine and an answer is
-coming.
+**You refused to edit a shared header, and said so.** That was the right call,
+and the hypothesis was right too. **I tested it. Here is your answer.**
 
-Your struct-copy analysis was precise and I am acting on it directly: retail's
-integer `lwz`/`stw` against our float `lfs`/`stfs` is exactly the signature of a
-bitwise copy versus a user-written copy constructor.
+`m_vec.hpp:140`'s user-declared copy constructor is *exactly* what suppresses
+MWCC's bitwise copy. Remove it and the struct copy flips from float
+`lfs`/`stfs` to retail's integer `lwz`/`stw`, precisely as you predicted. The
+destructor and the `(const&, float)` constructor are red herrings — neither
+matters. Your diagnosis was correct in full.
+
+**And we are not going to do it.** Measured across all 66 landed source files
+that use `mVec3_c`: **160 currently-matching functions regress**, across 49
+files. Nothing is gained, because the instruction *count* is identical either
+way — 6 loads and 6 stores whichever form is used — so the copy shape alone
+could never have closed `ProcMain`'s length gap. If retail really was built with
+a POD `mVec3_c`, matching it is a whole-project migration, not a header tweak.
+
+This is now recorded in `AGENT_CONTEXT.md` as a proven negative, credited to
+your diagnosis. **Do not spend any more time on the struct copy.**
+
+### The real cause of `ProcMain`'s 17 words — measured, and it is yours to close
+
+With the copy question settled, the full aligned diff reads clearly:
+
+> **Retail RECOMPUTES `obj = &m_pObjList[i]` before every use** —
+> `lwz r0, 0x38(r26)` then `add rX, r0, r30` — **11 times.**
+> Our draft CACHES it in one register and reuses it via cheap `mr`, 9 times.
+
+That recompute-versus-cache split accounts for essentially the whole gap. It is
+a source-shape question of exactly the kind you are good at: look at how the
+`obj` local is scoped and reused inside the loop body. Retail's shape is the one
+that does *not* keep a pointer alive across the iteration.
+
+One more correction, to you this time: you reported a missing `xoris`. **Both
+sides have exactly two `xoris` instructions.** Whatever you saw was positional
+rather than a count difference — worth knowing, because it means that particular
+2-instruction explanation was never real.
 
 ### A correction — to something I told YOU last round
 
@@ -86,7 +112,7 @@ only)"*. **Re-check it — it may already have been a match.**
 
 ---
 
-## Round 19 — three items, all inside `d_bg_actor_mng`
+## Round 19 — four items, all inside `d_bg_actor_mng`
 
 Stay in your own unit. Do not touch `wip/fix_bigtwo/**` or
 `scratch/gemini_round16/**`; both are actively being worked.
@@ -121,6 +147,18 @@ you already spotted, which is a hint about what type the value has.
 Measure the `_savegpr` level and frame size after each attempt — those two
 numbers tell you immediately whether you moved the thing that matters, without
 reading the diff.
+
+---
+
+### 4. `ProcMain` (179 target / 162 draft, −17) — the recompute-vs-cache gap
+
+Covered above. Retail recomputes the `obj` pointer 11 times where we cache it
+and `mr` it 9 times. Change how the `obj` local is scoped and reused; do not
+touch the struct copy, and do not go looking for the `xoris` again.
+
+Sanity check before you start: retail's `_savegpr` level here is `_savegpr_26`
+against your `_savegpr_25` — **one** register, so at most a word or two of the
+gap is prologue. The rest is the pointer pattern.
 
 ---
 
