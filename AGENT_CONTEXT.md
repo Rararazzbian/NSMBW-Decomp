@@ -949,3 +949,32 @@ while sitting in a gap that the reporter's own reference dump did not cover, so
 their comparison script had never looked at it; the real diff was 314 of 1,446
 instructions. **A function absent from your reference dump must be reported as
 UNKNOWN, never as MATCH.**
+
+## Unsuffixed `double` literals are ORIGINAL-SOURCE style, not a bug to fix
+
+A float expression silently promotes to `double` the moment a `double` enters
+it, and MWCC then emits `fadd`/`fmul` followed by `frsp` instead of the
+single-precision `fadds`/`fmuls`. The instinct on seeing `fadd`+`frsp` is to
+treat it as our mistake. Often it is the opposite: the original programmers
+wrote unsuffixed literals, and matching them REQUIRES us to.
+
+Measured in `d_line_mng.cpp`, in code that is byte-exact against retail --
+eleven functions, all in the `initializeState_*` / `executeState_*` families:
+
+    mPos.y = (mUnitBasePos.y - 16.0f) + 0.5 * (mPos.x - mUnitBasePos.x);
+    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = mUnitBasePos.x + 0.5 * (mUnitBasePos.y - mPos.y);
+
+Note `0.5` unsuffixed sitting directly beside `16.0f` suffixed, in the same
+expression. That mix is deliberate and it is what retail does.
+
+So for a same-length mismatch in float-heavy code, **the constant suffixes are a
+finite checklist, not an open hypothesis.** Decode each constant out of the
+target's literal pool -- 4 bytes means the source wrote `f`, 8 bytes means it did
+not -- and compare that list against the draft's suffixes. Do not normalise
+suffixes for consistency; consistency is not what the original had.
+
+Related, and worth preserving when you copy a matching sibling: in `0.5 * (a -
+b)` the literal is on the LEFT with the heavier subtree on the right. That
+interacts with lever 12's evaluation-order rule, so reproduce the operand order
+exactly rather than tidying it.
