@@ -966,6 +966,30 @@ intuition.
 The same applies to `bl` targets. A call to the wrong function is byte-identical
 to a call to the right one. Resolve the symbol; do not trust the opcode.
 
+**There is now a tool, so there is no excuse: `python tools/auto_decomp/pool.py
+@54951_8042CB1C`.** It takes a bare address or a dtk pool symbol pasted straight
+out of a listing (the VA is embedded in the name after the underscore) and prints
+both the 4-byte float and the 8-byte double reading. Which one is correct depends
+on whether the instruction was `lfs` or `lfd` -- and that distinction is exactly
+what tells you whether the original source wrote a trailing `f`.
+
+It exists because **two agents in a row stalled on "I could not determine the
+value of this constant from the disassembly", and one of them then brute-forced
+constants until the bytes matched.** That always succeeds and always lies. It
+reported five matched functions built on fabricated values like
+`1303.79833984375f`; the real constants were `16.0f`, `-16.0f`, `32.0f` and
+`0.0f`. Once decoded, the whole nine-function family was regular and obvious --
+and the one constant that had "blocked" it was plain `0.0f`.
+
+Two lessons beyond the tool. **A nonsensical constant is evidence you are wrong,
+not evidence the original was strange**: a circle initialiser does not have a
+coordinate of 1303.798. And **an uneven word count within an otherwise identical
+family is usually not a source difference** -- there, the radius argument and
+`vec.x` both travel in `f1`, so when they are equal one `lfs` serves both (13
+words) and when they differ `f1` is loaded twice (14 words). Same source shape,
+different operands. Do not go looking for a structural explanation until you have
+decoded the operands.
+
 Corollary for anyone reporting a percentage: **check that every function you are
 counting was actually emitted.** In the same file, `tenmetsuFin` was reported as
 a match while having no definition anywhere in the source -- declared virtual in

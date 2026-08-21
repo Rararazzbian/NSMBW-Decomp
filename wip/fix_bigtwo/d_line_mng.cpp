@@ -1159,14 +1159,13 @@ static void fn_800C3B20(dLineMng_c *self)
 /// the Y axis.
 static void fn_800C3B60(dLineMng_c *self)
 {
-    if (self->mPos.y >= self->mUnitBasePos.y) {
+    if (!(self->mPos.y < self->mUnitBasePos.y)) {
         self->mPos.y = self->mUnitBasePos.y - 0.1f;
     }
     f32 lower = self->mUnitBasePos.y - 16.0f;
-    if (!(self->mPos.y < lower)) {
-        return;
+    if (self->mPos.y < lower) {
+        self->mPos.y = lower;
     }
-    self->mPos.y = lower;
 }
 
 // ===========================================================================
@@ -1815,8 +1814,8 @@ void dLineMng_c::executeState_FallDown()
     if (speedY < -4.0f) {
         speedY = -4.0f;
     }
+    mPos.y += speedY;
     mSpeed.y = speedY;
-    mPos.y += mSpeed.y;
     fn_800C31C0(this);
 }
 
@@ -2244,8 +2243,9 @@ void dLineMng_c::executeState_Left60Up() {
 void dLineMng_c::initializeState_Left60Down() {
     fn_800C3B60(this);
     mAngle = 0xECCC;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Left60Down() {}
 void dLineMng_c::executeState_Left60Down() {
@@ -2295,8 +2295,9 @@ void dLineMng_c::executeState_Left60Down() {
 void dLineMng_c::initializeState_Right60Down() {
     fn_800C3B60(this);
     mAngle = 0x9333;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x += 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Right60Down() {}
 void dLineMng_c::executeState_Right60Down() {
@@ -2369,7 +2370,23 @@ void dLineMng_c::executeState_Right60Up() {
     }
 }
 
-void dLineMng_c::initializeState_Circle() {}
+// The nine Circle initialisers are one family and the retail constants are
+// perfectly regular once decoded out of the DOL's .sdata2 rather than guessed
+// from the instruction pattern -- every `lfs ...@sda21(r0)` here has its offset
+// field ZEROED in both disassemblies, so a wrong constant still compares
+// byte-identical. Decoded values:  Left => vec.x = +size, Right => vec.x = 0;
+//                                  Up   => vec.y = -size, Down  => vec.y = 0.
+// The radius argument is always +size.
+//
+// That last line is what makes the word counts uneven, and it is not a source
+// difference. The radius travels in f1, and so does vec.x. When they are equal
+// (every Left variant) one `lfs` serves both and the function is 13 words. When
+// vec.x is 0 and the radius is not (the *up variants) f1 must be loaded twice,
+// giving 14. RightDown is 13 again because 0.0f fills BOTH vector slots from a
+// single load. Same source shape throughout -- only the operands differ.
+void dLineMng_c::initializeState_Circle() {
+    circle_nextpos_set(mVec2_c(8.0f, -8.0f), 8.0f);
+}
 void dLineMng_c::finalizeState_Circle() {}
 void dLineMng_c::executeState_Circle() {
     mVec2_c old = mPos;
@@ -2383,49 +2400,65 @@ void dLineMng_c::executeState_Circle() {
     }
 }
 
-void dLineMng_c::initializeState_Circle2x2Leftup() {}
+void dLineMng_c::initializeState_Circle2x2Leftup() {
+    circle_nextpos_set(mVec2_c(16.0f, -16.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2Leftup() {}
 void dLineMng_c::executeState_Circle2x2Leftup() {
     move_on_circle2(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle2x2Rightup() {}
+void dLineMng_c::initializeState_Circle2x2Rightup() {
+    circle_nextpos_set(mVec2_c(0.0f, -16.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2Rightup() {}
 void dLineMng_c::executeState_Circle2x2Rightup() {
     move_on_circle1(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle2x2LeftDown() {}
+void dLineMng_c::initializeState_Circle2x2LeftDown() {
+    circle_nextpos_set(mVec2_c(16.0f, 0.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2LeftDown() {}
 void dLineMng_c::executeState_Circle2x2LeftDown() {
     move_on_circle3(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle2x2RightDown() {}
+void dLineMng_c::initializeState_Circle2x2RightDown() {
+    circle_nextpos_set(mVec2_c(0.0f, 0.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2RightDown() {}
 void dLineMng_c::executeState_Circle2x2RightDown() {
     move_on_circle4(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle4x4Rightup() {}
+void dLineMng_c::initializeState_Circle4x4Rightup() {
+    circle_nextpos_set(mVec2_c(0.0f, -32.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4Rightup() {}
 void dLineMng_c::executeState_Circle4x4Rightup() {
     move_on_circle1(32.0f, 325.9495849609375f);
 }
 
-void dLineMng_c::initializeState_Circle4x4LeftUp() {}
+void dLineMng_c::initializeState_Circle4x4LeftUp() {
+    circle_nextpos_set(mVec2_c(32.0f, -32.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4LeftUp() {}
 void dLineMng_c::executeState_Circle4x4LeftUp() {
     move_on_circle2(32.0f, 325.9495849609375f);
 }
 
-void dLineMng_c::initializeState_Circle4x4LeftDown() {}
+void dLineMng_c::initializeState_Circle4x4LeftDown() {
+    circle_nextpos_set(mVec2_c(32.0f, 0.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4LeftDown() {}
 void dLineMng_c::executeState_Circle4x4LeftDown() {
     move_on_circle3(32.0f, 325.9495849609375f);
 }
 
-void dLineMng_c::initializeState_Circle4x4RightDown() {}
+void dLineMng_c::initializeState_Circle4x4RightDown() {
+    circle_nextpos_set(mVec2_c(0.0f, 0.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4RightDown() {}
 void dLineMng_c::executeState_Circle4x4RightDown() {
     move_on_circle4(32.0f, 325.9495849609375f);
