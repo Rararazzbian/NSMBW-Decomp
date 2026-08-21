@@ -2254,8 +2254,21 @@ void dLineMng_c::executeState_Left60Down() {
     mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
+    // DOUBLE-PRECISION SPLIT ASSIGNMENT. `8.0` and `0.5` are unsuffixed, so
+    // both are DOUBLES -- confirmed by decoding the pool: retail loads them
+    // with `lfd` from 0x8042CBB0 (4020000000000000 = 8.0) and 0x8042CBA0
+    // (3FE0000000000000 = 0.5), while the float 0.5f/16.0f used elsewhere in
+    // this file sit separately at 0x8042CB5C/0x8042CB48 as 4-byte floats.
+    // The shape is identical to the MATCHING executeState_Left60Up two
+    // functions up (`mPos.x = mUnitBasePos.x; mPos.x += 16.0f; mPos.x -= ...`).
+    // Lever 11 DOES extend to double precision: the compound assignment puts
+    // the member in the FIRST source slot (`fadd f2, f3, f2`), where the
+    // combined form `mUnitBasePos.x + 8.0` hoists the literal there instead.
+    // The intermediate `frsp` is the rounding the float member's `+=` requires
+    // -- Left60Up needs none only because `fadds` already rounds.
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
         mSpeed.y = mBaseSpeed;
@@ -2292,8 +2305,11 @@ void dLineMng_c::executeState_Right60Down() {
     mSpeed.y *= -0.8910065f;
     mSpeed.x = -(0.5f * mSpeed.y);
     mPos.y += mSpeed.y;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
+    // See executeState_Left60Down for the double-precision reasoning; this is
+    // the same statement with the outer sign flipped.
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x += 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
         mSpeed.y = mBaseSpeed;

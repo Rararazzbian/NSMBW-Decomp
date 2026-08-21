@@ -690,9 +690,34 @@ variants.
     form fixes both. The `+` form is identical:
     `mPos.x = mUnitBasePos.x; mPos.x += 16.0f;`.
 
-    Closed five functions in `d_line_mng` in one round. Do NOT reach for it
-    when the residual is in a DOUBLE-precision `fadd`/`frsp` path -- that is a
-    different class and this does not touch it.
+    Closed five functions in `d_line_mng` in one round.
+
+    **CORRECTION.** This entry used to say "do NOT reach for it when the residual
+    is in a DOUBLE-precision `fadd`/`frsp` path -- that is a different class".
+    **That was wrong and it cost time.** The def-point split is exactly what
+    closes the double-precision class too; it was written off after one failed
+    attempt whose real defect was something else. Measured A/B, everything else
+    in the body held fixed:
+
+        mPos.x = mUnitBasePos.x + 8.0;              -> fadd f2, f2, f3  (literal first, 1 diff)
+        mPos.x = mUnitBasePos.x; mPos.x += 8.0;     -> fadd f2, f3, f2  (member first,  0 diff)
+
+    One instruction moved, nothing else in a 102-word body shifted. **So levers
+    11 and 12 govern the OPERATION, not the PRECISION** -- `fadd`/`fmul` behave
+    exactly as `fadds`/`fmuls`, and the compound-assignment route bypasses the
+    literal-hoisting canonicaliser identically.
+
+    What IS genuinely different about the double path, and the thing that
+    actually misled the earlier attempt: assigning a double-typed expression into
+    a `float` member emits a visible `frsp`. Introducing an `f32 t = ...` local to
+    "hold" the intermediate reproduces that `frsp` **in the wrong register and
+    about ten slots too early**, which then drags a whole scheduling window out
+    of alignment and looks like a deep structural mismatch. There is no float
+    local in the original -- the store to the member is dead-store-eliminated and
+    only its rounding survives. Write the member, not a temp.
+
+    This closed `executeState_Left60Down` and `executeState_Right60Down`
+    (102w + 104w, both to zero diffs) and their two `initializeState_` siblings.
 
 ### Levers that are PROVEN NOT to work -- do not spend a round on these
 
