@@ -241,10 +241,10 @@ bool dBgActorManager_c::addObj(u16 a, u16 b, u16 c, u8 d) {
 
 int dBgActorManager_c::createObjList(bool add) {
     dBg_c *bg = dBg_c::m_bg_p;
-    int x0 = (int)(bg->m_8fe64 * 0.0625f);
-    int y0 = (int)(-(bg->m_8fe6c) * 0.0625f);
-    int x1 = (int)(bg->m_8fe68 - bg->m_8fe64);
-    int y1 = (int)(bg->m_8fe6c - bg->m_8fe70);
+    u32 x0 = (u32)(bg->m_8fe64 * 0.0625f);
+    u32 y0 = (u32)(-(bg->m_8fe6c) * 0.0625f);
+    u32 x1 = (u32)(bg->m_8fe68 - bg->m_8fe64);
+    u32 y1 = (u32)(bg->m_8fe6c - bg->m_8fe70);
     x1 = (x1 & 0xF) ? (x1 >> 4) + 1 : (x1 >> 4);
     y1 = (y1 & 0xF) ? (y1 >> 4) + 1 : (y1 >> 4);
     int count = 0;

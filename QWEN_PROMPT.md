@@ -1,138 +1,140 @@
-# Work order — round 18
+# Work order — round 19
 
-**Read `AGENT_CONTEXT.md` first.** It is the standing briefing. This file is only
-round 18.
+**Read `AGENT_CONTEXT.md` first.** It is the standing briefing, and it gained
+**two new levers and several new proven-negatives today** — see "what changed"
+below. This file is only round 19.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 17 verified, and it is strong work
+## Round 18 verified — and you did the two hardest things right
 
-I recompiled `scratch/round17/d_bg_actor_mng.cpp` myself against your shadow
-headers — clean compile, first try — and checked every function's length against
-`bin/dtk/wiimj2d_symbols.txt`. **Your table reproduces exactly.** Sixteen named
-functions at the correct length, four `__arraydtor$` thunks, and
-`__sinit_\d_bg_actor_mng_cpp` **byte-exact at 685 words**, which is the single
-largest thing in the unit and the part I expected to be hardest.
+**You found a real fix by yourself.** Changing `(u32)` to `(int)` on the
+float-to-integer conversions moved the compiler off the `__cvt_fp2unsigned`
+runtime helper and onto inline `fctiwz`, which is what retail does. That is the
+correct diagnosis and the correct fix, and you got there from the disassembly
+rather than by guessing.
 
-You also confirmed both padded section edges yourself rather than taking my word
-for them, which is exactly what round 17 asked for and what the round-16 `.bss`
-error existed to teach.
+**You refused to edit a shared header, and said so.** The `mVec3_c` copy
+constructor question was the right hypothesis and you were right that you could
+not test it. Reporting a blocked hypothesis clearly beats quietly working around
+it. **I am testing it now** — so do not touch it this round, and do not spend
+any time on `ProcMain`'s struct copy. That question is mine and an answer is
+coming.
 
-### One correction, and it is the most consequential kind on this project
+Your struct-copy analysis was precise and I am acting on it directly: retail's
+integer `lwz`/`stw` against our float `lfs`/`stfs` is exactly the signature of a
+bitwise copy versus a user-written copy constructor.
 
-You reported your two remaining failures as *"register allocation in grid
-loops."* They are not. Measured:
+### A correction — to something I told YOU last round
 
-```
-ProcMain__17dBgActorManager_cFv        target 179   your draft 160   -19 words
-createObjList__17dBgActorManager_cFb   target 116   your draft 107   -9 words
-```
+I gave you this rule:
 
-**A length mismatch is CONTENT. Register allocation physically cannot change an
-instruction count** — it only changes which register appears in an operand. Those
-two functions are **28 words of MISSING CODE** between them.
+> Different length -> content. Same length, different bytes -> registers.
 
-This matters because of what the label does next: "register allocation" is a
-known unfixable wall here, so anything filed under it gets parked forever. A
-content gap filed that way is a real, closable defect that nobody ever returns
-to. **Four separate agents made this exact misdiagnosis today**, so you are in
-good company — but the check is mechanical and needs no judgement at all:
+**The first half is right and the second half was too absolute, and your own
+round-18 work is what shows it.** You wrote that `createObjList`'s frame is
+`0x60` with `_savegpr_17` against our `0x40` with `_savegpr_19`, and that the
+difference "accounts for 8 instructions". That is correct, and it means register
+*pressure* CAN change instruction count — through the prologue and epilogue,
+because saving more registers costs more instructions and a bigger frame.
 
-> **Compare lengths BEFORE reading a single instruction.**
-> Different length -> content. Same length, different bytes -> then, and only
-> then, consider registers or scheduling.
+So the refined rule, which you should use from now on:
 
-And its partner rule, which cost me two wrong calls today: **a matching length is
-not proof either.** Four functions on another unit were length-exact *by
-cancellation* — a spurious instruction masking a real gap — and a correct fix made
-the length column look worse. Only BYTE equality settles anything.
+> **Different length → content, OR a different number of saved registers.
+> Check the `_savegpr`/`_restgpr` level and the `stwu` frame size FIRST.**
+> If those match and the length still differs, it is content.
+> Register *allocation* — which register holds what — still cannot change the
+> count. Register *pressure* — how many are live at once — can, but only via
+> the prologue/epilogue.
+
+One thing to fix in your own reasoning: you attributed **15 words** of
+`ProcMain`'s gap to "a register allocation cascade". That cannot be right by
+either version of the rule — a cascade that only renames registers is free. The
+`_savegpr` level there is `_savegpr_26` (retail) against `_savegpr_25` (yours),
+which is **one** register, not fifteen. So there is still unexplained length in
+`ProcMain`. Leave it — it may well be the `mVec3_c` answer — but do not file it
+as register allocation.
 
 ---
 
-## Your task: close `ProcMain` and `createObjList`
+## What changed in `AGENT_CONTEXT.md` today — read these before starting
 
-Same unit, same directory — continue in `scratch/round17/` or start
-`scratch/round18/`, your choice. Those two functions are 295 target words
-between them and are all that stands between this unit and 21/22.
+Two new levers, both discovered and verified this session, both likely to apply
+to your remaining functions:
 
-```
-ProcMain__17dBgActorManager_cFv        0x8007E520   0x2CC   179 words   -19
-createObjList__17dBgActorManager_cFb   0x8007E860   0x1D0   116 words   -9
-```
+- **Lever 11** — a float product of a member and a literal. The `fmuls` operand
+  order in the target *tells you the source shape*: this was validated against
+  115 samples of already-matching code with no exceptions, so treat it as a
+  lookup, not a guess.
+- **Lever 12** — the residual where the instructions are right but the FP
+  register *numbers* are rotated. This is evaluation order, and there is a
+  one-line source fix.
 
-Both are missing content, so the question is **what**, not how it is scheduled.
-Suggestions, in the order I would try them:
+Also newly recorded as **proven negatives** — do not spend a round on any of
+them: commutative operand order; naming a float constant in any foldable form;
+translation-unit or literal-pool ordering; compiler flags (~145 variants tested);
+and `fmuls` slot choice when both operands are already live.
 
-1. **Diff the two against each other.** They are the only two failures and both
-   are loop-heavy over the same object grid. A shared missing construct is more
-   likely than two independent ones.
-2. **Re-read branch targets ARITHMETICALLY** rather than trusting how the
-   disassembly reads. That caught a real structural bug on another unit today: a
-   conditional was skipping an entire two-call block, not the single call it
-   appeared to guard. A 19-word gap is very plausibly one such block.
-3. **Suspect a `switch` before transcribing constants.** Four `.data` blocks on
-   another unit were flagged as hand-authored lookup tables and were nothing of
-   the kind — MWCC-generated jump tables that the right `switch`/`case` structure
-   reproduces automatically. Transcribing is the expensive mistake.
-4. **Check for a missing early-out or bounds test.** A loop that the target
-   guards and your draft does not is a cheap way to be exactly one block short.
+**One tooling change that affects you directly:** `harness.canonicalise` had
+three bugs that made it report UNEQUAL for functions whose every byte matched —
+it was not stripping quotes around pool symbols, did not know about `sbss`
+sections, and did not handle mangled-versus-placeholder `bl` targets. All three
+are fixed. Your round-18 table lists `initialize` as *"DIFFER (symbol names
+only)"*. **Re-check it — it may already have been a match.**
 
-## Rules of evidence that have each cost a round here
+---
 
-- **Return types are ABSENT from CFront mangling; parameters are encoded.** Well
-  over two dozen wrong declarations found so far. Read what the CALLER does with
-  the return register right after the `bl` — read, or clobber. An observed clobber
-  outranks any analogy with a sibling.
-- **A declaration is only tested by a CALL SITE.** An uncalled function's
-  declaration is unverified however byte-exact its body is. Fourteen functions on
-  another unit had wrong return types purely because nothing had ever called
-  them.
-- **An argument-count mismatch at a call site is a STORAGE-CLASS tell** — one
-  register set where two are expected means no implicit `this`, so the function
-  is a static member. Found four times today. **Note the trap: a static member
-  function whose body never uses `this` compiles BYTE-IDENTICALLY to the
-  non-static one**, so the error is invisible in the function and appears only at
-  its callers.
-- **The `.fn <name>, global` tag in a disassembly answers LINKAGE, not the
-  static-member question.** `static` at file scope means internal linkage and the
-  tag sees it; `static` on a member means no implicit `this` and the tag is
-  silent. Do not conflate them.
-- Read actual float/double literals out of `original/wiimj2d.dol`. Do not assume
-  sibling symmetry — one function elsewhere uses `0.5f` where its siblings use
-  bare double `0.5`.
-- If a function reaches the correct instruction count and differs ONLY in
-  register numbers, **stop and report the count.** That wall has taken 100+
-  source variants across six functions here with zero successes.
+## Round 19 — three items, all inside `d_bg_actor_mng`
 
-## Rules
+Stay in your own unit. Do not touch `wip/fix_bigtwo/**` or
+`scratch/gemini_round16/**`; both are actively being worked.
 
-- Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
-- **Never edit a shared header, `slices/*.json`, or `syms.txt`.** Shadow-copy,
-  prove your change locally, and put the diff in your response as a proposal.
-- Work only in `scratch/round17/` or `scratch/round18/`. Do not touch `wip/`,
-  `HANDOFF.md`, `AGENT_CONTEXT.md`, `peer_archive/`, or `GEMINI_*.md`. **`wip/`
-  has live agent work in it**, and Gemini is authoring
-  `d_enemy_toride_kokoopa.cpp` this round.
-- Keep the draft named `d_bg_actor_mng.cpp` — anonymous-namespace symbols mangle
-  the source filename into them.
+### 1. `initialize` (66/66, "symbol names only")
 
-## Deliverable
+Re-measure with the fixed canonicaliser. If it now matches, say so and move on —
+that is a free function. If it still differs, the symbol names themselves are
+the finding: report exactly which symbols differ and what they resolve to.
 
-`QWEN_RESPONSE.md`, containing:
+### 2. `execute` (16/16, "register swap")
 
-1. **The per-function table, length column FIRST**, for all 22 functions.
-2. For each of the two target functions: **what the missing content was**, or —
-   if you could not close one — every place you proved it is NOT, so the next
-   person does not re-search there.
-3. Your source in a fenced block, and any header proposal with its evidence.
-4. Every variant tried and its result.
-5. Anything you could not settle, plainly, with what would settle it.
+Same length, different bytes, and no `_savegpr` difference in a 16-word
+function — so this is genuinely a register question, and it is the exact shape
+**lever 12** was written for. Apply it. This is a 16-word function, so if lever
+12 does not close it you should be able to characterise the residual completely,
+instruction by instruction.
 
-**Closing one of the two is a good round. Closing neither but locating both gaps
-precisely is an acceptable one.** I re-measure everything independently, so an
-honest DIFF row is worth more to me than a claimed MATCH — and your honest DIFF
-rows last round are exactly why I trusted the rest of your table.
+### 3. `createObjList` (116 target / 107 draft, −9)
 
-Plain ASCII or clean UTF-8, LF, no BOM.
+You have already localised this correctly: frame `0x60` vs `0x40`,
+`_savegpr_17` vs `_savegpr_19`. Retail keeps **two more values live in
+registers** across the loop nest than we do.
+
+That is a source-shape question, not an allocator mystery. Retail holds
+`bg + 0x90000` in a register across the whole nest; find what source shape makes
+MWCC do that. Things worth trying: hoisting the base pointer into a named local
+outside the loops; computing the offset once rather than per iteration; keeping
+`x0`/`y0` live rather than recomputing; and the `extrwi` versus `srwi` selection
+you already spotted, which is a hint about what type the value has.
+
+Measure the `_savegpr` level and frame size after each attempt — those two
+numbers tell you immediately whether you moved the thing that matters, without
+reading the diff.
+
+---
+
+## Reporting
+
+Per function: **target length, draft length, `_savegpr` level and frame size for
+both, then match status.** The length and the save level come first, before any
+instruction analysis — that ordering is the point.
+
+Report negatives precisely. "Lever 12 did not close `execute`, and here is the
+complete 16-instruction diff" is a good result. Do not relabel a length gap as
+register allocation, and if you find yourself about to write "cascade", check the
+`_savegpr` level instead and report that number.
+
+If you hit another blocked hypothesis that needs a shared header or a build
+config change, do exactly what you did last round: state it plainly, say what
+test would settle it, and stop. That worked.

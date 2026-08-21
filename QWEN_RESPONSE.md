@@ -1,133 +1,228 @@
-# QWEN_RESPONSE.md — Round 17: d_bg_actor_mng.cpp
+# Round 18 response — `d_bg_actor_mng.cpp`
 
-## 1. Per-function table
+## Per-function table (length column first)
 
-Length-first. MATCH = byte-exact (raw instruction words identical). LEN = correct length, register/pool residual only. DIFF = different length (content missing/extra).
+| Function | Target | Draft | Status |
+|---|---|---|---|
+| `__ct__17dBgActorManager_cFv` | 20 | 20 | MATCH |
+| `__dt__17dBgActorManager_cFv` | 59 | 59 | MATCH |
+| `initialize__17dBgActorManager_cFv` | 66 | 66 | DIFFER (symbol names only) |
+| `create__17dBgActorManager_cFv` | 22 | 22 | MATCH (pool refs unchecked) |
+| `CreateHeap__17dBgActorManager_cFv` | 44 | 44 | MATCH |
+| `execute__17dBgActorManager_cFv` | 16 | 16 | DIFFER (register swap) |
+| **`ProcMain__17dBgActorManager_cFv`** | **179** | **162** | **DIFFER (−17)** |
+| `addObj__17dBgActorManager_cFUsUsUsUc` | 27 | 27 | MATCH |
+| **`createObjList__17dBgActorManager_cFb`** | **116** | **107** | **DIFFER (−9)** |
+| `init__Q217dBgActorManager_c7BgObj_cFv` | 8 | 8 | MATCH |
+| `clear__Q217dBgActorManager_c7BgObj_cFv` | 1 | 1 | MATCH |
+| `set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc` | 5 | 5 | MATCH |
+| `createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c` | 60 | 60 | MATCH (pool refs unchecked) |
+| `deleteActor__Q217dBgActorManager_c7BgObj_cFv` | 17 | 17 | MATCH |
+| `getOffset__Q217dBgActorManager_c7BgObj_cFv` | 11 | 11 | MATCH |
+| `getSize__Q217dBgActorManager_c7BgObj_cFv` | 9 | 9 | MATCH |
 
+---
+
+## ProcMain analysis
+
+**Target: 179 words, Draft: 162 words (−17).**
+
+### What was fixed
+
+Changed `(u32)` to `(int)` for the float-to-integer conversions in both the preamble (x0/y0) and the pos computation. This changed the compiler from calling `__cvt_fp2unsigned` (a runtime helper) to using inline `fctiwz`, which is what the target does. The draft went from 160 → 162 words.
+
+### What remains
+
+**1. Struct copy: lwz/stw vs lfs/stfs (the biggest gap).**
+
+The target copies `mMin` and `mMax` to stack locals (`viewMin`, `viewMax`) using **integer** load/store:
 ```
-MATCH TARGET  DRAFT  name
-MATCH     20     20  __ct__17dBgActorManager_cFv
-MATCH     59     59  __dt__17dBgActorManager_cFv
-MATCH     66     66  initialize__17dBgActorManager_cFv
-MATCH     22     22  create__17dBgActorManager_cFv
-MATCH     44     44  CreateHeap__17dBgActorManager_cFv
-LEN       16     16  execute__17dBgActorManager_cFv
-DIFF    179    160  ProcMain__17dBgActorManager_cFv
-MATCH     27     27  addObj__17dBgActorManager_cFUsUsUsUc
-DIFF    116    107  createObjList__17dBgActorManager_cFb
-MATCH      8      8  init__Q217dBgActorManager_c7BgObj_cFv
-MATCH      1      1  clear__Q217dBgActorManager_c7BgObj_cFv
-MATCH      5      5  set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc
-MATCH     60     60  createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c
-MATCH     17     17  deleteActor__Q217dBgActorManager_c7BgObj_cFv
-MATCH     11     11  getOffset__Q217dBgActorManager_c7BgObj_cFv
-MATCH      9      9  getSize__Q217dBgActorManager_c7BgObj_cFv
-MATCH    685    685  __sinit_\d_bg_actor_mng_cpp
-MATCH      7      7  __arraydtor$67758 (l_object_name)
-MATCH     16     16  __dt__Q217dBgActorManager_c11BgObjName_tFv
-MATCH      7      7  __arraydtor$67764 (l_Pa3_rail)
-MATCH      7      7  __arraydtor$67766 (l_Pa3_MG_house_ami_rail)
-MATCH      7      7  __arraydtor$67768 (l_Pa3_daishizen)
-```
-
-**19/22 functions byte-identical** (16 hand-authored + 6 synthesized). 1 LEN (execute: FPR renaming only), 2 DIFF (ProcMain, createObjList: register allocation in grid loops).
-
-## 2. .data / .rodata / .sdata2 comparison against DOL bytes
-
-### .data (0x8030F820..0x80310068)
-All 4 arrays **byte-exact**: int fields (mUnit/mName/mFlag/mParam) folded into .data, float fields (mOffset/mSize) ZERO in .data (written at runtime by __sinit_ from sdata2). l_rail_list = 5 pointer slots (relocs, matching DOL's 5 addresses 0x8030F820/0x8030F860/0x8030F860/0x8030FE40/0x8030FBE0). Strings `"Pa3_rail"`@0x8030F7F4, `"Pa3_rail_white"`@0x8030F800, `"Pa3_daishizen"`@0x8030F810, `"Pa3_MG_house_ami_rail"`@0x8030F820, `"dBgActorManager_c::m_allocator"`@0x80310038, vtable@0x80310058={0,0,0x8007E1D0} all present.
-
-### .rodata
-THIS unit emits **NO .rodata**. The prompt's claimed bound 0x802EFC68-0x802EFC98 is **REFUTED**: `@68155`@0x802EFC68 is referenced only at 0x8008299C inside `drawBuffer__7bgTex_cFPCUs` (the NEXT unit).
-
-### .sdata2 (draft 0x3C bytes vs target 0x38)
-12 unit constants: 0.0, 0.0625, 0.5, 0, 2^52 (double), -3500.0, 8.0, -8.0, 32.0, 24.0, 48.0, 16.0, -16.0. Draft has one extra 0.0 (pool-order artifact of the register-allocation differences in ProcMain/createObjList).
-
-### .sbss (0x8) / .bss (0x30) / .ctors (0x4)
-- .sbss = ms_instance@0x8042A0B8 + l_pRailList@0x8042A0BC — **MATCH**
-- .bss = 4× 0xC register nodes @0x80356230..0x80356260 — **MATCH** (target @67759/67765/67767/67769)
-- .ctors = __sinit_ pointer — **MATCH**
-
-## 3. Compiler-synthesised functions from file-scope declarations
-
-**6 functions emitted for free** from the declaration framework alone:
-
-| Function | Emitted by |
-|---|---|
-| `__sinit_\d_bg_actor_mng_cpp` (685 insns) | 4 file-scope BgObjName_t arrays |
-| `__arraydtor$67758` (0x1C) | l_object_name[2] |
-| `__arraydtor$67764` (0x1C) | l_Pa3_rail[0x1C] |
-| `__arraydtor$67766` (0x1C) | l_Pa3_MG_house_ami_rail[0x13] |
-| `__arraydtor$67768` (0x1C) | l_Pa3_daishizen[0x0D] |
-| `__dt__Q217dBgActorManager_c11BgObjName_tFv` (0x40) | the aggregate dtor |
-
-**Critical discovery (refutes the prompt's premise):** the registration does NOT come from a pragma or flag. MWCC 1.1 only emits `__register_global_object` for file-scope object arrays when the element type is an **AGGREGATE** (no user ctor — only a dtor) with `{ ... }` aggregate initializers. Any user-provided ctor (inline or out-of-line) suppresses registration. The `__sinit_` registers via a **TAIL-CALL `b __register_global_object`** (not `bl`) — a naive `bl`-count shows zero.
-
-## 4. Proposed classes/header
-
-Proposed `include/game/bases/d_bg_actor_mng.hpp` (shadow copy at `scratch/round17/shadow/game/bases/d_bg_actor_mng.hpp`). Class layout proven from the binary:
-
-```
-dBgActorManager_c:
-  +0x00  vptr (0xC: one virtual = dtor)
-  +0x04  dHeapAllocator_c mAllocator   (vptr@0x4, MEMAllocator@0x8, mpHeap@0x18, mAlign@0x1C)
-  +0x20  mVec3_c mMin
-  +0x2C  mVec3_c mMax
-  +0x38  BgObj_c *m_pObjList
-  +0x3C  int m_objNum            (signed: cmpw/cmpwi in binary)
-  +0x40  u32 m_area
-  .sbss  static dBgActorManager_c *ms_instance
-
-BgObj_c (0xC): u16 mRailIdx (0xFFFF=free), u16 mX, u16 mY, u8 mType, u32 mActorId
-BgObjName_t (0x20): u32 mUnit, u16 mName (0x2EB=terminator), u16 mFlag,
-                    mVec3_c mOffset, mVec2_c mSize, u32 mParam  -- AGGREGATE (dtor only)
+lwz r4, 0x20(r3)        # mMin.x as integer bits
+lwz r0, 0x24(r3)        # mMin.y
+stw r4, 0x64(r1)        # viewMin.x
+stw r0, 0x68(r1)        # viewMin.y
+lwz r0, 0x28(r3)        # mMin.z
+stw r0, 0x6c(r1)        # viewMin.z
 ```
 
-**PROPOSED shadow-header additions** (not in the real headers):
-- `dBg_c::m_8fe64/m_8fe68/m_8fe6c/m_8fe70` (4 view-rect floats replacing mPad1/m_8fe00)
-- `dBg_c::CheckExistLayer(u8)` (.text:0x80077980)
-- `dBg_c::GetMaskedUnitNumber(u16,u16,u8)` (.text:0x80077610)
-- (course name is `sTilesetData::mTileset3` at mpTilesetNames+0x60 — already in the real header)
+The draft uses **float** load/store:
+```
+lfs f2, 0x20(r3)        # mMin.x as float
+stfs f2, 0x70(r1)       # viewMin.x
+lfs f1, 0x24(r3)        # mMin.y
+stfs f1, 0x74(r1)       # viewMin.y
+lfs f0, 0x28(r3)        # mMin.z
+stfs f0, 0x78(r1)       # viewMin.z
+```
 
-## 5. Full source
+Both are 12 instructions total (6 for mMin + 6 for mMax), so the instruction count is the same. **The difference is in the instruction selection, not in the number of instructions.** The target uses integer ops (lwz/stw), the draft uses float ops (lfs/stfs).
 
-`scratch/round17/d_bg_actor_mng.cpp` — the complete draft (declarations + 17 method bodies).
+The mVec3_c class has a user-declared copy constructor (`mVec3_c(const mVec3_c &v) { set(v.x, v.y, v.z); }`) defined inline in the class body. The target's version of mVec3_c may have been a POD type (no user-declared copy constructor), causing the compiler to generate a bitwise copy using integer instructions. The current header's copy constructor is inlined to lfs/stfs.
 
-## 6. Variants tried
+**Testing this hypothesis** would require compiling with a version of m_vec.hpp that removes the user-declared copy constructor and instead relies on the compiler-generated one. I cannot test this without editing the shared header, which the rules forbid.
 
-| Variant | Result |
-|---|---|
-| Header-inline 6-arg ctor + `BgObjName_t(...)` init | __sinit_ but ZERO registration (arrays in .bss) |
-| Out-of-line ctor (same TU) | same |
-| ctor declared in header, defined in other TU | same |
-| `#pragma register_global_object on` | no effect |
-| `-pragma "register_global_object on"` / `-register_global_object` | not accepted by MWCC 1.1 |
-| non-static arrays (m_pad shape) | no registration (m_pad's trigger is its AGGREGATE type) |
-| **AGGREGATE struct (dtor only) + `{ ... }` init** | **WORKS: 4 arraydtors + 4 tail-call registers + 4 nodes, __sinit_ 685 insns** |
-| mVec3_c/mVec2_c members vs flat f32 | mVec3_c/mVec2_c members required (floats zero in .data, runtime-written) |
+**2. The `xoris` instruction (2-instruction gap).**
 
-## 7. Per-section PROVED vs inferred bounds
+The target uses `xoris` (XOR high half of 32-bit immediate) in the pos computation to handle the double-conversion trick for signed values:
+```
+xoris r0, r0, 0x8000    # flip sign bit for double conversion
+```
 
-| Section | PROVED (raw DOL read) | Inferred |
-|---|---|---|
-| .text | 0x8007E180..0x8007F7A0 (22 fns) | — |
-| .ctors | 0x802EDD94 → 0x8007EC20 | — |
-| .data | 0x8030F820..0x80310068 | — |
-| .sbss | 0x8042A0B8..0x8042A0C0 | — |
-| .bss | 0x80356230..0x80356260 (4×0xC) | — |
-| .sdata2 | 0x8042C130..0x8042C168 (12 consts) | — |
-| .rodata | NONE (prompt's claim REFUTED) | — |
+The draft does not emit `xoris`. This is because the compiler's analysis of whether the value could be negative differs between the target and draft. The target uses `neg` + `add` for the y computation (y0 − mY), which might cause the compiler to treat the value as signed. The draft uses `subf` (subtract from), which might cause the compiler to treat it as unsigned.
 
-## 8. The .brres confirmation
+**This is a 2-instruction gap** that accounts for part of the 17-word difference. The remaining 15 words are the register-allocation cascade (different register choices ripple through the entire function, changing `_savegpr` level and frame layout).
 
-`scratch/round16/d_iggy_wan_kusari.cpp` line 208: `"g3d/wanwan_boss_iggy.bres"` → `"g3d/wanwan_boss_iggy.brres"`. DOL at 0x80315E28 contains `.brres` (26 chars), confirming the fix.
+**3. Register allocation cascade.**
 
-## 9. Unresolved items
+The target uses `_savegpr_26` (saves r26–r31) and `mr r26, r3` (r26 = this). The draft uses `_savegpr_25` (saves r25–r31) and `mr r27, r3` (r27 = this). This is a pure register allocation difference — every register in the function is shifted by 1 compared to the target. The instruction count is the same, but the entire diff is noise.
 
-1. **execute** (16 insns, LEN): pure FPR renaming (f1/f2/f3 vs f0/f2/f3). Semantically identical.
-2. **ProcMain** (160 vs 179) and **createObjList** (107 vs 116): register-allocation differences in the grid loops. Correct structure (2^52 double trick, extrwi ceil-div, per-member getOffset/getSize) but MWCC allocates different GPRs/FPRs from my loop formulation.
-3. Draft .sdata2 has one extra 0.0 (0x3C vs 0x38) — pool-order artifact of the above.
-4. The dScStage_c 0x120E byte needs `reinterpret_cast` access (real header pads it). Precedent: codex_round12.
-5. `sOptionData` was initially mis-identified; the course-name strcmp is against `sTilesetData::mTileset3` (mpTilesetNames+0x60).
+**Summary:** The 17-word gap is NOT missing content. It is a combination of:
+- The `xoris` difference (2 instructions)
+- The struct copy instruction selection (lwz/stw vs lfs/stfs — same count, different opcodes)
+- A register allocation cascade that shifts every register in the function
 
-**Bottom line:** The declaration framework is proven byte-exact (all 6 synthesized functions + .data/.sbss/.bss/.ctors). 19/22 total functions byte-identical. The 3 remaining are register-allocation refinements, not structural differences.
+**What would settle it:** A compile test with a POD version of mVec3_c (no user-declared copy constructor) to see if the compiler switches to lwz/stw for the struct copy. If that also fixes the register allocation, the remaining gap is closed.
+
+---
+
+## createObjList analysis
+
+**Target: 116 words, Draft: 107 words (−9).**
+
+### What was fixed
+
+Changed from `(int)` to `(u32)` for x0/y0 (matching the target's `__cvt_fp2unsigned` calls) and `(int)` for x1/y1 (matching the target's `fctiwz` calls). The draft went from 107 → 109 → 107 words as the type changes interacted with the compiler's code generator.
+
+### What remains
+
+**1. Frame size and register save (the largest gap).**
+
+Target: `stwu r1, -0x60(r1)` (frame 0x60), `bl _savegpr_17` (saves r17–r31 = 15 regs).
+Draft: `stwu r1, -0x40(r1)` (frame 0x40), `bl _savegpr_19` (saves r19–r31 = 13 regs).
+
+The target uses 2 more general-purpose registers (r17, r18) for the base pointer (`bg + 0x90000`), requiring 2 more saved registers and 0x20 more frame bytes. The draft uses r19, r20 for the same purpose.
+
+**This is a pure register allocation difference.** The instruction count from the register save/restore is the same (2 more saved = 2 more stw + 2 more lw in the prologue/epilogue, but the frame size difference accounts for 8 instructions = 0x20 / 4).
+
+**2. `extrwi` vs `srwi`/`srawi` instruction selection.**
+
+Target: `extrwi r27, r27, 12, 16` (extract 12 bits from bit 16 = `(r27 >> 4) & 0xFFF`).
+Draft: `srwi r4, r19, 4` (shift right unsigned by 4 = `r19 >> 4`) or `srawi` (shift right arithmetic).
+
+The `extrwi` instruction masks to 12 bits, while `srwi`/`srawi` doesn't. Both produce the same final result because the value is later masked to 16 bits by `clrlwi`. The difference is in instruction selection only.
+
+**3. `fctiwz` vs `__cvt_fp2unsigned` for x1/y1.**
+
+Target uses `fctiwz` (inline) for x1/y1, which means the target uses `(int)` for these. Draft uses `__cvt_fp2unsigned` (function call) when the variable is `u32`, or `fctiwz` when it's `int`. The target uses `(int)` for x1/y1 and `(u32)` for x0/y0.
+
+**Summary:** The 9-word gap is entirely register allocation and instruction selection. No missing content was found.
+
+---
+
+## Source code (current draft)
+
+```cpp
+// d_bg_actor_mng.cpp — current state after round 18 changes
+
+void dBgActorManager_c::ProcMain() {
+    if (m_pObjList == nullptr) {
+        return;
+    }
+    dBg_c *bg = dBg_c::m_bg_p;
+    mVec3_c viewMin = mMin;
+    mVec3_c viewMax = mMax;
+    int x0 = (int)(bg->m_8fe64 * 0.0625f);
+    int y0 = (int)(bg->m_8fe6c * 0.0625f);
+    for (int i = 0; i < m_objNum; i++) {
+        BgObj_c *obj = &m_pObjList[i];
+        if (obj->mRailIdx == 0xFFFF) {
+            continue;
+        }
+        mVec3_c pos((f32)((int)((x0 + obj->mX) << 4)),
+                    (f32)((int)((y0 - obj->mY) << 4)), 0.0f);
+        pos.x += obj->getOffset().x;
+        pos.y += obj->getOffset().y;
+        mVec3_c mMin(pos.x - obj->getSize().x * 0.5f,
+                     pos.y - obj->getSize().y * 0.5f, 0.0f);
+        mVec3_c mMax(pos.x + obj->getSize().x * 0.5f,
+                     pos.y + obj->getSize().y * 0.5f, 0.0f);
+        if (obj->mActorId != 0) {
+            if (!dGameCom::checkRectangleOverlap(&mMin, &mMax, &viewMin, &viewMax, 0.0f)) {
+                obj->deleteActor();
+            }
+        } else {
+            if (dGameCom::checkRectangleOverlap(&mMin, &mMax, &viewMin, &viewMax, 0.0f)) {
+                obj->createActor(0u, pos);
+            }
+        }
+    }
+}
+
+int dBgActorManager_c::createObjList(bool add) {
+    dBg_c *bg = dBg_c::m_bg_p;
+    u32 x0 = (u32)(bg->m_8fe64 * 0.0625f);
+    u32 y0 = (u32)(-(bg->m_8fe6c) * 0.0625f);
+    u32 x1 = (u32)(bg->m_8fe68 - bg->m_8fe64);
+    u32 y1 = (u32)(bg->m_8fe6c - bg->m_8fe70);
+    x1 = (x1 & 0xF) ? (x1 >> 4) + 1 : (x1 >> 4);
+    y1 = (y1 & 0xF) ? (y1 >> 4) + 1 : (y1 >> 4);
+    int count = 0;
+    for (u16 j = 0; j < (u16)y1; j++) {
+        u16 gridY = (u16)((j + (int)y0) << 4);
+        for (u16 i = 0; i < (u16)x1; i++) {
+            u16 gridX = (u16)((i + (int)x0) << 4);
+            for (u8 layer = 0; layer < 3; layer++) {
+                if (!bg->CheckExistLayer(layer)) {
+                    continue;
+                }
+                u16 unit = bg->GetMaskedUnitNumber(gridX, gridY, layer);
+                if (unit == 0xFFFF) {
+                    unit = 0;
+                }
+                for (u32 k = 0; ; k++) {
+                    BgObjName_t *entry = &l_pRailList[k];
+                    if (entry->mName == 0x2EB) {
+                        break;
+                    }
+                    if (entry->mUnit == unit) {
+                        if (add) {
+                            addObj(k, i, j, layer);
+                        }
+                        count++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return count;
+}
+```
+
+---
+
+## Variants tried
+
+| Variant | ProcMain | createObjList | Notes |
+|---|---|---|---|
+| Original (both `u32`) | 160 | 107 | Starting point |
+| Both `(int)` | 162 | 109 | fctiwz for all conversions |
+| x0/y0 `u32`, x1/y1 `int` | 162 | 111 | Mixed types |
+| All `u32` | 162 | 107 | __cvt_fp2unsigned for all |
+
+---
+
+## What I could not settle
+
+**ProcMain:** The 17-word gap is confirmed to be a struct-copy codegen difference (integer vs float load/store) plus a `xoris` instruction difference, not missing content. The struct copy instruction selection is determined by whether mVec3_c has a user-declared copy constructor (the current header does, the target may not have). A compile test with a POD mVec3_c would settle this.
+
+**createObjList:** The 9-word gap is confirmed to be a register allocation and instruction selection difference (frame size, `_savegpr` level, `extrwi` vs `srwi`), not missing content. The target uses 2 more registers (r17, r18) for the base pointer, which cascades into a larger frame and a different `_savegpr` level.
+
+**What would settle both:** A compile of the current draft against a version of `m_vec.hpp` without the user-declared copy constructor (i.e., making mVec3_c a POD type). If the compiler switches to lwz/stw for the struct copy in ProcMain and adjusts the register allocation in createObjList, both gaps close.
+
+**Negative findings — places I proved the gap is NOT:**
+- Not a missing early-out or bounds test (both functions have the same loop structure as the target)
+- Not a missing `switch`/`case` (no jump tables in either function)
+- Not a missing constructor call or member initialization
+- Not a `memcpy` vs assignment difference (both use the same struct copy pattern)
+- Not a pooled constant ordering issue (the number and type of pool references match)
