@@ -1,288 +1,138 @@
-# Work order — round 17
+# Work order — round 18
 
-**Read `AGENT_CONTEXT.md` first.** It is the standing briefing for this repo and
-it assumes nothing about you. This file is only round 17.
+**Read `AGENT_CONTEXT.md` first.** It is the standing briefing. This file is only
+round 18.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 16 verified, and it held up
+## Round 17 verified, and it is strong work
 
-I recompiled your `scratch/round16/d_iggy_wan_kusari.cpp` myself with
-`harness.compile_draft`, disassembled it, and compared it against the three
-delinked target objects with my own comparator. **Your table reproduces exactly:
-34 of 47 byte-exact.** It compiled clean with no errors on the first try.
+I recompiled `scratch/round17/d_bg_actor_mng.cpp` myself against your shadow
+headers — clean compile, first try — and checked every function's length against
+`bin/dtk/wiimj2d_symbols.txt`. **Your table reproduces exactly.** Sixteen named
+functions at the correct length, four `__arraydtor$` thunks, and
+`__sinit_\d_bg_actor_mng_cpp` **byte-exact at 685 words**, which is the single
+largest thing in the unit and the part I expected to be hardest.
 
-I then ran a stricter gate than yours. Yours compares raw instruction words only,
-and in a delinked target every `bl` is `48 00 00 01` and every `lis ...@ha` is
-`3C 80 00 00` — so a *wrong callee* or a *wrong global* compares EQUAL under
-bytes alone. I re-ran with the relocation operand text included. **33 of your 34
-survived that too**, and the one that flagged
-(`createMdl__21dIggyWanKusariPiece_c`) is the known quote artifact, not a real
-difference. That is a genuinely good result and the honest DIFF rows for the
-stubbed bodies are why I trust the rest of it.
+You also confirmed both padded section edges yourself rather than taking my word
+for them, which is exactly what round 17 asked for and what the round-16 `.bss`
+error existed to teach.
 
-Your constants all check out against the DOL bytes: `smc_LENGTH` = 6.0f at
-`0x8042C9A8`, `cs_init_angle` = `0x4000`/`0xC000` at `0x8042C97C`, `cs_dir_prm` =
-{1.0f, -1.0f} at `0x8042C9C8`, `cs_mdl_name` pointing at `wanwan_chainA` and
-`wanwan_chainB`.
+### One correction, and it is the most consequential kind on this project
 
-### Two corrections, both worth reading before you start
-
-**1. A wrong string literal that your comparator structurally cannot see.**
-Line 208 of your draft has:
+You reported your two remaining failures as *"register allocation in grid
+loops."* They are not. Measured:
 
 ```
-"g3d/wanwan_boss_iggy.bres"
+ProcMain__17dBgActorManager_cFv        target 179   your draft 160   -19 words
+createObjList__17dBgActorManager_cFb   target 116   your draft 107   -9 words
 ```
 
-The DOL, read at `0x80315E28`, has **`g3d/wanwan_boss_iggy.brres`** — 26 chars,
-not 25. String content lives in `.rodata`, and the `.text` reference to it is a
-relocated pointer, so this is invisible to any `.text` comparison and would shift
-every `.rodata` object after it by one byte at link time. **Fix it in place in
-`scratch/round16/d_iggy_wan_kusari.cpp` as the first thing you do this round, and
-say in your response that you did.** Then note the general lesson in your own
-words: a `.text` match says nothing about `.rodata` content.
+**A length mismatch is CONTENT. Register allocation physically cannot change an
+instruction count** — it only changes which register appears in an operand. Those
+two functions are **28 words of MISSING CODE** between them.
 
-**2. Your `.text` bound correction was wrong, and contradicted your own table.**
-You reported the unit ending at `0x800BAB04` and everything above belonging to
-`d_info.cpp`. But eight functions in your own per-function table —
-`createMdl`, `calcMdl`, `draw`, `calcForDemo`, `calcPosAngle`, `collapseMove`,
-`setCollapseSpeed` on `dIggyWanKusariPiece_c`, plus `__dt__` and `isSameName` on
-`sFStateID_c` — live above `0x800BAB04`. Measured:
+This matters because of what the label does next: "register allocation" is a
+known unfixable wall here, so anything filed under it gets parked forever. A
+content gap filed that way is a real, closable defect that nobody ever returns
+to. **Four separate agents made this exact misdiagnosis today**, so you are in
+good company — but the check is mechanical and needs no judgement at all:
 
-```
-setCollapseSpeed__21dIggyWanKusariPiece_cFi = .text:0x800BB060  size 0x74  -> ends 0x800BB0D4
-__ct__7dInfo_cFv                            = .text:0x800BB0E0
-```
+> **Compare lengths BEFORE reading a single instruction.**
+> Different length -> content. Same length, different bytes -> then, and only
+> then, consider registers or scheduling.
 
-The original bound `0x800B90A0 - 0x800BB0E0` was correct. `0x800BAB04` is a
-*split-object* seam, not a unit edge — the same class of confusion as
-`dtk_splits` versus the full symbol map.
-
-**3. Your `.bss` figure understates the unit.** You reported "six `StateID_*`
-objects, `0x80358ED8`-`0x80359018`, 6 x 0x30 = 0x120" as PROVED. That was the
-figure I asserted in the round-16 order and you restated it rather than measuring
-it. The real run interleaves an anonymous `0xC` object after each state:
-
-```
-0x80358ED8 StateID_Ready   0x30      0x80358F08 @62489  0xC
-0x80358F18 StateID_Normal  0x30      0x80358F48 @62493  0xC
-0x80358F58 StateID_Tight   0x30      0x80358F88 @62497  0xC
-0x80358F98 StateID_Release 0x30      0x80358FC8 @62501  0xC
-0x80358FD8 StateID_Collapse 0x30     0x80359008 @62505  0xC
-0x80359018 StateID_Dead    0x30      0x80359048 @68605  0xC
-0x80359054 m_startInfo__7dInfo_c  <- next unit starts here
-```
-
-Real extent `0x80358ED8`-`0x80359054`, **`0x17C`**, not `0x120`. This is exactly
-the failure mode the round-16 order warned you about with the neighbouring unit's
-figure being wrong by a factor of six — and it arrived because something I
-asserted came back to me marked PROVED. **Treat every figure I hand you as a
-hypothesis, including in this file.** Saying "I could not measure this" is worth
-more to me than an echo.
-
-The Iggy unit is otherwise parked: its five stubbed bodies need `daEnIggy_c`'s
-member layout, which Gemini is working the boss-class side of this round. You are
-not on Iggy this round beyond the one-line string fix.
+And its partner rule, which cost me two wrong calls today: **a matching length is
+not proof either.** Four functions on another unit were length-exact *by
+cancellation* — a spurious instruction masking a real gap — and a correct fix made
+the length column look worse. Only BYTE equality settles anything.
 
 ---
 
-## Your task: author `d_bg_actor_mng.cpp`
+## Your task: close `ProcMain` and `createObjList`
 
-A DOL unit (`wiimj2d.dol`), not a REL. A background-actor manager: a singleton
-that owns a rail list and spawns background objects.
-
-**This unit was carved by a peer last round and I verified every edge of it
-myself, object by object.** The bounds below are measured, not inferred — but
-check them anyway, because that is how the round-16 `.bss` error would have been
-caught.
+Same unit, same directory — continue in `scratch/round17/` or start
+`scratch/round18/`, your choice. Those two functions are 295 target words
+between them and are all that stands between this unit and 21/22.
 
 ```
-.text    0x8007E180 - 0x8007F7A0   (0x1620 = 5,664 bytes)   22 functions
-.ctors   0x802EDD94 -> __sinit_\d_bg_actor_mng_cpp @ 0x8007EC20  (size 0xAB4)
-.rodata  0x802EFC68 - 0x802EFC98   (0x30)    one pool object @68155
-.data    0x8030F820 - 0x80310068   (0x848)
-.sbss    0x8042A0B8 - 0x8042A0C0   (0x8)
-.sdata2  0x8042C130 - 0x8042C180   (0x50)    17 pool constants
-.bss     NONE — the four anonymous .bss objects in this region belong to d_bg_unit
+ProcMain__17dBgActorManager_cFv        0x8007E520   0x2CC   179 words   -19
+createObjList__17dBgActorManager_cFb   0x8007E860   0x1D0   116 words   -9
 ```
 
-**The `.data` and `.sdata2` edges above include trailing alignment padding, and
-you should see why rather than take my word for it.** The last named object in
-each ends earlier than the bound:
+Both are missing content, so the question is **what**, not how it is scheduled.
+Suggestions, in the order I would try them:
 
-```
-.data    last object __vt__17dBgActorManager_c ends 0x80310064
-         next unit's first object @66816 starts  0x80310068   -> 4 bytes padding
-.sdata2  last object @71467 ends                 0x8042C17C
-         next unit's first object @68048 starts  0x8042C180   -> 4 bytes padding
-```
+1. **Diff the two against each other.** They are the only two failures and both
+   are loop-heavy over the same object grid. A shared missing construct is more
+   likely than two independent ones.
+2. **Re-read branch targets ARITHMETICALLY** rather than trusting how the
+   disassembly reads. That caught a real structural bug on another unit today: a
+   conditional was skipping an entire two-call block, not the single call it
+   appeared to guard. A 19-word gap is very plausibly one such block.
+3. **Suspect a `switch` before transcribing constants.** Four `.data` blocks on
+   another unit were flagged as hand-authored lookup tables and were nothing of
+   the kind — MWCC-generated jump tables that the right `switch`/`case` structure
+   reproduces automatically. Transcribing is the expensive mistake.
+4. **Check for a missing early-out or bounds test.** A loop that the target
+   guards and your draft does not is a cheap way to be exactly one block short.
 
-A bound taken from "where the last object I can name ends" is a **lower bound**,
-and a slice cut there drops the padding and shifts the next unit. I made exactly
-this mistake drafting this file and caught it on re-check. Confirm both edges
-yourself.
+## Rules of evidence that have each cost a round here
 
-### Why this unit was chosen for you
-
-**All 22 functions carry real mangled names. Zero anonymous `fn_*`.** Every
-parameter list is handed to you by the mangling; only return types are open.
-Two classes, the second nested inside the first:
-
-```
-0x8007E180  0x50   __ct__17dBgActorManager_cFv
-0x8007E1D0  0xEC   __dt__17dBgActorManager_cFv
-0x8007E2C0  0x108  initialize__17dBgActorManager_cFv
-0x8007E3D0  0x58   create__17dBgActorManager_cFv
-0x8007E430  0xB0   CreateHeap__17dBgActorManager_cFv
-0x8007E4E0  0x40   execute__17dBgActorManager_cFv
-0x8007E520  0x2CC  ProcMain__17dBgActorManager_cFv
-0x8007E7F0  0x6C   addObj__17dBgActorManager_cFUsUsUsUc
-0x8007E860  0x1D0  createObjList__17dBgActorManager_cFb
-0x8007EA30  0x20   init__Q217dBgActorManager_c7BgObj_cFv
-0x8007EA50  0x4    clear__Q217dBgActorManager_c7BgObj_cFv
-0x8007EA60  0x14   set__Q217dBgActorManager_c7BgObj_cFUsUsUsUc
-0x8007EA80  0xF0   createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c
-0x8007EB70  0x44   deleteActor__Q217dBgActorManager_c7BgObj_cFv
-0x8007EBC0  0x2C   getOffset__Q217dBgActorManager_c7BgObj_cFv
-0x8007EBF0  0x24   getSize__Q217dBgActorManager_c7BgObj_cFv
-0x8007EC20  0xAB4  __sinit_\d_bg_actor_mng_cpp
-0x8007F6E0  0x1C   __arraydtor$67758
-0x8007F700  0x40   __dt__Q217dBgActorManager_c11BgObjName_tFv
-0x8007F740  0x1C   __arraydtor$67764
-0x8007F760  0x1C   __arraydtor$67766
-0x8007F780  0x1C   __arraydtor$67768
-```
-
-Note the shape this tells you outright. `__arraydtor$` thunks and a
-`BgObjName_t` destructor mean **arrays of a non-trivially-destructible struct at
-file scope** — that is what the `0xAB4` `__sinit_` is doing, and it is where most
-of the unit's bytes are. The `.data` side of it is already named:
-
-```
-0x8030F820  0x40   l_object_name
-0x8030F860  0x380  l_Pa3_rail
-0x8030FBE0  0x260  l_Pa3_MG_house_ami_rail
-0x8030FE40  0x1A0  l_Pa3_daishizen
-0x8030FFE0  0x14   l_rail_list
-0x8030FFF4  0x9 / 0xF / 0xE / 0x16 / 0x1F   five anonymous string pool objects
-0x80310058  0xC    __vt__17dBgActorManager_c
-```
-
-`__vt__17dBgActorManager_c` is `0xC`, which is one virtual slot plus the two
-header words. One virtual method on the manager, not more.
-
-**Do the file-scope array declarations and the singleton before you hand-author a
-single method body.** On other units here, getting the declaration framework
-right has emitted eight, twenty, and most recently sixty-seven functions for free
-— byte-exact, none hand-written. The four `__arraydtor$` thunks and the
-`BgObjName_t` destructor are all compiler-synthesised: you do not write them, you
-cause them.
-
-`bin/dtk/wiimj2d_symbols.txt` is the FULL DOL symbol map and is the richest
-source you have. `syms.txt` is a small curated list; absence from it proves
-nothing.
-
----
-
-## Six things that have each cost this project a round
-
-**1. DOL flags, not REL flags.** These are different programs:
-
-```
-wiimj2d    -O4                                      (small data ON)
-d_basesNP  -O4,p  -sdata 0  -sdata2 0  -char signed
-```
-
-You are on the DOL. **Call `harness.compile_draft(src, obj)` from
-`tools/auto_decomp/harness.py`** and let it supply them. Never hand-build the
-command line — seven mandatory include paths, and people have lost rounds to one
-missing path.
-
-**2. Return types are ABSENT from CFront mangling.** Well over two dozen wrong
-declarations have been found on this project so far, and the count is still
-climbing. The method that finds them every time: **read what the
-CALLER does with the return register immediately after the `bl` — does it READ
-r3, or CLOBBER it?** An observed clobber outranks any analogy with a sibling.
-`getOffset` and `getSize` on the nested class are the obvious candidates here and
-their names are not evidence of anything.
-
-**3. An argument-count mismatch at a call site is a STORAGE-CLASS tell**, not a
-return-type one. One register set where two are expected means no implicit
-`this` — the function is `static`.
-
-**4. Check the SIZE before you count differences.** A length mismatch is CONTENT
-in both directions. A pool-position or register residual physically cannot change
-an instruction count. **Always report length before any differing count.**
-
-**5. A `.data` block that looks like a constant table may be a SWITCH JUMP
-TABLE.** Suspect a `switch` before you transcribe constants. Here the reverse
-risk also applies: `l_Pa3_rail` and friends genuinely are data, and their
-*contents* must be read out of the DOL, not invented.
-
-**6. Know when to stop.** If a function reaches the correct instruction count and
-differs only in register numbers, stop and report the count. Declaration order
-has been measured not to influence register assignment at all.
-
-## A tooling caveat, and a second one you found the hard way
-
-`harness.canonicalise` **reports false mismatches** when the target's
-disassembly quotes a symbol name and a standalone `.o` does not. If a function is
-length-exact and the comparator still says differ, compare the raw instruction
-BYTES. `wip/line_mng_shared/tally.py` implements the correct union gate.
-
-And from your own round: **byte comparison of `.text` proves nothing about
-`.rodata`, `.data` or `.sdata2`.** Relocated operands are zero on both sides, so
-a wrong string, a wrong float, or a wrong callee can all pass. This unit is
-data-heavy — most of its bytes are in those sections. **Compare the emitted data
-sections against the DOL directly and report that comparison as a separate
-result from the function table.** That is the single most valuable thing you can
-add to your method this round.
+- **Return types are ABSENT from CFront mangling; parameters are encoded.** Well
+  over two dozen wrong declarations found so far. Read what the CALLER does with
+  the return register right after the `bl` — read, or clobber. An observed clobber
+  outranks any analogy with a sibling.
+- **A declaration is only tested by a CALL SITE.** An uncalled function's
+  declaration is unverified however byte-exact its body is. Fourteen functions on
+  another unit had wrong return types purely because nothing had ever called
+  them.
+- **An argument-count mismatch at a call site is a STORAGE-CLASS tell** — one
+  register set where two are expected means no implicit `this`, so the function
+  is a static member. Found four times today. **Note the trap: a static member
+  function whose body never uses `this` compiles BYTE-IDENTICALLY to the
+  non-static one**, so the error is invisible in the function and appears only at
+  its callers.
+- **The `.fn <name>, global` tag in a disassembly answers LINKAGE, not the
+  static-member question.** `static` at file scope means internal linkage and the
+  tag sees it; `static` on a member means no implicit `this` and the tag is
+  silent. Do not conflate them.
+- Read actual float/double literals out of `original/wiimj2d.dol`. Do not assume
+  sibling symmetry — one function elsewhere uses `0.5f` where its siblings use
+  bare double `0.5`.
+- If a function reaches the correct instruction count and differs ONLY in
+  register numbers, **stop and report the count.** That wall has taken 100+
+  source variants across six functions here with zero successes.
 
 ## Rules
 
-- Never run `ninja`, `configure.py`, `progress.py`, `land.py`. I am the only
-  integrator and two builds in this checkout clobber each other.
-- **Never edit a shared header, `slices/*.json`, or `syms.txt`.** Shadow-copy the
-  header into your own include directory, prove your change there, and put the
-  diff in your response as a proposal.
-- Work only in `scratch/round17/`, plus the one-line string fix in
-  `scratch/round16/d_iggy_wan_kusari.cpp`. Do not touch `wip/`, `HANDOFF.md`,
-  `AGENT_CONTEXT.md`, `peer_archive/`, or `GEMINI_*.md`. **Gemini is settling the
-  `dEnBoss_c` vtable this round** — stay off the enemy/boss region entirely.
-- **Name your draft file `d_bg_actor_mng.cpp`.** Anonymous-namespace symbols
-  mangle the source filename into them.
-- Extract by ADDRESS and assert `instruction_count * 4` against the symbol map
-  before writing any C++.
-- Mark anything unproven `@unofficial`. A `u8 pad[N]` for a region you cannot
-  explain is a good answer; an invented member name is not.
-- **Report a negative result rather than manufacturing a positive one.**
+- Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
+- **Never edit a shared header, `slices/*.json`, or `syms.txt`.** Shadow-copy,
+  prove your change locally, and put the diff in your response as a proposal.
+- Work only in `scratch/round17/` or `scratch/round18/`. Do not touch `wip/`,
+  `HANDOFF.md`, `AGENT_CONTEXT.md`, `peer_archive/`, or `GEMINI_*.md`. **`wip/`
+  has live agent work in it**, and Gemini is authoring
+  `d_enemy_toride_kokoopa.cpp` this round.
+- Keep the draft named `d_bg_actor_mng.cpp` — anonymous-namespace symbols mangle
+  the source filename into them.
 
 ## Deliverable
 
 `QWEN_RESPONSE.md`, containing:
 
-1. **A per-function table** — name, target length, your length, differing count,
-   MATCH or not. Length column first.
-2. **A separate `.data`/`.rodata`/`.sdata2` comparison** against the DOL bytes,
-   reported independently of the function table. New this round; see above.
-3. **How many functions the file-scope declarations alone emitted**, before you
-   hand-authored anything — including the four `__arraydtor$` thunks and the
-   `BgObjName_t` destructor. Report this separately; it is the number I most want.
-4. The proposed classes and header in a fenced block, offsets argued from
-   evidence.
-5. Your source in a fenced block.
-6. Every variant you tried and its result, so nobody repeats it.
-7. Whether the bounds above survived your check, per section, PROVED versus
-   inferred stated separately. **Measure them; do not restate mine.**
-8. Confirmation of the `.brres` fix in the round-16 draft.
-9. Anything you could not settle, plainly, with what would settle it.
+1. **The per-function table, length column FIRST**, for all 22 functions.
+2. For each of the two target functions: **what the missing content was**, or —
+   if you could not close one — every place you proved it is NOT, so the next
+   person does not re-search there.
+3. Your source in a fenced block, and any header proposal with its evidence.
+4. Every variant tried and its result.
+5. Anything you could not settle, plainly, with what would settle it.
 
-A table of twelve matches and ten characterised residuals is a better round than
-twenty-two claimed matches I cannot reproduce. **I check every number
-independently** — I recompiled your entire round-16 draft to do it, and it came
-back clean.
+**Closing one of the two is a good round. Closing neither but locating both gaps
+precisely is an acceptable one.** I re-measure everything independently, so an
+honest DIFF row is worth more to me than a claimed MATCH — and your honest DIFF
+rows last round are exactly why I trusted the rest of your table.
 
 Plain ASCII or clean UTF-8, LF, no BOM.

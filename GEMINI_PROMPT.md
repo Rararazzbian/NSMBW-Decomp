@@ -1,178 +1,174 @@
-# Work order for Gemini — round 15
+# Work order for Gemini — round 16
 
-**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 15.
+**`AGENT_CONTEXT.md` is the standing briefing.** This file is only round 16.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite).
 
 ---
 
-## Round 14 verified: Task A is clean, Task B has one error that would cost a round
+## Round 15 verified in full, and the method is why
 
-I re-derived every number in round 14 independently, from `original/wiimj2d.dol`
-and `bin/dtk/wiimj2d_symbols.txt`, without reading your scripts.
-
-**Task A survived in full.** All seven of your carve ranges land on real function
-boundaries. Your function counts and anonymous-symbol counts are exact — 123/13
-for `d_bc.cpp`, 88/15 for `d_bg.cpp`, 22/0 for `d_bg_actor_mng.cpp`, 125/42 and
-34/11 for the two `d_bg_unit` spans, 72/9 for `d_capture_mng.cpp`, 5/0 for
-`d_beans_kuribo_mng`. Your `.ctors` addresses are exact and contiguous, correctly
-bracketed by `__sinit_\d_base_actor_cpp` and `__sinit_\d_cc_cpp`. I walked
-`d_bg_actor_mng.cpp`'s `.data`, `.rodata`, `.sbss` and `.sdata2` object by object
-and every edge you gave is right, including the correct call that it owns no
-`.bss` — the four anonymous `.bss` objects in that gap belong to `d_bg_unit`.
-
-Two cosmetic slips, neither load-bearing: `__vt__17dBgActorManager_c` is `0xC`,
-not `0x10`, and your byte-named percentages use range size as denominator while
-mine used summed function size, which is why `d_bc.cpp` reads 82.9 against my
-82.8. Neither changes a ranking.
-
-**Qwen is authoring `d_bg_actor_mng.cpp` this round on the strength of that
-carve.** Do not touch it.
-
-### The Task B error
-
-You reported `dEnBoss_c`'s vtable as 226 slots, and that is right — `0x390`,
-confirmed. You reported Kokoopa at 375 slots (`0x5E4`) and the difference as 149,
-both right. Your 149-slot decomposition is right: I decoded every slot and the
-state triples land exactly where you said — `Jump_St` at 226-228, `Jump` at
-229-231, `DieFumi_St` at 283-285, the five demo states at 358-372, `awakeSE` and
-`ikakuSE` at 373-374. Your 26 named boss virtuals at slots 200-225 are also
-exactly right, name for name and slot for slot.
-
-**But those 26 are not all of `dEnBoss_c`'s new slots.** You wrote that slots
-23-199 are inherited from `dEn_c`. They are not:
+I re-derived every vtable figure independently from `bin/dtk/wiimj2d_symbols.txt`
+without reading your scripts:
 
 ```
-__vt__5dEn_c  = .data:0x80311EE0  size 0x280  -> (0x280-8)/4 = 158 slots
-__vt__8dActor_c = .data:0x8030A26C size 0xD4  -> 51 slots, not 23
+__vt__8dActor_c            0x0D4  ->  51 slots
+__vt__5dEn_c               0x280  -> 158 slots
+__vt__9dEnBoss_c           0x390  -> 226 slots   ->  68 new over dEn_c
+__vt__18dEnTorideKokoopa_c 0x5E4  -> 375 slots   -> 149 new over dEnBoss_c
 ```
 
-`dEn_c` ends at slot 157. `dEnBoss_c` introduces **68** new slots, 158 through
-225 — the 26 you found plus 42 you missed:
+Exact, slot for slot, including the 68/21/41 decomposition.
 
-```
-158-175  six state triples: DemoWait, DieFire, DieSlide, DieShell, DieStar, DieQuake
-176-186  setBattleReady, createModel, createBossLife, createInit, tenmetsuReady,
-         tenmetsuProc, tenmetsuFin, getTenmetsuTime_Fire, getTenmetsuTime_Shell,
-         getTenmetsuTime_Press, deadAllKill
-187-199  setFumiDamage, setFumiDead, setFireDamage, setFireDead, setHipatkDamage,
-         setHipatkDead, setSlideDamage, setSlideDead, setStarDamage, setStarDead,
-         setQuakeDamage, setQuakeDead, setShellDamage
-200-225  the 26 you already have, beginning setShellDead
-```
+**The part that raises this above a good analysis: you did not stop at
+argument.** You compiled the proposed header with the real CodeWarrior and
+matched all 226 slots against retail one-for-one, then placed a derived test
+class and confirmed its first new slot lands at 226. For a declaration-order
+claim that is the only adequate standard, because being 42 slots out is
+completely invisible in prose — which is exactly the round-14 error, and you
+closed it yourself.
 
-A header written to your round-14 spec would declare 26 virtuals where 68 are
-needed and every slot from 158 on would land 42 places early — the same cascade
-you yourself named as the diagnostic for a missing declaration, arriving from the
-other direction.
+**Task B's confirmed negative is worth as much as the positive.**
+`include/game/bases/d_enemy.hpp` declares exactly 158 virtual slots with zero
+divergence from retail. That header sits under every enemy unit in the project;
+a defect there would have been latent everywhere. Establishing that it is clean
+removes a whole category of doubt.
 
-Everything else in Task B held. `sizeof(dEnBoss_c) == 0x600` is **confirmed**:
-`__ct__18dEnTorideKokoopa_cFv` at `0x800A88A0` does `stw r29, 0x600(r27)` as its
-first derived-member write. Your member layout is confirmed instruction by
-instruction from `__ct__9dEnBoss_cFv` at `0x800983C0` — the allocator sub-object
-at `0x524`, the zeroed word at `0x540`, the sound object at `0x544`, the halfword
-at `0x5F0` and the two words at `0x5F4`/`0x5F8`. Your `.text` extent is right: the
-range ends exactly where `__ct__20dEnBossKoopaJrBase_cFv` begins at `0x8009AD30`.
+**Your own work has unblocked the largest unit on the board. It is yours.**
 
 ---
 
-## Task A: produce the complete `dEnBoss_c` declaration order
+## Your task: first pass on `d_enemy_toride_kokoopa.cpp`
 
-This is round 14's Task B finished properly, and it is the deliverable that
-actually unblocks the 33,552-byte Kokoopa unit.
+**33,552 bytes — larger than the last six landed units on this project
+combined.** I verified the shape myself:
 
-**Deliver a proposed `include/game/bases/d_enemy_boss.hpp`** in which the virtual
-declaration order reproduces the real vtable exactly. Three things have to be
-right and each is separately checkable:
+```
+.text   VA 0x800A8710 - 0x800B0A20   (offset 0xA1F90-0xAA2A0)   0x8310 = 33,552 bytes
+__sinit_\d_enemy_toride_kokoopa_cpp = .text:0x800AED40, size 0x1698
+251 functions in range.  ZERO anonymous -- every one carries a real mangled name.
+sizeof(dEnBoss_c) = 0x600, confirmed by your own round-15 measurement
+```
 
-1. **The 68 new slots, 158-225, in order.** I have given you the ordering above;
-   confirm it against the binary yourself rather than trusting me, and give each
-   one a signature. Parameters come free from the mangling. Return types do not —
-   the `is*Invalid` group at 203-208 is `const` and near-certainly `bool`, and the
-   `getTenmetsuTime_*` group at 183-185 returns something you must read off the
-   caller.
+**Twenty-eight states, named outright in the symbol map:**
 
-2. **Which of `dEn_c`'s 158 slots `dEnBoss_c` overrides.** I measured **21**
-   overridden and 137 inherited unchanged. Name all 21. An override that is
-   declared but not actually overridden is invisible in the slot count and
-   silently wrong.
+```
+Attack  AttackBegin  AttackEnd  AttackReady  AttackSearch
+BigJump  BigJump_St  Jump  Jump_St  LandOn  ShellAtk  ShellAtk_St
+DemoAwake  DemoAwake_Wait  DemoIkaku  DemoIkaku_Wait  DemoWait  DemoEscape_St
+DieFire  DieFumi_St  DieShell
+FireHit  FumiHit  QuakeHit  ShellHit  ShellOut  SlideHit  StarHit
+```
 
-3. **Which of the 226 inherited slots Kokoopa overrides.** I measured **41**.
-   Name them. This is what tells the Kokoopa author which methods have bodies to
-   write versus which are inherited, and it is not derivable from the 149.
+### This round is a FIRST PASS, not the whole unit. Scope it deliberately.
 
-State the method by which you confirmed each of the three counts.
+251 functions is too many for one round and I would rather have a solid
+foundation than a thin sweep. In priority order:
 
-## Task B: audit the `dEn_c` declaration we already have
+1. **The class layout for `dEnTorideKokoopa_c`.** This is the shared prerequisite
+   every function depends on; an agent authoring against a wrong layout burns its
+   whole round. Verify offsets with **compiled `offsetof` assertions plus a
+   negative control proving the check discriminates** — that is the standard that
+   worked on the last unit, and reading offsets off a disassembly and asserting
+   them is not it.
 
-`dEn_c` is the base under all of this and `source/dol/bases/d_enemy.cpp` is
-landed, so `include/game/bases/d_enemy.hpp` exists and declares some number of
-virtuals. **Count them and compare against the real 158.**
+2. **Declare all 28 states and MEASURE how many functions that alone emits.**
+   Report that number separately — it is the figure I most want. On the previous
+   unit, declaring 25 states took it from 0 to 67 matching functions with only a
+   constructor and five stubs authored. Do the framework before hand-authoring
+   anything.
 
-If the declared count is not 158, say so with the measurement and locate where
-the divergence begins — that is a defect sitting under every enemy unit in the
-project, not just Kokoopa, and finding it is worth more than either task above.
+3. **The 41 `dEnBoss_c` methods Kokoopa overrides**, which you already
+   enumerated — these have real bodies to write. Author as many as the round
+   allows, largest-first or easiest-first as you judge.
 
-If it is 158, say that plainly. A confirmed negative is a real result here.
+4. **Report what remains**, so the next round starts from a map.
+
+### A warning specific to this unit, from the last one
+
+**Report BYTE-WEIGHTED progress, not just a function count.** On the previous
+unit the state framework emitted 67 of 182 functions — 36.8% by count but only
+**6.9% by bytes**, because framework-emitted functions are many and small. A
+count overstated it more than five to one. Give both figures.
+
+### A layout trap that cost a round on the last unit
+
+An offset was recorded as padding because the constructor never touched it. It
+was a real field, written only by two state-transition methods. **"The
+constructor never touches it" is an argument from silence.** Before calling any
+offset padding, grep the whole unit's disassembly for that offset — one command,
+and it would have caught it immediately.
 
 ---
 
-## Things that have each cost a round here
+## Rules of evidence that have each cost a round here
 
-**Return types are ABSENT from CFront mangling.** Parameters are encoded; return
-types are not. Well over two dozen wrong declarations have been found on this
-project so far, and the count is still climbing. The method that
-finds them: read what the CALLER does with the return register immediately after
-the `bl` — does it READ r3 or CLOBBER it? An observed clobber outranks any
-analogy with a sibling.
-
-**An argument-count mismatch at a call site is a STORAGE-CLASS tell.** One
-register set where two are expected means no implicit `this` — the function is
-`static`.
-
-**Check SIZE before counting differences.** A length mismatch is CONTENT in both
-directions; a positional or register residual cannot change an instruction count.
-
-**A vtable region derived from what you can name is a LOWER BOUND.** That is the
-round-14 error in one sentence: you enumerated the slots you could identify and
-reported the count of those, where the count comes from the vtable's own size.
-Take the size first, divide, and make the names account for the whole span.
-
-**`harness.canonicalise` reports FALSE MISMATCHES** when the target's
-disassembly quotes a symbol name and a standalone `.o` does not. If a function is
-length-exact and the comparator still says differ, compare raw instruction BYTES.
-I hit this myself verifying Qwen this round.
+- **Return types are ABSENT from CFront mangling; parameters are encoded.** Well
+  over two dozen wrong declarations found. Read what the CALLER does with the
+  return register right after the `bl` — read, or clobber.
+- **A declaration is only tested by a CALL SITE.** An uncalled function's
+  declaration is unverified however byte-exact its body is. Fourteen functions on
+  the last unit had wrong return types purely because nothing had called them.
+- **An argument-count mismatch at a call site is a STORAGE-CLASS tell** — one
+  register where two are expected means no implicit `this`. Found four times
+  today. **The trap: a static member function whose body never uses `this`
+  compiles BYTE-IDENTICALLY to the non-static one**, so it is invisible in the
+  function and shows only at its callers.
+- **The `.fn <name>, global` tag answers LINKAGE, not the static-member
+  question.** `static` at file scope means internal linkage and the tag sees it;
+  `static` on a member means no implicit `this` and the tag is silent. Do not
+  conflate them — I checked, and every function on the last unit was tagged
+  `global` including two proven static members.
+- **Check LENGTH before counting differences.** A length mismatch is CONTENT in
+  both directions; register allocation cannot change an instruction count. Four
+  agents filed a length mismatch as "register allocation" today.
+- **But a matching length is not proof either.** Four functions were length-exact
+  *by cancellation* — a spurious instruction masking a real gap — and the correct
+  fix made the length column look worse. **Only BYTE equality settles anything.**
+- **`bl _savegpr_N`/`_restgpr_N` versus inlined register stores is a WHOLE-TU
+  decision.** A function compiled in isolation can differ structurally from
+  identical source in the full TU — 27 words on one function measured. The size
+  rule holds only within a fixed compilation context. **But a regime mismatch
+  does NOT predict a defect** — I tested that across every parked unit and six
+  units with a mismatch had already landed byte-perfect.
+- **`harness.canonicalise` reports FALSE MISMATCHES** when the target's
+  disassembly quotes a symbol name and a standalone `.o` does not. If a function
+  is length-exact and the comparator still says differ, compare raw instruction
+  BYTES.
 
 ## Rules
 
 - Never run `ninja`, `configure.py`, `progress.py`, `land.py`.
-- **READ-ONLY on the tree.** Never edit anything under `source/` or `include/`,
-  nor `syms.txt`, nor any `slices/*.json`. Header changes are proposals in your
-  response; I apply and verify them.
-- Work only in `scratch/gemini_round15/`. Do not touch `wip/`, `HANDOFF.md`,
-  `AGENT_CONTEXT.md`, `peer_archive/`, or `QWEN_*.md`. **Qwen is authoring
-  `d_bg_actor_mng.cpp` this round** — if your work reaches into it, report the
-  finding rather than acting on it.
-- Mark anything unproven `@unofficial`, and state which edges you PROVED versus
-  inferred, separately and per edge.
-- **Report a negative result rather than manufacturing a positive one.**
+- **Never edit anything under `source/` or `include/`, nor `syms.txt`, nor any
+  `slices/*.json`.** Header changes are proposals in your response; I apply them
+  and verify five binaries before anything lands, so a failure is never
+  ambiguous.
+- Work only in `scratch/gemini_round16/`. Do not touch `wip/`, `HANDOFF.md`,
+  `AGENT_CONTEXT.md`, `peer_archive/`, or `QWEN_*.md`. **`wip/` has live agent
+  work in it**, and Qwen is closing two functions in `d_bg_actor_mng.cpp` this
+  round.
+- Name your draft `d_enemy_toride_kokoopa.cpp` — anonymous-namespace symbols
+  mangle the source filename into them.
+- Mark anything unproven `@unofficial`. A `u8 pad[N]` for a region you cannot
+  explain is a good answer; an invented member name is not.
 
 ## Deliverable
 
 `GEMINI_RESPONSE.md`, containing:
 
-1. **Task A**: the proposed `d_enemy_boss.hpp` in a fenced block, with the 68 new
-   virtuals in order and signatures argued from evidence; the 21 `dEn_c`
-   overrides named; the 41 Kokoopa overrides named. Say how you confirmed each
-   count.
-2. **Task B**: the declared virtual count in the existing `dEn_c` header against
-   the real 158, and if they differ, where.
-3. For both: what you PROVED versus what you INFERRED, kept separate.
-4. Anything you could not settle, plainly, with what would settle it.
+1. **How many functions the 28 state declarations alone emitted**, before any
+   hand-authoring. Report this on its own line — it is the headline.
+2. **Both figures for overall progress: N/251 by count AND percentage BY BYTES.**
+3. The proposed `dEnTorideKokoopa_c` layout, with the method by which each offset
+   was verified, and explicitly which offsets you PROVED versus inferred.
+4. A per-function table, **length column first**, for everything you authored.
+5. Your source and header proposal in fenced blocks.
+6. What remains, mapped, so the next round does not start cold.
+7. Anything you could not settle, plainly, with what would settle it.
 
-I check every number independently — that is how round 14's Task B error was
-found, and it is also how round 14's Task A was confirmed clean enough to hand
-straight to another agent. If something I assert above is wrong, say so with the
-measurement.
+I re-measure everything independently. An honest DIFF row is worth more than a
+claimed MATCH, and if something I assert above is wrong, say so with the
+measurement — agents corrected me six times today and each correction was worth
+more than the round's tally.
 
 Plain ASCII or clean UTF-8, LF, no BOM.
