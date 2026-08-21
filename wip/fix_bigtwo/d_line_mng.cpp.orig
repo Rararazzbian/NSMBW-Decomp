@@ -1854,11 +1854,7 @@ void dLineMng_c::executeState_Left45() {
 void dLineMng_c::initializeState_Right45() {
     fn_800C3B20(this);
     mAngle = 0xA000;
-    // SELF-ASSIGN THEN COMPOUND-SUBTRACT, not the single expression
-    // `mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x)`. See the note
-    // on executeState_Right45.
-    mPos.y = mUnitBasePos.y;
-    mPos.y -= (mPos.x - mUnitBasePos.x);
+    mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x);
 }
 void dLineMng_c::finalizeState_Right45() {}
 void dLineMng_c::executeState_Right45() {
@@ -1873,18 +1869,7 @@ void dLineMng_c::executeState_Right45() {
     mSpeed.x *= 0.70703f;
     mSpeed.y = -mSpeed.x;
     mPos.x += mSpeed.x;
-    // OPERAND EVALUATION ORDER. Written as one expression, MWCC evaluates
-    // the heavier operand of the outer `-` first -- the parenthesised
-    // difference -- and numbers the FP registers descending in THAT order,
-    // giving mPos.x=f2 / mUnitBasePos.x=f1 / mUnitBasePos.y=f0. Retail
-    // numbers them descending in SOURCE order (f2/f1/f0 over
-    // mUnitBasePos.y, mPos.x, mUnitBasePos.x), which is what MWCC does once
-    // the left operand has a def-point of its own ahead of the subtract.
-    // Same def-point rule as lever 11, on `-` instead of `*`. A named local
-    // for mUnitBasePos.y also fixes the initialize... variant but NOT this
-    // one (13 diffs); the self-assign is the form that fixes both.
-    mPos.y = mUnitBasePos.y;
-    mPos.y -= (mPos.x - mUnitBasePos.x);
+    mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
         mSpeed.x = mBaseSpeed;
@@ -1922,14 +1907,7 @@ void dLineMng_c::executeState_Side() {
 void dLineMng_c::initializeState_Height() {
     fn_800C3B60(this);
     mAngle = 0x0;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer `+` first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    mPos.x = mUnitBasePos.x;
-    mPos.x += 16.0f;
+    mPos.x = mUnitBasePos.x + 16.0f;
 }
 void dLineMng_c::finalizeState_Height() {}
 void dLineMng_c::executeState_Height() {
@@ -1951,14 +1929,7 @@ void dLineMng_c::executeState_Height() {
 void dLineMng_c::initializeState_CornerHeightLine() {
     fn_800C3B60(this);
     mAngle = 0x0;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer `+` first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    mPos.x = mUnitBasePos.x;
-    mPos.x += 16.0f;
+    mPos.x = mUnitBasePos.x + 16.0f;
 }
 void dLineMng_c::finalizeState_CornerHeightLine() {}
 void dLineMng_c::executeState_CornerHeightLine() {
@@ -2076,20 +2047,7 @@ void dLineMng_c::executeState_Left30Right() {
         mPos = old;
         mSpeed.x = mBaseSpeed;
         mSpeed.x *= 0.8910065f;
-        // DIVISION, not `0.5f * mSpeed.x`, at THIS occurrence only -- the head
-        // site above keeps the multiply. Retail really is asymmetric here:
-        // this restore block is the ONLY one of the five sibling states whose
-        // half-product has the member in fmuls slot A (`fmuls f0, f1, f0`);
-        // Left30Left, Right30Left, Right30Right and Right60Up all emit
-        // `fmuls f0, f0, f1` here and match with the plain multiply. Both
-        // operands are already live, so lever 11's load-order rule cannot
-        // reach it; only a source route that never shows the canonicaliser a
-        // syntactic literal does. `/ 2.0f` (reciprocal-multiply route) and
-        // `mSpeed.y = mSpeed.x; mSpeed.y *= 0.5f;` (compound route) compile
-        // byte-identical; using `/ 2.0f` to keep the block a 3-statement
-        // parallel of its siblings. Applying it at BOTH sites just moves the
-        // defect to the head multiply (idx 19), so the asymmetry is forced.
-        mSpeed.y = mSpeed.x / 2.0f;
+        mSpeed.y = 0.5f * mSpeed.x;
     } else if (mPos.x < mUnitBasePos.x) {
         mVec2_c newBase = mUnitBasePos;
         newBase.x -= 16.0f;
@@ -2120,14 +2078,7 @@ void dLineMng_c::executeState_Right30Left() {
     mSpeed.x *= 0.8910065f;
     mSpeed.y = -(0.5f * mSpeed.x);
     mPos.x += mSpeed.x;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer +/- first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    mPos.y = mUnitBasePos.y;
-    mPos.y -= 0.5f * (mPos.x - mUnitBasePos.x);
+    mPos.y = mUnitBasePos.y - 0.5f * (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
         mSpeed.x = mBaseSpeed;
@@ -2190,16 +2141,7 @@ void dLineMng_c::executeState_Right30Right() {
 void dLineMng_c::initializeState_Left60Up() {
     fn_800C3B60(this);
     mAngle = 0xECCC;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer +/- first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    // Both operators need it here: the inner `+` and the outer `-`.
-    mPos.x = mUnitBasePos.x;
-    mPos.x += 16.0f;
-    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = (mUnitBasePos.x + 16.0f) - 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Left60Up() {}
 void dLineMng_c::executeState_Left60Up() {
@@ -2208,16 +2150,7 @@ void dLineMng_c::executeState_Left60Up() {
     mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer +/- first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    // Both operators need it here: the inner `+` and the outer `-`.
-    mPos.x = mUnitBasePos.x;
-    mPos.x += 16.0f;
-    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = (mUnitBasePos.x + 16.0f) - 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
         mSpeed.y = mBaseSpeed;

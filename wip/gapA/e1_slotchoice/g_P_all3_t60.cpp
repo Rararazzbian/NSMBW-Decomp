@@ -78,16 +78,6 @@ void dLineMng_c::move()
     }
 }
 
-// PLACEMENT 1: insert between dLineMng_c::move() and dLineMng_c::SetPos() in
-// wip/fix_bigtwo/d_line_mng.cpp (retail address order: move -> GetPos ->
-// SetPos -> CalcAdjustPosY). Target: GetPos__10dLineMng_cCFv, 5 words.
-// Draft: 5 words. BYTE-EXACT.
-// ---------------------------------------------------------------------------
-mVec2_c dLineMng_c::GetPos() const
-{
-    return mPos;
-}
-
 void dLineMng_c::SetPos(const mVec2_c &pos)
 {
     mPos.x = pos.x;
@@ -133,39 +123,6 @@ void dLineMng_c::SetBaseSpeed(f32 speed)
     if (mReverse) speed = -speed;
     mBaseSpeed = speed;
 }
-
-// PLACEMENT 2: insert between dLineMng_c::SetBaseSpeed() and the existing
-// fn_800C15B0 comment block (retail address order: SetBaseSpeed -> acm_angle
-// -> fn_800C15B0 -> start_line_move). Target: acm_angle__10dLineMng_cCFv,
-// 9 words. Draft: 9 words. BYTE-EXACT.
-//
-// Requires the shadow-header return-type change noted above.
-//
-// Residual note for posterity: the FIRST attempt (no hoisted local, just
-// `if (!mReverse) return mAngle + 0x4000; return mAngle - 0x4000;`) compiled
-// to 11 words with a branch-around-and-two-reloads shape -- WRONG. Retail
-// loads mAngle ONCE, unconditionally, before the branch (visible as an
-// `lhz` at the top, ahead of the `cmpwi`), and reuses that one register in
-// both the early-return (`beqlr`) and fallthrough paths. Hoisting the field
-// read into a named local up front is what reproduces this exactly.
-// ---------------------------------------------------------------------------
-u16 dLineMng_c::acm_angle() const
-{
-    u16 angle = mAngle;
-    if (!mReverse) {
-        return angle + 0x4000;
-    }
-    return angle - 0x4000;
-}
-
-// ---------------------------------------------------------------------------
-// fn_800C15B0 -- ALREADY PRESENT in wip/fix_bigtwo/d_line_mng.cpp as
-// `setArrElem_800C15B0` (author_core), already byte-exact (7/7 words),
-// confirmed via tally.py's content-based fallback pairing. NOT reproduced
-// here; no action needed. Caveat in the brief is correct.
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
 
 /// @unofficial fn_800C15B0 (0x1C bytes, 7 words). Shape: arr[idx] = *src for
 /// an 8-byte-stride array (author_core). Sits between acm_angle() and
@@ -497,10 +454,9 @@ bool dLineMng_c::height_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mV
 }
 
 bool dLineMng_c::width_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    // AGGREGATE COPY, not two scalar field writes -- lever 10. The member-wise
-    // form front-loads the `a` literal and reverses the store order.
-    mVec2_c origin = p1;
-    origin.y -= 16.0f;
+    mVec2_c origin;
+    origin.y = p1.y - 16.0f;
+    origin.x = p1.x;
     return fn_800C1EE0(this, 0.0f, 16.0f, p1, p2, p3, origin);
 }
 
@@ -554,105 +510,6 @@ bool dLineMng_c::line4_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVe
     return result;
 }
 
-bool dLineMng_c::line5_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    bool result = height_cross_chk(p1, p2, p3);
-    if (result) {
-        mStateMgr.changeState(StateID_Height);
-    }
-    return result;
-}
-
-bool dLineMng_c::line7_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c origin = p1;
-    origin.y -= 16.0f;
-    bool result = fn_800C1EE0(this, 0.5f, 16.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Left30Left);
-    }
-    return result;
-}
-
-bool dLineMng_c::line8_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c origin = p1;
-    origin.y -= 8.0f;
-    bool result = fn_800C1EE0(this, 0.5f, 16.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Left30Right);
-    }
-    return result;
-}
-
-bool dLineMng_c::line9_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    bool result = fn_800C1EE0(this, -0.5f, 16.0f, p1, p2, p3, p1);
-    if (result) {
-        mStateMgr.changeState(StateID_Right30Left);
-    }
-    return result;
-}
-
-bool dLineMng_c::lineA_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c origin = p1;
-    origin.y -= 8.0f;
-    bool result = fn_800C1EE0(this, -0.5f, 16.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Right30Right);
-    }
-    return result;
-}
-
-bool dLineMng_c::lineB_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    // AGGREGATE COPY (AGENT_CONTEXT lever 10) + compound assignment (lever 11):
-    // this is what puts BOTH the member-first fadds/fsubs operand order AND
-    // the clustered-then-computed load schedule the target shows. A plain
-    // `mVec2_c origin(p1.x + 8.0f, p1.y - 16.0f);` matches the load schedule
-    // but leaves the adds/subs literal-first (wrong); a field-by-field
-    // `origin.x = p1.x + 8.0f; origin.y = p1.y - 16.0f;` gets neither.
-    mVec2_c origin = p1;
-    origin.x += 8.0f;
-    origin.y -= 16.0f;
-    bool result = fn_800C1EE0(this, 2.0f, 8.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Left60Up);
-    }
-    return result;
-}
-
-bool dLineMng_c::lineC_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    // Here only Y needs an arithmetic op and X is a plain copy, so the
-    // ordinary two-argument constructor already produces the exact target
-    // shape (no lever-11 operand-order issue arises for a bare copy).
-    mVec2_c origin(p1.x, p1.y - 16.0f);
-    bool result = fn_800C1EE0(this, 2.0f, 8.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Left60Down);
-    }
-    return result;
-}
-
-bool dLineMng_c::lineD_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    // Mirror of lineB but only X is computed (+8.0f) and Y is a plain copy;
-    // needs the same aggregate-copy + compound-assignment shape as lineB for
-    // the member-first fadds.
-    mVec2_c origin = p1;
-    origin.x += 8.0f;
-    bool result = fn_800C1EE0(this, -2.0f, 8.0f, p1, p2, p3, origin);
-    if (result) {
-        mStateMgr.changeState(StateID_Right60Down);
-    }
-    return result;
-}
-
-bool dLineMng_c::lineE_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    // No origin computation at all -- p1 is passed straight through as both
-    // the p1 and origin arguments (confirmed by the target's r7 <- r4 `mr`
-    // and its smaller 0x10 stack frame; the three-argument versions above
-    // need 0x20 for a real local).
-    bool result = fn_800C1EE0(this, -2.0f, 8.0f, p1, p2, p3, p1);
-    if (result) {
-        mStateMgr.changeState(StateID_Right60Up);
-    }
-    return result;
-}
 bool dLineMng_c::lineF_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
     origin.y = p1.y - 8.0f;
@@ -1099,38 +956,6 @@ found:
 }
 
 // ===========================================================================
-// PLACEMENT 3: insert between the end of fn_800C31C0 and the
-// "author_core: fn_800C3B20 / fn_800C3B60" comment block (retail address
-// order: fn_800C31C0 -> circle_nextpos_set -> fn_800C3B20).
-// Target: circle_nextpos_set__10dLineMng_cFRC7mVec2_cf, 47 words.
-// Draft: 47 words. BYTE-EXACT.
-//
-// Uses the project's standard nw4r::math::CosIdx/SinIdx(short) idiom
-// (include/lib/nw4r/math/math_triangular.h + math_arithmetic.h): these
-// inline down to the paired-single "store u16 to stack, psq_l reload as
-// float, multiply by 1/256" sequence, which is exactly the `sth`+`psq_l
-// ...,1,qr3`+`fmuls ...,(1/256)` shape target.txt shows immediately before
-// each `bl CosFIdx__Q24nw4r4mathFf` / `bl SinFIdx__Q24nw4r4mathFf`. mAngle
-// (a u16 field) is passed to CosIdx/SinIdx's `short` parameter with NO
-// explicit cast in source -- that implicit u16->short conversion is what
-// makes the compiler choose a sign-extending `lha` for this particular
-// read of mAngle, vs. the plain `lhz` acm_angle() uses for the same field
-// when it needs the raw unsigned value. Y is computed before X throughout
-// (matches retail's field/store order exactly: mUnitBasePos.y+pos.y first,
-// then mUnitBasePos.x+pos.x, stores 0x5c/0x58/0x40/0x44 in that order).
-// ---------------------------------------------------------------------------
-void dLineMng_c::circle_nextpos_set(const mVec2_c &pos, f32 radius)
-{
-    mUnk58.y = mUnitBasePos.y + pos.y;
-    mUnk58.x = mUnitBasePos.x + pos.x;
-    mPos.x = mUnk58.x;
-    mPos.y = mUnk58.y;
-    mPos.x = mPos.x + radius * nw4r::math::CosIdx(mAngle);
-    mPos.y = mPos.y + radius * nw4r::math::SinIdx(mAngle);
-}
-
-// ---------------------------------------------------------------------------
-
 // author_core: fn_800C3B20 / fn_800C3B60 (unnamed file-scope helpers)
 // Renamed here from author_core's clampPosX_800C3B20/clampPosY_800C3B60 to
 // match author_states' assumed call-site names (fn_800C3B20/fn_800C3B60) --
@@ -1170,83 +995,6 @@ static void fn_800C3B60(dLineMng_c *self)
 }
 
 // ===========================================================================
-// PLACEMENT 4: insert between the end of fn_800C3B60 and the
-// "author_mov: mov_to_*/mov_frm_* quadruplets" comment block (retail
-// address order: fn_800C3B60 -> fn_800C3BA0 -> fn_800C3BF0 ->
-// calc_rotate_to_circle_rev -> calc_rotate_to_circle_prev -> mov_to_rightupper).
-// All four below are BYTE-EXACT. Definition order matters here (per
-// AGENT_CONTEXT.md) -- keep this exact sequence.
-//
-// fn_800C3BA0: target 18 words, draft 18 words.
-// fn_800C3BF0: target 8 words (listed as 7 in the brief's caveat text --
-//   recount from target.txt gives 8; trust the measured tally, not the
-//   brief), draft 8 words.
-// calc_rotate_to_circle_rev: target 27 words, draft 27 words.
-// calc_rotate_to_circle_prev: target 27 words, draft 27 words.
-//
-// Both static helpers are plain file-scope functions taking a single u16
-// argument (mAngle's value), no `this` -- called with a bare int argument
-// from both callers below, no class access needed, so no friend declaration
-// or header change required.
-//
-// fn_800C3BA0 reduces a BAM angle down by 0x4000 while it is >= 0x4000,
-// compiled as a guarded, trip-count-computed, duff's-device-unrolled ctr
-// loop (MWCC's standard transform when it can prove a small bound on a
-// `while` loop's iteration count -- here, at most 3, since the argument's
-// value never exceeds 0xFFFF). fn_800C3BF0 mirrors it for wrapping UP past
-// 0xC000, but compiles as a plain test-at-bottom loop -- MWCC did not find
-// a closed-form trip count for that direction, so don't try to force the
-// unrolled shape onto it.
-//
-// Residual note for posterity: the FIRST attempt at the two
-// calc_rotate_to_circle_* functions (calling `fn_800C3BF0(mAngle)` inline,
-// once per branch, no cast) compiled to 24 words each vs retail's 27 -- both
-// missing the SAME two things: (1) retail loads mAngle ONCE, unconditionally,
-// before the `reverse` branch, and reuses that register (`mr r3,r0`) in
-// each arm, rather than reloading the field fresh inside each arm; (2)
-// retail masks the helper's return value back to unsigned 16 bits
-// (`clrlwi r0,r3,16`) before combining it with `target` -- since the helpers
-// return `short` (sign-extended via `extsh` internally), this only appears
-// with an EXPLICIT `(u16)` cast at the call site; without it, C++'s usual
-// arithmetic conversions promote the `short` to a plain (still signed) `int`
-// and no mask is emitted. Both fixes together closed the residual exactly.
-// ---------------------------------------------------------------------------
-static short fn_800C3BA0(u16 angle)
-{
-    while (angle >= 0x4000) {
-        angle -= 0x4000;
-    }
-    return (short)angle;
-}
-
-static short fn_800C3BF0(u16 angle)
-{
-    while (angle < 0xC000) {
-        angle -= 0x4000;
-    }
-    return (short)angle;
-}
-
-void dLineMng_c::calc_rotate_to_circle_rev(u16 target, bool reverse)
-{
-    u16 angle = mAngle;
-    if (reverse) {
-        mAngle = target + (u16)fn_800C3BF0(angle);
-    } else {
-        mAngle = target - (u16)fn_800C3BA0(angle);
-    }
-}
-
-void dLineMng_c::calc_rotate_to_circle_prev(u16 target, bool reverse)
-{
-    u16 angle = mAngle;
-    if (reverse) {
-        mAngle = target - (u16)fn_800C3BF0(angle);
-    } else {
-        mAngle = target + (u16)fn_800C3BA0(angle);
-    }
-}
-
 // author_mov: mov_to_*/mov_frm_* quadruplets
 // ===========================================================================
 
@@ -1922,12 +1670,6 @@ void dLineMng_c::executeState_Side() {
 void dLineMng_c::initializeState_Height() {
     fn_800C3B60(this);
     mAngle = 0x0;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer `+` first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
     mPos.x = mUnitBasePos.x;
     mPos.x += 16.0f;
 }
@@ -1951,12 +1693,6 @@ void dLineMng_c::executeState_Height() {
 void dLineMng_c::initializeState_CornerHeightLine() {
     fn_800C3B60(this);
     mAngle = 0x0;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer `+` first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
     mPos.x = mUnitBasePos.x;
     mPos.x += 16.0f;
 }
@@ -2120,12 +1856,6 @@ void dLineMng_c::executeState_Right30Left() {
     mSpeed.x *= 0.8910065f;
     mSpeed.y = -(0.5f * mSpeed.x);
     mPos.x += mSpeed.x;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer +/- first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
     mPos.y = mUnitBasePos.y;
     mPos.y -= 0.5f * (mPos.x - mUnitBasePos.x);
     if (check_term()) {
@@ -2190,13 +1920,6 @@ void dLineMng_c::executeState_Right30Right() {
 void dLineMng_c::initializeState_Left60Up() {
     fn_800C3B60(this);
     mAngle = 0xECCC;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer +/- first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    // Both operators need it here: the inner `+` and the outer `-`.
     mPos.x = mUnitBasePos.x;
     mPos.x += 16.0f;
     mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
@@ -2208,13 +1931,6 @@ void dLineMng_c::executeState_Left60Up() {
     mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
-    // LEFT-OPERAND DEF-POINT (lever 11's rule 1, generalised off `*`).
-    // Written as one expression MWCC evaluates the HEAVIER operand of the
-    // outer +/- first and numbers the FP registers descending in THAT order;
-    // retail numbers them descending in SOURCE order. Giving the light left
-    // operand a def-point of its own ahead of the operator restores source
-    // order. Same fix as executeState_Right45.
-    // Both operators need it here: the inner `+` and the outer `-`.
     mPos.x = mUnitBasePos.x;
     mPos.x += 16.0f;
     mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
@@ -2244,7 +1960,8 @@ void dLineMng_c::executeState_Left60Up() {
 void dLineMng_c::initializeState_Left60Down() {
     fn_800C3B60(this);
     mAngle = 0xECCC;
-    f32 t = mUnitBasePos.x + 8.0;
+    f32 t = mUnitBasePos.x;
+    t += 8.0;
     mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Left60Down() {}
@@ -2254,7 +1971,8 @@ void dLineMng_c::executeState_Left60Down() {
     mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
-    f32 t = mUnitBasePos.x + 8.0;
+    f32 t = mUnitBasePos.x;
+    t += 8.0;
     mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
@@ -2282,7 +2000,8 @@ void dLineMng_c::executeState_Left60Down() {
 void dLineMng_c::initializeState_Right60Down() {
     fn_800C3B60(this);
     mAngle = 0x9333;
-    f32 t = mUnitBasePos.x + 8.0;
+    f32 t = mUnitBasePos.x;
+    t += 8.0;
     mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Right60Down() {}
@@ -2292,7 +2011,8 @@ void dLineMng_c::executeState_Right60Down() {
     mSpeed.y *= -0.8910065f;
     mSpeed.x = -(0.5f * mSpeed.y);
     mPos.y += mSpeed.y;
-    f32 t = mUnitBasePos.x + 8.0;
+    f32 t = mUnitBasePos.x;
+    t += 8.0;
     mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
