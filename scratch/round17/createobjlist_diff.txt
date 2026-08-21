@@ -1,42 +1,42 @@
-size: target 116, draft 111
+size: target 116, draft 113
     0 | want: stwu r1, -0x60(r1)                           got: stwu r1, -0x50(r1)
     2 | want: stw r0, 0x64(r1)                             got: stw r0, 0x54(r1)
     3 | want: addi r11, r1, 0x60                           got: addi r11, r1, 0x50
     4 | want: bl _savegpr_17                               got: bl _savegpr_19
     5 | want: lwz r28, m_bg_p__5dBg_c@sda21(r0)            got: lwz r29, m_bg_p__5dBg_c@sda21(r0)
-    6 | want: mr r19, r3                                   got: mr r21, r3
     7 | want: lfs f0, SYM0@sda21(r0)                       got: lfs f1, SYM0@sda21(r0)
-    8 | want: mr r20, r4                                   got: mr r22, r4
-    9 | want: addis r17, r28, 0x9                          got: addis r19, r29, 0x9
-   10 | want: lfs f1, -0x19c(r17)                          got: lfs f0, -0x19c(r19)
-   13 | want: lfs f1, -0x194(r17)                          got: lfs f1, -0x194(r19)
-   14 | want: mr r18, r17                                  got: mr r20, r19
+    9 | want: addis r17, r28, 0x9                          got: addis r21, r29, 0x9
+   10 | want: lfs f1, -0x19c(r17)                          got: lfs f0, -0x19c(r21)
+   13 | want: lfs f1, -0x194(r17)                          got: lfs f1, -0x194(r21)
+   14 | want: mr r18, r17                                  got: mr r22, r21
    16 | want: mr r29, r3                                   got: mr r30, r3
    18 | want: fmuls f1, f1, f0                             got: fmuls f1, f0, f1
-   20 | want: lfs f0, -0x19c(r17)                          got: lfs f0, -0x19c(r19)
+   20 | want: lfs f0, -0x19c(r17)                          got: lfs f0, -0x19c(r21)
    21 | want: mr r30, r3                                   got: mr r31, r3
-   22 | want: lfs f1, -0x198(r17)                          got: lfs f2, -0x198(r19)
-   23 | want: lfs f2, -0x190(r17)                          got: lfs f1, -0x194(r20)
+   22 | want: lfs f1, -0x198(r17)                          got: lfs f2, -0x198(r21)
+   23 | want: lfs f2, -0x190(r17)                          got: lfs f1, -0x194(r22)
    24 | want: fsubs f1, f1, f0                             got: fsubs f2, f2, f0
-   25 | want: lfs f0, -0x194(r18)                          got: lfs f0, -0x190(r19)
+   25 | want: lfs f0, -0x194(r18)                          got: lfs f0, -0x190(r21)
    26 | want: fsubs f0, f0, f2                             got: fsubs f0, f1, f0
    27 | want: fctiwz f1, f1                                got: fctiwz f1, f2
    30 | want: lwz r27, 0xc(r1)                             got: lwz r3, 0xc(r1)
    32 | want: clrlwi. r0, r27, 28                          got: clrlwi. r0, r3, 28
-   33 | want: lwz r3, 0x14(r1)                             got: srawi r4, r3, 4
-   34 | want: beq .L |41820010|                            got: lwz r5, 0x14(r1)
-   35 | want: extrwi r27, r27, 12, 16                      got: beq .L |4182000C|
-   36 | want: addi r27, r27, 0x1                           got: srawi r3, r3, 4
-   37 | want: b .L |48000008|                              got: addi r4, r3, 0x1
-   38 | want: extrwi r27, r27, 12, 16                      got: clrlwi. r0, r5, 28
-   39 | want: clrlwi. r0, r3, 28                           got: srawi r0, r5, 4
-   40 | want: beq .L |41820010|                            got: beq .L |4182000C|
-   41 | want: extrwi r3, r3, 12, 16                        got: srawi r3, r5, 4
-   42 | want: addi r3, r3, 0x1                             got: addi r0, r3, 0x1
-   43 | want: b .L |48000008|                              got: clrlwi r19, r4, 16
-   44 | want: extrwi r3, r3, 12, 16                        got: clrlwi r20, r0, 16
-   45 | want: clrlwi r31, r27, 16                          got: li r28, 0x0
-   46 | want: clrlwi r18, r3, 16                           got: li r27, 0x0
-   47 | want: li r26, 0x0                                  got: b .L |480000D8|
-   48 | want: li r25, 0x0                                  got: clrlwi r0, r27, 16
+   33 | want: lwz r3, 0x14(r1)                             got: clrlwi r4, r3, 16
+   34 | want: beq .L |41820010|                            got: lwz r0, 0x14(r1)
+   35 | want: extrwi r27, r27, 12, 16                      got: extrwi r3, r3, 12, 16
+   36 | want: addi r27, r27, 0x1                           got: clrlwi r5, r0, 16
+   37 | want: b .L |48000008|                              got: beq .L |4182000C|
+   38 | want: extrwi r27, r27, 12, 16                      got: extrwi r3, r4, 12, 16
+   39 | want: clrlwi. r0, r3, 28                           got: addi r3, r3, 0x1
+   40 | want: beq .L |41820010|                            got: clrlwi. r0, r5, 28
+   41 | want: extrwi r3, r3, 12, 16                        got: clrlwi r28, r3, 16
+   42 | want: addi r3, r3, 0x1                             got: extrwi r3, r5, 12, 16
+   43 | want: b .L |48000008|                              got: beq .L |41820008|
+   44 | want: extrwi r3, r3, 12, 16                        got: addi r3, r3, 0x1
+   45 | want: clrlwi r31, r27, 16                          got: clrlwi r27, r3, 16
+   46 | want: clrlwi r18, r3, 16                           got: li r26, 0x0
+   47 | want: li r26, 0x0                                  got: li r25, 0x0
+   48 | want: li r25, 0x0                                  got: b .L |480000DC|
+   49 | want: b .L |480000E4|                              got: clrlwi r0, r25, 16
+   50 | want: cmpwi r31, 0x0                               got: li r23, 0x0
   ... truncated

@@ -1,6 +1,12 @@
 #pragma once
 #include <game/bases/d_enemy_boss.hpp>
-#include <game/mLib/m_ef.hpp>
+#include <game/mLib/m_effect.hpp>
+
+class KokoopaSpFumiCheck_c : public FumiCheckBase_c {
+public:
+    virtual ~KokoopaSpFumiCheck_c();
+    virtual bool operate(int &result, dEn_c *en, FumiCcInfo_c &fumi);
+};
 
 class dEnTorideKokoopa_c : public dEnBoss_c {
 public:

@@ -5,6 +5,7 @@
 #include <game/bases/d_score_manager.hpp>
 #include <game/framework/f_manager.hpp>
 #include <game/snd/snd_scene_manager.hpp>
+#include <game/bases/d_a_player_base.hpp>
 #include <game/sLib/s_lib.hpp>
 
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, Jump_St);
@@ -779,7 +780,7 @@ void dEnTorideKokoopa_c::calcWandCcData() {}
 void dEnTorideKokoopa_c::setBlitzTarget() {}
 void dEnTorideKokoopa_c::blitzShoot() {}
 int dEnTorideKokoopa_c::getTorideFunfareTime() { return 40; }
-static const float l_bounceSpeed[4] = { 0.0f, 1.5f, 2.75f, 4.0f };
+static const float l_bounceSpeed[] = { 0.0f, 1.5f, 2.75f, 4.0f };
 
 void dEnTorideKokoopa_c::initializeState_ShellAtk_St() {
     if (mUnk794 == 1) {
@@ -855,10 +856,11 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
     if (mBc.checkFootEnm()) {
         shelllandonSE();
         shellLandonEffect();
-        s32 count = --mUnkAA0;
-        if (count > 0) {
-            mSpeed.y = l_bounceSpeed[count];
+        if (mUnkAA0 - 1 > 0) {
+            mUnkAA0--;
+            mSpeed.y = l_bounceSpeed[mUnkAA0];
         } else {
+            mUnkAA0--;
             mSpeed.y = 0.0f;
             changeState(StateID_ShellAtk);
         }
@@ -866,7 +868,6 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
 }
 
 static const float l_shellatk_speed[2] = { 4.0f, -4.0f };
-static const s16 cs_atkangle_z[2] = { 0x038E, -0x038E };
 
 void dEnTorideKokoopa_c::executeState_AttackSearch() {
     dActor_c *blitz;
@@ -973,9 +974,10 @@ void dEnTorideKokoopa_c::initializeState_ShellAtk() {
 }
 
 void dEnTorideKokoopa_c::executeState_ShellAtk() {
+    static const s16 cs_atkangle_z[2] = { 0x038E, -0x038E };
     calcSpeedX();
     calcSpeedY();
-    float oldX = mPos.x;
+    f32 lastX = mPos.x;
     posMove();
     if (mBc.checkFootEnm()) {
         mSpeed.y = 0.0f;
@@ -985,24 +987,24 @@ void dEnTorideKokoopa_c::executeState_ShellAtk() {
     } else {
         mDirection = 0;
     }
+    s16 targetAngle = 0;
     mAngle.y += mUnkAC0;
-    s16 targetAngleZ = 0;
     if (mUnkAC8 > 1) {
-        targetAngleZ = -cs_atkangle_z[mDirection];
+        targetAngle = -cs_atkangle_z[mDirection];
     }
-    sLib::chaseAngle((s16*)&mAngle.z, targetAngleZ, 0x80);
-    shellChangeEffect();
-    shellLandonEffect();
+    sLib::chaseAngle((s16*)&mAngle.z, targetAngle, 0x80);
+    shellatkSE();
+    shellBumMarEffect();
     shellAtkEffect();
-    if ((oldX < mUnkAC4 && mPos.x >= mUnkAC4) || (oldX > mUnkAC4 && mPos.x <= mUnkAC4)) {
+    if ((lastX < mUnkAC4 && mPos.x >= mUnkAC4) || (lastX > mUnkAC4 && mPos.x <= mUnkAC4)) {
         if (--mUnkAC8 > 0) {
             mSpeedMax.x = -mSpeedMax.x;
         } else {
             mSpeed.x = 0.0f;
             mDirection = getPl_LRflag(mPos);
-            int dirAngle = defaultDirAngle();
+            s32 dir = defaultDirAngle();
             mAngle.z = 0;
-            mAngle.y = (s8)l_EnMuki[mDirection] * dirAngle;
+            mAngle.y = (s8)l_EnMuki[mDirection] * dir;
             changeState(StateID_ShellOut);
         }
     }
@@ -1075,14 +1077,14 @@ void dEnTorideKokoopa_c::executeState_ShellOut() {
 bool KokoopaSpFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
     result = 0;
     daPlBase_c *player = (daPlBase_c*)fumi.mCc2->mpOwner;
-    if ((player->mUnk1074 | player->mUnk1078) != 0) {
+    if ((player->mBgPressActive | player->mBgPressFlags) != 0) {
         if (player->mSpeed.y > 0.0f) {
             result = 0;
             return true;
         }
     }
     if (!player->mBc.isFoot() && en->mSpeed.y > 0.0f) {
-        if (player->mUnk1090 == 3) {
+        if (player->mDokanMode == 3) {
             if (player->mPos.y >= en->mPos.y + 4.0f) {
                 int plrNo = player->getPlrNo();
                 en->mNoHitPlayer.mTimer[plrNo] = 24;
