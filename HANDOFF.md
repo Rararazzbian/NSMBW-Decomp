@@ -14405,3 +14405,28 @@ MWCC lays literals into the pool in order of first use across the TU, so retail 
 `0.5f` EARLIER in the file than we do -- a fingerprint of a function still missing from our draft.
 It does not cause the register permutation (proven above), but it is a free completeness check:
 when the pool order matches retail's, the missing early function has been found.
+
+### Gap B addendum: the lever reaches beyond the eight, and it is not fmuls-specific
+
+Sweeping the rest of the unit: **104/182 -> 106/182, 2426 -> 2580 words, 31.8% -> 33.8% BY BYTES.**
+
+- `executeState_Left45` (60w) -- MATCHES. Same inversion, but the source held the
+  product in a shared local `dv`. The split must land on the MEMBER, not the local:
+  `mSpeed.x = mBaseSpeed; mSpeed.x *= 0.70703f; mSpeed.y = mSpeed.x;`. The def-point
+  rule has nothing to anchor to on a local.
+- `start_line_move` (94w) -- MATCHES. **The rule is not fmuls-specific: it governs
+  `fdivs` too.** `mPos.x / smc_UNIT_SIZE_X` written as a bare operand puts x and y in
+  the wrong registers; `f32 px = mPos.x;` immediately ahead of each divide fixes both.
+- `executeState_Right45` -- improved 24 real diffs -> 4, not closed. The remainder is
+  an unrelated f0/f1 swap in `mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x)`.
+  Kept as a strict improvement.
+- `CalcAdjustPosY`, `executeState_Side`, `executeState_Height` -- CHECKED AND SKIPPED.
+  Their residuals only resemble the inversion; they are callee-saved FPR renumbering
+  (f29<->f30) and an f2/f3/f4 rotation, with no `member * literal` shape present.
+  Different bug class; the lever does not reach them.
+
+So the general statement of the lever is broader than first written: **a member
+operand of a float divide or multiply only lands in retail's register if it has its
+own def-point immediately ahead of the operation, and that def must be on the member
+itself.** Corroborated independently against the matched corpus, where division by a
+constant is one of exactly three source routes that produce member-first ordering.

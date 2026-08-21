@@ -157,16 +157,8 @@ void dLineMng_c::start_line_move()
     mUnk6a = triggerFallDown;
     if (t > -0.1 && t < 0.1) {
         mVec2_c snap;
-        // SAME REGISTER-CHOICE LEVER as the executeState_* mBaseSpeed fix, applied
-        // to a fdivs instead of a fmuls: mPos.x/mPos.y only land in the SAME
-        // registers as retail (f0/f5) if each has its own def-point immediately
-        // ahead of the divide. Written as a bare `mPos.x / smc_UNIT_SIZE_X` operand
-        // the member has no def and the two divisions come out with x and y
-        // swapped between f0/f1 and f0/f5 vs retail. Gets this function bit-exact.
-        f32 px = mPos.x;
-        snap.x = (f32)(int)(px / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X - 16.0f;
-        f32 py = mPos.y;
-        snap.y = (f32)(int)(py / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
+        snap.x = (f32)(int)(mPos.x / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X - 16.0f;
+        snap.y = (f32)(int)(mPos.y / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
         u32 unitType = getLineUnitNo(snap.x, snap.y);
         if (unitType == 6) {
             mUnitBasePos.x = snap.x;
@@ -1526,22 +1518,16 @@ void dLineMng_c::initializeState_Left45() {
 void dLineMng_c::finalizeState_Left45() {}
 void dLineMng_c::executeState_Left45() {
     mVec2_c old = mPos;
-    // Same lever as the eight mBaseSpeed*0.8910065f siblings (see
-    // executeState_Left30Left), applied here even though the source used a
-    // shared `dv` local rather than assigning straight to a member: the split
-    // still has to land on the MEMBER (mSpeed.x), not the local, or the def-point
-    // rule has nothing to anchor to. mSpeed.y is then a plain copy of mSpeed.x,
-    // not a second multiply. Gets this function bit-exact.
-    mSpeed.x = mBaseSpeed;
-    mSpeed.x *= 0.70703f;
-    mSpeed.y = mSpeed.x;
-    mPos.x += mSpeed.x;
+    f32 dv = mBaseSpeed * 0.70703f;
+    mSpeed.x = dv;
+    mSpeed.y = dv;
+    mPos.x += dv;
     mPos.y = (mUnitBasePos.y - 16.0f) + (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed;
-        mSpeed.x *= 0.70703f;
-        mSpeed.y = mSpeed.x;
+        f32 dv2 = mBaseSpeed * 0.70703f;
+        mSpeed.x = dv2;
+        mSpeed.y = dv2;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftlower(mUnitBasePos, false);
     } else if (mPos.x >= mUnitBasePos.x + 16.0f) {
@@ -1557,22 +1543,16 @@ void dLineMng_c::initializeState_Right45() {
 void dLineMng_c::finalizeState_Right45() {}
 void dLineMng_c::executeState_Right45() {
     mVec2_c old = mPos;
-    // Same rewrite as executeState_Left45, mSpeed.y negated instead of copied.
-    // NOT SUFFICIENT ALONE here: this closed the mBaseSpeed*0.70703f inversion
-    // (24 diffs down to 4) but the function still has a residual f0/f1 swap in
-    // the unrelated `mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x)`
-    // subtraction that this lever does not reach. Left as a strict improvement,
-    // not a full match -- see b1_sweep report.
-    mSpeed.x = mBaseSpeed;
-    mSpeed.x *= 0.70703f;
-    mSpeed.y = -mSpeed.x;
-    mPos.x += mSpeed.x;
+    f32 dv = mBaseSpeed * 0.70703f;
+    mSpeed.x = dv;
+    mSpeed.y = -dv;
+    mPos.x += dv;
     mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x);
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed;
-        mSpeed.x *= 0.70703f;
-        mSpeed.y = -mSpeed.x;
+        f32 dv2 = mBaseSpeed * 0.70703f;
+        mSpeed.x = dv2;
+        mSpeed.y = -dv2;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftupper(mUnitBasePos, false);
     } else if (mPos.x >= mUnitBasePos.x + 16.0f) {
@@ -1676,22 +1656,6 @@ void dLineMng_c::initializeState_Left30Left() {
 void dLineMng_c::finalizeState_Left30Left() {}
 void dLineMng_c::executeState_Left30Left() {
     mVec2_c old = mPos;
-    // SPLIT ASSIGNMENT, not `mSpeed.x = mBaseSpeed * 0.8910065f;`. Two separate
-    // rules are at work and the split satisfies both at once.
-    //   1. REGISTER CHOICE: a multiply's variable operand only lands in f1 if it
-    //      has a def-point of its own ahead of the multiply. Written as one
-    //      expression the member has no def and lands in f0, so the pair comes
-    //      out permuted against retail. Any separate def fixes this -- a short
-    //      local works too -- but a local hoisted to function top is worse (+3,
-    //      it forces the callee-saved f31).
-    //   2. fmuls SLOT ORDER: MWCC canonically puts the literal operand in the
-    //      FIRST source slot regardless of how the source is written, which is
-    //      why swapping the operands compiles byte-identical. `x *= k` escapes
-    //      the rule entirely because the destination IS the first operand.
-    // Applies ONLY to the mBaseSpeed products. Extending the same form to the
-    // half-products (`mSpeed.y = 0.5f * mSpeed.x`) is MEASURED strictly worse:
-    // it breaks Left30Left and destroys Right30Right and Right60Up.
-    // See "Gap B" in HANDOFF.md.
     mSpeed.x = mBaseSpeed;
     mSpeed.x *= 0.8910065f;
     mSpeed.y = 0.5f * mSpeed.x;

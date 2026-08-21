@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 14408 lines / 583 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14433 lines / 584 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -604,3 +604,4 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `14356-14387` Four clean negatives established alongside it -- do not spend rounds on these
   - `14388-14397` A REAL INFRASTRUCTURE BUG found on the way, still open
   - `14398-14408` Secondary finding worth keeping for whoever fills in the remaining 78 functions
+  - `14409-14433` Gap B addendum: the lever reaches beyond the eight, and it is not fmuls-specific
