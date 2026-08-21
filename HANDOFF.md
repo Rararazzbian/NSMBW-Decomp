@@ -14190,3 +14190,97 @@ compiler would rather keep in a register, and the real question is what source
 shape causes MWCC to do that without `volatile`. Same underlying question as the
 eight `executeState_*` gaps ("Gap A"), so **one answer closes both** — roughly
 1,360 words across nine functions.
+
+## GAP A IS ANSWERED: an AGGREGATE COPY is not CSE'd against earlier scalar reads
+
+The question left open above — *what source shape makes MWCC reload a field it is
+still holding in a register, without `volatile`* — has a one-line answer:
+
+```
+    mVec2_c newBase = mUnitBasePos;   // aggregate copy: BOTH fields reload
+    newBase.x += 16.0f;               // ...and the add is recomputed
+```
+
+**The field loads MWCC emits for an aggregate copy are not
+common-subexpression-eliminated against earlier scalar reads of the same
+members.** Writing the same thing as a constructor call —
+`mVec2_c newBase(mUnitBasePos.x + 16.0f, mUnitBasePos.y)` — lets `-O4` reuse the
+sum it computed for the `mPos.x >= mUnitBasePos.x + 16.0f` test one line above,
+and that is exactly the two words every one of these functions was short.
+
+Nothing exotic, no `volatile`, no compiler-baiting construct: it is ordinary
+source that any programmer might write either way, and the two ways are not
+equivalent to MWCC.
+
+### What it closes, measured
+
+`executeState_Left30Left`, the worked example (99 words in retail):
+
+```
+constructor form   97 insns   -2   reload + re-add missing, stores in x,y order
+copy-then-adjust   99 insns   +0   reload, re-add and y-before-x store order ALL exact
+```
+
+The **entire** gap region disappears from the diff. What remains in that function
+is the separately-documented `f0`/`f1` permutation on `mBaseSpeed`, untouched.
+
+Applied to all eight sites (four `x ± 16.0f`, four `y ± 16.0f`), every one of the
+eight `executeState_*` functions moves from `STRUCTURAL` (wrong length) to
+`LEN OK`:
+
+```
+Right60Down 104  Right30Right 104  Right30Left 103  Left60Down 102
+Right60Up   101  Left60Up     101  Left30Right 100  Left30Left   99
+```
+
+### It also RETIRES the `volatile` hack in `fn_800C31C0`
+
+Same rule, applied to the other half of Gap A:
+
+```
+    mVec2_c base = self->mPos;                       // was: two volatile-cast reads
+    base.x = smc_UNIT_SIZE_X * (f32)(int)(base.x / smc_UNIT_SIZE_X) - 16.0f;
+    base.y = smc_UNIT_SIZE_X * (f32)(int)(base.y / smc_UNIT_SIZE_X) - 16.0f;
+```
+
+```
+plain reads    547/549
+volatile hack  549/549   rejected last round as inauthentic
+aggregate copy 549/549   BYTE-IDENTICAL to the volatile version
+```
+
+**Byte-identical** — so the construct that was rejected on authenticity grounds
+buys nothing the honest one does not. Both are now in the draft as the honest
+form; the `volatile` casts are gone from the unit entirely.
+
+### READ THE MATCHED COUNT HONESTLY: it did not move
+
+`101/182 functions, 2122/7631 words = 27.8%` before and after. **Length-exact is
+not byte-exact.** All nine functions still carry the pre-existing register
+permutation, so none of them flips to matched yet. What changed is that nine
+functions are now correct in *content and length*, with one known residual class
+between them and matching, instead of two — and the standing "roughly 1,360
+words" figure quoted above is the SIZE OF THE PRIZE, not progress banked.
+
+### Clean negative: commutative float operand order is CANONICALISED before allocation
+
+With the Gap A gap removed, the remaining `f0`/`f1` permutation was re-tested
+properly. Four source spellings of the same two products:
+
+```
+mBaseSpeed * 0.8910065f  /  0.5f * mSpeed.x     (control)
+0.8910065f * mBaseSpeed  /  0.5f * mSpeed.x
+mBaseSpeed * 0.8910065f  /  mSpeed.x * 0.5f
+0.8910065f * mBaseSpeed  /  mSpeed.x * 0.5f
+```
+
+**All four compile to byte-identical code.** MWCC canonicalises commutative
+floating-point operand order before register allocation, so source operand order
+is not a lever on it — for anyone, anywhere in this project. A fifth variant
+hoisting the product into a named local made it strictly worse (it perturbed
+register assignment across the whole function). This confirms an earlier agent's
+result, but now uncontaminated by the Gap A gap that was sitting next to it.
+
+Experiment rig kept at `wip/gapA/` — `try.py` (newBase shapes), `try2.py`
+(operand order), `try3.py` (`fn_800C31C0`), `apply.py` (sweep all eight sites).
+Each compiles one variant of the real TU and diffs one function against retail.

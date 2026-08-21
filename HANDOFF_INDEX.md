@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 14193 lines / 570 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14287 lines / 575 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -591,3 +591,8 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `14118-14148` `__sinit`'s residual is WEAK-SYMBOL LINKER DEDUPLICATION — and the symbol map TAGS it
   - `14149-14166` MY BRIEF CREATED A PHANTOM CONTRADICTION — the two figures were never in conflict
 - `14167-14193` `fn_800C31C0` reaches 549/549 — but the fix is a `volatile` proxy and is NOT being shipped
+- `14194-14214` GAP A IS ANSWERED: an AGGREGATE COPY is not CSE'd against earlier scalar reads
+  - `14215-14235` What it closes, measured
+  - `14236-14255` It also RETIRES the `volatile` hack in `fn_800C31C0`
+  - `14256-14264` READ THE MATCHED COUNT HONESTLY: it did not move
+  - `14265-14287` Clean negative: commutative float operand order is CANONICALISED before allocation
