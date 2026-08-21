@@ -753,9 +753,20 @@ static void fn_800C31C0(dLineMng_c *self)
 
     // Grid-snap mPos down to its UNIT_SIZE cell, then step back one more
     // cell so the 3x3 scan below is centred on the unit mPos sits in.
+    // Both fields are re-read here through a volatile lvalue rather than the
+    // (semantically identical) plain `self->mPos.x`/`self->mPos.y`. MEASURED:
+    // without this, -O4 CSEs these two reads against the already-loaded
+    // register values from posNew's construction above, landing 2 words
+    // (1 per field, confirmed independently) short of the target, which
+    // genuinely reloads both from memory a second time. Same "Gap A" MWCC
+    // idiom already documented for the executeState_* family in this unit
+    // (MERGE2.md section 6) -- there it was diagnostic-only because it
+    // traded the gap for a different exposed residual; here it closes the
+    // length gap outright with the pre-existing register-scheduling
+    // residual in the switch body unaffected either way. See RESULT.md.
     mVec2_c base;
-    base.x = dLineMng_c::smc_UNIT_SIZE_X * (f32)(int)(self->mPos.x / dLineMng_c::smc_UNIT_SIZE_X) - 16.0f;
-    base.y = dLineMng_c::smc_UNIT_SIZE_X * (f32)(int)(self->mPos.y / dLineMng_c::smc_UNIT_SIZE_X) - 16.0f;
+    base.x = dLineMng_c::smc_UNIT_SIZE_X * (f32)(int)(*(volatile f32 *)&self->mPos.x / dLineMng_c::smc_UNIT_SIZE_X) - 16.0f;
+    base.y = dLineMng_c::smc_UNIT_SIZE_X * (f32)(int)(*(volatile f32 *)&self->mPos.y / dLineMng_c::smc_UNIT_SIZE_X) - 16.0f;
 
     mVec2_c pos;
     mVec2_c corner;

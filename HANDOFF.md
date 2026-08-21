@@ -14114,3 +14114,79 @@ in the project; a defect there would have been latent everywhere. It is clean.
 
 **The 33,552-byte `d_enemy_toride_kokoopa.cpp` is therefore UNBLOCKED** — larger
 than the last six landed units on this project combined.
+
+## `__sinit`'s residual is WEAK-SYMBOL LINKER DEDUPLICATION — and the symbol map TAGS it
+
+`__sinit_\d_line_mng_cpp` is length-exact at 1193/1193. Its 175 differing words
+decompose into **25 blocks of 7 — one per declared state — with a flat, uniform
+`+0x40` shift.**
+
+The cause, traced and independently confirmed here: `r28` anchors into a `.data`
+pool holding 12 `s_State.hpp` framework vtables. Six are templated on
+`dLineMng_c` and genuinely belong to this TU. **The other six are plain,
+non-template interface vtables shared project-wide, and they are physically
+hosted elsewhere in the image:**
+
+```
+__vt__13sStateIDChk_c = .data:0x802FEDF8; // size:0x10  scope:weak
+                                    ^^^^^^^^^^^^^^^^^ tagged WEAK in the map
+this TU's own .data slice is 0x80316CA0-0x80317738 -- nowhere near it
+```
+
+**`scope:weak` is written into `bin/dtk/wiimj2d_symbols.txt` directly.** That is
+a cheap, general way to spot link-deduplicated objects: grep the map for
+`scope:weak` before assuming an object belongs to the unit that references it.
+
+An isolated compile emits its own copy of every weak vtable; the real link keeps
+one and discards the rest, shifting everything downstream. **This is a
+whole-program link-time effect, invisible to per-TU compilation** — the same
+family as the `_savegpr` finding, and it means the residual is not addressable
+from inside `d_line_mng.cpp` at all. Correctly, no source change was made.
+
+(Consistent with the standing note that unreferenced weak symbols are not placed
+— an object's size must not be read as a link overflow.)
+
+### MY BRIEF CREATED A PHANTOM CONTRADICTION — the two figures were never in conflict
+
+I told the agent this unit's `__sinit` residual had been "measured to decompose
+into 5 blocks of 7, one per state, with uniform deltas (+0x14, +0x10)" and asked
+it to check whether that still held. It measured **25 blocks of 7 with +0x40**,
+flagged the contradiction rather than quietly reconciling it, and was right to.
+
+**The contradiction was mine.** The 5-blocks-of-7 measurement is **LEMMY's**
+`__sinit`, recorded earlier in this file. LEMMY has **5 states**; `d_line_mng` has
+**25**. Seven words per state, one block per state — the two measurements are the
+*same phenomenon scaled by state count*, and were never in conflict. I attributed
+one unit's number to another when writing the round brief.
+
+**Lesson for briefs, not for the compiler:** a measurement is only portable
+between units if the quantity it scales with is the same. Seven words per state
+is portable; "35 words" is not. **Quote the per-unit RATE, never the total**, and
+name the unit it came from.
+
+## `fn_800C31C0` reaches 549/549 — but the fix is a `volatile` proxy and is NOT being shipped
+
+Root cause found and cleanly measured: the source reads `mPos.x`/`mPos.y` twice,
+~18 statements apart, and `-O4` common-subexpression-eliminates the second read
+against the still-live register. **The target genuinely reloads both fields from
+memory.** Forcing the reload with `*(volatile f32 *)&self->mPos.x` closes it, and
+the evidence is clean and additive: **each field's forcing is worth exactly +1
+word — 547->548 alone, 547->549 together.** That additivity is what makes the
+mechanism believable rather than coincidental.
+
+**It is still not byte-exact** — the switch-dispatch body has a register
+permutation and branch-polarity wall that a previous agent already tried and
+reverted (it regressed 547->564). This agent correctly did not repeat it.
+
+**Decision: do NOT ship the `volatile` casts.** The original source cannot have
+contained them; they are a proxy for whatever real construct forces the reload.
+Shipping them would buy a length match that **does not convert into a byte
+match**, at the cost of an inauthentic construct sitting in the source
+permanently. That is the same call an earlier agent made for the `executeState_*`
+family, and it was right then too.
+
+**What to keep is the MECHANISM, not the hack:** the target reloads a field the
+compiler would rather keep in a register, and the real question is what source
+shape causes MWCC to do that without `volatile`. Same underlying question as the
+eight `executeState_*` gaps ("Gap A"), so **one answer closes both** — roughly
+1,360 words across nine functions.

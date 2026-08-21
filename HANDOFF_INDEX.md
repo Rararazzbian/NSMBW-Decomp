@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 14117 lines / 567 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14193 lines / 570 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -588,3 +588,6 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
 - `14064-14065` Peer rounds verified: Qwen r17 and Gemini r15 both DELIVERED and both reproduce
   - `14066-14091` Qwen round 17 — `d_bg_actor_mng.cpp`, 19/22 byte-exact
   - `14092-14117` Gemini round 15 — `dEnBoss_c` declaration order, every number confirmed
+- `14118-14148` `__sinit`'s residual is WEAK-SYMBOL LINKER DEDUPLICATION — and the symbol map TAGS it
+  - `14149-14166` MY BRIEF CREATED A PHANTOM CONTRADICTION — the two figures were never in conflict
+- `14167-14193` `fn_800C31C0` reaches 549/549 — but the fix is a `volatile` proxy and is NOT being shipped
