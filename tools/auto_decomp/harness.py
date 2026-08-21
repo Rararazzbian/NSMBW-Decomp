@@ -78,9 +78,9 @@ INCLUDES = ['include', 'include/lib', 'include/lib/MSL', 'include/lib/MSL/intern
 # literally. The original binary names one `@71831_8042B7EC` -- symbol plus dtk's
 # address suffix -- where a freshly compiled object has a bare `@21389`. Match the
 # combined form first so a reference stays ONE token on both sides.
-POOL_SYM = re.compile(r'@\d+(?:_[0-9A-Fa-f]{8})?'
+POOL_SYM = re.compile(r'"?@\d+(?:_[0-9A-Fa-f]{8})?"?'
                       r'|lbl_[0-9A-Fa-f]{8}'
-                      r'|\.\.\.(?:data|rodata|bss|sdata2?)\.\d+')
+                      r'|"?\.\.\.(?:data|rodata|s?bss|sdata2?)\.\d+"?')
 
 # dtk also appends _<ADDR> to ordinary symbols to disambiguate duplicate names.
 # Applied AFTER pool numbering, so it cannot eat an `lbl_########`.
@@ -92,7 +92,11 @@ ADDR_SUFFIX_INLINE = re.compile(r'_[0-9A-Fa-f]{8}\b')
 # `bl fn_800A1234` and `bl fn_800CDEF0` compare EQUAL -- a wrong callee passing
 # as a match. Fixing norm_name() alone did not cover this: that fixed which
 # function gets looked up, this is about what the compared TEXT says.
-PLACEHOLDER_CALLEE = re.compile(r'\b(fn|func)_([0-9A-Fa-f]{8})\b')
+# CFront mangling appends `__<length><classname>F<args>` to mangled names. We
+# must match and STRIP that to avoid false mismatches like `fn_800C3B20` vs
+# `fn_800C3B20__FP10dLineMng_c` (same static function, same bytes, different
+# disassembly source).
+PLACEHOLDER_CALLEE = re.compile(r'\b(fn|func)_([0-9A-Fa-f]{8})(?:__\w+)?\b')
 _KEEP = '\x00'
 
 
@@ -123,7 +127,9 @@ def canonicalise(lines):
             return mapping.setdefault(m.group(0), 'SYM%d' % len(mapping))
         s = POOL_SYM.sub(number, line)
         # Shield placeholder callee names from the suffix strip below; their
-        # address is their identity, not a disambiguator.
+        # address is their identity, not a disambiguator. Strip any CFront
+        # mangling suffix so `fn_800C3B20` and `fn_800C3B20__FP10dLineMng_c`
+        # normalize to the same form (same bytes, just different source disassembly).
         s = PLACEHOLDER_CALLEE.sub(lambda m: m.group(1) + _KEEP + m.group(2), s)
         s = ADDR_SUFFIX_INLINE.sub('', s)
         out.append(s.replace(_KEEP, '_'))

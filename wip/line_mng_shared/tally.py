@@ -70,14 +70,36 @@ def main():
     # Name-keyed pass.
     hit = [k for k in t if k in d and matched(d[k], t[k])]
 
+    # Mangled-name pass. CFront mangling appends `__<classinfo>` to function names.
+    # A retail placeholder `fn_800C31C0` never matches a draft's `fn_800C31C0__FP10dLineMng_c`.
+    # Try stripping the mangling suffix from draft names to pair them by name alone.
+    used = set(hit)
+    for k in t:
+        if k in used:
+            continue
+        # Look for a draft function whose unmangled name matches this target
+        for dk in d:
+            if dk in used or dk not in d:
+                continue
+            # Check if dk is the mangled form of k (e.g., fn_800C31C0__FP10dLineMng_c -> fn_800C31C0)
+            if '__' in dk:
+                unmangled = dk.split('__')[0]
+                if unmangled == k:
+                    # Pair by name. Add synthetic entry for reporting so the draft length is visible.
+                    if matched(d[dk], t[k]):
+                        hit.append(k)
+                    d[k] = d[dk]  # Allow reporting logic to find the draft
+                    used.add(k)
+                    paired_by_content.append((k, dk))
+                    break
+
     # Content-keyed fallback. An UNNAMED target function (`fn_800C31C0`) never
     # keys against a draft's mangled/static name, so the name pass reports it
     # MISSING even when it is byte-perfect. Same defect class that verify_anon.py
     # exists to solve for the RELs. Pair the leftovers on BYTE EQUALITY only --
     # that is sound by definition (identical bytes IS a match) and cannot invent
     # a pairing the way a fuzzy heuristic could.
-    used = set(hit)
-    spare = {k: v for k, v in d.items() if k not in t}
+    spare = {k: v for k, v in d.items() if k not in t and k not in used}
     spare_by_bytes = {}
     for k, v in spare.items():
         spare_by_bytes.setdefault(tuple(b for b, _ in v), []).append(k)
