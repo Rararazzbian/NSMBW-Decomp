@@ -96,9 +96,20 @@ void dLineMng_c::SetPos(const mVec2_c &pos)
 
 f32 dLineMng_c::CalcAdjustPosY(f32 a, f32 b)
 {
+    // DECLARE-EARLY / ASSIGN-LATE. The callee-saved FP registers f31..f28 are
+    // handed out in DECLARATION order, but the instruction schedule follows
+    // ASSIGNMENT order, and here retail needs the two to disagree: absB is
+    // f30 and x is f29 (declaration order absB-then-x), yet `fabs f0,f28` /
+    // `frsp f30,f0` are scheduled AFTER the first `bl GetPos` (assignment
+    // order x-then-absB). Writing `f32 absB = fabs(b);` above `f32 x` gets the
+    // registers right but hoists the fabs into the prologue, which then kills
+    // the `fmr f28, f2` that preserves `b` across the call and comes out
+    // 127w instead of 128w. Splitting the declaration from the assignment
+    // satisfies both rules and makes the function BYTE-EXACT (128/128).
     f32 origSpeed = mBaseSpeed;
+    f32 absB;
     f32 x = GetPos().x;
-    f32 absB = std::fabs(b);
+    absB = std::fabs(b);
     f32 y = GetPos().y;
     if (std::fabs(a - x) < 0.01f) {
         return y;
@@ -273,16 +284,17 @@ u32 dLineMng_c::getLineUnitNo(f32 x, f32 y)
 // "function-local static -> file scope" lever, confirmed by the symbol shape
 // itself rather than assumed. From wip/fix_bighelper.
 static mVec2_POD_c s_dDir[4];
-static u8 s_dDirInit = 0;
+static s8 s_dDirInit = 0;  // s8, not u8 -- gives retail's extsb. test rather than lbz+cmpwi
 
 void dLineMng_c::init_term_ck_pos()
 {
     mVec2_c *p = mDirVec;
+    mVec2_c *end0 = p + 3;
     do {
         p->x = 0.0f;
         p->y = 0.0f;
         p++;
-    } while (p != mDirVec + 3);
+    } while ((u32)p < (u32)end0);
 
     if (!s_dDirInit) {
         s_dDir[0].set(-0.1f, 0.1f);
@@ -293,12 +305,13 @@ void dLineMng_c::init_term_ck_pos()
     }
 
     const mVec2_POD_c *q = s_dDir;
+    mVec2_c *end1 = end0 + 4;
     do {
         p->x = q->x;
         p->y = q->y;
         q++;
         p++;
-    } while (p != mDirVec + 7);
+    } while ((u32)p < (u32)end1);
 }
 
 bool dLineMng_c::check_term()
@@ -310,11 +323,29 @@ bool dLineMng_c::check_term()
         // pair right before the `bl getLineUnitNo` (writes to r1+0x8/+0xc,
         // never loaded back), which only happens when the value is first
         // assigned to a real local rather than passed as a bare expression.
-        // Y computed before X -- target's load/fadds/fdivs order processes
-        // the Y component first. From wip/fix_bighelper.
+        //
+        // The four leaf loads are split across TWO independent orderings and
+        // the shape below is the only one of ~25 tested that reproduces both
+        // at once (BYTE-EXACT, 73/73):
+        //   * mPos.y/mPos.x each get a DEF-POINT of their own (`by`/`bx`)
+        //     ahead of the adds (lever 12). Without them the fadds folds into
+        //     a compound accumulate and the result lands in the left operand's
+        //     register instead of the right's. Their register numbers ASCEND
+        //     in DEFINITION order -- by=f2, bx=f3 -- so `by` must be declared
+        //     FIRST even though the X component is used first.
+        //   * `p->x`/`p->y` stay BARE leaves (no def-point) and are numbered
+        //     DESCENDING in EVALUATION order, so the X add must be written
+        //     FIRST to give p->x=f1, p->y=f0.
+        // Hence: declare Y's base first, then compute X's sum first.
+        // The two quantise stores must then be X then Y, which is what puts
+        // X in the 0x10/0x18 conversion slot pair and stores it to r1+0x8.
+        f32 by = mPos.y;
+        f32 bx = mPos.x;
+        f32 sx = bx + p->x;
+        f32 sy = by + p->y;
         mVec2_c testPos;
-        testPos.y = (f32)(int)((mPos.y + p->y) / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
-        testPos.x = (f32)(int)((mPos.x + p->x) / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
+        testPos.x = (f32)(int)(sx / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
+        testPos.y = (f32)(int)(sy / smc_UNIT_SIZE_X) * smc_UNIT_SIZE_X;
         if (getLineUnitNo(testPos.x, testPos.y) == 0x22) {
             if (mLineType == 0) {
                 change_dir();
@@ -332,14 +363,24 @@ bool dLineMng_c::check_term()
 // ===========================================================================
 
 bool dLineMng_c::line_cross_slope_check(const mVec2_c &a, const mVec2_c &b, f32 &slope, f32 &intercept) {
-    f32 dx = b.x - a.x;
-    f32 dy = b.y - a.y;
-    if (dx == 0.0f) {
-        return false;
+    // NAMED AGGREGATE local, not two scalar f32 temps -- target allocates a
+    // real 0x10 stack frame here and has an unread stfs PAIR for dx/dy right
+    // before the dx==0.0f branch (both fields stored, neither ever reloaded,
+    // since the register copies stay live for the rest of the function).
+    // That is the same "store a real local, then keep using the live
+    // register copy" idiom as check_term()'s testPos -- a bare pair of f32
+    // locals never gets memory-backed at all (0 frame, exactly what a plain
+    // `f32 dx/dy` compiled to here), so the vector needs to be one genuine
+    // mVec2_c object for the stack slot to exist.
+    mVec2_c d(b.x - a.x, b.y - a.y);
+    // Branch polarity per target's beq/b-around shape (lever 5): the
+    // success arm is the fallthrough `if`, not an early `return false`.
+    if (d.x != 0.0f) {
+        slope = d.y / d.x;
+        intercept = b.y - slope * b.x;
+        return true;
     }
-    slope = dy / dx;
-    intercept = b.y - slope * b.x;
-    return true;
+    return false;
 }
 
 bool dLineMng_c::line_cross_range_check(f32 a, f32 b, f32 v) {
@@ -362,37 +403,38 @@ bool dLineMng_c::line_cross_chk1(f32 p1, f32 p2, const mVec2_c &p3, mVec2_c p4, 
 
     f32 slope, intercept;
     if (line_cross_slope_check(p4, p5, slope, intercept)) {
-        if (p1 - slope == 0.0f) {
+        f32 d = p1 - slope;
+        if (d != 0.0f) {
+            out.x = intercept / d;
+            out.y = p1 * out.x;
+        } else {
             if (intercept != 0.0f) {
                 return false;
             }
             out.x = p5.x;
             out.y = p5.y;
-        } else {
-            out.x = intercept / (p1 - slope);
-            out.y = p1 * out.x;
         }
 
-        if (!(out.x >= -0.1f && out.x <= p2 + 0.1f)) {
-            return false;
-        }
-        if (!line_cross_range_check(p4.x, p5.x, out.x)) {
-            return false;
+        if (out.x >= -0.1f && out.x <= p2 + 0.1f) {
+            if (line_cross_range_check(p4.x, p5.x, out.x)) {
+                out.x += p3.x;
+                out.y += p3.y;
+                return true;
+            }
         }
     } else {
-        if (!(p5.x >= 0.0f && p5.x < p2)) {
-            return false;
-        }
-        out.x = p5.x;
-        out.y = p1 * p5.x;
-        if (!line_cross_range_check(p4.y, p5.y, out.y)) {
-            return false;
+        if (p5.x >= 0.0f && p5.x < p2) {
+            f32 x5 = p5.x;
+            out.x = x5;
+            out.y = p1 * x5;
+            if (line_cross_range_check(p4.y, p5.y, out.y)) {
+                out.x += p3.x;
+                out.y += p3.y;
+                return true;
+            }
         }
     }
-
-    out.x += p3.x;
-    out.y += p3.y;
-    return true;
+    return false;
 }
 
 bool dLineMng_c::line_cross_chk2(f32 p1, const mVec2_c &p3, mVec2_c p4, mVec2_c p5, f32 &out) {
@@ -402,55 +444,80 @@ bool dLineMng_c::line_cross_chk2(f32 p1, const mVec2_c &p3, mVec2_c p4, mVec2_c 
     p5.y -= p3.y;
 
     if (p4.x != 0.0f && p5.x != 0.0f) {
-        if (p4.x >= 0.0f) {
-            if (!(p5.x >= 0.0f)) {
-                return false;
-            }
-        } else if (p5.x < 0.0f) {
+        if ((p4.x < 0.0f && p5.x < 0.0f) || (p4.x >= 0.0f && p5.x >= 0.0f)) {
             return false;
         }
     }
 
     f32 slope, intercept;
     if (line_cross_slope_check(p4, p5, slope, intercept)) {
-        if (!(intercept >= -0.1f && intercept <= 0.1f + p1)) {
-            return false;
+        f32 v = intercept;
+        if (v >= -0.1f && v <= 0.1f + p1) {
+            if (line_cross_range_check(p4.y, p5.y, v)) {
+                out = v;
+                return true;
+            }
         }
-        if (!line_cross_range_check(p4.y, p5.y, intercept)) {
-            return false;
-        }
-        out = intercept;
-        return true;
     } else {
-        if (p5.x != 0.0f) {
-            return false;
+        if (p5.x == 0.0f) {
+            if (p5.y >= 0.0f && p5.y < p1) {
+                out = p5.y;
+                return true;
+            }
         }
-        if (!(p5.y >= 0.0f && p5.y < p1)) {
-            return false;
-        }
-        out = p5.y;
-        return true;
     }
+    return false;
 }
 
 bool dLineMng_c::line_cross_chk3(f32 p1, const mVec2_c &p2, const mVec2_c &p3) {
-    f32 d3 = p3.x * p3.x + p3.y * p3.y - p1;
+    // d3 = p3.x*p3.x, THEN accumulated via += / -=, not one flat expression --
+    // this keeps d3 pinned in its own dedicated register (f4 in target) across
+    // both the y^2 add and the p1 subtract, matching target's stable
+    // accumulator; a flat `a*a + b*b - c` expression lets -O4 fold it into
+    // whichever register the y^2 term happened to land in instead.
+    f32 d3 = p3.x * p3.x;
+    d3 += p3.y * p3.y;
+    d3 -= p1;
     if (d3 == 0.0f) {
         return true;
     }
-    f32 d2 = p2.x * p2.x + p2.y * p2.y - p1;
+    f32 d2 = p2.x * p2.x;
+    d2 += p2.y * p2.y;
+    d2 -= p1;
+    // First block: plain `if (d3 < 0.0f) { ... }`, no else -- the fallthrough
+    // (d3>=0) needs no explicit branch of its own, it just falls into the
+    // second block below. Lever: direct `<`/`>` (or its negation) lowers to
+    // a bare hardware flag branch (bge here); it's only a literal `>=`/`<=`
+    // that MWCC lowers via cror.
     if (d3 < 0.0f) {
         if (d2 >= 0.0f) {
             goto ok;
         }
-        return false;
     }
-    if (d2 < 0.0f) {
-        goto ok;
+    // Second block re-tests d3's sign -- this is a genuinely redundant
+    // retest reached both by falling through the first block's fallthrough
+    // (d3>=0) AND by falling OUT of it (d3<0 but d2<0 too). Both `goto ok;`
+    // sites share the SAME physical return-true block in target (one is a
+    // forward branch into it, the other a plain fallthrough) -- a bare
+    // `return true;` written twice does NOT get tail-merged by MWCC the
+    // same way; it has to be one label both paths jump/fall into.
+    if (d3 >= 0.0f) {
+        // Negated-LT (`!(d2<0.0f)`) so this specific occurrence lowers to a
+        // plain bge (matches target's un-cror'd final compare), with the
+        // return-true block sitting BEFORE return-false in address order --
+        // reorder the two labels to put `ok:` first, `fail:` last.
+        if (!(d2 < 0.0f)) {
+            goto fail;
+        }
+    } else {
+        // Only reached via d3<0 && d2<0 (the first block's fallthrough) --
+        // that combination is a genuine failure, not an implicit "ok".
+        goto fail;
     }
-    return false;
 ok:
     return true;
+fail:
+    return false;
 }
 
 // @unofficial unnamed file-scope helper (target `fn_800C1EE0`, author_geom).
@@ -462,9 +529,15 @@ ok:
 // touch mPos/mUnitBasePos -- see the MERGE-LOCAL header addition.
 bool fn_800C1EE0(dLineMng_c *pThis, f32 a, f32 b, const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3, const mVec2_c &origin) {
     mVec2_c out;
-    mVec2_c p2c = p2;
-    mVec2_c p3c = p3;
-    bool result = dLineMng_c::line_cross_chk1(a, b, origin, p2c, p3c, out);
+    // Pass p2/p3 straight through as the by-value args -- NOT via a named
+    // p2c/p3c local first. line_cross_chk1's p4/p5 are by-value copies; a
+    // named intermediate local gets its own stack slot AND the compiler
+    // still separately materialises the outgoing-argument copy for the
+    // call, doubling the four stfs stores and costing 0x10 bytes of frame.
+    // Passing p2/p3 directly lets the by-value parameter construct straight
+    // into the argument save area, one store each, matching the target's
+    // single stfs sequence and its 0x30 frame (this fn_800C1EE0 was 0x40).
+    bool result = dLineMng_c::line_cross_chk1(a, b, origin, p2, p3, out);
     if (result) {
         pThis->mPos.x = out.x;
         pThis->mPos.y = out.y;
@@ -475,12 +548,26 @@ bool fn_800C1EE0(dLineMng_c *pThis, f32 a, f32 b, const mVec2_c &p1, const mVec2
 }
 
 bool dLineMng_c::height_cross_chk(const mVec2_c &p1, const mVec2_c &p2, const mVec2_c &p3) {
-    mVec2_c pt(p1.x + 16.0f, p1.y - 16.0f);
+    // AGGREGATE COPY + compound assignment (levers 10/11), same as
+    // lineB_cross_chk's origin -- both fields need an arithmetic op here, so
+    // the plain 2-arg constructor leaves the fadds/fsubs operands
+    // literal-first and swaps the p1.y/p1.x load order vs target.
+    mVec2_c pt = p1;
+    pt.x += 16.0f;
+    pt.y -= 16.0f;
     f32 outY;
     bool result = line_cross_chk2(16.0f, pt, p2, p3, outY);
     if (result) {
         mPos.x = pt.x;
-        mPos.y = outY + pt.y;
+        // Write the sum BACK into outY itself, not a fresh local -- outY is
+        // address-taken (passed by reference into line_cross_chk2), so it
+        // already has real stack storage, and target has an unread stfs to
+        // exactly that slot right after the add (write-only, never
+        // reloaded back, since mPos.y's store below uses the live register
+        // copy directly). A fresh separate local optimises away entirely
+        // with nothing to spill.
+        outY += pt.y;
+        mPos.y = outY;
         mUnitBasePos.x = p1.x;
         mUnitBasePos.y = p1.y;
         if (mSpeed.y < 0.0f) {
@@ -697,8 +784,9 @@ bool dLineMng_c::circle_ul2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             mUnitBasePos.y = p1.y;
             change_dir();
             mStateMgr.changeState(StateID_Circle2x2Leftup);
+            return result;
         } else {
-            result = false;
+            return false;
         }
     }
     return result;
@@ -706,8 +794,8 @@ bool dLineMng_c::circle_ul2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
 
 bool dLineMng_c::circle_ur2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 16.0f;
     origin.x = p1.x;
+    origin.y = p1.y - 16.0f;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -729,8 +817,9 @@ bool dLineMng_c::circle_ur2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             mUnitBasePos.y = p1.y;
             change_dir();
             mStateMgr.changeState(StateID_Circle2x2Rightup);
+            return result;
         } else {
-            result = false;
+            return false;
         }
     }
     return result;
@@ -739,7 +828,8 @@ bool dLineMng_c::circle_ur2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
 bool dLineMng_c::circle_dl2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
     origin.y = p1.y;
-    origin.x = p1.x + 16.0f;
+    origin.x = p1.x;
+    origin.x += 16.0f;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -760,8 +850,9 @@ bool dLineMng_c::circle_dl2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             mUnitBasePos.x = p1.x;
             mUnitBasePos.y = p1.y;
             mStateMgr.changeState(StateID_Circle2x2LeftDown);
+            return result;
         } else {
-            result = false;
+            return false;
         }
     }
     return result;
@@ -783,11 +874,12 @@ bool dLineMng_c::circle_dr2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
             } else if (angle >= 0x4100) {
                 angle = 0x40ff;
             }
-            angle -= 0x4100;
+            angle += 0xbf00;
             mAngle = angle;
             mUnitBasePos.x = p1.x;
             mUnitBasePos.y = p1.y;
             mStateMgr.changeState(StateID_Circle2x2RightDown);
+            return result;
         } else {
             return false;
         }
@@ -797,8 +889,8 @@ bool dLineMng_c::circle_dr2_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3)
 
 bool dLineMng_c::lineRHUR_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
-    origin.y = p1.y - 32.0f;
     origin.x = p1.x;
+    origin.y = p1.y - 32.0f;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -820,9 +912,9 @@ bool dLineMng_c::lineRHUR_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
             mUnitBasePos.y = p1.y;
             change_dir();
             mStateMgr.changeState(StateID_Circle4x4Rightup);
-        } else {
-            result = false;
+            return result;
         }
+        return false;
     }
     return result;
 }
@@ -852,9 +944,9 @@ bool dLineMng_c::lineRHUL_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
             mUnitBasePos.y = p1.y;
             change_dir();
             mStateMgr.changeState(StateID_Circle4x4LeftUp);
-        } else {
-            result = false;
+            return result;
         }
+        return false;
     }
     return result;
 }
@@ -862,7 +954,8 @@ bool dLineMng_c::lineRHUL_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
 bool dLineMng_c::lineRHLL_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
     mVec2_c origin;
     origin.y = p1.y;
-    origin.x = p1.x + 32.0f;
+    origin.x = p1.x;
+    origin.x += 32.0f;
     p3.x -= origin.x;
     p3.y -= origin.y;
     p2.x -= origin.x;
@@ -883,9 +976,9 @@ bool dLineMng_c::lineRHLL_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
             mUnitBasePos.x = p1.x;
             mUnitBasePos.y = p1.y;
             mStateMgr.changeState(StateID_Circle4x4LeftDown);
-        } else {
-            result = false;
+            return result;
         }
+        return false;
     }
     return result;
 }
@@ -906,14 +999,14 @@ bool dLineMng_c::lineRHLR_cross_chk(const mVec2_c &p1, mVec2_c p2, mVec2_c p3) {
             } else if (angle >= 0x4100) {
                 angle = 0x40ff;
             }
-            angle -= 0x4100;
+            angle += 0xbf00;
             mAngle = angle;
             mUnitBasePos.x = p1.x;
             mUnitBasePos.y = p1.y;
             mStateMgr.changeState(StateID_Circle4x4RightDown);
-        } else {
-            return false;
+            return result;
         }
+        return false;
     }
     return result;
 }
@@ -1159,14 +1252,13 @@ static void fn_800C3B20(dLineMng_c *self)
 /// the Y axis.
 static void fn_800C3B60(dLineMng_c *self)
 {
-    if (self->mPos.y >= self->mUnitBasePos.y) {
+    if (!(self->mPos.y < self->mUnitBasePos.y)) {
         self->mPos.y = self->mUnitBasePos.y - 0.1f;
     }
     f32 lower = self->mUnitBasePos.y - 16.0f;
-    if (!(self->mPos.y < lower)) {
-        return;
+    if (self->mPos.y < lower) {
+        self->mPos.y = lower;
     }
-    self->mPos.y = lower;
 }
 
 // ===========================================================================
@@ -1657,8 +1749,10 @@ void dLineMng_c::mov_frm_leftupper(const mVec2_c &pos, bool reverse) {
 
 void dLineMng_c::move_on_circle_speedset(f32 radius, f32 speedScale)
 {
-    mAngle = (u16)(mAngle + mBaseSpeed * speedScale);
-    mSpeed.x = -mBaseSpeed * nw4r::math::SinIdx((short)mAngle);
+    f32 delta = mBaseSpeed;
+    delta *= speedScale;
+    mAngle = (u16)(mAngle + delta);
+    mSpeed.x = mBaseSpeed * -nw4r::math::SinIdx((short)mAngle);
     mSpeed.y = mBaseSpeed * nw4r::math::CosIdx((short)mAngle);
     mPos.x = mUnk58.x;
     mPos.y = mUnk58.y;
@@ -1668,9 +1762,7 @@ void dLineMng_c::move_on_circle_speedset(f32 radius, f32 speedScale)
 
 void dLineMng_c::move_on_circle1(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1680,12 +1772,9 @@ void dLineMng_c::move_on_circle1(f32 radius, f32 speedScale)
         mSpeed.x = -mSpeed.x;
         mSpeed.y = -mSpeed.y;
     } else if ((s16)mAngle < 0) {
-        mVec2_c dst;
-        dst.x = mUnitBasePos.x + radius - 16.0f;
-        dst.y = mUnitBasePos.y - radius + 16.0f;
         mSpeed.x = 0.0f;
         mSpeed.y = mBaseSpeed;
-        mov_frm_rightlower(dst, true);
+        mov_frm_rightlower(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y - radius + 16.0f), true);
     } else if ((s16)(mAngle - 0x4000) >= 0) {
         mSpeed.x = -mBaseSpeed;
         mSpeed.y = 0.0f;
@@ -1695,9 +1784,7 @@ void dLineMng_c::move_on_circle1(f32 radius, f32 speedScale)
 
 void dLineMng_c::move_on_circle2(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1709,28 +1796,21 @@ void dLineMng_c::move_on_circle2(f32 radius, f32 speedScale)
     } else {
         s16 rel = mAngle - 0x4000;
         if (rel < 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x + radius - 16.0f;
-            dst.y = mUnitBasePos.y;
             mSpeed.x = -mBaseSpeed;
             mSpeed.y = 0.0f;
-            mov_frm_rightupper(dst, true);
+            mov_frm_rightupper(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y), true);
         } else if ((s16)(rel - 0x4000) >= 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x;
-            dst.y = mUnitBasePos.y - radius + 16.0f;
+            f32 dstX = mUnitBasePos.x;
             mSpeed.x = 0.0f;
             mSpeed.y = -mBaseSpeed;
-            mov_frm_leftlower(dst, true);
+            mov_frm_leftlower(mVec2_c(dstX, mUnitBasePos.y - radius + 16.0f), true);
         }
     }
 }
 
 void dLineMng_c::move_on_circle3(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1746,21 +1826,16 @@ void dLineMng_c::move_on_circle3(f32 radius, f32 speedScale)
             mSpeed.y = -mBaseSpeed;
             mov_frm_leftupper(mUnitBasePos, false);
         } else if ((s16)(rel - 0x4000) >= 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x + radius - 16.0f;
-            dst.y = mUnitBasePos.y - radius + 16.0f;
             mSpeed.x = mBaseSpeed;
             mSpeed.y = 0.0f;
-            mov_frm_rightlower(dst, false);
+            mov_frm_rightlower(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y - radius + 16.0f), false);
         }
     }
 }
 
 void dLineMng_c::move_on_circle4(f32 radius, f32 speedScale)
 {
-    mVec2_c savedPos;
-    savedPos.x = mPos.x;
-    savedPos.y = mPos.y;
+    mVec2_c savedPos = mPos;
     u16 savedAngle = mAngle;
     move_on_circle_speedset(radius, speedScale);
     if (check_term()) {
@@ -1772,19 +1847,14 @@ void dLineMng_c::move_on_circle4(f32 radius, f32 speedScale)
     } else {
         s16 rel = mAngle + 0x4000;
         if (rel < 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x;
-            dst.y = mUnitBasePos.y - radius + 16.0f;
+            f32 dstX = mUnitBasePos.x;
             mSpeed.x = mBaseSpeed;
             mSpeed.y = 0.0f;
-            mov_frm_leftlower(dst, false);
+            mov_frm_leftlower(mVec2_c(dstX, mUnitBasePos.y - radius + 16.0f), false);
         } else if ((s16)(rel - 0x4000) >= 0) {
-            mVec2_c dst;
-            dst.x = mUnitBasePos.x + radius - 16.0f;
-            dst.y = mUnitBasePos.y;
             mSpeed.x = 0.0f;
             mSpeed.y = mBaseSpeed;
-            mov_frm_rightupper(dst, false);
+            mov_frm_rightupper(mVec2_c(mUnitBasePos.x + radius - 16.0f, mUnitBasePos.y), false);
         }
     }
 }
@@ -1815,8 +1885,8 @@ void dLineMng_c::executeState_FallDown()
     if (speedY < -4.0f) {
         speedY = -4.0f;
     }
+    mPos.y += speedY;
     mSpeed.y = speedY;
-    mPos.y += mSpeed.y;
     fn_800C31C0(this);
 }
 
@@ -1905,12 +1975,14 @@ void dLineMng_c::initializeState_Side() {
 void dLineMng_c::finalizeState_Side() {}
 void dLineMng_c::executeState_Side() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed;
+    f32 baseSpeed = mBaseSpeed;
+    mSpeed.x = baseSpeed;
     mSpeed.y = 0.0f;
-    mPos.x += mBaseSpeed;
+    mPos.x += baseSpeed;
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed;
+        f32 baseSpeed2 = mBaseSpeed;
+        mSpeed.x = baseSpeed2;
         mSpeed.y = 0.0f;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftlower(mUnitBasePos, false);
@@ -1934,13 +2006,15 @@ void dLineMng_c::initializeState_Height() {
 void dLineMng_c::finalizeState_Height() {}
 void dLineMng_c::executeState_Height() {
     mVec2_c old = mPos;
+    f32 baseSpeed = mBaseSpeed;
     mSpeed.x = 0.0f;
-    mSpeed.y = mBaseSpeed;
-    mPos.y = mPos.y + mBaseSpeed;
+    mSpeed.y = baseSpeed;
+    mPos.y = mPos.y + baseSpeed;
     if (check_term()) {
         mPos = old;
+        f32 baseSpeed2 = mBaseSpeed;
         mSpeed.x = 0.0f;
-        mSpeed.y = mBaseSpeed;
+        mSpeed.y = baseSpeed2;
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mov_frm_rightlower(mUnitBasePos, true);
     } else if (mPos.y >= mUnitBasePos.y) {
@@ -1963,13 +2037,15 @@ void dLineMng_c::initializeState_CornerHeightLine() {
 void dLineMng_c::finalizeState_CornerHeightLine() {}
 void dLineMng_c::executeState_CornerHeightLine() {
     mVec2_c old = mPos;
+    f32 baseSpeed = mBaseSpeed;
     mSpeed.x = 0.0f;
-    mSpeed.y = mBaseSpeed;
-    mPos.y = mPos.y + mBaseSpeed;
+    mSpeed.y = baseSpeed;
+    mPos.y = mPos.y + baseSpeed;
     if (check_term()) {
         mPos = old;
+        f32 baseSpeed2 = mBaseSpeed;
         mSpeed.x = 0.0f;
-        mSpeed.y = mBaseSpeed;
+        mSpeed.y = baseSpeed2;
     } else if (mPos.y < mUnitBasePos.y - 16.0f) {
         mStateMgr.changeState(StateID_CornerSideLine);
     } else if (mPos.y >= mUnitBasePos.y) {
@@ -1985,12 +2061,14 @@ void dLineMng_c::initializeState_CornerSideLine() {
 void dLineMng_c::finalizeState_CornerSideLine() {}
 void dLineMng_c::executeState_CornerSideLine() {
     mVec2_c old = mPos;
-    mSpeed.x = mBaseSpeed;
+    f32 baseSpeed = mBaseSpeed;
+    mSpeed.x = baseSpeed;
     mSpeed.y = 0.0f;
-    mPos.x += mBaseSpeed;
+    mPos.x += baseSpeed;
     if (check_term()) {
         mPos = old;
-        mSpeed.x = mBaseSpeed;
+        f32 baseSpeed2 = mBaseSpeed;
+        mSpeed.x = baseSpeed2;
         mSpeed.y = 0.0f;
     } else if (mPos.x < mUnitBasePos.x) {
         mov_frm_leftlower(mUnitBasePos, false);
@@ -2244,8 +2322,9 @@ void dLineMng_c::executeState_Left60Up() {
 void dLineMng_c::initializeState_Left60Down() {
     fn_800C3B60(this);
     mAngle = 0xECCC;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Left60Down() {}
 void dLineMng_c::executeState_Left60Down() {
@@ -2254,8 +2333,21 @@ void dLineMng_c::executeState_Left60Down() {
     mSpeed.y *= 0.8910065f;
     mSpeed.x = 0.5f * mSpeed.y;
     mPos.y += mSpeed.y;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t - 0.5 * (mUnitBasePos.y - mPos.y);
+    // DOUBLE-PRECISION SPLIT ASSIGNMENT. `8.0` and `0.5` are unsuffixed, so
+    // both are DOUBLES -- confirmed by decoding the pool: retail loads them
+    // with `lfd` from 0x8042CBB0 (4020000000000000 = 8.0) and 0x8042CBA0
+    // (3FE0000000000000 = 0.5), while the float 0.5f/16.0f used elsewhere in
+    // this file sit separately at 0x8042CB5C/0x8042CB48 as 4-byte floats.
+    // The shape is identical to the MATCHING executeState_Left60Up two
+    // functions up (`mPos.x = mUnitBasePos.x; mPos.x += 16.0f; mPos.x -= ...`).
+    // Lever 11 DOES extend to double precision: the compound assignment puts
+    // the member in the FIRST source slot (`fadd f2, f3, f2`), where the
+    // combined form `mUnitBasePos.x + 8.0` hoists the literal there instead.
+    // The intermediate `frsp` is the rounding the float member's `+=` requires
+    // -- Left60Up needs none only because `fadds` already rounds.
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x -= 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
         mSpeed.y = mBaseSpeed;
@@ -2282,8 +2374,9 @@ void dLineMng_c::executeState_Left60Down() {
 void dLineMng_c::initializeState_Right60Down() {
     fn_800C3B60(this);
     mAngle = 0x9333;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x += 0.5 * (mUnitBasePos.y - mPos.y);
 }
 void dLineMng_c::finalizeState_Right60Down() {}
 void dLineMng_c::executeState_Right60Down() {
@@ -2292,8 +2385,11 @@ void dLineMng_c::executeState_Right60Down() {
     mSpeed.y *= -0.8910065f;
     mSpeed.x = -(0.5f * mSpeed.y);
     mPos.y += mSpeed.y;
-    f32 t = mUnitBasePos.x + 8.0;
-    mPos.x = t + 0.5 * (mUnitBasePos.y - mPos.y);
+    // See executeState_Left60Down for the double-precision reasoning; this is
+    // the same statement with the outer sign flipped.
+    mPos.x = mUnitBasePos.x;
+    mPos.x += 8.0;
+    mPos.x += 0.5 * (mUnitBasePos.y - mPos.y);
     if (check_term()) {
         mPos = old;
         mSpeed.y = mBaseSpeed;
@@ -2353,7 +2449,23 @@ void dLineMng_c::executeState_Right60Up() {
     }
 }
 
-void dLineMng_c::initializeState_Circle() {}
+// The nine Circle initialisers are one family and the retail constants are
+// perfectly regular once decoded out of the DOL's .sdata2 rather than guessed
+// from the instruction pattern -- every `lfs ...@sda21(r0)` here has its offset
+// field ZEROED in both disassemblies, so a wrong constant still compares
+// byte-identical. Decoded values:  Left => vec.x = +size, Right => vec.x = 0;
+//                                  Up   => vec.y = -size, Down  => vec.y = 0.
+// The radius argument is always +size.
+//
+// That last line is what makes the word counts uneven, and it is not a source
+// difference. The radius travels in f1, and so does vec.x. When they are equal
+// (every Left variant) one `lfs` serves both and the function is 13 words. When
+// vec.x is 0 and the radius is not (the *up variants) f1 must be loaded twice,
+// giving 14. RightDown is 13 again because 0.0f fills BOTH vector slots from a
+// single load. Same source shape throughout -- only the operands differ.
+void dLineMng_c::initializeState_Circle() {
+    circle_nextpos_set(mVec2_c(8.0f, -8.0f), 8.0f);
+}
 void dLineMng_c::finalizeState_Circle() {}
 void dLineMng_c::executeState_Circle() {
     mVec2_c old = mPos;
@@ -2367,49 +2479,65 @@ void dLineMng_c::executeState_Circle() {
     }
 }
 
-void dLineMng_c::initializeState_Circle2x2Leftup() {}
+void dLineMng_c::initializeState_Circle2x2Leftup() {
+    circle_nextpos_set(mVec2_c(16.0f, -16.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2Leftup() {}
 void dLineMng_c::executeState_Circle2x2Leftup() {
     move_on_circle2(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle2x2Rightup() {}
+void dLineMng_c::initializeState_Circle2x2Rightup() {
+    circle_nextpos_set(mVec2_c(0.0f, -16.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2Rightup() {}
 void dLineMng_c::executeState_Circle2x2Rightup() {
     move_on_circle1(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle2x2LeftDown() {}
+void dLineMng_c::initializeState_Circle2x2LeftDown() {
+    circle_nextpos_set(mVec2_c(16.0f, 0.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2LeftDown() {}
 void dLineMng_c::executeState_Circle2x2LeftDown() {
     move_on_circle3(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle2x2RightDown() {}
+void dLineMng_c::initializeState_Circle2x2RightDown() {
+    circle_nextpos_set(mVec2_c(0.0f, 0.0f), 16.0f);
+}
 void dLineMng_c::finalizeState_Circle2x2RightDown() {}
 void dLineMng_c::executeState_Circle2x2RightDown() {
     move_on_circle4(16.0f, 651.899169921875f);
 }
 
-void dLineMng_c::initializeState_Circle4x4Rightup() {}
+void dLineMng_c::initializeState_Circle4x4Rightup() {
+    circle_nextpos_set(mVec2_c(0.0f, -32.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4Rightup() {}
 void dLineMng_c::executeState_Circle4x4Rightup() {
     move_on_circle1(32.0f, 325.9495849609375f);
 }
 
-void dLineMng_c::initializeState_Circle4x4LeftUp() {}
+void dLineMng_c::initializeState_Circle4x4LeftUp() {
+    circle_nextpos_set(mVec2_c(32.0f, -32.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4LeftUp() {}
 void dLineMng_c::executeState_Circle4x4LeftUp() {
     move_on_circle2(32.0f, 325.9495849609375f);
 }
 
-void dLineMng_c::initializeState_Circle4x4LeftDown() {}
+void dLineMng_c::initializeState_Circle4x4LeftDown() {
+    circle_nextpos_set(mVec2_c(32.0f, 0.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4LeftDown() {}
 void dLineMng_c::executeState_Circle4x4LeftDown() {
     move_on_circle3(32.0f, 325.9495849609375f);
 }
 
-void dLineMng_c::initializeState_Circle4x4RightDown() {}
+void dLineMng_c::initializeState_Circle4x4RightDown() {
+    circle_nextpos_set(mVec2_c(0.0f, 0.0f), 32.0f);
+}
 void dLineMng_c::finalizeState_Circle4x4RightDown() {}
 void dLineMng_c::executeState_Circle4x4RightDown() {
     move_on_circle4(32.0f, 325.9495849609375f);

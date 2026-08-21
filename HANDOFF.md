@@ -14430,3 +14430,95 @@ operand of a float divide or multiply only lands in retail's register if it has 
 own def-point immediately ahead of the operation, and that def must be on the member
 itself.** Corroborated independently against the matched corpus, where division by a
 constant is one of exactly three source routes that produce member-first ordering.
+
+---
+
+# SESSION: d_line_mng 27.8% -> 65.9%, and four of my own rules were wrong
+
+## Where the unit stands
+
+`matched 165/182 functions   5031/7631 words = 65.9% BY BYTES`, up from 101/182
+and 27.8% at the start of the previous session and from 136/182 and 47.0% at the
+start of this one. Live draft: `wip/fix_bigtwo/d_line_mng.cpp`.
+
+**`__sinit` (1193w, 15.6% of the unit) is SOLVED but NOT LANDED.** It is gated on
+a shared-header change and on the build, which is broken -- see below. Landing it
+takes the unit to roughly **82%**.
+
+## CORRECTION to the entry immediately above this one
+
+That entry says `CalcAdjustPosY`, `executeState_Side` and `executeState_Height`
+were "CHECKED AND SKIPPED -- callee-saved FPR renumbering ... Different bug class;
+the lever does not reach them."
+
+**All three closed this session, byte-exact.** The bug class was correctly
+identified and the conclusion drawn from it was wrong. `CalcAdjustPosY`'s 23
+apparent differences collapsed to 10 real ones, all a single FP register pair.
+
+## The four rules that were wrong, and what replaced them
+
+1. **"Treat a pure register-permutation residual as not source-addressable."**
+   Measured on three hoisted base POINTERS -- GPRs -- and generalised without
+   testing. False for FPRs: callee-saved `f31…f28` are handed out in DECLARATION
+   order while the schedule follows ASSIGNMENT order, so `f32 v; ... v = expr;`
+   decouples them. This note had been actively steering agents away from what
+   became the session's largest wins; three separate agents and one peer AI all
+   cited it to close out work that was in fact closable.
+
+2. **"Lever 12 does not apply to double-precision `fadd`/`frsp` paths."** Written
+   off after one failed attempt whose real defect was an `f32` temp emitting its
+   `frsp` ten slots early. Levers 11 and 12 govern the OPERATION, not the
+   PRECISION.
+
+3. **"Put the def-point on the MEMBER, never a scalar temp."** True when the
+   member is being WRITTEN by an arithmetic statement. Backwards when it is being
+   READ and reused -- that wants a named local (lever 13), and a FRESH SECOND
+   local after a call, because reusing the outer one forces a cross-call spill.
+
+4. **The `__sinit` residual was assumed to be a base-register cascade** (by
+   analogy with kokoopa). It was not: base registers, frame and save level all
+   matched. It was one extra weak vtable in `.data` shifting every displacement
+   by a fixed `+0x40`.
+
+## New this session
+
+- **Lever 13** (read-side def-point) and the FPR declaration-order rule, both in
+  `AGENT_CONTEXT.md`.
+- **A leaf WITH a def-point numbers ASCENDING in declaration order; a bare leaf
+  numbers DESCENDING in evaluation order.** Opposite directions, so a four-leaf
+  statement pair can need its two orderings written backwards relative to each
+  other. Found by measuring ~25 variants on `check_term` (12 -> 8 -> 0 diffs).
+- **`tools/auto_decomp/pool.py`** -- decodes a literal-pool constant from the DOL
+  by address or by pasted dtk pool symbol, printing both the f32 and f64 reading.
+- **`wip/line_mng_shared/merge_agents.py`** -- function-granular merge for
+  parallel agent workspaces, with conflict detection. Merges function bodies
+  ONLY; file-scope changes need manual follow-up.
+
+## The false-positive trap is REAL and cost real work
+
+`lfs`/`lfd`/`bl` all have their address or pool-offset field zeroed in both
+disassemblies, so **a wrong constant or a wrong callee compares byte-identical.**
+Live instances this session: an agent "matched" five circle initialisers on
+invented constants like `1303.79833984375f` (real values: `16.0f`, `-16.0f`,
+`32.0f`, `0.0f`); and a peer AI produced 11 false positives across two rounds, all
+writing `0.0f` where retail has `5500.0f`, including two it had already been told
+about. `pool.py` exists because of this. Use it before claiming any match whose
+body is essentially one pooled-constant reference.
+
+## THE BUILD IS BROKEN -- and it predates this session
+
+`ninja` fails in two independent places. `source/` and `include/` are clean in
+git and this session's commits touched neither; the last successful build left
+artifacts dated ~10 days ago, and units have landed in `d_basesNP` since.
+
+1. **`d_a_wm_manta.cpp` no longer compiles** -- MWCC 10319, "ambiguous access to
+   name found `daWmManta_c` and `@unnamed@d_a_wm_manta_cpp@::daWmManta_c`".
+2. **`slice_rel.py` emits a `.bss` filler with size `-0x10360`** for `d_basesNP`
+   only; the other two RELs slice cleanly. `-0x10360` is exactly the highest
+   `.bss` end address claimed in `slices/d_basesNP.json`, and the module's real
+   `.bss` is `0x12484`.
+
+**Nothing can land until both are fixed**, including `__sinit`. Agents are on
+both. Until then, a "green tree" cannot be asserted -- and it has been asserted in
+recent commit messages on the strength of per-unit checks rather than a full
+build.

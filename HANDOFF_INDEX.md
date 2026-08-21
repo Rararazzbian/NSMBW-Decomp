@@ -1,6 +1,6 @@
 # HANDOFF.md — index
 
-HANDOFF.md is ~570KB / 14433 lines / 584 sections. **Do not read it whole,
+HANDOFF.md is ~570KB / 14525 lines / 590 sections. **Do not read it whole,
 and do not rely on `tail`** — the tail shows only the newest entries, and the
 finding you need is usually older than that.
 
@@ -604,4 +604,10 @@ Regenerate with `python wip/wm_units/make_handoff_index.py`.
   - `14356-14387` Four clean negatives established alongside it -- do not spend rounds on these
   - `14388-14397` A REAL INFRASTRUCTURE BUG found on the way, still open
   - `14398-14408` Secondary finding worth keeping for whoever fills in the remaining 78 functions
-  - `14409-14433` Gap B addendum: the lever reaches beyond the eight, and it is not fmuls-specific
+  - `14409-14437` Gap B addendum: the lever reaches beyond the eight, and it is not fmuls-specific
+- `14438-14447` Where the unit stands
+- `14448-14457` CORRECTION to the entry immediately above this one
+- `14458-14482` The four rules that were wrong, and what replaced them
+- `14483-14496` New this session
+- `14497-14507` The false-positive trap is REAL and cost real work
+- `14508-14525` THE BUILD IS BROKEN -- and it predates this session
