@@ -598,13 +598,59 @@ variants.
     authentic replacement for a `volatile` cast** -- the two compile to
     byte-identical code, so never ship the `volatile`.
 
+11. **SPLIT THE ASSIGNMENT when a `member * literal` product has its operands
+    in the wrong registers.** Write:
+
+        mSpeed.x = mBaseSpeed;
+        mSpeed.x *= 0.8910065f;
+
+    not `mSpeed.x = mBaseSpeed * 0.8910065f;`. TWO stacked rules make this
+    work, which is why one-shot attempts at such a permutation keep failing:
+      1. **A multiply's variable operand only reaches `f1` if it has a
+         def-point of its own ahead of the multiply.** Written as one
+         expression it is a bare operand and lands in `f0`.
+      2. **MWCC puts a float LITERAL in the FIRST `fmuls` source slot**,
+         always, regardless of how the source is written. (This is the
+         mechanism behind the commutative dead end below.)
+    `x *= k` satisfies both at once: the assignment supplies the def, and a
+    compound assignment is not a binary expression so rule 2 does not apply --
+    the destination IS the first operand. Closed three functions in
+    `d_line_mng` outright and improved all eight siblings; 27.8% -> 31.8%.
+    Constraints, all MEASURED: apply it to the MEMBER, not to a scalar temp
+    (a temp re-schedules the prologue and loses the match); the def must be
+    adjacent, since hoisting to function top costs +3 by forcing the
+    callee-saved `f31`; and do NOT extend it to a dependent half-product
+    (`y = 0.5f * x`), which destroys two of the three matches.
+
 ### Levers that are PROVEN NOT to work -- do not spend a round on these
 
 - **Commutative float operand order in the source.** `a * b` and `b * a` (and
   the `+` equivalents) compile to BYTE-IDENTICAL code; MWCC canonicalises
   commutative FP operands before register allocation. Four spellings were
   tested side by side on one function. If an `f0`/`f1` permutation is your
-  residual, source operand order will not move it.
+  residual, source operand order will not move it. See lever 11 for what DOES
+  move it.
+- **Naming a float constant, in any foldable form.** File-scope `const`, anon
+  namespace, class static defined in the same TU, `#define`, `const` local,
+  function-scope `static const`, address-taken -- all seven compile
+  BYTE-IDENTICAL to the inline literal, because MWCC re-folds them. Only
+  NON-foldable forms (extern, array element, struct member) change codegen,
+  and those emit a symbol. Check the retail symbol map before reaching for
+  one: an anonymous `scope:local` 4-byte `.sdata2` entry is what an inline
+  literal compiles to and nothing else does, so if the map shows one, the
+  original source spelled the number inline.
+- **Translation-unit ordering and float literal-pool position.** 17 variants
+  -- dummy earlier uses, injecting the statement into an earlier function,
+  moving or reversing function order, shrinking the pool -- moved a register
+  permutation not at all, and that includes a variant that reproduces retail's
+  exact relative pool order. (Pool order IS a useful completeness fingerprint
+  for a partially-written TU; it is just not a codegen lever.)
+- **Compiler flags.** ~145 variants: every `-O` level and `-opt` sub-keyword,
+  every scheduling setting, every accepted `-fp`/IEEE/fsel/fmadd option, all
+  inlining and IPA modes, small-data thresholds. None moved an `f0`/`f1`
+  permutation, the project's current flags scored joint-best, and the result
+  is stable across compiler versions 1.0/1.3/1.7. Such permutations are
+  decided upstream of scheduling and are purely source-shape-driven.
 - **Hoisting a repeated product into a named local** to fix such a permutation.
   Tested on the same function: it perturbed register assignment across the
   whole body and made the diff strictly worse.
