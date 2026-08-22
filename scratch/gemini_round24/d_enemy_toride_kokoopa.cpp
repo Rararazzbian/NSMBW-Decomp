@@ -1327,7 +1327,7 @@ void dEnTorideKokoopa_c::executeState_AttackSearch() {
         }
         break;
     case 2:
-        blitzMove((mUnk770 == 0) ? nullptr : (dActor_c*)fManager_c::searchBaseByID((fBaseID_e)mUnk770));
+        blitzMove(*(dActor_c**)&(fBase_c*&)(fBase_c*){(mUnk770 == 0) ? (fBase_c*)0 : fManager_c::searchBaseByID((fBaseID_e)mUnk770)});
         if (--mUnk768 <= 0 && lockon != 0) {
             changeState(StateID_Attack);
         }

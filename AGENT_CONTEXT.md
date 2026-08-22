@@ -1846,3 +1846,29 @@ change you have independently confirmed as correct moves a count away from
 target, treat the new count as the honest one and go looking for missing
 content. Stop asking "why is my codegen different" and start asking "what work
 am I not doing".
+
+## When the FRAME SIZE differs, diff count is not a progress metric
+
+A specialisation of "a misaligned diff invents structural conclusions", and it
+cost a round on `dBg_ctr_c::calc`.
+
+If the two sides have different frame sizes, **every stack reference is
+displaced by the same constant**, so almost every line reads as differing no
+matter how correct the body is. The count is then measuring the displacement,
+not the code. Measured on `calc`, where the target saves `f31/f30/r31/r30` and
+nothing else:
+
+    baseline   129 words, frame 0x60, saves f29 AND f28 spurious  -> 103 diffs
+    v1 / v2    125 words, frame 0x50, saves f29 spurious          -> 121 diffs
+
+The variants were **better** — they eliminated one of the two spurious FPR
+saves, which is exactly the 4 words — and the diff count went *up* by 18 because
+shrinking the frame displaced every stack offset by `0x10`. The round read "same
+length, still 121 diffs, so length is not the issue" and deprioritised the two
+best results it had.
+
+**The rule: when frame sizes differ, score on the SAVED-REGISTER SET, not on the
+diff count.** Compare the prologues directly — which GPRs and which FPRs each
+side saves — and drive that to equality first. Only once the frames agree does
+the diff count mean anything. A change that removes a spurious callee-saved
+register is progress even when every downstream line shifts.

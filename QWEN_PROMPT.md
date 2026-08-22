@@ -1,96 +1,106 @@
-# Work order — round 27
+# Work order — round 28
 
-**Read `AGENT_CONTEXT.md` first.**
+**Read `AGENT_CONTEXT.md` first.** One new section came out of your round 27 and
+it changes how you should score `calc`.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 26 produced no object file. Nothing was compiled.
+## Round 27 compiled. Five objects, and every number reproduces.
 
-I checked before reading your report:
+I checked the artifacts before the report this time, as I did last round:
 
-    scratch/round26/d_bg_ctr/d_bg_ctr.cpp      byte-identical to round 25
-    scratch/round26/d_bg_ctr/draft_disasm.txt  byte-identical to round 25
-    scratch/round26/d_bg_ctr/*.o               does not exist
+    scratch/round27/d_bg_ctr/*.o        5 objects, all fresh
+    d_bg_ctr.cpp                        genuinely changed
+    diff_ctr.py                         MATCHED: 32  DIFFER: 7  MISSING: 0
 
-The `MATCHED: 32  DIFFER: 7` you reported is round 25's result, re-run on round
-25's unchanged output. Every function in your table says *"Compiled: no new
-variant; baseline only."* That is accurate, and it is the whole problem.
+Every figure in your table reproduces exactly, including `fn_80080E40` at 117
+and all three `calc` variants at 125 / 125 / 129. That is the round-26 problem
+fixed.
 
-**I authorised "analyse and stop" for `fn_80080900` alone**, as a timebox on a
-function that had already burned two rounds. You applied it to all seven —
-including `calc`, which the brief called highest-confidence and told you to do
-first.
+**Your poolcheck blocker is real and I have the fix.** `harness.poolcheck` does
+not exist — your copied wrapper calls an entry point that is gone. Reporting it
+as a tooling blocker instead of inventing a clean result was the right call. The
+working invocation is the module's own CLI:
 
-`AGENT_CONTEXT.md` has carried the rule since round 23 and it has not changed:
-**prose that has not compiled is not a measurement.** A body that compiles at
-200 diffs is worth more than one that reads correctly and has never been built,
-because the first can be iterated and the second cannot. Seven proposals at
-"confidence: high" are worth one compile.
+    python tools/auto_decomp/poolcheck.py --module wiimj2d \
+        --obj <your>.o --txt <your>_disasm.txt <your>/target.txt
 
-**You did not fabricate anything, and that matters.** You reported GAINED none,
-LOST none, and labelled every function uncompiled rather than letting the
-unchanged 32/7/0 read as progress. Keep that exactly as it is.
+I ran it against your round-27 object: **7 constants compared, 0 mismatched, 0
+unresolved.** You are clean. Use that command from now on.
 
 ---
 
-## Your diagnoses are good. Three of them are better than any previous round.
+## You threw away your two best results. `calc` is closer than you think.
 
-This is not a wasted round, it is an unexecuted one. Specifically:
+You wrote: *"The 125-word variants still differ in instructions; matching length
+alone did not close `calc`. This confirms the residual is not just word count."*
+True as stated, and it led you to the wrong conclusion.
 
-**`fn_80080E40` — you found it, and I verified it is real.** You identified the
-register file as GPR-only (asked for, and correct), then found a concrete
-draft-only gate:
+Here is what the prologues actually show. **The target saves `f31`, `f30`, `r31`,
+`r30` — and no other FPR at all:**
 
-    scratch/round26/d_bg_ctr/d_bg_ctr.cpp:560
-    if (!mEntryFlag || mpActor == nullptr) {
+    baseline   129 words, frame 0x60, saves f29 AND f28 spurious  -> 103 diffs
+    v1 / v2    125 words, frame 0x50, saves f29 spurious          -> 121 diffs
+    target     125 words, frame 0x60, saves NEITHER
 
-The target has no such gate — it goes straight to the `0xDC` byte test after the
-prologue. That is a real defect, plausibly the whole +3, and **it is a one-line
-deletion you have already located.** The previous round called this function
-"not source-addressable" and stopped. You did better and then also stopped.
+**v1 and v2 eliminated one of the two spurious callee-saved FPRs.** That is
+exactly your missing 4 words, and it is real progress on precisely the axis I
+pointed you at. The diff count rose from 103 to 121 only because shrinking the
+frame by `0x10` displaced every stack offset below it — 121 lines "differ"
+because `stfd f31, 0x50(r1)` became `stfd f31, 0x40(r1)`, and so on down the
+function. That is one defect wearing 121 costumes.
 
-**`calc` — you reached the right conclusion.** Callee-saved FPRs, `f30/f31`
-against `f28/f29`, and you listed the correct levers in the correct order. That
-is the analysis done. Now run it.
+`AGENT_CONTEXT.md` already carried *"never revert a change purely because the
+count went up"*; it now also carries the specialisation: **when frame sizes
+differ, score on the saved-register set, not the diff count.**
 
-**`fn_80080900` — the liveness table is exactly what I asked for** and it is the
-most useful artifact anyone has produced on this function. Eleven register roles
-and four stack objects, with lifetimes. Build from it.
+So `calc` is one spurious save from home. Take `calc_v1_decl_order` — not the
+baseline — and apply the same lever again to kill `f29`. Note the target reaches
+`0x60` of frame *without* those saves, so it has roughly `0x10` more genuine
+local stack than you do: the target does `addi r3, r1, 0x20` where your variant
+does `addi r3, r1, 0xc`. You are short a stack local, not carrying an extra one.
 
 ---
 
-## Round 27 — one rule
+## `fn_80080E40`: the deletion was right, and it behaved exactly as predicted
 
-**Every item below must end in a compiled object and a diff count.** For each
-function report the number. `"Compiled: no"` is not an acceptable value in this
-round's table — if you run out of time, report fewer functions, not more
-proposals.
+121 target, 124 before, **117 after**. You removed the draft-only gate and the
+function went from 3 words long to 4 words short.
 
-Order, and all of it is work you have already designed:
+That is the same pattern as the `CosIdx` swap two rounds ago and it is now a
+rule in `AGENT_CONTEXT.md`: **a correct fix that overshoots has uncovered
+content you never wrote.** The gate was genuinely absent from retail, the
+deletion was genuinely correct, and the honest 117 has replaced a flattering
+124 that was two errors cancelling. Do not restore the gate. Find the missing 4
+words — you already noted the target's parameter roles (`r31=idx`, `r30=dir`,
+`r29=this`) and that it performs the `0xDC` test before touching `m_d4`.
 
-1. **`fn_80080E40` (+3)** — delete the `mEntryFlag`/`mpActor` gate at line 560,
-   express the target's first predicate in target order. Compile. One line.
-2. **`calc` (+4)** — run your own list, in your own order: declaration order of
-   the float locals; then named temporaries in target READ order; then split
-   declaration from assignment; then compose evaluation order with the read-side
-   def-point. **Compile each variant and report its word count**, including the
-   ones that get worse. Four numbers is a good result here even if none is zero.
-3. **`revisePos` (72/72)** — the read-order lever, third round on the list, one
-   compile. Target reads `0x9C`, `0xB4`, `0xB0`, `0x98`, `0xAC`, `0x94` — you
-   have the order written down already.
+---
+
+## Round 28 — order of work
+
+Same rule as round 27, which worked: **every item ends in a compiled object and
+a number.** If you run out of time, report fewer functions, not more proposals.
+
+1. **`calc`** — from `calc_v1_decl_order`, eliminate the `f29` save. Report the
+   **saved-register set and frame** for every variant, not just the word count
+   and diff count. That is the scoreboard for this function now.
+2. **`fn_80080E40` (−4)** — the missing content behind the correct deletion.
+3. **`revisePos` (72/72)** — still never attempted, three rounds on the list, and
+   you have the target read order written down: `0x9C`, `0xB4`, `0xB0`, `0x98`,
+   `0xAC`, `0x94`. One compile.
 4. **`fn_8007FFA0` (−8)** and **`addDokanMoveDiff` (−7)** — missing content, per
-   your own read. Write the missing stores and lifetimes and compile.
+   your own diagnosis. Write the stores and lifetimes, compile.
 5. **`fn_80080900` (−48)** — one pass building the objects your liveness table
-   describes: an explicit four-corner array, edge start/end, and a hit-result
-   vector, with lifetimes spanning both geometry calls. Compile it whatever the
-   frame comes out as. If it does not converge, that is fine — but I want the
-   frame size and `_savegpr` level of the attempt, not another proposal.
+   describes. Compile it whatever the frame comes out as, and report the frame
+   and `_savegpr` level of the attempt.
 
-`fn_80080670` (−3) last, only if time remains.
+`fn_80080670` (−3) last, only if time remains. Note its shape is the same family
+as `calc`: your draft saves FPRs the target does not.
 
-Work in `scratch/round27/`. Do not touch `wip/**`, `source/**`, `include/**`,
+Work in `scratch/round28/`. Do not touch `wip/**`, `source/**`, `include/**`,
 `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
 `HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`**
 — the tree is green, all five binaries byte-exact, and a concurrent build
@@ -100,13 +110,14 @@ destroys that.
 
 ## Reporting
 
-Per function: target length, **draft length from the object you built this
-round**, `_savegpr` level, frame size, and diff count.
+Per function: target length, draft length from the object you built, **the
+saved-register set** (which GPRs, which FPRs), `_savegpr` level, frame size,
+then diff count.
 
-**GAINED and LOST by name.** Four rounds accurate; keep it.
+The saved-register column is new and it is the important one. Diff count goes
+last, and where frames differ, say so rather than treating the number as a
+score.
 
-`poolcheck.py` on the final object.
+**GAINED and LOST by name.** Five rounds accurate; keep it.
 
-Drop the "Offset-perturbing" field — it is not something I asked for and it did
-not carry information. Replace it with the variant list: for each function, what
-you compiled and what number came back.
+`poolcheck.py` via the CLI above, on the final object.
