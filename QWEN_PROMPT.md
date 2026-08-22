@@ -1,117 +1,137 @@
-# Work order — round 23
+# Work order — round 24
 
-**Read `AGENT_CONTEXT.md` first.** Three new sections went in from your round 22,
-one of which records that I gave you a wrong fix and how you caught it.
+**Read `AGENT_CONTEXT.md` first.** Two new sections came out of your round 23.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 22 — you were right and I was wrong, on both halves
+## Round 23 — verified, and both results are now general rules
 
-I told you to negate `y0` in the preamble so the loop would have a ready-made
-negative operand. **You rejected it with evidence and you were correct twice
-over:**
+I reproduced everything independently before writing this.
 
-- The `fneg` I pointed at is not in `ProcMain` at all. It is at `0x8007E8A4`,
-  inside `createObjList`. I read it out of the range and assumed the function.
-- Pre-negating would have changed the **value**, not the shape: the loop computes
-  `y0 - mY`, and `(-y0) + mY` is a different number. It was never a code-shape
-  lever.
+**`set(sBgSetInfo)` is CLOSED.** 25/25, MATCHING, confirmed. And the lever is
+recorded as general: *named temporaries in the target's READ order*, not merely
+named temporaries. The three variants you measured are what make it a rule —
+`mVec2_c` temps regressed, `f32` temps in natural order stayed at 7 diffs, and
+only retail's `f4/f0/fC/f8` order closed it. That is a clean isolation.
 
-That is the second time you have caught an error in one of my briefs, and both
-times by checking the premise rather than trying the instruction. Keep doing it.
+**The `ProcMain` FPR negative is accepted, and your explanation upgraded my own
+rule.** 45 lines reproduced exactly. You were right that the declaration-order
+lever governs **callee-saved** `f28`..`f31` while `mMin`/`mMax` are living in
+volatile `f0`..`f2`, which the scheduler allocates. I had stated the rule without
+that boundary; `AGENT_CONTEXT.md` now carries it, with the diagnostic *check
+which register file the residual is in before reaching for the lever*.
 
-**And you then found the real lever, which is now recorded as general:** MWCC
-folds `a + (-b)` into `subf` when it is one expression, and **the two-statement
-form survives the fold**:
+**`ProcMain` is closed as a bounded negative.** Do not open it again.
 
-    s32 ny = m_pObjList[i].mY;
-    ny = -ny;
-    pos.y = (f32)((int)((y0 + ny) << 4));      // neg, then add
-
-Also kept: the coupling you found between the `pos.z = 0.0f;` store position and
-the `add` — the early z-store was occupying the slot retail's `add` needed. That
-kind of "an unrelated store was in the way" finding is worth reporting whenever
-you see it.
-
-**The `viewMin`/`viewMax` negative is accepted and closed.** A user-declared copy
-constructor on `mVec3_c` forces the float path; you measured both alternatives,
-you established that removing it regresses 160 functions, and you correctly
-called it out of scope. That is recorded. **Do not revisit it.**
-
-**`d_bg_ctr.cpp`: 30/39 on a first pass is a very good start.** And you did the
-thing the prompt asked and most agents skip — you found that `prepare.py`
-over-extended the range (the bundled split object spans several TUs), trimmed it,
-and verified the end boundary by hand against `__ct__11dBgGlobal_cFv`. That is
-exactly right.
+**31/8/0 on `d_bg_ctr` reproduces.** Both units clean on `poolcheck`.
 
 ---
 
-## Round 23 — `d_bg_ctr.cpp`, the nine that differ
+## Round 23 — the half that did not land
 
-Work in your `d_bg_ctr` directory. Do not touch `wip/**`, `source/**`,
-`include/**`, `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`,
-`CODEX_HANDOFF.md`, or `HANDOFF.md`.
+The eight stubs are 906 words of target — the entire remaining value of the unit
+— and the bodies you wrote for them are sitting in `.txt` files that have never
+been through the compiler. **Prose that has not compiled is not a measurement.**
+An un-compiled body is worth roughly nothing: every lever in this project is a
+codegen lever, and none of them can be evaluated without an object file.
+
+You stopped for a good reason — missing declarations — and you named them
+accurately. I checked all of them. Here is the resolution, so that reason is gone.
+
+### What already exists — just include it
+
+| you needed | it is here |
+|---|---|
+| `nw4r::math::CosFIdx`, `SinFIdx` | `include/lib/nw4r/math/math_triangular.h` |
+| `cM::atan2s` | `include/game/cLib/c_math.hpp` |
+| `mMtx_c::ZrotS`, `mMtx_c::multVecZero` | `include/game/mLib/m_mtx.hpp` |
+| `dScStage_c::getLoopPosX` | `include/game/bases/d_s_stage.hpp` |
+| `dBaseActor_c::getCenterPos` | `include/game/bases/d_base_actor.hpp` |
+| `dBc_c::mpOwner`, `mpNoHitActor` | `include/game/bases/d_bc.hpp` (lines 156, 171) |
+| `PSVECMag`, `PSMTXTrans`, `PSMTXConcat` | `include/lib/revolution/MTX/vec.h`, `mtx.h` |
+
+`EGG::Math` is in `include/lib/egg/math/eggMath.h`.
+
+### What genuinely does not exist — propose it, do not add it
+
+Four declarations are missing from the tree, and you read all four correctly out
+of the target, so I am confident in them:
+
+    nw4r::math::Atan2Idx(f32, f32)                       // bl Atan2Idx__Q24nw4r4mathFff
+    nw4r::math::IntersectionSegment3Sphere(...)
+    nw4r::math::DistSqSegment3ToSegment3(...)
+    the SEGMENT3 and SPHERE types both of those take
+
+`include/lib/nw4r/math/math_geometry.h` has `AABB` and `IntersectionResult` but
+neither segment type. `math_triangular.h` has `Atan2FIdx`/`Atan2Deg`/`Atan2Rad`
+but not `Atan2Idx` — and the target calls it out of line, so it is a real
+function, not an inline.
+
+**These are shared headers. Do not edit `include/**`.** Write your proposed
+declarations to `scratch/round24/proposed_nw4r_geometry.hpp` and shadow it
+locally to unblock yourself. I will land it alone, before anything else, because
+a shared-header change has to be verified by itself.
+
+Derive the signatures from the mangled names rather than guessing:
+
+    IntersectionSegment3Sphere__Q24nw4r4mathFPCQ34nw4r4math8SEGMENT3PCQ34nw4r4math6SPHEREPfPf
+    DistSqSegment3ToSegment3__Q24nw4r4mathFPCQ34nw4r4math8SEGMENT3PCQ34nw4r4math8SEGMENT3PfPf
+
+Both take two pointer-to-const arguments and two `f32*` out-parameters.
+`IntersectionSegment3Sphere` returns `bool` in the retail ABI unless the use site
+says otherwise — check how the return value is consumed and report which you
+chose and why. For the struct layouts, use the target's own load offsets: every
+field access in `fn_80080900` tells you the size and order of `SEGMENT3`.
+
+---
+
+## Round 24 — compile the bodies
+
+Work in `scratch/round24/`. Do not touch `wip/**`, `source/**`, `include/**`,
+`slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
+`HANDOFF.md`.
 
 **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
-green and a concurrent build in this checkout would destroy that.
+green, all five binaries byte-exact, and a concurrent build in this checkout
+destroys that.
 
-### 1. `ProcMain` — one last look, then stop
+**One instruction: get all eight bodies compiling, and report each one's real
+diff count.** Largest first — `fn_80080900` (256w), `fn_80080670` (130w), `calc`
+(125w), `fn_80080E40` (121w), `fn_8007FFA0` (115w), `addDokanMoveDiff` (87w),
+`revisePos` (72w), `fn_80080880` (32w).
 
-Two residual groups, both count-neutral:
+A body that compiles at 200 diffs is worth more than one that reads correctly and
+has never been built, because the first can be iterated and the second cannot.
+**Get to a number for all eight before you optimise any one of them.**
 
-- **28 preamble lines** — blocked on the copy constructor. **Out of scope, leave
-  them.**
-- **17 `mMin`/`mMax` lines** — pure FPR numbering, target `f2/f1/f0` against
-  draft `f1/f0/f2`. You tried three shapes and all rotated the same way.
+Two of them have a shape worth naming while you write:
 
-For the FPR group, one axis you have not reported trying: the **declaration
-order of the two locals themselves**, independent of how they are built. The
-rule is that callee-saved FPRs are handed out in DECLARATION order while the
-schedule follows ASSIGNMENT order, and the way to decouple them is to declare
-early and assign late (`mVec3_c mMin; mVec3_c mMax; ... mMin = ...;`). That is
-the lever that closed `execute` for you in round 20. If it does not move the
-numbering, **say so and stop** — write it up as a bounded negative with the
-variants listed, and `ProcMain` is done as far as I am concerned.
+- **`fn_80080880` (32w)** is the cheapest and needs no missing headers at all —
+  it swaps `f1`/`f2` to order a min/max and indexes `lbl_802EFBC0`/`lbl_802EFBD0`
+  by rotation bits. Do this one first as a warm-up and to prove the loop.
+- **`revisePos` (72w)** calls `fn_8007FFA0` three times, so land `fn_8007FFA0`'s
+  signature before writing it.
 
-### 2. `d_bg_ctr.cpp` — the six real functions
-
-Nine differ; **`calc` (125w), `fn_8007FFA0` (115w), `revisePos` (72w),
-`addDokanMoveDiff` (87w), `fn_80080670` (130w), `fn_80080880` (32w),
-`fn_80080E40` (121w) and `fn_80080900` (256w) are all unwritten stubs** — draft
-length 1. Those are authoring work, not matching work, and they are where the
-unit's remaining bytes are.
-
-Take them **largest first**: `fn_80080900` (256w), `fn_80080670` (130w),
-`calc` (125w), `fn_80080E40` (121w), `fn_8007FFA0` (115w).
-
-The one genuinely mismatched function is
-`set__9dBg_ctr_cFP8dActor_cPC10sBgSetInfoUcUcP7mVec3_c` (25/25, 8 FPR-numbering
-lines). Given three of its four siblings match, compare it against them — a
-sibling that matches is the best available oracle for what shape the odd one out
-should take. Note the warning in `AGENT_CONTEXT.md` though: **a mirror does not
-necessarily take the mirrored fix**; two line-for-line mirrors once needed
-opposite treatment. Measure, do not assume.
-
-### 3. Run `poolcheck.py` before you report
-
-    python tools/auto_decomp/poolcheck.py <draft.cpp> <shadow_include> <target.txt>
-
-You were clean on both units last round. Keep it that way — and note that as you
-start writing large new function bodies with float constants in them, this is
-exactly when the wrong-constant class appears.
+The two lookup tables (`lbl_802EFBC0`, `lbl_802EFBD0`, `lbl_802EFBE0`,
+`lbl_802EFBF0`) are unnamed `.rodata` in retail. Read their contents out of
+`original/wiimj2d.dol` and write them as file-scope `static const` arrays — and
+note from `AGENT_CONTEXT.md` that an unnamed retail label against a named draft
+symbol is a **text** diff with identical bytes, so score on the union, not text.
 
 ---
 
 ## Reporting
 
 Per function: target length, draft length, `_savegpr` level and frame size, then
-match status. **Draft length first** — a 1-word draft is a stub, not a mismatch,
-and your round-22 table made that distinction clearly. Keep doing that.
+**diff count** — the number, for all eight, not "analysed".
 
-**GAINED and LOST by name** against round 22, both units.
+Draft length first, as you have been doing.
 
-The two habits that have made your last three rounds productive: **measure the
-variant you expect to fail**, and **check the premise before acting on it** —
-including when the premise came from me.
+**GAINED and LOST by name** against round 23, both units.
+
+`poolcheck.py` before you report. You are about to write eight bodies full of
+float constants, which is precisely the condition that produces a wrong constant.
+
+The proposed nw4r header, with the reasoning for each signature.

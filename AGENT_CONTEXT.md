@@ -1626,3 +1626,99 @@ General rule: **a displacement delta tells you two objects sit at different
 offsets. It does not tell you which object changed size.** Enumerate both `.data`
 layouts and find where they diverge before proposing a fix, especially when the
 proposed fix is a change to a shared base class.
+
+## Decode a vtable slot from the `vfNN` placeholders before blaming the header
+
+A residual of one line, `lwz r12, 0x98(r12)` against `lwz r12, 0xb0(r12)`, was
+reported as "the base class `allEnemyDeathEffSet()` sits at the wrong vtable
+offset" -- i.e. as a defect in a shared header, six slots' worth. It was not. The
+draft was calling **a different method**.
+
+`dActor_c`'s vtable carries un-named retail slots as placeholders whose names
+**encode their own offset**: `vf68__8dActor_cFP9dBg_ctr_c` is at `0x68`,
+`vfb4__8dActor_cFv` is at `0xb4`. Any vtable dump in the tree that lists them is
+therefore self-indexing -- count `.4byte` entries from one anchor and you have
+every slot's offset with no assumptions about where the vptr points:
+
+    wip/wm_units/agent_castle_bg/target_auto_04_000132B0_data.txt
+
+Read off that table: `0xb0` is `allEnemyDeathEffSet__8dActor_cFv` -- **which is
+what the draft emitted, correctly** -- and `0x98` is `removeCc__8dActor_cFv`.
+Two anchors agree. The fix was one word of source, not a header change.
+
+**Rule: a slot-offset diff names a DIFFERENT FUNCTION. Identify it before you
+conclude anything about layout.** The header-is-wrong reading is the expensive
+one -- it points at shared code, it cannot be verified from inside one unit, and
+it is wrong far more often than "you called the wrong method".
+
+## A const object containing a pointer cannot have a zero static image
+
+Following the `__sinit` 128-byte shortfall above: the proposed cause was "four
+`static const sDeathInfoData` structs, 32 bytes each". The arithmetic fits --
+`sDeathInfoData` really is 32 bytes -- but the type cannot be right.
+
+`sDeathInfoData` holds `const sStateIDIf_c *mDeathState`. The address of a static
+object is a **link-time constant**, so a `static const` array of these has that
+word filled in in the DOL. The disputed region is *all zeros, every word*.
+Whatever lives there has a genuinely zero image.
+
+`dDeathInfo_c` is the same 32 bytes (`mVec2_c` 8 + 2 floats + pointer + 2 ints +
+3 bytes padded), has a **user-written constructor** (`mIsDead(false)`), and is
+therefore runtime-constructed -- zero static image, and an entry in `__sinit`,
+which is exactly where the residual is.
+
+**Rule: when a region is zero, the candidate must be something that is zero
+before `__sinit` runs.** Sizes that happen to divide the shortfall are not
+evidence; a `const` initialiser with a relocation in it is counter-evidence.
+
+## A TEXT-ONLY gate undercounts -- an unnamed retail label is not a diff
+
+A peer's scorer compared disassembly TEXT only, and reported
+`executeState_ShellAtk_St` as 2 diffs for two rounds running:
+
+    lis  r3, lbl_802F0C80@ha    |  lis  r3, l_bounceSpeed@ha
+
+Retail's `.rodata` symbol has no name in the symbol table, so dtk invents
+`lbl_802F0C80`; the draft's has one. **Both sides' instruction bytes are
+`3C 60 00 00` -- the relocation field is zeroed on each.** The function was
+byte-identical all along, and had been since before the "fix" that claimed it.
+
+This is the same false-mismatch class `wip/line_mng_shared/tally.py` documents
+for quoted symbol names. **Score with the union: raw bytes equal OR canonicalised
+text equal.** Text alone undercounts; bytes alone miss genuine relocation cases.
+And run `poolcheck.py` over the union, because neither half sees a wrong constant.
+
+## The FPR declaration-order lever governs CALLEE-SAVED registers only
+
+Recorded rule: callee-saved FPRs (`f31`..`f28`) are handed out in DECLARATION
+order while the schedule follows ASSIGNMENT order, so declaring early and
+assigning late decouples them. That closed `execute` in `d_bg_actor_mng`.
+
+**It does nothing for volatile FPRs.** `ProcMain`'s residual is 17 lines of
+`f2/f1/f0` against `f1/f0/f2` on two `mVec3_c` locals living in `f0`..`f2`. Both
+declaration orders were measured; the diff stayed at 45 lines in all three
+variants. Volatile FPRs are allocated by the scheduler, not by declaration.
+
+**Before reaching for the lever, check which register file the residual is in.**
+If the numbers are `f0`..`f13`, this is not the lever, and neither is any other
+source-level reordering that has been tried on it.
+
+## Named temporaries in the target's READ order fix argument FPR numbering
+
+`dBg_ctr_c::set(actor, sBgSetInfo*, ...)` differed by 8 lines of FPR numbering.
+The draft passed struct fields straight into a constructor call:
+
+    set(actor, mVec2_c(info->f0, info->f4), mVec2_c(info->f8, info->fC), ...);
+
+MWCC loaded the four fields in declaration order; retail loaded them `f4, f0,
+fC, f8`. Hoisting each into a named `f32` local **in retail's load order**, then
+passing the locals, closed it exactly:
+
+    f32 f4 = info->f4;  f32 f0 = info->f0;
+    f32 fC = info->fC;  f32 f8 = info->f8;
+    set(actor, mVec2_c(f0, f4), mVec2_c(f8, fC), ...);
+
+Note what did NOT work: named `mVec2_c` temporaries (29w, regressed), and named
+`f32` temporaries in natural order (25w, still 7 diffs). **The lever is the order
+of the reads, not the presence of temporaries** -- related to lever 13, and to
+lever 12 (FP register rotation is evaluation order).
