@@ -1,4 +1,4 @@
-# Work order — round 25
+# Work order — round 26
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,98 +6,104 @@ Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 24 is your best round on this project, and the numbers are yours
+## Round 25: four real closures, and one 5,784-byte regression you did not see
 
-Verified independently against a fresh compile before writing this:
+The four gains are real and verified:
 
-    GAINED: 12 functions, 2,412 bytes
-    LOST:    0 functions,     0 bytes
+    + 188  movelimitCheck
+    +  80  getFumiRev__12FumiCcInfo_cFv
+    +  64  __dt__21MugenComboFumiCheck_cFv
+    +  60  operate__21MugenComboFumiCheck_cFRiP5dEn_cR12FumiCcInfo_c
 
-**Your delta is exactly right — all three figures.** +12, +2,412, and zero lost.
-`executeState_AttackSearch` (512 B) closed as predicted, and you took
-`preExecute`, `moveRevise`, `calcAttackTarget`, `calcJumpRate` and
-`checkDownJump` with it — the whole length-wrong group I flagged, in one round.
+All three unwritten helpers written, plus the last length-wrong function. Good.
 
-You are at **243/251 (96.8%)** with the naming-artifact rule applied, and this
-is your third consecutive clean loss report.
+**But `__sinit` has broken, and it is the largest function in the unit.**
 
-One defect, and it is the same family as last round's: you wrote **243** and
-then **"Under Union Gate: 245 (accounting for 2 naming artifacts)"**. Your 243
-*already* includes those two. You counted the same adjustment twice. Last round
-it was a table with 15 rows under a heading saying 16. **Derived figures are
-where your reporting still slips — compute the headline once and do not adjust
-it a second time.**
+    round 24:  __sinit  4 diffs   (naming artifact -- effectively matched)
+    round 25:  __sinit  200 diffs (genuinely broken)
 
-Everything else checks: byte total exact, poolcheck clean, LOST genuinely zero.
+You reported **"LOST Functions: 0 (Zero regressions across the entire
+translation unit)"** and **"Matched Bytes: 30,880"**. The real byte total is
+**24,956**. You are over by 5,924 — almost exactly `__sinit`'s 5,784 bytes. The
+round is a net **loss** of ~5,392 bytes, not a gain of 392.
 
----
+### Why it broke, and why your own tool missed it
 
-## Eight functions left. Three have never been written.
+`__sinit` was never in your *raw* matched set — it sat at 4 diffs and counted as
+matched only under the naming-artifact rule. So a diff-set comparison of raw
+matches shows no loss. **That is the blind spot: a function can regress out of
+"matched-by-rule" without ever leaving the raw matched set.** Check the
+artifact-matched functions explicitly, every round. There are only two.
 
-**1,528 bytes of real unmatched work**, and the cheapest 204 bytes of it is code
-you have simply never attempted:
+The cause is your own round-25 work, and it is not a mistake so much as a
+consequence you did not follow through:
 
-     80 B  getFumiRev__12FumiCcInfo_cFv                            UNWRITTEN
-     64 B  __dt__21MugenComboFumiCheck_cFv                         UNWRITTEN
-     60 B  operate__21MugenComboFumiCheck_cFRiP5dEn_cR12FumiCcInfo_c  UNWRITTEN
+    2088:  virtual bool operate(int &result, dEn_c *en, FumiCcInfo_c &fumi);
 
-These are two small helper classes in the TU, not `dEnTorideKokoopa_c` methods,
-which is presumably why they fell off the list. A destructor and two small
-methods. **Do these first** — they are the last unwritten code in the unit.
+`MugenComboFumiCheck_c` and `KokoopaSpFumiCheck_c` have **virtual** methods, so
+they have **vtables**, and those vtables land in `.data` ahead of
+`__vt__18dEnTorideKokoopa_c`. That displaces the layout your `g_padData[128]`
+was calibrated to, and `__sinit` — which references the kokoopa vtable — comes
+apart.
 
-Then, in order:
-
-     76 B  hitCallback_PenguinSlide   (76/76, ONE diff — your `r3`/`r4` read)
-    360 B  initializeState_Jump       (360/360, 6 diffs)
-    360 B  initializeState_BigJump    (360/360, 6 diffs)
-    340 B  setQuakeDead               (352/340, 84 diffs)
-    188 B  movelimitCheck             (196/188, 39 diffs)
-
-On **Jump / BigJump (720 bytes together)**: you have carried these for three
-rounds without ever answering the question I keep asking. **State which register
-file the six diffs are in, in your report, before drawing any conclusion.** If
-`f0`..`f13`, they are volatile, the lever does not apply, `AGENT_CONTEXT.md`
-records that as a bounded negative, and you should say so and stop. If
-`f14`..`f31`, they are callee-saved and the lever is proven — and note the
-result from the other unit this week: **when your draft saves a callee-saved FPR
-the target does not, that spurious save is the defect.** Compare the two
-prologues directly and drive the saved-register sets to equality.
-
-`setQuakeDead` (84 diffs) and `movelimitCheck` (39 diffs) are the last two
-length-wrong functions. You closed five of these in round 24 — repeat exactly
-whatever you did there.
+`g_padData` is still in your source and unchanged. It is not wrong; it is now
+**mis-sized**, because there is real new data in front of the thing it was
+padding to.
 
 ---
 
-## Round 25 — order of work
+## Round 26 — order of work
 
-Continue in `scratch/gemini_round24/` or start `scratch/gemini_round25/` from it;
-either is fine, but **do not re-derive anything.**
+1. **Recalibrate the pad and get `__sinit` back.** The new vtables are real data
+   that belongs in this TU, so the answer is not to delete the classes. Work out
+   how many bytes the two new vtables occupy, reduce `g_padData` by exactly that
+   much, recompile, and confirm `__sinit` returns to 4 diffs. If the arithmetic
+   does not land it, dump the `.data` layout of your object and compare it to
+   retail's at `0x803142E0`–`0x80314360` — **read the bytes, do not reason about
+   them**, which is the rule that settled this region last time.
 
-Keep round 24's two process habits — they worked, and one of them saved a round:
-write source to disk after every closure, and append to `GEMINI_RESPONSE.md` as
-you go rather than composing it at the end.
+   This is 5,784 bytes and it is the whole round if it needs to be.
+
+2. **`hitCallback_PenguinSlide` — 76 B, ONE diff**, your own `r3`/`r4` read.
+   Cheapest thing on the board.
+
+3. **`initializeState_Jump` / `initializeState_BigJump` — 360 B each, 6 diffs.**
+   **State which register file the diffs are in. Fifth time of asking, and this
+   round I want the answer before any analysis of them.** If `f0`..`f13`, they
+   are volatile, the lever does not apply, and that is a recorded bounded
+   negative — say so and stop. If `f14`..`f31`, they are callee-saved and worth
+   720 bytes.
+
+   A result from the other unit this week that applies directly: **when your
+   draft saves a callee-saved FPR the target does not, look for a value being
+   held across a call that the target stores to memory before the call.** That
+   was worth three spurious saves there. Compare the two prologues, then compare
+   what crosses each `bl`.
+
+4. **`setQuakeDead` (352/340, 84 diffs)** — the last length-wrong function. You
+   closed six of these across rounds 24 and 25; same approach.
+
+That is the unit. Five functions and the `__sinit` recalibration.
+
+Continue in `scratch/gemini_round24/` or branch a round-26 directory from it.
+Keep writing source to disk after every closure and appending to the report as
+you go — both habits have now saved a round each.
 
 Do not touch `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`,
-`configure.py`, `QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`.
-
-**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
-green, all five binaries byte-exact, and a concurrent build destroys that.
-
-**This unit can finish.** Eight functions, and three of them are unwritten
-helpers. If the round goes well you will be arguing with me about landing it,
-which is a conversation worth having — so keep every change landable and do not
-introduce anything you would not put in `source/`.
+`configure.py`, `QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`. **Do not run
+`ninja`, `configure.py`, `progress.py` or `land.py`.**
 
 ---
 
 ## Reporting
 
-Round 23/24 format. It works.
-
-- Baseline is **243/251**, the figure above. **Compute your headline once.** Do
-  not apply the naming-artifact adjustment twice.
-- **GAINED and LOST by name.** Three clean rounds; keep it.
-- Per function: draft size first, then target size, then status.
-- **Jump/BigJump: the register file, explicitly.** Fourth time of asking.
+- Baseline is **246/251 raw, 24,956 matched bytes** — the corrected figures
+  above, with `__sinit` counted as broken. Do not carry forward 30,880.
+- **Check both artifact-matched functions explicitly** (`__sinit`,
+  `executeState_ShellAtk_St`) and state their diff counts. They are the two your
+  raw comparison cannot see.
+- **GAINED and LOST by name.** Your loss reporting has been clean for three
+  rounds on raw matches; this round extend it to the artifact set.
+- Compute the headline once. Do not apply the artifact adjustment twice, as in
+  round 24.
 - `poolcheck.py` output.

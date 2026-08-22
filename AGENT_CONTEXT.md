@@ -1872,3 +1872,30 @@ diff count.** Compare the prologues directly — which GPRs and which FPRs each
 side saves — and drive that to equality first. Only once the frames agree does
 the diff count mean anything. A change that removes a spurious callee-saved
 register is progress even when every downstream line shifts.
+
+## A function can regress out of MATCHED-BY-RULE without leaving the raw set
+
+Caught on `d_enemy_toride_kokoopa` round 25, and it hid a 5,784-byte loss under
+a "zero regressions" headline.
+
+Two functions in that unit match only under the naming-artifact rule — they sit
+in the *unmatched* list at 2 and 4 diffs and are counted as matched by judgement.
+A GAINED/LOST diff of the **raw** matched sets therefore cannot see them change:
+
+    round 24  __sinit    4 diffs  (artifact -- effectively matched)
+    round 25  __sinit  200 diffs  (genuinely broken)
+    raw GAINED/LOST both rounds: no loss reported
+
+The round reported +392 bytes gained. The true figure was ~5,392 bytes **lost**.
+
+**The rule: enumerate the artifact-matched functions by name and re-check their
+diff counts every round.** They are invisible to set-difference scoring, so they
+need an explicit list. Any scoring gate that counts a function as matched by a
+rule rather than by comparison inherits this hole.
+
+The cause is also worth keeping: adding a class with **virtual** methods adds a
+**vtable to `.data`**, which displaces everything after it. If a unit's `.data`
+alignment has been calibrated by hand — a pad, a placement assumption, anything
+— **writing a new virtual class invalidates that calibration.** Re-measure the
+layout after adding any class with virtuals, before trusting a `.data`-dependent
+match.

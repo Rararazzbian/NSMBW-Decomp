@@ -1,101 +1,102 @@
-# Work order — round 29
+# Work order — round 30
 
-**One function. One starting file. One change.** Read this whole brief before
-touching anything; it is short on purpose.
+**Read `AGENT_CONTEXT.md` first.**
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Why this round is narrow
+## Round 29: you did everything right. My hypothesis was wrong.
 
-Round 28 compiled 13 objects and moved the deliverable by nothing.
-`scratch/round28/d_bg_ctr/d_bg_ctr.cpp` is byte-identical to round 27's.
+Verified against your artifacts before writing this. You:
 
-The round-28 brief asked you to start from `calc_v1_decl_order` — the 125-word
-variant that had already eliminated the spurious `f28` — and remove `f29` from
-it. Instead every round-28 object went back to the 129-word baseline carrying
-**both** `f28` and `f29`, and the one `calc` attempt reached 139 words. That is
-the second round running that your own best result was discarded, and the first
-where it was discarded against an explicit instruction.
+- started from `calc_v1_decl_order.cpp`, as instructed;
+- compiled it unchanged first and reproduced the gate exactly — **125 words,
+  frame `0x50`, saves `f31 f30 f29`**;
+- made precisely the change I specified and no other;
+- tried two further shapes, then **stopped**, as instructed;
+- reported the saved-register set as the scoreboard;
+- restored the correct `GAINED`/`LOST` definition — *"none (no matched-status
+  change)"* — after last round's drift;
+- touched exactly one function.
 
-So: nothing else this round. Breadth is not the problem.
+Every number reproduces. **That is a clean round and the process question is
+settled.**
 
-**Also, correct the scoreboard.** You reported *"GAINED: every function now has
-a fresh compilable experiment"* and *"GAINED: `target_math_dokan` reached 88
-words"*. Neither is a gain. **GAINED and LOST mean one thing only: a function
-that changed matched status.** The honest entry for round 28 was `GAINED: none,
-LOST: none` — which you also wrote, three lines later. Your numbers were all
-accurate and reproduced exactly; the framing was not. Do not redefine the metric.
+**The result is a negative, and it is my error, not yours.** I predicted that
+inlining `cxs` at both use sites would shorten the live range and drop `f29`.
+It did the opposite — both variants came back at **129 words with `f28` back**,
+i.e. the baseline six-save shape. Recorded: **naming that temporary is better
+than inlining it here**, and the def-point lever does not reach this residual.
+A refuted prediction that moves the number is still information; this one moved
+it the wrong way and that is worth knowing.
 
----
-
-## The task: `calc`, from `calc_v1_decl_order.cpp`, remove the `f29` save
-
-**Start file, exactly:** `scratch/round27/d_bg_ctr/calc_v1_decl_order.cpp`
-Copy it to `scratch/round29/d_bg_ctr/` and work there. Do **not** start from
-`d_bg_ctr.cpp`, and do not re-run the round-27 or round-28 experiments.
-
-State of play:
-
-    target      125 words, frame 0x60, saves f31 f30 r31 r30  and NO other FPR
-    v1          125 words, frame 0x50, saves f31 f30 f29 r31 r30
-    baseline    129 words, frame 0x60, saves f31 f30 f29 f28 r31 r30
-
-v1 is one spurious callee-saved FPR from the target's shape. **`f28` is already
-gone. Remove `f29` the same way.**
-
-### I have located `f29` for you
-
-In `calc_v1_decl_order.txt`, `f29` is written once and read twice, far apart:
-
-     66  fmuls f29, f5, f31      <- computed here
-     77  fsubs f1, f30, f29      <- read here
-     83  fsubs f6, f6, f29       <- and here
-
-A value defined once and consumed at two distant points is exactly what forces
-MWCC to park it in a **callee-saved** register — that is the def-point rule in
-`AGENT_CONTEXT.md` ("a def-point is not free"), and lever 13, the read-side
-def-point.
-
-**The target does not hold that product at all.** Its entire arithmetic body
-runs in volatile registers — every `fmuls` lands in `f13`, `f12`, `f9`, `f8`,
-`f5`, `f4`, `f3`, `f2`, and nothing survives long enough to need saving:
-
-     59  fmuls f13, f7, f31       67  fmuls f5, f2, f31
-     61  fmuls f12, f4, f1        68  fmuls f4, f2, f1
-     62  fmuls f9, f4, f31        70  fmuls f3, f0, f1
-     64  fmuls f8, f7, f1         71  fmuls f2, f0, f31
-
-**The change:** find the named local in `calc_v1_decl_order.cpp` holding that
-`f5 * f31` product and used at both subtraction sites, and **write the
-expression inline at each use instead of storing it in a variable.** Shorten its
-live range to nothing and it should stay volatile.
-
-That is the change. One edit.
+Drop the `Offset-perturbing` line — third time of asking, and it has never
+carried information.
 
 ---
 
-## What to do, in order
+## I looked again, and the real difference is not the live range. It is order.
 
-1. Copy `calc_v1_decl_order.cpp` into `scratch/round29/d_bg_ctr/`. Compile it
-   unchanged first and confirm you reproduce **125 words, `f29` present**. If you
-   cannot reproduce that, stop and report it — everything below depends on it.
-2. Make the single change above. Compile.
-3. Report the **saved-register set** and frame. That is the scoreboard, not the
-   diff count — the frames differ, so the diff count is measuring displacement.
-4. If `f29` is gone and the frame is `0x60`, diff it against target and report
-   what is left. If `calc` matches, fold it into a canonical `d_bg_ctr.cpp`,
-   re-run `diff_ctr.py`, and report the new MATCHED count.
-5. If the change does not remove `f29`, try **at most two** further shapes for
-   shortening that value's live range, and report the saved-register set of each.
-   Then stop.
+Two findings, both single source edits, both from the same side-by-side.
 
-**Do not touch any other function.** Not `revisePos`, not `addDokanMoveDiff`,
-not `fn_80080900`. If you finish early, stop early — a short report that closes
-`calc` is the best outcome available this round.
+### 1. The two trig calls are in the opposite order
 
-Work in `scratch/round29/`. Do not touch `wip/**`, `source/**`, `include/**`,
+    target:  bl CosFIdx  ->  fmr f31, f1  ->  bl SinFIdx
+    v1:      bl SinFIdx  ->  fmr f31, f1  ->  bl CosFIdx
+
+The target computes **cosine first, then sine**. Your draft does sine first.
+Whichever is computed first has to survive the second call, so the call order
+decides what gets parked in a callee-saved register. **Swap them** so cosine is
+evaluated first.
+
+Note the target's `f30` is not a computed value at all — it is a constant load,
+`lfs f30, SYM1@sda21(r0)`. Only **one** computed value crosses a call in the
+target. Three cross one in yours.
+
+### 2. Your three products are held across the `revisePos()` call
+
+This is the bigger one.
+
+    v1      66  fmuls f29, f5, f31        target  77  fadds f31, f10, f1
+            70  fmuls f30, f3, f1                 80  stfs  f31, 0x74(r30)
+            73  fmuls f31, f3, f31
+           ...                                   ...
+           104  bl revisePos                     106  bl revisePos
+
+The target **stores each result to memory as soon as it computes it**, before
+calling `revisePos()`. Your draft computes all three products, holds them in
+registers across the `revisePos()` call, and stores afterwards — which is
+exactly why they need callee-saved registers at all.
+
+**Move the writes to `mScratch[...]` above the `revisePos()` call**, so each
+value is computed and immediately stored. That should let all three live in
+volatile registers and drop `f29`, `f30` and `f28` together.
+
+---
+
+## Round 30 — order of work
+
+Still `calc` first, still from `calc_v1_decl_order.cpp` in `scratch/round30/`.
+You have earned wider scope back, but finish `calc` before moving on.
+
+1. **`calc`** — finding 2 first (store before the call), since it explains three
+   saves rather than one. Then finding 1 (swap the trig call order). Then both
+   together. **Report the saved-register set for each.** If `calc` matches, fold
+   it into a canonical `d_bg_ctr.cpp`, re-run `diff_ctr.py`, report the MATCHED
+   count.
+2. **`fn_80080670` (−3)** — same family: your draft saves FPRs the target does
+   not. Check whether it too is holding values across a call that the target
+   stores first. This is the cheapest test of whether finding 2 generalises.
+3. **`revisePos` (72/72)** — you have two measured negatives here already
+   (target-read-order rewrites, codegen-neutral). Try it once through the
+   store-before-call lens instead, then leave it.
+4. **`addDokanMoveDiff`** — you reached 88 against target 87, the closest it has
+   been. One word. Worth a look now that `calc` may have taught you the shape.
+
+Nothing else. Do not reopen `fn_80080900`.
+
+Work in `scratch/round30/`. Do not touch `wip/**`, `source/**`, `include/**`,
 `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
 `HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`.**
 
@@ -103,13 +104,10 @@ Work in `scratch/round29/`. Do not touch `wip/**`, `source/**`, `include/**`,
 
 ## Reporting
 
-Short. One function.
+Per variant: word count, **saved-register set**, frame size. Diff count last,
+and only where frames agree.
 
-- For every variant compiled: word count, **saved-register set** (which GPRs,
-  which FPRs), frame size. Diff count last, and only where frames agree.
-- **GAINED / LOST by name**, under the definition above — matched-status changes
-  only. `none` is a perfectly good answer and has been the true one twice.
-- `poolcheck.py` on the final object, via the CLI:
+**GAINED / LOST by name**, matched-status changes only — exactly as you did in
+round 29.
 
-      python tools/auto_decomp/poolcheck.py --module wiimj2d \
-          --obj <obj> --txt <disasm> scratch/round29/d_bg_ctr/target.txt
+`poolcheck.py` on the final object.

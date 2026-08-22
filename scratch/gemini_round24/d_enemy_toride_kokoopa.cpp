@@ -166,7 +166,8 @@ static const sDeathInfoData l_dieFire = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_
 static const sDeathInfoData l_dieStar = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0 };
 static const sDeathInfoData l_dieQuake = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0xFF };
 bool dEnTorideKokoopa_c::hitCallback_PenguinSlide(dCc_c *myCc, dCc_c *otherCc) {
-    ((daPlBase_c*)otherCc->getOwner())->setDamage(this, (mUnk794 & 2) ? (daPlBase_c::DamageType_e)2 : (daPlBase_c::DamageType_e)3);
+    daPlBase_c::DamageType_e dmg = (mUnk794 & 2) ? (daPlBase_c::DamageType_e)2 : (daPlBase_c::DamageType_e)3;
+    ((daPlBase_c*)otherCc->getOwner())->setDamage(this, dmg);
     return true;
 }
 
@@ -312,19 +313,8 @@ void dEnTorideKokoopa_c::setQuakeDamage() {
 }
 
 void dEnTorideKokoopa_c::setQuakeDead() {
-    static const sDeathInfoData deathData = {
-        0.0f,
-        3.0f,
-        -4.0f,
-        -0.1875f,
-        &dEnBoss_c::StateID_DieStar,
-        -1,
-        -1,
-        0,
-        0xFF
-    };
     u8 dir = getPl_LRflag(mPos);
-    if (mAnmMatClr.mpChildren[1].getObj() != nullptr) {
+    if (*(u32*)((u8*)mAnmMatClr.mpChildren + 0x3C) != 0) {
         mAnmMatClr.setFrame(0.0f, 1);
     }
     removeCc();
@@ -332,14 +322,14 @@ void dEnTorideKokoopa_c::setQuakeDead() {
     mUnk792 = 0;
     mUnk790 = 0;
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
-    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
-    if (base != nullptr) {
-        base->deleteRequest();
+    dActor_c *act = (mUnk770 == 0) ? nullptr : (dActor_c*)fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (act != nullptr) {
+        act->deleteRequest();
     }
     mActorProperties &= ~8;
-    sDeathInfoData death = deathData;
-    death.mDirection = dir;
-    mDeathInfo = death;
+    sDeathInfoData deathData = (sDeathInfoData){ 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0xFF };
+    deathData.mDirection = dir;
+    mDeathInfo = deathData;
 }
 
 void dEnTorideKokoopa_c::setShellDamage(dActor_c *killedBy) {
@@ -483,18 +473,17 @@ float dEnTorideKokoopa_c::getJumpDist() const {
 }
 
 bool dEnTorideKokoopa_c::movelimitCheck(float dist) {
-    float targetX = mPos.x + dist * (float)l_EnMuki[mDirection];
-    float limit = (&mUnk840)[mDirection] + dGameCom::getDispCenterX();
+    float targetX = mPos.x + (float)l_EnMuki[mDirection] * dist;
+    float dispX = dGameCom::getDispCenterX();
+    float limit = (&mUnk840)[mDirection];
+    limit += dispX;
+    bool res = false;
     if (mDirection == 0) {
-        if (targetX >= limit) {
-            return true;
-        }
+        if (targetX >= limit) res = true;
     } else {
-        if (targetX <= limit) {
-            return true;
-        }
+        if (targetX <= limit) res = true;
     }
-    return false;
+    return res;
 }
 
 int dEnTorideKokoopa_c::calcDirAngle(short step) {
@@ -1884,35 +1873,6 @@ void dEnTorideKokoopa_c::getupSE() {}
 float dEnTorideKokoopa_c::getKokoopaOnFrm() const { return 0.0f; }
 float dEnTorideKokoopa_c::getShellOffFrm() const { return 0.0f; }
 
-bool KokoopaSpFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
-    result = 0;
-    daPlBase_c *player = (daPlBase_c*)fumi.mCc2->mpOwner;
-    if ((*(u32*)((char*)player + 0x1074) | *(u32*)((char*)player + 0x1078)) != 0) {
-        if (player->mSpeed.y > 0.0f) {
-            result = 0;
-            return true;
-        }
-    }
-    if (!player->mBc.isFoot() && en->mSpeed.y > 0.0f) {
-        if (*(s32*)((char*)player + 0x1090) == 3) {
-            if (player->mPos.y >= en->mPos.y + 4.0f) {
-                int plrNo = player->getPlrNo();
-                en->mNoHitPlayer.mTimer[plrNo] = 24;
-                result = 1;
-                return true;
-            }
-        } else {
-            if (player->mPos.y >= en->mPos.y + 10.0f) {
-                int plrNo = player->getPlrNo();
-                en->mNoHitPlayer.mTimer[plrNo] = 24;
-                result = 1;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 void dEnTorideKokoopa_c::initializeState_DieFumi_St() {
     const char *anmName = mpParamShell->mAnmNames[1];
     if (anmName != nullptr) {
@@ -2122,6 +2082,12 @@ void dEnTorideKokoopa_c::executeState_DemoEscape_St() {}
 float dEnTorideKokoopa_c::getShellOnFrm() const { return 0.0f; }
 float dEnTorideKokoopa_c::getKokoopaOffFrm() const { return 0.0f; }
 
+class KokoopaSpFumiCheck_c : public FumiCheckBase_c {
+public:
+    virtual ~KokoopaSpFumiCheck_c() {}
+    virtual bool operate(int &result, dEn_c *en, FumiCcInfo_c &fumi);
+};
+
 dEnTorideKokoopa_c::dEnTorideKokoopa_c() :
     mResFile(),
     mMdlKokoopa(),
@@ -2159,5 +2125,58 @@ dEnTorideKokoopa_c::~dEnTorideKokoopa_c() {
     mCc.release();
 }
 
+float FumiCcInfo_c::getFumiRev() {
+    dActor_c *owner = mCc2->mpOwner;
+    switch ((int)owner->mKind) {
+    case 1:
+        if (mCc2->mCcData.mAttack == CC_ATTACK_SPIN) {
+            return mCc1->mCollOffsetY[CC_KIND_PLAYER_ATTACK];
+        } else {
+            return mCc1->mCollOffsetY[CC_KIND_PLAYER];
+        }
+    case 2:
+        return mCc1->mCollOffsetY[CC_KIND_YOSHI];
+    }
+}
 
+bool MugenComboFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
+    result = 0;
+    daPlBase_c *player = (daPlBase_c*)fumi.mCc2->mpOwner;
+    if (!player->isNowBgCross(daPlBase_c::BGC_FOOT)) {
+        if (player->mSpeed.y < 0.0f) {
+            result = 1;
+        }
+    }
+    return true;
+}
 
+bool KokoopaSpFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
+    result = 0;
+    daPlBase_c *player = (daPlBase_c*)fumi.mCc2->mpOwner;
+    if ((*(u32*)((char*)player + 0x1074) | *(u32*)((char*)player + 0x1078)) != 0) {
+        if (player->mSpeed.y > 0.0f) {
+            result = 0;
+            return true;
+        }
+    }
+    if (!player->mBc.isFoot() && en->mSpeed.y > 0.0f) {
+        if (*(s32*)((char*)player + 0x1090) == 3) {
+            if (player->mPos.y >= en->mPos.y + 4.0f) {
+                int plrNo = player->getPlrNo();
+                en->mNoHitPlayer.mTimer[plrNo] = 24;
+                result = 1;
+                return true;
+            }
+        } else {
+            if (player->mPos.y >= en->mPos.y + 10.0f) {
+                int plrNo = player->getPlrNo();
+                en->mNoHitPlayer.mTimer[plrNo] = 24;
+                result = 1;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+MugenComboFumiCheck_c::~MugenComboFumiCheck_c() {}

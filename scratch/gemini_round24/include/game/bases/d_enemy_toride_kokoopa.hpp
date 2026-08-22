@@ -2,11 +2,7 @@
 #include <game/bases/d_enemy_boss.hpp>
 #include <game/mLib/m_effect.hpp>
 
-class KokoopaSpFumiCheck_c : public FumiCheckBase_c {
-public:
-    virtual ~KokoopaSpFumiCheck_c() {}
-    virtual bool operate(int &result, dEn_c *en, FumiCcInfo_c &fumi);
-};
+class KokoopaSpFumiCheck_c;
 
 class dEnTorideKokoopa_c : public dEnBoss_c {
 public:
