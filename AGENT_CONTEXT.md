@@ -1722,3 +1722,80 @@ Note what did NOT work: named `mVec2_c` temporaries (29w, regressed), and named
 `f32` temporaries in natural order (25w, still 7 diffs). **The lever is the order
 of the reads, not the presence of temporaries** -- related to lever 13, and to
 lever 12 (FP register rotation is evaluation order).
+
+## A `SYM<n>` vs named-local diff is a NAMING ARTIFACT, not a code difference
+
+Extension of the "text-only gate undercounts" entry, and the failure mode is now
+observed in **both** directions on one unit, so state it symmetrically.
+
+The canonicaliser rewrites symbols it cannot resolve to a stable name as `SYM0`,
+`SYM1`, ... It does this **per side, independently**. Whenever one side has a
+real name and the other has a placeholder, you get a manufactured diff:
+
+    executeState_ShellAtk_St   T: lis r3, SYM2@ha       D: lis r3, l_bounceSpeed@ha
+    __sinit                    T: lis r28, __vt__18dEnTorideKokoopa_c@ha
+                               D: lis r28, SYM0@ha
+
+The second case is worse than it looks: naming one symbol shifts **every
+subsequent placeholder**, so a single unnamed symbol turned into 4 diffs across
+`__sinit` and made a 1,446-instruction exact match read as a miss.
+
+**Rule: if the only difference on a line is the symbol operand, and one side is
+`SYM<n>` while the other is a named local, it is a match.** Check whether the
+placeholders are merely renumbered before concluding anything. Do not spend time
+closing these, and do not count them against a peer's report.
+
+## If `__sinit` matches with INERT data in place, the occupant is not constructed
+
+**This entry retracts the `dDeathInfo_c` attribution given for the
+`d_enemy_toride_kokoopa` 128-byte `.data` region.** The attribution was mine and
+it was wrong.
+
+The reasoning that produced it was: the region is zero before `__sinit` runs, so
+the occupant must be something with a zero static image, therefore a
+runtime-constructed object such as `dDeathInfo_c` (user-written constructor, zero
+image, entry in `__sinit`).
+
+The refutation is a measurement. With an inert 128-byte array in place:
+
+    with pad     __sinit: 4 diffs (all naming artifacts -- i.e. matching)
+    without pad  __sinit: 200 diffs
+
+`__sinit` matches retail **instruction for instruction** with data that has no
+constructor. A runtime-constructed occupant would contribute calls to `__sinit`
+and the counts could not match.
+
+**The general rule: `__sinit` is the discriminator between static and
+constructed data.** If a candidate occupant is runtime-constructed, it must show
+up as extra `__sinit` instructions. If `__sinit` already matches without them,
+the occupant is static. "Zero before `__sinit` runs" narrows the field; it does
+not select a constructed object, and a size that divides the shortfall still is
+not evidence.
+
+## `bl CosFIdx` does NOT rule out `CosIdx` in the source -- the Idx forms are inline
+
+`nw4r::math::CosIdx` / `SinIdx` are **inline wrappers**, so both spellings emit
+the same call and the call is never the diff:
+
+    include/lib/nw4r/math/math_triangular.h:41,61
+    CosIdx(short idx) -> CosF(U16ToF32(idx)) -> CosFIdx(U16ToF32(idx) * (1.0f/256.0f))
+
+The difference is in the **argument**. `U16ToF32`
+(`include/lib/nw4r/math/math_arithmetic.h:113`) is
+`OSu16tof32(&arg, &ret)`, a GQR3 u16-dequantising paired-single load which does
+the 16-bit load *and* the `1/256` scale in one instruction, straight from the
+object field:
+
+    lha   r31, 0x0(r3)
+    psq_l f1, 0x0(r3), 1, qr3
+    bl    CosFIdx__Q24nw4r4mathFf
+
+Hand-writing `CosFIdx((f32)rot * (1.0f/256.0f))` compiles to a load, a convert
+and an `fmuls` instead -- several words longer per call site.
+
+**Rule: a `psq_l ..., 1, qr3` against the target is a signature of the
+`U16ToF32`/`S16ToF32` conversion helpers.** Reach for the existing inline in
+`math_triangular.h`; do not declare a new one, and do not conclude from the
+`bl` target that the source used the `FIdx` form. Note the target reloads the
+same field with a second `psq_l` for the sine rather than reusing the converted
+float -- do not fold those into one load.

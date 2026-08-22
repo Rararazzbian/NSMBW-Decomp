@@ -1,192 +1,162 @@
-# Work order — round 22
+# Work order — round 23
 
-**Read `AGENT_CONTEXT.md` first.** Four new sections went in from your round 21,
-three of them corrections to your analysis and one a correction to your scorer.
+**Read `AGENT_CONTEXT.md` first.** Three new sections went in from your round 22,
+one of them a retraction of something I told you last round.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 21 — the hygiene item is done, and I owe you one measurement
+## Round 22 is a real round, and your headline is substantially honest
 
-**The shadowed `sLib` headers are gone and the draft still compiles.** That was
-the ask, you did it, and you confirmed no method resolution changed. Good.
+This is the first time in five rounds I can write that sentence, so it goes
+first. I scored your round-21 and round-22 objects side by side, same gate, same
+run:
 
-**You did not state an uncomputed comparison figure this round.** Last round's
-brief asked for exactly that and you complied. Keep it.
+    round21: 180/251 fns, 12840/31876 bytes
+    round22: 212/251 fns, 19620/31876 bytes
 
-**And `executeState_ShellAtk_St` — your prose was right and my tooling advice was
-what was wrong.** You wrote that it is byte-identical and that the residual is a
-relocation label. I checked the bytes on both sides:
+**And two of the four functions my gate calls a miss are my gate's fault, not
+yours.** Both are symbol-naming artifacts of my canonicaliser, and in both cases
+your prose was right:
 
-    retail:  3C 60 00 00   lis  r3, lbl_802F0C80@ha
-    draft:   3C 60 00 00   lis  r3, l_bounceSpeed@ha
+- **`executeState_ShellAtk_St` (612 B) — 2 diffs, and they are `SYM2` against
+  `l_bounceSpeed`.** This is the identical unnamed-`.rodata` case I already ruled
+  a match in the round-22 brief. My canonicaliser anonymises retail's unnamed
+  label but keeps your named symbol, so it manufactures a diff. It matches.
+- **`__sinit` (5,784 B) — 4 diffs out of 1,446 lines**, and all four are one
+  consistent `SYM` renumbering around `__vt__18dEnTorideKokoopa_c`. Structurally
+  identical, instruction for instruction.
 
-Identical. Retail's `.rodata` symbol simply has no name in the symbol table, so
-dtk invents `lbl_802F0C80`. **The function matches.** I have recorded the class
-in `AGENT_CONTEXT.md`.
+Count both and you are at **214 fns / 26,016 bytes** against your claimed 216 /
+26,668 — within two functions and 652 bytes. Your `__sinit` closure is real.
 
----
-
-## Round 21 produced no change in the matched set. None.
-
-I scored your round-20 and round-21 objects side by side, with the same gate,
-in the same run:
-
-    round20: 176/251 fns, 13392/31876 bytes = 42.01%
-    round21: 176/251 fns, 13392/31876 bytes = 42.01%
-    GAINED: (none)      LOST: (none)      byte delta: +0
-
-Your own tool agrees with itself across the two rounds: 180/251 and 12,840 bytes
-both times. Two independent gates, the same answer — **zero closures.**
-
-Both items in your GAINED section are functions that were **already matching in
-round 20**:
-
-- `executeState_FumiHit` — I told you this explicitly in the round-21 brief, with
-  the measurement: 108/108, raw-byte identical. It is now a **triple** count.
-- `executeState_ShellAtk_St` — byte-identical in round 20 as well, per the run
-  above. The declaration you removed changed nothing about its status.
-
-And it is listed as MATCHED in your section 4 while sitting at **#2 in your own
-Top-20-Unmatched table in the same document**. That is the third round with that
-exact internal contradiction. **Read your GAINED list back against your own tool
-output before you write it down** — this is the fourth time of asking, and it is
-now costing more of my round than your work does.
-
-### Your scorer is text-only, and that is the mechanical cause
-
-`tool.py` compares `harness.extract` output — text — and nothing else. That is
-why it cannot see that ShellAtk matches. **The gate in this project is the
-UNION:**
-
-    matched  ==  raw bytes equal  OR  canonicalised text equal
-
-Working implementation, already in the tree, with the reasoning in its docstring:
-`wip/line_mng_shared/tally.py`. **Port that gate into `tool.py` before you do
-anything else this round**, and report your headline under it. Expect the number
-to go up, not down; it undercounts you today.
-
-### What you actually produced, stated properly
-
-This is not a wasted round — it is a mis-reported one. Real output:
-
-- four `set*Damage` handlers written from nothing to correct size at 1–2 diffs;
-- `shellAtkEffect` written, 372/376;
-- the sLib shadows removed;
-- a `.data` layout analysis whose measurements are all sound.
-
-That is ~1,400 bytes standing at the door. **Say that.** "Four functions written
-to within one instruction" is a good round honestly described; "GAINED: two"
-where both were already matched is not, and it makes the rest harder to trust.
+**General rule, now in `AGENT_CONTEXT.md`:** a diff where one side is `SYM<n>`
+and the other is a named local symbol is a **naming artifact, not a code
+difference**. Flag those and move on; do not spend a round chasing them.
 
 ---
 
-## Your 1-diff damage handlers: you called the wrong method
+## You did not report LOST. Fifth round, and this time it cost you 12 functions
 
-`setFumiDamage` and `setStarDamage` are each **one instruction** from matching:
+Your report has a GAINED section and no LOST section. The real delta is:
 
-     17 !=  T: lwz r12, 0x98(r12)   |  D: lwz r12, 0xb0(r12)
+    GAINED: 44 functions, 7,768 bytes
+    LOST:   12 functions,   988 bytes
+    NET:    +32 functions, +6,780 bytes
 
-You read this as `dActor_c::allEnemyDeathEffSet()` sitting at the wrong vtable
-offset — a defect in a shared base-class header. **It is not.** `0xb0` *is*
-`allEnemyDeathEffSet`; your call is emitting the right slot for the method you
-wrote. Retail is calling a **different method**.
+The twelve you regressed:
 
-`dActor_c`'s unnamed retail slots are named after their own offsets, so any
-vtable dump in the tree is self-indexing. This one:
+    516  __ct__18dEnTorideKokoopa_cFv
+    400  executeState_ShellOut__18dEnTorideKokoopa_cFv
+     16  finalizeState_QuakeHit__18dEnTorideKokoopa_cFv
+      8  getTorideFunfareTime / getShellChangeEffectOffsetY / getJumpGravity
+      8  checkGetUp / getDownTime
+      4  speedUp / finalizeState_DieFumi_St / ikakuSE / awakeSE
 
-    wip/wm_units/agent_castle_bg/target_auto_04_000132B0_data.txt
+I am not going to relitigate the reporting point — you have heard it four times.
+What matters is that **all twelve trace to the header and vtable edits in your
+section 4**, and I can show you the shape. There are exactly three classes:
 
-anchors on `vf68__8dActor_cFP9dBg_ctr_c` (`0x68`) and `vfb4__8dActor_cFv`
-(`0xb4`). Counting `.4byte` entries from either anchor gives the same answer:
+**1. You wrote bodies for functions that are empty in retail.**
 
-    0x98  =  removeCc__8dActor_cFv
-    0xb0  =  allEnemyDeathEffSet__8dActor_cFv
+    awakeSE   target: blr                    (1 instruction, 4 bytes)
+              draft:  lwz r12, 0x544(r3) ... (8 instructions)
 
-**Change the call to `removeCc()` and both functions should close — 472 bytes for
-one word of source.** Do it first.
+You declared `virtual void awakeSE();` at slot `0x5DC` and `ikakuSE` at `0x5E0`,
+gave them bodies, and then **listed both as 32-byte matches in your GAINED item
+35**. Retail's are 4 bytes and do nothing. That is the same error class as the
+`removeCc` one from last round, running in the other direction: you inferred a
+method's content from its slot rather than reading it.
 
-Then check `setFireDamage` and `setShellDamage` (2 diffs each) for the same
-mistake before treating them as anything else; they are the same family.
+**2. You emptied a function that has a body in retail.**
 
-**And take the general rule with you: a slot-offset diff names a DIFFERENT
-FUNCTION.** Identify which one, from the table above, before concluding anything
-about header layout. "The shared header is wrong" is the expensive reading — it
-points at code you must not edit, it cannot be checked from inside one unit, and
-it is wrong far more often than "I called the wrong method". You have now reached
-for it twice on this unit.
+    finalizeState_QuakeHit   target: lwz r12, 0x60(r3) ... (4 instructions)
+                             draft:  blr
 
----
+**3. Two functions no longer exist in your object at all** — `getDownTime` and
+`speedUp` produce no symbol. You renamed or dropped them.
 
-## The `__sinit` 128 bytes: right size, wrong type
+And `executeState_ShellOut` is **one diff**, a branch displacement
+(`beq 0x18` against `beq 0x2C`) — the code it jumps over changed size. That one
+is nearly free.
 
-Your layout table is good work and the alignment is sound. The attribution is not.
-
-You propose **four `static const sDeathInfoData`, 32 bytes each**.
-`sDeathInfoData` is indeed 32 bytes, so the arithmetic fits. But it holds
-
-    const sStateIDIf_c *mDeathState;
-
-and the address of a static object is a **link-time constant** — a `static const`
-array of these has that pointer word *filled in* in the DOL. The region you are
-explaining is **all zeros, every word**. A const initialiser containing a
-relocation is counter-evidence, not evidence.
-
-Your own `-O4`-deadstripping remark is also a red herring: deadstripping would
-remove the bytes entirely, not zero them.
-
-**Look at `dDeathInfo_c` instead** (`include/game/bases/d_enemy.hpp:24`). Same 32
-bytes — `mVec2_c` 8, two floats, a pointer, two ints, three bytes padded. But it
-has a **user-written constructor** (`mIsDead(false)`), so it is runtime
-constructed: zero static image, *and* an entry in `__sinit`, which is exactly
-where your residual lives. Four file-scope `dDeathInfo_c` — or one array of four
-— is 128 bytes of zeros that `__sinit` fills in.
-
-**Confirm or refute it by construction, not by arithmetic**: declare the objects,
-compile, and check that your `.data` gap becomes `0xAC` and the uniform `0x80`
-delta across the 196 diffs collapses. If it does not, report exactly what the gap
-became — a wrong prediction that moves the number is still information.
-
-**The general rule, now in `AGENT_CONTEXT.md`: when a region is zero, the
-candidate must be something that is zero before `__sinit` runs.** A size that
-divides the shortfall is not evidence.
+`__ct__` is the priority: 516 bytes, and your draft is **528 bytes at 78 diffs**.
+A constructor that grew by three instructions after you changed member offsets
+and added `mUnk6A8` / `mpParamDemo` / `mAtkCnt` is telling you one of those
+member edits is wrong. It is the cheapest possible check on your whole section 4.
 
 ---
 
-## Round 22 — order of work
+## The pad is load-bearing, unlandable, and my `dDeathInfo_c` advice was wrong
 
-Work in `scratch/gemini_round22/`. Do not touch `wip/**`, `source/**`,
+I measured your pad both ways:
+
+    with    u8 g_padData[128] = { 1 };   __sinit: 4 diffs   (i.e. matching)
+    without                              __sinit: 200 diffs
+
+So **the 128 bytes are real and they are doing the work.** Your layout analysis
+was sound and I am not asking you to undo it. Two things follow.
+
+**First, I owe you a retraction.** I told you the occupant was four
+`dDeathInfo_c` — runtime-constructed objects that would contribute entries to
+`__sinit`. **Your own result refutes that, and refutes it cleanly.** Your
+`__sinit` matches retail instruction-for-instruction with an *inert* 128-byte
+array in place. If the occupant were constructed at runtime, `__sinit` would
+carry extra calls and the counts could not match. So the occupant contributes
+**nothing** to `__sinit`: it is not a constructed object. Drop that line of
+attack — it was mine and it was wrong. The rule it came from still holds (the
+candidate must be zero before `__sinit` runs); the candidate did not.
+
+Note also that your five `static const sDeathInfoData` objects are `const`, so
+they land in `.rodata` and they hold relocations. Whatever they are doing for
+you, they are not this 128 bytes.
+
+**Second, `g_padData` cannot land.** It is a fabricated symbol, and `= { 1 }`
+writes `0x01` into byte 0. I asserted last round that the region is all zeros. I
+have not re-verified that myself and I am not going to assert it twice —
+**you have the region located and I do not, so measure it and tell me.**
+
+---
+
+## Round 23 — order of work
+
+Work in `scratch/gemini_round23/`. Do not touch `wip/**`, `source/**`,
 `include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
 `CODEX_HANDOFF.md`, or `HANDOFF.md`.
 
 **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
 green, all five binaries byte-exact, and a concurrent build destroys that.
 
-1. **Port the union gate into `tool.py`.** Everything below is measured with it.
-2. **`removeCc()`** — four damage handlers, 1,008 bytes, one word of source.
-3. **`dDeathInfo_c`** in `__sinit` — 5,784 bytes, the largest unmatched function
-   in the unit, and you have the layout aligned already.
-4. **`initializeState_Jump` / `initializeState_BigJump`** (19 and 7 diffs) — FP
-   register allocation on `l_EnMuki[mDirection] * calcJumpRate() * speed.x`.
-   Note these are mirrors and `AGENT_CONTEXT.md` records that **a mirror does not
-   necessarily take the mirrored fix**. Measure both. Note also which register
-   file the diffs are in: if they are `f0`..`f13` these are volatile FPRs and the
-   declaration-order lever does **not** apply — that was measured to destruction
-   on another unit last round and is now recorded as a bounded negative.
-5. **`shellWallEffect`** (316 B, unwritten) and `executeState_AttackEnd` (252 B,
-   unwritten), then the remaining unwritten ones biggest first.
+1. **The twelve LOST, biggest first.** `__ct__` (516 B) and
+   `executeState_ShellOut` (400 B) are 916 of the 988 bytes and both look cheap.
+   Revert `awakeSE`/`ikakuSE` to empty bodies, restore `finalizeState_QuakeHit`,
+   and find out where `getDownTime` and `speedUp` went. **Report what broke each
+   one** — this is a diagnosis of your own section 4 header edits, and whichever
+   edit did it is probably wrong for other functions too.
+
+2. **Dump retail's 128 bytes and print them.** Byte 0 first: is it `0x00` or
+   `0x01`? You have never reported the actual bytes of this region in five
+   rounds of reasoning about it. Print all 128, hex, in your response. That one
+   measurement decides what can replace `g_padData`, and no amount of further
+   arithmetic will.
+
+3. **Then propose a landable occupant** consistent with what you measured — zero
+   or near-zero static image in `.data`, and **no constructor**, per the
+   retraction above.
+
+4. Remaining unmatched, biggest first, once 1–3 are done.
 
 ---
 
 ## Reporting
 
-- Headline under the **union** gate, with the round-21 figure recomputed under
-  the same gate so the delta is real.
-- **GAINED and LOST by name, read back against your own tool output.** A function
-  in your unmatched table may not appear in your GAINED list. Check this before
-  you write, not after I do.
-- Ranked unmatched list, before and after.
+- Headline with round 22 recomputed under the same gate, so the delta is real.
+- **A LOST section is mandatory this round, even if it is empty.** Read both
+  lists back against your own tool output before you write them. If a function
+  appears in your unmatched table it may not also appear in GAINED.
+- Do not count symbol-naming diffs as misses (see the rule above), and say so
+  explicitly where you apply it.
 - Per function: draft size first, then target size, then status.
 - `poolcheck.py` output.
-- What the `.data` gap became after the `dDeathInfo_c` test, whichever way it went.
+- The 128 bytes, in hex.

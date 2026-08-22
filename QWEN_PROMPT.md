@@ -1,137 +1,156 @@
-# Work order — round 24
+# Work order — round 25
 
-**Read `AGENT_CONTEXT.md` first.** Two new sections came out of your round 23.
+**Read `AGENT_CONTEXT.md` first.** Two new sections came out of your round 24.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 23 — verified, and both results are now general rules
+## Round 24 — verified in full, and every number reproduced
 
-I reproduced everything independently before writing this.
+I reproduced everything independently before writing this, and this is the
+cleanest round anyone has turned in on this project. Stated plainly so it is on
+the record:
 
-**`set(sBgSetInfo)` is CLOSED.** 25/25, MATCHING, confirmed. And the lever is
-recorded as general: *named temporaries in the target's READ order*, not merely
-named temporaries. The three variants you measured are what make it a rule —
-`mVec2_c` temps regressed, `f32` temps in natural order stayed at 7 diffs, and
-only retail's `f4/f0/fC/f8` order closed it. That is a clean isolation.
+**All eight bodies compile, and every figure in your table is exact.** I reran
+your own `diff_ctr.py` against both round 23 and round 24 in the same session:
 
-**The `ProcMain` FPR negative is accepted, and your explanation upgraded my own
-rule.** 45 lines reproduced exactly. You were right that the declaration-order
-lever governs **callee-saved** `f28`..`f31` while `mMin`/`mMax` are living in
-volatile `f0`..`f2`, which the scheduler allocates. I had stated the rule without
-that boundary; `AGENT_CONTEXT.md` now carries it, with the diagnostic *check
-which register file the residual is in before reaching for the lever*.
+    round23:  MATCHED: 31  DIFFER: 8  MISSING: 0  (target 39)
+    round24:  MATCHED: 31  DIFFER: 8  MISSING: 0  (target 39)
 
-**`ProcMain` is closed as a bounded negative.** Do not open it again.
+and the eight went from stubs to real bodies exactly as you reported:
 
-**31/8/0 on `d_bg_ctr` reproduces.** Both units clean on `poolcheck`.
+| Function | target | r23 draft | r24 draft |
+|---|---|---|---|
+| `fn_80080900` | 256 | 2 | 208 |
+| `fn_80080670` | 130 | 2 | 127 |
+| `calc` | 125 | 1 | 138 |
+| `fn_80080E40` | 121 | 2 | 124 |
+| `fn_8007FFA0` | 115 | 1 | 114 |
+| `addDokanMoveDiff` | 87 | 1 | 91 |
+| `revisePos` | 72 | 1 | 72 |
+| `fn_80080880` | 32 | 2 | 31 |
 
----
+**You reported GAINED {} / LOST {} and that is correct** — I checked the matched
+set by name, both units, and it is unchanged. You described a round that moved
+906 words from un-compiled prose to measured bodies *without* claiming a single
+function it did not close. That is exactly the reporting standard, and it is the
+reason I can spend this round on your leads instead of on your arithmetic.
 
-## Round 23 — the half that did not land
-
-The eight stubs are 906 words of target — the entire remaining value of the unit
-— and the bodies you wrote for them are sitting in `.txt` files that have never
-been through the compiler. **Prose that has not compiled is not a measurement.**
-An un-compiled body is worth roughly nothing: every lever in this project is a
-codegen lever, and none of them can be evaluated without an object file.
-
-You stopped for a good reason — missing declarations — and you named them
-accurately. I checked all of them. Here is the resolution, so that reason is gone.
-
-### What already exists — just include it
-
-| you needed | it is here |
-|---|---|
-| `nw4r::math::CosFIdx`, `SinFIdx` | `include/lib/nw4r/math/math_triangular.h` |
-| `cM::atan2s` | `include/game/cLib/c_math.hpp` |
-| `mMtx_c::ZrotS`, `mMtx_c::multVecZero` | `include/game/mLib/m_mtx.hpp` |
-| `dScStage_c::getLoopPosX` | `include/game/bases/d_s_stage.hpp` |
-| `dBaseActor_c::getCenterPos` | `include/game/bases/d_base_actor.hpp` |
-| `dBc_c::mpOwner`, `mpNoHitActor` | `include/game/bases/d_bc.hpp` (lines 156, 171) |
-| `PSVECMag`, `PSMTXTrans`, `PSMTXConcat` | `include/lib/revolution/MTX/vec.h`, `mtx.h` |
-
-`EGG::Math` is in `include/lib/egg/math/eggMath.h`.
-
-### What genuinely does not exist — propose it, do not add it
-
-Four declarations are missing from the tree, and you read all four correctly out
-of the target, so I am confident in them:
-
-    nw4r::math::Atan2Idx(f32, f32)                       // bl Atan2Idx__Q24nw4r4mathFff
-    nw4r::math::IntersectionSegment3Sphere(...)
-    nw4r::math::DistSqSegment3ToSegment3(...)
-    the SEGMENT3 and SPHERE types both of those take
-
-`include/lib/nw4r/math/math_geometry.h` has `AABB` and `IntersectionResult` but
-neither segment type. `math_triangular.h` has `Atan2FIdx`/`Atan2Deg`/`Atan2Rad`
-but not `Atan2Idx` — and the target calls it out of line, so it is a real
-function, not an inline.
-
-**These are shared headers. Do not edit `include/**`.** Write your proposed
-declarations to `scratch/round24/proposed_nw4r_geometry.hpp` and shadow it
-locally to unblock yourself. I will land it alone, before anything else, because
-a shared-header change has to be verified by itself.
-
-Derive the signatures from the mangled names rather than guessing:
+**Your nw4r geometry header is right where it matters.** Both segment symbols
+are in the target disassembly verbatim:
 
     IntersectionSegment3Sphere__Q24nw4r4mathFPCQ34nw4r4math8SEGMENT3PCQ34nw4r4math6SPHEREPfPf
     DistSqSegment3ToSegment3__Q24nw4r4mathFPCQ34nw4r4math8SEGMENT3PCQ34nw4r4math8SEGMENT3PfPf
 
-Both take two pointer-to-const arguments and two `f32*` out-parameters.
-`IntersectionSegment3Sphere` returns `bool` in the retail ABI unless the use site
-says otherwise — check how the return value is consumed and report which you
-chose and why. For the struct layouts, use the target's own load offsets: every
-field access in `fn_80080900` tells you the size and order of `SEGMENT3`.
+`Atan2Idx__Q24nw4r4mathFff` is also real, but note where it is: it is called from
+**`fn_8007FFA0` and `addDokanMoveDiff`**, not from `fn_80080900`. `fn_80080900`
+calls **`atan2s__2cMFff`** twice — and your draft already does that correctly, so
+this is a note for your header's documentation, not a code defect.
 
 ---
 
-## Round 24 — compile the bodies
+## Your `calc` / `addDokanMoveDiff` fix is correct — and you must not write it
 
-Work in `scratch/round24/`. Do not touch `wip/**`, `source/**`, `include/**`,
+You proposed replacing `CosFIdx((f32)rot * (1.0f/256.0f))` with
+`nw4r::math::CosIdx(rot)` / `SinIdx(rot)`. **Do it. It is right.** But you were
+about to declare these yourself, and the tree already has them:
+
+    include/lib/nw4r/math/math_triangular.h:41   inline f32 SinIdx(short idx) { return SinF(U16ToF32(idx)); }
+    include/lib/nw4r/math/math_triangular.h:61   inline f32 CosIdx(short idx) { return CosF(U16ToF32(idx)); }
+
+**Resolve the objection you would otherwise hit.** You may look at the target,
+see `bl CosFIdx__Q24nw4r4mathFf`, and conclude that it therefore cannot be
+`CosIdx`. That is a false dichotomy — `CosIdx` is **inline** and expands to
+
+    CosIdx(idx) -> CosF(U16ToF32(idx)) -> CosFIdx(U16ToF32(idx) * (1.0f/256.0f))
+
+so it emits `bl CosFIdx` too. Both spellings produce the same call. The call is
+not the diff.
+
+**The diff is the argument, and you already found it.** The `psq_l f1, 0x0(r3),
+1, qr3` you spotted is `U16ToF32` inlining to
+
+    include/lib/nw4r/math/math_arithmetic.h:113   inline f32 U16ToF32(u16 arg) { f32 ret; OSu16tof32(&arg, &ret); return ret; }
+
+`OSu16tof32` is a GQR3 u16-dequantising paired-single load: it does the 16-bit
+load *and* the `1/256` scale in one instruction, straight from the object field.
+Your manual `(f32)rot * (1.0f/256.0f)` compiles to a load, a convert and an
+`fmuls` instead. **That sequence is where your +13 and +4 words are.**
+
+Here is the target's `calc` doing it, for confirmation:
+
+    lha   r31, 0x0(r3)
+    psq_l f1, 0x0(r3), 1, qr3
+    bl    CosFIdx__Q24nw4r4mathFf
+    psq_l f1, 0x0(r3), 1, qr3
+    bl    SinFIdx__Q24nw4r4mathFf
+
+Note it reads the same field twice with `psq_l` rather than keeping the converted
+float alive — do not "optimise" that into one load.
+
+These two are **mirrors**, and `AGENT_CONTEXT.md` records that a mirror does not
+necessarily take the mirrored fix. Measure both separately.
+
+---
+
+## Round 25 — order of work
+
+Work in `scratch/round25/`. Do not touch `wip/**`, `source/**`, `include/**`,
 `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
-`HANDOFF.md`.
-
-**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
-green, all five binaries byte-exact, and a concurrent build in this checkout
+`HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`**
+— the tree is green, all five binaries byte-exact, and a concurrent build
 destroys that.
 
-**One instruction: get all eight bodies compiling, and report each one's real
-diff count.** Largest first — `fn_80080900` (256w), `fn_80080670` (130w), `calc`
-(125w), `fn_80080E40` (121w), `fn_8007FFA0` (115w), `addDokanMoveDiff` (87w),
-`revisePos` (72w), `fn_80080880` (32w).
+1. **`calc` (+13) and `addDokanMoveDiff` (+4)** — the `CosIdx`/`SinIdx` swap
+   above. Highest confidence, cheapest, and it needs no new declarations. Do it
+   first.
 
-A body that compiles at 200 diffs is worth more than one that reads correctly and
-has never been built, because the first can be iterated and the second cannot.
-**Get to a number for all eight before you optimise any one of them.**
+2. **`fn_80080880` (−1)** — your own next step is good: try
+   `if (f3 + mScratch[lbl_802EFBD0[idx]].x < f2) return false; return true;`
+   against the compound `return ... >= f2;`. One compile, and the target's
+   `fcmpo`/`mfcr`/`extrwi`/`cntlzw`/`srwi` shape is a strong tell for the
+   negated-if form.
 
-Two of them have a shape worth naming while you write:
+3. **`revisePos` (72/72)** — same instruction count, so this is pure ordering and
+   nothing structural is wrong. Your diagnosis (target reads `m_9C`, then `m_98`,
+   then `m_94`; draft reads declaration order) is testable in one compile. Note
+   this is the same lever that closed `set(sBgSetInfo)` in round 23: **named
+   temporaries in the target's READ order.** Reach for it exactly that way.
 
-- **`fn_80080880` (32w)** is the cheapest and needs no missing headers at all —
-  it swaps `f1`/`f2` to order a min/max and indexes `lbl_802EFBC0`/`lbl_802EFBD0`
-  by rotation bits. Do this one first as a warm-up and to prove the loop.
-- **`revisePos` (72w)** calls `fn_8007FFA0` three times, so land `fn_8007FFA0`'s
-  signature before writing it.
+4. **`fn_80080900` (−48, frame −0xb0)** — the biggest single gap left in the unit
+   and worth the rest of the round. Read the prologue as a requirement, not an
+   artifact:
 
-The two lookup tables (`lbl_802EFBC0`, `lbl_802EFBD0`, `lbl_802EFBE0`,
-`lbl_802EFBF0`) are unnamed `.rodata` in retail. Read their contents out of
-`original/wiimj2d.dol` and write them as file-scope `static const` arrays — and
-note from `AGENT_CONTEXT.md` that an unnamed retail label against a named draft
-symbol is a **text** diff with identical bytes, so score on the union, not text.
+       target:  stwu r1, -0x170(r1) ;  bl _savegpr_20   (r20..r31, 12 GPRs)
+       draft:   stwu r1, -0xc0(r1)  ;  bl _savegpr_24   (r24..r31,  8 GPRs)
+
+   The target needs **four more callee-saved GPRs and 0xb0 more stack**. That is
+   more simultaneously-live locals, not different codegen for the same source —
+   you are missing state, not mis-spelling it. Your SEGMENT3/SPHERE-on-stack
+   reading is the right thread: the four-corner array and the `edgeSeg` struct
+   are the candidates for the missing stack. Pull on that before touching
+   register allocation.
+
+5. `fn_80080670` (−3), `fn_8007FFA0` (−1), `fn_80080E40` (+3) — all three are
+   register-file diffs (FPR saves where the target has GPR saves, or assignment
+   order). Take them last; they are the least likely to move on a source edit.
+
+`d_bg_actor_mng.cpp` needs no work this round unless something falls out for
+free — 13/3/0 is where it should stay.
 
 ---
 
 ## Reporting
 
 Per function: target length, draft length, `_savegpr` level and frame size, then
-**diff count** — the number, for all eight, not "analysed".
+**diff count**.
 
-Draft length first, as you have been doing.
+**GAINED and LOST by name** against round 24, both units. You have done this
+correctly twice running; keep it.
 
-**GAINED and LOST by name** against round 23, both units.
+`poolcheck.py` before you report.
 
-`poolcheck.py` before you report. You are about to write eight bodies full of
-float constants, which is precisely the condition that produces a wrong constant.
-
-The proposed nw4r header, with the reasoning for each signature.
+On the `psq_l` result specifically: report whether the `CosIdx` swap changed the
+word count, **whichever way it went**. A refuted prediction that moves the number
+is still information, and this one is load-bearing for two other units.
