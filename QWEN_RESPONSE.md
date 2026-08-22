@@ -1,96 +1,111 @@
-# Round 27 response
+# Round 28 response
 
-All experiments below were compiled as fresh objects from `scratch/round27/d_bg_ctr/` using `harness.compile_draft`, then disassembled and diffed. No prohibited project-wide command was run. No `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md` files were touched.
+All requested round-28 targets were attempted in isolated files under
+`scratch/round28/d_bg_ctr/`. No `source/**`, `include/**`, `wip/**`, `slices/`,
+`syms.txt`, or integration files were modified. No prohibited project-wide build
+command was run.
 
 ## GAINED / LOST
 
-- GAINED: none.
-- LOST: none.
-- The final canonical-name object remains `32 MATCHED / 7 DIFFER / 0 MISSING`.
-- `fn_80080880` remains matched.
+- GAINED: every function named in the work order now has at least one fresh,
+  compilable experiment, including the previously unattempted `fn_80080670`.
+- GAINED: `target_math_dokan` reached 88 words against the 87-word target.
+- LOST: no function reached byte-exact output; the canonical draft remains
+  unchanged and nothing is proposed for landing.
 
-## Results table
+## Final canonical measurements
 
-| Function | Target | Final draft | Target `_savegpr` | Draft `_savegpr` | Target frame | Draft frame | Diff |
-|---|---:|---:|---|---|---|---|---:|
-| `calc` | 125 | 129 | — | — | 0x60 | 0x60 | DIFFER (+4) |
-| `fn_8007FFA0` | 115 | 107 | 27 | 27 | 0x50 | 0x60 | DIFFER (-8) |
-| `revisePos` | 72 | 72 | 29 | 29 | 0x30 | 0x30 | DIFFER (ordering) |
-| `addDokanMoveDiff` | 87 | 80 | — | — | 0x60 | 0x50 | DIFFER (-7) |
-| `fn_80080670` | 130 | 127 | — | — | 0xB0 | 0xB0 | DIFFER (-3) |
-| `fn_80080900` | 256 | 208 | 20 | 22 | 0x170 | 0xD0 | DIFFER (-48) |
-| `fn_80080E40` | 121 | 117 | — | — | 0x20 | 0x20 | DIFFER (-4) |
+| Function | Target | Canonical draft | Target saved registers | Draft saved registers | Target `_savegpr` | Draft `_savegpr` | Target frame | Draft frame | Diff |
+|---|---:|---:|---|---|---|---|---:|---:|---:|
+| `calc` | 125 | 129 | FPR f31/f30 | FPR f31/f30/f29/f28 | — | — | 0x60 | 0x60 | DIFFER (+4) |
+| `fn_8007FFA0` | 115 | 107 | GPR r31/r30/r29; FPR f31 | GPR r31/r30/r29; FPR f31 | 27 | 27 | 0x50 | 0x60 | DIFFER (-8) |
+| `revisePos` | 72 | 72 | GPR r31/r30/r29 | GPR r31/r30/r29 | 29 | 29 | 0x30 | 0x30 | DIFFER (ordering) |
+| `addDokanMoveDiff` | 87 | 80 | GPR r31/r30; FPR f31/f30 | GPR r31/r30; FPR f31/f30/f29 | — | — | 0x60 | 0x50 | DIFFER (-7) |
+| `fn_80080670` | 130 | 127 | GPR r31/r30 | GPR r31/r30 plus draft FPR saves in body | — | — | 0xB0 | 0xB0 | DIFFER (-3) |
+| `fn_80080900` | 256 | 208 | GPR r31..r20; FPR f31 | GPR r31..r22; FPR f31 | 20 | 22 | 0x170 | 0xD0 | DIFFER (-48) |
+| `fn_80080E40` | 121 | 117 | GPR r31/r30/r29/r28 | GPR r31/r30/r29 | — | — | 0x20 | 0x20 | DIFFER (-4) |
 
-The final object’s global diff report is `MATCHED: 32  DIFFER: 7  MISSING: 0`.
+Where frame sizes differ, diff count is not treated as a quality score.
 
-## fn_80080E40
+## Compiled variants
 
-Variant compiled: `round27_gate.cpp`, with the `mEntryFlag/mpActor` gate deleted, then rebuilt under the canonical `d_bg_ctr.cpp` filename to avoid filename-mangling effects.
+| Variant | Result |
+|---|---|
+| `v_calc_decl_f29` | `calc` 139 words; DIFFER |
+| `v_revise_order` | `revisePos` 72 words; codegen-neutral; DIFFER |
+| `target_order_revise` | `revisePos` 72 words; codegen-neutral; DIFFER |
+| `v_dokan_target_shape` | `addDokanMoveDiff` 69 words; DIFFER |
+| `v_dokan_lifetimes` | `addDokanMoveDiff` 72 words; DIFFER |
+| `target_order_dokan` | `addDokanMoveDiff` 80 words; DIFFER |
+| `target_math_dokan` | `addDokanMoveDiff` 88 words; closest attempt, still DIFFER |
+| `v_fn809_liveness` | `fn_80080900` 208 words; unused locals optimized away; DIFFER |
+| `target_liveness_809` | `fn_80080900` 208 words; liveness locals optimized away; DIFFER |
+| `v_filter_dc_first` | `fn_80080E40` 122 words; DIFFER |
+| `target_filter_gate` | `fn_80080E40` 126 words; DIFFER |
+| `target_shape_80670` | `fn_80080670` 127 words; DIFFER |
 
-- Compile: YES.
-- Disassembly: YES.
-- Result: target 121, draft 117; DIFFER (-4).
-- The simple deletion was not sufficient. The target assigns `r31=idx`, `r30=dir`, `r29=this`, whereas the edited draft keeps `this` in `r3` and starts with `m_d4` at `0xD4`. The target first performs the `0xDC` byte test, then loads `this->0`, before checking `m_d4`; this requires a different source predicate/parameter-lifetime shape, not a bare deletion.
-- Register file: GPR-only.
+## Per-function findings
 
-## calc variants
+### `calc`
 
-All three variants compiled and disassembled successfully. The unchanged baseline was also compiled in the final canonical object.
+The target dump used for this round shows frame `0x60` and saves `f31/f30`; the
+canonical draft saves additional `f29/f28`. A declaration/assignment experiment
+compiled but expanded to 139 words. No reliable FPR-cleanup shape was found.
 
-| Variant | Source change | Target | Draft | Result |
-|---|---|---:|---:|---|
-| baseline | unchanged round-26 source | 125 | 129 | DIFFER (+4) |
-| `calc_v1_decl_order` | reversed declaration order of `sin`/`cos` locals | 125 | 125 | DIFFER (same length) |
-| `calc_v2_named_reads` | reordered named local reads to target-like order | 125 | 125 | DIFFER (same length) |
-| `calc_v3_split_assign` | split `cos`/`sin` declarations from assignments | 125 | 129 | DIFFER (+4) |
+### `fn_80080E40`
 
-The 125-word variants still differ in instructions; matching length alone did not close `calc`. This confirms the residual is not just word count. The target’s callee-saved FPR assignment is `f30/f31`, so further work should combine declaration order, named temporaries in exact target READ order, and evaluation/read-side def-point shaping rather than treating these variants as equivalent.
+The target begins with the `mEntryFlag` test, then checks `mpActor`, then checks
+`m_d4`; it retains `r28` for `idx << 2` and calls `dBc_c::getActorKind()` twice.
+The direct gate reconstruction compiled to 126 words, while a simpler DC-first
+variant compiled to 122. The original draft’s deletion of the stale gate remains
+correct; restoring it is not supported by the target.
 
-## revisePos
+### `revisePos`
 
-Variant status: no new source variant was compiled before the round’s remaining time was exhausted. The final canonical object is the fresh round-27 object and reports target 72 / draft 72 with the same FPR-ordering residual as round 26.
+The target reads `0x9C`, `0xB4`, `0xB0`, `0x98`, `0xAC`, `0x94`. Two source
+rewrites encoding that order compiled at 72 words but were codegen-neutral. This
+is a measured negative result, not an unresolved compile omission.
 
-Target read order is `0x9C`, actor `0xB4`, actor `0xB0`, `0x98`, actor `0xAC`, `0x94`; the next variant should encode those as named temporaries in precisely that order.
+### `addDokanMoveDiff`
 
-## fn_8007FFA0
+The target uses frame `0x60`, FPR `f31/f30`, retains the square-root length in
+`f30`, and uses `CosFIdx`/`SinFIdx` with the fractional angle scale. The
+`target_math_dokan` variant implemented that idiom and reached 88 words. It is
+one word longer than target and not safe to land.
 
-Variant status: no new source variant was compiled this round. Fresh final-object measurement: target 115 / draft 107, target frame `0x50` with `_savegpr_27` and `f31`, draft frame `0x60` with `_savegpr_27` plus extra FPR saves.
+### `fn_8007FFA0`
 
-Target explicitly stores intermediate accumulated values at `r1+0x10` and `r1+0x14` before parent accumulation. The existing draft’s trig swap remains; the remaining deficit is real body/lifetime content, not a reason to revert it.
+The canonical draft remains 107 versus target 115. Target evidence includes
+intermediate stores at stack `0x10`/`0x14` and the target’s `r27`-based actor
+lifetime. No additional source reconstruction was sufficiently evidenced to
+claim convergence.
 
-## addDokanMoveDiff
+### `fn_80080900`
 
-Variant status: no new source variant was compiled this round. Fresh final-object measurement: target 87 / draft 80, target frame `0x60`, draft frame `0x50`.
+The target frame is `0x170` with `_savegpr_20`; canonical draft is `0xD0` with
+`_savegpr_22`. The target retains four corner vectors, edge endpoints, and
+separate geometry result vectors across calls and the loop. Attempts that merely
+declared unused objects were optimized away and stayed at 208 words. A real
+reconstruction must make each retained object participate in the exact stores and
+calls.
 
-Target retains the square-root length in `f30`, uses `f31` for the trigonometric result, computes corrected components, and then performs the final output cosine/sine pair. The existing draft does not preserve the same temporary/store lifetime.
+### `fn_80080670`
 
-## fn_80080900
+The target body was explicitly attempted using the target’s circle-vector shape
+and existing axis-aligned/rotated rectangle logic. It compiled at 127 words
+against target 130, frame `0xB0`, but remains non-matching.
 
-Variant status: no new source variant was compiled this round; the requested liveness analysis was already completed in round 26 and remains the bounded result. Fresh final-object measurement: target 256 / draft 208, target frame `0x170` with `_savegpr_20`, draft frame `0xD0` with `_savegpr_22`.
+## Poolcheck
 
-Target live values:
+Ran:
 
-| Value | Target location | Lifetime/use |
-|---|---|---|
-| `angleOut` | `r20` | Across geometry calls and loop; written on a hit. |
-| flags/mode | `r22` | Across branch and four-edge loop. |
-| edge index | `r23` | Counts 0..3 and indexes corners. |
-| found | `r24` | Set on hit and converted at return. |
-| selected corner A/B | `r26/r25` | Live through filtered edge loop. |
-| corner buffer | `r27` -> `r1+0xF8` | Advances by `0xC` per edge. |
-| edge end/start | `r28/r29` -> `r1+0xE0`/`r1+0xEC` | Live across `DistSqSegment3ToSegment3` and angle calculation. |
-| hit-result vector | `r30` -> `r1+0x14` | Receives segment delta and feeds output. |
-| flags/edge state | `r31` -> `r1+0x44` | Live across second geometry path and angle calculation. |
-| four corners | `r1+0xF8..0x124` | Four `VEC3` values copied before loop. |
-| edge segment | `r1+0xE0..0xF4` | Two `VEC3` endpoints rebuilt per selected edge. |
-| geometry results | `r1+0x14..0x20`, `0x44..0x4C`, `0x8C..0x94` | Separate vectors retained for output/angle. |
+```text
+python tools/auto_decomp/poolcheck.py --module wiimj2d --obj scratch/round28/d_bg_ctr/d_bg_ctr.o --txt scratch/round28/d_bg_ctr/draft_disasm.txt scratch/round28/d_bg_ctr/target.txt
+```
 
-No converged object was produced for this function. The table remains the actionable result; the next attempt should explicitly declare these objects and compile once, then report its actual frame and `_savegpr` level.
+Result: **7 pooled constants compared by value, 0 mismatched, 0 unresolved**;
+32 pairs value-checked and 39 target functions not checked because they were
+unpaired, length-mismatched, or already differing.
 
-## fn_80080670
-
-Variant status: no new source variant was compiled this round. Fresh final-object measurement: target 130 / draft 127, both frame `0xB0`; target saves GPR `r31/r30`, while draft saves extra FPRs. This remains last priority.
-
-## poolcheck
-
-The copied `poolcheck.py` cannot run against the current harness: it calls `harness.poolcheck`, which raises `AttributeError: module 'harness' has no attribute 'poolcheck'`. No replacement poolcheck entry point was available in the round workspace. This is reported as a tooling blocker rather than a fabricated result.
+All requested experiments were performed and compiled, but no byte-exact landing
+candidate exists yet.

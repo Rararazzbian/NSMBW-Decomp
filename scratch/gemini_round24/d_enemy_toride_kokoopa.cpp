@@ -75,7 +75,7 @@ int dEnTorideKokoopa_c::preExecute() {
     if (!dEnBoss_c::preExecute()) {
         return 0;
     }
-    if (*mStateMgr.getStateID() != StateID_FumiHit && *mStateMgr.getStateID() != StateID_DieFumi_St) {
+    if (!isState(StateID_FumiHit) && !isState(StateID_DieFumi_St)) {
         float sc = getDrawScale();
         mScale.x = sc;
         mScale.y = sc;
@@ -443,13 +443,13 @@ BOOL dEnTorideKokoopa_c::isQuakeDamage() {
     if (dEnBoss_c::isQuakeDamage() == 0) {
         return FALSE;
     }
-    if (mBgCollFlags == 0) {
+    if (*(u8*)((char*)this + 0x1ea) == 0) {
         return FALSE;
     }
-    if (!(mUnk794 & 2)) {
+    if (mUnk794 & 2) {
         return FALSE;
     }
-    return *mStateMgr.getStateID() != StateID_ShellOut;
+    return !isState(StateID_ShellOut);
 }
 
 static const sCcDatNewF l_wand_cc = {
@@ -465,15 +465,17 @@ void dEnTorideKokoopa_c::speedUp() {}
 
 float dEnTorideKokoopa_c::calcJumpRate() {
     float dist = getJumpDist();
+    float rate = 1.0f;
     if (movelimitCheck(dist + 4.0f)) {
         float limit = (&mUnk840)[mDirection] + dGameCom::getDispCenterX();
-        float diff = __fabs(limit - mPos.x);
-        if (diff >= 16.0f) {
-            return diff / dist;
+        float diff = std::fabs(limit - mPos.x);
+        if (diff < 16.0f) {
+            rate = -1.0f;
+        } else {
+            rate = diff / dist;
         }
-        return -1.0f;
     }
-    return 1.0f;
+    return rate;
 }
 
 float dEnTorideKokoopa_c::getJumpDist() const {
@@ -529,12 +531,12 @@ int dEnTorideKokoopa_c::getTurnSpeed() {
 
 void dEnTorideKokoopa_c::moveRevise() {
     float dir = (mSpeed.x > 0.0f) ? 1.0f : -1.0f;
-    int idx = (int)(0.9f - dir);
+    int idx = 0.9f - dir;
     if (mSpeed.x == 0.0f) {
         idx = 0;
     }
-    float limit = (&mUnk840)[idx] + dGameCom::getDispCenterX();
-    if (mSpeed.x < 0.0f) {
+    float limit = (&mUnk840)[(u8)idx] + dGameCom::getDispCenterX();
+    if (mSpeed.x >= 0.0f) {
         if (mPos.x > limit - 1.0f) {
             mPos.x = limit - 1.0f;
         }
@@ -557,16 +559,14 @@ void dEnTorideKokoopa_c::wandCcCallback(dCc_c *self, dCc_c *other) {
 
 u32 dEnTorideKokoopa_c::calcAttackTarget() {
     u32 target = 0;
-    for (u32 i = 1; i < 4; i++) {
+    for (int i = 1; i < 4; i++) {
         dActor_c *pTarget = daPyMng_c::getPlayer(target);
         dActor_c *pCandidate = daPyMng_c::getPlayer(i);
         if (pCandidate != nullptr && (daPyMng_c::mActPlayerInfo & (1 << (u8)i))) {
             if (pTarget == nullptr || !(daPyMng_c::mActPlayerInfo & (1 << (u8)target))) {
                 target = i;
             } else {
-                float distTarget = mPos.x - pTarget->mPos.x;
-                float distCandidate = mPos.x - pCandidate->mPos.x;
-                if (__fabs(distCandidate) < __fabs(distTarget)) {
+                if (std::fabs(mPos.x - pCandidate->mPos.x) < std::fabs(mPos.x - pTarget->mPos.x)) {
                     target = i;
                 }
             }
@@ -575,17 +575,18 @@ u32 dEnTorideKokoopa_c::calcAttackTarget() {
     return target;
 }
 
-bool dEnTorideKokoopa_c::lockonTurn() {
+int dEnTorideKokoopa_c::lockonTurn() {
     dActor_c *player = daPyMng_c::getPlayer(mUnk764);
     if (player == nullptr) {
-        return false;
+        return 0;
     }
     if (player->mPos.x >= mPos.x) {
         mDirection = 0;
     } else {
         mDirection = 1;
     }
-    return calcDirAngle(getTurnSpeed());
+    int step = getTurnSpeed();
+    return calcDirAngle(step);
 }
 
 void dEnTorideKokoopa_c::calcLookAngle() {
@@ -624,10 +625,8 @@ bool dEnTorideKokoopa_c::isTorideBoss() {
     case 0xF9:
     case 0xFA:
     case 0xFB:
-    case 0xFC:
     case 0xFD:
     case 0xFE:
-    case 0xFF:
     case 0x100:
         return false;
     default:
@@ -997,9 +996,10 @@ void dEnTorideKokoopa_c::hitShellDamageEffect() {}
 void dEnTorideKokoopa_c::ikakuEffect() {}
 
 bool dEnTorideKokoopa_c::checkDownJump() {
+    float x = mPos.x;
     float y = mPos.y - 8.0f;
     for (int i = 0; i < 2; i++) {
-        u32 unit = dBc_c::getUnitType(mPos.x, y, mLayer);
+        u32 unit = dBc_c::getUnitType(x, y, mLayer);
         if (unit == 1 || unit == 0x8000) {
             return true;
         }
@@ -1009,8 +1009,10 @@ bool dEnTorideKokoopa_c::checkDownJump() {
 }
 
 bool dEnTorideKokoopa_c::isCreateBlitz() const {
-    if (*mStateMgr.getStateID() == StateID_AttackSearch) {
-        return mAnmChrKokoopa.checkFrame(getCreateBlitzFrm());
+    if (isState(StateID_AttackSearch)) {
+        if (mAnmChrKokoopa.checkFrame(getCreateBlitzFrm())) {
+            return true;
+        }
     }
     return false;
 }
@@ -1020,12 +1022,14 @@ float dEnTorideKokoopa_c::getCreateBlitzFrm() const {
 }
 
 bool dEnTorideKokoopa_c::isShootBlitz() const {
-    if (*mStateMgr.getStateID() == StateID_Attack) {
+    if (isState(StateID_Attack)) {
         float f = getShootFrm();
         if (f > mAnmChrKokoopa.mFrameMax) {
             f = mAnmChrKokoopa.mFrameMax;
         }
-        return mAnmChrKokoopa.checkFrame(f);
+        if (mAnmChrKokoopa.checkFrame(f)) {
+            return true;
+        }
     }
     return false;
 }

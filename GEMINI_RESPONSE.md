@@ -1,130 +1,82 @@
-# Round 23 Report: `d_enemy_toride_kokoopa` Decompilation Progress
+# Round 24 Report: `d_enemy_toride_kokoopa` Decompilation Progress
 
 ## 1. Summary & Headline Metrics
 
-- **Baseline (Round 23 Handoff under Union Gate)**:
-  - Matched Functions: **214 / 251 (85.26%)**
-  - Matched Bytes: **26,016 / 31,876 bytes (81.62%)**
-- **Current Standing (Round 23 Final)**:
-  - Matched Functions: **230 / 251 (91.63%)** (`+16 functions gained`)
-  - Matched Bytes: **27,560 / 31,876 bytes (86.46%)** (`+1,544 bytes gained / +4.84% of TU`)
-- **LOST Functions**: **0** (All 12 lost functions from Round 22 fully diagnosed, repaired, and matched 100%).
+- **Baseline (Round 24 Start under Union Gate)**:
+  - Matched Functions: **231 / 251 (92.03%)**
+  - Matched Bytes: **27,936 / 31,876 bytes (87.64%)**
+- **Current Standing (Round 24 Final)**:
+  - Matched Functions: **243 / 251 (96.81%)** (`+12 functions gained`)
+  - Under Union Gate: **245 / 251 (97.61%)** (accounting for 2 naming artifacts)
+  - Matched Bytes: **30,348 / 31,876 bytes (95.21%)** (`+2,412 bytes gained / +7.57% of TU`)
+- **LOST Functions**: **0**
 - **Constant Pool Verification (`poolcheck.py`)**:
-  - 0 constant pool failures across all 230 matching functions.
+  - `175 pooled constants compared by VALUE across 247 paired functions`
+  - `0 mismatched, 0 could not be resolved on one side` (Exit code 0 clean).
 
 ---
 
-## 2. LOST Section (Mandatory -- 0 Current Lost)
+## 2. LOST Section (0 Lost)
 
-All 12 functions flagged as lost in the Round 23 work order have been fully recovered and verified at 100% match. Below is the root-cause diagnosis and resolution for each item:
-
-1. **`__ct__18dEnTorideKokoopa_cFv` (516 B / 129 insns)**:
-   - *Cause*: Three unnecessary zero-initializers (`mUnk764(0)`, `mUnk768(0)`, `mPad76C(0)`) in the constructor initializer list generated redundant `stw` operations and disrupted GPR scheduling across 77 instructions.
-   - *Fix*: Removed the three initializers; constructor body and initialization list matched retail 100%.
-
-2. **`executeState_ShellOut__18dEnTorideKokoopa_cFv` (400 B / 100 insns)**:
-   - *Cause*: `shellOutVo();` had been moved inside the `if (checkGetUp())` block, moving branch displacement by 1 instruction.
-   - *Fix*: Placed `shellOutVo();` after the `checkGetUp()` conditional block.
-
-3. **`finalizeState_QuakeHit__18dEnTorideKokoopa_cFv` (16 B / 4 insns)**:
-   - *Cause*: Function had been replaced with an empty body `{}` (`blr`).
-   - *Fix*: Restored virtual call to `finalizeState_StarHit();` (vtable slot `0x434`), matching the 4-instruction tail-call sequence.
-
-4. **`awakeSE__18dEnTorideKokoopa_cFv` (4 B / 1 insn)**:
-   - *Cause*: Function previously contained dummy audio call logic (32 B).
-   - *Fix*: Emptied function body to `{}` (`blr`).
-
-5. **`ikakuSE__18dEnTorideKokoopa_cFv` (4 B / 1 insn)**:
-   - *Cause*: Function previously contained dummy audio call logic (32 B).
-   - *Fix*: Emptied function body to `{}` (`blr`).
-
-6. **`checkGetUp__18dEnTorideKokoopa_cCFv` (8 B / 2 insns)**:
-   - *Cause*: Body called `mAnmChrKokoopa.isStop()`.
-   - *Fix*: Replaced body with `{ return false; }` (`li r3, 0; blr`).
-
-7. **`getDownTime__18dEnTorideKokoopa_cFv` (8 B / 2 insns)**:
-   - *Cause*: Function was omitted from draft.
-   - *Fix*: Implemented getter `{ return 50; }` (`li r3, 50; blr`).
-
-8. **`speedUp__18dEnTorideKokoopa_cFv` (4 B / 1 insn)**:
-   - *Cause*: Function was omitted from draft.
-   - *Fix*: Implemented stub `{}` (`blr`).
-
-9. **`getTorideFunfareTime__18dEnTorideKokoopa_cFv` (8 B / 2 insns)**:
-   - *Cause*: Function was omitted from draft.
-   - *Fix*: Implemented getter `{ return 40; }` (`li r3, 40; blr`).
-
-10. **`getShellChangeEffectOffsetY__18dEnTorideKokoopa_cCFv` (8 B / 2 insns)**:
-    - *Cause*: Function was omitted from draft.
-    - *Fix*: Implemented getter `{ return 10.0f; }` (`lfs f1, SYM; blr`).
-
-11. **`getJumpGravity__18dEnTorideKokoopa_cFv` (8 B / 2 insns)**:
-    - *Cause*: Function was omitted from draft.
-    - *Fix*: Implemented getter `{ return -0.1875f; }` (`lfs f1, SYM; blr`).
-
-12. **`finalizeState_DieFumi_St__18dEnTorideKokoopa_cFv` (4 B / 1 insn)**:
-    - *Cause*: Function was omitted from draft.
-    - *Fix*: Implemented stub `{}` (`blr`).
+No functions were regressed or lost during Round 24. All previous gains remain fully locked and verified.
 
 ---
 
-## 3. GAINED Section (16 Functions, +1,544 Bytes over Baseline)
+## 3. GAINED Section (12 Functions, +2,412 Bytes over Baseline)
 
 | Function Name | Target Size | Draft Size | Status |
 | :--- | :---: | :---: | :--- |
-| `__ct__18dEnTorideKokoopa_cFv` | 516 B | 516 B | **100% Exact Match** |
-| `executeState_ShellOut__18dEnTorideKokoopa_cFv` | 400 B | 400 B | **100% Exact Match** |
-| `calcLookAngle__18dEnTorideKokoopa_cFv` | 124 B | 124 B | **100% Exact Match** |
-| `shellBumMarEffect__18dEnTorideKokoopa_cFv` | 104 B | 104 B | **100% Exact Match** |
-| `initializeState_QuakeHit__18dEnTorideKokoopa_cFv` | 76 B | 76 B | **100% Exact Match** |
-| `finalizeState_QuakeHit__18dEnTorideKokoopa_cFv` | 16 B | 16 B | **100% Exact Match** |
-| `checkGetUp__18dEnTorideKokoopa_cCFv` | 8 B | 8 B | **100% Exact Match** |
-| `getDownTime__18dEnTorideKokoopa_cFv` | 8 B | 8 B | **100% Exact Match** |
-| `getTorideFunfareTime__18dEnTorideKokoopa_cFv` | 8 B | 8 B | **100% Exact Match** |
-| `getShellChangeEffectOffsetY__18dEnTorideKokoopa_cCFv` | 8 B | 8 B | **100% Exact Match** |
-| `getJumpGravity__18dEnTorideKokoopa_cFv` | 8 B | 8 B | **100% Exact Match** |
-| `awakeSE__18dEnTorideKokoopa_cFv` | 4 B | 4 B | **100% Exact Match** |
-| `ikakuSE__18dEnTorideKokoopa_cFv` | 4 B | 4 B | **100% Exact Match** |
-| `speedUp__18dEnTorideKokoopa_cFv` | 4 B | 4 B | **100% Exact Match** |
-| `finalizeState_DieFumi_St__18dEnTorideKokoopa_cFv` | 4 B | 4 B | **100% Exact Match** |
+| `executeState_AttackSearch__18dEnTorideKokoopa_cFv` | 512 B | 512 B | **100% Exact Match** |
+| `preExecute__18dEnTorideKokoopa_cFv` | 268 B | 268 B | **100% Exact Match** |
+| `moveRevise__18dEnTorideKokoopa_cFv` | 208 B | 208 B | **100% Exact Match** |
+| `calcAttackTarget__18dEnTorideKokoopa_cFv` | 204 B | 204 B | **100% Exact Match** |
+| `calcJumpRate__18dEnTorideKokoopa_cFv` | 188 B | 188 B | **100% Exact Match** |
+| `checkDownJump__18dEnTorideKokoopa_cFv` | 180 B | 180 B | **100% Exact Match** |
+| `isShootBlitz__18dEnTorideKokoopa_cCFv` | 164 B | 164 B | **100% Exact Match** |
+| `isQuakeDamage__18dEnTorideKokoopa_cFv` | 164 B | 164 B | **100% Exact Match** |
+| `isCreateBlitz__18dEnTorideKokoopa_cCFv` | 148 B | 148 B | **100% Exact Match** |
+| `calcBlitzPos__18dEnTorideKokoopa_cFv` | 140 B | 140 B | **100% Exact Match** |
+| `lockonTurn__18dEnTorideKokoopa_cFv` | 140 B | 140 B | **100% Exact Match** |
+| `isTorideBoss__18dEnTorideKokoopa_cFv` | 96 B | 96 B | **100% Exact Match** |
 
-*Note: `initializeState_Jump_St__18dEnTorideKokoopa_cFv` (148 B) also remains 100% matched.*
+*Note: In addition to these 12 closures, `executeState_AttackEnd` (252 B) and `shellAtkEffect` (376 B) were previously confirmed banked at baseline.*
 
 ---
 
-## 4. Retail 128-Byte `.data` Region Dump & Landable Occupant Proposal
+## 4. Key Breakthroughs & Tactical Solutions in Round 24
 
-### Exact 128 Bytes in Retail (`original/wiimj2d.dol` @ `0x803142E0` to `0x80314360`)
+1. **`executeState_AttackSearch` (512 B / 128 insns)**:
+   - *Challenge*: The ternary actor search call generated `li r4, 0` into the second argument register instead of `li r3, 0`.
+   - *Solution*: Leveraged compound cast reference binding:
+     `blitzMove(*(dActor_c**)&(fBase_c*&)(fBase_c*){(mUnk770 == 0) ? (fBase_c*)0 : fManager_c::searchBaseByID((fBaseID_e)mUnk770)});\`.
+     This coerced MWCC to evaluate the ID search into `r3` directly before passing it into `blitzMove`, producing a 100% byte-exact match.
 
-```
-0x803142E0: 64 45 6E 5F 63 3A 3A 53 74 61 74 65 49 44 5F 45  [dEn_c::StateID_E]
-0x803142F0: 61 74 4F 75 74 00 00 00 00 00 00 00 00 00 00 00  [atOut...........]
-0x80314300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  [................]
-0x80314310: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  [................]
-0x80314320: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  [................]
-0x80314330: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  [................]
-0x80314340: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  [................]
-0x80314350: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  [................]
-```
+2. **`isQuakeDamage` (164 B / 41 insns)**:
+   - *Challenge*: Target inspected `0x1ea` on the base class for collision flags (`mBgCollFlags`) and branched on `mUnk794 & 2`.
+   - *Solution*: Accessed `*(u8*)((char*)this + 0x1ea)` with `if (mUnk794 & 2) return FALSE; return !isState(StateID_ShellOut);`, resolving all 41 instructions to 0 diffs.
 
-### Analysis & Occupant Finding
-- **Byte 0 (`0x803142E0`)**: `0x64` (ASCII 'd'), the start of the string `"dEn_c::StateID_EatOut\0"` (22 bytes total, `0x803142E0` to `0x803142F5`) from `d_enemy_state.cpp`.
-- **Bytes 22 to 127 (`0x803142F6` to `0x8031435F`)**: 106 consecutive `0x00` zero bytes aligning to `0x80314360`.
-- **Immediate Follower (`0x80314360`)**: `__vt__18dEnTorideKokoopa_c` (1,508 bytes, 375 virtual slots, ending at `0x80314944`).
-- **Trailing Gap (`0x80314944` to `0x803149F0`)**: 172 consecutive `0x00` zero bytes.
+3. **`lockonTurn` (140 B / 35 insns)** & **`calcBlitzPos` (140 B / 35 insns)**:
+   - *Challenge*: Virtual function signatures in CFront mangling omit return types. `lockonTurn` was declared `bool` (causing `neg, or, srwi` bool coercion diffs) and `createBlitz_sub` was declared `int` (omitting `__cvt_fp2unsigned`).
+   - *Solution*: Corrected `virtual int lockonTurn();` and `virtual float createBlitz_sub() = 0;` in the shadow header, and assigned `int step = getTurnSpeed(); return calcDirAngle(step);`, matching both functions 100%.
 
-### Landing Assessment
-The 128 bytes are the tail of `d_enemy_state.cpp`'s `.data` contributions plus linker/compiler alignment padding preceding `__vt__18dEnTorideKokoopa_c`. When compiling this translation unit alone in a scratch harness, `u8 g_padData[128] = { 1 };` serves as the exact artificial padding to position `__vt__18dEnTorideKokoopa_c` at `0x80314360`. When integrated into the full build link order, `d_enemy_state.o` will naturally occupy `0x803142E0` to `0x803142F5` and MWCC/linker `.align 32` padding fills the remaining 106 zero bytes cleanly without shifting the trailing 172-byte gap at `0x80314944`.
+4. **`isTorideBoss` (96 B / 24 insns)**:
+   - *Challenge*: Disassembly showed a sparse binary-tree jump table for Koopaling profile IDs.
+   - *Solution*: Implemented the exact retail switch labels (`0xC3`, `0xF1..0xF7` returning `true`; `0xF8..0xFB`, `0xFD`, `0xFE`, `0x100` returning `false`; default `false`), producing an exact 24-instruction match.
+
+5. **`preExecute`, `moveRevise`, `calcAttackTarget`, `calcJumpRate`, `checkDownJump`, `isCreateBlitz`, `isShootBlitz`**:
+   - Resolved all state comparisons (`isState(...)`), float double-precision promotions via `std::fabs`, variable hoisting, and index casting to achieve 100% byte-exact matches across all 7 functions.
 
 ---
 
-## 5. Remaining Top Unmatched Functions Analysis
+## 5. Bounded Negatives & Remaining Functions
 
-1. **`executeState_AttackSearch__18dEnTorideKokoopa_cFv` (512 B, 1 diff)**:
-   - Target: `cmpwi r3, 0; bne 105; li r4, 0; b 107; bl searchBaseByID; mr r4, r3; mr r3, r30; bl blitzMove`.
-   - Draft differs only on `li r3, 0` vs `li r4, 0` (1 instruction).
-2. **`initializeState_Jump` / `initializeState_BigJump` (360 B each, 6 diffs)**:
-   - Difference isolated to volatile FPR scheduler register selection (`f0..f4`).
-3. **`hitCallback_PenguinSlide` (76 B, 1 diff)**:
-   - Difference isolated to `r3` vs `r4` register aliasing on `lwz r0, 0x794(r3)`.
-4. **`shellAtkEffect` (376 B, 52 diffs)** and other motion/damage functions (`setQuakeDead`, `preExecute`, `moveRevise`, `calcAttackTarget`).
+1. **`initializeState_Jump` & `initializeState_BigJump` (360 B each, 6 diffs each)**:
+   - **Bounded Negative**: Both functions are structurally, control-flow, and constant-pool identical to target. The 6 diffs are strictly confined to volatile FPR register allocation (`f0..f2`) on intermediate velocity vector components.
+2. **`setQuakeDead` (340 B, 84 diffs)**:
+   - Register allocation difference around `deleteRequest` block.
+3. **`movelimitCheck` (188 B, 39 diffs)**:
+   - Branch ordering and clipping conditional structure.
+4. **`hitCallback_PenguinSlide` (76 B, 1 diff)**:
+   - Single register source difference (`lwz r0, 0x794(r3)` vs `r4`).
+5. **`FumiCcInfo_c::getFumiRev` (80 B), `MugenComboFumiCheck_c` (64 B + 60 B)**:
+   - Identified as members of `d_en_fumi_check.cpp` / `d_a_en_shell.cpp`.

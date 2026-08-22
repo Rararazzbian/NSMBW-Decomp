@@ -74,7 +74,7 @@ public:
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, DieFumi_St);
 
     // 89 New Virtual Methods (Slots 286..374)
-    virtual bool lockonTurn(); // 0x480
+    virtual int lockonTurn(); // 0x480
     virtual void calcKokoopaMdl(); // 0x484
     virtual void calcShellMdl(); // 0x488
     virtual void drawKokoopa(); // 0x48C
@@ -94,7 +94,7 @@ public:
     virtual int getTurnSpeed(); // 0x4C4
     virtual int getFumiRecoverTime(); // 0x4C8
     virtual int createBlitz(); // 0x4CC
-    virtual int createBlitz_sub() = 0; // 0x4D0
+    virtual float createBlitz_sub() = 0; // 0x4D0
     virtual mVec3_c getMagicStickEffectOffset() const; // 0x4D4
     virtual void setKokoopaCc(); // 0x4D8
     virtual void setShellCc(); // 0x4DC
