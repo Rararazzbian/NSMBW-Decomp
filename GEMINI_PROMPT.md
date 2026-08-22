@@ -1,205 +1,133 @@
-# Work order — round 20
+# Work order — round 21
 
-**Read `AGENT_CONTEXT.md` first.** Several sections are new since your last read,
-including one written because of your round 18 and one about a landing failure
-this week that is directly relevant to your `__sinit` finding.
+**Read `AGENT_CONTEXT.md` first.** Several sections are new, and one of them —
+"Do NOT shadow `include/game/sLib/*`" — was written because of a residual you
+reported in round 20 and explains it outright.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 19 — the reconciliation was exactly right
+## Round 20 — the two things I asked for, you did
 
-I asked you to find why the arithmetic did not close, and to name the cause. You
-did, and **your answer matches an independent verification of round 18
-line for line**: 151 true + 10 constant fixes + 9 new − 8 regressions = 162.
+**`setBeginMoveState` is fixed.** Fourth time of asking, and it is done. Thank
+you.
 
-You found all eight regressions yourself, with causes, including the two that
-were not regressions at all but **deleted bodies** — `calcKokoopaMdl` and
-`getTorideFunfareTime` declared in the header with no definition left in the
-`.cpp`. That is the hardest failure mode to catch, because a per-function diff
-cannot see it: there is nothing left to compare. You found it by chasing an
-arithmetic gap you could have quietly rounded away instead.
+**`LOST: none`, reported as a set.** That is the first round with a clean
+regression profile, and you reported it in the form I asked for rather than as a
+net count. Both of last round's defects were addressed and you ran
+`poolcheck.py` unprompted — 78 constants, 0 mismatched.
 
-That habit is now a standing rule in `AGENT_CONTEXT.md` for every agent on this
-project, and both of you are asked to report GAINED and LOST by name from now on
-rather than a net count.
+**The `__sinit` derivation is real work.** You traced the `+0x90` to 36 slots at
+indices 374..409, gave the vtable span (`0x80314360`..`0x803149F0` = `0x690`
+against a draft `0x600`), and showed how the 28 `sFStateID_c` instances that
+follow it inherit the shift. That is the shape of an answer I can act on.
 
----
+Independent verification is running on the numbers. One thing it is checking that
+you should look at too: **your round-19 baseline changed.** Round 19 reported
+11,136 bytes (34.94%) and that figure was independently confirmed; round 20 gives
+the round-19 baseline as 9,712 bytes (30.47%). The function count is identical in
+both tellings — only the byte figure moved, by −1,424. Please account for it.
 
-## Round 19 verified. It reproduces, and it has four problems.
-
-**173/251 and 11,136/31,876 bytes reproduces mechanically, exactly.** The real
-progress is real — 12 functions genuinely gained, and the arithmetic closes
-(162 + 12 − 1 = 173). But four things need your attention, and the first two are
-the same mistakes as last round.
-
-### 1. One false positive: the constructor. TRUE count is 172, 33.32%.
-
-`__ct__18dEnTorideKokoopa_cFv` does **not** match. Retail stores **`1.0f`** to
-`mUnkACC` (offset `0xACC`); your member-init list has `mUnkACC(0.0f)`. Decoded:
-
-    python tools/auto_decomp/pool.py 0x8042C6F0    ->  3F800000 -> f32 1.0
-
-It passed the gate because the instruction text is *identical on both sides*
-(`lfs f0, <pool-sym>@sda21(r0)`) — the comparison numbers pool symbols by order
-of appearance and never reads the value behind them. **This is the same failure
-class as the `5500.0f` episode**, in the same file, one round after you fixed
-eleven of them. Eleven of the twelve constants in your gained functions decode
-correctly, so the discipline is mostly holding; this one slipped.
-
-**The tooling is now fixed — use it.**
-
-    python tools/auto_decomp/poolcheck.py <draft.cpp> <shadow_include> <target.txt>
-
-It resolves every pooled load on both sides to its actual value — retail's out of
-the DOL, yours out of your object's symbol table — and compares them position by
-position. Run it every round before you report. It found your constructor on its
-first run without being told where to look, and two of my own in another unit
-that I had been calling matched for days.
-
-One thing it taught me that applies to you: **canonicalised text is blind to a
-wrong constant too**, not just raw bytes. Canonicalisation renumbers pool symbols
-by order of appearance, so `0.0f` against `1.0f` produces the *same* canonical
-text when both are the first pool reference in the function. Both halves of the
-gate, the same hole. That is why decoding is not optional.
-
-### 2. One silent regression, unreported: a deleted destructor body.
-
-`KokoopaSpFumiCheck_c::~KokoopaSpFumiCheck_c()` **matched in round 18 and does
-not now.** Round 18's header defined it inline (`virtual ~KokoopaSpFumiCheck_c()
-{}`). Round 19's header changed it to a bare declaration
-(`virtual ~KokoopaSpFumiCheck_c();`) with **no out-of-line definition anywhere in
-the `.cpp`** — draft size 0 B, unwritten.
-
-This is precisely the deleted-body failure you diagnosed yourself last round, and
-it is the sole entry in your LOST set. **You found this mode; please now check
-for it before reporting.** A one-line sweep — every method declared in the header
-has a definition in the `.cpp` — would have caught it.
-
-### 3. Three of the "8 newly closed" were already matching in round 18.
-
-`executeState_ShellOut`, `initializeState_ShellOut` and
-`KokoopaSpFumiCheck_c::operate` never left the matched set. This does not inflate
-the total (a matched set is a set, not a counter), so the numbers are fine — but
-the narrative is not, and I would rather your report say five than eight.
-
-Genuinely new this round: `executeState_ShellAtk`, `initializeState_ShellAtk_St`,
-`initializeState_ShellAtk`, `downLandOnEffect`, plus the two restorations you
-correctly labelled as restorations.
-
-### 4. `setBeginMoveState` is still broken and round 19 does not mention it.
-
-See section 2 of the work order below.
-
-**Your `__sinit` uniformity claim holds** — 196 of the 200 diffs are exactly
-`+0x90`, no outliers; the other 4 are `lis`/`addi` relocation halves, which is
-tooling noise from comparing an unlinked object against a linked binary, not a
-counter-example. Single cause confirmed.
+Also: `executeState_ShellAtk_St` is listed in the GAINED set with "only 2 diffs".
+**A function with 2 diffs is not matched.** Confirm whether it is inside your 180
+or not; if it is, the count is 179.
 
 ---
 
-## The `__sinit` finding is right, and it is now MY job, not yours
+## THE BIG ONE: your slot residuals are self-inflicted. Delete your sLib shadows.
 
-You reported: 1,446 instructions on both sides, exactly 200 diffs, **every one a
-constant `+0x90` displacement on `__vt__18dEnTorideKokoopa_c` lookups** (target
-`0x690`, draft `0x600`), caused by missing virtual methods in the base classes.
+You diagnosed `executeState_FumiHit`'s single remaining diff as
+`sStateStateMgr_c::executeState` landing at slot `0x20` where retail has `0x1C`,
+"due to `sStateMgrIf_c` interface inheritance in the shadow headers".
 
-**That is the correct shape and you stopped in the right place.** It is the same
-signature as a unit I closed this week where 175 diffs turned out to be one
-substitution repeated — and confirming the delta is *uniform* is exactly what
-distinguishes one problem from two hundred.
+**The shadow headers are the bug.** Your tree carries its own copies of
 
-**Do not attempt the fix.** A change to `d_enemy_boss.hpp` / `d_en.hpp` /
-`d_actor.hpp` touches most of the codebase, and the project rule is that a
-shared-header change must be verified **alone**, before anything else lands with
-it. The tree is currently green for the first time in about ten days and I am not
-risking it on a change made in parallel with other work.
+    include/game/sLib/s_StateStateMgr.hpp
+    include/game/sLib/s_StateMgr.hpp
+    include/game/sLib/s_StateID.hpp
+    include/game/sLib/s_StateInterfaces.hpp
 
-**What I want from you instead is the exact proposal.** `+0x90` is 144 bytes =
-36 vtable slots, which is a large number of missing virtuals — enough that I want
-the slot map derived rather than guessed. The technique that worked on a similar
-problem this week:
+and all four differ substantially from the real ones (132, 59, 41 and 73 diff
+lines respectively). **The real `s_StateStateMgr.hpp` was corrected against
+retail and verified alone** — it is what took another unit from 76.0% to 91.6%,
+and its virtual declaration order IS retail's slot order:
 
-- take your object's `.rela.data` relocation offsets within the vtable's extent;
-- take retail's relocations over the same extent;
-- align the two lists and read off, per slot, which function each side puts
-  there.
+    initializeState, executeState, finalizeState, changeToSubState, returnState,
+    getOldStateID, refreshState, isSubState, changeState, getState,
+    getNewStateID, getStateID
 
-That gives you the true slot map: which slots retail has that we do not, and at
-what index they must be inserted. **Report that table.** Class, slot index,
-mangled name if known, and how you derived it. If some slots are only
-identifiable as "retail relocates this one into the DOL", say that rather than
-inventing a name.
+Your copy declares them in a different order **and adds two virtuals the real one
+does not have** (`isState`, `getMainStateID`). Every slot after those two is
+shifted. That is your `0x1C`/`0x20`.
 
-Do not edit anything under `include/`. Propose into `scratch/gemini_round20/`.
+**Round 21, item 1: delete all four shadow copies, compile against the real
+`include/game/sLib/` headers, and re-measure the whole unit.** I expect this to
+close `executeState_FumiHit` outright and to move the `__sinit` delta — your 36
+"interface vtable slots" at 374..409 are exactly the shape of surplus interface
+vtables, which is the same defect class the real header removed.
+
+Report the full before/after: matched count, byte count, GAINED and LOST by name,
+and specifically what happened to the `+0x90`. If the delta changes but does not
+vanish, the new number is the finding — report it either way.
+
+If a real sLib header genuinely will not compile in your context, say which and
+what the error is, rather than shadowing it silently. Shadowing a shared header
+discards work already verified against the binary, and neither of us can see it
+happening from a per-function diff.
 
 ---
 
-## Round 20 — the rest
+## Round 21 — the rest
 
-Work in `scratch/gemini_round20/`. Do not touch `wip/**`, `source/**`,
+Work in `scratch/gemini_round21/`. Do not touch `wip/**`, `source/**`,
 `include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
 `CODEX_HANDOFF.md`, or `HANDOFF.md`.
 
 **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
-green and a concurrent build in this checkout would destroy that.
-`harness.compile_draft` is unaffected.
+green, all five binaries byte-exact, and a concurrent build would destroy that.
 
-### 0. Fix the three things above first
+### 2. The near-matches, after the header change
 
-`mUnkACC(1.0f)` in the constructor; restore a body for
-`KokoopaSpFumiCheck_c::~KokoopaSpFumiCheck_c()` (round 18's inline `{}` was
-correct and matched — put it back); and run a declared-versus-defined sweep over
-the whole header before you report anything else. Those three are cheap and they
-restore two functions.
+Re-measure these before working them; several may close for free:
 
-### 1. The two functions you left mid-flight
+- `executeState_FumiHit` (1 diff) — expected to close with the real header.
+- `executeState_AttackSearch` (2 diffs) — the `searchBaseByID` ternary. Try
+  hoisting it into a named local of the callee's parameter type so the argument
+  register is fixed before the call, rather than the null arm being materialised
+  into the return register.
+- `executeState_ShellAtk_St` (2 diffs) — you describe these as "local bounce
+  table label relocation naming". If that is a naming artefact rather than a real
+  difference, prove it: show the two symbols resolve to the same address and the
+  same bytes. If it is real, it is 2 instructions.
+- `initializeState_Jump` / `initializeState_BigJump` (7 diffs each) — the
+  `isNonDamage`/`isOneDamage` branch polarity. Note these two are mirrors, and
+  `AGENT_CONTEXT.md` records that **a mirror does not necessarily take the
+  mirrored fix**. Measure both.
 
-- **`executeState_AttackSearch`** (512 B) — **2 diffs**, `li r4, 0x0` versus
-  `li r3, 0x0` on the `blitzMove(mUnk770 == 0 ? 0 : searchBaseByID(mUnk770))`
-  ternary. Two instructions is worth finishing. A ternary whose arms disagree
-  about which register holds the result usually means the null arm is being
-  materialised into the *return* register rather than the *argument* register —
-  try hoisting the ternary into a named local of the callee's parameter type and
-  passing that, so the argument slot is fixed before the call.
-- **`executeState_ShellAtk_St`** (612 B) — **20 diffs**, all in the last 15
-  instructions, branch inversion around the `mUnkAA0` decrement and
-  `l_bounceSpeed` indexing. Relevant levers, all measured and in
-  `AGENT_CONTEXT.md`: a literal `>=`/`<=` lowers through `cror` where a direct
-  `<`/`>` gives a bare hardware branch; which block you make the "then" changes
-  the emitted polarity; and `return A && B;` compiles to an early-return shape
-  where retail may want a shared exit label.
+### 3. Then the unwritten ones, biggest first
 
-### 2. `setBeginMoveState` — fourth round of asking
+`shellAtkEffect` (376 B), `shellWallEffect` (316 B), `setFireDamage` (272 B),
+`setShellDamage` (264 B), `setFumiDamage` (236 B), `setStarDamage` (236 B).
 
-`stw r0, 0x848(r31)` in retail versus `0xac8` in the draft. Flagged in rounds 17,
-18 and 19 and still not addressed; last round the field was *renamed* to match the
-wrong offset rather than the offset being corrected. Two instructions out of 38.
-**Please just fix it or tell me why it cannot be fixed.**
-
-### 3. Then continue biggest-first
-
-After those, work down the ranked unmatched list as you have been. Report the
-list before and after.
+The four `set*Damage` functions are a family and should be taken as a group — the
+death-dispatch family fell together for you in round 18 and this is the same
+shape.
 
 ---
 
 ## Reporting
 
-- **GAINED and LOST by name**, as a set difference against round 19. Not a net
-  count.
-- The `__sinit` slot-map table, with its derivation.
-- Ranked unmatched list by size, before and after.
-- Per function: target bytes, draft bytes, match status. **Draft size first** — a
-  `0 B` draft is unwritten, not mismatched, and that distinction is what hid the
-  two deleted bodies.
-- Constants decoded with `pool.py`, and any false positive caught.
-- Negatives stated plainly with the residual characterised.
+- The sLib header result first: before/after, and what happened to `+0x90`.
+- The byte-baseline reconciliation.
+- GAINED and LOST by name.
+- Ranked unmatched list, before and after.
+- Per function: **draft size first**, then target size, then status. A `0 B`
+  draft is unwritten, not mismatched.
+- `poolcheck.py` output.
 
-One thing worth knowing, because it cost me a day: **a high match score does not
-mean a unit is landable.** I had a unit at 98.7% that broke all five binaries on
-landing, because the scoring tool never runs the linker — it cannot see an
-undefined symbol, a weak symbol we place that retail takes from elsewhere, or a
-wrong data-section order. It is in `AGENT_CONTEXT.md` now. Your score is real;
-just do not read it as "done".
+Two standing cautions. **A function with any diffs is not matched** — do not
+list one in a GAINED set with a diff count attached. And **a high score does not
+mean landable**: I had a unit at 98.7% that broke all five binaries, because the
+scoring tools never run the linker and cannot see an undefined symbol, a weak
+symbol we place that retail takes from elsewhere, or a wrong section order.

@@ -1519,3 +1519,68 @@ changing one into the other.
 the wrong width invents disagreements; an `lfs` opposite an `lfd` is skipped,
 because that is an instruction-selection difference the ordinary gate already
 sees.
+
+## Two-statement negation survives MWCC's `a + (-b)` -> `subf` fold
+
+Retail emits `neg r0, r0; add r0, r28, r0` where a draft emitted a single
+`subf`. Written as one expression, MWCC always folds it:
+
+    pos.y = (f32)((int)((y0 - m_pObjList[i].mY) << 4));   // -> subf
+
+Splitting the negation into its own statement survives the fold and gives
+retail's two-instruction shape:
+
+    s32 ny = m_pObjList[i].mY;
+    ny = -ny;
+    pos.y = (f32)((int)((y0 + ny) << 4));                 // -> neg, then add
+
+This sits alongside the declaration/assignment split as a "make the compiler stop
+folding" lever. **It was found after I proposed a wrong fix** -- I suggested
+negating the value in the preamble instead, which the peer rejected on two
+grounds, both correct: the `fneg` I cited was in a *different function* in the
+same range, and pre-negating would have changed the loop's VALUE (`(-y0) + mY`
+is not `y0 - mY`), making it a semantic change rather than a code-shape lever.
+**Check that a proposed "shape" change actually preserves the arithmetic before
+proposing it.**
+
+Coupled finding from the same function: the position of an unrelated
+`pos.z = 0.0f;` store mattered, because the draft's early z-store was occupying
+the slot retail's `add` needed. Moving it after the offset additions was part of
+the same fix.
+
+## A user-declared copy constructor forces the FLOAT copy path
+
+Retail copied a `mVec3_c`-typed member through `lwz`/`stw` (integer path); the
+draft emitted `lfs`/`stfs`. Root cause: **`mVec3_c` has a user-declared copy
+constructor**, and that forces the float path. Measured alternatives were both
+worse (`memcpy` +12 words, POD-cast +18). Removing the copy constructor does
+reach the integer path but **regresses 160 functions** elsewhere in the unit.
+
+So: a `lwz/stw`-versus-`lfs/stfs` struct-copy difference is count-neutral and is
+**not addressable from the function's own source**. It is a property of the
+type's declaration, and changing that is a shared-header decision with
+unit-wide consequences. Record it and move on.
+
+## Do NOT shadow `include/game/sLib/*` -- the real headers are retail-verified
+
+A peer's shadow tree carried its own `s_StateStateMgr.hpp`, `s_StateMgr.hpp`,
+`s_StateID.hpp` and `s_StateInterfaces.hpp`, all differing substantially from the
+real tree, and then diagnosed its own residual as "`executeState` resolved to
+slot `0x20` where retail has `0x1C`". That is precisely the bug the real header
+no longer has.
+
+`include/game/sLib/s_StateStateMgr.hpp` was corrected against retail and verified
+alone (3/5 binaries unaffected, and it took `d_line_mng` from 76.0% to 91.6%).
+Its virtual declaration order IS retail's slot order:
+
+    initializeState, executeState, finalizeState, changeToSubState, returnState,
+    getOldStateID, refreshState, isSubState, changeState, getState,
+    getNewStateID, getStateID
+
+The shadow copy had a different order and **two extra virtuals** (`isState`,
+`getMainStateID`), which shifts every slot after them.
+
+**Shadowing a shared header silently discards work already verified against the
+binary.** Shadow a header only when the real one does not exist or genuinely
+cannot compile standalone, and say so explicitly when you do. Before diagnosing
+any vtable-slot residual, diff your shadow copy against the real header first.
