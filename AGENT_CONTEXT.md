@@ -1565,9 +1565,14 @@ unit-wide consequences. Record it and move on.
 
 A peer's shadow tree carried its own `s_StateStateMgr.hpp`, `s_StateMgr.hpp`,
 `s_StateID.hpp` and `s_StateInterfaces.hpp`, all differing substantially from the
-real tree, and then diagnosed its own residual as "`executeState` resolved to
-slot `0x20` where retail has `0x1C`". That is precisely the bug the real header
-no longer has.
+real tree (132, 59, 41 and 73 diff lines).
+
+**Caveat, because I got this wrong once already:** the peer *also* diagnosed a
+residual as "`executeState` resolved to slot `0x20` where retail has `0x1C`", and
+I attributed that residual to these shadows. On measurement the function in
+question was already byte-identical — there was no residual to explain. The
+shadows are a real latent hazard and should still go, but **do not reach for them
+as the explanation of a specific diff without first confirming the diff exists.**
 
 `include/game/sLib/s_StateStateMgr.hpp` was corrected against retail and verified
 alone (3/5 binaries unaffected, and it took `d_line_mng` from 76.0% to 91.6%).
@@ -1584,3 +1589,40 @@ The shadow copy had a different order and **two extra virtuals** (`isState`,
 binary.** Shadow a header only when the real one does not exist or genuinely
 cannot compile standalone, and say so explicitly when you do. Before diagnosing
 any vtable-slot residual, diff your shadow copy against the real header first.
+
+## A uniform displacement delta is NOT necessarily missing virtuals
+
+A `__sinit` residual of 196 diffs, every one the same constant offset delta on
+loads relative to a vtable base, looks exactly like "our vtable is short by N
+slots". It was not, and the wrong reading nearly cost a round of work adding
+virtuals to shared base classes.
+
+**Check the vtable's SIZE on both sides first. It is one lookup each:**
+
+    grep '__vt__<Class> = ' bin/dtk/wiimj2d_symbols.txt     # retail's size
+    # and the same symbol's st_size in your own compiled object
+
+In the case that prompted this, both were `0x5E4` — **identical**. A vtable that
+is the same size on both sides cannot be missing slots, and that single check
+falsifies the whole "N missing virtuals" reading immediately.
+
+**Then dump the disputed bytes out of the DOL before naming them.** The claim was
+that 36 slots there held "retail internal thunks" for interface sub-objects. The
+region is `0xAC` bytes and every word of it is **zero**. Real vtable slots are
+resolved function addresses in a linked DOL; a run of zeros is not a vtable.
+
+What it actually was: retail emits `0xAC` of zero-image `.data` between the end
+of the vtable object and the next named object, where the draft emitted `0x2C` —
+a **128-byte shortfall in file-scope objects placed after the vtable**, not
+inside it. Runtime-constructed statics (a `sFStateID_c`, a `static const` struct
+that `__sinit` fills in) have a zero static image, so they are invisible in the
+DOL bytes and have to be found by aligning the two `.data` object lists.
+
+**Also: the reported delta was wrong.** The peer said `+0x90`; measurement gave a
+uniform `+0x80` across all 196. Read the delta off the instructions rather than
+deriving it from a span you have assumed.
+
+General rule: **a displacement delta tells you two objects sit at different
+offsets. It does not tell you which object changed size.** Enumerate both `.data`
+layouts and find where they diverge before proposing a fix, especially when the
+proposed fix is a change to a shared base class.
