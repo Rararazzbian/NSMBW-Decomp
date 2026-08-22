@@ -1799,3 +1799,50 @@ and an `fmuls` instead -- several words longer per call site.
 `bl` target that the source used the `FIdx` form. Note the target reloads the
 same field with a second `psq_l` for the sine rather than reusing the converted
 float -- do not fold those into one load.
+
+## READ THE BYTES before theorising about a data region
+
+**This retracts my assertion that the `d_enemy_toride_kokoopa` 128-byte `.data`
+region is "all zeros, every word". It is not. Byte 0 is `0x64`.** I stated it
+twice and built two work orders on it.
+
+The region, read out of `original/wiimj2d.dol`:
+
+    0x803142E0: 64 45 6E 5F 63 3A 3A 53 74 61 74 65 49 44 5F 45  [dEn_c::StateID_E]
+    0x803142F0: 61 74 4F 75 74 00 00 00 ...                       [atOut...........]
+
+It is the tail of **`d_enemy_state.cpp`'s** `.data` — a state-ID name string —
+plus alignment padding running up to `__vt__18dEnTorideKokoopa_c` at
+`0x80314360`. It never belonged to the kokoopa TU at all. Five rounds of
+arithmetic went into explaining 128 bytes that nobody had looked at, and one hex
+dump ended it.
+
+**The rule: before proposing an occupant for a gap, dump the gap.** A chain of
+correct arithmetic over an unread region is still a guess, and "the size divides
+evenly" remains not evidence. Corollary, and the reason this ran so long: a
+scratch harness compiling one TU in isolation has **no neighbours**, so any gap
+before your first symbol may belong to an adjacent TU entirely. An artificial
+pad that calibrates your offsets is a **harness artifact**, not a finding — keep
+it if it makes your addresses line up, but never propose it as source, and check
+the neighbouring TU before concluding the bytes are yours.
+
+## A codegen fix that OVERSHOOTS has uncovered content you never wrote
+
+When a correct codegen fix makes the word count *worse*, do not revert it.
+
+The `CosIdx`/`psq_l` swap (see the GQR3 entry above) applied to three functions:
+
+    calc              138 -> 129  vs target 125   (+13 -> +4,  improved)
+    fn_8007FFA0       114 -> 107  vs target 115   ( -1 -> -8,  "worse")
+    addDokanMoveDiff   91 ->  80  vs target  87   ( +4 -> -7,  "worse")
+
+The two that got "worse" were **missing real behaviour all along**. The bulkier
+hand-written trig sequence was padding the length so the totals looked close;
+removing it exposed the shortfall. The flattering number was the lie.
+
+**The rule: a length that is nearly right is not evidence that the content is
+right — two errors of opposite sign look exactly like a near-match.** When a
+change you have independently confirmed as correct moves a count away from
+target, treat the new count as the honest one and go looking for missing
+content. Stop asking "why is my codegen different" and start asking "what work
+am I not doing".

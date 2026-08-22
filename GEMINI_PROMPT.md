@@ -1,162 +1,135 @@
-# Work order — round 23
+# Work order — round 24
 
-**Read `AGENT_CONTEXT.md` first.** Three new sections went in from your round 22,
-one of them a retraction of something I told you last round.
+**Read `AGENT_CONTEXT.md` first.** One new section went in from your round 23,
+and it is a correction to something I asserted twice.
 
 Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 22 is a real round, and your headline is substantially honest
+## Round 23 is the round I asked for. All three items land.
 
-This is the first time in five rounds I can write that sentence, so it goes
-first. I scored your round-21 and round-22 objects side by side, same gate, same
-run:
+I verified every claim independently before writing this. Stated plainly,
+because you have not had one of these yet:
 
-    round21: 180/251 fns, 12840/31876 bytes
-    round22: 212/251 fns, 19620/31876 bytes
+**All 12 regressions are genuinely recovered.** I checked each by name against a
+fresh compile. Twelve for twelve.
 
-**And two of the four functions my gate calls a miss are my gate's fault, not
-yours.** Both are symbol-naming artifacts of my canonicaliser, and in both cases
-your prose was right:
+**Your LOST section is real, and it is real zero.** I diffed your matched set
+against round 22 by name:
 
-- **`executeState_ShellAtk_St` (612 B) — 2 diffs, and they are `SYM2` against
-  `l_bounceSpeed`.** This is the identical unnamed-`.rodata` case I already ruled
-  a match in the round-22 brief. My canonicaliser anonymises retail's unnamed
-  label but keeps your named symbol, so it manufactures a diff. It matches.
-- **`__sinit` (5,784 B) — 4 diffs out of 1,446 lines**, and all four are one
-  consistent `SYM` renumbering around `__vt__18dEnTorideKokoopa_c`. Structurally
-  identical, instruction for instruction.
+    GAINED: 15 functions, 1,292 bytes
+    LOST:    0 functions,     0 bytes
 
-Count both and you are at **214 fns / 26,016 bytes** against your claimed 216 /
-26,668 — within two functions and 652 bytes. Your `__sinit` closure is real.
+That is the first clean loss report in six rounds. It is also what made this
+round cheap for me to check, which is the whole point of asking for it.
 
-**General rule, now in `AGENT_CONTEXT.md`:** a diff where one side is `SYM<n>`
-and the other is a named local symbol is a **naming artifact, not a code
-difference**. Flag those and move on; do not spend a round chasing them.
+**Your headline is within one function.** Under my gate with the naming-artifact
+rule applied: **229/251, 27,308 bytes**, against your claimed 230 / 27,560. The
+gap is arithmetic, not inflation — your own GAINED table has **15 rows** while
+its heading says 16, and the byte figure is 252 over. Count the table you wrote.
+That is the entire remaining defect in your reporting, and it is a rounding
+error next to where you were two rounds ago.
 
----
-
-## You did not report LOST. Fifth round, and this time it cost you 12 functions
-
-Your report has a GAINED section and no LOST section. The real delta is:
-
-    GAINED: 44 functions, 7,768 bytes
-    LOST:   12 functions,   988 bytes
-    NET:    +32 functions, +6,780 bytes
-
-The twelve you regressed:
-
-    516  __ct__18dEnTorideKokoopa_cFv
-    400  executeState_ShellOut__18dEnTorideKokoopa_cFv
-     16  finalizeState_QuakeHit__18dEnTorideKokoopa_cFv
-      8  getTorideFunfareTime / getShellChangeEffectOffsetY / getJumpGravity
-      8  checkGetUp / getDownTime
-      4  speedUp / finalizeState_DieFumi_St / ikakuSE / awakeSE
-
-I am not going to relitigate the reporting point — you have heard it four times.
-What matters is that **all twelve trace to the header and vtable edits in your
-section 4**, and I can show you the shape. There are exactly three classes:
-
-**1. You wrote bodies for functions that are empty in retail.**
-
-    awakeSE   target: blr                    (1 instruction, 4 bytes)
-              draft:  lwz r12, 0x544(r3) ... (8 instructions)
-
-You declared `virtual void awakeSE();` at slot `0x5DC` and `ikakuSE` at `0x5E0`,
-gave them bodies, and then **listed both as 32-byte matches in your GAINED item
-35**. Retail's are 4 bytes and do nothing. That is the same error class as the
-`removeCc` one from last round, running in the other direction: you inferred a
-method's content from its slot rather than reading it.
-
-**2. You emptied a function that has a body in retail.**
-
-    finalizeState_QuakeHit   target: lwz r12, 0x60(r3) ... (4 instructions)
-                             draft:  blr
-
-**3. Two functions no longer exist in your object at all** — `getDownTime` and
-`speedUp` produce no symbol. You renamed or dropped them.
-
-And `executeState_ShellOut` is **one diff**, a branch displacement
-(`beq 0x18` against `beq 0x2C`) — the code it jumps over changed size. That one
-is nearly free.
-
-`__ct__` is the priority: 516 bytes, and your draft is **528 bytes at 78 diffs**.
-A constructor that grew by three instructions after you changed member offsets
-and added `mUnk6A8` / `mpParamDemo` / `mAtkCnt` is telling you one of those
-member edits is wrong. It is the cheapest possible check on your whole section 4.
+**And the 128-byte dump is byte-for-byte correct.** I read the region out of
+`original/wiimj2d.dol` myself and it matches yours exactly, including the string.
 
 ---
 
-## The pad is load-bearing, unlandable, and my `dDeathInfo_c` advice was wrong
+## I was wrong about the 128 bytes, twice, and your dump is what settled it
 
-I measured your pad both ways:
+I told you the region was "all zeros, every word", and I repeated it. **Byte 0 is
+`0x64`.** It is the `d` of `"dEn_c::StateID_EatOut"`, and the region is the tail
+of a **different translation unit** — not yours at all:
 
-    with    u8 g_padData[128] = { 1 };   __sinit: 4 diffs   (i.e. matching)
-    without                              __sinit: 200 diffs
+    0x803142E0: 64 45 6E 5F 63 3A 3A 53 74 61 74 65 49 44 5F 45  [dEn_c::StateID_E]
+    0x803142F0: 61 74 4F 75 74 00 00 ...                          [atOut...........]
 
-So **the 128 bytes are real and they are doing the work.** Your layout analysis
-was sound and I am not asking you to undo it. Two things follow.
+Your landing assessment follows from that and I accept it: `d_enemy_state.o`
+occupies those bytes in the real link, alignment padding fills the rest, and
+`__vt__18dEnTorideKokoopa_c` lands at `0x80314360` without your help.
+**`g_padData` is a scratch-harness artifact, not a proposed occupant** — keep it
+in the harness so your offsets stay calibrated, and mark it clearly as
+non-landing so nobody tries to promote it. **The question is closed.** Do not
+spend any more of a round on it.
 
-**First, I owe you a retraction.** I told you the occupant was four
-`dDeathInfo_c` — runtime-constructed objects that would contribute entries to
-`__sinit`. **Your own result refutes that, and refutes it cleanly.** Your
-`__sinit` matches retail instruction-for-instruction with an *inert* 128-byte
-array in place. If the occupant were constructed at runtime, `__sinit` would
-carry extra calls and the counts could not match. So the occupant contributes
-**nothing** to `__sinit`: it is not a constructed object. Drop that line of
-attack — it was mine and it was wrong. The rule it came from still holds (the
-candidate must be zero before `__sinit` runs); the candidate did not.
-
-Note also that your five `static const sDeathInfoData` objects are `const`, so
-they land in `.rodata` and they hold relocations. Whatever they are doing for
-you, they are not this 128 bytes.
-
-**Second, `g_padData` cannot land.** It is a fabricated symbol, and `= { 1 }`
-writes `0x01` into byte 0. I asserted last round that the region is all zeros. I
-have not re-verified that myself and I am not going to assert it twice —
-**you have the region located and I do not, so measure it and tell me.**
+Note what closed it: one hex dump, after five rounds of arithmetic about a
+region nobody had looked at. `AGENT_CONTEXT.md` now carries the rule — **read
+the bytes before theorising about them, and a chain of correct arithmetic on an
+unread region is still a guess.** That one was mine, not yours.
 
 ---
 
-## Round 23 — order of work
+## Two functions are worth 764 bytes for three instructions
 
-Work in `scratch/gemini_round23/`. Do not touch `wip/**`, `source/**`,
+You have **22 genuinely unmatched functions, 4,568 bytes**. Two of them are
+nearly free and one is not in your own top-unmatched list:
+
+- **`executeState_AttackEnd` — 252 B, 252/252, ONE diff.** You did not report
+  this one at all. It is the best value on the board.
+- **`executeState_AttackSearch` — 512 B, 512/512, TWO diffs.** You reported it as
+  one; it is two. Your `li r3, 0` / `li r4, 0` reading is right as far as it goes.
+
+Both are the right length with the right control flow. Do these first.
+
+**Ignore these two — they are matches my gate mis-scores**, per the naming-artifact
+rule: `__sinit` (4 diffs) and `executeState_ShellAtk_St` (2 diffs). Both are pure
+`SYM<n>`-renumbering. Count them as matched and do not touch them.
+
+After the two cheap ones, biggest first:
+
+    376 B  shellAtkEffect        (372/376, 52 diffs)
+    360 B  initializeState_Jump      (6 diffs)
+    360 B  initializeState_BigJump   (6 diffs)
+    340 B  setQuakeDead          (352/340, 84 diffs)
+    268 B  preExecute            (252/268, 48 diffs)
+    208 B  moveRevise            (204/208, 22 diffs)
+    204 B  calcAttackTarget      (196/204, 21 diffs)
+    188 B  calcJumpRate          (176/188, 45 diffs)
+    188 B  movelimitCheck        (196/188, 39 diffs)
+    180 B  checkDownJump         (160/180, 42 diffs)
+
+On **`initializeState_Jump` / `initializeState_BigJump` (6 diffs each)**: you
+report the residual is in `f0`..`f4`. If that is accurate these are **volatile**
+FPRs, the declaration-order lever does **not** apply, and `AGENT_CONTEXT.md`
+records that as a measured bounded negative. **Confirm which register file the
+diffs are in before spending anything on them**, and if they are volatile, say so
+and move on rather than grinding. They are also mirrors, and a mirror does not
+necessarily take the mirrored fix.
+
+The 40-plus-diff group (`shellAtkEffect`, `setQuakeDead`, `preExecute`,
+`calcJumpRate`, `checkDownJump`) is where the real bytes are. Those are content
+problems, not codegen problems — the lengths are wrong, so something is missing
+or extra, and no register lever will help until the length is right.
+
+---
+
+## Round 24 — order of work
+
+Work in `scratch/gemini_round24/`. Do not touch `wip/**`, `source/**`,
 `include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
 `CODEX_HANDOFF.md`, or `HANDOFF.md`.
 
 **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
 green, all five binaries byte-exact, and a concurrent build destroys that.
 
-1. **The twelve LOST, biggest first.** `__ct__` (516 B) and
-   `executeState_ShellOut` (400 B) are 916 of the 988 bytes and both look cheap.
-   Revert `awakeSE`/`ikakuSE` to empty bodies, restore `finalizeState_QuakeHit`,
-   and find out where `getDownTime` and `speedUp` went. **Report what broke each
-   one** — this is a diagnosis of your own section 4 header edits, and whichever
-   edit did it is probably wrong for other functions too.
-
-2. **Dump retail's 128 bytes and print them.** Byte 0 first: is it `0x00` or
-   `0x01`? You have never reported the actual bytes of this region in five
-   rounds of reasoning about it. Print all 128, hex, in your response. That one
-   measurement decides what can replace `g_padData`, and no amount of further
-   arithmetic will.
-
-3. **Then propose a landable occupant** consistent with what you measured — zero
-   or near-zero static image in `.data`, and **no constructor**, per the
-   retraction above.
-
-4. Remaining unmatched, biggest first, once 1–3 are done.
+1. `executeState_AttackEnd` (1 diff) and `executeState_AttackSearch` (2 diffs).
+   764 bytes.
+2. Check the Jump/BigJump register file, then either close them or record the
+   negative and stop.
+3. The length-wrong group, biggest first: `shellAtkEffect`, `setQuakeDead`,
+   `preExecute`. Get the lengths right before touching registers.
 
 ---
 
 ## Reporting
 
-- Headline with round 22 recomputed under the same gate, so the delta is real.
-- **A LOST section is mandatory this round, even if it is empty.** Read both
-  lists back against your own tool output before you write them. If a function
-  appears in your unmatched table it may not also appear in GAINED.
-- Do not count symbol-naming diffs as misses (see the rule above), and say so
-  explicitly where you apply it.
+Keep round 23's format exactly — it worked.
+
+- Headline with round 23 recomputed under the same gate.
+- **GAINED and LOST by name.** Then **count the rows of your own GAINED table
+  and check the number against your heading** before you write the summary.
+  That is the last thing standing between your report and mine.
+- Do not count naming artifacts as misses; say where you applied the rule.
 - Per function: draft size first, then target size, then status.
 - `poolcheck.py` output.
-- The 128 bytes, in hex.
