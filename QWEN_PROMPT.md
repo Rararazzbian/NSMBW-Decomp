@@ -1,123 +1,115 @@
-# Work order — round 28
+# Work order — round 29
 
-**Read `AGENT_CONTEXT.md` first.** One new section came out of your round 27 and
-it changes how you should score `calc`.
+**One function. One starting file. One change.** Read this whole brief before
+touching anything; it is short on purpose.
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 27 compiled. Five objects, and every number reproduces.
+## Why this round is narrow
 
-I checked the artifacts before the report this time, as I did last round:
+Round 28 compiled 13 objects and moved the deliverable by nothing.
+`scratch/round28/d_bg_ctr/d_bg_ctr.cpp` is byte-identical to round 27's.
 
-    scratch/round27/d_bg_ctr/*.o        5 objects, all fresh
-    d_bg_ctr.cpp                        genuinely changed
-    diff_ctr.py                         MATCHED: 32  DIFFER: 7  MISSING: 0
+The round-28 brief asked you to start from `calc_v1_decl_order` — the 125-word
+variant that had already eliminated the spurious `f28` — and remove `f29` from
+it. Instead every round-28 object went back to the 129-word baseline carrying
+**both** `f28` and `f29`, and the one `calc` attempt reached 139 words. That is
+the second round running that your own best result was discarded, and the first
+where it was discarded against an explicit instruction.
 
-Every figure in your table reproduces exactly, including `fn_80080E40` at 117
-and all three `calc` variants at 125 / 125 / 129. That is the round-26 problem
-fixed.
+So: nothing else this round. Breadth is not the problem.
 
-**Your poolcheck blocker is real and I have the fix.** `harness.poolcheck` does
-not exist — your copied wrapper calls an entry point that is gone. Reporting it
-as a tooling blocker instead of inventing a clean result was the right call. The
-working invocation is the module's own CLI:
-
-    python tools/auto_decomp/poolcheck.py --module wiimj2d \
-        --obj <your>.o --txt <your>_disasm.txt <your>/target.txt
-
-I ran it against your round-27 object: **7 constants compared, 0 mismatched, 0
-unresolved.** You are clean. Use that command from now on.
+**Also, correct the scoreboard.** You reported *"GAINED: every function now has
+a fresh compilable experiment"* and *"GAINED: `target_math_dokan` reached 88
+words"*. Neither is a gain. **GAINED and LOST mean one thing only: a function
+that changed matched status.** The honest entry for round 28 was `GAINED: none,
+LOST: none` — which you also wrote, three lines later. Your numbers were all
+accurate and reproduced exactly; the framing was not. Do not redefine the metric.
 
 ---
 
-## You threw away your two best results. `calc` is closer than you think.
+## The task: `calc`, from `calc_v1_decl_order.cpp`, remove the `f29` save
 
-You wrote: *"The 125-word variants still differ in instructions; matching length
-alone did not close `calc`. This confirms the residual is not just word count."*
-True as stated, and it led you to the wrong conclusion.
+**Start file, exactly:** `scratch/round27/d_bg_ctr/calc_v1_decl_order.cpp`
+Copy it to `scratch/round29/d_bg_ctr/` and work there. Do **not** start from
+`d_bg_ctr.cpp`, and do not re-run the round-27 or round-28 experiments.
 
-Here is what the prologues actually show. **The target saves `f31`, `f30`, `r31`,
-`r30` — and no other FPR at all:**
+State of play:
 
-    baseline   129 words, frame 0x60, saves f29 AND f28 spurious  -> 103 diffs
-    v1 / v2    125 words, frame 0x50, saves f29 spurious          -> 121 diffs
-    target     125 words, frame 0x60, saves NEITHER
+    target      125 words, frame 0x60, saves f31 f30 r31 r30  and NO other FPR
+    v1          125 words, frame 0x50, saves f31 f30 f29 r31 r30
+    baseline    129 words, frame 0x60, saves f31 f30 f29 f28 r31 r30
 
-**v1 and v2 eliminated one of the two spurious callee-saved FPRs.** That is
-exactly your missing 4 words, and it is real progress on precisely the axis I
-pointed you at. The diff count rose from 103 to 121 only because shrinking the
-frame by `0x10` displaced every stack offset below it — 121 lines "differ"
-because `stfd f31, 0x50(r1)` became `stfd f31, 0x40(r1)`, and so on down the
-function. That is one defect wearing 121 costumes.
+v1 is one spurious callee-saved FPR from the target's shape. **`f28` is already
+gone. Remove `f29` the same way.**
 
-`AGENT_CONTEXT.md` already carried *"never revert a change purely because the
-count went up"*; it now also carries the specialisation: **when frame sizes
-differ, score on the saved-register set, not the diff count.**
+### I have located `f29` for you
 
-So `calc` is one spurious save from home. Take `calc_v1_decl_order` — not the
-baseline — and apply the same lever again to kill `f29`. Note the target reaches
-`0x60` of frame *without* those saves, so it has roughly `0x10` more genuine
-local stack than you do: the target does `addi r3, r1, 0x20` where your variant
-does `addi r3, r1, 0xc`. You are short a stack local, not carrying an extra one.
+In `calc_v1_decl_order.txt`, `f29` is written once and read twice, far apart:
+
+     66  fmuls f29, f5, f31      <- computed here
+     77  fsubs f1, f30, f29      <- read here
+     83  fsubs f6, f6, f29       <- and here
+
+A value defined once and consumed at two distant points is exactly what forces
+MWCC to park it in a **callee-saved** register — that is the def-point rule in
+`AGENT_CONTEXT.md` ("a def-point is not free"), and lever 13, the read-side
+def-point.
+
+**The target does not hold that product at all.** Its entire arithmetic body
+runs in volatile registers — every `fmuls` lands in `f13`, `f12`, `f9`, `f8`,
+`f5`, `f4`, `f3`, `f2`, and nothing survives long enough to need saving:
+
+     59  fmuls f13, f7, f31       67  fmuls f5, f2, f31
+     61  fmuls f12, f4, f1        68  fmuls f4, f2, f1
+     62  fmuls f9, f4, f31        70  fmuls f3, f0, f1
+     64  fmuls f8, f7, f1         71  fmuls f2, f0, f31
+
+**The change:** find the named local in `calc_v1_decl_order.cpp` holding that
+`f5 * f31` product and used at both subtraction sites, and **write the
+expression inline at each use instead of storing it in a variable.** Shorten its
+live range to nothing and it should stay volatile.
+
+That is the change. One edit.
 
 ---
 
-## `fn_80080E40`: the deletion was right, and it behaved exactly as predicted
+## What to do, in order
 
-121 target, 124 before, **117 after**. You removed the draft-only gate and the
-function went from 3 words long to 4 words short.
+1. Copy `calc_v1_decl_order.cpp` into `scratch/round29/d_bg_ctr/`. Compile it
+   unchanged first and confirm you reproduce **125 words, `f29` present**. If you
+   cannot reproduce that, stop and report it — everything below depends on it.
+2. Make the single change above. Compile.
+3. Report the **saved-register set** and frame. That is the scoreboard, not the
+   diff count — the frames differ, so the diff count is measuring displacement.
+4. If `f29` is gone and the frame is `0x60`, diff it against target and report
+   what is left. If `calc` matches, fold it into a canonical `d_bg_ctr.cpp`,
+   re-run `diff_ctr.py`, and report the new MATCHED count.
+5. If the change does not remove `f29`, try **at most two** further shapes for
+   shortening that value's live range, and report the saved-register set of each.
+   Then stop.
 
-That is the same pattern as the `CosIdx` swap two rounds ago and it is now a
-rule in `AGENT_CONTEXT.md`: **a correct fix that overshoots has uncovered
-content you never wrote.** The gate was genuinely absent from retail, the
-deletion was genuinely correct, and the honest 117 has replaced a flattering
-124 that was two errors cancelling. Do not restore the gate. Find the missing 4
-words — you already noted the target's parameter roles (`r31=idx`, `r30=dir`,
-`r29=this`) and that it performs the `0xDC` test before touching `m_d4`.
+**Do not touch any other function.** Not `revisePos`, not `addDokanMoveDiff`,
+not `fn_80080900`. If you finish early, stop early — a short report that closes
+`calc` is the best outcome available this round.
 
----
-
-## Round 28 — order of work
-
-Same rule as round 27, which worked: **every item ends in a compiled object and
-a number.** If you run out of time, report fewer functions, not more proposals.
-
-1. **`calc`** — from `calc_v1_decl_order`, eliminate the `f29` save. Report the
-   **saved-register set and frame** for every variant, not just the word count
-   and diff count. That is the scoreboard for this function now.
-2. **`fn_80080E40` (−4)** — the missing content behind the correct deletion.
-3. **`revisePos` (72/72)** — still never attempted, three rounds on the list, and
-   you have the target read order written down: `0x9C`, `0xB4`, `0xB0`, `0x98`,
-   `0xAC`, `0x94`. One compile.
-4. **`fn_8007FFA0` (−8)** and **`addDokanMoveDiff` (−7)** — missing content, per
-   your own diagnosis. Write the stores and lifetimes, compile.
-5. **`fn_80080900` (−48)** — one pass building the objects your liveness table
-   describes. Compile it whatever the frame comes out as, and report the frame
-   and `_savegpr` level of the attempt.
-
-`fn_80080670` (−3) last, only if time remains. Note its shape is the same family
-as `calc`: your draft saves FPRs the target does not.
-
-Work in `scratch/round28/`. Do not touch `wip/**`, `source/**`, `include/**`,
+Work in `scratch/round29/`. Do not touch `wip/**`, `source/**`, `include/**`,
 `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
-`HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`**
-— the tree is green, all five binaries byte-exact, and a concurrent build
-destroys that.
+`HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`.**
 
 ---
 
 ## Reporting
 
-Per function: target length, draft length from the object you built, **the
-saved-register set** (which GPRs, which FPRs), `_savegpr` level, frame size,
-then diff count.
+Short. One function.
 
-The saved-register column is new and it is the important one. Diff count goes
-last, and where frames differ, say so rather than treating the number as a
-score.
+- For every variant compiled: word count, **saved-register set** (which GPRs,
+  which FPRs), frame size. Diff count last, and only where frames agree.
+- **GAINED / LOST by name**, under the definition above — matched-status changes
+  only. `none` is a perfectly good answer and has been the true one twice.
+- `poolcheck.py` on the final object, via the CLI:
 
-**GAINED and LOST by name.** Five rounds accurate; keep it.
-
-`poolcheck.py` via the CLI above, on the final object.
+      python tools/auto_decomp/poolcheck.py --module wiimj2d \
+          --obj <obj> --txt <disasm> scratch/round29/d_bg_ctr/target.txt
