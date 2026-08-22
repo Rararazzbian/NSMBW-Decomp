@@ -1,0 +1,46 @@
+.include "macros.inc"
+.file "auto_sinit__d_screen_cpp_text"
+
+# 0x800E2B40..0x800E2BBC | size: 0x7C
+.text
+.balign 4
+
+# .text:0x0 | 0x800E2B40 | size: 0x7C
+.fn "__sinit_\d_screen_cpp", global
+/* 800E2B40 00000040  3C E0 00 00 */	lis r7, sTVModeInfo__Q23EGG6Screen@ha
+/* 800E2B44 00000044  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800E2B48 00000048  38 87 00 00 */	addi r4, r7, sTVModeInfo__Q23EGG6Screen@l
+/* 800E2B4C 0000004C  3D 00 43 30 */	lis r8, 0x4330
+/* 800E2B50 00000050  A0 04 00 0E */	lhz r0, 0xe(r4)
+/* 800E2B54 00000054  38 A0 00 00 */	li r5, l_ScreenSize16x9__7dScreen@sda21
+/* 800E2B58 00000058  A0 C4 00 0C */	lhz r6, 0xc(r4)
+/* 800E2B5C 0000005C  38 60 00 00 */	li r3, l_ScreenSize4x3__7dScreen@sda21
+/* 800E2B60 00000060  90 01 00 0C */	stw r0, 0xc(r1)
+/* 800E2B64 00000064  A0 84 00 02 */	lhz r4, 0x2(r4)
+/* 800E2B68 00000068  91 01 00 08 */	stw r8, 0x8(r1)
+/* 800E2B6C 0000006C  A0 07 00 00 */	lhz r0, sTVModeInfo__Q23EGG6Screen@l(r7)
+/* 800E2B70 00000070  C8 21 00 08 */	lfd f1, 0x8(r1)
+/* 800E2B74 00000074  C8 40 00 00 */	lfd f2, "@51639_8042CF78"@sda21(r0)
+/* 800E2B78 00000078  91 01 00 10 */	stw r8, 0x10(r1)
+/* 800E2B7C 0000007C  EC 81 10 28 */	fsubs f4, f1, f2
+/* 800E2B80 00000080  90 C1 00 14 */	stw r6, 0x14(r1)
+/* 800E2B84 00000084  C8 01 00 10 */	lfd f0, 0x10(r1)
+/* 800E2B88 00000088  90 81 00 0C */	stw r4, 0xc(r1)
+/* 800E2B8C 0000008C  EC 60 10 28 */	fsubs f3, f0, f2
+/* 800E2B90 00000090  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800E2B94 00000094  C8 21 00 08 */	lfd f1, 0x8(r1)
+/* 800E2B98 00000098  C8 01 00 10 */	lfd f0, 0x10(r1)
+/* 800E2B9C 0000009C  EC 21 10 28 */	fsubs f1, f1, f2
+/* 800E2BA0 000000A0  D0 60 00 00 */	stfs f3, l_ScreenSize16x9__7dScreen@sda21(r0)
+/* 800E2BA4 000000A4  EC 00 10 28 */	fsubs f0, f0, f2
+/* 800E2BA8 000000A8  D0 85 00 04 */	stfs f4, 0x4(r5)
+/* 800E2BAC 000000AC  D0 00 00 00 */	stfs f0, l_ScreenSize4x3__7dScreen@sda21(r0)
+/* 800E2BB0 000000B0  D0 23 00 04 */	stfs f1, 0x4(r3)
+/* 800E2BB4 000000B4  38 21 00 20 */	addi r1, r1, 0x20
+/* 800E2BB8 000000B8  4E 80 00 20 */	blr
+.endfn "__sinit_\d_screen_cpp"
+
+# 0x802EDE28..0x802EDE2C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_screen_cpp"

@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "f_profile.cpp"
+
+# 0x8042A698..0x8042A6A0 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A698 | size: 0x4
+# fProfile::sProfileList
+.obj sProfileList__8fProfile, global
+	.skip 0x4
+.endobj sProfileList__8fProfile
+
+# .sbss:0x4 | 0x8042A69C | size: 0x4
+.obj gap_10_8042A69C_sbss, global
+.hidden gap_10_8042A69C_sbss
+	.skip 0x4
+.endobj gap_10_8042A69C_sbss

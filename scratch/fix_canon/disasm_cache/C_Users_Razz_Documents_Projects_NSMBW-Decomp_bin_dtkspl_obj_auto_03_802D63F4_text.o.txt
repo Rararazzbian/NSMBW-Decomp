@@ -1,0 +1,1377 @@
+.include "macros.inc"
+.file "auto_03_802D63F4_text"
+
+# 0x802D63F4..0x802D72F0 | size: 0xEFC
+.text
+.balign 4
+
+# .text:0x0 | 0x802D63F4 | size: 0xC
+.fn pad_03_802D63F4_text, local
+/* 802D63F4 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D63F8 00000044  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D63FC 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_802D63F4_text
+
+# .text:0xC | 0x802D6400 | size: 0x70
+# EGG::SoundHeapMgr::createSoundHeap(EGG::Allocator*, unsigned long)
+.fn createSoundHeap__Q23EGG12SoundHeapMgrFPQ23EGG9AllocatorUl, global
+/* 802D6400 0000004C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6404 00000050  7C 08 02 A6 */	mflr r0
+/* 802D6408 00000054  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D640C 00000058  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6410 0000005C  7C BF 2B 78 */	mr r31, r5
+/* 802D6414 00000060  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 802D6418 00000064  7C 7E 1B 78 */	mr r30, r3
+/* 802D641C 00000068  80 03 00 20 */	lwz r0, 0x20(r3)
+/* 802D6420 0000006C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6424 00000070  40 82 00 34 */	bne .L_802D6458
+/* 802D6428 00000074  7C 83 23 78 */	mr r3, r4
+/* 802D642C 00000078  7F E4 FB 78 */	mr r4, r31
+/* 802D6430 0000007C  81 83 00 10 */	lwz r12, 0x10(r3)
+/* 802D6434 00000080  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 802D6438 00000084  7D 89 03 A6 */	mtctr r12
+/* 802D643C 00000088  4E 80 04 21 */	bctrl
+/* 802D6440 0000008C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D6444 00000090  41 82 00 14 */	beq .L_802D6458
+/* 802D6448 00000094  7C 64 1B 78 */	mr r4, r3
+/* 802D644C 00000098  7F E5 FB 78 */	mr r5, r31
+/* 802D6450 0000009C  38 7E 00 04 */	addi r3, r30, 0x4
+/* 802D6454 000000A0  48 00 00 01 */	bl Create__Q34nw4r3snd9SoundHeapFPvUl
+.L_802D6458:
+/* 802D6458 000000A4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D645C 000000A8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6460 000000AC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 802D6464 000000B0  7C 08 03 A6 */	mtlr r0
+/* 802D6468 000000B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D646C 000000B8  4E 80 00 20 */	blr
+.endfn createSoundHeap__Q23EGG12SoundHeapMgrFPQ23EGG9AllocatorUl
+
+# .text:0x7C | 0x802D6470 | size: 0x8
+# EGG::SoundHeapMgr::destroySoundHeap()
+.fn destroySoundHeap__Q23EGG12SoundHeapMgrFv, global
+/* 802D6470 000000BC  38 63 00 04 */	addi r3, r3, 0x4
+/* 802D6474 000000C0  48 00 00 00 */	b Destroy__Q34nw4r3snd9SoundHeapFv
+.endfn destroySoundHeap__Q23EGG12SoundHeapMgrFv
+
+# .text:0x84 | 0x802D6478 | size: 0x8
+.fn gap_03_802D6478_text, global
+.hidden gap_03_802D6478_text
+/* 802D6478 000000C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D647C 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6478_text
+
+# .text:0x8C | 0x802D6480 | size: 0x30
+# EGG::IAudioMgr::Arg::Arg()
+.fn __ct__Q33EGG9IAudioMgr3ArgFv, global
+/* 802D6480 000000CC  38 C0 00 00 */	li r6, 0x0
+/* 802D6484 000000D0  38 A0 00 04 */	li r5, 0x4
+/* 802D6488 000000D4  38 80 00 03 */	li r4, 0x3
+/* 802D648C 000000D8  38 00 00 01 */	li r0, 0x1
+/* 802D6490 000000DC  90 C3 00 00 */	stw r6, 0x0(r3)
+/* 802D6494 000000E0  90 A3 00 08 */	stw r5, 0x8(r3)
+/* 802D6498 000000E4  90 83 00 0C */	stw r4, 0xc(r3)
+/* 802D649C 000000E8  90 C3 00 04 */	stw r6, 0x4(r3)
+/* 802D64A0 000000EC  90 C3 00 10 */	stw r6, 0x10(r3)
+/* 802D64A4 000000F0  90 C3 00 14 */	stw r6, 0x14(r3)
+/* 802D64A8 000000F4  90 03 00 18 */	stw r0, 0x18(r3)
+/* 802D64AC 000000F8  4E 80 00 20 */	blr
+.endfn __ct__Q33EGG9IAudioMgr3ArgFv
+
+# .text:0xBC | 0x802D64B0 | size: 0x44
+# EGG::SimpleAudioMgr::SimpleAudioMgrArg::SimpleAudioMgrArg()
+.fn __ct__Q33EGG14SimpleAudioMgr17SimpleAudioMgrArgFv, global
+/* 802D64B0 000000FC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D64B4 00000100  7C 08 02 A6 */	mflr r0
+/* 802D64B8 00000104  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D64BC 00000108  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D64C0 0000010C  7C 7F 1B 78 */	mr r31, r3
+/* 802D64C4 00000110  48 00 00 01 */	bl __ct__Q33EGG9IAudioMgr3ArgFv
+/* 802D64C8 00000114  3C 60 00 8D */	lis r3, 0x8d
+/* 802D64CC 00000118  38 00 00 01 */	li r0, 0x1
+/* 802D64D0 0000011C  38 63 A0 00 */	subi r3, r3, 0x6000
+/* 802D64D4 00000120  90 7F 00 1C */	stw r3, 0x1c(r31)
+/* 802D64D8 00000124  7F E3 FB 78 */	mr r3, r31
+/* 802D64DC 00000128  98 1F 00 20 */	stb r0, 0x20(r31)
+/* 802D64E0 0000012C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D64E4 00000130  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D64E8 00000134  7C 08 03 A6 */	mtlr r0
+/* 802D64EC 00000138  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D64F0 0000013C  4E 80 00 20 */	blr
+.endfn __ct__Q33EGG14SimpleAudioMgr17SimpleAudioMgrArgFv
+
+# .text:0x100 | 0x802D64F4 | size: 0xC
+.fn gap_03_802D64F4_text, global
+.hidden gap_03_802D64F4_text
+/* 802D64F4 00000140  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D64F8 00000144  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D64FC 00000148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D64F4_text
+
+# .text:0x10C | 0x802D6500 | size: 0xE0
+# EGG::SimpleAudioMgr::SimpleAudioMgr()
+.fn __ct__Q23EGG14SimpleAudioMgrFv, global
+/* 802D6500 0000014C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6504 00000150  7C 08 02 A6 */	mflr r0
+/* 802D6508 00000154  3C A0 00 00 */	lis r5, __vt__Q23EGG9IAudioMgr@ha
+/* 802D650C 00000158  3C 80 00 00 */	lis r4, __vt__Q23EGG12SoundHeapMgr@ha
+/* 802D6510 0000015C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6514 00000160  38 A5 00 00 */	addi r5, r5, __vt__Q23EGG9IAudioMgr@l
+/* 802D6518 00000164  38 84 00 00 */	addi r4, r4, __vt__Q23EGG12SoundHeapMgr@l
+/* 802D651C 00000168  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6520 0000016C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 802D6524 00000170  7C 7E 1B 78 */	mr r30, r3
+/* 802D6528 00000174  90 A3 00 00 */	stw r5, 0x0(r3)
+/* 802D652C 00000178  90 83 00 08 */	stw r4, 0x8(r3)
+/* 802D6530 0000017C  38 63 00 0C */	addi r3, r3, 0xc
+/* 802D6534 00000180  48 00 00 01 */	bl __ct__Q34nw4r3snd9SoundHeapFv
+/* 802D6538 00000184  38 7E 00 68 */	addi r3, r30, 0x68
+/* 802D653C 00000188  38 9E 00 88 */	addi r4, r30, 0x88
+/* 802D6540 0000018C  38 A0 00 04 */	li r5, 0x4
+/* 802D6544 00000190  48 00 00 01 */	bl OSInitMessageQueue
+/* 802D6548 00000194  38 7E 00 98 */	addi r3, r30, 0x98
+/* 802D654C 00000198  38 9E 00 B8 */	addi r4, r30, 0xb8
+/* 802D6550 0000019C  38 A0 00 04 */	li r5, 0x4
+/* 802D6554 000001A0  48 00 00 01 */	bl OSInitMessageQueue
+/* 802D6558 000001A4  38 7E 00 C8 */	addi r3, r30, 0xc8
+/* 802D655C 000001A8  38 9E 00 E8 */	addi r4, r30, 0xe8
+/* 802D6560 000001AC  38 A0 00 04 */	li r5, 0x4
+/* 802D6564 000001B0  48 00 00 01 */	bl OSInitMessageQueue
+/* 802D6568 000001B4  38 7E 00 F8 */	addi r3, r30, 0xf8
+/* 802D656C 000001B8  38 9E 05 DC */	addi r4, r30, 0x5dc
+/* 802D6570 000001BC  38 BE 00 0C */	addi r5, r30, 0xc
+/* 802D6574 000001C0  48 00 00 01 */	bl __ct__Q23EGG9ArcPlayerFPQ34nw4r3snd18SoundArchivePlayerPQ34nw4r3snd9SoundHeap
+/* 802D6578 000001C4  38 7E 05 D0 */	addi r3, r30, 0x5d0
+/* 802D657C 000001C8  48 00 00 01 */	bl __ct__Q23EGG11AudioSystemFv
+/* 802D6580 000001CC  3C A0 00 00 */	lis r5, __vt__Q23EGG14SimpleAudioMgr@ha
+/* 802D6584 000001D0  3B FE 05 DC */	addi r31, r30, 0x5dc
+/* 802D6588 000001D4  38 A5 00 00 */	addi r5, r5, __vt__Q23EGG14SimpleAudioMgr@l
+/* 802D658C 000001D8  90 BE 00 00 */	stw r5, 0x0(r30)
+/* 802D6590 000001DC  38 85 00 10 */	addi r4, r5, 0x10
+/* 802D6594 000001E0  7F E3 FB 78 */	mr r3, r31
+/* 802D6598 000001E4  38 05 00 24 */	addi r0, r5, 0x24
+/* 802D659C 000001E8  90 9E 00 08 */	stw r4, 0x8(r30)
+/* 802D65A0 000001EC  90 1E 00 F8 */	stw r0, 0xf8(r30)
+/* 802D65A4 000001F0  48 00 00 01 */	bl __ct__Q34nw4r3snd18SoundArchivePlayerFv
+/* 802D65A8 000001F4  3C 60 00 00 */	lis r3, __vt__Q23EGG21SoundArchivePlayerEGG@ha
+/* 802D65AC 000001F8  38 00 00 00 */	li r0, 0x0
+/* 802D65B0 000001FC  38 63 00 00 */	addi r3, r3, __vt__Q23EGG21SoundArchivePlayerEGG@l
+/* 802D65B4 00000200  90 7F 00 08 */	stw r3, 0x8(r31)
+/* 802D65B8 00000204  38 83 00 14 */	addi r4, r3, 0x14
+/* 802D65BC 00000208  90 9F 00 0C */	stw r4, 0xc(r31)
+/* 802D65C0 0000020C  7F C3 F3 78 */	mr r3, r30
+/* 802D65C4 00000210  98 1E 00 04 */	stb r0, 0x4(r30)
+/* 802D65C8 00000214  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D65CC 00000218  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 802D65D0 0000021C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D65D4 00000220  7C 08 03 A6 */	mtlr r0
+/* 802D65D8 00000224  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D65DC 00000228  4E 80 00 20 */	blr
+.endfn __ct__Q23EGG14SimpleAudioMgrFv
+
+# .text:0x1EC | 0x802D65E0 | size: 0x58
+# EGG::SoundArchivePlayerEGG::~SoundArchivePlayerEGG()
+.fn __dt__Q23EGG21SoundArchivePlayerEGGFv, global
+/* 802D65E0 0000022C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D65E4 00000230  7C 08 02 A6 */	mflr r0
+/* 802D65E8 00000234  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D65EC 00000238  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D65F0 0000023C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D65F4 00000240  7C 9F 23 78 */	mr r31, r4
+/* 802D65F8 00000244  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 802D65FC 00000248  7C 7E 1B 78 */	mr r30, r3
+/* 802D6600 0000024C  41 82 00 1C */	beq .L_802D661C
+/* 802D6604 00000250  38 80 00 00 */	li r4, 0x0
+/* 802D6608 00000254  48 00 00 01 */	bl __dt__Q34nw4r3snd18SoundArchivePlayerFv
+/* 802D660C 00000258  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 802D6610 0000025C  40 81 00 0C */	ble .L_802D661C
+/* 802D6614 00000260  7F C3 F3 78 */	mr r3, r30
+/* 802D6618 00000264  48 00 00 01 */	bl __dl__FPv
+.L_802D661C:
+/* 802D661C 00000268  7F C3 F3 78 */	mr r3, r30
+/* 802D6620 0000026C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6624 00000270  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 802D6628 00000274  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D662C 00000278  7C 08 03 A6 */	mtlr r0
+/* 802D6630 0000027C  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6634 00000280  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG21SoundArchivePlayerEGGFv
+
+# .text:0x244 | 0x802D6638 | size: 0x8
+.fn gap_03_802D6638_text, global
+.hidden gap_03_802D6638_text
+/* 802D6638 00000284  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D663C 00000288  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6638_text
+
+# .text:0x24C | 0x802D6640 | size: 0xA8
+# EGG::SimpleAudioMgr::~SimpleAudioMgr()
+.fn __dt__Q23EGG14SimpleAudioMgrFv, global
+/* 802D6640 0000028C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6644 00000290  7C 08 02 A6 */	mflr r0
+/* 802D6648 00000294  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D664C 00000298  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6650 0000029C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6654 000002A0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6658 000002A4  7C 9E 23 78 */	mr r30, r4
+/* 802D665C 000002A8  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 802D6660 000002AC  7C 7D 1B 78 */	mr r29, r3
+/* 802D6664 000002B0  41 82 00 64 */	beq .L_802D66C8
+/* 802D6668 000002B4  34 63 05 DC */	addic. r3, r3, 0x5dc
+/* 802D666C 000002B8  41 82 00 0C */	beq .L_802D6678
+/* 802D6670 000002BC  38 80 00 00 */	li r4, 0x0
+/* 802D6674 000002C0  48 00 00 01 */	bl __dt__Q34nw4r3snd18SoundArchivePlayerFv
+.L_802D6678:
+/* 802D6678 000002C4  38 7D 05 D0 */	addi r3, r29, 0x5d0
+/* 802D667C 000002C8  38 80 00 00 */	li r4, 0x0
+/* 802D6680 000002CC  48 00 00 01 */	bl __dt__Q23EGG11AudioSystemFv
+/* 802D6684 000002D0  38 7D 00 F8 */	addi r3, r29, 0xf8
+/* 802D6688 000002D4  38 80 00 00 */	li r4, 0x0
+/* 802D668C 000002D8  48 00 00 01 */	bl __dt__Q23EGG9ArcPlayerFv
+/* 802D6690 000002DC  37 FD 00 08 */	addic. r31, r29, 0x8
+/* 802D6694 000002E0  41 82 00 24 */	beq .L_802D66B8
+/* 802D6698 000002E4  3C 80 00 00 */	lis r4, __vt__Q23EGG12SoundHeapMgr@ha
+/* 802D669C 000002E8  7F E3 FB 78 */	mr r3, r31
+/* 802D66A0 000002EC  38 84 00 00 */	addi r4, r4, __vt__Q23EGG12SoundHeapMgr@l
+/* 802D66A4 000002F0  90 9F 00 00 */	stw r4, 0x0(r31)
+/* 802D66A8 000002F4  48 00 00 01 */	bl destroySoundHeap__Q23EGG12SoundHeapMgrFv
+/* 802D66AC 000002F8  38 7F 00 04 */	addi r3, r31, 0x4
+/* 802D66B0 000002FC  38 80 FF FF */	li r4, -0x1
+/* 802D66B4 00000300  48 00 00 01 */	bl __dt__Q34nw4r3snd9SoundHeapFv
+.L_802D66B8:
+/* 802D66B8 00000304  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 802D66BC 00000308  40 81 00 0C */	ble .L_802D66C8
+/* 802D66C0 0000030C  7F A3 EB 78 */	mr r3, r29
+/* 802D66C4 00000310  48 00 00 01 */	bl __dl__FPv
+.L_802D66C8:
+/* 802D66C8 00000314  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D66CC 00000318  7F A3 EB 78 */	mr r3, r29
+/* 802D66D0 0000031C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D66D4 00000320  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 802D66D8 00000324  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D66DC 00000328  7C 08 03 A6 */	mtlr r0
+/* 802D66E0 0000032C  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D66E4 00000330  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG14SimpleAudioMgrFv
+
+# .text:0x2F4 | 0x802D66E8 | size: 0x8
+.fn gap_03_802D66E8_text, global
+.hidden gap_03_802D66E8_text
+/* 802D66E8 00000334  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D66EC 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D66E8_text
+
+# .text:0x2FC | 0x802D66F0 | size: 0x160
+# EGG::SimpleAudioMgr::initialize(EGG::IAudioMgr::Arg*)
+.fn initialize__Q23EGG14SimpleAudioMgrFPQ33EGG9IAudioMgr3Arg, global
+/* 802D66F0 0000033C  94 21 FF B0 */	stwu r1, -0x50(r1)
+/* 802D66F4 00000340  7C 08 02 A6 */	mflr r0
+/* 802D66F8 00000344  90 01 00 54 */	stw r0, 0x54(r1)
+/* 802D66FC 00000348  93 E1 00 4C */	stw r31, 0x4c(r1)
+/* 802D6700 0000034C  7C 7F 1B 78 */	mr r31, r3
+/* 802D6704 00000350  38 60 00 00 */	li r3, 0x0
+/* 802D6708 00000354  93 C1 00 48 */	stw r30, 0x48(r1)
+/* 802D670C 00000358  93 A1 00 44 */	stw r29, 0x44(r1)
+/* 802D6710 0000035C  7C 9D 23 78 */	mr r29, r4
+/* 802D6714 00000360  48 00 00 01 */	bl AIInit
+/* 802D6718 00000364  48 00 00 01 */	bl AXInit
+/* 802D671C 00000368  80 1D 00 1C */	lwz r0, 0x1c(r29)
+/* 802D6720 0000036C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6724 00000370  41 82 00 38 */	beq .L_802D675C
+/* 802D6728 00000374  80 9D 00 00 */	lwz r4, 0x0(r29)
+/* 802D672C 00000378  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802D6730 0000037C  41 82 00 2C */	beq .L_802D675C
+/* 802D6734 00000380  38 61 00 18 */	addi r3, r1, 0x18
+/* 802D6738 00000384  38 A0 00 20 */	li r5, 0x20
+/* 802D673C 00000388  48 00 00 01 */	bl __ct__Q23EGG9AllocatorFPQ23EGG4Heapl
+/* 802D6740 0000038C  80 BD 00 1C */	lwz r5, 0x1c(r29)
+/* 802D6744 00000390  38 7F 00 08 */	addi r3, r31, 0x8
+/* 802D6748 00000394  38 81 00 18 */	addi r4, r1, 0x18
+/* 802D674C 00000398  48 00 00 01 */	bl createSoundHeap__Q23EGG12SoundHeapMgrFPQ23EGG9AllocatorUl
+/* 802D6750 0000039C  38 61 00 18 */	addi r3, r1, 0x18
+/* 802D6754 000003A0  38 80 FF FF */	li r4, -0x1
+/* 802D6758 000003A4  48 00 00 01 */	bl __dt__Q23EGG9AllocatorFv
+.L_802D675C:
+/* 802D675C 000003A8  80 7D 00 10 */	lwz r3, 0x10(r29)
+/* 802D6760 000003AC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D6764 000003B0  40 82 00 20 */	bne .L_802D6784
+/* 802D6768 000003B4  80 1D 00 14 */	lwz r0, 0x14(r29)
+/* 802D676C 000003B8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6770 000003BC  40 82 00 14 */	bne .L_802D6784
+/* 802D6774 000003C0  80 7D 00 08 */	lwz r3, 0x8(r29)
+/* 802D6778 000003C4  80 9D 00 0C */	lwz r4, 0xc(r29)
+/* 802D677C 000003C8  48 00 00 01 */	bl InitSoundSystem__Q34nw4r3snd11SoundSystemFll
+/* 802D6780 000003CC  48 00 00 98 */	b .L_802D6818
+.L_802D6784:
+/* 802D6784 000003D0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D6788 000003D4  40 82 00 0C */	bne .L_802D6794
+/* 802D678C 000003D8  38 00 40 00 */	li r0, 0x4000
+/* 802D6790 000003DC  90 1D 00 10 */	stw r0, 0x10(r29)
+.L_802D6794:
+/* 802D6794 000003E0  80 1D 00 14 */	lwz r0, 0x14(r29)
+/* 802D6798 000003E4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D679C 000003E8  40 82 00 0C */	bne .L_802D67A8
+/* 802D67A0 000003EC  38 00 40 00 */	li r0, 0x4000
+/* 802D67A4 000003F0  90 1D 00 14 */	stw r0, 0x14(r29)
+.L_802D67A8:
+/* 802D67A8 000003F4  38 80 40 00 */	li r4, 0x4000
+/* 802D67AC 000003F8  38 60 00 04 */	li r3, 0x4
+/* 802D67B0 000003FC  38 00 00 03 */	li r0, 0x3
+/* 802D67B4 00000400  90 61 00 08 */	stw r3, 0x8(r1)
+/* 802D67B8 00000404  38 61 00 08 */	addi r3, r1, 0x8
+/* 802D67BC 00000408  90 81 00 0C */	stw r4, 0xc(r1)
+/* 802D67C0 0000040C  90 01 00 10 */	stw r0, 0x10(r1)
+/* 802D67C4 00000410  90 81 00 14 */	stw r4, 0x14(r1)
+/* 802D67C8 00000414  80 1D 00 08 */	lwz r0, 0x8(r29)
+/* 802D67CC 00000418  90 01 00 08 */	stw r0, 0x8(r1)
+/* 802D67D0 0000041C  80 1D 00 10 */	lwz r0, 0x10(r29)
+/* 802D67D4 00000420  90 01 00 0C */	stw r0, 0xc(r1)
+/* 802D67D8 00000424  80 1D 00 0C */	lwz r0, 0xc(r29)
+/* 802D67DC 00000428  90 01 00 10 */	stw r0, 0x10(r1)
+/* 802D67E0 0000042C  80 1D 00 14 */	lwz r0, 0x14(r29)
+/* 802D67E4 00000430  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D67E8 00000434  48 00 00 01 */	bl GetRequiredMemSize__Q34nw4r3snd11SoundSystemFRCQ44nw4r3snd11SoundSystem16SoundSystemParam
+/* 802D67EC 00000438  7C 7E 1B 78 */	mr r30, r3
+/* 802D67F0 0000043C  3C A0 53 59 */	lis r5, 0x5359
+/* 802D67F4 00000440  38 C5 53 54 */	addi r6, r5, 0x5354
+/* 802D67F8 00000444  38 7F 00 0C */	addi r3, r31, 0xc
+/* 802D67FC 00000448  7F C4 F3 78 */	mr r4, r30
+/* 802D6800 0000044C  38 A0 00 00 */	li r5, 0x0
+/* 802D6804 00000450  48 00 00 01 */	bl Alloc__Q34nw4r3snd9SoundHeapFUlPFPvUlPv_vPv
+/* 802D6808 00000454  7C 64 1B 78 */	mr r4, r3
+/* 802D680C 00000458  7F C5 F3 78 */	mr r5, r30
+/* 802D6810 0000045C  38 61 00 08 */	addi r3, r1, 0x8
+/* 802D6814 00000460  48 00 00 01 */	bl InitSoundSystem__Q34nw4r3snd11SoundSystemFRCQ44nw4r3snd11SoundSystem16SoundSystemParamPvUl
+.L_802D6818:
+/* 802D6818 00000464  80 9D 00 18 */	lwz r4, 0x18(r29)
+/* 802D681C 00000468  38 7F 00 F8 */	addi r3, r31, 0xf8
+/* 802D6820 0000046C  48 00 00 01 */	bl setSteamBlocks__Q23EGG9ArcPlayerFUl
+/* 802D6824 00000470  88 7D 00 20 */	lbz r3, 0x20(r29)
+/* 802D6828 00000474  38 00 00 01 */	li r0, 0x1
+/* 802D682C 00000478  98 7F 00 FE */	stb r3, 0xfe(r31)
+/* 802D6830 0000047C  98 1F 00 04 */	stb r0, 0x4(r31)
+/* 802D6834 00000480  83 E1 00 4C */	lwz r31, 0x4c(r1)
+/* 802D6838 00000484  83 C1 00 48 */	lwz r30, 0x48(r1)
+/* 802D683C 00000488  83 A1 00 44 */	lwz r29, 0x44(r1)
+/* 802D6840 0000048C  80 01 00 54 */	lwz r0, 0x54(r1)
+/* 802D6844 00000490  7C 08 03 A6 */	mtlr r0
+/* 802D6848 00000494  38 21 00 50 */	addi r1, r1, 0x50
+/* 802D684C 00000498  4E 80 00 20 */	blr
+.endfn initialize__Q23EGG14SimpleAudioMgrFPQ33EGG9IAudioMgr3Arg
+
+# .text:0x45C | 0x802D6850 | size: 0x4C
+# EGG::SimpleAudioMgr::calc()
+.fn calc__Q23EGG14SimpleAudioMgrFv, global
+/* 802D6850 0000049C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6854 000004A0  7C 08 02 A6 */	mflr r0
+/* 802D6858 000004A4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D685C 000004A8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6860 000004AC  7C 7F 1B 78 */	mr r31, r3
+/* 802D6864 000004B0  38 63 05 D0 */	addi r3, r3, 0x5d0
+/* 802D6868 000004B4  48 00 00 01 */	bl calc__Q23EGG11AudioSystemFv
+/* 802D686C 000004B8  80 1F 05 D4 */	lwz r0, 0x5d4(r31)
+/* 802D6870 000004BC  2C 00 00 02 */	cmpwi r0, 0x2
+/* 802D6874 000004C0  40 82 00 0C */	bne .L_802D6880
+/* 802D6878 000004C4  38 7F 00 F8 */	addi r3, r31, 0xf8
+/* 802D687C 000004C8  48 00 00 01 */	bl stopAllSound__Q23EGG9ArcPlayerFv
+.L_802D6880:
+/* 802D6880 000004CC  38 7F 00 F8 */	addi r3, r31, 0xf8
+/* 802D6884 000004D0  48 00 00 01 */	bl calc__Q23EGG9ArcPlayerFv
+/* 802D6888 000004D4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D688C 000004D8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6890 000004DC  7C 08 03 A6 */	mtlr r0
+/* 802D6894 000004E0  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6898 000004E4  4E 80 00 20 */	blr
+.endfn calc__Q23EGG14SimpleAudioMgrFv
+
+# .text:0x4A8 | 0x802D689C | size: 0x4
+.fn gap_03_802D689C_text, global
+.hidden gap_03_802D689C_text
+/* 802D689C 000004E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D689C_text
+
+# .text:0x4AC | 0x802D68A0 | size: 0x8
+# EGG::SimpleAudioMgr::openDvdArchive(const char*, nw4r::snd::SoundHeap*)
+.fn openDvdArchive__Q23EGG14SimpleAudioMgrFPCcPQ34nw4r3snd9SoundHeap, global
+/* 802D68A0 000004EC  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D68A4 000004F0  48 00 00 00 */	b openDvdArchive__Q23EGG9ArcPlayerFPCcPQ34nw4r3snd9SoundHeap
+.endfn openDvdArchive__Q23EGG14SimpleAudioMgrFPCcPQ34nw4r3snd9SoundHeap
+
+# .text:0x4B4 | 0x802D68A8 | size: 0x8
+.fn gap_03_802D68A8_text, global
+.hidden gap_03_802D68A8_text
+/* 802D68A8 000004F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D68AC 000004F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D68A8_text
+
+# .text:0x4BC | 0x802D68B0 | size: 0x8
+# EGG::SimpleAudioMgr::openNandArchive(const char*, nw4r::snd::SoundHeap*)
+.fn openNandArchive__Q23EGG14SimpleAudioMgrFPCcPQ34nw4r3snd9SoundHeap, global
+/* 802D68B0 000004FC  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D68B4 00000500  48 00 00 00 */	b openNandArchive__Q23EGG9ArcPlayerFPCcPQ34nw4r3snd9SoundHeap
+.endfn openNandArchive__Q23EGG14SimpleAudioMgrFPCcPQ34nw4r3snd9SoundHeap
+
+# .text:0x4C4 | 0x802D68B8 | size: 0x8
+.fn gap_03_802D68B8_text, global
+.hidden gap_03_802D68B8_text
+/* 802D68B8 00000504  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D68BC 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D68B8_text
+
+# .text:0x4CC | 0x802D68C0 | size: 0x8
+# EGG::SimpleAudioMgr::setupMemoryArchive(const void*, nw4r::snd::SoundHeap*)
+.fn setupMemoryArchive__Q23EGG14SimpleAudioMgrFPCvPQ34nw4r3snd9SoundHeap, global
+/* 802D68C0 0000050C  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D68C4 00000510  48 00 00 00 */	b setupMemoryArchive__Q23EGG9ArcPlayerFPCvPQ34nw4r3snd9SoundHeap
+.endfn setupMemoryArchive__Q23EGG14SimpleAudioMgrFPCvPQ34nw4r3snd9SoundHeap
+
+# .text:0x4D4 | 0x802D68C8 | size: 0x8
+.fn gap_03_802D68C8_text, global
+.hidden gap_03_802D68C8_text
+/* 802D68C8 00000514  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D68CC 00000518  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D68C8_text
+
+# .text:0x4DC | 0x802D68D0 | size: 0x8
+# EGG::SimpleAudioMgr::closeArchive()
+.fn closeArchive__Q23EGG14SimpleAudioMgrFv, global
+/* 802D68D0 0000051C  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D68D4 00000520  48 00 00 00 */	b closeArchive__Q23EGG9ArcPlayerFv
+.endfn closeArchive__Q23EGG14SimpleAudioMgrFv
+
+# .text:0x4E4 | 0x802D68D8 | size: 0x8
+.fn gap_03_802D68D8_text, global
+.hidden gap_03_802D68D8_text
+/* 802D68D8 00000524  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D68DC 00000528  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D68D8_text
+
+# .text:0x4EC | 0x802D68E0 | size: 0x8
+# EGG::SimpleAudioMgr::loadGroup(unsigned int, nw4r::snd::SoundHeap*, unsigned long)
+.fn loadGroup__Q23EGG14SimpleAudioMgrFUiPQ34nw4r3snd9SoundHeapUl, global
+/* 802D68E0 0000052C  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D68E4 00000530  48 00 00 00 */	b loadGroup__Q23EGG9ArcPlayerFUiPQ34nw4r3snd9SoundHeapUl
+.endfn loadGroup__Q23EGG14SimpleAudioMgrFUiPQ34nw4r3snd9SoundHeapUl
+
+# .text:0x4F4 | 0x802D68E8 | size: 0x8
+.fn gap_03_802D68E8_text, global
+.hidden gap_03_802D68E8_text
+/* 802D68E8 00000534  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D68EC 00000538  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D68E8_text
+
+# .text:0x4FC | 0x802D68F0 | size: 0x8
+# EGG::SimpleAudioMgr::loadGroup(int, nw4r::snd::SoundHeap*, unsigned long)
+.fn loadGroup__Q23EGG14SimpleAudioMgrFiPQ34nw4r3snd9SoundHeapUl, global
+/* 802D68F0 0000053C  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D68F4 00000540  48 00 00 00 */	b loadGroup__Q23EGG9ArcPlayerFiPQ34nw4r3snd9SoundHeapUl
+.endfn loadGroup__Q23EGG14SimpleAudioMgrFiPQ34nw4r3snd9SoundHeapUl
+
+# .text:0x504 | 0x802D68F8 | size: 0x8
+.fn gap_03_802D68F8_text, global
+.hidden gap_03_802D68F8_text
+/* 802D68F8 00000544  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D68FC 00000548  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D68F8_text
+
+# .text:0x50C | 0x802D6900 | size: 0x8
+# EGG::SimpleAudioMgr::loadGroup(unsigned long, nw4r::snd::SoundHeap*, unsigned long)
+.fn loadGroup__Q23EGG14SimpleAudioMgrFUlPQ34nw4r3snd9SoundHeapUl, global
+/* 802D6900 0000054C  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D6904 00000550  48 00 00 00 */	b loadGroup__Q23EGG9ArcPlayerFUlPQ34nw4r3snd9SoundHeapUl
+.endfn loadGroup__Q23EGG14SimpleAudioMgrFUlPQ34nw4r3snd9SoundHeapUl
+
+# .text:0x514 | 0x802D6908 | size: 0x8
+.fn gap_03_802D6908_text, global
+.hidden gap_03_802D6908_text
+/* 802D6908 00000554  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D690C 00000558  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6908_text
+
+# .text:0x51C | 0x802D6910 | size: 0x8
+# EGG::SimpleAudioMgr::loadGroup(const char*, nw4r::snd::SoundHeap*, unsigned long)
+.fn loadGroup__Q23EGG14SimpleAudioMgrFPCcPQ34nw4r3snd9SoundHeapUl, global
+/* 802D6910 0000055C  38 63 00 F8 */	addi r3, r3, 0xf8
+/* 802D6914 00000560  48 00 00 00 */	b loadGroup__Q23EGG9ArcPlayerFPCcPQ34nw4r3snd9SoundHeapUl
+.endfn loadGroup__Q23EGG14SimpleAudioMgrFPCcPQ34nw4r3snd9SoundHeapUl
+
+# .text:0x524 | 0x802D6918 | size: 0x8
+.fn gap_03_802D6918_text, global
+.hidden gap_03_802D6918_text
+/* 802D6918 00000564  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D691C 00000568  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6918_text
+
+# .text:0x52C | 0x802D6920 | size: 0x4
+# EGG::IAudioMgr::initialize(EGG::IAudioMgr::Arg*)
+.fn initialize__Q23EGG9IAudioMgrFPQ33EGG9IAudioMgr3Arg, global
+/* 802D6920 0000056C  4E 80 00 20 */	blr
+.endfn initialize__Q23EGG9IAudioMgrFPQ33EGG9IAudioMgr3Arg
+
+# .text:0x530 | 0x802D6924 | size: 0xC
+.fn gap_03_802D6924_text, global
+.hidden gap_03_802D6924_text
+/* 802D6924 00000570  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6928 00000574  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D692C 00000578  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6924_text
+
+# .text:0x53C | 0x802D6930 | size: 0x34
+# EGG::SoundArchivePlayerEGG::detail_SetupSound(nw4r::snd::SoundHandle*, unsigned long, bool, const nw4r::snd::SoundStartable::StartInfo*)
+.fn detail_SetupSound__Q23EGG21SoundArchivePlayerEGGFPQ34nw4r3snd11SoundHandleUlbPCQ44nw4r3snd14SoundStartable9StartInfo, global
+/* 802D6930 0000057C  81 00 00 00 */	lwz r8, sInstanse__Q23EGG11AudioSystem@sda21(r0)
+/* 802D6934 00000580  2C 08 00 00 */	cmpwi r8, 0x0
+/* 802D6938 00000584  41 82 00 24 */	beq .L_802D695C
+/* 802D693C 00000588  80 08 00 08 */	lwz r0, 0x8(r8)
+/* 802D6940 0000058C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6944 00000590  40 82 00 10 */	bne .L_802D6954
+/* 802D6948 00000594  80 08 00 04 */	lwz r0, 0x4(r8)
+/* 802D694C 00000598  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6950 0000059C  41 82 00 0C */	beq .L_802D695C
+.L_802D6954:
+/* 802D6954 000005A0  38 60 00 80 */	li r3, 0x80
+/* 802D6958 000005A4  4E 80 00 20 */	blr
+.L_802D695C:
+/* 802D695C 000005A8  48 00 00 00 */	b detail_SetupSound__Q34nw4r3snd18SoundArchivePlayerFPQ34nw4r3snd11SoundHandleUlbPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 802D6960 000005AC  4E 80 00 20 */	blr
+.endfn detail_SetupSound__Q23EGG21SoundArchivePlayerEGGFPQ34nw4r3snd11SoundHandleUlbPCQ44nw4r3snd14SoundStartable9StartInfo
+
+# .text:0x570 | 0x802D6964 | size: 0xC
+.fn gap_03_802D6964_text, global
+.hidden gap_03_802D6964_text
+/* 802D6964 000005B0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6968 000005B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D696C 000005B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6964_text
+
+# .text:0x57C | 0x802D6970 | size: 0x8
+# EGG::SoundArchivePlayerEGG::@12@detail_SetupSound(nw4r::snd::SoundHandle*, unsigned long, bool, const nw4r::snd::SoundStartable::StartInfo*)
+.fn "@12@detail_SetupSound__Q23EGG21SoundArchivePlayerEGGFPQ34nw4r3snd11SoundHandleUlbPCQ44nw4r3snd14SoundStartable9StartInfo", global
+/* 802D6970 000005BC  38 63 FF F4 */	subi r3, r3, 0xc
+/* 802D6974 000005C0  48 00 00 00 */	b detail_SetupSound__Q23EGG21SoundArchivePlayerEGGFPQ34nw4r3snd11SoundHandleUlbPCQ44nw4r3snd14SoundStartable9StartInfo
+.endfn "@12@detail_SetupSound__Q23EGG21SoundArchivePlayerEGGFPQ34nw4r3snd11SoundHandleUlbPCQ44nw4r3snd14SoundStartable9StartInfo"
+
+# .text:0x584 | 0x802D6978 | size: 0x8
+.fn gap_03_802D6978_text, global
+.hidden gap_03_802D6978_text
+/* 802D6978 000005C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D697C 000005C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6978_text
+
+# .text:0x58C | 0x802D6980 | size: 0x8
+.fn "@12@__dt__Q23EGG21SoundArchivePlayerEGGFv", global
+/* 802D6980 000005CC  38 63 FF F4 */	subi r3, r3, 0xc
+/* 802D6984 000005D0  48 00 00 00 */	b __dt__Q23EGG21SoundArchivePlayerEGGFv
+.endfn "@12@__dt__Q23EGG21SoundArchivePlayerEGGFv"
+
+# .text:0x594 | 0x802D6988 | size: 0x8
+.fn gap_03_802D6988_text, global
+.hidden gap_03_802D6988_text
+/* 802D6988 000005D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D698C 000005D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6988_text
+
+# .text:0x59C | 0x802D6990 | size: 0x8
+.fn "@248@__dt__Q23EGG14SimpleAudioMgrFv", global
+/* 802D6990 000005DC  38 63 FF 08 */	subi r3, r3, 0xf8
+/* 802D6994 000005E0  48 00 00 00 */	b __dt__Q23EGG14SimpleAudioMgrFv
+.endfn "@248@__dt__Q23EGG14SimpleAudioMgrFv"
+
+# .text:0x5A4 | 0x802D6998 | size: 0x8
+.fn gap_03_802D6998_text, global
+.hidden gap_03_802D6998_text
+/* 802D6998 000005E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D699C 000005E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6998_text
+
+# .text:0x5AC | 0x802D69A0 | size: 0x90
+# EGG::AudioRmtSpeakerMgr::setupCallback(long, long)
+.fn setupCallback__Q23EGG18AudioRmtSpeakerMgrFll, global
+/* 802D69A0 000005EC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D69A4 000005F0  7C 08 02 A6 */	mflr r0
+/* 802D69A8 000005F4  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802D69AC 000005F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D69B0 000005FC  40 82 00 38 */	bne .L_802D69E8
+/* 802D69B4 00000600  80 00 00 00 */	lwz r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D69B8 00000604  3C A0 00 00 */	lis r5, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D69BC 00000608  38 A5 00 00 */	addi r5, r5, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D69C0 0000060C  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D69C4 00000610  7C A5 02 14 */	add r5, r5, r0
+/* 802D69C8 00000614  81 85 00 08 */	lwz r12, 0x8(r5)
+/* 802D69CC 00000618  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802D69D0 0000061C  41 82 00 0C */	beq .L_802D69DC
+/* 802D69D4 00000620  7D 89 03 A6 */	mtctr r12
+/* 802D69D8 00000624  4E 80 04 21 */	bctrl
+.L_802D69DC:
+/* 802D69DC 00000628  48 00 00 01 */	bl WPADGetSpeakerVolume
+/* 802D69E0 0000062C  98 60 00 00 */	stb r3, sAudioRmtSpeakerWpadVolume__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D69E4 00000630  48 00 00 20 */	b .L_802D6A04
+.L_802D69E8:
+/* 802D69E8 00000634  80 00 00 00 */	lwz r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D69EC 00000638  3C 80 00 00 */	lis r4, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D69F0 0000063C  38 84 00 00 */	addi r4, r4, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D69F4 00000640  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D69F8 00000644  7C 84 02 14 */	add r4, r4, r0
+/* 802D69FC 00000648  80 84 00 08 */	lwz r4, 0x8(r4)
+/* 802D6A00 0000064C  48 00 00 01 */	bl setup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+.L_802D6A04:
+/* 802D6A04 00000650  80 00 00 00 */	lwz r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6A08 00000654  3C 60 00 00 */	lis r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6A0C 00000658  38 63 00 00 */	addi r3, r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6A10 0000065C  38 80 00 01 */	li r4, 0x1
+/* 802D6A14 00000660  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D6A18 00000664  7C 63 02 14 */	add r3, r3, r0
+/* 802D6A1C 00000668  98 83 00 01 */	stb r4, 0x1(r3)
+/* 802D6A20 0000066C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6A24 00000670  7C 08 03 A6 */	mtlr r0
+/* 802D6A28 00000674  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6A2C 00000678  4E 80 00 20 */	blr
+.endfn setupCallback__Q23EGG18AudioRmtSpeakerMgrFll
+
+# .text:0x63C | 0x802D6A30 | size: 0x8C
+# EGG::AudioRmtSpeakerMgr::shutdownCallback(long, long)
+.fn shutdownCallback__Q23EGG18AudioRmtSpeakerMgrFll, global
+/* 802D6A30 0000067C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6A34 00000680  7C 08 02 A6 */	mflr r0
+/* 802D6A38 00000684  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6A3C 00000688  38 04 00 01 */	addi r0, r4, 0x1
+/* 802D6A40 0000068C  28 00 00 01 */	cmplwi r0, 0x1
+/* 802D6A44 00000690  41 81 00 30 */	bgt .L_802D6A74
+/* 802D6A48 00000694  80 00 00 00 */	lwz r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6A4C 00000698  3C A0 00 00 */	lis r5, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6A50 0000069C  38 A5 00 00 */	addi r5, r5, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6A54 000006A0  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D6A58 000006A4  7C A5 02 14 */	add r5, r5, r0
+/* 802D6A5C 000006A8  81 85 00 08 */	lwz r12, 0x8(r5)
+/* 802D6A60 000006AC  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802D6A64 000006B0  41 82 00 2C */	beq .L_802D6A90
+/* 802D6A68 000006B4  7D 89 03 A6 */	mtctr r12
+/* 802D6A6C 000006B8  4E 80 04 21 */	bctrl
+/* 802D6A70 000006BC  48 00 00 20 */	b .L_802D6A90
+.L_802D6A74:
+/* 802D6A74 000006C0  80 00 00 00 */	lwz r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6A78 000006C4  3C 80 00 00 */	lis r4, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6A7C 000006C8  38 84 00 00 */	addi r4, r4, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6A80 000006CC  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D6A84 000006D0  7C 84 02 14 */	add r4, r4, r0
+/* 802D6A88 000006D4  80 84 00 08 */	lwz r4, 0x8(r4)
+/* 802D6A8C 000006D8  48 00 00 01 */	bl shutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+.L_802D6A90:
+/* 802D6A90 000006DC  80 00 00 00 */	lwz r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6A94 000006E0  3C 60 00 00 */	lis r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6A98 000006E4  38 63 00 00 */	addi r3, r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6A9C 000006E8  38 80 00 01 */	li r4, 0x1
+/* 802D6AA0 000006EC  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D6AA4 000006F0  7C 63 02 14 */	add r3, r3, r0
+/* 802D6AA8 000006F4  98 83 00 01 */	stb r4, 0x1(r3)
+/* 802D6AAC 000006F8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6AB0 000006FC  7C 08 03 A6 */	mtlr r0
+/* 802D6AB4 00000700  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6AB8 00000704  4E 80 00 20 */	blr
+.endfn shutdownCallback__Q23EGG18AudioRmtSpeakerMgrFll
+
+# .text:0x6C8 | 0x802D6ABC | size: 0x4
+.fn gap_03_802D6ABC_text, global
+.hidden gap_03_802D6ABC_text
+/* 802D6ABC 00000708  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6ABC_text
+
+# .text:0x6CC | 0x802D6AC0 | size: 0x84
+# EGG::AudioRmtSpeakerMgr::add_task(long, void (*)(long, long), bool)
+.fn add_task__Q23EGG18AudioRmtSpeakerMgrFlPFll_vb, global
+/* 802D6AC0 0000070C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6AC4 00000710  7C 08 02 A6 */	mflr r0
+/* 802D6AC8 00000714  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6ACC 00000718  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6AD0 0000071C  7C BF 2B 78 */	mr r31, r5
+/* 802D6AD4 00000720  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6AD8 00000724  7C 9E 23 78 */	mr r30, r4
+/* 802D6ADC 00000728  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 802D6AE0 0000072C  7C 7D 1B 78 */	mr r29, r3
+/* 802D6AE4 00000730  48 00 00 01 */	bl OSDisableInterrupts
+/* 802D6AE8 00000734  80 A0 00 00 */	lwz r5, mTaskRequestCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6AEC 00000738  3C C0 00 00 */	lis r6, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6AF0 0000073C  38 C6 00 00 */	addi r6, r6, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6AF4 00000740  38 80 00 00 */	li r4, 0x0
+/* 802D6AF8 00000744  1C E5 00 0C */	mulli r7, r5, 0xc
+/* 802D6AFC 00000748  38 05 00 01 */	addi r0, r5, 0x1
+/* 802D6B00 0000074C  90 00 00 00 */	stw r0, mTaskRequestCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6B04 00000750  28 00 00 14 */	cmplwi r0, 0x14
+/* 802D6B08 00000754  7C A6 3A 14 */	add r5, r6, r7
+/* 802D6B0C 00000758  93 A5 00 04 */	stw r29, 0x4(r5)
+/* 802D6B10 0000075C  7F E6 39 AE */	stbx r31, r6, r7
+/* 802D6B14 00000760  93 C5 00 08 */	stw r30, 0x8(r5)
+/* 802D6B18 00000764  98 85 00 01 */	stb r4, 0x1(r5)
+/* 802D6B1C 00000768  41 80 00 08 */	blt .L_802D6B24
+/* 802D6B20 0000076C  90 80 00 00 */	stw r4, mTaskRequestCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+.L_802D6B24:
+/* 802D6B24 00000770  48 00 00 01 */	bl OSRestoreInterrupts
+/* 802D6B28 00000774  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D6B2C 00000778  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D6B30 0000077C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D6B34 00000780  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 802D6B38 00000784  7C 08 03 A6 */	mtlr r0
+/* 802D6B3C 00000788  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D6B40 0000078C  4E 80 00 20 */	blr
+.endfn add_task__Q23EGG18AudioRmtSpeakerMgrFlPFll_vb
+
+# .text:0x750 | 0x802D6B44 | size: 0xC
+.fn gap_03_802D6B44_text, global
+.hidden gap_03_802D6B44_text
+/* 802D6B44 00000790  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6B48 00000794  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6B4C 00000798  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6B44_text
+
+# .text:0x75C | 0x802D6B50 | size: 0x7C
+# EGG::AudioRmtSpeakerMgr::doSetup(long, void (*)(long, long))
+.fn doSetup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v, global
+/* 802D6B50 0000079C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6B54 000007A0  7C 08 02 A6 */	mflr r0
+/* 802D6B58 000007A4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6B5C 000007A8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6B60 000007AC  7C 9F 23 78 */	mr r31, r4
+/* 802D6B64 000007B0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 802D6B68 000007B4  7C 7E 1B 78 */	mr r30, r3
+/* 802D6B6C 000007B8  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail20RemoteSpeakerManagerFv
+/* 802D6B70 000007BC  7F C4 F3 78 */	mr r4, r30
+/* 802D6B74 000007C0  48 00 00 01 */	bl GetRemoteSpeaker__Q44nw4r3snd6detail20RemoteSpeakerManagerFi
+/* 802D6B78 000007C4  7F E4 FB 78 */	mr r4, r31
+/* 802D6B7C 000007C8  48 00 00 01 */	bl Setup__Q34nw4r3snd13RemoteSpeakerFPFll_v
+/* 802D6B80 000007CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D6B84 000007D0  40 82 00 30 */	bne .L_802D6BB4
+/* 802D6B88 000007D4  7F C3 F3 78 */	mr r3, r30
+/* 802D6B8C 000007D8  7F E4 FB 78 */	mr r4, r31
+/* 802D6B90 000007DC  38 A0 00 01 */	li r5, 0x1
+/* 802D6B94 000007E0  48 00 00 01 */	bl add_task__Q23EGG18AudioRmtSpeakerMgrFlPFll_vb
+/* 802D6B98 000007E4  80 00 00 00 */	lwz r0, mTaskRequestCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6B9C 000007E8  3C 60 00 00 */	lis r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6BA0 000007EC  38 63 00 00 */	addi r3, r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6BA4 000007F0  38 80 00 01 */	li r4, 0x1
+/* 802D6BA8 000007F4  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D6BAC 000007F8  7C 63 02 14 */	add r3, r3, r0
+/* 802D6BB0 000007FC  98 83 00 01 */	stb r4, 0x1(r3)
+.L_802D6BB4:
+/* 802D6BB4 00000800  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6BB8 00000804  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6BBC 00000808  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 802D6BC0 0000080C  7C 08 03 A6 */	mtlr r0
+/* 802D6BC4 00000810  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6BC8 00000814  4E 80 00 20 */	blr
+.endfn doSetup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+
+# .text:0x7D8 | 0x802D6BCC | size: 0x4
+.fn gap_03_802D6BCC_text, global
+.hidden gap_03_802D6BCC_text
+/* 802D6BCC 00000818  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6BCC_text
+
+# .text:0x7DC | 0x802D6BD0 | size: 0x48
+# EGG::AudioRmtSpeakerMgr::doShutdown(long, void (*)(long, long))
+.fn doShutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v, global
+/* 802D6BD0 0000081C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6BD4 00000820  7C 08 02 A6 */	mflr r0
+/* 802D6BD8 00000824  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6BDC 00000828  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6BE0 0000082C  7C 9F 23 78 */	mr r31, r4
+/* 802D6BE4 00000830  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 802D6BE8 00000834  7C 7E 1B 78 */	mr r30, r3
+/* 802D6BEC 00000838  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail20RemoteSpeakerManagerFv
+/* 802D6BF0 0000083C  7F C4 F3 78 */	mr r4, r30
+/* 802D6BF4 00000840  48 00 00 01 */	bl GetRemoteSpeaker__Q44nw4r3snd6detail20RemoteSpeakerManagerFi
+/* 802D6BF8 00000844  7F E4 FB 78 */	mr r4, r31
+/* 802D6BFC 00000848  48 00 00 01 */	bl Shutdown__Q34nw4r3snd13RemoteSpeakerFPFll_v
+/* 802D6C00 0000084C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6C04 00000850  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6C08 00000854  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 802D6C0C 00000858  7C 08 03 A6 */	mtlr r0
+/* 802D6C10 0000085C  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6C14 00000860  4E 80 00 20 */	blr
+.endfn doShutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+
+# .text:0x824 | 0x802D6C18 | size: 0x8
+.fn gap_03_802D6C18_text, global
+.hidden gap_03_802D6C18_text
+/* 802D6C18 00000864  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6C1C 00000868  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6C18_text
+
+# .text:0x82C | 0x802D6C20 | size: 0xC4
+# EGG::AudioRmtSpeakerMgr::calc()
+.fn calc__Q23EGG18AudioRmtSpeakerMgrFv, global
+/* 802D6C20 0000086C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6C24 00000870  7C 08 02 A6 */	mflr r0
+/* 802D6C28 00000874  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6C2C 00000878  88 00 00 00 */	lbz r0, sTask__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6C30 0000087C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6C34 00000880  40 82 00 64 */	bne .L_802D6C98
+/* 802D6C38 00000884  80 60 00 00 */	lwz r3, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6C3C 00000888  80 00 00 00 */	lwz r0, mTaskRequestCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6C40 0000088C  7C 00 18 40 */	cmplw r0, r3
+/* 802D6C44 00000890  41 82 00 90 */	beq .L_802D6CD4
+/* 802D6C48 00000894  1C 83 00 0C */	mulli r4, r3, 0xc
+/* 802D6C4C 00000898  3C 60 00 00 */	lis r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6C50 0000089C  38 63 00 00 */	addi r3, r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6C54 000008A0  7C 03 20 AE */	lbzx r0, r3, r4
+/* 802D6C58 000008A4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6C5C 000008A8  41 82 00 1C */	beq .L_802D6C78
+/* 802D6C60 000008AC  7C 63 22 14 */	add r3, r3, r4
+/* 802D6C64 000008B0  3C 80 00 00 */	lis r4, setupCallback__Q23EGG18AudioRmtSpeakerMgrFll@ha
+/* 802D6C68 000008B4  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 802D6C6C 000008B8  38 84 00 00 */	addi r4, r4, setupCallback__Q23EGG18AudioRmtSpeakerMgrFll@l
+/* 802D6C70 000008BC  48 00 00 01 */	bl doSetup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+/* 802D6C74 000008C0  48 00 00 18 */	b .L_802D6C8C
+.L_802D6C78:
+/* 802D6C78 000008C4  7C 63 22 14 */	add r3, r3, r4
+/* 802D6C7C 000008C8  3C 80 00 00 */	lis r4, shutdownCallback__Q23EGG18AudioRmtSpeakerMgrFll@ha
+/* 802D6C80 000008CC  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 802D6C84 000008D0  38 84 00 00 */	addi r4, r4, shutdownCallback__Q23EGG18AudioRmtSpeakerMgrFll@l
+/* 802D6C88 000008D4  48 00 00 01 */	bl doShutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+.L_802D6C8C:
+/* 802D6C8C 000008D8  38 00 00 01 */	li r0, 0x1
+/* 802D6C90 000008DC  98 00 00 00 */	stb r0, sTask__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6C94 000008E0  48 00 00 40 */	b .L_802D6CD4
+.L_802D6C98:
+/* 802D6C98 000008E4  80 80 00 00 */	lwz r4, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6C9C 000008E8  3C 60 00 00 */	lis r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@ha
+/* 802D6CA0 000008EC  38 63 00 00 */	addi r3, r3, sConnectTask__Q23EGG18AudioRmtSpeakerMgr@l
+/* 802D6CA4 000008F0  1C 04 00 0C */	mulli r0, r4, 0xc
+/* 802D6CA8 000008F4  7C 63 02 14 */	add r3, r3, r0
+/* 802D6CAC 000008F8  88 03 00 01 */	lbz r0, 0x1(r3)
+/* 802D6CB0 000008FC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6CB4 00000900  41 82 00 20 */	beq .L_802D6CD4
+/* 802D6CB8 00000904  38 04 00 01 */	addi r0, r4, 0x1
+/* 802D6CBC 00000908  38 60 00 00 */	li r3, 0x0
+/* 802D6CC0 0000090C  28 00 00 14 */	cmplwi r0, 0x14
+/* 802D6CC4 00000910  98 60 00 00 */	stb r3, sTask__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6CC8 00000914  90 00 00 00 */	stw r0, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6CCC 00000918  41 80 00 08 */	blt .L_802D6CD4
+/* 802D6CD0 0000091C  90 60 00 00 */	stw r3, mTaskFinishCount__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+.L_802D6CD4:
+/* 802D6CD4 00000920  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6CD8 00000924  7C 08 03 A6 */	mtlr r0
+/* 802D6CDC 00000928  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6CE0 0000092C  4E 80 00 20 */	blr
+.endfn calc__Q23EGG18AudioRmtSpeakerMgrFv
+
+# .text:0x8F0 | 0x802D6CE4 | size: 0xC
+.fn gap_03_802D6CE4_text, global
+.hidden gap_03_802D6CE4_text
+/* 802D6CE4 00000930  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6CE8 00000934  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6CEC 00000938  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6CE4_text
+
+# .text:0x8FC | 0x802D6CF0 | size: 0x3C
+# EGG::AudioRmtSpeakerMgr::setupCallbackDirect(long, long)
+.fn setupCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll, global
+/* 802D6CF0 0000093C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6CF4 00000940  7C 08 02 A6 */	mflr r0
+/* 802D6CF8 00000944  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802D6CFC 00000948  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6D00 0000094C  40 82 00 10 */	bne .L_802D6D10
+/* 802D6D04 00000950  48 00 00 01 */	bl WPADGetSpeakerVolume
+/* 802D6D08 00000954  98 60 00 00 */	stb r3, sAudioRmtSpeakerWpadVolume__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6D0C 00000958  48 00 00 10 */	b .L_802D6D1C
+.L_802D6D10:
+/* 802D6D10 0000095C  3C 80 00 00 */	lis r4, setupCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@ha
+/* 802D6D14 00000960  38 84 00 00 */	addi r4, r4, setupCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@l
+/* 802D6D18 00000964  48 00 00 01 */	bl doSetup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+.L_802D6D1C:
+/* 802D6D1C 00000968  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6D20 0000096C  7C 08 03 A6 */	mtlr r0
+/* 802D6D24 00000970  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6D28 00000974  4E 80 00 20 */	blr
+.endfn setupCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll
+
+# .text:0x938 | 0x802D6D2C | size: 0x4
+.fn gap_03_802D6D2C_text, global
+.hidden gap_03_802D6D2C_text
+/* 802D6D2C 00000978  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6D2C_text
+
+# .text:0x93C | 0x802D6D30 | size: 0x20
+# EGG::AudioRmtSpeakerMgr::shutdownCallbackDirect(long, long)
+.fn shutdownCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll, global
+/* 802D6D30 0000097C  2C 04 FF FF */	cmpwi r4, -0x1
+/* 802D6D34 00000980  4D 82 00 20 */	beqlr
+/* 802D6D38 00000984  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802D6D3C 00000988  4D 82 00 20 */	beqlr
+/* 802D6D40 0000098C  3C 80 00 00 */	lis r4, shutdownCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@ha
+/* 802D6D44 00000990  38 84 00 00 */	addi r4, r4, shutdownCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@l
+/* 802D6D48 00000994  48 00 00 00 */	b doShutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+/* 802D6D4C 00000998  4E 80 00 20 */	blr
+.endfn shutdownCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll
+
+# .text:0x95C | 0x802D6D50 | size: 0x60
+# EGG::AudioRmtSpeakerMgr::setup(long, void (*)(long, long))
+.fn setup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v, global
+/* 802D6D50 0000099C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6D54 000009A0  7C 08 02 A6 */	mflr r0
+/* 802D6D58 000009A4  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6D5C 000009A8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6D60 000009AC  7C 9F 23 78 */	mr r31, r4
+/* 802D6D64 000009B0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6D68 000009B4  7C 7E 1B 78 */	mr r30, r3
+/* 802D6D6C 000009B8  88 00 00 00 */	lbz r0, sAudioRmtSpeakerConnectCanncelSw__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6D70 000009BC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6D74 000009C0  40 82 00 24 */	bne .L_802D6D98
+/* 802D6D78 000009C4  38 81 00 08 */	addi r4, r1, 0x8
+/* 802D6D7C 000009C8  48 00 00 01 */	bl WPADProbe
+/* 802D6D80 000009CC  2C 03 FF FF */	cmpwi r3, -0x1
+/* 802D6D84 000009D0  41 82 00 14 */	beq .L_802D6D98
+/* 802D6D88 000009D4  7F C3 F3 78 */	mr r3, r30
+/* 802D6D8C 000009D8  7F E4 FB 78 */	mr r4, r31
+/* 802D6D90 000009DC  38 A0 00 01 */	li r5, 0x1
+/* 802D6D94 000009E0  48 00 00 01 */	bl add_task__Q23EGG18AudioRmtSpeakerMgrFlPFll_vb
+.L_802D6D98:
+/* 802D6D98 000009E4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D6D9C 000009E8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D6DA0 000009EC  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D6DA4 000009F0  7C 08 03 A6 */	mtlr r0
+/* 802D6DA8 000009F4  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D6DAC 000009F8  4E 80 00 20 */	blr
+.endfn setup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+
+# .text:0x9BC | 0x802D6DB0 | size: 0x78
+# EGG::AudioRmtSpeakerMgr::shutdown(long, void (*)(long, long))
+.fn shutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v, global
+/* 802D6DB0 000009FC  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6DB4 00000A00  7C 08 02 A6 */	mflr r0
+/* 802D6DB8 00000A04  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6DBC 00000A08  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6DC0 00000A0C  7C 9F 23 78 */	mr r31, r4
+/* 802D6DC4 00000A10  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6DC8 00000A14  7C 7E 1B 78 */	mr r30, r3
+/* 802D6DCC 00000A18  88 00 00 00 */	lbz r0, sAudioRmtSpeakerConnectCanncelSw__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6DD0 00000A1C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D6DD4 00000A20  40 82 00 3C */	bne .L_802D6E10
+/* 802D6DD8 00000A24  38 81 00 08 */	addi r4, r1, 0x8
+/* 802D6DDC 00000A28  48 00 00 01 */	bl WPADProbe
+/* 802D6DE0 00000A2C  2C 03 FF FF */	cmpwi r3, -0x1
+/* 802D6DE4 00000A30  40 82 00 1C */	bne .L_802D6E00
+/* 802D6DE8 00000A34  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail20RemoteSpeakerManagerFv
+/* 802D6DEC 00000A38  7F C4 F3 78 */	mr r4, r30
+/* 802D6DF0 00000A3C  48 00 00 01 */	bl GetRemoteSpeaker__Q44nw4r3snd6detail20RemoteSpeakerManagerFi
+/* 802D6DF4 00000A40  48 00 00 01 */	bl IsEnabledOutput__Q34nw4r3snd13RemoteSpeakerCFv
+/* 802D6DF8 00000A44  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D6DFC 00000A48  41 82 00 14 */	beq .L_802D6E10
+.L_802D6E00:
+/* 802D6E00 00000A4C  7F C3 F3 78 */	mr r3, r30
+/* 802D6E04 00000A50  7F E4 FB 78 */	mr r4, r31
+/* 802D6E08 00000A54  38 A0 00 00 */	li r5, 0x0
+/* 802D6E0C 00000A58  48 00 00 01 */	bl add_task__Q23EGG18AudioRmtSpeakerMgrFlPFll_vb
+.L_802D6E10:
+/* 802D6E10 00000A5C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D6E14 00000A60  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D6E18 00000A64  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D6E1C 00000A68  7C 08 03 A6 */	mtlr r0
+/* 802D6E20 00000A6C  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D6E24 00000A70  4E 80 00 20 */	blr
+.endfn shutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+
+# .text:0xA34 | 0x802D6E28 | size: 0x8
+.fn gap_03_802D6E28_text, global
+.hidden gap_03_802D6E28_text
+/* 802D6E28 00000A74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6E2C 00000A78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6E28_text
+
+# .text:0xA3C | 0x802D6E30 | size: 0x68
+# EGG::AudioRmtSpeakerMgr::connectAllByForce()
+.fn connectAllByForce__Q23EGG18AudioRmtSpeakerMgrFv, global
+/* 802D6E30 00000A7C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6E34 00000A80  7C 08 02 A6 */	mflr r0
+/* 802D6E38 00000A84  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6E3C 00000A88  38 00 00 00 */	li r0, 0x0
+/* 802D6E40 00000A8C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6E44 00000A90  3F E0 00 00 */	lis r31, setupCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@ha
+/* 802D6E48 00000A94  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6E4C 00000A98  3B C0 00 00 */	li r30, 0x0
+/* 802D6E50 00000A9C  98 00 00 00 */	stb r0, sAudioRmtSpeakerConnectCanncelSw__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+.L_802D6E54:
+/* 802D6E54 00000AA0  7F C3 F3 78 */	mr r3, r30
+/* 802D6E58 00000AA4  38 81 00 08 */	addi r4, r1, 0x8
+/* 802D6E5C 00000AA8  48 00 00 01 */	bl WPADProbe
+/* 802D6E60 00000AAC  2C 03 FF FF */	cmpwi r3, -0x1
+/* 802D6E64 00000AB0  41 82 00 10 */	beq .L_802D6E74
+/* 802D6E68 00000AB4  7F C3 F3 78 */	mr r3, r30
+/* 802D6E6C 00000AB8  38 9F 00 00 */	addi r4, r31, setupCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@l
+/* 802D6E70 00000ABC  48 00 00 01 */	bl doSetup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+.L_802D6E74:
+/* 802D6E74 00000AC0  3B DE 00 01 */	addi r30, r30, 0x1
+/* 802D6E78 00000AC4  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 802D6E7C 00000AC8  41 80 FF D8 */	blt .L_802D6E54
+/* 802D6E80 00000ACC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D6E84 00000AD0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D6E88 00000AD4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D6E8C 00000AD8  7C 08 03 A6 */	mtlr r0
+/* 802D6E90 00000ADC  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D6E94 00000AE0  4E 80 00 20 */	blr
+.endfn connectAllByForce__Q23EGG18AudioRmtSpeakerMgrFv
+
+# .text:0xAA4 | 0x802D6E98 | size: 0x8
+.fn gap_03_802D6E98_text, global
+.hidden gap_03_802D6E98_text
+/* 802D6E98 00000AE4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6E9C 00000AE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6E98_text
+
+# .text:0xAAC | 0x802D6EA0 | size: 0x78
+# EGG::AudioRmtSpeakerMgr::disconnectAllByForce()
+.fn disconnectAllByForce__Q23EGG18AudioRmtSpeakerMgrFv, global
+/* 802D6EA0 00000AEC  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6EA4 00000AF0  7C 08 02 A6 */	mflr r0
+/* 802D6EA8 00000AF4  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6EAC 00000AF8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6EB0 00000AFC  3F E0 00 00 */	lis r31, shutdownCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@ha
+/* 802D6EB4 00000B00  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6EB8 00000B04  3B C0 00 00 */	li r30, 0x0
+.L_802D6EBC:
+/* 802D6EBC 00000B08  7F C3 F3 78 */	mr r3, r30
+/* 802D6EC0 00000B0C  38 81 00 08 */	addi r4, r1, 0x8
+/* 802D6EC4 00000B10  48 00 00 01 */	bl WPADProbe
+/* 802D6EC8 00000B14  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail20RemoteSpeakerManagerFv
+/* 802D6ECC 00000B18  7F C4 F3 78 */	mr r4, r30
+/* 802D6ED0 00000B1C  48 00 00 01 */	bl GetRemoteSpeaker__Q44nw4r3snd6detail20RemoteSpeakerManagerFi
+/* 802D6ED4 00000B20  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 802D6ED8 00000B24  2C 00 00 04 */	cmpwi r0, 0x4
+/* 802D6EDC 00000B28  40 82 00 10 */	bne .L_802D6EEC
+/* 802D6EE0 00000B2C  7F C3 F3 78 */	mr r3, r30
+/* 802D6EE4 00000B30  38 9F 00 00 */	addi r4, r31, shutdownCallbackDirect__Q23EGG18AudioRmtSpeakerMgrFll@l
+/* 802D6EE8 00000B34  48 00 00 01 */	bl doShutdown__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+.L_802D6EEC:
+/* 802D6EEC 00000B38  3B DE 00 01 */	addi r30, r30, 0x1
+/* 802D6EF0 00000B3C  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 802D6EF4 00000B40  41 80 FF C8 */	blt .L_802D6EBC
+/* 802D6EF8 00000B44  38 00 00 01 */	li r0, 0x1
+/* 802D6EFC 00000B48  98 00 00 00 */	stb r0, sAudioRmtSpeakerConnectCanncelSw__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6F00 00000B4C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D6F04 00000B50  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D6F08 00000B54  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D6F0C 00000B58  7C 08 03 A6 */	mtlr r0
+/* 802D6F10 00000B5C  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D6F14 00000B60  4E 80 00 20 */	blr
+.endfn disconnectAllByForce__Q23EGG18AudioRmtSpeakerMgrFv
+
+# .text:0xB24 | 0x802D6F18 | size: 0x8
+.fn gap_03_802D6F18_text, global
+.hidden gap_03_802D6F18_text
+/* 802D6F18 00000B64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6F1C 00000B68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6F18_text
+
+# .text:0xB2C | 0x802D6F20 | size: 0x40
+# EGG::AudioRmtSpeakerMgr::connectAll()
+.fn connectAll__Q23EGG18AudioRmtSpeakerMgrFv, global
+/* 802D6F20 00000B6C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6F24 00000B70  7C 08 02 A6 */	mflr r0
+/* 802D6F28 00000B74  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6F2C 00000B78  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6F30 00000B7C  3B E0 00 00 */	li r31, 0x0
+.L_802D6F34:
+/* 802D6F34 00000B80  7F E3 FB 78 */	mr r3, r31
+/* 802D6F38 00000B84  38 80 00 00 */	li r4, 0x0
+/* 802D6F3C 00000B88  48 00 00 01 */	bl setup__Q23EGG18AudioRmtSpeakerMgrFlPFll_v
+/* 802D6F40 00000B8C  3B FF 00 01 */	addi r31, r31, 0x1
+/* 802D6F44 00000B90  2C 1F 00 04 */	cmpwi r31, 0x4
+/* 802D6F48 00000B94  41 80 FF EC */	blt .L_802D6F34
+/* 802D6F4C 00000B98  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6F50 00000B9C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6F54 00000BA0  7C 08 03 A6 */	mtlr r0
+/* 802D6F58 00000BA4  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6F5C 00000BA8  4E 80 00 20 */	blr
+.endfn connectAll__Q23EGG18AudioRmtSpeakerMgrFv
+
+# .text:0xB6C | 0x802D6F60 | size: 0x8
+# EGG::AudioRmtSpeakerMgr::getWpadVolume()
+.fn getWpadVolume__Q23EGG18AudioRmtSpeakerMgrFv, global
+/* 802D6F60 00000BAC  88 60 00 00 */	lbz r3, sAudioRmtSpeakerWpadVolume__Q23EGG18AudioRmtSpeakerMgr@sda21(r0)
+/* 802D6F64 00000BB0  4E 80 00 20 */	blr
+.endfn getWpadVolume__Q23EGG18AudioRmtSpeakerMgrFv
+
+# .text:0xB74 | 0x802D6F68 | size: 0x8
+.fn gap_03_802D6F68_text, global
+.hidden gap_03_802D6F68_text
+/* 802D6F68 00000BB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D6F6C 00000BB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D6F68_text
+
+# .text:0xB7C | 0x802D6F70 | size: 0x30
+# EGG::AudioUtility::MoveParamMgr::MoveParamMgr()
+.fn __ct__Q33EGG12AudioUtility12MoveParamMgrFv, global
+/* 802D6F70 00000BBC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802D6F74 00000BC0  7C 08 02 A6 */	mflr r0
+/* 802D6F78 00000BC4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802D6F7C 00000BC8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802D6F80 00000BCC  7C 7F 1B 78 */	mr r31, r3
+/* 802D6F84 00000BD0  48 00 00 01 */	bl init__Q33EGG12AudioUtility12MoveParamMgrFv
+/* 802D6F88 00000BD4  7F E3 FB 78 */	mr r3, r31
+/* 802D6F8C 00000BD8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802D6F90 00000BDC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802D6F94 00000BE0  7C 08 03 A6 */	mtlr r0
+/* 802D6F98 00000BE4  38 21 00 10 */	addi r1, r1, 0x10
+/* 802D6F9C 00000BE8  4E 80 00 20 */	blr
+.endfn __ct__Q33EGG12AudioUtility12MoveParamMgrFv
+
+# .text:0xBAC | 0x802D6FA0 | size: 0x10
+# EGG::AudioUtility::MoveParamMgr::init()
+.fn init__Q33EGG12AudioUtility12MoveParamMgrFv, global
+/* 802D6FA0 00000BEC  3C 60 00 00 */	lis r3, sMoveParamMgr__Q23EGG12AudioUtility@ha
+/* 802D6FA4 00000BF0  38 80 00 28 */	li r4, 0x28
+/* 802D6FA8 00000BF4  38 63 00 00 */	addi r3, r3, sMoveParamMgr__Q23EGG12AudioUtility@l
+/* 802D6FAC 00000BF8  48 00 00 00 */	b List_Init__Q24nw4r2utFPQ34nw4r2ut4ListUs
+.endfn init__Q33EGG12AudioUtility12MoveParamMgrFv
+
+# .text:0xBBC | 0x802D6FB0 | size: 0x10
+# EGG::AudioUtility::HBM::init(EGG::SimpleAudioMgr*, void (*)(EGG::AudioUtility::HBM::Mode, bool), long)
+.fn init__Q33EGG12AudioUtility3HBMFPQ23EGG14SimpleAudioMgrPFQ43EGG12AudioUtility3HBM4Modeb_vl, global
+/* 802D6FB0 00000BFC  90 60 00 00 */	stw r3, sSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D6FB4 00000C00  90 A0 00 00 */	stw r5, sHBFadeframe__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D6FB8 00000C04  90 80 00 00 */	stw r4, sHBMUserCallback__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D6FBC 00000C08  4E 80 00 20 */	blr
+.endfn init__Q33EGG12AudioUtility3HBMFPQ23EGG14SimpleAudioMgrPFQ43EGG12AudioUtility3HBM4Modeb_vl
+
+# .text:0xBCC | 0x802D6FC0 | size: 0x130
+# EGG::AudioUtility::HBM::enter()
+.fn enter__Q33EGG12AudioUtility3HBMFv, global
+/* 802D6FC0 00000C0C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D6FC4 00000C10  7C 08 02 A6 */	mflr r0
+/* 802D6FC8 00000C14  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D6FCC 00000C18  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D6FD0 00000C1C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D6FD4 00000C20  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 802D6FD8 00000C24  93 81 00 10 */	stw r28, 0x10(r1)
+/* 802D6FDC 00000C28  81 80 00 00 */	lwz r12, sHBMUserCallback__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D6FE0 00000C2C  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802D6FE4 00000C30  41 82 00 14 */	beq .L_802D6FF8
+/* 802D6FE8 00000C34  38 60 00 00 */	li r3, 0x0
+/* 802D6FEC 00000C38  38 80 00 00 */	li r4, 0x0
+/* 802D6FF0 00000C3C  7D 89 03 A6 */	mtctr r12
+/* 802D6FF4 00000C40  4E 80 04 21 */	bctrl
+.L_802D6FF8:
+/* 802D6FF8 00000C44  80 00 00 00 */	lwz r0, sSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D6FFC 00000C48  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D7000 00000C4C  41 82 00 38 */	beq .L_802D7038
+/* 802D7004 00000C50  3B C0 00 00 */	li r30, 0x0
+/* 802D7008 00000C54  48 00 00 1C */	b .L_802D7024
+.L_802D700C:
+/* 802D700C 00000C58  7F C4 F3 78 */	mr r4, r30
+/* 802D7010 00000C5C  48 00 00 01 */	bl GetSoundPlayer__Q34nw4r3snd18SoundArchivePlayerFUl
+/* 802D7014 00000C60  80 A0 00 00 */	lwz r5, sHBFadeframe__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7018 00000C64  38 80 00 01 */	li r4, 0x1
+/* 802D701C 00000C68  48 00 00 01 */	bl PauseAllSound__Q34nw4r3snd11SoundPlayerFbi
+/* 802D7020 00000C6C  3B DE 00 01 */	addi r30, r30, 0x1
+.L_802D7024:
+/* 802D7024 00000C70  80 60 00 00 */	lwz r3, sSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7028 00000C74  80 63 05 BC */	lwz r3, 0x5bc(r3)
+/* 802D702C 00000C78  80 03 00 3C */	lwz r0, 0x3c(r3)
+/* 802D7030 00000C7C  7C 1E 00 40 */	cmplw r30, r0
+/* 802D7034 00000C80  41 80 FF D8 */	blt .L_802D700C
+.L_802D7038:
+/* 802D7038 00000C84  80 60 00 00 */	lwz r3, sMultiArcSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D703C 00000C88  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D7040 00000C8C  41 82 00 5C */	beq .L_802D709C
+/* 802D7044 00000C90  83 E3 00 FC */	lwz r31, 0xfc(r3)
+/* 802D7048 00000C94  3B A0 00 00 */	li r29, 0x0
+/* 802D704C 00000C98  3B C0 00 00 */	li r30, 0x0
+/* 802D7050 00000C9C  48 00 00 44 */	b .L_802D7094
+.L_802D7054:
+/* 802D7054 00000CA0  3B 80 00 00 */	li r28, 0x0
+/* 802D7058 00000CA4  48 00 00 1C */	b .L_802D7074
+.L_802D705C:
+/* 802D705C 00000CA8  7F 84 E3 78 */	mr r4, r28
+/* 802D7060 00000CAC  48 00 00 01 */	bl GetSoundPlayer__Q34nw4r3snd18SoundArchivePlayerFUl
+/* 802D7064 00000CB0  80 A0 00 00 */	lwz r5, sHBFadeframe__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7068 00000CB4  38 80 00 01 */	li r4, 0x1
+/* 802D706C 00000CB8  48 00 00 01 */	bl PauseAllSound__Q34nw4r3snd11SoundPlayerFbi
+/* 802D7070 00000CBC  3B 9C 00 01 */	addi r28, r28, 0x1
+.L_802D7074:
+/* 802D7074 00000CC0  80 00 00 00 */	lwz r0, sMultiArcSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7078 00000CC4  7C 60 F2 14 */	add r3, r0, r30
+/* 802D707C 00000CC8  80 63 05 C4 */	lwz r3, 0x5c4(r3)
+/* 802D7080 00000CCC  80 03 00 3C */	lwz r0, 0x3c(r3)
+/* 802D7084 00000CD0  7C 1C 00 40 */	cmplw r28, r0
+/* 802D7088 00000CD4  41 80 FF D4 */	blt .L_802D705C
+/* 802D708C 00000CD8  3B DE 04 D8 */	addi r30, r30, 0x4d8
+/* 802D7090 00000CDC  3B BD 00 01 */	addi r29, r29, 0x1
+.L_802D7094:
+/* 802D7094 00000CE0  7C 1D F8 00 */	cmpw r29, r31
+/* 802D7098 00000CE4  41 80 FF BC */	blt .L_802D7054
+.L_802D709C:
+/* 802D709C 00000CE8  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail9AxManagerFv
+/* 802D70A0 00000CEC  38 80 00 00 */	li r4, 0x0
+/* 802D70A4 00000CF0  38 A0 00 FA */	li r5, 0xfa
+/* 802D70A8 00000CF4  48 00 00 01 */	bl ClearEffect__Q44nw4r3snd6detail9AxManagerFQ34nw4r3snd6AuxBusi
+/* 802D70AC 00000CF8  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail9AxManagerFv
+/* 802D70B0 00000CFC  38 80 00 01 */	li r4, 0x1
+/* 802D70B4 00000D00  38 A0 00 FA */	li r5, 0xfa
+/* 802D70B8 00000D04  48 00 00 01 */	bl ClearEffect__Q44nw4r3snd6detail9AxManagerFQ34nw4r3snd6AuxBusi
+/* 802D70BC 00000D08  48 00 00 01 */	bl GetInstance__Q44nw4r3snd6detail9AxManagerFv
+/* 802D70C0 00000D0C  38 80 00 02 */	li r4, 0x2
+/* 802D70C4 00000D10  38 A0 00 FA */	li r5, 0xfa
+/* 802D70C8 00000D14  48 00 00 01 */	bl ClearEffect__Q44nw4r3snd6detail9AxManagerFQ34nw4r3snd6AuxBusi
+/* 802D70CC 00000D18  48 00 00 01 */	bl disconnectAllByForce__Q23EGG18AudioRmtSpeakerMgrFv
+/* 802D70D0 00000D1C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D70D4 00000D20  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D70D8 00000D24  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D70DC 00000D28  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 802D70E0 00000D2C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 802D70E4 00000D30  7C 08 03 A6 */	mtlr r0
+/* 802D70E8 00000D34  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D70EC 00000D38  4E 80 00 20 */	blr
+.endfn enter__Q33EGG12AudioUtility3HBMFv
+
+# .text:0xCFC | 0x802D70F0 | size: 0x120
+# EGG::AudioUtility::HBM::exit(bool)
+.fn exit__Q33EGG12AudioUtility3HBMFb, global
+/* 802D70F0 00000D3C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D70F4 00000D40  7C 08 02 A6 */	mflr r0
+/* 802D70F8 00000D44  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D70FC 00000D48  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D7100 00000D4C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D7104 00000D50  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 802D7108 00000D54  93 81 00 10 */	stw r28, 0x10(r1)
+/* 802D710C 00000D58  7C 7C 1B 78 */	mr r28, r3
+/* 802D7110 00000D5C  81 80 00 00 */	lwz r12, sHBMUserCallback__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7114 00000D60  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802D7118 00000D64  41 82 00 14 */	beq .L_802D712C
+/* 802D711C 00000D68  7F 84 E3 78 */	mr r4, r28
+/* 802D7120 00000D6C  38 60 00 01 */	li r3, 0x1
+/* 802D7124 00000D70  7D 89 03 A6 */	mtctr r12
+/* 802D7128 00000D74  4E 80 04 21 */	bctrl
+.L_802D712C:
+/* 802D712C 00000D78  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 802D7130 00000D7C  41 82 00 A8 */	beq .L_802D71D8
+/* 802D7134 00000D80  80 00 00 00 */	lwz r0, sSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7138 00000D84  2C 00 00 00 */	cmpwi r0, 0x0
+/* 802D713C 00000D88  41 82 00 38 */	beq .L_802D7174
+/* 802D7140 00000D8C  3B C0 00 00 */	li r30, 0x0
+/* 802D7144 00000D90  48 00 00 1C */	b .L_802D7160
+.L_802D7148:
+/* 802D7148 00000D94  7F C4 F3 78 */	mr r4, r30
+/* 802D714C 00000D98  48 00 00 01 */	bl GetSoundPlayer__Q34nw4r3snd18SoundArchivePlayerFUl
+/* 802D7150 00000D9C  80 A0 00 00 */	lwz r5, sHBFadeframe__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7154 00000DA0  38 80 00 00 */	li r4, 0x0
+/* 802D7158 00000DA4  48 00 00 01 */	bl PauseAllSound__Q34nw4r3snd11SoundPlayerFbi
+/* 802D715C 00000DA8  3B DE 00 01 */	addi r30, r30, 0x1
+.L_802D7160:
+/* 802D7160 00000DAC  80 60 00 00 */	lwz r3, sSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7164 00000DB0  80 63 05 BC */	lwz r3, 0x5bc(r3)
+/* 802D7168 00000DB4  80 03 00 3C */	lwz r0, 0x3c(r3)
+/* 802D716C 00000DB8  7C 1E 00 40 */	cmplw r30, r0
+/* 802D7170 00000DBC  41 80 FF D8 */	blt .L_802D7148
+.L_802D7174:
+/* 802D7174 00000DC0  80 60 00 00 */	lwz r3, sMultiArcSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D7178 00000DC4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D717C 00000DC8  41 82 00 5C */	beq .L_802D71D8
+/* 802D7180 00000DCC  83 E3 00 FC */	lwz r31, 0xfc(r3)
+/* 802D7184 00000DD0  3B A0 00 00 */	li r29, 0x0
+/* 802D7188 00000DD4  3B C0 00 00 */	li r30, 0x0
+/* 802D718C 00000DD8  48 00 00 44 */	b .L_802D71D0
+.L_802D7190:
+/* 802D7190 00000DDC  3B 80 00 00 */	li r28, 0x0
+/* 802D7194 00000DE0  48 00 00 1C */	b .L_802D71B0
+.L_802D7198:
+/* 802D7198 00000DE4  7F 84 E3 78 */	mr r4, r28
+/* 802D719C 00000DE8  48 00 00 01 */	bl GetSoundPlayer__Q34nw4r3snd18SoundArchivePlayerFUl
+/* 802D71A0 00000DEC  80 A0 00 00 */	lwz r5, sHBFadeframe__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D71A4 00000DF0  38 80 00 00 */	li r4, 0x0
+/* 802D71A8 00000DF4  48 00 00 01 */	bl PauseAllSound__Q34nw4r3snd11SoundPlayerFbi
+/* 802D71AC 00000DF8  3B 9C 00 01 */	addi r28, r28, 0x1
+.L_802D71B0:
+/* 802D71B0 00000DFC  80 00 00 00 */	lwz r0, sMultiArcSimpleAudioMgr__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D71B4 00000E00  7C 60 F2 14 */	add r3, r0, r30
+/* 802D71B8 00000E04  80 63 05 C4 */	lwz r3, 0x5c4(r3)
+/* 802D71BC 00000E08  80 03 00 3C */	lwz r0, 0x3c(r3)
+/* 802D71C0 00000E0C  7C 1C 00 40 */	cmplw r28, r0
+/* 802D71C4 00000E10  41 80 FF D4 */	blt .L_802D7198
+/* 802D71C8 00000E14  3B DE 04 D8 */	addi r30, r30, 0x4d8
+/* 802D71CC 00000E18  3B BD 00 01 */	addi r29, r29, 0x1
+.L_802D71D0:
+/* 802D71D0 00000E1C  7C 1D F8 00 */	cmpw r29, r31
+/* 802D71D4 00000E20  41 80 FF BC */	blt .L_802D7190
+.L_802D71D8:
+/* 802D71D8 00000E24  81 80 00 00 */	lwz r12, sHBMEffectRestCallback__Q33EGG12AudioUtility3HBM@sda21(r0)
+/* 802D71DC 00000E28  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802D71E0 00000E2C  41 82 00 0C */	beq .L_802D71EC
+/* 802D71E4 00000E30  7D 89 03 A6 */	mtctr r12
+/* 802D71E8 00000E34  4E 80 04 21 */	bctrl
+.L_802D71EC:
+/* 802D71EC 00000E38  48 00 00 01 */	bl connectAllByForce__Q23EGG18AudioRmtSpeakerMgrFv
+/* 802D71F0 00000E3C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D71F4 00000E40  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D71F8 00000E44  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D71FC 00000E48  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 802D7200 00000E4C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 802D7204 00000E50  7C 08 03 A6 */	mtlr r0
+/* 802D7208 00000E54  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D720C 00000E58  4E 80 00 20 */	blr
+.endfn exit__Q33EGG12AudioUtility3HBMFb
+
+# .text:0xE1C | 0x802D7210 | size: 0xD4
+.fn fn_802D7210, global
+/* 802D7210 00000E5C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802D7214 00000E60  7C 08 02 A6 */	mflr r0
+/* 802D7218 00000E64  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802D721C 00000E68  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802D7220 00000E6C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 802D7224 00000E70  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 802D7228 00000E74  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 802D722C 00000E78  7C 7D 1B 78 */	mr r29, r3
+/* 802D7230 00000E7C  40 82 00 0C */	bne .L_802D723C
+/* 802D7234 00000E80  C0 20 00 00 */	lfs f1, "@16079_8042F8F8"@sda21(r0)
+/* 802D7238 00000E84  48 00 00 90 */	b .L_802D72C8
+.L_802D723C:
+/* 802D723C 00000E88  48 00 00 01 */	bl labs
+/* 802D7240 00000E8C  3F E0 2A AB */	lis r31, 0x2aab
+/* 802D7244 00000E90  3C 00 43 30 */	lis r0, 0x4330
+/* 802D7248 00000E94  38 9F AA AB */	subi r4, r31, 0x5555
+/* 802D724C 00000E98  90 01 00 08 */	stw r0, 0x8(r1)
+/* 802D7250 00000E9C  7C 04 18 96 */	mulhw r0, r4, r3
+/* 802D7254 00000EA0  7C 7E 1B 78 */	mr r30, r3
+/* 802D7258 00000EA4  C8 40 00 00 */	lfd f2, "@16418_8042F908"@sda21(r0)
+/* 802D725C 00000EA8  C8 20 00 00 */	lfd f1, "@16416_8042F900"@sda21(r0)
+/* 802D7260 00000EAC  7C 00 0E 70 */	srawi r0, r0, 1
+/* 802D7264 00000EB0  54 03 0F FE */	srwi r3, r0, 31
+/* 802D7268 00000EB4  7C 00 1A 14 */	add r0, r0, r3
+/* 802D726C 00000EB8  6C 00 80 00 */	xoris r0, r0, 0x8000
+/* 802D7270 00000EBC  90 01 00 0C */	stw r0, 0xc(r1)
+/* 802D7274 00000EC0  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 802D7278 00000EC4  EC 40 10 28 */	fsubs f2, f0, f2
+/* 802D727C 00000EC8  48 00 00 01 */	bl pow
+/* 802D7280 00000ECC  38 1F AA AB */	subi r0, r31, 0x5555
+/* 802D7284 00000ED0  3C 60 00 00 */	lis r3, lbl_802FD5A0@ha
+/* 802D7288 00000ED4  7C 00 F0 96 */	mulhw r0, r0, r30
+/* 802D728C 00000ED8  FC 20 08 18 */	frsp f1, f1
+/* 802D7290 00000EDC  38 63 00 00 */	addi r3, r3, lbl_802FD5A0@l
+/* 802D7294 00000EE0  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 802D7298 00000EE4  7C 00 0E 70 */	srawi r0, r0, 1
+/* 802D729C 00000EE8  54 04 0F FE */	srwi r4, r0, 31
+/* 802D72A0 00000EEC  7C 00 22 14 */	add r0, r0, r4
+/* 802D72A4 00000EF0  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 802D72A8 00000EF4  7C 00 F0 50 */	subf r0, r0, r30
+/* 802D72AC 00000EF8  54 00 10 3A */	slwi r0, r0, 2
+/* 802D72B0 00000EFC  7C 03 04 2E */	lfsx f0, r3, r0
+/* 802D72B4 00000F00  EC 21 00 32 */	fmuls f1, f1, f0
+/* 802D72B8 00000F04  40 81 00 08 */	ble .L_802D72C0
+/* 802D72BC 00000F08  48 00 00 0C */	b .L_802D72C8
+.L_802D72C0:
+/* 802D72C0 00000F0C  C0 00 00 00 */	lfs f0, "@16079_8042F8F8"@sda21(r0)
+/* 802D72C4 00000F10  EC 20 08 24 */	fdivs f1, f0, f1
+.L_802D72C8:
+/* 802D72C8 00000F14  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802D72CC 00000F18  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 802D72D0 00000F1C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 802D72D4 00000F20  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 802D72D8 00000F24  7C 08 03 A6 */	mtlr r0
+/* 802D72DC 00000F28  38 21 00 20 */	addi r1, r1, 0x20
+/* 802D72E0 00000F2C  4E 80 00 20 */	blr
+.endfn fn_802D7210
+
+# .text:0xEF0 | 0x802D72E4 | size: 0xC
+.fn gap_03_802D72E4_text, global
+.hidden gap_03_802D72E4_text
+/* 802D72E4 00000F30  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D72E8 00000F34  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802D72EC 00000F38  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802D72E4_text

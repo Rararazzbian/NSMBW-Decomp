@@ -1,0 +1,850 @@
+.include "macros.inc"
+.file "d_a_obj_fruit_tree.cpp"
+
+# 0x00108360..0x00108970 | size: 0x610
+.text
+.balign 4
+
+# .text:0x0 | 0x108360 | size: 0x84
+# daObjFruitTree_c_classInit()
+.fn daObjFruitTree_c_classInit__Fv, global
+/* 00108360 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00108364 00000044  7C 08 02 A6 */	mflr r0
+/* 00108368 00000048  38 60 05 C0 */	li r3, 0x5c0
+/* 0010836C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00108370 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00108374 00000054  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 00108378 00000058  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 0010837C 0000005C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 00108380 00000060  7C 7F 1B 78 */	mr r31, r3
+/* 00108384 00000064  41 82 00 44 */	beq .L_001083C8
+/* 00108388 00000068  48 00 00 01 */	bl __ct__5dEn_cFv
+/* 0010838C 0000006C  3C 80 00 00 */	lis r4, __vt__16daObjFruitTree_c@ha
+/* 00108390 00000070  38 7F 05 24 */	addi r3, r31, 0x524
+/* 00108394 00000074  38 84 00 00 */	addi r4, r4, __vt__16daObjFruitTree_c@l
+/* 00108398 00000078  90 9F 00 60 */	stw r4, 0x60(r31)
+/* 0010839C 0000007C  48 00 00 01 */	bl __ct__16dHeapAllocator_cFv
+/* 001083A0 00000080  38 00 00 00 */	li r0, 0x0
+/* 001083A4 00000084  90 1F 05 40 */	stw r0, 0x540(r31)
+/* 001083A8 00000088  38 7F 05 44 */	addi r3, r31, 0x544
+/* 001083AC 0000008C  48 00 00 01 */	bl __ct__Q23m3d5mdl_cFv
+/* 001083B0 00000090  3B DF 05 84 */	addi r30, r31, 0x584
+/* 001083B4 00000094  7F C3 F3 78 */	mr r3, r30
+/* 001083B8 00000098  48 00 00 01 */	bl __ct__Q23m3d6fanm_cFv
+/* 001083BC 0000009C  3C 60 00 00 */	lis r3, __vt__Q23m3d8anmChr_c@ha
+/* 001083C0 000000A0  38 63 00 00 */	addi r3, r3, __vt__Q23m3d8anmChr_c@l
+/* 001083C4 000000A4  90 7E 00 00 */	stw r3, 0x0(r30)
+.L_001083C8:
+/* 001083C8 000000A8  7F E3 FB 78 */	mr r3, r31
+/* 001083CC 000000AC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 001083D0 000000B0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 001083D4 000000B4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 001083D8 000000B8  7C 08 03 A6 */	mtlr r0
+/* 001083DC 000000BC  38 21 00 10 */	addi r1, r1, 0x10
+/* 001083E0 000000C0  4E 80 00 20 */	blr
+.endfn daObjFruitTree_c_classInit__Fv
+
+# .text:0x84 | 0x1083E4 | size: 0xC
+.fn gap_00_001083E4_text, global
+.hidden gap_00_001083E4_text
+/* 001083E4 000000C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 001083E8 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 001083EC 000000CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_001083E4_text
+
+# .text:0x90 | 0x1083F0 | size: 0x34C
+# daObjFruitTree_c::create()
+.fn create__16daObjFruitTree_cFv, global
+/* 001083F0 000000D0  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 001083F4 000000D4  7C 08 02 A6 */	mflr r0
+/* 001083F8 000000D8  90 01 00 44 */	stw r0, 0x44(r1)
+/* 001083FC 000000DC  39 61 00 40 */	addi r11, r1, 0x40
+/* 00108400 000000E0  48 00 00 01 */	bl _savegpr_26
+/* 00108404 000000E4  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 00108408 000000E8  3F 80 00 00 */	lis r28, g_profile_OBJ_FRUITTREE@ha
+/* 0010840C 000000EC  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 00108410 000000F0  7C 7F 1B 78 */	mr r31, r3
+/* 00108414 000000F4  83 63 00 04 */	lwz r27, 0x4(r3)
+/* 00108418 000000F8  3B 9C 00 00 */	addi r28, r28, g_profile_OBJ_FRUITTREE@l
+/* 0010841C 000000FC  3B C0 00 00 */	li r30, 0x0
+/* 00108420 00000100  3B A0 00 00 */	li r29, 0x0
+/* 00108424 00000104  38 80 FF FF */	li r4, -0x1
+/* 00108428 00000108  38 C0 00 00 */	li r6, 0x0
+/* 0010842C 0000010C  38 E0 00 20 */	li r7, 0x20
+/* 00108430 00000110  38 63 05 24 */	addi r3, r3, 0x524
+/* 00108434 00000114  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 00108438 00000118  57 7A E7 3F */	extrwi. r26, r27, 4, 24
+/* 0010843C 0000011C  40 82 00 20 */	bne .L_0010845C
+/* 00108440 00000120  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 00108444 00000124  38 BC 00 0C */	addi r5, r28, 0xc
+/* 00108448 00000128  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 0010844C 0000012C  38 9C 00 24 */	addi r4, r28, 0x24
+/* 00108450 00000130  38 63 00 04 */	addi r3, r3, 0x4
+/* 00108454 00000134  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 00108458 00000138  48 00 00 1C */	b .L_00108474
+.L_0010845C:
+/* 0010845C 0000013C  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 00108460 00000140  38 BC 00 30 */	addi r5, r28, 0x30
+/* 00108464 00000144  80 63 00 00 */	lwz r3, m_instance__9dResMng_c@l(r3)
+/* 00108468 00000148  38 9C 00 4C */	addi r4, r28, 0x4c
+/* 0010846C 0000014C  38 63 00 04 */	addi r3, r3, 0x4
+/* 00108470 00000150  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+.L_00108474:
+/* 00108474 00000154  2C 1A 00 00 */	cmpwi r26, 0x0
+/* 00108478 00000158  90 7F 05 40 */	stw r3, 0x540(r31)
+/* 0010847C 0000015C  40 82 00 78 */	bne .L_001084F4
+/* 00108480 00000160  57 7B 07 3F */	clrlwi. r27, r27, 28
+/* 00108484 00000164  41 82 00 20 */	beq .L_001084A4
+/* 00108488 00000168  28 1B 00 01 */	cmplwi r27, 0x1
+/* 0010848C 0000016C  41 82 00 2C */	beq .L_001084B8
+/* 00108490 00000170  28 1B 00 02 */	cmplwi r27, 0x2
+/* 00108494 00000174  41 82 00 38 */	beq .L_001084CC
+/* 00108498 00000178  28 1B 00 03 */	cmplwi r27, 0x3
+/* 0010849C 0000017C  41 82 00 44 */	beq .L_001084E0
+/* 001084A0 00000180  48 00 00 C4 */	b .L_00108564
+.L_001084A4:
+/* 001084A4 00000184  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001084A8 00000188  38 9C 00 60 */	addi r4, r28, 0x60
+/* 001084AC 0000018C  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 001084B0 00000190  7C 7E 1B 78 */	mr r30, r3
+/* 001084B4 00000194  48 00 00 B0 */	b .L_00108564
+.L_001084B8:
+/* 001084B8 00000198  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001084BC 0000019C  38 9C 00 70 */	addi r4, r28, 0x70
+/* 001084C0 000001A0  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 001084C4 000001A4  7C 7E 1B 78 */	mr r30, r3
+/* 001084C8 000001A8  48 00 00 9C */	b .L_00108564
+.L_001084CC:
+/* 001084CC 000001AC  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001084D0 000001B0  38 9C 00 80 */	addi r4, r28, 0x80
+/* 001084D4 000001B4  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 001084D8 000001B8  7C 7E 1B 78 */	mr r30, r3
+/* 001084DC 000001BC  48 00 00 88 */	b .L_00108564
+.L_001084E0:
+/* 001084E0 000001C0  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001084E4 000001C4  38 9C 00 90 */	addi r4, r28, 0x90
+/* 001084E8 000001C8  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 001084EC 000001CC  7C 7E 1B 78 */	mr r30, r3
+/* 001084F0 000001D0  48 00 00 74 */	b .L_00108564
+.L_001084F4:
+/* 001084F4 000001D4  57 7B 07 3F */	clrlwi. r27, r27, 28
+/* 001084F8 000001D8  41 82 00 20 */	beq .L_00108518
+/* 001084FC 000001DC  28 1B 00 01 */	cmplwi r27, 0x1
+/* 00108500 000001E0  41 82 00 2C */	beq .L_0010852C
+/* 00108504 000001E4  28 1B 00 02 */	cmplwi r27, 0x2
+/* 00108508 000001E8  41 82 00 38 */	beq .L_00108540
+/* 0010850C 000001EC  28 1B 00 03 */	cmplwi r27, 0x3
+/* 00108510 000001F0  41 82 00 44 */	beq .L_00108554
+/* 00108514 000001F4  48 00 00 50 */	b .L_00108564
+.L_00108518:
+/* 00108518 000001F8  38 7F 05 40 */	addi r3, r31, 0x540
+/* 0010851C 000001FC  38 9C 00 A0 */	addi r4, r28, 0xa0
+/* 00108520 00000200  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 00108524 00000204  7C 7E 1B 78 */	mr r30, r3
+/* 00108528 00000208  48 00 00 3C */	b .L_00108564
+.L_0010852C:
+/* 0010852C 0000020C  38 7F 05 40 */	addi r3, r31, 0x540
+/* 00108530 00000210  38 9C 00 B4 */	addi r4, r28, 0xb4
+/* 00108534 00000214  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 00108538 00000218  7C 7E 1B 78 */	mr r30, r3
+/* 0010853C 0000021C  48 00 00 28 */	b .L_00108564
+.L_00108540:
+/* 00108540 00000220  38 7F 05 40 */	addi r3, r31, 0x540
+/* 00108544 00000224  38 9C 00 C8 */	addi r4, r28, 0xc8
+/* 00108548 00000228  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 0010854C 0000022C  7C 7E 1B 78 */	mr r30, r3
+/* 00108550 00000230  48 00 00 14 */	b .L_00108564
+.L_00108554:
+/* 00108554 00000234  38 7F 05 40 */	addi r3, r31, 0x540
+/* 00108558 00000238  38 9C 00 DC */	addi r4, r28, 0xdc
+/* 0010855C 0000023C  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 00108560 00000240  7C 7E 1B 78 */	mr r30, r3
+.L_00108564:
+/* 00108564 00000244  93 C1 00 10 */	stw r30, 0x10(r1)
+/* 00108568 00000248  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0010856C 0000024C  38 81 00 10 */	addi r4, r1, 0x10
+/* 00108570 00000250  38 BF 05 24 */	addi r5, r31, 0x524
+/* 00108574 00000254  38 C0 00 20 */	li r6, 0x20
+/* 00108578 00000258  38 E0 00 01 */	li r7, 0x1
+/* 0010857C 0000025C  39 00 00 00 */	li r8, 0x0
+/* 00108580 00000260  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 00108584 00000264  38 7F 05 44 */	addi r3, r31, 0x544
+/* 00108588 00000268  48 00 00 01 */	bl setSoftLight_MapObj__8dActor_cFRQ23m3d6bmdl_c
+/* 0010858C 0000026C  2C 1A 00 00 */	cmpwi r26, 0x0
+/* 00108590 00000270  40 82 00 78 */	bne .L_00108608
+/* 00108594 00000274  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 00108598 00000278  41 82 00 20 */	beq .L_001085B8
+/* 0010859C 0000027C  28 1B 00 01 */	cmplwi r27, 0x1
+/* 001085A0 00000280  41 82 00 2C */	beq .L_001085CC
+/* 001085A4 00000284  28 1B 00 02 */	cmplwi r27, 0x2
+/* 001085A8 00000288  41 82 00 38 */	beq .L_001085E0
+/* 001085AC 0000028C  28 1B 00 03 */	cmplwi r27, 0x3
+/* 001085B0 00000290  41 82 00 44 */	beq .L_001085F4
+/* 001085B4 00000294  48 00 00 C4 */	b .L_00108678
+.L_001085B8:
+/* 001085B8 00000298  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001085BC 0000029C  38 9C 00 60 */	addi r4, r28, 0x60
+/* 001085C0 000002A0  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 001085C4 000002A4  7C 7D 1B 78 */	mr r29, r3
+/* 001085C8 000002A8  48 00 00 B0 */	b .L_00108678
+.L_001085CC:
+/* 001085CC 000002AC  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001085D0 000002B0  38 9C 00 70 */	addi r4, r28, 0x70
+/* 001085D4 000002B4  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 001085D8 000002B8  7C 7D 1B 78 */	mr r29, r3
+/* 001085DC 000002BC  48 00 00 9C */	b .L_00108678
+.L_001085E0:
+/* 001085E0 000002C0  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001085E4 000002C4  38 9C 00 80 */	addi r4, r28, 0x80
+/* 001085E8 000002C8  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 001085EC 000002CC  7C 7D 1B 78 */	mr r29, r3
+/* 001085F0 000002D0  48 00 00 88 */	b .L_00108678
+.L_001085F4:
+/* 001085F4 000002D4  38 7F 05 40 */	addi r3, r31, 0x540
+/* 001085F8 000002D8  38 9C 00 90 */	addi r4, r28, 0x90
+/* 001085FC 000002DC  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 00108600 000002E0  7C 7D 1B 78 */	mr r29, r3
+/* 00108604 000002E4  48 00 00 74 */	b .L_00108678
+.L_00108608:
+/* 00108608 000002E8  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 0010860C 000002EC  41 82 00 20 */	beq .L_0010862C
+/* 00108610 000002F0  28 1B 00 01 */	cmplwi r27, 0x1
+/* 00108614 000002F4  41 82 00 2C */	beq .L_00108640
+/* 00108618 000002F8  28 1B 00 02 */	cmplwi r27, 0x2
+/* 0010861C 000002FC  41 82 00 38 */	beq .L_00108654
+/* 00108620 00000300  28 1B 00 03 */	cmplwi r27, 0x3
+/* 00108624 00000304  41 82 00 44 */	beq .L_00108668
+/* 00108628 00000308  48 00 00 50 */	b .L_00108678
+.L_0010862C:
+/* 0010862C 0000030C  38 7F 05 40 */	addi r3, r31, 0x540
+/* 00108630 00000310  38 9C 00 A0 */	addi r4, r28, 0xa0
+/* 00108634 00000314  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 00108638 00000318  7C 7D 1B 78 */	mr r29, r3
+/* 0010863C 0000031C  48 00 00 3C */	b .L_00108678
+.L_00108640:
+/* 00108640 00000320  38 7F 05 40 */	addi r3, r31, 0x540
+/* 00108644 00000324  38 9C 00 B4 */	addi r4, r28, 0xb4
+/* 00108648 00000328  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 0010864C 0000032C  7C 7D 1B 78 */	mr r29, r3
+/* 00108650 00000330  48 00 00 28 */	b .L_00108678
+.L_00108654:
+/* 00108654 00000334  38 7F 05 40 */	addi r3, r31, 0x540
+/* 00108658 00000338  38 9C 00 C8 */	addi r4, r28, 0xc8
+/* 0010865C 0000033C  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 00108660 00000340  7C 7D 1B 78 */	mr r29, r3
+/* 00108664 00000344  48 00 00 14 */	b .L_00108678
+.L_00108668:
+/* 00108668 00000348  38 7F 05 40 */	addi r3, r31, 0x540
+/* 0010866C 0000034C  38 9C 00 DC */	addi r4, r28, 0xdc
+/* 00108670 00000350  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 00108674 00000354  7C 7D 1B 78 */	mr r29, r3
+.L_00108678:
+/* 00108678 00000358  93 A1 00 08 */	stw r29, 0x8(r1)
+/* 0010867C 0000035C  38 7F 05 84 */	addi r3, r31, 0x584
+/* 00108680 00000360  38 81 00 0C */	addi r4, r1, 0xc
+/* 00108684 00000364  38 A1 00 08 */	addi r5, r1, 0x8
+/* 00108688 00000368  93 C1 00 0C */	stw r30, 0xc(r1)
+/* 0010868C 0000036C  38 DF 05 24 */	addi r6, r31, 0x524
+/* 00108690 00000370  38 E0 00 00 */	li r7, 0x0
+/* 00108694 00000374  48 00 00 01 */	bl create__Q23m3d8anmChr_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d9ResAnmChrP12mAllocator_cPUl
+/* 00108698 00000378  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 0010869C 0000037C  38 7F 05 84 */	addi r3, r31, 0x584
+/* 001086A0 00000380  38 9F 05 44 */	addi r4, r31, 0x544
+/* 001086A4 00000384  38 A1 00 14 */	addi r5, r1, 0x14
+/* 001086A8 00000388  38 C0 00 00 */	li r6, 0x0
+/* 001086AC 0000038C  48 00 00 01 */	bl setAnm__Q23m3d8anmChr_cFRQ23m3d6bmdl_cQ34nw4r3g3d9ResAnmChrQ23m3d10playMode_e
+/* 001086B0 00000390  3C 80 00 00 */	lis r4, "@13945"@ha
+/* 001086B4 00000394  38 7F 05 44 */	addi r3, r31, 0x544
+/* 001086B8 00000398  C0 24 00 00 */	lfs f1, "@13945"@l(r4)
+/* 001086BC 0000039C  38 9F 05 84 */	addi r4, r31, 0x584
+/* 001086C0 000003A0  48 00 00 01 */	bl setAnm__Q23m3d5mdl_cFRQ23m3d6banm_cf
+/* 001086C4 000003A4  C0 3F 05 AC */	lfs f1, 0x5ac(r31)
+/* 001086C8 000003A8  48 00 00 01 */	bl __cvt_fp2unsigned
+/* 001086CC 000003AC  3C 80 00 00 */	lis r4, m_exeFrame__10dScStage_c@ha
+/* 001086D0 000003B0  3C 00 43 30 */	lis r0, 0x4330
+/* 001086D4 000003B4  80 A4 00 00 */	lwz r5, m_exeFrame__10dScStage_c@l(r4)
+/* 001086D8 000003B8  3C 80 00 00 */	lis r4, "@13948"@ha
+/* 001086DC 000003BC  90 01 00 18 */	stw r0, 0x18(r1)
+/* 001086E0 000003C0  7C 05 1B 96 */	divwu r0, r5, r3
+/* 001086E4 000003C4  C8 24 00 00 */	lfd f1, "@13948"@l(r4)
+/* 001086E8 000003C8  7C 00 19 D6 */	mullw r0, r0, r3
+/* 001086EC 000003CC  38 7F 05 84 */	addi r3, r31, 0x584
+/* 001086F0 000003D0  7C 00 28 50 */	subf r0, r0, r5
+/* 001086F4 000003D4  90 01 00 1C */	stw r0, 0x1c(r1)
+/* 001086F8 000003D8  C8 01 00 18 */	lfd f0, 0x18(r1)
+/* 001086FC 000003DC  EC 20 08 28 */	fsubs f1, f0, f1
+/* 00108700 000003E0  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
+/* 00108704 000003E4  38 7F 05 24 */	addi r3, r31, 0x524
+/* 00108708 000003E8  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 0010870C 000003EC  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 00108710 000003F0  7F E3 FB 78 */	mr r3, r31
+/* 00108714 000003F4  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 00108718 000003F8  7D 89 03 A6 */	mtctr r12
+/* 0010871C 000003FC  4E 80 04 21 */	bctrl
+/* 00108720 00000400  39 61 00 40 */	addi r11, r1, 0x40
+/* 00108724 00000404  38 60 00 01 */	li r3, 0x1
+/* 00108728 00000408  48 00 00 01 */	bl _restgpr_26
+/* 0010872C 0000040C  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 00108730 00000410  7C 08 03 A6 */	mtlr r0
+/* 00108734 00000414  38 21 00 40 */	addi r1, r1, 0x40
+/* 00108738 00000418  4E 80 00 20 */	blr
+.endfn create__16daObjFruitTree_cFv
+
+# .text:0x3DC | 0x10873C | size: 0x4
+.fn gap_00_0010873C_text, global
+.hidden gap_00_0010873C_text
+/* 0010873C 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0010873C_text
+
+# .text:0x3E0 | 0x108740 | size: 0x30
+# daObjFruitTree_c::execute()
+.fn execute__16daObjFruitTree_cFv, global
+/* 00108740 00000420  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00108744 00000424  7C 08 02 A6 */	mflr r0
+/* 00108748 00000428  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0010874C 0000042C  85 83 05 44 */	lwzu r12, 0x544(r3)
+/* 00108750 00000430  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 00108754 00000434  7D 89 03 A6 */	mtctr r12
+/* 00108758 00000438  4E 80 04 21 */	bctrl
+/* 0010875C 0000043C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00108760 00000440  38 60 00 01 */	li r3, 0x1
+/* 00108764 00000444  7C 08 03 A6 */	mtlr r0
+/* 00108768 00000448  38 21 00 10 */	addi r1, r1, 0x10
+/* 0010876C 0000044C  4E 80 00 20 */	blr
+.endfn execute__16daObjFruitTree_cFv
+
+# .text:0x410 | 0x108770 | size: 0x11C
+# daObjFruitTree_c::draw()
+.fn draw__16daObjFruitTree_cFv, global
+/* 00108770 00000450  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 00108774 00000454  7C 08 02 A6 */	mflr r0
+/* 00108778 00000458  38 A0 00 01 */	li r5, 0x1
+/* 0010877C 0000045C  90 01 00 34 */	stw r0, 0x34(r1)
+/* 00108780 00000460  38 81 00 14 */	addi r4, r1, 0x14
+/* 00108784 00000464  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 00108788 00000468  7C 7F 1B 78 */	mr r31, r3
+/* 0010878C 0000046C  C0 03 00 B4 */	lfs f0, 0xb4(r3)
+/* 00108790 00000470  C0 23 00 B0 */	lfs f1, 0xb0(r3)
+/* 00108794 00000474  C0 43 00 AC */	lfs f2, 0xac(r3)
+/* 00108798 00000478  D0 41 00 1C */	stfs f2, 0x1c(r1)
+/* 0010879C 0000047C  D0 21 00 20 */	stfs f1, 0x20(r1)
+/* 001087A0 00000480  D0 01 00 24 */	stfs f0, 0x24(r1)
+/* 001087A4 00000484  A8 03 01 00 */	lha r0, 0x100(r3)
+/* 001087A8 00000488  B0 01 00 14 */	sth r0, 0x14(r1)
+/* 001087AC 0000048C  A8 03 01 02 */	lha r0, 0x102(r3)
+/* 001087B0 00000490  B0 01 00 16 */	sth r0, 0x16(r1)
+/* 001087B4 00000494  A8 03 01 04 */	lha r0, 0x104(r3)
+/* 001087B8 00000498  38 61 00 1C */	addi r3, r1, 0x1c
+/* 001087BC 0000049C  B0 01 00 18 */	sth r0, 0x18(r1)
+/* 001087C0 000004A0  48 00 00 01 */	bl changePosAngle__8dActor_cFP7mVec3_cP7mAng3_ci
+/* 001087C4 000004A4  88 1F 03 8F */	lbz r0, 0x38f(r31)
+/* 001087C8 000004A8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 001087CC 000004AC  40 82 00 14 */	bne .L_001087E0
+/* 001087D0 000004B0  3C 60 00 00 */	lis r3, "@13977"@ha
+/* 001087D4 000004B4  C0 03 00 00 */	lfs f0, "@13977"@l(r3)
+/* 001087D8 000004B8  D0 01 00 24 */	stfs f0, 0x24(r1)
+/* 001087DC 000004BC  48 00 00 10 */	b .L_001087EC
+.L_001087E0:
+/* 001087E0 000004C0  3C 60 00 00 */	lis r3, "@13978"@ha
+/* 001087E4 000004C4  C0 03 00 00 */	lfs f0, "@13978"@l(r3)
+/* 001087E8 000004C8  D0 01 00 24 */	stfs f0, 0x24(r1)
+.L_001087EC:
+/* 001087EC 000004CC  C0 61 00 24 */	lfs f3, 0x24(r1)
+/* 001087F0 000004D0  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 001087F4 000004D4  C0 41 00 20 */	lfs f2, 0x20(r1)
+/* 001087F8 000004D8  C0 21 00 1C */	lfs f1, 0x1c(r1)
+/* 001087FC 000004DC  48 00 00 01 */	bl PSMTXTrans
+/* 00108800 000004E0  A0 01 00 16 */	lhz r0, 0x16(r1)
+/* 00108804 000004E4  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 00108808 000004E8  B0 01 00 10 */	sth r0, 0x10(r1)
+/* 0010880C 000004EC  38 81 00 10 */	addi r4, r1, 0x10
+/* 00108810 000004F0  48 00 00 01 */	bl YrotM__6mMtx_cF4mAng
+/* 00108814 000004F4  A0 01 00 14 */	lhz r0, 0x14(r1)
+/* 00108818 000004F8  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 0010881C 000004FC  B0 01 00 0C */	sth r0, 0xc(r1)
+/* 00108820 00000500  38 81 00 0C */	addi r4, r1, 0xc
+/* 00108824 00000504  48 00 00 01 */	bl XrotM__6mMtx_cF4mAng
+/* 00108828 00000508  A0 01 00 18 */	lhz r0, 0x18(r1)
+/* 0010882C 0000050C  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 00108830 00000510  B0 01 00 08 */	sth r0, 0x8(r1)
+/* 00108834 00000514  38 81 00 08 */	addi r4, r1, 0x8
+/* 00108838 00000518  48 00 00 01 */	bl ZrotM__6mMtx_cF4mAng
+/* 0010883C 0000051C  38 7F 05 44 */	addi r3, r31, 0x544
+/* 00108840 00000520  38 9F 00 7C */	addi r4, r31, 0x7c
+/* 00108844 00000524  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 00108848 00000528  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0010884C 0000052C  38 9F 00 DC */	addi r4, r31, 0xdc
+/* 00108850 00000530  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 00108854 00000534  38 7F 05 44 */	addi r3, r31, 0x544
+/* 00108858 00000538  38 80 00 00 */	li r4, 0x0
+/* 0010885C 0000053C  48 00 00 01 */	bl calc__Q23m3d9scnLeaf_cFb
+/* 00108860 00000540  81 9F 05 44 */	lwz r12, 0x544(r31)
+/* 00108864 00000544  38 7F 05 44 */	addi r3, r31, 0x544
+/* 00108868 00000548  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 0010886C 0000054C  7D 89 03 A6 */	mtctr r12
+/* 00108870 00000550  4E 80 04 21 */	bctrl
+/* 00108874 00000554  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 00108878 00000558  38 60 00 01 */	li r3, 0x1
+/* 0010887C 0000055C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 00108880 00000560  7C 08 03 A6 */	mtlr r0
+/* 00108884 00000564  38 21 00 30 */	addi r1, r1, 0x30
+/* 00108888 00000568  4E 80 00 20 */	blr
+.endfn draw__16daObjFruitTree_cFv
+
+# .text:0x52C | 0x10888C | size: 0x4
+.fn gap_00_0010888C_text, global
+.hidden gap_00_0010888C_text
+/* 0010888C 0000056C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0010888C_text
+
+# .text:0x530 | 0x108890 | size: 0x50
+# daObjFruitTree_c::doDelete()
+.fn doDelete__16daObjFruitTree_cFv, global
+/* 00108890 00000570  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00108894 00000574  7C 08 02 A6 */	mflr r0
+/* 00108898 00000578  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0010889C 0000057C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 001088A0 00000580  7C 7F 1B 78 */	mr r31, r3
+/* 001088A4 00000584  48 00 00 01 */	bl getInstance__21mAllocatorDummyHeap_cFv
+/* 001088A8 00000588  80 1F 05 38 */	lwz r0, 0x538(r31)
+/* 001088AC 0000058C  7C 00 18 40 */	cmplw r0, r3
+/* 001088B0 00000590  41 82 00 18 */	beq .L_001088C8
+/* 001088B4 00000594  81 9F 05 44 */	lwz r12, 0x544(r31)
+/* 001088B8 00000598  38 7F 05 44 */	addi r3, r31, 0x544
+/* 001088BC 0000059C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 001088C0 000005A0  7D 89 03 A6 */	mtctr r12
+/* 001088C4 000005A4  4E 80 04 21 */	bctrl
+.L_001088C8:
+/* 001088C8 000005A8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 001088CC 000005AC  38 60 00 01 */	li r3, 0x1
+/* 001088D0 000005B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 001088D4 000005B4  7C 08 03 A6 */	mtlr r0
+/* 001088D8 000005B8  38 21 00 10 */	addi r1, r1, 0x10
+/* 001088DC 000005BC  4E 80 00 20 */	blr
+.endfn doDelete__16daObjFruitTree_cFv
+
+# .text:0x580 | 0x1088E0 | size: 0x84
+# daObjFruitTree_c::~daObjFruitTree_c()
+.fn __dt__16daObjFruitTree_cFv, global
+/* 001088E0 000005C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 001088E4 000005C4  7C 08 02 A6 */	mflr r0
+/* 001088E8 000005C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 001088EC 000005CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 001088F0 000005D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 001088F4 000005D4  7C 9F 23 78 */	mr r31, r4
+/* 001088F8 000005D8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 001088FC 000005DC  7C 7E 1B 78 */	mr r30, r3
+/* 00108900 000005E0  41 82 00 48 */	beq .L_00108948
+/* 00108904 000005E4  34 63 05 84 */	addic. r3, r3, 0x584
+/* 00108908 000005E8  41 82 00 0C */	beq .L_00108914
+/* 0010890C 000005EC  38 80 00 00 */	li r4, 0x0
+/* 00108910 000005F0  48 00 00 01 */	bl __dt__Q23m3d6fanm_cFv
+.L_00108914:
+/* 00108914 000005F4  38 7E 05 44 */	addi r3, r30, 0x544
+/* 00108918 000005F8  38 80 FF FF */	li r4, -0x1
+/* 0010891C 000005FC  48 00 00 01 */	bl __dt__Q23m3d5mdl_cFv
+/* 00108920 00000600  38 7E 05 24 */	addi r3, r30, 0x524
+/* 00108924 00000604  38 80 FF FF */	li r4, -0x1
+/* 00108928 00000608  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
+/* 0010892C 0000060C  7F C3 F3 78 */	mr r3, r30
+/* 00108930 00000610  38 80 00 00 */	li r4, 0x0
+/* 00108934 00000614  48 00 00 01 */	bl __dt__5dEn_cFv
+/* 00108938 00000618  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0010893C 0000061C  40 81 00 0C */	ble .L_00108948
+/* 00108940 00000620  7F C3 F3 78 */	mr r3, r30
+/* 00108944 00000624  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_00108948:
+/* 00108948 00000628  7F C3 F3 78 */	mr r3, r30
+/* 0010894C 0000062C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 00108950 00000630  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 00108954 00000634  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 00108958 00000638  7C 08 03 A6 */	mtlr r0
+/* 0010895C 0000063C  38 21 00 10 */	addi r1, r1, 0x10
+/* 00108960 00000640  4E 80 00 20 */	blr
+.endfn __dt__16daObjFruitTree_cFv
+
+# .text:0x604 | 0x108964 | size: 0xC
+.fn gap_00_00108964_text, global
+.hidden gap_00_00108964_text
+/* 00108964 00000644  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00108968 00000648  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0010896C 0000064C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_00108964_text
+
+# 0x00006180..0x00006198 | size: 0x18
+.rodata
+.balign 8
+
+# .rodata:0x0 | 0x6180 | size: 0x4
+.obj "@13945", local
+	.4byte 0x3F800000
+.endobj "@13945"
+	.4byte 0x00000000
+
+# .rodata:0x8 | 0x6188 | size: 0x8
+.obj "@13948", local
+	.4byte 0x43300000
+	.4byte 0x00000000
+.endobj "@13948"
+
+# .rodata:0x10 | 0x6190 | size: 0x4
+.obj "@13977", local
+	.4byte 0xC3480000
+.endobj "@13977"
+
+# .rodata:0x14 | 0x6194 | size: 0x4
+.obj "@13978", local
+	.4byte 0xC5674000
+.endobj "@13978"
+
+# 0x00034058..0x000343E0 | size: 0x388
+.data
+.balign 8
+
+# .data:0x0 | 0x34058 | size: 0xC
+.obj g_profile_OBJ_FRUITTREE, global
+	.4byte daObjFruitTree_c_classInit__Fv
+	.4byte 0x02310238
+	.4byte 0x00000000
+.endobj g_profile_OBJ_FRUITTREE
+
+# .data:0xC | 0x34064 | size: 0x16
+.obj "@13933", local
+	.4byte 0x6733642F
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573612E
+	.4byte 0x62727265
+	.2byte 0x7300
+.endobj "@13933"
+
+# .data:0x22 | 0x3407A | size: 0x2
+.obj gap_04_0003407A_data, global
+.hidden gap_04_0003407A_data
+	.2byte 0x0000
+.endobj gap_04_0003407A_data
+
+# .data:0x24 | 0x3407C | size: 0xC
+.obj "@13934", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x75736100
+.endobj "@13934"
+
+# .data:0x30 | 0x34088 | size: 0x1B
+.obj "@13935", local
+	.4byte 0x6733642F
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.4byte 0x67616B65
+	.4byte 0x2E627272
+	.byte 0x65, 0x73, 0x00
+.endobj "@13935"
+
+# .data:0x4B | 0x340A3 | size: 0x1
+.obj gap_04_000340A3_data, global
+.hidden gap_04_000340A3_data
+	.byte 0x00
+.endobj gap_04_000340A3_data
+
+# .data:0x4C | 0x340A4 | size: 0x11
+.obj "@13936", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.4byte 0x67616B65
+	.byte 0x00
+.endobj "@13936"
+
+# .data:0x5D | 0x340B5 | size: 0x3
+.obj gap_04_000340B5_data, global
+.hidden gap_04_000340B5_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_04_000340B5_data
+
+# .data:0x60 | 0x340B8 | size: 0xE
+.obj "@13937", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.2byte 0x5300
+.endobj "@13937"
+
+# .data:0x6E | 0x340C6 | size: 0x2
+.obj gap_04_000340C6_data, global
+.hidden gap_04_000340C6_data
+	.2byte 0x0000
+.endobj gap_04_000340C6_data
+
+# .data:0x70 | 0x340C8 | size: 0xE
+.obj "@13938", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.2byte 0x4D00
+.endobj "@13938"
+
+# .data:0x7E | 0x340D6 | size: 0x2
+.obj gap_04_000340D6_data, global
+.hidden gap_04_000340D6_data
+	.2byte 0x0000
+.endobj gap_04_000340D6_data
+
+# .data:0x80 | 0x340D8 | size: 0xE
+.obj "@13939", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.2byte 0x4C00
+.endobj "@13939"
+
+# .data:0x8E | 0x340E6 | size: 0x2
+.obj gap_04_000340E6_data, global
+.hidden gap_04_000340E6_data
+	.2byte 0x0000
+.endobj gap_04_000340E6_data
+
+# .data:0x90 | 0x340E8 | size: 0xF
+.obj "@13940", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.byte 0x4C, 0x4C, 0x00
+.endobj "@13940"
+
+# .data:0x9F | 0x340F7 | size: 0x1
+.obj gap_04_000340F7_data, global
+.hidden gap_04_000340F7_data
+	.byte 0x00
+.endobj gap_04_000340F7_data
+
+# .data:0xA0 | 0x340F8 | size: 0x13
+.obj "@13941", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.4byte 0x67616B65
+	.byte 0x5F, 0x53, 0x00
+.endobj "@13941"
+
+# .data:0xB3 | 0x3410B | size: 0x1
+.obj gap_04_0003410B_data, global
+.hidden gap_04_0003410B_data
+	.byte 0x00
+.endobj gap_04_0003410B_data
+
+# .data:0xB4 | 0x3410C | size: 0x13
+.obj "@13942", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.4byte 0x67616B65
+	.byte 0x5F, 0x4D, 0x00
+.endobj "@13942"
+
+# .data:0xC7 | 0x3411F | size: 0x1
+.obj gap_04_0003411F_data, global
+.hidden gap_04_0003411F_data
+	.byte 0x00
+.endobj gap_04_0003411F_data
+
+# .data:0xC8 | 0x34120 | size: 0x13
+.obj "@13943", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.4byte 0x67616B65
+	.byte 0x5F, 0x4C, 0x00
+.endobj "@13943"
+
+# .data:0xDB | 0x34133 | size: 0x1
+.obj gap_04_00034133_data, global
+.hidden gap_04_00034133_data
+	.byte 0x00
+.endobj gap_04_00034133_data
+
+# .data:0xDC | 0x34134 | size: 0x14
+.obj "@13944", local
+	.4byte 0x66727569
+	.4byte 0x74735F6B
+	.4byte 0x7573615F
+	.4byte 0x67616B65
+	.4byte 0x5F4C4C00
+.endobj "@13944"
+
+# .data:0xF0 | 0x34148 | size: 0x280
+# daObjFruitTree_c::__vtable
+.obj __vt__16daObjFruitTree_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__16daObjFruitTree_cFv
+	.4byte preCreate__8dActor_cFv
+	.4byte postCreate__5dEn_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__16daObjFruitTree_cFv
+	.4byte preDelete__8dActor_cFv
+	.4byte postDelete__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__16daObjFruitTree_cFv
+	.4byte preExecute__5dEn_cFv
+	.4byte postExecute__5dEn_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__16daObjFruitTree_cFv
+	.4byte preDraw__5dEn_cFv
+	.4byte postDraw__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__16daObjFruitTree_cFv
+	.4byte getKindString__8dActor_cCFv
+	.4byte draw2D__12dBaseActor_cFv
+	.4byte draw2D_lyt2__12dBaseActor_cFv
+	.4byte GetActorType__12dBaseActor_cFv
+	.4byte finalUpdate__12dBaseActor_cFv
+	.4byte ActorDrawCullCheck__8dActor_cFv
+	.4byte block_hit_init__5dEn_cFv
+	.4byte vf68__8dActor_cFP9dBg_ctr_c
+	.4byte getPlrNo__8dActor_cFv
+	.4byte getLookatPos__8dActor_cCFv
+	.4byte isSpinLiftUpEnable__8dActor_cFv
+	.4byte setSpinLiftUpActor__8dActor_cFP8dActor_c
+	.4byte setCarryFall__8dActor_cFP8dActor_ci
+	.4byte setEatTongue__5dEn_cFP8dActor_c
+	.4byte setEatTongueOff__5dEn_cFP8dActor_c
+	.4byte setEatMouth__8dActor_cFP8dActor_c
+	.4byte setEatSpitOut__5dEn_cFP8dActor_c
+	.4byte setEatGlupDown__8dActor_cFP8dActor_c
+	.4byte eatMove__8dActor_cFP8dActor_c
+	.4byte removeCc__8dActor_cFv
+	.4byte reviveCc__8dActor_cFv
+	.4byte setAfterEatScale__8dActor_cFv
+	.4byte calcSpitOutPos__8dActor_cFP8dActor_c
+	.4byte calcEatScaleRate__8dActor_cFP8dActor_c
+	.4byte calcEatInScale__5dEn_cFP8dActor_c
+	.4byte allEnemyDeathEffSet__8dActor_cFv
+	.4byte vfb4__8dActor_cFv
+	.4byte funsuiMoveX__8dActor_cFv
+	.4byte cancelFunsuiActUpper__8dActor_cFv
+	.4byte cancelFunsuiActSide__8dActor_cFi
+	.4byte cancelFunsuiActVanish__8dActor_cFv
+	.4byte waterSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte yoganSplashEffect__5dEn_cFRC7mVec3_cf
+	.4byte poisonSplashEffect__5dEn_cFRC7mVec3_cf
+	.4byte changeState__5dEn_cFRC12sStateIDIf_c
+	.4byte initializeState_GegnericMulti__18dActorMultiState_cFv
+	.4byte executeState_GegnericMulti__18dActorMultiState_cFv
+	.4byte finalizeState_GegnericMulti__18dActorMultiState_cFv
+	.4byte EnDamageCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte PlDamageCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte YoshiDamageCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte EtcDamageCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte Normal_VsEnHitCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte Normal_VsPlHitCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte Normal_VsYoshiHitCheck__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Star__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Slip__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Large__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Spin__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Rolling__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_WireNet__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_HipAttk__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_YoshiHipAttk__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Screw__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_PenguinSlide__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Cannon__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Shell__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Fire__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_Ice__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_YoshiBullet__5dEn_cFP5dCc_cP5dCc_c
+	.4byte hitCallback_YoshiFire__5dEn_cFP5dCc_cP5dCc_c
+	.4byte setDeathInfo_Other__5dEn_cFP8dActor_c
+	.4byte setDeathInfo_Quake__5dEn_cFi
+	.4byte setDeathInfo_IceBreak__5dEn_cFv
+	.4byte setDeathInfo_IceVanish__5dEn_cFv
+	.4byte isQuakeDamage__5dEn_cFv
+	.4byte hitYoshiEat__5dEn_cFP5dCc_cP5dCc_c
+	.4byte setDeathSound_HipAttk__5dEn_cFv
+	.4byte setDeathSound_Fire__5dEn_cFv
+	.4byte setDeathSound_Slip__5dEn_cFP8dActor_c
+	.4byte setDeathSound_Spin__5dEn_cFv
+	.4byte setDeathSound_Rolling__5dEn_cFv
+	.4byte initializeState_DieFumi__5dEn_cFv
+	.4byte executeState_DieFumi__5dEn_cFv
+	.4byte finalizeState_DieFumi__5dEn_cFv
+	.4byte initializeState_DieFall__5dEn_cFv
+	.4byte executeState_DieFall__5dEn_cFv
+	.4byte finalizeState_DieFall__5dEn_cFv
+	.4byte initializeState_DieBigFall__5dEn_cFv
+	.4byte executeState_DieBigFall__5dEn_cFv
+	.4byte finalizeState_DieBigFall__5dEn_cFv
+	.4byte initializeState_DieSmoke__5dEn_cFv
+	.4byte executeState_DieSmoke__5dEn_cFv
+	.4byte finalizeState_DieSmoke__5dEn_cFv
+	.4byte initializeState_DieYoshiFumi__5dEn_cFv
+	.4byte executeState_DieYoshiFumi__5dEn_cFv
+	.4byte finalizeState_DieYoshiFumi__5dEn_cFv
+	.4byte initializeState_DieIceVanish__5dEn_cFv
+	.4byte executeState_DieIceVanish__5dEn_cFv
+	.4byte finalizeState_DieIceVanish__5dEn_cFv
+	.4byte initializeState_DieGoal__5dEn_cFv
+	.4byte executeState_DieGoal__5dEn_cFv
+	.4byte finalizeState_DieGoal__5dEn_cFv
+	.4byte initializeState_DieOther__5dEn_cFv
+	.4byte executeState_DieOther__5dEn_cFv
+	.4byte finalizeState_DieOther__5dEn_cFv
+	.4byte initializeState_EatIn__5dEn_cFv
+	.4byte executeState_EatIn__5dEn_cFv
+	.4byte finalizeState_EatIn__5dEn_cFv
+	.4byte initializeState_EatNow__5dEn_cFv
+	.4byte executeState_EatNow__5dEn_cFv
+	.4byte finalizeState_EatNow__5dEn_cFv
+	.4byte initializeState_EatOut__5dEn_cFv
+	.4byte executeState_EatOut__5dEn_cFv
+	.4byte finalizeState_EatOut__5dEn_cFv
+	.4byte initializeState_HitSpin__5dEn_cFv
+	.4byte executeState_HitSpin__5dEn_cFv
+	.4byte finalizeState_HitSpin__5dEn_cFv
+	.4byte initializeState_Ice__5dEn_cFv
+	.4byte executeState_Ice__5dEn_cFv
+	.4byte finalizeState_Ice__5dEn_cFv
+	.4byte fumidamageEffect__5dEn_cFRC7mVec3_c
+	.4byte hipatkEffect__5dEn_cFRC7mVec3_c
+	.4byte fumidamageSE__5dEn_cFRC7mVec3_ci
+	.4byte quakeAction__5dEn_cFv
+	.4byte checkDispIn__5dEn_cFv
+	.4byte setWaterSpeed__5dEn_cFv
+	.4byte setDamage__5dEn_cFP8dActor_c
+	.4byte boyonBegin__5dEn_cFv
+	.4byte calcBoyonScale__5dEn_cFv
+	.4byte createIceActor__5dEn_cFv
+	.4byte setIceAnm__5dEn_cFv
+	.4byte returnAnm_Ice__5dEn_cFv
+	.4byte returnState_Ice__5dEn_cFv
+	.4byte beginFunsui__5dEn_cFv
+	.4byte endFunsui__5dEn_cFv
+	.4byte isFunsui__5dEn_cCFv
+	.4byte checkComboClap__5dEn_cFi
+	.4byte FumiJumpSet__5dEn_cFP8dActor_c
+	.4byte FumiScoreSet__5dEn_cFP8dActor_c
+	.4byte MameFumiJumpSet__5dEn_cFP8dActor_c
+	.4byte YoshiFumiJumpSet__5dEn_cFP8dActor_c
+	.4byte YoshiFumiScoreSet__5dEn_cFP8dActor_c
+	.4byte fumiSE__5dEn_cFP8dActor_c
+	.4byte fumiEffect__5dEn_cFP8dActor_c
+	.4byte spinfumiSE__5dEn_cFP8dActor_c
+	.4byte spinfumiEffect__5dEn_cFP8dActor_c
+	.4byte mamefumiSE__5dEn_cFP8dActor_c
+	.4byte mamefumiEffect__5dEn_cFP8dActor_c
+	.4byte yoshifumiSE__5dEn_cFP8dActor_c
+	.4byte yoshifumiEffect__5dEn_cFP8dActor_c
+.endobj __vt__16daObjFruitTree_c
+
+# .data:0x370 | 0x343C8 | size: 0x18
+.obj gap_04_000343C8_data, global
+.hidden gap_04_000343C8_data
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj gap_04_000343C8_data

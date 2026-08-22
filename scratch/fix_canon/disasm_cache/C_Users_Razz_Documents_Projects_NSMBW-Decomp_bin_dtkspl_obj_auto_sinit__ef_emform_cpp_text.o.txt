@@ -1,0 +1,37 @@
+.include "macros.inc"
+.file "auto_sinit__ef_emform_cpp_text"
+
+# 0x802973D0..0x80297428 | size: 0x58
+.text
+.balign 4
+
+# .text:0x0 | 0x802973D0 | size: 0x58
+.fn "__sinit_\ef_emform_cpp", global
+/* 802973D0 00000040  3D 20 00 00 */	lis r9, __vt__Q34nw4r2ef15EmitterFormDisc@ha
+/* 802973D4 00000044  3D 00 00 00 */	lis r8, __vt__Q34nw4r2ef15EmitterFormLine@ha
+/* 802973D8 00000048  3C E0 00 00 */	lis r7, __vt__Q34nw4r2ef19EmitterFormCylinder@ha
+/* 802973DC 0000004C  3C C0 00 00 */	lis r6, __vt__Q34nw4r2ef17EmitterFormSphere@ha
+/* 802973E0 00000050  3C A0 00 00 */	lis r5, __vt__Q34nw4r2ef16EmitterFormTorus@ha
+/* 802973E4 00000054  3C 80 00 00 */	lis r4, __vt__Q34nw4r2ef15EmitterFormCube@ha
+/* 802973E8 00000058  3C 60 00 00 */	lis r3, __vt__Q34nw4r2ef16EmitterFormPoint@ha
+/* 802973EC 0000005C  39 29 00 00 */	addi r9, r9, __vt__Q34nw4r2ef15EmitterFormDisc@l
+/* 802973F0 00000060  39 08 00 00 */	addi r8, r8, __vt__Q34nw4r2ef15EmitterFormLine@l
+/* 802973F4 00000064  38 E7 00 00 */	addi r7, r7, __vt__Q34nw4r2ef19EmitterFormCylinder@l
+/* 802973F8 00000068  38 C6 00 00 */	addi r6, r6, __vt__Q34nw4r2ef17EmitterFormSphere@l
+/* 802973FC 0000006C  38 A5 00 00 */	addi r5, r5, __vt__Q34nw4r2ef16EmitterFormTorus@l
+/* 80297400 00000070  38 84 00 00 */	addi r4, r4, __vt__Q34nw4r2ef15EmitterFormCube@l
+/* 80297404 00000074  38 63 00 00 */	addi r3, r3, __vt__Q34nw4r2ef16EmitterFormPoint@l
+/* 80297408 00000078  91 20 00 00 */	stw r9, gEmitterFormDisc__Q24nw4r2ef@sda21(r0)
+/* 8029740C 0000007C  91 00 00 00 */	stw r8, gEmitterFormLine__Q24nw4r2ef@sda21(r0)
+/* 80297410 00000080  90 E0 00 00 */	stw r7, gEmitterFormCylinder__Q24nw4r2ef@sda21(r0)
+/* 80297414 00000084  90 C0 00 00 */	stw r6, gEmitterFormSphere__Q24nw4r2ef@sda21(r0)
+/* 80297418 00000088  90 A0 00 00 */	stw r5, gEmitterFormTorus__Q24nw4r2ef@sda21(r0)
+/* 8029741C 0000008C  90 80 00 00 */	stw r4, gEmitterFormCube__Q24nw4r2ef@sda21(r0)
+/* 80297420 00000090  90 60 00 00 */	stw r3, gEmitterFormPoint__Q24nw4r2ef@sda21(r0)
+/* 80297424 00000094  4E 80 00 20 */	blr
+.endfn "__sinit_\ef_emform_cpp"
+
+# 0x802EDF64..0x802EDF68 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\ef_emform_cpp"

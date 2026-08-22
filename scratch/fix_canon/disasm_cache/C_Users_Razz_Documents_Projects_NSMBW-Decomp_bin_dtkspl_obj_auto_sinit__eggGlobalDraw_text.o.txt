@@ -1,0 +1,16 @@
+.include "macros.inc"
+.file "auto_sinit__eggGlobalDraw_text"
+
+# 0x802C7E00..0x802C7E04 | size: 0x4
+.text
+.balign 4
+
+# .text:0x0 | 0x802C7E00 | size: 0x4
+.fn "__sinit_\eggGlobalDrawState_cpp", global
+/* 802C7E00 00000040  4E 80 00 20 */	blr
+.endfn "__sinit_\eggGlobalDrawState_cpp"
+
+# 0x802EDF9C..0x802EDFA0 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\eggGlobalDrawState_cpp"

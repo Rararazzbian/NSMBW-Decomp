@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__eggScreenEffe_text"
+
+# 0x802D2080..0x802D208C | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x802D2080 | size: 0xC
+.fn "__sinit_\eggScreenEffectBase_cpp", global
+/* 802D2080 00000040  3C 60 00 00 */	lis r3, sScreen__Q23EGG16ScreenEffectBase@ha
+/* 802D2084 00000044  38 63 00 00 */	addi r3, r3, sScreen__Q23EGG16ScreenEffectBase@l
+/* 802D2088 00000048  48 00 00 00 */	b __ct__Q23EGG6ScreenFv
+.endfn "__sinit_\eggScreenEffectBase_cpp"
+
+# 0x802EDFA4..0x802EDFA8 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\eggScreenEffectBase_cpp"

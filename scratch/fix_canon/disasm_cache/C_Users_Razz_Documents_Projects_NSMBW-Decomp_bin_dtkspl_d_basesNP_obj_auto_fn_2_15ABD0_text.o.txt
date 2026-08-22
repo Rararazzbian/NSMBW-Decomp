@@ -1,0 +1,48 @@
+.include "macros.inc"
+.file "auto_fn_2_15ABD0_text"
+
+# 0x0015ABD0..0x0015AC54 | size: 0x84
+.text
+.balign 4
+
+# .text:0x0 | 0x15ABD0 | size: 0x84
+.fn fn_2_15ABD0, global
+/* 0015ABD0 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0015ABD4 00000044  7C 08 02 A6 */	mflr r0
+/* 0015ABD8 00000048  3C A0 00 00 */	lis r5, lbl_2_rodata_8570@ha
+/* 0015ABDC 0000004C  3C C0 00 00 */	lis r6, lbl_2_data_436BC@ha
+/* 0015ABE0 00000050  38 A5 00 00 */	addi r5, r5, lbl_2_rodata_8570@l
+/* 0015ABE4 00000054  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0015ABE8 00000058  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 0015ABEC 0000005C  C0 45 00 18 */	lfs f2, 0x18(r5)
+/* 0015ABF0 00000060  38 C6 00 00 */	addi r6, r6, lbl_2_data_436BC@l
+/* 0015ABF4 00000064  C0 25 00 1C */	lfs f1, 0x1c(r5)
+/* 0015ABF8 00000068  C0 05 00 20 */	lfs f0, 0x20(r5)
+/* 0015ABFC 0000006C  3C 80 00 00 */	lis r4, fn_2_15AC60@ha
+/* 0015AC00 00000070  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 0015AC04 00000074  3C A0 00 00 */	lis r5, lbl_2_bss_FCC0@ha
+/* 0015AC08 00000078  90 06 00 0C */	stw r0, 0xc(r6)
+/* 0015AC0C 0000007C  38 84 00 00 */	addi r4, r4, fn_2_15AC60@l
+/* 0015AC10 00000080  38 A5 00 00 */	addi r5, r5, lbl_2_bss_FCC0@l
+/* 0015AC14 00000084  38 60 00 00 */	li r3, 0x0
+/* 0015AC18 00000088  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 0015AC1C 0000008C  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 0015AC20 00000090  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 0015AC24 00000094  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 0015AC28 00000098  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 0015AC2C 0000009C  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 0015AC30 000000A0  48 00 00 01 */	bl __register_global_object
+/* 0015AC34 000000A4  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 0015AC38 000000A8  3C 60 00 00 */	lis r3, lbl_2_bss_FCCC@ha
+/* 0015AC3C 000000AC  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 0015AC40 000000B0  90 03 00 00 */	stw r0, lbl_2_bss_FCCC@l(r3)
+/* 0015AC44 000000B4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0015AC48 000000B8  7C 08 03 A6 */	mtlr r0
+/* 0015AC4C 000000BC  38 21 00 20 */	addi r1, r1, 0x20
+/* 0015AC50 000000C0  4E 80 00 20 */	blr
+.endfn fn_2_15ABD0
+
+# 0x000003B0..0x000003B4 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte fn_2_15ABD0

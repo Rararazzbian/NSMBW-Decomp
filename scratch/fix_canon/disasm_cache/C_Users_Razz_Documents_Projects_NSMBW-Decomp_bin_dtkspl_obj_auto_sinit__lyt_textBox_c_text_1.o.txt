@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__lyt_textBox_c_text_1"
+
+# 0x802AF820..0x802AF82C | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x802AF820 | size: 0xC
+.fn "__sinit_\lyt_textBox_cpp", local
+/* 802AF820 00000040  38 00 00 00 */	li r0, typeInfo__Q34nw4r3lyt4Pane@sda21
+/* 802AF824 00000044  90 00 00 00 */	stw r0, typeInfo__Q34nw4r3lyt7TextBox@sda21(r0)
+/* 802AF828 00000048  4E 80 00 20 */	blr
+.endfn "__sinit_\lyt_textBox_cpp"
+
+# 0x802EDF74..0x802EDF78 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\lyt_textBox_cpp"

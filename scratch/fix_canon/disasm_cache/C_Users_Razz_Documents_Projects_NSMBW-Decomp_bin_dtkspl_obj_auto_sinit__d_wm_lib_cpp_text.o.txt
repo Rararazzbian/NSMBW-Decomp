@@ -1,0 +1,43 @@
+.include "macros.inc"
+.file "auto_sinit__d_wm_lib_cpp_text"
+
+# 0x800FD610..0x800FD680 | size: 0x70
+.text
+.balign 4
+
+# .text:0x0 | 0x800FD610 | size: 0x70
+.fn "__sinit_\d_wm_lib_cpp", global
+/* 800FD610 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800FD614 00000044  7C 08 02 A6 */	mflr r0
+/* 800FD618 00000048  3C C0 00 00 */	lis r6, sc_ForceList__6dWmLib_8031C3B4@ha
+/* 800FD61C 0000004C  C0 40 00 00 */	lfs f2, "@79501_8042D30C"@sda21(r0)
+/* 800FD620 00000050  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800FD624 00000054  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib_8031C3B4@l
+/* 800FD628 00000058  C0 20 00 00 */	lfs f1, "@79502_8042D310"@sda21(r0)
+/* 800FD62C 0000005C  3C 80 00 00 */	lis r4, __arraydtor$53530_800FD680@ha
+/* 800FD630 00000060  C0 00 00 00 */	lfs f0, "@79503_8042D314"@sda21(r0)
+/* 800FD634 00000064  3C A0 00 00 */	lis r5, "@53531_80374000"@ha
+/* 800FD638 00000068  80 00 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@sda21(r0)
+/* 800FD63C 0000006C  38 84 00 00 */	addi r4, r4, __arraydtor$53530_800FD680@l
+/* 800FD640 00000070  90 06 00 0C */	stw r0, 0xc(r6)
+/* 800FD644 00000074  38 A5 00 00 */	addi r5, r5, "@53531_80374000"@l
+/* 800FD648 00000078  38 60 00 00 */	li r3, 0x0
+/* 800FD64C 0000007C  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 800FD650 00000080  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 800FD654 00000084  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 800FD658 00000088  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 800FD65C 0000008C  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 800FD660 00000090  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 800FD664 00000094  48 00 00 01 */	bl __register_global_object
+/* 800FD668 00000098  80 00 00 00 */	lwz r0, c_START_ID__10dCsvData_c@sda21(r0)
+/* 800FD66C 0000009C  90 00 00 00 */	stw r0, c_StartPointKinokoHouseID__6dWmLib_8042A440@sda21(r0)
+/* 800FD670 000000A0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800FD674 000000A4  7C 08 03 A6 */	mtlr r0
+/* 800FD678 000000A8  38 21 00 20 */	addi r1, r1, 0x20
+/* 800FD67C 000000AC  4E 80 00 20 */	blr
+.endfn "__sinit_\d_wm_lib_cpp"
+
+# 0x802EDE5C..0x802EDE60 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_wm_lib_cpp"

@@ -1,0 +1,80 @@
+.include "macros.inc"
+.file "auto_03_80094DDC_text"
+
+# 0x80094DDC..0x80094E80 | size: 0xA4
+.text
+.balign 4
+
+# .text:0x0 | 0x80094DDC | size: 0x4
+.fn pad_03_80094DDC_text, local
+/* 80094DDC 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_80094DDC_text
+
+# .text:0x4 | 0x80094DE0 | size: 0x58
+# mEf::oneEmitter_c::~oneEmitter_c()
+.fn __dt__Q23mEf12oneEmitter_cFv, global
+/* 80094DE0 00000044  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80094DE4 00000048  7C 08 02 A6 */	mflr r0
+/* 80094DE8 0000004C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80094DEC 00000050  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80094DF0 00000054  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80094DF4 00000058  7C 9F 23 78 */	mr r31, r4
+/* 80094DF8 0000005C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80094DFC 00000060  7C 7E 1B 78 */	mr r30, r3
+/* 80094E00 00000064  41 82 00 1C */	beq .L_80094E1C
+/* 80094E04 00000068  38 80 00 00 */	li r4, 0x0
+/* 80094E08 0000006C  48 00 00 01 */	bl __dt__Q23EGG6EffectFv
+/* 80094E0C 00000070  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80094E10 00000074  40 81 00 0C */	ble .L_80094E1C
+/* 80094E14 00000078  7F C3 F3 78 */	mr r3, r30
+/* 80094E18 0000007C  48 00 00 01 */	bl __dl__FPv
+.L_80094E1C:
+/* 80094E1C 00000080  7F C3 F3 78 */	mr r3, r30
+/* 80094E20 00000084  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80094E24 00000088  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80094E28 0000008C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80094E2C 00000090  7C 08 03 A6 */	mtlr r0
+/* 80094E30 00000094  38 21 00 10 */	addi r1, r1, 0x10
+/* 80094E34 00000098  4E 80 00 20 */	blr
+.endfn __dt__Q23mEf12oneEmitter_cFv
+
+# .text:0x5C | 0x80094E38 | size: 0x8
+.fn gap_03_80094E38_text, global
+.hidden gap_03_80094E38_text
+/* 80094E38 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80094E3C 000000A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80094E38_text
+
+# .text:0x64 | 0x80094E40 | size: 0x1C
+.fn __arraydtor$69164, global
+/* 80094E40 000000A4  3C 60 00 00 */	lis r3, lbl_803576B0@ha
+/* 80094E44 000000A8  3C 80 00 00 */	lis r4, __dt__Q24dDvd8loader_cFv@ha
+/* 80094E48 000000AC  38 63 00 00 */	addi r3, r3, lbl_803576B0@l
+/* 80094E4C 000000B0  38 A0 00 14 */	li r5, 0x14
+/* 80094E50 000000B4  38 84 00 00 */	addi r4, r4, __dt__Q24dDvd8loader_cFv@l
+/* 80094E54 000000B8  38 C0 00 0E */	li r6, 0xe
+/* 80094E58 000000BC  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$69164
+
+# .text:0x80 | 0x80094E5C | size: 0x4
+.fn gap_03_80094E5C_text, global
+.hidden gap_03_80094E5C_text
+/* 80094E5C 000000C0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80094E5C_text
+
+# .text:0x84 | 0x80094E60 | size: 0x1C
+.fn __arraydtor$69166, global
+/* 80094E60 000000C4  3C 60 00 00 */	lis r3, lbl_803577D8@ha
+/* 80094E64 000000C8  3C 80 00 00 */	lis r4, __dt__Q24dDvd8loader_cFv@ha
+/* 80094E68 000000CC  38 63 00 00 */	addi r3, r3, lbl_803577D8@l
+/* 80094E6C 000000D0  38 A0 00 14 */	li r5, 0x14
+/* 80094E70 000000D4  38 84 00 00 */	addi r4, r4, __dt__Q24dDvd8loader_cFv@l
+/* 80094E74 000000D8  38 C0 00 0E */	li r6, 0xe
+/* 80094E78 000000DC  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$69166
+
+# .text:0xA0 | 0x80094E7C | size: 0x4
+.fn gap_03_80094E7C_text, global
+.hidden gap_03_80094E7C_text
+/* 80094E7C 000000E0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80094E7C_text

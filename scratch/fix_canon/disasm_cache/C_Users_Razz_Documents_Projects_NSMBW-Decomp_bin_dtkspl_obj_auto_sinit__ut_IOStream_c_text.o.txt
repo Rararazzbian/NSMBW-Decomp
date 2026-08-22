@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__ut_IOStream_c_text"
+
+# 0x80229E70..0x80229E7C | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x80229E70 | size: 0xC
+.fn "__sinit_\ut_IOStream_cpp", global
+/* 80229E70 00000040  38 00 00 00 */	li r0, 0x0
+/* 80229E74 00000044  90 00 00 00 */	stw r0, typeInfo__Q34nw4r2ut8IOStream@sda21(r0)
+/* 80229E78 00000048  4E 80 00 20 */	blr
+.endfn "__sinit_\ut_IOStream_cpp"
+
+# 0x802EDF1C..0x802EDF20 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\ut_IOStream_cpp"

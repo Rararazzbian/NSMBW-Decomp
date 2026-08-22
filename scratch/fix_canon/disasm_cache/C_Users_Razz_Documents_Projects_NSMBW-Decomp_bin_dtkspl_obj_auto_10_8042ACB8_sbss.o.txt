@@ -1,0 +1,782 @@
+.include "macros.inc"
+.file "auto_10_8042ACB8_sbss"
+
+# 0x8042ACB8..0x8042AE80 | size: 0x1C8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042ACB8 | size: 0x4
+.obj lowIntType_8042ACB8, global
+	.skip 0x4
+.endobj lowIntType_8042ACB8
+
+# .sbss:0x4 | 0x8042ACBC | size: 0x4
+.obj numInternalRetry, global
+	.skip 0x4
+.endobj numInternalRetry
+
+# .sbss:0x8 | 0x8042ACC0 | size: 0x4
+.obj lastError, global
+	.skip 0x4
+.endobj lastError
+
+# .sbss:0xC | 0x8042ACC4 | size: 0x4
+.obj gap_10_8042ACC4_sbss, global
+.hidden gap_10_8042ACC4_sbss
+	.skip 0x4
+.endobj gap_10_8042ACC4_sbss
+
+# .sbss:0x10 | 0x8042ACC8 | size: 0x1
+.obj requestInProgress, global
+	.skip 0x1
+.endobj requestInProgress
+
+# .sbss:0x11 | 0x8042ACC9 | size: 0x1
+.obj callbackInProgress, global
+	.skip 0x1
+.endobj callbackInProgress
+
+# .sbss:0x12 | 0x8042ACCA | size: 0x2
+.obj gap_10_8042ACCA_sbss, global
+.hidden gap_10_8042ACCA_sbss
+	.skip 0x2
+.endobj gap_10_8042ACCA_sbss
+
+# .sbss:0x14 | 0x8042ACCC | size: 0x4
+.obj freeCommandBuf, global
+	.skip 0x4
+.endobj freeCommandBuf
+
+# .sbss:0x18 | 0x8042ACD0 | size: 0x4
+.obj freeDvdContext, global
+	.skip 0x4
+.endobj freeDvdContext
+
+# .sbss:0x1C | 0x8042ACD4 | size: 0x1
+.obj dvdContextsInited, global
+	.skip 0x1
+.endobj dvdContextsInited
+
+# .sbss:0x1D | 0x8042ACD5 | size: 0x1
+.obj DVDLowInitCalled, global
+	.skip 0x1
+.endobj DVDLowInitCalled
+
+# .sbss:0x1E | 0x8042ACD6 | size: 0x2
+.obj gap_10_8042ACD6_sbss, global
+.hidden gap_10_8042ACD6_sbss
+	.skip 0x2
+.endobj gap_10_8042ACD6_sbss
+
+# .sbss:0x20 | 0x8042ACD8 | size: 0x4
+.obj spinUpValue, global
+	.skip 0x4
+.endobj spinUpValue
+
+# .sbss:0x24 | 0x8042ACDC | size: 0x4
+.obj readLength, global
+	.skip 0x4
+.endobj readLength
+
+# .sbss:0x28 | 0x8042ACE0 | size: 0x4
+.obj pathBuf, global
+	.skip 0x4
+.endobj pathBuf
+
+# .sbss:0x2C | 0x8042ACE4 | size: 0x4
+.obj diCommand, global
+	.skip 0x4
+.endobj diCommand
+
+# .sbss:0x30 | 0x8042ACE8 | size: 0x1
+.obj breakRequested, global
+	.skip 0x1
+.endobj breakRequested
+
+# .sbss:0x31 | 0x8042ACE9 | size: 0x7
+.obj gap_10_8042ACE9_sbss, global
+.hidden gap_10_8042ACE9_sbss
+	.skip 0x7
+.endobj gap_10_8042ACE9_sbss
+
+# .sbss:0x38 | 0x8042ACF0 | size: 0x4
+.obj sRootListInitialized, global
+	.skip 0x4
+.endobj sRootListInitialized
+
+# .sbss:0x3C | 0x8042ACF4 | size: 0x4
+.obj gap_10_8042ACF4_sbss, global
+.hidden gap_10_8042ACF4_sbss
+	.skip 0x4
+.endobj gap_10_8042ACF4_sbss
+
+# .sbss:0x40 | 0x8042ACF8 | size: 0x4
+.obj __DSP_init_flag, global
+	.skip 0x4
+.endobj __DSP_init_flag
+
+# .sbss:0x44 | 0x8042ACFC | size: 0x4
+.obj gap_10_8042ACFC_sbss, global
+.hidden gap_10_8042ACFC_sbss
+	.skip 0x4
+.endobj gap_10_8042ACFC_sbss
+
+# .sbss:0x48 | 0x8042AD00 | size: 0x4
+.obj __DSP_rude_task_pending, global
+	.skip 0x4
+.endobj __DSP_rude_task_pending
+
+# .sbss:0x4C | 0x8042AD04 | size: 0x4
+.obj __DSP_rude_task, global
+	.skip 0x4
+.endobj __DSP_rude_task
+
+# .sbss:0x50 | 0x8042AD08 | size: 0x4
+.obj __DSP_tmp_task, global
+	.skip 0x4
+.endobj __DSP_tmp_task
+
+# .sbss:0x54 | 0x8042AD0C | size: 0x4
+.obj __DSP_last_task, global
+	.skip 0x4
+.endobj __DSP_last_task
+
+# .sbss:0x58 | 0x8042AD10 | size: 0x4
+.obj __DSP_first_task, global
+	.skip 0x4
+.endobj __DSP_first_task
+
+# .sbss:0x5C | 0x8042AD14 | size: 0x4
+.obj __DSP_curr_task, global
+	.skip 0x4
+.endobj __DSP_curr_task
+
+# .sbss:0x60 | 0x8042AD18 | size: 0x4
+# nandGetUniqueNumber()::s_counter
+.obj "@LOCAL@nandGetUniqueNumber__Fv@s_counter", global
+	.skip 0x4
+.endobj "@LOCAL@nandGetUniqueNumber__Fv@s_counter"
+
+# .sbss:0x64 | 0x8042AD1C | size: 0x4
+.obj gap_10_8042AD1C_sbss, global
+.hidden gap_10_8042AD1C_sbss
+	.skip 0x4
+.endobj gap_10_8042AD1C_sbss
+
+# .sbss:0x68 | 0x8042AD20 | size: 0x4
+.obj s_libState, global
+	.skip 0x4
+.endobj s_libState
+
+# .sbss:0x6C | 0x8042AD24 | size: 0x4
+.obj gap_10_8042AD24_sbss, global
+.hidden gap_10_8042AD24_sbss
+	.skip 0x4
+.endobj gap_10_8042AD24_sbss
+
+# .sbss:0x70 | 0x8042AD28 | size: 0x4
+.obj s_callback, global
+	.skip 0x4
+.endobj s_callback
+
+# .sbss:0x74 | 0x8042AD2C | size: 0x4
+.obj s_stage, global
+	.skip 0x4
+.endobj s_stage
+
+# .sbss:0x78 | 0x8042AD30 | size: 0x1
+.obj BgJobStatus, global
+	.skip 0x1
+.endobj BgJobStatus
+
+# .sbss:0x79 | 0x8042AD31 | size: 0x3
+.obj gap_10_8042AD31_sbss, global
+.hidden gap_10_8042AD31_sbss
+	.skip 0x3
+.endobj gap_10_8042AD31_sbss
+
+# .sbss:0x7C | 0x8042AD34 | size: 0x4
+.obj ItemRestSize, global
+	.skip 0x4
+.endobj ItemRestSize
+
+# .sbss:0x80 | 0x8042AD38 | size: 0x4
+.obj ItemNumTotal, global
+	.skip 0x4
+.endobj ItemNumTotal
+
+# .sbss:0x84 | 0x8042AD3C | size: 0x4
+.obj ItemIDMaxPlus1, global
+	.skip 0x4
+.endobj ItemIDMaxPlus1
+
+# .sbss:0x88 | 0x8042AD40 | size: 0x4
+.obj ItemIDOffsetTblOffset, global
+	.skip 0x4
+.endobj ItemIDOffsetTblOffset
+
+# .sbss:0x8C | 0x8042AD44 | size: 0x1
+.obj IsDevKit, global
+	.skip 0x1
+.endobj IsDevKit
+
+# .sbss:0x8D | 0x8042AD45 | size: 0x1
+.obj DirtyFlag, global
+	.skip 0x1
+.endobj DirtyFlag
+
+# .sbss:0x8E | 0x8042AD46 | size: 0x1
+.obj Initialized_8042AD46, global
+	.skip 0x1
+.endobj Initialized_8042AD46
+
+# .sbss:0x8F | 0x8042AD47 | size: 0x1
+.obj gap_10_8042AD47_sbss, global
+.hidden gap_10_8042AD47_sbss
+	.skip 0x1
+.endobj gap_10_8042AD47_sbss
+
+# .sbss:0x90 | 0x8042AD48 | size: 0x4
+.obj __PADSpec, global
+	.skip 0x4
+.endobj __PADSpec
+
+# .sbss:0x94 | 0x8042AD4C | size: 0x4
+.obj gap_10_8042AD4C_sbss, global
+.hidden gap_10_8042AD4C_sbss
+	.skip 0x4
+.endobj gap_10_8042AD4C_sbss
+
+# .sbss:0x98 | 0x8042AD50 | size: 0x1
+.obj _wpadRegisterShutdownFunc, global
+	.skip 0x1
+.endobj _wpadRegisterShutdownFunc
+
+# .sbss:0x99 | 0x8042AD51 | size: 0x1
+.obj gap_10_8042AD51_sbss, global
+.hidden gap_10_8042AD51_sbss
+	.skip 0x1
+.endobj gap_10_8042AD51_sbss
+
+# .sbss:0x9A | 0x8042AD52 | size: 0x2
+.obj _wpadSenseCnt, global
+	.skip 0x2
+.endobj _wpadSenseCnt
+
+# .sbss:0x9C | 0x8042AD54 | size: 0x1
+.obj _wpadCheckCnt, global
+	.skip 0x1
+.endobj _wpadCheckCnt
+
+# .sbss:0x9D | 0x8042AD55 | size: 0x1
+.obj gap_10_8042AD55_sbss, global
+.hidden gap_10_8042AD55_sbss
+	.skip 0x1
+.endobj gap_10_8042AD55_sbss
+
+# .sbss:0x9E | 0x8042AD56 | size: 0x2
+.obj _wpadAfhCnt, global
+	.skip 0x2
+.endobj _wpadAfhCnt
+
+# .sbss:0xA0 | 0x8042AD58 | size: 0x4
+.obj _wpadExtCnt, global
+	.skip 0x4
+.endobj _wpadExtCnt
+
+# .sbss:0xA4 | 0x8042AD5C | size: 0x4
+.obj _wpadRumbleCnt, global
+	.skip 0x4
+.endobj _wpadRumbleCnt
+
+# .sbss:0xA8 | 0x8042AD60 | size: 0x4
+.obj _wpadStartup, global
+	.skip 0x4
+.endobj _wpadStartup
+
+# .sbss:0xAC | 0x8042AD64 | size: 0x4
+.obj _wpadReconnectWait, global
+	.skip 0x4
+.endobj _wpadReconnectWait
+
+# .sbss:0xB0 | 0x8042AD68 | size: 0x4
+.obj _wpadVSMInit, global
+	.skip 0x4
+.endobj _wpadVSMInit
+
+# .sbss:0xB4 | 0x8042AD6C | size: 0x4
+.obj _wpadTRNInit, global
+	.skip 0x4
+.endobj _wpadTRNInit
+
+# .sbss:0xB8 | 0x8042AD70 | size: 0x4
+.obj _wpadGTRInit, global
+	.skip 0x4
+.endobj _wpadGTRInit
+
+# .sbss:0xBC | 0x8042AD74 | size: 0x4
+.obj _wpadDRMInit, global
+	.skip 0x4
+.endobj _wpadDRMInit
+
+# .sbss:0xC0 | 0x8042AD78 | size: 0x4
+.obj _enabledVSM, global
+	.skip 0x4
+.endobj _enabledVSM
+
+# .sbss:0xC4 | 0x8042AD7C | size: 0x4
+.obj _enabledTRN, global
+	.skip 0x4
+.endobj _enabledTRN
+
+# .sbss:0xC8 | 0x8042AD80 | size: 0x4
+.obj _enabledGTR, global
+	.skip 0x4
+.endobj _enabledGTR
+
+# .sbss:0xCC | 0x8042AD84 | size: 0x4
+.obj _enabledDRM, global
+	.skip 0x4
+.endobj _enabledDRM
+
+# .sbss:0xD0 | 0x8042AD88 | size: 0x4
+.obj _wpadUsedCallback, global
+	.skip 0x4
+.endobj _wpadUsedCallback
+
+# .sbss:0xD4 | 0x8042AD8C | size: 0x4
+.obj _wpadInitialized, global
+	.skip 0x4
+.endobj _wpadInitialized
+
+# .sbss:0xD8 | 0x8042AD90 | size: 0x4
+.obj _wpadIsUsedChannel, global
+	.skip 0x4
+.endobj _wpadIsUsedChannel
+
+# .sbss:0xDC | 0x8042AD94 | size: 0x1
+.obj _wpadAfhChannel, global
+	.skip 0x1
+.endobj _wpadAfhChannel
+
+# .sbss:0xDD | 0x8042AD95 | size: 0x1
+.obj _wpadShutdownFlag, global
+	.skip 0x1
+.endobj _wpadShutdownFlag
+
+# .sbss:0xDE | 0x8042AD96 | size: 0x1
+.obj _wpadSCSetting, global
+	.skip 0x1
+.endobj _wpadSCSetting
+
+# .sbss:0xDF | 0x8042AD97 | size: 0x1
+.obj _wpadSpeakerVol, global
+	.skip 0x1
+.endobj _wpadSpeakerVol
+
+# .sbss:0xE0 | 0x8042AD98 | size: 0x4
+.obj _wpadRumbleFlag, global
+	.skip 0x4
+.endobj _wpadRumbleFlag
+
+# .sbss:0xE4 | 0x8042AD9C | size: 0x1
+.obj _wpadSensorBarPos, global
+	.skip 0x1
+.endobj _wpadSensorBarPos
+
+# .sbss:0xE5 | 0x8042AD9D | size: 0x1
+.obj _wpadDpdSense, global
+	.skip 0x1
+.endobj _wpadDpdSense
+
+# .sbss:0xE6 | 0x8042AD9E | size: 0x1
+.obj _wpadSleepTime, global
+	.skip 0x1
+.endobj _wpadSleepTime
+
+# .sbss:0xE7 | 0x8042AD9F | size: 0x1
+.obj gap_10_8042AD9F_sbss, global
+.hidden gap_10_8042AD9F_sbss
+	.skip 0x1
+.endobj gap_10_8042AD9F_sbss
+
+# .sbss:0xE8 | 0x8042ADA0 | size: 0x4
+.obj _wpadGameCode, global
+	.skip 0x4
+.endobj _wpadGameCode
+
+# .sbss:0xEC | 0x8042ADA4 | size: 0x1
+.obj _wpadGameType, global
+	.skip 0x1
+.endobj _wpadGameType
+
+# .sbss:0xED | 0x8042ADA5 | size: 0x3
+.obj gap_10_8042ADA5_sbss, global
+.hidden gap_10_8042ADA5_sbss
+	.skip 0x3
+.endobj gap_10_8042ADA5_sbss
+
+# .sbss:0xF0 | 0x8042ADA8 | size: 0x4
+.obj _recv_3e, global
+	.skip 0x4
+.endobj _recv_3e
+
+# .sbss:0xF4 | 0x8042ADAC | size: 0x4
+.obj _recv_3f, global
+	.skip 0x4
+.endobj _recv_3f
+
+# .sbss:0xF8 | 0x8042ADB0 | size: 0x4
+.obj _wpadExtInitRetryCnt, global
+	.skip 0x4
+.endobj _wpadExtInitRetryCnt
+
+# .sbss:0xFC | 0x8042ADB4 | size: 0x4
+.obj _wpadCLCompt, global
+	.skip 0x4
+.endobj _wpadCLCompt
+
+# .sbss:0x100 | 0x8042ADB8 | size: 0x4
+.obj _wpadDevMode, global
+	.skip 0x4
+.endobj _wpadDevMode
+
+# .sbss:0x104 | 0x8042ADBC | size: 0x4
+.obj _wpadDevType, global
+	.skip 0x4
+.endobj _wpadDevType
+
+# .sbss:0x108 | 0x8042ADC0 | size: 0x1
+.obj NUM_C, global
+	.skip 0x1
+.endobj NUM_C
+
+# .sbss:0x109 | 0x8042ADC1 | size: 0x1
+.obj NUM_B, global
+	.skip 0x1
+.endobj NUM_B
+
+# .sbss:0x10A | 0x8042ADC2 | size: 0x1
+.obj NUM_A, global
+	.skip 0x1
+.endobj NUM_A
+
+# .sbss:0x10B | 0x8042ADC3 | size: 0x1
+.obj SEED, global
+	.skip 0x1
+.endobj SEED
+
+# .sbss:0x10C | 0x8042ADC4 | size: 0x4
+.obj gap_10_8042ADC4_sbss, global
+.hidden gap_10_8042ADC4_sbss
+	.skip 0x4
+.endobj gap_10_8042ADC4_sbss
+
+# .sbss:0x110 | 0x8042ADC8 | size: 0x8
+.obj icenter_org, global
+	.skip 0x8
+.endobj icenter_org
+
+# .sbss:0x118 | 0x8042ADD0 | size: 0x4
+.obj kp_stick_clamp_cross, global
+	.skip 0x4
+.endobj kp_stick_clamp_cross
+
+# .sbss:0x11C | 0x8042ADD4 | size: 0x4
+.obj kp_ex_trigger_min, global
+	.skip 0x4
+.endobj kp_ex_trigger_min
+
+# .sbss:0x120 | 0x8042ADD8 | size: 0x4
+.obj kp_ex_analog_min, global
+	.skip 0x4
+.endobj kp_ex_analog_min
+
+# .sbss:0x124 | 0x8042ADDC | size: 0x1
+.obj kp_initialized, global
+	.skip 0x1
+.endobj kp_initialized
+
+# .sbss:0x125 | 0x8042ADDD | size: 0x3
+.obj gap_10_8042ADDD_sbss, global
+.hidden gap_10_8042ADDD_sbss
+	.skip 0x3
+.endobj gap_10_8042ADDD_sbss
+
+# .sbss:0x128 | 0x8042ADE0 | size: 0x8
+.obj Vec2_0, global
+	.skip 0x8
+.endobj Vec2_0
+
+# .sbss:0x130 | 0x8042ADE8 | size: 0x8
+.obj kp_wbc_tgc_weight, global
+	.skip 0x8
+.endobj kp_wbc_tgc_weight
+
+# .sbss:0x138 | 0x8042ADF0 | size: 0x2
+.obj kp_wbc_ave_sample_count, global
+	.skip 0x2
+.endobj kp_wbc_ave_sample_count
+
+# .sbss:0x13A | 0x8042ADF2 | size: 0x1
+.obj kp_wbc_zero_point_done, global
+	.skip 0x1
+.endobj kp_wbc_zero_point_done
+
+# .sbss:0x13B | 0x8042ADF3 | size: 0x1
+.obj kp_wbc_tgc_weight_issued, global
+	.skip 0x1
+.endobj kp_wbc_tgc_weight_issued
+
+# .sbss:0x13C | 0x8042ADF4 | size: 0x1
+.obj kp_wbc_setup, global
+	.skip 0x1
+.endobj kp_wbc_setup
+
+# .sbss:0x13D | 0x8042ADF5 | size: 0x1
+.obj kp_wbc_enabled, global
+	.skip 0x1
+.endobj kp_wbc_enabled
+
+# .sbss:0x13E | 0x8042ADF6 | size: 0x1
+.obj kp_wbc_issued, global
+	.skip 0x1
+.endobj kp_wbc_issued
+	.skip 0x1
+
+# .sbss:0x140 | 0x8042ADF8 | size: 0x4
+.obj kp_dist_vv1, global
+	.skip 0x4
+.endobj kp_dist_vv1
+
+# .sbss:0x144 | 0x8042ADFC | size: 0x4
+.obj kp_err_dist_min, global
+	.skip 0x4
+.endobj kp_err_dist_min
+
+# .sbss:0x148 | 0x8042AE00 | size: 0x4
+.obj lo, global
+	.skip 0x4
+.endobj lo
+
+# .sbss:0x14C | 0x8042AE04 | size: 0x4
+.obj hi, global
+	.skip 0x4
+.endobj hi
+
+# .sbss:0x150 | 0x8042AE08 | size: 0x1
+.obj s_usb_log, global
+	.skip 0x1
+.endobj s_usb_log
+
+# .sbss:0x151 | 0x8042AE09 | size: 0x7
+.obj gap_10_8042AE09_sbss, global
+.hidden gap_10_8042AE09_sbss
+	.skip 0x7
+.endobj gap_10_8042AE09_sbss
+
+# .sbss:0x158 | 0x8042AE10 | size: 0x4
+.obj _wudInitialized, global
+	.skip 0x4
+.endobj _wudInitialized
+
+# .sbss:0x15C | 0x8042AE14 | size: 0x4
+.obj _wudReadNand, global
+	.skip 0x4
+.endobj _wudReadNand
+
+# .sbss:0x160 | 0x8042AE18 | size: 0x4
+.obj _wudAbortSync, global
+	.skip 0x4
+.endobj _wudAbortSync
+
+# .sbss:0x164 | 0x8042AE1C | size: 0x1
+.obj _wudPatchRemoveCmd, global
+	.skip 0x1
+.endobj _wudPatchRemoveCmd
+
+# .sbss:0x165 | 0x8042AE1D | size: 0x1
+.obj __bte_trace_level, global
+	.skip 0x1
+.endobj __bte_trace_level
+
+# .sbss:0x166 | 0x8042AE1E | size: 0x2
+.obj gap_10_8042AE1E_sbss, global
+.hidden gap_10_8042AE1E_sbss
+	.skip 0x2
+.endobj gap_10_8042AE1E_sbss
+
+# .sbss:0x168 | 0x8042AE20 | size: 0x4
+.obj _wudNandBufPtr, global
+	.skip 0x4
+.endobj _wudNandBufPtr
+
+# .sbss:0x16C | 0x8042AE24 | size: 0x4
+.obj _initWBC, global
+	.skip 0x4
+.endobj _initWBC
+
+# .sbss:0x170 | 0x8042AE28 | size: 0x4
+.obj _linkedWBC, global
+	.skip 0x4
+.endobj _linkedWBC
+
+# .sbss:0x174 | 0x8042AE2C | size: 0x4
+.obj _wudNandWbcCrc, global
+	.skip 0x4
+.endobj _wudNandWbcCrc
+
+# .sbss:0x178 | 0x8042AE30 | size: 0x4
+.obj _wudNandPhase, global
+	.skip 0x4
+.endobj _wudNandPhase
+
+# .sbss:0x17C | 0x8042AE34 | size: 0x1
+.obj _wudNandLocked, global
+	.skip 0x1
+.endobj _wudNandLocked
+
+# .sbss:0x17D | 0x8042AE35 | size: 0x1
+.obj _wudInstallNum, global
+	.skip 0x1
+.endobj _wudInstallNum
+
+# .sbss:0x17E | 0x8042AE36 | size: 0x1
+.obj _wudPatchNum, global
+	.skip 0x1
+.endobj _wudPatchNum
+
+# .sbss:0x17F | 0x8042AE37 | size: 0x1
+.obj gap_10_8042AE37_sbss, global
+.hidden gap_10_8042AE37_sbss
+	.skip 0x1
+.endobj gap_10_8042AE37_sbss
+
+# .sbss:0x180 | 0x8042AE38 | size: 0x4
+.obj _wudPatchAddress, global
+	.skip 0x4
+.endobj _wudPatchAddress
+
+# .sbss:0x184 | 0x8042AE3C | size: 0x4
+.obj _wudPatchOffset, global
+	.skip 0x4
+.endobj _wudPatchOffset
+
+# .sbss:0x188 | 0x8042AE40 | size: 0x4
+.obj _wudPatchSize, global
+	.skip 0x4
+.endobj _wudPatchSize
+
+# .sbss:0x18C | 0x8042AE44 | size: 0x1
+.obj _scFlush, global
+	.skip 0x1
+.endobj _scFlush
+
+# .sbss:0x18D | 0x8042AE45 | size: 0x1
+.obj _wudTarget, global
+	.skip 0x1
+.endobj _wudTarget
+
+# .sbss:0x18E | 0x8042AE46 | size: 0x1
+.obj _wudDiscRssi, global
+	.skip 0x1
+.endobj _wudDiscRssi
+
+# .sbss:0x18F | 0x8042AE47 | size: 0x1
+.obj _wudDiscNumResps, global
+	.skip 0x1
+.endobj _wudDiscNumResps
+
+# .sbss:0x190 | 0x8042AE48 | size: 0x1
+.obj uusb_g_usb_devid_found, global
+	.skip 0x1
+.endobj uusb_g_usb_devid_found
+
+# .sbss:0x191 | 0x8042AE49 | size: 0x1
+.obj uusb_g_trace_state_initialized, global
+	.skip 0x1
+.endobj uusb_g_trace_state_initialized
+
+# .sbss:0x192 | 0x8042AE4A | size: 0x2
+.obj gap_10_8042AE4A_sbss, global
+.hidden gap_10_8042AE4A_sbss
+	.skip 0x2
+.endobj gap_10_8042AE4A_sbss
+
+# .sbss:0x194 | 0x8042AE4C | size: 0x4
+.obj __ntd_ohci, global
+	.skip 0x4
+.endobj __ntd_ohci
+
+# .sbss:0x198 | 0x8042AE50 | size: 0x4
+.obj __ntd_ohci_init_flag, global
+	.skip 0x4
+.endobj __ntd_ohci_init_flag
+
+# .sbss:0x19C | 0x8042AE54 | size: 0x1
+.obj __ntd_pid_vid_specified, global
+	.skip 0x1
+.endobj __ntd_pid_vid_specified
+
+# .sbss:0x19D | 0x8042AE55 | size: 0x3
+.obj gap_10_8042AE55_sbss, global
+.hidden gap_10_8042AE55_sbss
+	.skip 0x3
+.endobj gap_10_8042AE55_sbss
+
+# .sbss:0x1A0 | 0x8042AE58 | size: 0x4
+.obj __ntd_vid, global
+	.skip 0x4
+.endobj __ntd_vid
+
+# .sbss:0x1A4 | 0x8042AE5C | size: 0x4
+.obj __ntd_pid, global
+	.skip 0x4
+.endobj __ntd_pid
+
+# .sbss:0x1A8 | 0x8042AE60 | size: 0x4
+.obj p_hcisu_if, global
+	.skip 0x4
+.endobj p_hcisu_if
+
+# .sbss:0x1AC | 0x8042AE64 | size: 0x4
+.obj p_hcisu_cfg, global
+	.skip 0x4
+.endobj p_hcisu_cfg
+
+# .sbss:0x1B0 | 0x8042AE68 | size: 0x1
+.obj bte_target_mode, global
+	.skip 0x1
+.endobj bte_target_mode
+
+# .sbss:0x1B1 | 0x8042AE69 | size: 0x3
+.obj gap_10_8042AE69_sbss, global
+.hidden gap_10_8042AE69_sbss
+	.skip 0x3
+.endobj gap_10_8042AE69_sbss
+
+# .sbss:0x1B4 | 0x8042AE6C | size: 0x4
+.obj _bte_app_info, global
+	.skip 0x4
+.endobj _bte_app_info
+
+# .sbss:0x1B8 | 0x8042AE70 | size: 0x4
+.obj _btu_g_count, global
+	.skip 0x4
+.endobj _btu_g_count
+
+# .sbss:0x1BC | 0x8042AE74 | size: 0x4
+.obj _btu_last_timer_tick, global
+	.skip 0x4
+.endobj _btu_last_timer_tick
+
+# .sbss:0x1C0 | 0x8042AE78 | size: 0x1
+.obj appl_trace_level, global
+	.skip 0x1
+.endobj appl_trace_level
+
+# .sbss:0x1C1 | 0x8042AE79 | size: 0x7
+.obj gap_10_8042AE79_sbss, global
+.hidden gap_10_8042AE79_sbss
+	.skip 0x7
+.endobj gap_10_8042AE79_sbss

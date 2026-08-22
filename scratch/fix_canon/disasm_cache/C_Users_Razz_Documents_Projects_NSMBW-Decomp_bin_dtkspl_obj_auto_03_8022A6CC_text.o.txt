@@ -1,0 +1,398 @@
+.include "macros.inc"
+.file "auto_03_8022A6CC_text"
+
+# 0x8022A6CC..0x8022AAF0 | size: 0x424
+.text
+.balign 4
+
+# .text:0x0 | 0x8022A6CC | size: 0x4
+.fn pad_03_8022A6CC_text, local
+/* 8022A6CC 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_8022A6CC_text
+
+# .text:0x4 | 0x8022A6D0 | size: 0x84
+# nw4r::ut::DvdLockedFileStream::DvdLockedFileStream(long)
+.fn __ct__Q34nw4r2ut19DvdLockedFileStreamFl, global
+/* 8022A6D0 00000044  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8022A6D4 00000048  7C 08 02 A6 */	mflr r0
+/* 8022A6D8 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8022A6DC 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8022A6E0 00000054  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8022A6E4 00000058  7C 7E 1B 78 */	mr r30, r3
+/* 8022A6E8 0000005C  48 00 00 01 */	bl __ct__Q34nw4r2ut13DvdFileStreamFl
+/* 8022A6EC 00000060  3C 60 00 00 */	lis r3, __vt__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A6F0 00000064  38 00 00 00 */	li r0, 0x0
+/* 8022A6F4 00000068  38 63 00 00 */	addi r3, r3, __vt__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A6F8 0000006C  90 7E 00 00 */	stw r3, 0x0(r30)
+/* 8022A6FC 00000070  98 1E 00 6F */	stb r0, 0x6f(r30)
+/* 8022A700 00000074  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022A704 00000078  88 00 00 00 */	lbz r0, sInitialized__Q34nw4r2ut19DvdLockedFileStream@sda21(r0)
+/* 8022A708 0000007C  7C 7F 1B 78 */	mr r31, r3
+/* 8022A70C 00000080  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8022A710 00000084  40 82 00 20 */	bne .L_8022A730
+/* 8022A714 00000088  3C 60 00 00 */	lis r3, sMutex__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A718 0000008C  38 63 00 00 */	addi r3, r3, sMutex__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A71C 00000090  48 00 00 01 */	bl OSInitMutex
+/* 8022A720 00000094  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022A724 00000098  48 00 00 01 */	bl OSInitThreadQueue
+/* 8022A728 0000009C  38 00 00 01 */	li r0, 0x1
+/* 8022A72C 000000A0  98 00 00 00 */	stb r0, sInitialized__Q34nw4r2ut19DvdLockedFileStream@sda21(r0)
+.L_8022A730:
+/* 8022A730 000000A4  7F E3 FB 78 */	mr r3, r31
+/* 8022A734 000000A8  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A738 000000AC  7F C3 F3 78 */	mr r3, r30
+/* 8022A73C 000000B0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8022A740 000000B4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8022A744 000000B8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8022A748 000000BC  7C 08 03 A6 */	mtlr r0
+/* 8022A74C 000000C0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8022A750 000000C4  4E 80 00 20 */	blr
+.endfn __ct__Q34nw4r2ut19DvdLockedFileStreamFl
+
+# .text:0x88 | 0x8022A754 | size: 0xC
+.fn gap_03_8022A754_text, global
+.hidden gap_03_8022A754_text
+/* 8022A754 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A758 000000CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A75C 000000D0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022A754_text
+
+# .text:0x94 | 0x8022A760 | size: 0x84
+# nw4r::ut::DvdLockedFileStream::DvdLockedFileStream(const DVDFileInfo*, bool)
+.fn __ct__Q34nw4r2ut19DvdLockedFileStreamFPC11DVDFileInfob, global
+/* 8022A760 000000D4  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8022A764 000000D8  7C 08 02 A6 */	mflr r0
+/* 8022A768 000000DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8022A76C 000000E0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8022A770 000000E4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8022A774 000000E8  7C 7E 1B 78 */	mr r30, r3
+/* 8022A778 000000EC  48 00 00 01 */	bl __ct__Q34nw4r2ut13DvdFileStreamFPC11DVDFileInfob
+/* 8022A77C 000000F0  3C 60 00 00 */	lis r3, __vt__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A780 000000F4  38 00 00 00 */	li r0, 0x0
+/* 8022A784 000000F8  38 63 00 00 */	addi r3, r3, __vt__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A788 000000FC  90 7E 00 00 */	stw r3, 0x0(r30)
+/* 8022A78C 00000100  98 1E 00 6F */	stb r0, 0x6f(r30)
+/* 8022A790 00000104  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022A794 00000108  88 00 00 00 */	lbz r0, sInitialized__Q34nw4r2ut19DvdLockedFileStream@sda21(r0)
+/* 8022A798 0000010C  7C 7F 1B 78 */	mr r31, r3
+/* 8022A79C 00000110  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8022A7A0 00000114  40 82 00 20 */	bne .L_8022A7C0
+/* 8022A7A4 00000118  3C 60 00 00 */	lis r3, sMutex__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A7A8 0000011C  38 63 00 00 */	addi r3, r3, sMutex__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A7AC 00000120  48 00 00 01 */	bl OSInitMutex
+/* 8022A7B0 00000124  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022A7B4 00000128  48 00 00 01 */	bl OSInitThreadQueue
+/* 8022A7B8 0000012C  38 00 00 01 */	li r0, 0x1
+/* 8022A7BC 00000130  98 00 00 00 */	stb r0, sInitialized__Q34nw4r2ut19DvdLockedFileStream@sda21(r0)
+.L_8022A7C0:
+/* 8022A7C0 00000134  7F E3 FB 78 */	mr r3, r31
+/* 8022A7C4 00000138  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A7C8 0000013C  7F C3 F3 78 */	mr r3, r30
+/* 8022A7CC 00000140  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8022A7D0 00000144  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8022A7D4 00000148  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8022A7D8 0000014C  7C 08 03 A6 */	mtlr r0
+/* 8022A7DC 00000150  38 21 00 10 */	addi r1, r1, 0x10
+/* 8022A7E0 00000154  4E 80 00 20 */	blr
+.endfn __ct__Q34nw4r2ut19DvdLockedFileStreamFPC11DVDFileInfob
+
+# .text:0x118 | 0x8022A7E4 | size: 0xC
+.fn gap_03_8022A7E4_text, global
+.hidden gap_03_8022A7E4_text
+/* 8022A7E4 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A7E8 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A7EC 00000160  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022A7E4_text
+
+# .text:0x124 | 0x8022A7F0 | size: 0x58
+# nw4r::ut::DvdLockedFileStream::~DvdLockedFileStream()
+.fn __dt__Q34nw4r2ut19DvdLockedFileStreamFv, global
+/* 8022A7F0 00000164  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8022A7F4 00000168  7C 08 02 A6 */	mflr r0
+/* 8022A7F8 0000016C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8022A7FC 00000170  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8022A800 00000174  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8022A804 00000178  7C 9F 23 78 */	mr r31, r4
+/* 8022A808 0000017C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8022A80C 00000180  7C 7E 1B 78 */	mr r30, r3
+/* 8022A810 00000184  41 82 00 1C */	beq .L_8022A82C
+/* 8022A814 00000188  38 80 00 00 */	li r4, 0x0
+/* 8022A818 0000018C  48 00 00 01 */	bl __dt__Q34nw4r2ut13DvdFileStreamFv
+/* 8022A81C 00000190  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8022A820 00000194  40 81 00 0C */	ble .L_8022A82C
+/* 8022A824 00000198  7F C3 F3 78 */	mr r3, r30
+/* 8022A828 0000019C  48 00 00 01 */	bl __dl__FPv
+.L_8022A82C:
+/* 8022A82C 000001A0  7F C3 F3 78 */	mr r3, r30
+/* 8022A830 000001A4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8022A834 000001A8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8022A838 000001AC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8022A83C 000001B0  7C 08 03 A6 */	mtlr r0
+/* 8022A840 000001B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8022A844 000001B8  4E 80 00 20 */	blr
+.endfn __dt__Q34nw4r2ut19DvdLockedFileStreamFv
+
+# .text:0x17C | 0x8022A848 | size: 0x8
+.fn gap_03_8022A848_text, global
+.hidden gap_03_8022A848_text
+/* 8022A848 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A84C 000001C0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022A848_text
+
+# .text:0x184 | 0x8022A850 | size: 0x34
+# nw4r::ut::DvdLockedFileStream::Close()
+.fn Close__Q34nw4r2ut19DvdLockedFileStreamFv, global
+/* 8022A850 000001C4  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8022A854 000001C8  7C 08 02 A6 */	mflr r0
+/* 8022A858 000001CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8022A85C 000001D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8022A860 000001D4  7C 7F 1B 78 */	mr r31, r3
+/* 8022A864 000001D8  48 00 00 01 */	bl Close__Q34nw4r2ut13DvdFileStreamFv
+/* 8022A868 000001DC  38 00 00 00 */	li r0, 0x0
+/* 8022A86C 000001E0  98 1F 00 6F */	stb r0, 0x6f(r31)
+/* 8022A870 000001E4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8022A874 000001E8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8022A878 000001EC  7C 08 03 A6 */	mtlr r0
+/* 8022A87C 000001F0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8022A880 000001F4  4E 80 00 20 */	blr
+.endfn Close__Q34nw4r2ut19DvdLockedFileStreamFv
+
+# .text:0x1B8 | 0x8022A884 | size: 0xC
+.fn gap_03_8022A884_text, global
+.hidden gap_03_8022A884_text
+/* 8022A884 000001F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A888 000001FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A88C 00000200  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022A884_text
+
+# .text:0x1C4 | 0x8022A890 | size: 0xD4
+# nw4r::ut::DvdLockedFileStream::Read(void*, unsigned long)
+.fn Read__Q34nw4r2ut19DvdLockedFileStreamFPvUl, global
+/* 8022A890 00000204  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8022A894 00000208  7C 08 02 A6 */	mflr r0
+/* 8022A898 0000020C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8022A89C 00000210  39 61 00 20 */	addi r11, r1, 0x20
+/* 8022A8A0 00000214  48 00 00 01 */	bl _savegpr_27
+/* 8022A8A4 00000218  7C 7B 1B 78 */	mr r27, r3
+/* 8022A8A8 0000021C  7C 9C 23 78 */	mr r28, r4
+/* 8022A8AC 00000220  7C BD 2B 78 */	mr r29, r5
+/* 8022A8B0 00000224  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022A8B4 00000228  7C 7E 1B 78 */	mr r30, r3
+/* 8022A8B8 0000022C  3F E0 00 00 */	lis r31, sMutex__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A8BC 00000230  48 00 00 28 */	b .L_8022A8E4
+.L_8022A8C0:
+/* 8022A8C0 00000234  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022A8C4 00000238  48 00 00 01 */	bl OSSleepThread
+/* 8022A8C8 0000023C  88 1B 00 6F */	lbz r0, 0x6f(r27)
+/* 8022A8CC 00000240  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8022A8D0 00000244  41 82 00 14 */	beq .L_8022A8E4
+/* 8022A8D4 00000248  7F C3 F3 78 */	mr r3, r30
+/* 8022A8D8 0000024C  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A8DC 00000250  38 00 00 00 */	li r0, 0x0
+/* 8022A8E0 00000254  48 00 00 20 */	b .L_8022A900
+.L_8022A8E4:
+/* 8022A8E4 00000258  38 7F 00 00 */	addi r3, r31, sMutex__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A8E8 0000025C  48 00 00 01 */	bl OSTryLockMutex
+/* 8022A8EC 00000260  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8022A8F0 00000264  41 82 FF D0 */	beq .L_8022A8C0
+/* 8022A8F4 00000268  7F C3 F3 78 */	mr r3, r30
+/* 8022A8F8 0000026C  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A8FC 00000270  38 00 00 01 */	li r0, 0x1
+.L_8022A900:
+/* 8022A900 00000274  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8022A904 00000278  40 82 00 0C */	bne .L_8022A910
+/* 8022A908 0000027C  38 60 FF FD */	li r3, -0x3
+/* 8022A90C 00000280  48 00 00 40 */	b .L_8022A94C
+.L_8022A910:
+/* 8022A910 00000284  7F 63 DB 78 */	mr r3, r27
+/* 8022A914 00000288  7F 84 E3 78 */	mr r4, r28
+/* 8022A918 0000028C  7F A5 EB 78 */	mr r5, r29
+/* 8022A91C 00000290  48 00 00 01 */	bl Read__Q34nw4r2ut13DvdFileStreamFPvUl
+/* 8022A920 00000294  7C 7F 1B 78 */	mr r31, r3
+/* 8022A924 00000298  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022A928 0000029C  3C 80 00 00 */	lis r4, sMutex__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A92C 000002A0  7C 7E 1B 78 */	mr r30, r3
+/* 8022A930 000002A4  38 64 00 00 */	addi r3, r4, sMutex__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A934 000002A8  48 00 00 01 */	bl OSUnlockMutex
+/* 8022A938 000002AC  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022A93C 000002B0  48 00 00 01 */	bl OSWakeupThread
+/* 8022A940 000002B4  7F C3 F3 78 */	mr r3, r30
+/* 8022A944 000002B8  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A948 000002BC  7F E3 FB 78 */	mr r3, r31
+.L_8022A94C:
+/* 8022A94C 000002C0  39 61 00 20 */	addi r11, r1, 0x20
+/* 8022A950 000002C4  48 00 00 01 */	bl _restgpr_27
+/* 8022A954 000002C8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8022A958 000002CC  7C 08 03 A6 */	mtlr r0
+/* 8022A95C 000002D0  38 21 00 20 */	addi r1, r1, 0x20
+/* 8022A960 000002D4  4E 80 00 20 */	blr
+.endfn Read__Q34nw4r2ut19DvdLockedFileStreamFPvUl
+
+# .text:0x298 | 0x8022A964 | size: 0xC
+.fn gap_03_8022A964_text, global
+.hidden gap_03_8022A964_text
+/* 8022A964 000002D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A968 000002DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022A96C 000002E0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022A964_text
+
+# .text:0x2A4 | 0x8022A970 | size: 0xD4
+# nw4r::ut::DvdLockedFileStream::Peek(void*, unsigned long)
+.fn Peek__Q34nw4r2ut19DvdLockedFileStreamFPvUl, global
+/* 8022A970 000002E4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8022A974 000002E8  7C 08 02 A6 */	mflr r0
+/* 8022A978 000002EC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8022A97C 000002F0  39 61 00 20 */	addi r11, r1, 0x20
+/* 8022A980 000002F4  48 00 00 01 */	bl _savegpr_27
+/* 8022A984 000002F8  7C 7B 1B 78 */	mr r27, r3
+/* 8022A988 000002FC  7C 9C 23 78 */	mr r28, r4
+/* 8022A98C 00000300  7C BD 2B 78 */	mr r29, r5
+/* 8022A990 00000304  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022A994 00000308  7C 7E 1B 78 */	mr r30, r3
+/* 8022A998 0000030C  3F E0 00 00 */	lis r31, sMutex__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022A99C 00000310  48 00 00 28 */	b .L_8022A9C4
+.L_8022A9A0:
+/* 8022A9A0 00000314  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022A9A4 00000318  48 00 00 01 */	bl OSSleepThread
+/* 8022A9A8 0000031C  88 1B 00 6F */	lbz r0, 0x6f(r27)
+/* 8022A9AC 00000320  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8022A9B0 00000324  41 82 00 14 */	beq .L_8022A9C4
+/* 8022A9B4 00000328  7F C3 F3 78 */	mr r3, r30
+/* 8022A9B8 0000032C  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A9BC 00000330  38 00 00 00 */	li r0, 0x0
+/* 8022A9C0 00000334  48 00 00 20 */	b .L_8022A9E0
+.L_8022A9C4:
+/* 8022A9C4 00000338  38 7F 00 00 */	addi r3, r31, sMutex__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022A9C8 0000033C  48 00 00 01 */	bl OSTryLockMutex
+/* 8022A9CC 00000340  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8022A9D0 00000344  41 82 FF D0 */	beq .L_8022A9A0
+/* 8022A9D4 00000348  7F C3 F3 78 */	mr r3, r30
+/* 8022A9D8 0000034C  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022A9DC 00000350  38 00 00 01 */	li r0, 0x1
+.L_8022A9E0:
+/* 8022A9E0 00000354  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8022A9E4 00000358  40 82 00 0C */	bne .L_8022A9F0
+/* 8022A9E8 0000035C  38 60 FF FD */	li r3, -0x3
+/* 8022A9EC 00000360  48 00 00 40 */	b .L_8022AA2C
+.L_8022A9F0:
+/* 8022A9F0 00000364  7F 63 DB 78 */	mr r3, r27
+/* 8022A9F4 00000368  7F 84 E3 78 */	mr r4, r28
+/* 8022A9F8 0000036C  7F A5 EB 78 */	mr r5, r29
+/* 8022A9FC 00000370  48 00 00 01 */	bl Peek__Q34nw4r2ut13DvdFileStreamFPvUl
+/* 8022AA00 00000374  7C 7F 1B 78 */	mr r31, r3
+/* 8022AA04 00000378  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022AA08 0000037C  3C 80 00 00 */	lis r4, sMutex__Q34nw4r2ut19DvdLockedFileStream@ha
+/* 8022AA0C 00000380  7C 7E 1B 78 */	mr r30, r3
+/* 8022AA10 00000384  38 64 00 00 */	addi r3, r4, sMutex__Q34nw4r2ut19DvdLockedFileStream@l
+/* 8022AA14 00000388  48 00 00 01 */	bl OSUnlockMutex
+/* 8022AA18 0000038C  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022AA1C 00000390  48 00 00 01 */	bl OSWakeupThread
+/* 8022AA20 00000394  7F C3 F3 78 */	mr r3, r30
+/* 8022AA24 00000398  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022AA28 0000039C  7F E3 FB 78 */	mr r3, r31
+.L_8022AA2C:
+/* 8022AA2C 000003A0  39 61 00 20 */	addi r11, r1, 0x20
+/* 8022AA30 000003A4  48 00 00 01 */	bl _restgpr_27
+/* 8022AA34 000003A8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8022AA38 000003AC  7C 08 03 A6 */	mtlr r0
+/* 8022AA3C 000003B0  38 21 00 20 */	addi r1, r1, 0x20
+/* 8022AA40 000003B4  4E 80 00 20 */	blr
+.endfn Peek__Q34nw4r2ut19DvdLockedFileStreamFPvUl
+
+# .text:0x378 | 0x8022AA44 | size: 0xC
+.fn gap_03_8022AA44_text, global
+.hidden gap_03_8022AA44_text
+/* 8022AA44 000003B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AA48 000003BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AA4C 000003C0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022AA44_text
+
+# .text:0x384 | 0x8022AA50 | size: 0x58
+# nw4r::ut::DvdLockedFileStream::Cancel()
+.fn Cancel__Q34nw4r2ut19DvdLockedFileStreamFv, global
+/* 8022AA50 000003C4  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8022AA54 000003C8  7C 08 02 A6 */	mflr r0
+/* 8022AA58 000003CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8022AA5C 000003D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8022AA60 000003D4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8022AA64 000003D8  7C 7E 1B 78 */	mr r30, r3
+/* 8022AA68 000003DC  48 00 00 01 */	bl OSDisableInterrupts
+/* 8022AA6C 000003E0  38 00 00 01 */	li r0, 0x1
+/* 8022AA70 000003E4  98 1E 00 6F */	stb r0, 0x6f(r30)
+/* 8022AA74 000003E8  7C 7F 1B 78 */	mr r31, r3
+/* 8022AA78 000003EC  38 60 00 00 */	li r3, sThreadQueue__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022AA7C 000003F0  48 00 00 01 */	bl OSWakeupThread
+/* 8022AA80 000003F4  7F E3 FB 78 */	mr r3, r31
+/* 8022AA84 000003F8  48 00 00 01 */	bl OSRestoreInterrupts
+/* 8022AA88 000003FC  7F C3 F3 78 */	mr r3, r30
+/* 8022AA8C 00000400  48 00 00 01 */	bl Cancel__Q34nw4r2ut13DvdFileStreamFv
+/* 8022AA90 00000404  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8022AA94 00000408  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8022AA98 0000040C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8022AA9C 00000410  7C 08 03 A6 */	mtlr r0
+/* 8022AAA0 00000414  38 21 00 10 */	addi r1, r1, 0x10
+/* 8022AAA4 00000418  4E 80 00 20 */	blr
+.endfn Cancel__Q34nw4r2ut19DvdLockedFileStreamFv
+
+# .text:0x3DC | 0x8022AAA8 | size: 0x8
+.fn gap_03_8022AAA8_text, global
+.hidden gap_03_8022AAA8_text
+/* 8022AAA8 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AAAC 00000420  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022AAA8_text
+
+# .text:0x3E4 | 0x8022AAB0 | size: 0x8
+# nw4r::ut::DvdLockedFileStream::CanAsync() const
+.fn CanAsync__Q34nw4r2ut19DvdLockedFileStreamCFv, global
+/* 8022AAB0 00000424  38 60 00 00 */	li r3, 0x0
+/* 8022AAB4 00000428  4E 80 00 20 */	blr
+.endfn CanAsync__Q34nw4r2ut19DvdLockedFileStreamCFv
+
+# .text:0x3EC | 0x8022AAB8 | size: 0x8
+.fn gap_03_8022AAB8_text, global
+.hidden gap_03_8022AAB8_text
+/* 8022AAB8 0000042C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AABC 00000430  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022AAB8_text
+
+# .text:0x3F4 | 0x8022AAC0 | size: 0x8
+# nw4r::ut::DvdLockedFileStream::PeekAsync(void*, unsigned long, void (*)(long, nw4r::ut::IOStream*, void*), void*)
+.fn PeekAsync__Q34nw4r2ut19DvdLockedFileStreamFPvUlPFlPQ34nw4r2ut8IOStreamPv_vPv, global
+/* 8022AAC0 00000434  38 60 00 00 */	li r3, 0x0
+/* 8022AAC4 00000438  4E 80 00 20 */	blr
+.endfn PeekAsync__Q34nw4r2ut19DvdLockedFileStreamFPvUlPFlPQ34nw4r2ut8IOStreamPv_vPv
+
+# .text:0x3FC | 0x8022AAC8 | size: 0x8
+.fn gap_03_8022AAC8_text, global
+.hidden gap_03_8022AAC8_text
+/* 8022AAC8 0000043C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AACC 00000440  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022AAC8_text
+
+# .text:0x404 | 0x8022AAD0 | size: 0x8
+# nw4r::ut::DvdLockedFileStream::ReadAsync(void*, unsigned long, void (*)(long, nw4r::ut::IOStream*, void*), void*)
+.fn ReadAsync__Q34nw4r2ut19DvdLockedFileStreamFPvUlPFlPQ34nw4r2ut8IOStreamPv_vPv, global
+/* 8022AAD0 00000444  38 60 00 00 */	li r3, 0x0
+/* 8022AAD4 00000448  4E 80 00 20 */	blr
+.endfn ReadAsync__Q34nw4r2ut19DvdLockedFileStreamFPvUlPFlPQ34nw4r2ut8IOStreamPv_vPv
+
+# .text:0x40C | 0x8022AAD8 | size: 0x8
+.fn gap_03_8022AAD8_text, global
+.hidden gap_03_8022AAD8_text
+/* 8022AAD8 0000044C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AADC 00000450  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022AAD8_text
+
+# .text:0x414 | 0x8022AAE0 | size: 0x8
+# nw4r::ut::DvdLockedFileStream::GetRuntimeTypeInfo() const
+.fn GetRuntimeTypeInfo__Q34nw4r2ut19DvdLockedFileStreamCFv, global
+/* 8022AAE0 00000454  38 60 00 00 */	li r3, typeInfo__Q34nw4r2ut19DvdLockedFileStream@sda21
+/* 8022AAE4 00000458  4E 80 00 20 */	blr
+.endfn GetRuntimeTypeInfo__Q34nw4r2ut19DvdLockedFileStreamCFv
+
+# .text:0x41C | 0x8022AAE8 | size: 0x8
+.fn gap_03_8022AAE8_text, global
+.hidden gap_03_8022AAE8_text
+/* 8022AAE8 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8022AAEC 00000460  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8022AAE8_text

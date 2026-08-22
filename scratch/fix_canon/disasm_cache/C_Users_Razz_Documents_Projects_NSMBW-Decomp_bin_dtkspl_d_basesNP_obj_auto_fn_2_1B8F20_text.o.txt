@@ -1,0 +1,48 @@
+.include "macros.inc"
+.file "auto_fn_2_1B8F20_text"
+
+# 0x001B8F20..0x001B8FA4 | size: 0x84
+.text
+.balign 4
+
+# .text:0x0 | 0x1B8F20 | size: 0x84
+.fn fn_2_1B8F20, global
+/* 001B8F20 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 001B8F24 00000044  7C 08 02 A6 */	mflr r0
+/* 001B8F28 00000048  3C A0 00 00 */	lis r5, lbl_2_rodata_A208@ha
+/* 001B8F2C 0000004C  3C C0 00 00 */	lis r6, lbl_2_data_4F210@ha
+/* 001B8F30 00000050  38 A5 00 00 */	addi r5, r5, lbl_2_rodata_A208@l
+/* 001B8F34 00000054  90 01 00 24 */	stw r0, 0x24(r1)
+/* 001B8F38 00000058  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 001B8F3C 0000005C  C0 45 01 34 */	lfs f2, 0x134(r5)
+/* 001B8F40 00000060  38 C6 00 00 */	addi r6, r6, lbl_2_data_4F210@l
+/* 001B8F44 00000064  C0 25 01 38 */	lfs f1, 0x138(r5)
+/* 001B8F48 00000068  C0 05 01 3C */	lfs f0, 0x13c(r5)
+/* 001B8F4C 0000006C  3C 80 00 00 */	lis r4, fn_2_1B8FB0@ha
+/* 001B8F50 00000070  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 001B8F54 00000074  3C A0 00 00 */	lis r5, lbl_2_bss_11798@ha
+/* 001B8F58 00000078  90 06 00 0C */	stw r0, 0xc(r6)
+/* 001B8F5C 0000007C  38 84 00 00 */	addi r4, r4, fn_2_1B8FB0@l
+/* 001B8F60 00000080  38 A5 00 00 */	addi r5, r5, lbl_2_bss_11798@l
+/* 001B8F64 00000084  38 60 00 00 */	li r3, 0x0
+/* 001B8F68 00000088  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 001B8F6C 0000008C  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 001B8F70 00000090  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 001B8F74 00000094  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 001B8F78 00000098  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 001B8F7C 0000009C  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 001B8F80 000000A0  48 00 00 01 */	bl __register_global_object
+/* 001B8F84 000000A4  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 001B8F88 000000A8  3C 60 00 00 */	lis r3, lbl_2_bss_117A4@ha
+/* 001B8F8C 000000AC  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 001B8F90 000000B0  90 03 00 00 */	stw r0, lbl_2_bss_117A4@l(r3)
+/* 001B8F94 000000B4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 001B8F98 000000B8  7C 08 03 A6 */	mtlr r0
+/* 001B8F9C 000000BC  38 21 00 20 */	addi r1, r1, 0x20
+/* 001B8FA0 000000C0  4E 80 00 20 */	blr
+.endfn fn_2_1B8F20
+
+# 0x000004E0..0x000004E4 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte fn_2_1B8F20

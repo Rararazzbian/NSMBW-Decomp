@@ -1,0 +1,33 @@
+--- (1) current slicelib on the PRE-FIX file ---
+  ValueError (guard fired): C:\Users\Razz\Documents\Projects\NSMBW-Decomp\scratch\fix_slicerel\d_basesNP.BROKEN.json: slice "d_basesNP/bases/d_a_branch.cpp" claims .text 0x676f0-0x677b0, which starts below the previous claim's end 0x7d630. Slices must be listed in ascending address order.
+
+--- (2) PRE-FIX slicelib behaviour (guard removed) on the PRE-FIX file ---
+  negative-size sections: 8
+    filler_1.o           .text    0x7d630 -> 0x676f0   size = -0x15f40  (-89920)
+    filler_1.o           .data    0x1bc30 -> 0x176f8   size = -0x4538  (-17720)
+    filler_15.o          .text    0x185b70 -> 0x4b0d0   size = -0x13aaa0  (-1288864)
+    filler_15.o          .rodata  0x9330 -> 0x1f98   size = -0x7398  (-29592)
+    filler_15.o          .data    0x48158 -> 0x13190   size = -0x34fc8  (-217032)
+    filler_18.o          .text    0x1b64a0 -> 0x70   size = -0x1b6430  (-1795120)
+    filler_18.o          .bss     0x10360 -> 0x0   size = -0x10360  (-66400)
+    filler_19.o          .text    0xf0 -> 0x0   size = -0xf0  (-240)
+
+  what the .bss NOBITS section header would get (extract_slice line 67):
+    sh_size = -0x10360  -> struct.pack("<I", -66400) raises
+
+  PROGBITS fillers that silently slice to zero bytes, and the filler that
+  then re-emits the whole region:
+    filler_1.o       .text 0x7d630-0x676f0 size=-0x15f40
+    filler_15.o      .text 0x185b70-0x4b0d0 size=-0x13aaa0
+    filler_16.o      .text 0x4b730-0x1b13f0 size=0x165cc0
+    filler_18.o      .text 0x1b64a0-0x70 size=-0x1b6430
+    filler_19.o      .text 0xf0-0x0 size=-0xf0
+    filler_20.o      .text 0x70-0x1c6004 size=0x1c5f94
+
+  per-section coverage under the pre-fix file:
+    OK  .bss     covered=0x12484 meta=0x12484
+    OK  .ctors   covered=0x4f8 meta=0x4f8
+    OK  .data    covered=0x51c98 meta=0x51c98
+    OK  .dtors   covered=0x4 meta=0x4
+    OK  .rodata  covered=0xa5fc meta=0xa5fc
+    OK  .text    covered=0x1c6004 meta=0x1c6004

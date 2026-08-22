@@ -1,0 +1,48 @@
+.include "macros.inc"
+.file "auto_fn_2_19FA00_text"
+
+# 0x0019FA00..0x0019FA84 | size: 0x84
+.text
+.balign 4
+
+# .text:0x0 | 0x19FA00 | size: 0x84
+.fn fn_2_19FA00, global
+/* 0019FA00 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0019FA04 00000044  7C 08 02 A6 */	mflr r0
+/* 0019FA08 00000048  3C A0 00 00 */	lis r5, lbl_2_rodata_9A80@ha
+/* 0019FA0C 0000004C  3C C0 00 00 */	lis r6, lbl_2_data_4AB38@ha
+/* 0019FA10 00000050  38 A5 00 00 */	addi r5, r5, lbl_2_rodata_9A80@l
+/* 0019FA14 00000054  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0019FA18 00000058  3C 60 00 00 */	lis r3, c_CASTLE_ID__10dCsvData_c@ha
+/* 0019FA1C 0000005C  C0 45 01 F8 */	lfs f2, 0x1f8(r5)
+/* 0019FA20 00000060  38 C6 00 00 */	addi r6, r6, lbl_2_data_4AB38@l
+/* 0019FA24 00000064  C0 25 01 FC */	lfs f1, 0x1fc(r5)
+/* 0019FA28 00000068  C0 05 02 00 */	lfs f0, 0x200(r5)
+/* 0019FA2C 0000006C  3C 80 00 00 */	lis r4, fn_2_19FA90@ha
+/* 0019FA30 00000070  80 03 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@l(r3)
+/* 0019FA34 00000074  3C A0 00 00 */	lis r5, lbl_2_bss_105A0@ha
+/* 0019FA38 00000078  90 06 00 0C */	stw r0, 0xc(r6)
+/* 0019FA3C 0000007C  38 84 00 00 */	addi r4, r4, fn_2_19FA90@l
+/* 0019FA40 00000080  38 A5 00 00 */	addi r5, r5, lbl_2_bss_105A0@l
+/* 0019FA44 00000084  38 60 00 00 */	li r3, 0x0
+/* 0019FA48 00000088  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 0019FA4C 0000008C  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 0019FA50 00000090  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 0019FA54 00000094  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 0019FA58 00000098  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 0019FA5C 0000009C  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 0019FA60 000000A0  48 00 00 01 */	bl __register_global_object
+/* 0019FA64 000000A4  3C 80 00 00 */	lis r4, c_START_ID__10dCsvData_c@ha
+/* 0019FA68 000000A8  3C 60 00 00 */	lis r3, lbl_2_bss_105AC@ha
+/* 0019FA6C 000000AC  80 04 00 00 */	lwz r0, c_START_ID__10dCsvData_c@l(r4)
+/* 0019FA70 000000B0  90 03 00 00 */	stw r0, lbl_2_bss_105AC@l(r3)
+/* 0019FA74 000000B4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0019FA78 000000B8  7C 08 03 A6 */	mtlr r0
+/* 0019FA7C 000000BC  38 21 00 20 */	addi r1, r1, 0x20
+/* 0019FA80 000000C0  4E 80 00 20 */	blr
+.endfn fn_2_19FA00
+
+# 0x000004A0..0x000004A4 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte fn_2_19FA00

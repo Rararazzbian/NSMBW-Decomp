@@ -1,0 +1,10 @@
+A) pre-fix (alphabetically re-sorted) d_basesNP.json:
+   caught: C:\Users\Razz\Documents\Projects\NSMBW-Decomp\scratch\fix_slicerel\d_basesNP.BROKEN.json: slice "d_basesNP/bases/d_a_branch.cpp" claims .text 0x676f0-0x677b0, w
+B) synthetic over-claim (.bss 0x10350-0x13000, section size 0x12484):
+   caught: filler_16.o: filler for .bss would run backwards, 0x13000-0x12484 (size -0xb7c). A filler range is never negative in a well-formed slice file; the usual cause is a slice claiming past the end of .bss 
+C) all five real slice files:
+   d_basesNP: ok
+   d_en_bossNP: ok
+   d_enemiesNP: ok
+   d_profileNP: ok
+   wiimj2d: ok

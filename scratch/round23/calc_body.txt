@@ -1,0 +1,68 @@
+// calc__9dBg_ctr_cFv
+// mUpdateFlag (0x3C), mPos (0x58, 0x5C), mScratch[4] (0x60..0x7C),
+// mCenter (0x80, 0x84), mOffset2 (0x88, 0x8C), m_a0 (0xA0, 0xA4),
+// m_a8 (0xA8, 0xAC), m_c0 (0xC0), m_c2 (0xC2), m_c4 (0xC4), mMode (0xC8)
+
+void dBg_ctr_c::calc() {
+    mUpdateFlag = 1;
+
+    mVec3_c centerPos = mpActor->getCenterPos();
+    dScStage_c::getLoopPosX(centerPos.x);
+
+    mPos.x = centerPos.x;
+    mPos.y = centerPos.y;
+
+    s16 rot = *mRotation;
+    s16 diff = rot - m_c0;
+    m_c2 = diff;
+    m_c4 = diff;
+
+    m_a8 = m_a0;
+
+    if (mMode == 1) {
+        // Circle mode: shift mPos by mCenter
+        mPos.x += mCenter.x;
+        mPos.y += mCenter.y;
+
+        m_a0 = mPos;
+    } else {
+        // Rect mode: compute four rotated scratch corners
+        f32 cos = nw4r::math::CosDeg(nw4r::math::U16ToF32(rot));
+        f32 sin = nw4r::math::SinDeg(nw4r::math::U16ToF32(rot));
+
+        f32 cxc = mCenter.x * cos;
+        f32 cys = mCenter.y * sin;
+        f32 cyc = mCenter.y * cos;
+        f32 cxs = mCenter.x * sin;
+
+        f32 oxc = mOffset2.x * cos;
+        f32 oxs = mOffset2.x * sin;
+        f32 oyc = mOffset2.y * cos;
+        f32 oys = mOffset2.y * sin;
+
+        mScratch[0].x = mPos.x + (cxc - cys);
+        mScratch[0].y = mPos.y + (cyc + cxs);
+
+        mScratch[1].x = mPos.x + (cxc - oys);
+        mScratch[1].y = mPos.y + (oyc + cxs);
+
+        mScratch[2].x = mPos.x + (oxc - oys);
+        mScratch[2].y = mPos.y + (oyc + oxs);
+
+        mScratch[3].x = mPos.x + (oxc - cys);
+        mScratch[3].y = mPos.y + (cyc + oxs);
+
+        m_a0.x = (mScratch[0].x + mScratch[2].x) * 0.5f;
+        m_a0.y = (mScratch[0].y + mScratch[2].y) * 0.5f;
+    }
+
+    revisePos();
+
+    // Copy actor fields at 0xAC/0xB0/0xB4 into this at 0x94/0x98/0x9C
+    // (likely mSpeed from dBaseActor_c)
+    *(f32 *)(mPad94 + 0) = *(const f32 *)((const u8 *)mpActor + 0xAC);
+    *(f32 *)(mPad94 + 4) = *(const f32 *)((const u8 *)mpActor + 0xB0);
+    *(f32 *)(mPad94 + 8) = *(const f32 *)((const u8 *)mpActor + 0xB4);
+
+    m_c0 = rot;
+}

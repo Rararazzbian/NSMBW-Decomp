@@ -1,0 +1,20 @@
+.include "macros.inc"
+.file "auto_sinit__lyt_window_cp_text"
+
+# 0x801886D0..0x801886E4 | size: 0x14
+.text
+.balign 4
+
+# .text:0x0 | 0x801886D0 | size: 0x14
+.fn "__sinit_\lyt_window_cpp", local
+/* 801886D0 00000040  3C 80 00 00 */	lis r4, typeInfo__Q36nw4hbm3lyt4Pane@ha
+/* 801886D4 00000044  3C 60 00 00 */	lis r3, typeInfo__Q36nw4hbm3lyt6Window@ha
+/* 801886D8 00000048  38 84 00 00 */	addi r4, r4, typeInfo__Q36nw4hbm3lyt4Pane@l
+/* 801886DC 0000004C  90 83 00 00 */	stw r4, typeInfo__Q36nw4hbm3lyt6Window@l(r3)
+/* 801886E0 00000050  4E 80 00 20 */	blr
+.endfn "__sinit_\lyt_window_cpp"
+
+# 0x802EDF14..0x802EDF18 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\lyt_window_cpp"

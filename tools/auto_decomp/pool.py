@@ -1,4 +1,4 @@
-"""Decode a literal-pool constant out of the retail DOL, by address or by symbol.
+"""Decode a literal-pool constant out of a retail binary, by address or by symbol.
 
 Two separate agents have now been blocked on "I could not determine the value of
 `@54951_8042CB1C` from the disassembly", and one of them papered over it by
@@ -7,20 +7,35 @@ brute-forcing constants until the bytes matched -- which always succeeds, becaus
 field ZEROED. A wrong constant is byte-identical to the right one. The pattern
 can never tell you the value; only the binary can.
 
-    python pool.py 0x8042CB1C            # -> float and double reading
+    python pool.py 0x8042CB1C            # DOL, by virtual address
     python pool.py @54951_8042CB1C       # the VA is embedded in the symbol name
     python pool.py 0x8042CB1C 0x8042CB48 # several at once
+    python pool.py lbl_2_rodata_87D0     # a REL label: module 2, .rodata+0x87D0
 
 dtk's pool symbol names carry the address after the underscore, so you can paste
 one straight out of a disassembly listing.
+
+REL binaries
+------------
+The four `.rel` modules are NOT address spaces -- they are relocatable, so a
+constant has a SECTION and an OFFSET, never a VA. dtk names them
+`lbl_<module>_<section>_<offset>`, which is self-describing, and `RelImage`
+below turns that straight into bytes out of `original/<module>.rel`.
+
+This matters because the RELs are compiled with `-sdata 0 -sdata2 0`, so they
+have NO `@sda21` addressing at all. Anything that only recognises the DOL's
+`@sda21` form sees nothing whatsoever in a REL -- see poolcheck.py's header.
 """
+import json
 import os
 import re
 import struct
 import sys
 
-DOL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.abspath(__file__)))), 'original', 'wiimj2d.dol')
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DOL = os.path.join(ROOT, 'original', 'wiimj2d.dol')
+SLICES = os.path.join(ROOT, 'slices')
+ORIGINAL = os.path.join(ROOT, 'original')
 
 
 def load(path=DOL):
@@ -66,6 +81,88 @@ def read(va, path=DOL):
     return out
 
 
+# ------------------------------------------------------------------ REL images
+
+# `lbl_2_rodata_87B0` -- module number, section NAME, section-relative offset.
+# The section name is spelled without its leading dot in the label.
+REL_LABEL = re.compile(r'^lbl_(\d+)_(text|ctors|dtors|rodata|data|bss)_'
+                       r'([0-9A-Fa-f]+)$')
+
+_MODULE_META = None
+
+
+def module_meta():
+    """{moduleNum: (rel filename, {section name: section index})} for every REL.
+
+    Read from the slice files rather than hardcoded, for the same reason
+    harness.flags_for() reads the compiler flags from them: a duplicated copy of
+    the section table drifts, and a wrong section index reads the wrong bytes and
+    reports a wrong constant, which is precisely the failure this module exists
+    to prevent.
+    """
+    global _MODULE_META
+    if _MODULE_META is None:
+        _MODULE_META = {}
+        for name in os.listdir(SLICES):
+            if not name.endswith('.json'):
+                continue
+            with open(os.path.join(SLICES, name), encoding='utf-8') as fh:
+                meta = json.load(fh)['meta']
+            if meta.get('type') != 'REL':
+                continue
+            _MODULE_META[int(meta['moduleNum'])] = (
+                meta['fileName'], {k: v['index'] for k, v in meta['sections'].items()})
+    return _MODULE_META
+
+
+class RelImage:
+    """Section-relative reader over one `original/<module>.rel`.
+
+    The REL header holds a section table of (offset|flags, length) pairs; a zero
+    offset means `.bss`, which has no bytes on disk. Nothing here relocates
+    anything -- we only ever read constant DATA, never code.
+    """
+
+    def __init__(self, module_num):
+        meta = module_meta().get(int(module_num))
+        if meta is None:
+            raise KeyError('no REL slice file declares moduleNum %s -- known: %s'
+                           % (module_num, sorted(module_meta())))
+        self.module_num = int(module_num)
+        self.filename, self.section_index = meta
+        with open(os.path.join(ORIGINAL, self.filename), 'rb') as fh:
+            self.data = fh.read()
+        count, info_off = struct.unpack('>II', self.data[0x0C:0x14])
+        self.sections = []
+        for i in range(count):
+            o = info_off + i * 8
+            flags, length = struct.unpack('>II', self.data[o:o + 8])
+            self.sections.append((flags & ~3, length))
+
+    def read(self, section, offset, size):
+        """`section` may be given with or without its leading dot."""
+        if not section.startswith('.'):
+            section = '.' + section
+        idx = self.section_index.get(section)
+        if idx is None or idx >= len(self.sections):
+            return None
+        base, length = self.sections[idx]
+        if base == 0:                       # .bss -- no bytes in the file
+            return None
+        if offset < 0 or offset + size > length:
+            return None
+        return self.data[base + offset:base + offset + size]
+
+
+_REL_CACHE = {}
+
+
+def rel(module_num):
+    if module_num not in _REL_CACHE:
+        _REL_CACHE[module_num] = RelImage(module_num)
+    return _REL_CACHE[module_num]
+
+
 def parse_arg(a):
     """Accept a bare address, or a dtk pool symbol with the VA in its name."""
     m = re.search(r'([0-9A-Fa-f]{8})\b', a.replace('0x', '', 1) if a.lower().startswith('0x') else a)
@@ -81,6 +178,25 @@ def main():
         print(__doc__)
         return 2
     for a in sys.argv[1:]:
+        m = REL_LABEL.match(a.strip('"'))
+        if m:
+            mod, sec, off = int(m.group(1)), m.group(2), int(m.group(3), 16)
+            try:
+                img = rel(mod)
+            except KeyError as exc:
+                print(f'{a}: {exc.args[0]}')
+                continue
+            b8 = img.read(sec, off, 8) or img.read(sec, off, 4)
+            if b8 is None:
+                print(f'{a}: not inside {img.filename} .{sec}')
+                continue
+            line = (f'{a:24s} {img.filename} .{sec}+0x{off:X}  '
+                    f'{b8[:4].hex().upper()} -> f32 {struct.unpack(">f", b8[:4])[0]!r}')
+            if len(b8) == 8:
+                line += (f'   |  {b8.hex().upper()} -> f64 '
+                         f'{struct.unpack(">d", b8)[0]!r}')
+            print(line)
+            continue
         va = parse_arg(a)
         r = read(va)
         if r is None:

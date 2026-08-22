@@ -1,0 +1,37 @@
+.include "macros.inc"
+.file "auto_sinit__d_pad_cpp_text"
+
+# 0x800D09A0..0x800D09F8 | size: 0x58
+.text
+.balign 4
+
+# .text:0x0 | 0x800D09A0 | size: 0x58
+.fn "__sinit_\d_pad_cpp", global
+/* 800D09A0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D09A4 00000044  7C 08 02 A6 */	mflr r0
+/* 800D09A8 00000048  3C 60 00 00 */	lis r3, m_ex__Q24dPad4ex_c@ha
+/* 800D09AC 0000004C  3C 80 00 00 */	lis r4, __ct__Q24dPad4ex_cFv@ha
+/* 800D09B0 00000050  3C A0 00 00 */	lis r5, __dt__Q24dPad4ex_cFv@ha
+/* 800D09B4 00000054  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D09B8 00000058  38 C0 00 20 */	li r6, 0x20
+/* 800D09BC 0000005C  38 63 00 00 */	addi r3, r3, m_ex__Q24dPad4ex_c@l
+/* 800D09C0 00000060  38 84 00 00 */	addi r4, r4, __ct__Q24dPad4ex_cFv@l
+/* 800D09C4 00000064  38 A5 00 00 */	addi r5, r5, __dt__Q24dPad4ex_cFv@l
+/* 800D09C8 00000068  38 E0 00 04 */	li r7, 0x4
+/* 800D09CC 0000006C  48 00 00 01 */	bl __construct_array
+/* 800D09D0 00000070  3C 80 00 00 */	lis r4, __arraydtor$52278@ha
+/* 800D09D4 00000074  3C A0 00 00 */	lis r5, "@52279_80371000"@ha
+/* 800D09D8 00000078  38 84 00 00 */	addi r4, r4, __arraydtor$52278@l
+/* 800D09DC 0000007C  38 60 00 00 */	li r3, 0x0
+/* 800D09E0 00000080  38 A5 00 00 */	addi r5, r5, "@52279_80371000"@l
+/* 800D09E4 00000084  48 00 00 01 */	bl __register_global_object
+/* 800D09E8 00000088  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D09EC 0000008C  7C 08 03 A6 */	mtlr r0
+/* 800D09F0 00000090  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D09F4 00000094  4E 80 00 20 */	blr
+.endfn "__sinit_\d_pad_cpp"
+
+# 0x802EDE14..0x802EDE18 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_pad_cpp"

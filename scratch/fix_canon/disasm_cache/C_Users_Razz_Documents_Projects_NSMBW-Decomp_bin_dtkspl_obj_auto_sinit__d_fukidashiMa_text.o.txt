@@ -1,0 +1,218 @@
+.include "macros.inc"
+.file "auto_sinit__d_fukidashiMa_text"
+
+# 0x801574F0..0x80157818 | size: 0x328
+.text
+.balign 4
+
+# .text:0x0 | 0x801574F0 | size: 0x328
+.fn "__sinit_\d_fukidashiManager_cpp", global
+/* 801574F0 00000040  94 21 FE 80 */	stwu r1, -0x180(r1)
+/* 801574F4 00000044  DB E1 01 70 */	stfd f31, 0x170(r1)
+/* 801574F8 00000048  F3 E1 01 78 */	psq_st f31, 0x178(r1), 0, qr0
+/* 801574FC 0000004C  DB C1 01 60 */	stfd f30, 0x160(r1)
+/* 80157500 00000050  F3 C1 01 68 */	psq_st f30, 0x168(r1), 0, qr0
+/* 80157504 00000054  DB A1 01 50 */	stfd f29, 0x150(r1)
+/* 80157508 00000058  F3 A1 01 58 */	psq_st f29, 0x158(r1), 0, qr0
+/* 8015750C 0000005C  DB 81 01 40 */	stfd f28, 0x140(r1)
+/* 80157510 00000060  F3 81 01 48 */	psq_st f28, 0x148(r1), 0, qr0
+/* 80157514 00000064  DB 61 01 30 */	stfd f27, 0x130(r1)
+/* 80157518 00000068  F3 61 01 38 */	psq_st f27, 0x138(r1), 0, qr0
+/* 8015751C 0000006C  DB 41 01 20 */	stfd f26, 0x120(r1)
+/* 80157520 00000070  F3 41 01 28 */	psq_st f26, 0x128(r1), 0, qr0
+/* 80157524 00000074  DB 21 01 10 */	stfd f25, 0x110(r1)
+/* 80157528 00000078  F3 21 01 18 */	psq_st f25, 0x118(r1), 0, qr0
+/* 8015752C 0000007C  DB 01 01 00 */	stfd f24, 0x100(r1)
+/* 80157530 00000080  F3 01 01 08 */	psq_st f24, 0x108(r1), 0, qr0
+/* 80157534 00000084  DA E1 00 F0 */	stfd f23, 0xf0(r1)
+/* 80157538 00000088  F2 E1 00 F8 */	psq_st f23, 0xf8(r1), 0, qr0
+/* 8015753C 0000008C  DA C1 00 E0 */	stfd f22, 0xe0(r1)
+/* 80157540 00000090  F2 C1 00 E8 */	psq_st f22, 0xe8(r1), 0, qr0
+/* 80157544 00000094  DA A1 00 D0 */	stfd f21, 0xd0(r1)
+/* 80157548 00000098  F2 A1 00 D8 */	psq_st f21, 0xd8(r1), 0, qr0
+/* 8015754C 0000009C  DA 81 00 C0 */	stfd f20, 0xc0(r1)
+/* 80157550 000000A0  F2 81 00 C8 */	psq_st f20, 0xc8(r1), 0, qr0
+/* 80157554 000000A4  DA 61 00 B0 */	stfd f19, 0xb0(r1)
+/* 80157558 000000A8  F2 61 00 B8 */	psq_st f19, 0xb8(r1), 0, qr0
+/* 8015755C 000000AC  DA 41 00 A0 */	stfd f18, 0xa0(r1)
+/* 80157560 000000B0  F2 41 00 A8 */	psq_st f18, 0xa8(r1), 0, qr0
+/* 80157564 000000B4  DA 21 00 90 */	stfd f17, 0x90(r1)
+/* 80157568 000000B8  F2 21 00 98 */	psq_st f17, 0x98(r1), 0, qr0
+/* 8015756C 000000BC  DA 01 00 80 */	stfd f16, 0x80(r1)
+/* 80157570 000000C0  F2 01 00 88 */	psq_st f16, 0x88(r1), 0, qr0
+/* 80157574 000000C4  D9 E1 00 70 */	stfd f15, 0x70(r1)
+/* 80157578 000000C8  F1 E1 00 78 */	psq_st f15, 0x78(r1), 0, qr0
+/* 8015757C 000000CC  D9 C1 00 60 */	stfd f14, 0x60(r1)
+/* 80157580 000000D0  F1 C1 00 68 */	psq_st f14, 0x68(r1), 0, qr0
+/* 80157584 000000D4  88 00 00 00 */	lbz r0, lbl_8042A604@sda21(r0)
+/* 80157588 000000D8  7C 00 07 75 */	extsb. r0, r0
+/* 8015758C 000000DC  40 82 01 F4 */	bne .L_80157780
+/* 80157590 000000E0  C0 00 00 00 */	lfs f0, c_MARIO_PROPEL_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157594 000000E4  3C 60 00 00 */	lis r3, lbl_80377278@ha
+/* 80157598 000000E8  D8 01 00 08 */	stfd f0, 0x8(r1)
+/* 8015759C 000000EC  38 83 00 00 */	addi r4, r3, lbl_80377278@l
+/* 801575A0 000000F0  C0 00 00 00 */	lfs f0, c_MARIO_PENGUIN_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575A4 000000F4  C0 E0 00 00 */	lfs f7, c_MARIO_MAME_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575A8 000000F8  D8 01 00 10 */	stfd f0, 0x10(r1)
+/* 801575AC 000000FC  C0 00 00 00 */	lfs f0, c_MARIO_ICE_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575B0 00000100  D8 01 00 18 */	stfd f0, 0x18(r1)
+/* 801575B4 00000104  C0 00 00 00 */	lfs f0, c_LUIGI_NORMAL_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575B8 00000108  D0 E4 00 7C */	stfs f7, 0x7c(r4)
+/* 801575BC 0000010C  C8 E1 00 08 */	lfd f7, 0x8(r1)
+/* 801575C0 00000110  D8 01 00 20 */	stfd f0, 0x20(r1)
+/* 801575C4 00000114  C0 00 00 00 */	lfs f0, c_LUIGI_SUPER_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575C8 00000118  C3 80 00 00 */	lfs f28, c_KINOPIO_NORMAL_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575CC 0000011C  C3 A0 00 00 */	lfs f29, c_KINOPIO_SUPER_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575D0 00000120  C3 C0 00 00 */	lfs f30, c_KINOPIO_FIRE_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575D4 00000124  C3 E0 00 00 */	lfs f31, c_KINOPIO_MAME_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575D8 00000128  C1 A0 00 00 */	lfs f13, c_KINOPIO_PROPEL_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575DC 0000012C  C1 80 00 00 */	lfs f12, c_KINOPIO_PENGUIN_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575E0 00000130  C1 60 00 00 */	lfs f11, c_KINOPIO_ICE_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 801575E4 00000134  C0 C0 00 00 */	lfs f6, c_KINOPIO_NORMAL_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575E8 00000138  C0 A0 00 00 */	lfs f5, c_KINOPIO_SUPER_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575EC 0000013C  C0 80 00 00 */	lfs f4, c_KINOPIO_FIRE_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801575F0 00000140  D0 E4 00 80 */	stfs f7, 0x80(r4)
+/* 801575F4 00000144  C8 E1 00 10 */	lfd f7, 0x10(r1)
+/* 801575F8 00000148  D8 01 00 28 */	stfd f0, 0x28(r1)
+/* 801575FC 0000014C  C0 00 00 00 */	lfs f0, c_LUIGI_FIRE_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157600 00000150  D0 E4 00 84 */	stfs f7, 0x84(r4)
+/* 80157604 00000154  C8 E1 00 18 */	lfd f7, 0x18(r1)
+/* 80157608 00000158  D8 01 00 30 */	stfd f0, 0x30(r1)
+/* 8015760C 0000015C  C0 00 00 00 */	lfs f0, c_LUIGI_MAME_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157610 00000160  D0 E4 00 88 */	stfs f7, 0x88(r4)
+/* 80157614 00000164  C8 E1 00 20 */	lfd f7, 0x20(r1)
+/* 80157618 00000168  D8 01 00 38 */	stfd f0, 0x38(r1)
+/* 8015761C 0000016C  C0 00 00 00 */	lfs f0, c_LUIGI_PROPEL_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157620 00000170  D0 E4 00 8C */	stfs f7, 0x8c(r4)
+/* 80157624 00000174  C8 E1 00 28 */	lfd f7, 0x28(r1)
+/* 80157628 00000178  D8 01 00 40 */	stfd f0, 0x40(r1)
+/* 8015762C 0000017C  C0 00 00 00 */	lfs f0, c_LUIGI_PENGUIN_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157630 00000180  D0 E4 00 90 */	stfs f7, 0x90(r4)
+/* 80157634 00000184  C8 E1 00 30 */	lfd f7, 0x30(r1)
+/* 80157638 00000188  D8 01 00 48 */	stfd f0, 0x48(r1)
+/* 8015763C 0000018C  C0 00 00 00 */	lfs f0, c_LUIGI_ICE_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157640 00000190  D0 E4 00 94 */	stfs f7, 0x94(r4)
+/* 80157644 00000194  C8 E1 00 38 */	lfd f7, 0x38(r1)
+/* 80157648 00000198  D8 01 00 50 */	stfd f0, 0x50(r1)
+/* 8015764C 0000019C  C1 C0 00 00 */	lfs f14, c_MARIO_NORMAL_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157650 000001A0  D0 E4 00 98 */	stfs f7, 0x98(r4)
+/* 80157654 000001A4  C8 E1 00 40 */	lfd f7, 0x40(r1)
+/* 80157658 000001A8  D0 E4 00 9C */	stfs f7, 0x9c(r4)
+/* 8015765C 000001AC  C8 E1 00 48 */	lfd f7, 0x48(r1)
+/* 80157660 000001B0  C1 E0 00 00 */	lfs f15, c_MARIO_SUPER_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157664 000001B4  C2 00 00 00 */	lfs f16, c_MARIO_FIRE_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157668 000001B8  C2 20 00 00 */	lfs f17, c_MARIO_MAME_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 8015766C 000001BC  C2 40 00 00 */	lfs f18, c_MARIO_PROPEL_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157670 000001C0  C2 60 00 00 */	lfs f19, c_MARIO_PENGUIN_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157674 000001C4  C2 80 00 00 */	lfs f20, c_MARIO_ICE_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157678 000001C8  C2 A0 00 00 */	lfs f21, c_LUIGI_NORMAL_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 8015767C 000001CC  C2 C0 00 00 */	lfs f22, c_LUIGI_SUPER_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157680 000001D0  C2 E0 00 00 */	lfs f23, c_LUIGI_FIRE_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157684 000001D4  C3 00 00 00 */	lfs f24, c_LUIGI_MAME_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157688 000001D8  C3 20 00 00 */	lfs f25, c_LUIGI_PROPEL_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 8015768C 000001DC  C3 40 00 00 */	lfs f26, c_LUIGI_PENGUIN_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157690 000001E0  C3 60 00 00 */	lfs f27, c_LUIGI_ICE_OFFSET_X__16dfukidashiInfo_c@sda21(r0)
+/* 80157694 000001E4  C1 40 00 00 */	lfs f10, c_MARIO_NORMAL_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 80157698 000001E8  C1 20 00 00 */	lfs f9, c_MARIO_SUPER_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 8015769C 000001EC  C1 00 00 00 */	lfs f8, c_MARIO_FIRE_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801576A0 000001F0  C0 60 00 00 */	lfs f3, c_KINOPIO_MAME_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801576A4 000001F4  C0 40 00 00 */	lfs f2, c_KINOPIO_PROPEL_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801576A8 000001F8  C0 20 00 00 */	lfs f1, c_KINOPIO_PENGUIN_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801576AC 000001FC  C0 00 00 00 */	lfs f0, c_KINOPIO_ICE_OFFSET_Y__16dfukidashiInfo_c@sda21(r0)
+/* 801576B0 00000200  D0 E4 00 A0 */	stfs f7, 0xa0(r4)
+/* 801576B4 00000204  C8 E1 00 50 */	lfd f7, 0x50(r1)
+/* 801576B8 00000208  D1 C3 00 00 */	stfs f14, lbl_80377278@l(r3)
+/* 801576BC 0000020C  D1 E4 00 04 */	stfs f15, 0x4(r4)
+/* 801576C0 00000210  D2 04 00 08 */	stfs f16, 0x8(r4)
+/* 801576C4 00000214  D2 24 00 0C */	stfs f17, 0xc(r4)
+/* 801576C8 00000218  D2 44 00 10 */	stfs f18, 0x10(r4)
+/* 801576CC 0000021C  D2 64 00 14 */	stfs f19, 0x14(r4)
+/* 801576D0 00000220  D2 84 00 18 */	stfs f20, 0x18(r4)
+/* 801576D4 00000224  D2 A4 00 1C */	stfs f21, 0x1c(r4)
+/* 801576D8 00000228  D2 C4 00 20 */	stfs f22, 0x20(r4)
+/* 801576DC 0000022C  D2 E4 00 24 */	stfs f23, 0x24(r4)
+/* 801576E0 00000230  D3 04 00 28 */	stfs f24, 0x28(r4)
+/* 801576E4 00000234  D3 24 00 2C */	stfs f25, 0x2c(r4)
+/* 801576E8 00000238  D3 44 00 30 */	stfs f26, 0x30(r4)
+/* 801576EC 0000023C  D3 64 00 34 */	stfs f27, 0x34(r4)
+/* 801576F0 00000240  D3 84 00 38 */	stfs f28, 0x38(r4)
+/* 801576F4 00000244  D3 A4 00 3C */	stfs f29, 0x3c(r4)
+/* 801576F8 00000248  D3 C4 00 40 */	stfs f30, 0x40(r4)
+/* 801576FC 0000024C  D3 E4 00 44 */	stfs f31, 0x44(r4)
+/* 80157700 00000250  D1 A4 00 48 */	stfs f13, 0x48(r4)
+/* 80157704 00000254  D1 84 00 4C */	stfs f12, 0x4c(r4)
+/* 80157708 00000258  D1 64 00 50 */	stfs f11, 0x50(r4)
+/* 8015770C 0000025C  D3 84 00 54 */	stfs f28, 0x54(r4)
+/* 80157710 00000260  D3 A4 00 58 */	stfs f29, 0x58(r4)
+/* 80157714 00000264  D3 C4 00 5C */	stfs f30, 0x5c(r4)
+/* 80157718 00000268  D3 E4 00 60 */	stfs f31, 0x60(r4)
+/* 8015771C 0000026C  D1 A4 00 64 */	stfs f13, 0x64(r4)
+/* 80157720 00000270  D1 84 00 68 */	stfs f12, 0x68(r4)
+/* 80157724 00000274  D1 64 00 6C */	stfs f11, 0x6c(r4)
+/* 80157728 00000278  D1 44 00 70 */	stfs f10, 0x70(r4)
+/* 8015772C 0000027C  D1 24 00 74 */	stfs f9, 0x74(r4)
+/* 80157730 00000280  D1 04 00 78 */	stfs f8, 0x78(r4)
+/* 80157734 00000284  D0 E4 00 A4 */	stfs f7, 0xa4(r4)
+/* 80157738 00000288  D0 C4 00 A8 */	stfs f6, 0xa8(r4)
+/* 8015773C 0000028C  D0 A4 00 AC */	stfs f5, 0xac(r4)
+/* 80157740 00000290  D0 84 00 B0 */	stfs f4, 0xb0(r4)
+/* 80157744 00000294  D0 64 00 B4 */	stfs f3, 0xb4(r4)
+/* 80157748 00000298  D0 44 00 B8 */	stfs f2, 0xb8(r4)
+/* 8015774C 0000029C  D0 24 00 BC */	stfs f1, 0xbc(r4)
+/* 80157750 000002A0  D0 04 00 C0 */	stfs f0, 0xc0(r4)
+/* 80157754 000002A4  D0 C4 00 C4 */	stfs f6, 0xc4(r4)
+/* 80157758 000002A8  D0 A4 00 C8 */	stfs f5, 0xc8(r4)
+/* 8015775C 000002AC  D0 84 00 CC */	stfs f4, 0xcc(r4)
+/* 80157760 000002B0  80 60 00 00 */	lwz r3, c_MAX_DISP_WAIT__16dfukidashiInfo_c@sda21(r0)
+/* 80157764 000002B4  38 00 00 01 */	li r0, 0x1
+/* 80157768 000002B8  D0 64 00 D0 */	stfs f3, 0xd0(r4)
+/* 8015776C 000002BC  D0 44 00 D4 */	stfs f2, 0xd4(r4)
+/* 80157770 000002C0  D0 24 00 D8 */	stfs f1, 0xd8(r4)
+/* 80157774 000002C4  D0 04 00 DC */	stfs f0, 0xdc(r4)
+/* 80157778 000002C8  B0 64 00 E0 */	sth r3, 0xe0(r4)
+/* 8015777C 000002CC  98 00 00 00 */	stb r0, lbl_8042A604@sda21(r0)
+.L_80157780:
+/* 80157780 000002D0  E3 E1 01 78 */	psq_l f31, 0x178(r1), 0, qr0
+/* 80157784 000002D4  CB E1 01 70 */	lfd f31, 0x170(r1)
+/* 80157788 000002D8  E3 C1 01 68 */	psq_l f30, 0x168(r1), 0, qr0
+/* 8015778C 000002DC  CB C1 01 60 */	lfd f30, 0x160(r1)
+/* 80157790 000002E0  E3 A1 01 58 */	psq_l f29, 0x158(r1), 0, qr0
+/* 80157794 000002E4  CB A1 01 50 */	lfd f29, 0x150(r1)
+/* 80157798 000002E8  E3 81 01 48 */	psq_l f28, 0x148(r1), 0, qr0
+/* 8015779C 000002EC  CB 81 01 40 */	lfd f28, 0x140(r1)
+/* 801577A0 000002F0  E3 61 01 38 */	psq_l f27, 0x138(r1), 0, qr0
+/* 801577A4 000002F4  CB 61 01 30 */	lfd f27, 0x130(r1)
+/* 801577A8 000002F8  E3 41 01 28 */	psq_l f26, 0x128(r1), 0, qr0
+/* 801577AC 000002FC  CB 41 01 20 */	lfd f26, 0x120(r1)
+/* 801577B0 00000300  E3 21 01 18 */	psq_l f25, 0x118(r1), 0, qr0
+/* 801577B4 00000304  CB 21 01 10 */	lfd f25, 0x110(r1)
+/* 801577B8 00000308  E3 01 01 08 */	psq_l f24, 0x108(r1), 0, qr0
+/* 801577BC 0000030C  CB 01 01 00 */	lfd f24, 0x100(r1)
+/* 801577C0 00000310  E2 E1 00 F8 */	psq_l f23, 0xf8(r1), 0, qr0
+/* 801577C4 00000314  CA E1 00 F0 */	lfd f23, 0xf0(r1)
+/* 801577C8 00000318  E2 C1 00 E8 */	psq_l f22, 0xe8(r1), 0, qr0
+/* 801577CC 0000031C  CA C1 00 E0 */	lfd f22, 0xe0(r1)
+/* 801577D0 00000320  E2 A1 00 D8 */	psq_l f21, 0xd8(r1), 0, qr0
+/* 801577D4 00000324  CA A1 00 D0 */	lfd f21, 0xd0(r1)
+/* 801577D8 00000328  E2 81 00 C8 */	psq_l f20, 0xc8(r1), 0, qr0
+/* 801577DC 0000032C  CA 81 00 C0 */	lfd f20, 0xc0(r1)
+/* 801577E0 00000330  E2 61 00 B8 */	psq_l f19, 0xb8(r1), 0, qr0
+/* 801577E4 00000334  CA 61 00 B0 */	lfd f19, 0xb0(r1)
+/* 801577E8 00000338  E2 41 00 A8 */	psq_l f18, 0xa8(r1), 0, qr0
+/* 801577EC 0000033C  CA 41 00 A0 */	lfd f18, 0xa0(r1)
+/* 801577F0 00000340  E2 21 00 98 */	psq_l f17, 0x98(r1), 0, qr0
+/* 801577F4 00000344  CA 21 00 90 */	lfd f17, 0x90(r1)
+/* 801577F8 00000348  E2 01 00 88 */	psq_l f16, 0x88(r1), 0, qr0
+/* 801577FC 0000034C  CA 01 00 80 */	lfd f16, 0x80(r1)
+/* 80157800 00000350  E1 E1 00 78 */	psq_l f15, 0x78(r1), 0, qr0
+/* 80157804 00000354  C9 E1 00 70 */	lfd f15, 0x70(r1)
+/* 80157808 00000358  E1 C1 00 68 */	psq_l f14, 0x68(r1), 0, qr0
+/* 8015780C 0000035C  C9 C1 00 60 */	lfd f14, 0x60(r1)
+/* 80157810 00000360  38 21 01 80 */	addi r1, r1, 0x180
+/* 80157814 00000364  4E 80 00 20 */	blr
+.endfn "__sinit_\d_fukidashiManager_cpp"
+
+# 0x802EDED0..0x802EDED4 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_fukidashiManager_cpp"

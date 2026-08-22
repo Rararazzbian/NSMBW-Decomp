@@ -1,0 +1,180 @@
+179 170
+  0   stwu r1, -0xe0(r1)                            | stwu r1, -0xe0(r1)
+  1   mflr r0                                       | mflr r0
+  2   stw r0, 0xe4(r1)                              | stw r0, 0xe4(r1)
+  3   addi r11, r1, 0xb0                            | addi r11, r1, 0xb0
+  4   stfd f31, 0xd0(r1)                            | stfd f31, 0xd0(r1)
+  5   psq_st f31, 0xd8(r1), 0, qr0                  | psq_st f31, 0xd8(r1), 0, qr0
+  6   stfd f30, 0xc0(r1)                            | stfd f30, 0xc0(r1)
+  7   psq_st f30, 0xc8(r1), 0, qr0                  | psq_st f30, 0xc8(r1), 0, qr0
+  8   stfd f29, 0xb0(r1)                            | stfd f29, 0xb0(r1)
+  9   psq_st f29, 0xb8(r1), 0, qr0                  | psq_st f29, 0xb8(r1), 0, qr0
+ 10   bl _savegpr_26                                | bl _savegpr_26
+ 11   lwz r0, 0x38(r3)                              | lwz r0, 0x38(r3)
+ 12   mr r26, r3                                    | mr r26, r3
+ 13   cmpwi r0, 0x0                                 | cmpwi r0, 0x0
+ 14 * beq .L |41820264|                             | beq .L |41820240|
+ 15 * lwz r5, m_bg_p__5dBg_c@sda21(r0)              | lfs f0, 0x28(r3)
+ 16   li r27, 0x0                                   | li r27, 0x0
+ 17 * lwz r4, 0x20(r3)                              | lfs f1, 0x24(r3)
+ 18   li r30, 0x0                                   | li r30, 0x0
+ 19 * addis r5, r5, 0x9                             | lfs f2, 0x20(r3)
+ 20 * lwz r0, 0x24(r3)                              | lis r31, 0x4330
+ 21 * lfs f1, -0x19c(r5)                            | stfs f2, 0x70(r1)
+ 22 * lis r31, 0x4330                               | lwz r4, m_bg_p__5dBg_c@sda21(r0)
+ 23 * lfs f2, -0x194(r5)                            | stfs f1, 0x74(r1)
+ 24 * lfs f0, SYM0@sda21(r0)                        | addis r4, r4, 0x9
+ 25 * stw r4, 0x64(r1)                              | lfs f2, SYM0@sda21(r0)
+ 26 * fmuls f1, f1, f0                              | stfs f0, 0x78(r1)
+ 27 * lfd f29, SYM1@sda21(r0)                       | lfs f31, SYM1@sda21(r0)
+ 28 * stw r0, 0x68(r1)                              | lfs f0, 0x34(r3)
+ 29 * fmuls f0, f2, f0                              | lfs f1, 0x30(r3)
+ 30 * lfs f30, SYM2@sda21(r0)                       | lfs f3, 0x2c(r3)
+ 31 * lwz r0, 0x28(r3)                              | stfs f3, 0x64(r1)
+ 32 * stw r0, 0x6c(r1)                              | lfd f30, SYM2@sda21(r0)
+ 33 * fctiwz f1, f1                                 | stfs f1, 0x68(r1)
+ 34 * fctiwz f0, f0                                 | lfs f29, SYM3@sda21(r0)
+ 35 * lfs f31, SYM3@sda21(r0)                       | stfs f0, 0x6c(r1)
+ 36 * stfd f1, 0x80(r1)                             | lfs f1, -0x19c(r4)
+ 37 * lwz r4, 0x2c(r3)                              | lfs f0, -0x194(r4)
+ 38 * lwz r0, 0x30(r3)                              | fmuls f1, f2, f1
+ 39 * stfd f0, 0x88(r1)                             | fmuls f0, f2, f0
+ 40 * lwz r29, 0x84(r1)                             | fctiwz f1, f1
+ 41 * stw r4, 0x58(r1)                              | fctiwz f0, f0
+ 42 * lwz r28, 0x8c(r1)                             | stfd f1, 0x80(r1)
+ 43 * stw r0, 0x5c(r1)                              | stfd f0, 0x88(r1)
+ 44 * lwz r0, 0x34(r3)                              | lwz r29, 0x84(r1)
+ 45 * stw r0, 0x60(r1)                              | lwz r28, 0x8c(r1)
+ 46 * b .L |480001D8|                               | b .L |480001B4|
+ 47   lwz r0, 0x38(r26)                             | lwz r0, 0x38(r26)
+ 48   add r4, r0, r30                               | add r4, r0, r30
+ 49   lhzx r0, r30, r0                              | lhzx r0, r30, r0
+ 50   cmplwi r0, 0xffff                             | cmplwi r0, 0xffff
+ 51 * beq .L |418201BC|                             | beq .L |41820198|
+ 52 * lhz r0, 0x2(r4)                               | lhz r5, 0x4(r4)
+ 53   addi r3, r1, 0x34                             | addi r3, r1, 0x34
+ 54 * stw r31, 0x88(r1)                             | lhz r0, 0x2(r4)
+ 55 * add r0, r29, r0                               | subf r5, r5, r28
+ 56 * slwi r0, r0, 4                                | stw r31, 0x88(r1)
+ 57 * stw r31, 0x80(r1)                             | add r0, r29, r0
+ 58 * xoris r0, r0, 0x8000                          | slwi r5, r5, 4
+ 59 * stw r0, 0x8c(r1)                              | stw r31, 0x80(r1)
+ 60 * lfd f0, 0x88(r1)                              | slwi r0, r0, 4
+ 61 * fsubs f0, f0, f29                             | xoris r5, r5, 0x8000
+ 62 * stfs f0, 0x70(r1)                             | stw r5, 0x8c(r1)
+ 63 * lhz r0, 0x4(r4)                               | xoris r0, r0, 0x8000
+ 64 * neg r0, r0                                    | stw r0, 0x84(r1)
+ 65 * add r0, r28, r0                               | lfd f1, 0x88(r1)
+ 66 * slwi r0, r0, 4                                | lfd f0, 0x80(r1)
+ 67 * xoris r0, r0, 0x8000                          | fsubs f1, f1, f30
+ 68 * stw r0, 0x84(r1)                              | stfs f31, 0x60(r1)
+ 69 * lfd f0, 0x80(r1)                              | fsubs f0, f0, f30
+ 70 * fsubs f0, f0, f29                             | stfs f1, 0x5c(r1)
+ 71 * stfs f0, 0x74(r1)                             | stfs f0, 0x58(r1)
+ 72   bl getOffset__Q217dBgActorManager_c7BgObj_cFv | bl getOffset__Q217dBgActorManager_c7BgObj_cFv
+ 73 * lfs f1, 0x70(r1)                              | lfs f1, 0x58(r1)
+ 74   addi r3, r1, 0x28                             | addi r3, r1, 0x28
+ 75   lfs f0, 0x34(r1)                              | lfs f0, 0x34(r1)
+ 76   fadds f0, f1, f0                              | fadds f0, f1, f0
+ 77 * stfs f0, 0x70(r1)                             | stfs f0, 0x58(r1)
+ 78   lwz r0, 0x38(r26)                             | lwz r0, 0x38(r26)
+ 79   add r4, r0, r30                               | add r4, r0, r30
+ 80   bl getOffset__Q217dBgActorManager_c7BgObj_cFv | bl getOffset__Q217dBgActorManager_c7BgObj_cFv
+ 81 * lfs f2, 0x74(r1)                              | lfs f1, 0x5c(r1)
+ 82   addi r3, r1, 0x20                             | addi r3, r1, 0x20
+ 83 * lfs f1, 0x2c(r1)                              | lfs f0, 0x2c(r1)
+ 84 * lfs f0, 0x70(r1)                              | fadds f0, f1, f0
+ 85 * fadds f1, f2, f1                              | stfs f0, 0x5c(r1)
+ 86 * stfs f30, 0x78(r1)                            | lwz r0, 0x38(r26)
+ 87 * stfs f1, 0x74(r1)                             | add r4, r0, r30
+ 88 * stfs f0, 0x4c(r1)                             | bl getSize__Q217dBgActorManager_c7BgObj_cFv
+ 89 * stfs f1, 0x50(r1)                             | lwz r0, 0x38(r26)
+ 90 * stfs f30, 0x54(r1)                            | addi r3, r1, 0x18
+ 91 * lwz r0, 0x38(r26)                             | add r4, r0, r30
+ 92 * add r4, r0, r30                               | bl getSize__Q217dBgActorManager_c7BgObj_cFv
+ 93 * bl getSize__Q217dBgActorManager_c7BgObj_cFv   | lfs f1, 0x1c(r1)
+ 94 * lfs f1, 0x20(r1)                              | addi r3, r1, 0x10
+ 95 * addi r3, r1, 0x18                             | lfs f0, 0x20(r1)
+ 96 * lfs f0, 0x4c(r1)                              | fmuls f3, f29, f1
+ 97 * fmuls f1, f31, f1                             | lfs f2, 0x5c(r1)
+ 98 * fsubs f0, f0, f1                              | fmuls f1, f29, f0
+ 99 * stfs f0, 0x4c(r1)                             | lfs f0, 0x58(r1)
+100 * lwz r0, 0x38(r26)                             | stfs f31, 0x54(r1)
+101 * add r4, r0, r30                               | fsubs f2, f2, f3
+102 * bl getSize__Q217dBgActorManager_c7BgObj_cFv   | fsubs f0, f0, f1
+103 * lfs f0, 0x1c(r1)                              | stfs f2, 0x50(r1)
+104 * addi r3, r1, 0x10                             | stfs f0, 0x4c(r1)
+105 * lfs f2, 0x70(r1)                              | lwz r0, 0x38(r26)
+106 * fmuls f4, f31, f0                             | add r4, r0, r30
+107 * lfs f3, 0x50(r1)                              | bl getSize__Q217dBgActorManager_c7BgObj_cFv
+108 * lfs f1, 0x74(r1)                              | lwz r0, 0x38(r26)
+109 * lfs f0, 0x78(r1)                              | addi r3, r1, 0x8
+110 * fsubs f3, f3, f4                              | add r4, r0, r30
+111 * stfs f2, 0x40(r1)                             | bl getSize__Q217dBgActorManager_c7BgObj_cFv
+112 * stfs f3, 0x50(r1)                             | lfs f1, 0xc(r1)
+113 * stfs f1, 0x44(r1)                             | lfs f0, 0x10(r1)
+114 * stfs f0, 0x48(r1)                             | fmuls f3, f29, f1
+115 * lwz r0, 0x38(r26)                             | lfs f2, 0x5c(r1)
+116 * add r4, r0, r30                               | fmuls f1, f29, f0
+117 * bl getSize__Q217dBgActorManager_c7BgObj_cFv   | lfs f0, 0x58(r1)
+118 * lfs f1, 0x10(r1)                              | stfs f31, 0x48(r1)
+119 * addi r3, r1, 0x8                              | fadds f2, f2, f3
+120 * lfs f0, 0x40(r1)                              | fadds f0, f0, f1
+121 * fmuls f1, f31, f1                             | stfs f2, 0x44(r1)
+122 * fadds f0, f0, f1                              | stfs f0, 0x40(r1)
+123 * stfs f0, 0x40(r1)                             | lwz r0, 0x38(r26)
+124 * lwz r0, 0x38(r26)                             | add r3, r0, r30
+125 * add r4, r0, r30                               | lwz r0, 0x8(r3)
+126 * bl getSize__Q217dBgActorManager_c7BgObj_cFv   | cmpwi r0, 0x0
+127 * lfs f1, 0xc(r1)                               | beq .L |41820034|
+128 * lfs f0, 0x44(r1)                              | fmr f1, f31
+129 * fmuls f1, f31, f1                             | addi r3, r1, 0x4c
+130 * fadds f0, f0, f1                              | addi r4, r1, 0x40
+131 * stfs f0, 0x44(r1)                             | addi r5, r1, 0x70
+132 * lwz r0, 0x38(r26)                             | addi r6, r1, 0x64
+133 * add r3, r0, r30                               | bl checkRectangleOverlap__8dGameComFP7mVec3_cP7mVec3_cP7mVec3_cP7mVec3_cf
+134 * lwz r0, 0x8(r3)                               | cmpwi r3, 0x0
+135 * cmpwi r0, 0x0                                 | bne .L |40820048|
+136 * beq .L |41820034|                             | lwz r0, 0x38(r26)
+137 * lfs f1, SYM2@sda21(r0)                        | add r3, r0, r30
+138 * addi r3, r1, 0x4c                             | bl deleteActor__Q217dBgActorManager_c7BgObj_cFv
+139 * addi r4, r1, 0x40                             | b .L |48000038|
+140 * addi r5, r1, 0x64                             | fmr f1, f31
+141 * addi r6, r1, 0x58                             | addi r3, r1, 0x4c
+142 * bl checkRectangleOverlap__8dGameComFP7mVec3_cP7mVec3_cP7mVec3_cP7mVec3_cf | addi r4, r1, 0x40
+143 * cmpwi r3, 0x0                                 | addi r5, r1, 0x70
+144 * bne .L |40820048|                             | addi r6, r1, 0x64
+145 * lwz r0, 0x38(r26)                             | bl checkRectangleOverlap__8dGameComFP7mVec3_cP7mVec3_cP7mVec3_cP7mVec3_cf
+146 * add r3, r0, r30                               | cmpwi r3, 0x0
+147 * bl deleteActor__Q217dBgActorManager_c7BgObj_cFv | beq .L |41820018|
+148 * b .L |48000038|                               | lwz r0, 0x38(r26)
+149 * lfs f1, SYM2@sda21(r0)                        | addi r5, r1, 0x58
+150 * addi r3, r1, 0x4c                             | li r4, 0x0
+151 * addi r4, r1, 0x40                             | add r3, r0, r30
+152 * addi r5, r1, 0x64                             | bl createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c
+153 * addi r6, r1, 0x58                             | addi r30, r30, 0xc
+154 * bl checkRectangleOverlap__8dGameComFP7mVec3_cP7mVec3_cP7mVec3_cP7mVec3_cf | addi r27, r27, 0x1
+155 * cmpwi r3, 0x0                                 | lwz r0, 0x3c(r26)
+156 * beq .L |41820018|                             | cmpw r27, r0
+157 * lwz r0, 0x38(r26)                             | blt .L |4180FE48|
+158 * addi r5, r1, 0x70                             | addi r11, r1, 0xb0
+159 * li r4, 0x0                                    | psq_l f31, 0xd8(r1), 0, qr0
+160 * add r3, r0, r30                               | lfd f31, 0xd0(r1)
+161 * bl createActor__Q217dBgActorManager_c7BgObj_cFUlR7mVec3_c | psq_l f30, 0xc8(r1), 0, qr0
+162 * addi r30, r30, 0xc                            | lfd f30, 0xc0(r1)
+163 * addi r27, r27, 0x1                            | psq_l f29, 0xb8(r1), 0, qr0
+164 * lwz r0, 0x3c(r26)                             | lfd f29, 0xb0(r1)
+165 * cmpw r27, r0                                  | bl _restgpr_26
+166 * blt .L |4180FE24|                             | lwz r0, 0xe4(r1)
+167 * addi r11, r1, 0xb0                            | mtlr r0
+168 * psq_l f31, 0xd8(r1), 0, qr0                   | addi r1, r1, 0xe0
+169 * lfd f31, 0xd0(r1)                             | blr
+170 * psq_l f30, 0xc8(r1), 0, qr0                   | <none>
+171 * lfd f30, 0xc0(r1)                             | <none>
+172 * psq_l f29, 0xb8(r1), 0, qr0                   | <none>
+173 * lfd f29, 0xb0(r1)                             | <none>
+174 * bl _restgpr_26                                | <none>
+175 * lwz r0, 0xe4(r1)                              | <none>
+176 * mtlr r0                                       | <none>
+177 * addi r1, r1, 0xe0                             | <none>
+178 * blr                                           | <none>

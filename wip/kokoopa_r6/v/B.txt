@@ -1,0 +1,17 @@
+    struct KoopaShipPos_t {
+        mVec3_c mPos1;
+        mVec3_c mPos2;
+
+        void doInit() {
+            mPos1 = mVec3_c(0.0f, 50.0f, -100.0f);
+            mPos2 = mVec3_c(0.0f, 0.0f, -100.0f);
+            s_koopaShipPosGuard.mDone = true;
+        }
+
+        KoopaShipPos_t() {
+            if (!s_koopaShipPosGuard.mDone) {
+                doInit();
+            }
+        }
+    };
+

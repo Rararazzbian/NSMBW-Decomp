@@ -1,0 +1,22 @@
+.include "macros.inc"
+.file "auto_08_80378F00_bss"
+
+# 0x80378F00..0x80378F0C | size: 0xC
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | 0x80378F00 | size: 0x4
+.obj __init_80378F00, global
+	.skip 0x4
+.endobj __init_80378F00
+
+# .bss:0x4 | 0x80378F04 | size: 0x4
+.obj gap_08_80378F04_bss, global
+.hidden gap_08_80378F04_bss
+	.skip 0x4
+.endobj gap_08_80378F04_bss
+
+# .bss:0x8 | 0x80378F08 | size: 0x4
+.obj __HBMSEQSequenceList, global
+	.skip 0x4
+.endobj __HBMSEQSequenceList

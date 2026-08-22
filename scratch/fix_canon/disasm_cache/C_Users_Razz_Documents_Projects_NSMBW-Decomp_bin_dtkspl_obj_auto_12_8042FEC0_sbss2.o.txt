@@ -1,0 +1,27 @@
+.include "macros.inc"
+.file "auto_12_8042FEC0_sbss2"
+
+# 0x8042FEC0..0x8042FED8 | size: 0x18
+.section .sbss2, "a", @nobits
+.balign 8
+
+# .sbss2:0x0 | 0x8042FEC0 | size: 0x8
+.obj lbl_8042FEC0, global
+	.skip 0x8
+.endobj lbl_8042FEC0
+
+# .sbss2:0x8 | 0x8042FEC8 | size: 0x8
+.obj lbl_8042FEC8, global
+	.skip 0x8
+.endobj lbl_8042FEC8
+
+# .sbss2:0x10 | 0x8042FED0 | size: 0x4
+.obj lbl_8042FED0, global
+	.skip 0x4
+.endobj lbl_8042FED0
+
+# .sbss2:0x14 | 0x8042FED4 | size: 0x4
+.obj gap_12_8042FED4_sbss2, global
+.hidden gap_12_8042FED4_sbss2
+	.skip 0x4
+.endobj gap_12_8042FED4_sbss2

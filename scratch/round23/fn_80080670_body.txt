@@ -1,0 +1,63 @@
+// fn_80080670 — dBg_ctr_c member, frame 0xb0
+// (this = r3, pos = r4, f1 = f1) returns bool
+bool dBg_ctr_c::fn_80080670(mVec3_c *pos, float f1) {
+    if (!mpActor) {
+        return false;
+    }
+
+    if (mMode == 1) {
+        // Circle collision: distance check against sphere centered at
+        // (f1 + mPos.x, mPos.y, 0.0f) with radius mRadius.
+        f32 cx = f1 + mPos.x;
+        f32 cy = mPos.y;
+        f32 diff[3];
+        diff[0] = cx - pos->x;
+        diff[1] = cy - pos->y;
+        diff[2] = -pos->z;
+
+        f32 mag = PSVECMag(diff);
+        if (mag <= mRadius) {
+            return true;
+        }
+        return false;
+    }
+
+    // Rect collision
+    short rot = *mRotation;
+    if (rot == 0) {
+        // Axis-aligned: bounds check against mScratch[0] and mScratch[2].
+        // Y range: [mScratch[2].y, mScratch[0].y]
+        // X range: [f1 + mScratch[0].x, f1 + mScratch[2].x]
+        if (pos->y > mScratch[0].y) return false;
+        if (pos->y < mScratch[2].y) return false;
+        if (pos->x > f1 + mScratch[2].x) return false;
+        if (pos->x < f1 + mScratch[0].x) return false;
+        return true;
+    }
+
+    // Rotated rect: transform (pos - center) by Z rotation of -rot,
+    // then check the result against AABB in the local frame.
+    mAng angle(-rot);
+    f32 centerX = f1 + mScratch[0].x;
+    f32 centerY = mScratch[0].y;
+
+    mMtx_c rotMtx;
+    rotMtx.ZrotS(angle);
+
+    mMtx_c transMtx;
+    PSMTXTrans(transMtx, pos->x - centerX, pos->y - centerY, pos->z);
+
+    PSMTXConcat(rotMtx, transMtx, rotMtx);
+
+    nw4r::math::VEC3 result;
+    rotMtx.multVecZero(result);
+
+    // Local-frame AABB: x in [0, mOffset2.x - mCenter.x],
+    //                  y in [mOffset2.y - mCenter.y, 0]
+    if (result.x < 0.0f) return false;
+    if (result.x > mOffset2.x - mCenter.x) return false;
+    if (result.y > 0.0f) return false;
+    if (result.y < mOffset2.y - mCenter.y) return false;
+
+    return true;
+}

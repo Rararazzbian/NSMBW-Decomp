@@ -1,0 +1,17 @@
+.include "macros.inc"
+.file "auto_sinit__eggEffect_cpp_text"
+
+# 0x802D8BB0..0x802D8BB8 | size: 0x8
+.text
+.balign 4
+
+# .text:0x0 | 0x802D8BB0 | size: 0x8
+.fn "__sinit_\eggEffect_cpp", global
+/* 802D8BB0 00000040  38 60 00 00 */	li r3, cInvalidHandle__3EGG@sda21
+/* 802D8BB4 00000044  48 00 00 00 */	b __ct__Q34nw4r2ef10HandleBaseFv
+.endfn "__sinit_\eggEffect_cpp"
+
+# 0x802EDFB0..0x802EDFB4 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\eggEffect_cpp"

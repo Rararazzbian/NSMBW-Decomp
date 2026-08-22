@@ -1,0 +1,203 @@
+.include "macros.inc"
+.file "d_last_actor.cpp"
+
+# 0x80124D40..0x80124EB0 | size: 0x170
+.text
+.balign 4
+
+# .text:0x0 | 0x80124D40 | size: 0x4C
+# dLastActor_c_classInit()
+.fn dLastActor_c_classInit__Fv, global
+/* 80124D40 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80124D44 00000044  7C 08 02 A6 */	mflr r0
+/* 80124D48 00000048  38 60 00 70 */	li r3, 0x70
+/* 80124D4C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80124D50 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80124D54 00000054  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 80124D58 00000058  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80124D5C 0000005C  7C 7F 1B 78 */	mr r31, r3
+/* 80124D60 00000060  41 82 00 14 */	beq .L_80124D74
+/* 80124D64 00000064  48 00 00 01 */	bl __ct__7dBase_cFv
+/* 80124D68 00000068  3C 60 00 00 */	lis r3, __vt__12dLastActor_c@ha
+/* 80124D6C 0000006C  38 63 00 00 */	addi r3, r3, __vt__12dLastActor_c@l
+/* 80124D70 00000070  90 7F 00 60 */	stw r3, 0x60(r31)
+.L_80124D74:
+/* 80124D74 00000074  7F E3 FB 78 */	mr r3, r31
+/* 80124D78 00000078  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80124D7C 0000007C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80124D80 00000080  7C 08 03 A6 */	mtlr r0
+/* 80124D84 00000084  38 21 00 10 */	addi r1, r1, 0x10
+/* 80124D88 00000088  4E 80 00 20 */	blr
+.endfn dLastActor_c_classInit__Fv
+
+# .text:0x4C | 0x80124D8C | size: 0x4
+.fn gap_03_80124D8C_text, global
+.hidden gap_03_80124D8C_text
+/* 80124D8C 0000008C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80124D8C_text
+
+# .text:0x50 | 0x80124D90 | size: 0x8
+# dLastActor_c::create()
+.fn create__12dLastActor_cFv, global
+/* 80124D90 00000090  38 60 00 01 */	li r3, 0x1
+/* 80124D94 00000094  4E 80 00 20 */	blr
+.endfn create__12dLastActor_cFv
+
+# .text:0x58 | 0x80124D98 | size: 0x8
+.fn gap_03_80124D98_text, global
+.hidden gap_03_80124D98_text
+/* 80124D98 00000098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80124D9C 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80124D98_text
+
+# .text:0x60 | 0x80124DA0 | size: 0x8
+# dLastActor_c::doDelete()
+.fn doDelete__12dLastActor_cFv, global
+/* 80124DA0 000000A0  38 60 00 01 */	li r3, 0x1
+/* 80124DA4 000000A4  4E 80 00 20 */	blr
+.endfn doDelete__12dLastActor_cFv
+
+# .text:0x68 | 0x80124DA8 | size: 0x8
+.fn gap_03_80124DA8_text, global
+.hidden gap_03_80124DA8_text
+/* 80124DA8 000000A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80124DAC 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80124DA8_text
+
+# .text:0x70 | 0x80124DB0 | size: 0x84
+# dLastActor_c::execute()
+.fn execute__12dLastActor_cFv, global
+/* 80124DB0 000000B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80124DB4 000000B4  7C 08 02 A6 */	mflr r0
+/* 80124DB8 000000B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80124DBC 000000BC  80 00 00 00 */	lwz r0, sEffectManager__Q23EGG13EffectManager@sda21(r0)
+/* 80124DC0 000000C0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80124DC4 000000C4  41 82 00 48 */	beq .L_80124E0C
+/* 80124DC8 000000C8  A0 00 00 00 */	lhz r0, m_nowScene__8dScene_c@sda21(r0)
+/* 80124DCC 000000CC  28 00 00 03 */	cmplwi r0, 0x3
+/* 80124DD0 000000D0  40 82 00 0C */	bne .L_80124DDC
+/* 80124DD4 000000D4  48 00 00 01 */	bl calcGroupForWm__15EffectManager_cFv
+/* 80124DD8 000000D8  48 00 00 34 */	b .L_80124E0C
+.L_80124DDC:
+/* 80124DDC 000000DC  28 00 00 08 */	cmplwi r0, 0x8
+/* 80124DE0 000000E0  40 82 00 28 */	bne .L_80124E08
+/* 80124DE4 000000E4  80 60 00 00 */	lwz r3, m_instance__10dScMovie_c@sda21(r0)
+/* 80124DE8 000000E8  88 03 01 9C */	lbz r0, 0x19c(r3)
+/* 80124DEC 000000EC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80124DF0 000000F0  41 82 00 10 */	beq .L_80124E00
+/* 80124DF4 000000F4  88 03 01 9D */	lbz r0, 0x19d(r3)
+/* 80124DF8 000000F8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80124DFC 000000FC  41 82 00 10 */	beq .L_80124E0C
+.L_80124E00:
+/* 80124E00 00000100  48 00 00 01 */	bl calcGroup__15EffectManager_cFv
+/* 80124E04 00000104  48 00 00 08 */	b .L_80124E0C
+.L_80124E08:
+/* 80124E08 00000108  48 00 00 01 */	bl calcGroup__15EffectManager_cFv
+.L_80124E0C:
+/* 80124E0C 0000010C  48 00 00 01 */	bl setGameStop__8dGameComFv
+/* 80124E10 00000110  88 80 00 00 */	lbz r4, mExecStopReq__8dActor_c@sda21(r0)
+/* 80124E14 00000114  38 60 00 01 */	li r3, 0x1
+/* 80124E18 00000118  88 00 00 00 */	lbz r0, mDrawStopReq__8dActor_c@sda21(r0)
+/* 80124E1C 0000011C  98 80 00 00 */	stb r4, mExecStop__8dActor_c@sda21(r0)
+/* 80124E20 00000120  98 00 00 00 */	stb r0, mDrawStop__8dActor_c@sda21(r0)
+/* 80124E24 00000124  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80124E28 00000128  7C 08 03 A6 */	mtlr r0
+/* 80124E2C 0000012C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80124E30 00000130  4E 80 00 20 */	blr
+.endfn execute__12dLastActor_cFv
+
+# .text:0xF4 | 0x80124E34 | size: 0xC
+.fn gap_03_80124E34_text, global
+.hidden gap_03_80124E34_text
+/* 80124E34 00000134  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80124E38 00000138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80124E3C 0000013C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80124E34_text
+
+# .text:0x100 | 0x80124E40 | size: 0x8
+# dLastActor_c::draw()
+.fn draw__12dLastActor_cFv, global
+/* 80124E40 00000140  38 60 00 01 */	li r3, 0x1
+/* 80124E44 00000144  4E 80 00 20 */	blr
+.endfn draw__12dLastActor_cFv
+
+# .text:0x108 | 0x80124E48 | size: 0x8
+.fn gap_03_80124E48_text, global
+.hidden gap_03_80124E48_text
+/* 80124E48 00000148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80124E4C 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80124E48_text
+
+# .text:0x110 | 0x80124E50 | size: 0x58
+# dLastActor_c::~dLastActor_c()
+.fn __dt__12dLastActor_cFv, global
+/* 80124E50 00000150  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80124E54 00000154  7C 08 02 A6 */	mflr r0
+/* 80124E58 00000158  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80124E5C 0000015C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80124E60 00000160  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80124E64 00000164  7C 9F 23 78 */	mr r31, r4
+/* 80124E68 00000168  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80124E6C 0000016C  7C 7E 1B 78 */	mr r30, r3
+/* 80124E70 00000170  41 82 00 1C */	beq .L_80124E8C
+/* 80124E74 00000174  38 80 00 00 */	li r4, 0x0
+/* 80124E78 00000178  48 00 00 01 */	bl __dt__7dBase_cFv
+/* 80124E7C 0000017C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80124E80 00000180  40 81 00 0C */	ble .L_80124E8C
+/* 80124E84 00000184  7F C3 F3 78 */	mr r3, r30
+/* 80124E88 00000188  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_80124E8C:
+/* 80124E8C 0000018C  7F C3 F3 78 */	mr r3, r30
+/* 80124E90 00000190  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80124E94 00000194  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80124E98 00000198  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80124E9C 0000019C  7C 08 03 A6 */	mtlr r0
+/* 80124EA0 000001A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80124EA4 000001A4  4E 80 00 20 */	blr
+.endfn __dt__12dLastActor_cFv
+
+# .text:0x168 | 0x80124EA8 | size: 0x8
+.fn gap_03_80124EA8_text, global
+.hidden gap_03_80124EA8_text
+/* 80124EA8 000001A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80124EAC 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80124EA8_text
+
+# 0x80324D28..0x80324D78 | size: 0x50
+.data
+.balign 8
+
+# .data:0x0 | 0x80324D28 | size: 0x50
+# dLastActor_c::__vtable
+.obj __vt__12dLastActor_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__12dLastActor_cFv
+	.4byte preCreate__7dBase_cFv
+	.4byte postCreate__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__12dLastActor_cFv
+	.4byte preDelete__7dBase_cFv
+	.4byte postDelete__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__12dLastActor_cFv
+	.4byte preExecute__7dBase_cFv
+	.4byte postExecute__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__12dLastActor_cFv
+	.4byte preDraw__7dBase_cFv
+	.4byte postDraw__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__12dLastActor_cFv
+	.4byte getKindString__7dBase_cCFv
+.endobj __vt__12dLastActor_c
+
+# 0x80429658..0x80429660 | size: 0x8
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80429658 | size: 0x8
+.obj g_profile_LASTACTOR, global
+	.4byte dLastActor_c_classInit__Fv
+	.4byte 0x02ED02EC
+.endobj g_profile_LASTACTOR

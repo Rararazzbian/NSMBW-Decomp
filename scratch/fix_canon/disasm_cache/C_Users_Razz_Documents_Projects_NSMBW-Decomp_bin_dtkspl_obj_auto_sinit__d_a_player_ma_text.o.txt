@@ -1,0 +1,54 @@
+.include "macros.inc"
+.file "auto_sinit__d_a_player_ma_text"
+
+# 0x80061310..0x800613AC | size: 0x9C
+.text
+.balign 4
+
+# .text:0x0 | 0x80061310 | size: 0x9C
+.fn "__sinit_\d_a_player_manager_cpp", global
+/* 80061310 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80061314 00000044  7C 08 02 A6 */	mflr r0
+/* 80061318 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006131C 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80061320 00000050  3F E0 00 00 */	lis r31, m_playerID__9daPyMng_c@ha
+/* 80061324 00000054  3B FF 00 00 */	addi r31, r31, m_playerID__9daPyMng_c@l
+/* 80061328 00000058  38 7F 00 D0 */	addi r3, r31, 0xd0
+/* 8006132C 0000005C  48 00 00 01 */	bl __ct__13daPyDemoMng_cFv
+/* 80061330 00000060  3C 80 00 00 */	lis r4, __dt__13daPyDemoMng_cFv@ha
+/* 80061334 00000064  38 7F 00 D0 */	addi r3, r31, 0xd0
+/* 80061338 00000068  38 84 00 00 */	addi r4, r4, __dt__13daPyDemoMng_cFv@l
+/* 8006133C 0000006C  38 BF 00 C0 */	addi r5, r31, 0xc0
+/* 80061340 00000070  48 00 00 01 */	bl __register_global_object
+/* 80061344 00000074  38 7F 01 74 */	addi r3, r31, 0x174
+/* 80061348 00000078  48 00 00 01 */	bl __ct__11dMultiMng_cFv
+/* 8006134C 0000007C  3C 80 00 00 */	lis r4, __dt__11dMultiMng_cFv@ha
+/* 80061350 00000080  38 7F 01 74 */	addi r3, r31, 0x174
+/* 80061354 00000084  38 84 00 00 */	addi r4, r4, __dt__11dMultiMng_cFv@l
+/* 80061358 00000088  38 BF 01 68 */	addi r5, r31, 0x168
+/* 8006135C 0000008C  48 00 00 01 */	bl __register_global_object
+/* 80061360 00000090  38 7F 01 E0 */	addi r3, r31, 0x1e0
+/* 80061364 00000094  48 00 00 01 */	bl __ct__12dAttention_cFv
+/* 80061368 00000098  3C 80 00 00 */	lis r4, __dt__12dAttention_cFv@ha
+/* 8006136C 0000009C  38 7F 01 E0 */	addi r3, r31, 0x1e0
+/* 80061370 000000A0  38 84 00 00 */	addi r4, r4, __dt__12dAttention_cFv@l
+/* 80061374 000000A4  38 BF 01 D0 */	addi r5, r31, 0x1d0
+/* 80061378 000000A8  48 00 00 01 */	bl __register_global_object
+/* 8006137C 000000AC  38 7F 02 44 */	addi r3, r31, 0x244
+/* 80061380 000000B0  48 00 00 01 */	bl __ct__14dPyEffectMng_cFv
+/* 80061384 000000B4  3C 80 00 00 */	lis r4, __dt__14dPyEffectMng_cFv@ha
+/* 80061388 000000B8  38 7F 02 44 */	addi r3, r31, 0x244
+/* 8006138C 000000BC  38 84 00 00 */	addi r4, r4, __dt__14dPyEffectMng_cFv@l
+/* 80061390 000000C0  38 BF 02 38 */	addi r5, r31, 0x238
+/* 80061394 000000C4  48 00 00 01 */	bl __register_global_object
+/* 80061398 000000C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006139C 000000CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800613A0 000000D0  7C 08 03 A6 */	mtlr r0
+/* 800613A4 000000D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 800613A8 000000D8  4E 80 00 20 */	blr
+.endfn "__sinit_\d_a_player_manager_cpp"
+
+# 0x802EDD68..0x802EDD6C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_a_player_manager_cpp"

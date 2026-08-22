@@ -1,0 +1,1407 @@
+builddir = bin
+
+python = "C:\Program Files\Python314\python.exe"
+cc = compilers\Wii\1.1\mwcceppc.exe
+ld = compilers\Wii\1.1\mwldeppc.exe
+
+rule cw
+  command = $cc -c $ccflags $in -o $out -MD -gccdep -DREVOLUTION -I- -i include -i include\lib -i include\lib\MSL -i include\lib\MSL\internal -i include\lib\revolution\BTE\include -i include\lib\revolution\BTE\stack\include -i include\lib\revolution\BTE\stack\btm -i include\lib\revolution\BTE\bta\include -i include\lib\revolution\BTE\bta\sys -i include\lib\revolution\BTE\gki\common -i include\lib\revolution\BTE\gki\platform
+  deps = gcc
+  depfile = $depfile
+  description = Compile $in
+
+rule slice_dol
+  command = $python tools\slice_dol.py $in -s $symbols -o $out_dir
+  description = Slice $in
+
+rule slice_rel
+  command = $python tools\slice_rel.py $in -a $alias_file -o $out_dir
+  description = Slice $in
+
+rule gen_linkerscript
+  command = $python tools\gen_lcf.py $in -o $out
+  description = Generate $out
+
+rule link
+  command = $ld $ldflags $in -lcf $lcf -o $out
+  description = Link $out
+
+rule build_dol
+  command = $python tools\build_dol.py $in -o $out
+  description = Build $out
+
+rule write_str
+  command = $python -c "import sys; open(sys.argv[1], 'w').write('\0'.join([p.replace('/', '\u005c') for p in sys.argv[2:]])+'\0')" $out $paths
+  description = Write $out
+
+rule build_rel
+  command = $python tools\build_rel.py $in -o $out
+  description = Build $out
+
+rule configure
+  command = $python configure.py
+  generator = True
+  description = Configure $out
+
+rule decomp_context
+  command = $python tools/decompctx.py $in -o $out
+  depfile = $depfile
+  description = Create decomp.me context for $in
+
+build bin\compiled\wiimj2d\dol\bases\d_2d.o: cw source/dol/bases/d_2d.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_2d.d
+
+build bin\compiled\wiimj2d\dol\bases\d_CourseSelectGuide.o: cw source/dol/bases/d_CourseSelectGuide.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_CourseSelectGuide.d
+
+build bin\compiled\wiimj2d\dol\bases\d_SmallScore.o: cw source/dol/bases/d_SmallScore.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_SmallScore.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wipe_circle.o: cw source/dol/bases/d_wipe_circle.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_circle.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wipe_dokan.o: cw source/dol/bases/d_wipe_dokan.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_dokan.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wipe_kuppa.o: cw source/dol/bases/d_wipe_kuppa.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_kuppa.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wipe_mario.o: cw source/dol/bases/d_wipe_mario.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_mario.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_bigpile.o: cw source/dol/bases/d_a_en_bigpile.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_bigpile.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_blockmain.o: cw source/dol/bases/d_a_en_blockmain.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_blockmain.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_bros_base.o: cw source/dol/bases/d_a_en_bros_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_bros_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_carry.o: cw source/dol/bases/d_a_en_carry.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_carry.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_dfpakkun.o: cw source/dol/bases/d_a_en_dfpakkun.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_dfpakkun.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_door.o: cw source/dol/bases/d_a_en_door.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_door.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun.o: cw source/dol/bases/d_a_en_dpakkun.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun_base.o: cw source/dol/bases/d_a_en_dpakkun_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_jimen_pakkun_base.o: cw source/dol/bases/d_a_en_jimen_pakkun_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_jimen_pakkun_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_kuribo_base.o: cw source/dol/bases/d_a_en_kuribo_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_kuribo_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_lkuribo_base.o: cw source/dol/bases/d_a_en_lkuribo_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_lkuribo_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_net_nokonoko_base.o: cw source/dol/bases/d_a_en_net_nokonoko_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_net_nokonoko_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_shell.o: cw source/dol/bases/d_a_en_shell.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_shell.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_super_bigpile.o: cw source/dol/bases/d_a_en_super_bigpile.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_super_bigpile.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_togezo_base.o: cw source/dol/bases/d_a_en_togezo_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_togezo_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_fireball_base.o: cw source/dol/bases/d_a_fireball_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_fireball_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_net_enemy.o: cw source/dol/bases/d_a_net_enemy.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_net_enemy.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_player_base.o: cw source/dol/bases/d_a_player_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_player_demo_manager.o: cw source/dol/bases/d_a_player_demo_manager.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player_demo_manager.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_player_hio_ADJ.o: cw source/dol/bases/d_a_player_hio_ADJ.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player_hio_ADJ.d
+
+build bin\compiled\wiimj2d\dol\bases\d_ac_py_key.o: cw source/dol/bases/d_ac_py_key.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_ac_py_key.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_right_base.o: cw source/dol/bases/d_a_right_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_right_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_rot_block.o: cw source/dol/bases/d_a_rot_block.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_rot_block.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_rot_objs_base.o: cw source/dol/bases/d_a_rot_objs_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_rot_objs_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_sink_dokan.o: cw source/dol/bases/d_a_sink_dokan.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_sink_dokan.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_spin_child_base.o: cw source/dol/bases/d_a_spin_child_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_spin_child_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_actor.o: cw source/dol/bases/d_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_actor_state.o: cw source/dol/bases/d_actor_state.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_actor_state.d
+
+build bin\compiled\wiimj2d\dol\bases\d_actorcreate_manager.o: cw source/dol/bases/d_actorcreate_manager.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_actorcreate_manager.d
+
+build bin\compiled\wiimj2d\dol\bases\d_base.o: cw source/dol/bases/d_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_base.d
+
+build bin\compiled\wiimj2d\dol\bases\d_base_actor.o: cw source/dol/bases/d_base_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_base_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_cc.o: cw source/dol/bases/d_cc.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_cc.d
+
+build bin\compiled\wiimj2d\dol\bases\d_coin.o: cw source/dol/bases/d_coin.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_coin.d
+
+build bin\compiled\wiimj2d\dol\bases\d_cd.o: cw source/dol/bases/d_cd.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_cd.d
+
+build bin\compiled\wiimj2d\dol\bases\d_cyuukan.o: cw source/dol/bases/d_cyuukan.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_cyuukan.d
+
+build bin\compiled\wiimj2d\dol\bases\d_dylink.o: cw source/dol/bases/d_dylink.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_dylink.d
+
+build bin\compiled\wiimj2d\dol\bases\d_enemy.o: cw source/dol/bases/d_enemy.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy.d
+
+build bin\compiled\wiimj2d\dol\bases\d_enemy_carry.o: cw source/dol/bases/d_enemy_carry.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy_carry.d
+
+build bin\compiled\wiimj2d\dol\bases\d_enemy_death.o: cw source/dol/bases/d_enemy_death.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy_death.d
+
+build bin\compiled\wiimj2d\dol\bases\d_enemy_state.o: cw source/dol/bases/d_enemy_state.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy_state.d
+
+build bin\compiled\wiimj2d\dol\bases\d_lytbase.o: cw source/dol/bases/d_lytbase.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_lytbase.d
+
+build bin\compiled\wiimj2d\dol\bases\d_lyttextbox.o: cw source/dol/bases/d_lyttextbox.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_lyttextbox.d
+
+build bin\compiled\wiimj2d\dol\bases\d_main.o: cw source/dol/bases/d_main.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_main.d
+
+build bin\compiled\wiimj2d\dol\bases\d_md_actor.o: cw source/dol/bases/d_md_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_md_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_mj2d_data.o: cw source/dol/bases/d_mj2d_data.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_mj2d_data.d
+
+build bin\compiled\wiimj2d\dol\bases\d_multi_manager.o: cw source/dol/bases/d_multi_manager.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_multi_manager.d
+
+build bin\compiled\wiimj2d\dol\bases\d_next.o: cw source/dol/bases/d_next.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_next.d
+
+build bin\compiled\wiimj2d\dol\bases\d_rail.o: cw source/dol/bases/d_rail.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_rail.d
+
+build bin\compiled\wiimj2d\dol\bases\d_res_info.o: cw source/dol/bases/d_res_info.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_res_info.d
+
+build bin\compiled\wiimj2d\dol\bases\d_res.o: cw source/dol/bases/d_res.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_res.d
+
+build bin\compiled\wiimj2d\dol\bases\d_res_mng.o: cw source/dol/bases/d_res_mng.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_res_mng.d
+
+build bin\compiled\wiimj2d\dol\bases\d_scene.o: cw source/dol/bases/d_scene.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_scene.d
+
+build bin\compiled\wiimj2d\dol\bases\d_system.o: cw source/dol/bases/d_system.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_system.d
+
+build bin\compiled\wiimj2d\dol\bases\d_tag_processor.o: cw source/dol/bases/d_tag_processor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_tag_processor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_util_frame_counter.o: cw source/dol/bases/d_util_frame_counter.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_util_frame_counter.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_actor.o: cw source/dol/bases/d_wm_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_csvdata.o: cw source/dol/bases/d_wm_csvdata.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_csvdata.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_demo_actor.o: cw source/dol/bases/d_wm_demo_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_demo_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_en_path.o: cw source/dol/bases/d_wm_en_path.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_en_path.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_enemy.o: cw source/dol/bases/d_wm_enemy.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_enemy.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_obj_actor.o: cw source/dol/bases/d_wm_obj_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_obj_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_wm_path.o: cw source/dol/bases/d_wm_path.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_path.d
+
+build bin\compiled\wiimj2d\dol\bases\d_SelectCursor.o: cw source/dol/bases/d_SelectCursor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_SelectCursor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_SmallScoreManager.o: cw source/dol/bases/d_SmallScoreManager.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_SmallScoreManager.d
+
+build bin\compiled\wiimj2d\dol\bases\d_WiiStrap.o: cw source/dol/bases/d_WiiStrap.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_WiiStrap.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_cursor.o: cw source/dol/bases/d_a_cursor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_cursor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_eatcoin.o: cw source/dol/bases/d_a_en_eatcoin.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_eatcoin.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_en_hatena_balloon.o: cw source/dol/bases/d_a_en_hatena_balloon.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_hatena_balloon.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_enemy_ice.o: cw source/dol/bases/d_a_enemy_ice.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_enemy_ice.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_fireball_player.o: cw source/dol/bases/d_a_fireball_player.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_fireball_player.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_iceball.o: cw source/dol/bases/d_a_iceball.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_iceball.d
+
+build bin\compiled\wiimj2d\dol\bases\d_last_actor.o: cw source/dol/bases/d_last_actor.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_last_actor.d
+
+build bin\compiled\wiimj2d\dol\bases\d_a_player.o: cw source/dol/bases/d_a_player.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player.d
+
+build bin\compiled\wiimj2d\dol\bases\d_pausewindow.o: cw source/dol/bases/d_pausewindow.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_pausewindow.d
+
+build bin\compiled\wiimj2d\dol\bases\d_s_boot.o: cw source/dol/bases/d_s_boot.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\bases\d_s_boot.d
+
+build bin\compiled\wiimj2d\dol\sLib\s_lib.o: cw source/dol/sLib/s_lib.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_lib.d
+
+build bin\compiled\wiimj2d\dol\sLib\s_Phase.o: cw source/dol/sLib/s_Phase.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_Phase.d
+
+build bin\compiled\wiimj2d\dol\sLib\s_StateID.o: cw source/dol/sLib/s_StateID.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_StateID.d
+
+build bin\compiled\wiimj2d\dol\sLib\s_StateMethod.o: cw source/dol/sLib/s_StateMethod.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_StateMethod.d
+
+build bin\compiled\wiimj2d\dol\sLib\s_StateMethodUsr_FI.o: cw source/dol/sLib/s_StateMethodUsr_FI.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_StateMethodUsr_FI.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_counter.o: cw source/dol/cLib/c_counter.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_counter.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_dylink.o: cw source/dol/cLib/c_dylink.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_dylink.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_list.o: cw source/dol/cLib/c_list.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_list.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_m3d.o: cw source/dol/cLib/c_m3d.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_m3d.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_math.o: cw source/dol/cLib/c_math.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_math.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_random.o: cw source/dol/cLib/c_random.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_random.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_tree.o: cw source/dol/cLib/c_tree.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_tree.d
+
+build bin\compiled\wiimj2d\dol\cLib\c_owner_set.o: cw source/dol/cLib/c_owner_set.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_owner_set.d
+
+build bin\compiled\wiimj2d\dol\framework\f_helper_unk.o: cw source/dol/framework/f_helper_unk.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\framework\f_helper_unk.d
+
+build bin\compiled\wiimj2d\dol\framework\f_base.o: cw source/dol/framework/f_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\framework\f_base.d
+
+build bin\compiled\wiimj2d\dol\framework\f_list.o: cw source/dol/framework/f_list.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\framework\f_list.d
+
+build bin\compiled\wiimj2d\dol\framework\f_manager.o: cw source/dol/framework/f_manager.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\framework\f_manager.d
+
+build bin\compiled\wiimj2d\dol\framework\f_profile.o: cw source/dol/framework/f_profile.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\framework\f_profile.d
+
+build bin\compiled\wiimj2d\dol\framework\f_tree.o: cw source/dol/framework/f_tree.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\framework\f_tree.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_2d.o: cw source/dol/mLib/m_2d.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_2d.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d.o: cw source/dol/mLib/m_3d.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr.o: cw source/dol/mLib/m_3d/anm_chr.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr_blend.o: cw source/dol/mLib/m_3d/anm_chr_blend.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr_blend.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\anm_mat_clr.o: cw source/dol/mLib/m_3d/anm_mat_clr.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_mat_clr.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_pat.o: cw source/dol/mLib/m_3d/anm_tex_pat.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_pat.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_srt.o: cw source/dol/mLib/m_3d/anm_tex_srt.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_srt.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\anm_vis.o: cw source/dol/mLib/m_3d/anm_vis.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_vis.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\banm.o: cw source/dol/mLib/m_3d/banm.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\banm.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\bmdl.o: cw source/dol/mLib/m_3d/bmdl.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\bmdl.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\calc_ratio.o: cw source/dol/mLib/m_3d/calc_ratio.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\calc_ratio.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\fanm.o: cw source/dol/mLib/m_3d/fanm.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\fanm.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\m_3d_capture.o: cw source/dol/mLib/m_3d/m_3d_capture.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\m_3d_capture.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\mdl.o: cw source/dol/mLib/m_3d/mdl.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\mdl.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\scn_leaf.o: cw source/dol/mLib/m_3d/scn_leaf.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\scn_leaf.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_3d\smdl.o: cw source/dol/mLib/m_3d/smdl.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\smdl.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_allocator.o: cw source/dol/mLib/m_allocator.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_allocator.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_angle.o: cw source/dol/mLib/m_angle.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_angle.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_color_fader.o: cw source/dol/mLib/m_color_fader.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_color_fader.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_fader.o: cw source/dol/mLib/m_fader.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_fader.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_fader_base.o: cw source/dol/mLib/m_fader_base.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_fader_base.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_heap.o: cw source/dol/mLib/m_heap.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_heap.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_mtx.o: cw source/dol/mLib/m_mtx.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_mtx.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_vec.o: cw source/dol/mLib/m_vec.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_vec.d
+
+build bin\compiled\wiimj2d\dol\mLib\m_wipe_fader.o: cw source/dol/mLib/m_wipe_fader.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_wipe_fader.d
+
+build bin\compiled\wiimj2d\lib\nw4hbm\ut\list.o: cw source/lib/nw4hbm/ut/list.cpp
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\nw4hbm\ut\list.d
+
+build bin\compiled\wiimj2d\lib\revolution\ax\AXAlloc.o: cw source/lib/revolution/ax/AXAlloc.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\ax\AXAlloc.d
+
+build bin\compiled\wiimj2d\lib\revolution\base\PPCArch.o: cw source/lib/revolution/base/PPCArch.c
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\lib\revolution\base\PPCArch.d
+
+build bin\compiled\wiimj2d\lib\revolution\os\OSArena.o: cw source/lib/revolution/os/OSArena.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\os\OSArena.d
+
+build bin\compiled\wiimj2d\lib\revolution\os\OSCache.o: cw source/lib/revolution/os/OSCache.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\os\OSCache.d
+
+build bin\compiled\wiimj2d\lib\revolution\os\OSMutex.o: cw source/lib/revolution/os/OSMutex.c
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\lib\revolution\os\OSMutex.d
+
+build bin\compiled\wiimj2d\lib\revolution\gx\GXAttr.o: cw source/lib/revolution/gx/GXAttr.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXAttr.d
+
+build bin\compiled\wiimj2d\lib\revolution\gx\GXLight.o: cw source/lib/revolution/gx/GXLight.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXLight.d
+
+build bin\compiled\wiimj2d\lib\revolution\gx\GXTev.o: cw source/lib/revolution/gx/GXTev.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXTev.d
+
+build bin\compiled\wiimj2d\lib\revolution\gx\GXPixel.o: cw source/lib/revolution/gx/GXPixel.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXPixel.d
+
+build bin\compiled\wiimj2d\lib\revolution\gx\GXTransform.o: cw source/lib/revolution/gx/GXTransform.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXTransform.d
+
+build bin\compiled\wiimj2d\lib\revolution\mem\mem_frameHeap.o: cw source/lib/revolution/mem/mem_frameHeap.c
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\revolution\mem\mem_frameHeap.d
+
+build bin\compiled\wiimj2d\lib\nw4r\ut\ut_list.o: cw source/lib/nw4r/ut/ut_list.cpp
+  ccflags = -proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off
+  depfile = bin\compiled\wiimj2d\lib\nw4r\ut\ut_list.d
+
+build bin\compiled\wiimj2d\lib\egg\core\eggDisposer.o: cw source/lib/egg/core/eggDisposer.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\lib\egg\core\eggDisposer.d
+
+build bin\compiled\wiimj2d\lib\egg\core\eggColorFader.o: cw source/lib/egg/core/eggColorFader.cpp
+  ccflags = -proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file -enc SJIS
+  depfile = bin\compiled\wiimj2d\lib\egg\core\eggColorFader.d
+
+build bin\compiled\wiimj2d\runtime\global_destructor_chain.o: cw source/runtime/global_destructor_chain.c
+  ccflags = -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off
+  depfile = bin\compiled\wiimj2d\runtime\global_destructor_chain.d
+
+build bin\compiled\wiimj2d\runtime\class_arrays.o: cw source/runtime/class_arrays.cpp
+  ccflags = -proc gekko -fp hard -O4 -char signed -rtti off -enum int -func_align 4 -use_lmw_stmw on -Cpp_exceptions on
+  depfile = bin\compiled\wiimj2d\runtime\class_arrays.d
+
+build bin\compiled\wiimj2d\runtime\__init_cpp_exceptions.o: cw source/runtime/__init_cpp_exceptions.cpp
+  ccflags = -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off
+  depfile = bin\compiled\wiimj2d\runtime\__init_cpp_exceptions.d
+
+build bin\wiimj2d.lcf: gen_linkerscript slices\wiimj2d.json | bin\compiled\wiimj2d\dol\bases\d_2d.o bin\compiled\wiimj2d\dol\bases\d_CourseSelectGuide.o bin\compiled\wiimj2d\dol\bases\d_SmallScore.o bin\compiled\wiimj2d\dol\bases\d_wipe_circle.o bin\compiled\wiimj2d\dol\bases\d_wipe_dokan.o bin\compiled\wiimj2d\dol\bases\d_wipe_kuppa.o bin\compiled\wiimj2d\dol\bases\d_wipe_mario.o bin\compiled\wiimj2d\dol\bases\d_a_en_bigpile.o bin\compiled\wiimj2d\dol\bases\d_a_en_blockmain.o bin\compiled\wiimj2d\dol\bases\d_a_en_bros_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_carry.o bin\compiled\wiimj2d\dol\bases\d_a_en_dfpakkun.o bin\compiled\wiimj2d\dol\bases\d_a_en_door.o bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun.o bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_jimen_pakkun_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_kuribo_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_lkuribo_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_net_nokonoko_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_shell.o bin\compiled\wiimj2d\dol\bases\d_a_en_super_bigpile.o bin\compiled\wiimj2d\dol\bases\d_a_en_togezo_base.o bin\compiled\wiimj2d\dol\bases\d_a_fireball_base.o bin\compiled\wiimj2d\dol\bases\d_a_net_enemy.o bin\compiled\wiimj2d\dol\bases\d_a_player_base.o bin\compiled\wiimj2d\dol\bases\d_a_player_demo_manager.o bin\compiled\wiimj2d\dol\bases\d_a_player_hio_ADJ.o bin\compiled\wiimj2d\dol\bases\d_ac_py_key.o bin\compiled\wiimj2d\dol\bases\d_a_right_base.o bin\compiled\wiimj2d\dol\bases\d_a_rot_block.o bin\compiled\wiimj2d\dol\bases\d_a_rot_objs_base.o bin\compiled\wiimj2d\dol\bases\d_a_sink_dokan.o bin\compiled\wiimj2d\dol\bases\d_a_spin_child_base.o bin\compiled\wiimj2d\dol\bases\d_actor.o bin\compiled\wiimj2d\dol\bases\d_actor_state.o bin\compiled\wiimj2d\dol\bases\d_actorcreate_manager.o bin\compiled\wiimj2d\dol\bases\d_base.o bin\compiled\wiimj2d\dol\bases\d_base_actor.o bin\compiled\wiimj2d\dol\bases\d_cc.o bin\compiled\wiimj2d\dol\bases\d_coin.o bin\compiled\wiimj2d\dol\bases\d_cd.o bin\compiled\wiimj2d\dol\bases\d_cyuukan.o bin\compiled\wiimj2d\dol\bases\d_dylink.o bin\compiled\wiimj2d\dol\bases\d_enemy.o bin\compiled\wiimj2d\dol\bases\d_enemy_carry.o bin\compiled\wiimj2d\dol\bases\d_enemy_death.o bin\compiled\wiimj2d\dol\bases\d_enemy_state.o bin\compiled\wiimj2d\dol\bases\d_lytbase.o bin\compiled\wiimj2d\dol\bases\d_lyttextbox.o bin\compiled\wiimj2d\dol\bases\d_main.o bin\compiled\wiimj2d\dol\bases\d_md_actor.o bin\compiled\wiimj2d\dol\bases\d_mj2d_data.o bin\compiled\wiimj2d\dol\bases\d_multi_manager.o bin\compiled\wiimj2d\dol\bases\d_next.o bin\compiled\wiimj2d\dol\bases\d_rail.o bin\compiled\wiimj2d\dol\bases\d_res_info.o bin\compiled\wiimj2d\dol\bases\d_res.o bin\compiled\wiimj2d\dol\bases\d_res_mng.o bin\compiled\wiimj2d\dol\bases\d_scene.o bin\compiled\wiimj2d\dol\bases\d_system.o bin\compiled\wiimj2d\dol\bases\d_tag_processor.o bin\compiled\wiimj2d\dol\bases\d_util_frame_counter.o bin\compiled\wiimj2d\dol\bases\d_wm_actor.o bin\compiled\wiimj2d\dol\bases\d_wm_csvdata.o bin\compiled\wiimj2d\dol\bases\d_wm_demo_actor.o bin\compiled\wiimj2d\dol\bases\d_wm_en_path.o bin\compiled\wiimj2d\dol\bases\d_wm_enemy.o bin\compiled\wiimj2d\dol\bases\d_wm_obj_actor.o bin\compiled\wiimj2d\dol\bases\d_wm_path.o bin\compiled\wiimj2d\dol\bases\d_SelectCursor.o bin\compiled\wiimj2d\dol\bases\d_SmallScoreManager.o bin\compiled\wiimj2d\dol\bases\d_WiiStrap.o bin\compiled\wiimj2d\dol\bases\d_a_cursor.o bin\compiled\wiimj2d\dol\bases\d_a_en_eatcoin.o bin\compiled\wiimj2d\dol\bases\d_a_en_hatena_balloon.o bin\compiled\wiimj2d\dol\bases\d_a_enemy_ice.o bin\compiled\wiimj2d\dol\bases\d_a_fireball_player.o bin\compiled\wiimj2d\dol\bases\d_a_iceball.o bin\compiled\wiimj2d\dol\bases\d_last_actor.o bin\compiled\wiimj2d\dol\bases\d_a_player.o bin\compiled\wiimj2d\dol\bases\d_pausewindow.o bin\compiled\wiimj2d\dol\bases\d_s_boot.o bin\compiled\wiimj2d\dol\sLib\s_lib.o bin\compiled\wiimj2d\dol\sLib\s_Phase.o bin\compiled\wiimj2d\dol\sLib\s_StateID.o bin\compiled\wiimj2d\dol\sLib\s_StateMethod.o bin\compiled\wiimj2d\dol\sLib\s_StateMethodUsr_FI.o bin\compiled\wiimj2d\dol\cLib\c_counter.o bin\compiled\wiimj2d\dol\cLib\c_dylink.o bin\compiled\wiimj2d\dol\cLib\c_list.o bin\compiled\wiimj2d\dol\cLib\c_m3d.o bin\compiled\wiimj2d\dol\cLib\c_math.o bin\compiled\wiimj2d\dol\cLib\c_random.o bin\compiled\wiimj2d\dol\cLib\c_tree.o bin\compiled\wiimj2d\dol\cLib\c_owner_set.o bin\compiled\wiimj2d\dol\framework\f_helper_unk.o bin\compiled\wiimj2d\dol\framework\f_base.o bin\compiled\wiimj2d\dol\framework\f_list.o bin\compiled\wiimj2d\dol\framework\f_manager.o bin\compiled\wiimj2d\dol\framework\f_profile.o bin\compiled\wiimj2d\dol\framework\f_tree.o bin\compiled\wiimj2d\dol\mLib\m_2d.o bin\compiled\wiimj2d\dol\mLib\m_3d.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr_blend.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_mat_clr.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_pat.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_srt.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_vis.o bin\compiled\wiimj2d\dol\mLib\m_3d\banm.o bin\compiled\wiimj2d\dol\mLib\m_3d\bmdl.o bin\compiled\wiimj2d\dol\mLib\m_3d\calc_ratio.o bin\compiled\wiimj2d\dol\mLib\m_3d\fanm.o bin\compiled\wiimj2d\dol\mLib\m_3d\m_3d_capture.o bin\compiled\wiimj2d\dol\mLib\m_3d\mdl.o bin\compiled\wiimj2d\dol\mLib\m_3d\scn_leaf.o bin\compiled\wiimj2d\dol\mLib\m_3d\smdl.o bin\compiled\wiimj2d\dol\mLib\m_allocator.o bin\compiled\wiimj2d\dol\mLib\m_angle.o bin\compiled\wiimj2d\dol\mLib\m_color_fader.o bin\compiled\wiimj2d\dol\mLib\m_fader.o bin\compiled\wiimj2d\dol\mLib\m_fader_base.o bin\compiled\wiimj2d\dol\mLib\m_heap.o bin\compiled\wiimj2d\dol\mLib\m_mtx.o bin\compiled\wiimj2d\dol\mLib\m_vec.o bin\compiled\wiimj2d\dol\mLib\m_wipe_fader.o bin\compiled\wiimj2d\lib\nw4hbm\ut\list.o bin\compiled\wiimj2d\lib\revolution\ax\AXAlloc.o bin\compiled\wiimj2d\lib\revolution\base\PPCArch.o bin\compiled\wiimj2d\lib\revolution\os\OSArena.o bin\compiled\wiimj2d\lib\revolution\os\OSCache.o bin\compiled\wiimj2d\lib\revolution\os\OSMutex.o bin\compiled\wiimj2d\lib\revolution\gx\GXAttr.o bin\compiled\wiimj2d\lib\revolution\gx\GXLight.o bin\compiled\wiimj2d\lib\revolution\gx\GXTev.o bin\compiled\wiimj2d\lib\revolution\gx\GXPixel.o bin\compiled\wiimj2d\lib\revolution\gx\GXTransform.o bin\compiled\wiimj2d\lib\revolution\mem\mem_frameHeap.o bin\compiled\wiimj2d\lib\nw4r\ut\ut_list.o bin\compiled\wiimj2d\lib\egg\core\eggDisposer.o bin\compiled\wiimj2d\lib\egg\core\eggColorFader.o bin\compiled\wiimj2d\runtime\global_destructor_chain.o bin\compiled\wiimj2d\runtime\class_arrays.o bin\compiled\wiimj2d\runtime\__init_cpp_exceptions.o
+
+build bin\compiled\d_profileNP\runtime\rel_init.o: cw source/runtime/rel_init.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_profileNP\runtime\rel_init.d
+
+build bin\compiled\d_profileNP\runtime\global_destructor_chain.o: cw source/runtime/global_destructor_chain.c
+  ccflags = -c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0
+  depfile = bin\compiled\d_profileNP\runtime\global_destructor_chain.d
+
+build bin\compiled\d_profileNP\d_profileNP\d_profile.o: cw source/d_profileNP/d_profile.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_profileNP\d_profileNP\d_profile.d
+
+build bin\compiled\d_profileNP\d_profileNP\bases\d_controller_information.o: cw source/d_profileNP/bases/d_controller_information.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_profileNP\d_profileNP\bases\d_controller_information.d
+
+build bin\compiled\d_profileNP\d_profileNP\bases\d_yes_no_window.o: cw source/d_profileNP/bases/d_yes_no_window.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_profileNP\d_profileNP\bases\d_yes_no_window.d
+
+build bin\d_profileNP.lcf: gen_linkerscript slices\d_profileNP.json | bin\compiled\d_profileNP\runtime\rel_init.o bin\compiled\d_profileNP\runtime\global_destructor_chain.o bin\compiled\d_profileNP\d_profileNP\d_profile.o bin\compiled\d_profileNP\d_profileNP\bases\d_controller_information.o bin\compiled\d_profileNP\d_profileNP\bases\d_yes_no_window.o
+
+build bin\compiled\d_basesNP\runtime\rel_init.o: cw source/runtime/rel_init.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\runtime\rel_init.d
+
+build bin\compiled\d_basesNP\runtime\global_destructor_chain.o: cw source/runtime/global_destructor_chain.c
+  ccflags = -c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0
+  depfile = bin\compiled\d_basesNP\runtime\global_destructor_chain.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_awa.o: cw source/d_basesNP/bases/d_awa.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_awa.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_branch.o: cw source/d_basesNP/bases/d_a_branch.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_branch.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.o: cw source/d_basesNP/bases/d_a_dummy_door_child.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.o: cw source/d_basesNP/bases/d_a_dummy_door_parent.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_ac_switch.o: cw source/d_basesNP/bases/d_a_ac_switch.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_ac_switch.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.o: cw source/d_basesNP/bases/d_a_obj_fruit_tree.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_remo_door.o: cw source/d_basesNP/bases/d_a_remo_door.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_remo_door.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_antlion.o: cw source/d_basesNP/bases/d_a_wm_antlion.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_antlion.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cannon.o: cw source/d_basesNP/bases/d_a_wm_cannon.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cannon.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cloud.o: cw source/d_basesNP/bases/d_a_wm_cloud.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cloud.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan.o: cw source/d_basesNP/bases/d_a_wm_dokan.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.o: cw source/d_basesNP/bases/d_a_wm_dokan_route.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_ghost.o: cw source/d_basesNP/bases/d_a_wm_ghost.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_ghost.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_grid.o: cw source/d_basesNP/bases/d_a_wm_grid.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_grid.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.o: cw source/d_basesNP/bases/d_a_wm_kinoko_1up.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.o: cw source/d_basesNP/bases/d_a_wm_kinoko_base.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.o: cw source/d_basesNP/bases/d_a_wm_kinoko_red.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.o: cw source/d_basesNP/bases/d_a_wm_kinoko_star.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_note.o: cw source/d_basesNP/bases/d_a_wm_note.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_note.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach.o: cw source/d_basesNP/bases/d_a_wm_peach.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.o: cw source/d_basesNP/bases/d_a_wm_peach_castle.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.o: cw source/d_basesNP/bases/d_a_wm_sinkship.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.o: cw source/d_basesNP/bases/d_a_wm_smallcloud.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_tower.o: cw source/d_basesNP/bases/d_a_wm_tower.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_tower.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_s_autoselect.o: cw source/d_basesNP/bases/d_s_autoselect.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_s_autoselect.d
+
+build bin\compiled\d_basesNP\d_basesNP\bases\d_s_select.o: cw source/d_basesNP/bases/d_s_select.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_s_select.d
+
+build bin\d_basesNP.lcf: gen_linkerscript slices\d_basesNP.json | bin\compiled\d_basesNP\runtime\rel_init.o bin\compiled\d_basesNP\runtime\global_destructor_chain.o bin\compiled\d_basesNP\d_basesNP\bases\d_awa.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_branch.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_ac_switch.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_remo_door.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_antlion.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cannon.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cloud.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_ghost.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_grid.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_note.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_tower.o bin\compiled\d_basesNP\d_basesNP\bases\d_s_autoselect.o bin\compiled\d_basesNP\d_basesNP\bases\d_s_select.o
+
+build bin\compiled\d_enemiesNP\runtime\rel_init.o: cw source/runtime/rel_init.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_enemiesNP\runtime\rel_init.d
+
+build bin\compiled\d_enemiesNP\runtime\global_destructor_chain.o: cw source/runtime/global_destructor_chain.c
+  ccflags = -c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0
+  depfile = bin\compiled\d_enemiesNP\runtime\global_destructor_chain.d
+
+build bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.o: cw source/d_enemiesNP/bases/d_a_en_noko.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.d
+
+build bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.o: cw source/d_enemiesNP/bases/d_a_en_snake_block.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.d
+
+build bin\d_enemiesNP.lcf: gen_linkerscript slices\d_enemiesNP.json | bin\compiled\d_enemiesNP\runtime\rel_init.o bin\compiled\d_enemiesNP\runtime\global_destructor_chain.o bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.o bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.o
+
+build bin\compiled\d_en_bossNP\runtime\rel_init.o: cw source/runtime/rel_init.cpp
+  ccflags = -sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS
+  depfile = bin\compiled\d_en_bossNP\runtime\rel_init.d
+
+build bin\d_en_bossNP.lcf: gen_linkerscript slices\d_en_bossNP.json | bin\compiled\d_en_bossNP\runtime\rel_init.o
+
+build bin\sliced\wiimj2d\filler_0.o bin\sliced\wiimj2d\filler_1.o bin\sliced\wiimj2d\filler_2.o bin\sliced\wiimj2d\filler_3.o bin\sliced\wiimj2d\filler_4.o bin\sliced\wiimj2d\filler_5.o bin\sliced\wiimj2d\filler_6.o bin\sliced\wiimj2d\filler_7.o bin\sliced\wiimj2d\filler_8.o bin\sliced\wiimj2d\filler_9.o bin\sliced\wiimj2d\dol\bases\d_a_player_hio_ADJ.o bin\sliced\wiimj2d\filler_10.o bin\sliced\wiimj2d\filler_11.o bin\sliced\wiimj2d\filler_12.o bin\sliced\wiimj2d\filler_13.o bin\sliced\wiimj2d\filler_14.o bin\sliced\wiimj2d\filler_15.o bin\sliced\wiimj2d\filler_16.o bin\sliced\wiimj2d\filler_17.o bin\sliced\wiimj2d\filler_18.o bin\sliced\wiimj2d\filler_19.o bin\sliced\wiimj2d\filler_20.o bin\sliced\wiimj2d\filler_21.o bin\sliced\wiimj2d\filler_22.o bin\sliced\wiimj2d\filler_23.o bin\sliced\wiimj2d\filler_24.o bin\sliced\wiimj2d\filler_25.o bin\sliced\wiimj2d\filler_26.o bin\sliced\wiimj2d\filler_27.o bin\sliced\wiimj2d\filler_28.o bin\sliced\wiimj2d\filler_29.o bin\sliced\wiimj2d\filler_30.o bin\sliced\wiimj2d\filler_31.o bin\sliced\wiimj2d\filler_32.o bin\sliced\wiimj2d\filler_33.o bin\sliced\wiimj2d\filler_34.o bin\sliced\wiimj2d\filler_35.o bin\sliced\wiimj2d\filler_36.o bin\sliced\wiimj2d\filler_37.o bin\sliced\wiimj2d\filler_38.o bin\sliced\wiimj2d\filler_39.o bin\sliced\wiimj2d\filler_40.o bin\sliced\wiimj2d\filler_41.o bin\sliced\wiimj2d\filler_42.o bin\sliced\wiimj2d\filler_43.o bin\sliced\wiimj2d\filler_44.o bin\sliced\wiimj2d\filler_45.o bin\sliced\wiimj2d\filler_46.o bin\sliced\wiimj2d\filler_47.o bin\sliced\wiimj2d\filler_48.o bin\sliced\wiimj2d\filler_49.o bin\sliced\wiimj2d\filler_50.o bin\sliced\wiimj2d\filler_51.o bin\sliced\wiimj2d\filler_52.o bin\sliced\wiimj2d\filler_53.o bin\sliced\wiimj2d\filler_54.o bin\sliced\wiimj2d\filler_55.o bin\sliced\wiimj2d\filler_56.o bin\sliced\wiimj2d\filler_57.o bin\sliced\wiimj2d\filler_58.o bin\sliced\wiimj2d\filler_59.o bin\sliced\wiimj2d\filler_60.o bin\sliced\wiimj2d\filler_61.o bin\sliced\wiimj2d\filler_62.o bin\sliced\wiimj2d\filler_63.o bin\sliced\wiimj2d\filler_64.o bin\sliced\wiimj2d\filler_65.o bin\sliced\wiimj2d\filler_66.o bin\sliced\wiimj2d\filler_67.o bin\sliced\wiimj2d\filler_68.o bin\sliced\wiimj2d\filler_69.o bin\sliced\wiimj2d\filler_70.o bin\sliced\wiimj2d\filler_71.o bin\sliced\wiimj2d\filler_72.o bin\sliced\wiimj2d\filler_73.o bin\sliced\wiimj2d\filler_74.o bin\sliced\wiimj2d\filler_75.o bin\sliced\wiimj2d\filler_76.o bin\sliced\wiimj2d\filler_77.o bin\sliced\wiimj2d\filler_78.o bin\sliced\wiimj2d\filler_79.o bin\sliced\wiimj2d\filler_80.o bin\sliced\wiimj2d\filler_81.o: slice_dol original\wiimj2d.dol | syms.txt slices\wiimj2d.json
+  symbols = syms.txt
+  out_dir = bin\sliced
+
+build bin\wiimj2d.elf: link bin\sliced\wiimj2d\filler_0.o bin\compiled\wiimj2d\dol\bases\d_2d.o bin\sliced\wiimj2d\filler_1.o bin\compiled\wiimj2d\dol\bases\d_CourseSelectGuide.o bin\sliced\wiimj2d\filler_2.o bin\compiled\wiimj2d\dol\bases\d_SmallScore.o bin\sliced\wiimj2d\filler_3.o bin\compiled\wiimj2d\dol\bases\d_wipe_circle.o bin\compiled\wiimj2d\dol\bases\d_wipe_dokan.o bin\compiled\wiimj2d\dol\bases\d_wipe_kuppa.o bin\compiled\wiimj2d\dol\bases\d_wipe_mario.o bin\sliced\wiimj2d\filler_4.o bin\compiled\wiimj2d\dol\bases\d_a_en_bigpile.o bin\compiled\wiimj2d\dol\bases\d_a_en_blockmain.o bin\compiled\wiimj2d\dol\bases\d_a_en_bros_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_carry.o bin\sliced\wiimj2d\filler_5.o bin\compiled\wiimj2d\dol\bases\d_a_en_dfpakkun.o bin\compiled\wiimj2d\dol\bases\d_a_en_door.o bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun.o bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_jimen_pakkun_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_kuribo_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_lkuribo_base.o bin\compiled\wiimj2d\dol\bases\d_a_en_net_nokonoko_base.o bin\sliced\wiimj2d\filler_6.o bin\compiled\wiimj2d\dol\bases\d_a_en_shell.o bin\compiled\wiimj2d\dol\bases\d_a_en_super_bigpile.o bin\compiled\wiimj2d\dol\bases\d_a_en_togezo_base.o bin\compiled\wiimj2d\dol\bases\d_a_fireball_base.o bin\sliced\wiimj2d\filler_7.o bin\compiled\wiimj2d\dol\bases\d_a_net_enemy.o bin\sliced\wiimj2d\filler_8.o bin\compiled\wiimj2d\dol\bases\d_a_player_base.o bin\sliced\wiimj2d\filler_9.o bin\compiled\wiimj2d\dol\bases\d_a_player_demo_manager.o bin\sliced\wiimj2d\dol\bases\d_a_player_hio_ADJ.o bin\compiled\wiimj2d\dol\bases\d_ac_py_key.o bin\sliced\wiimj2d\filler_10.o bin\compiled\wiimj2d\dol\bases\d_a_right_base.o bin\compiled\wiimj2d\dol\bases\d_a_rot_block.o bin\compiled\wiimj2d\dol\bases\d_a_rot_objs_base.o bin\sliced\wiimj2d\filler_11.o bin\compiled\wiimj2d\dol\bases\d_a_sink_dokan.o bin\compiled\wiimj2d\dol\bases\d_a_spin_child_base.o bin\sliced\wiimj2d\filler_12.o bin\compiled\wiimj2d\dol\bases\d_actor.o bin\sliced\wiimj2d\filler_13.o bin\compiled\wiimj2d\dol\bases\d_actor_state.o bin\sliced\wiimj2d\filler_14.o bin\compiled\wiimj2d\dol\bases\d_actorcreate_manager.o bin\sliced\wiimj2d\filler_15.o bin\compiled\wiimj2d\dol\bases\d_base.o bin\sliced\wiimj2d\filler_16.o bin\compiled\wiimj2d\dol\bases\d_base_actor.o bin\sliced\wiimj2d\filler_17.o bin\compiled\wiimj2d\dol\bases\d_cc.o bin\sliced\wiimj2d\filler_18.o bin\compiled\wiimj2d\dol\bases\d_coin.o bin\compiled\wiimj2d\dol\bases\d_cd.o bin\sliced\wiimj2d\filler_19.o bin\compiled\wiimj2d\dol\bases\d_cyuukan.o bin\sliced\wiimj2d\filler_20.o bin\compiled\wiimj2d\dol\bases\d_dylink.o bin\sliced\wiimj2d\filler_21.o bin\compiled\wiimj2d\dol\bases\d_enemy.o bin\sliced\wiimj2d\filler_22.o bin\compiled\wiimj2d\dol\bases\d_enemy_carry.o bin\sliced\wiimj2d\filler_23.o bin\compiled\wiimj2d\dol\bases\d_enemy_death.o bin\sliced\wiimj2d\filler_24.o bin\compiled\wiimj2d\dol\bases\d_enemy_state.o bin\sliced\wiimj2d\filler_25.o bin\compiled\wiimj2d\dol\bases\d_lytbase.o bin\compiled\wiimj2d\dol\bases\d_lyttextbox.o bin\sliced\wiimj2d\filler_26.o bin\compiled\wiimj2d\dol\bases\d_main.o bin\sliced\wiimj2d\filler_27.o bin\compiled\wiimj2d\dol\bases\d_md_actor.o bin\sliced\wiimj2d\filler_28.o bin\compiled\wiimj2d\dol\bases\d_mj2d_data.o bin\sliced\wiimj2d\filler_29.o bin\compiled\wiimj2d\dol\bases\d_multi_manager.o bin\sliced\wiimj2d\filler_30.o bin\compiled\wiimj2d\dol\bases\d_next.o bin\sliced\wiimj2d\filler_31.o bin\compiled\wiimj2d\dol\bases\d_rail.o bin\sliced\wiimj2d\filler_32.o bin\compiled\wiimj2d\dol\bases\d_res_info.o bin\sliced\wiimj2d\filler_33.o bin\compiled\wiimj2d\dol\bases\d_res.o bin\compiled\wiimj2d\dol\bases\d_res_mng.o bin\sliced\wiimj2d\filler_34.o bin\compiled\wiimj2d\dol\bases\d_scene.o bin\sliced\wiimj2d\filler_35.o bin\compiled\wiimj2d\dol\bases\d_system.o bin\compiled\wiimj2d\dol\bases\d_tag_processor.o bin\sliced\wiimj2d\filler_36.o bin\compiled\wiimj2d\dol\bases\d_util_frame_counter.o bin\sliced\wiimj2d\filler_37.o bin\compiled\wiimj2d\dol\bases\d_wm_actor.o bin\sliced\wiimj2d\filler_38.o bin\compiled\wiimj2d\dol\bases\d_wm_csvdata.o bin\compiled\wiimj2d\dol\bases\d_wm_demo_actor.o bin\compiled\wiimj2d\dol\bases\d_wm_en_path.o bin\compiled\wiimj2d\dol\bases\d_wm_enemy.o bin\sliced\wiimj2d\filler_39.o bin\compiled\wiimj2d\dol\bases\d_wm_obj_actor.o bin\compiled\wiimj2d\dol\bases\d_wm_path.o bin\sliced\wiimj2d\filler_40.o bin\compiled\wiimj2d\dol\bases\d_SelectCursor.o bin\sliced\wiimj2d\filler_41.o bin\compiled\wiimj2d\dol\bases\d_SmallScoreManager.o bin\sliced\wiimj2d\filler_42.o bin\compiled\wiimj2d\dol\bases\d_WiiStrap.o bin\sliced\wiimj2d\filler_43.o bin\compiled\wiimj2d\dol\bases\d_a_cursor.o bin\sliced\wiimj2d\filler_44.o bin\compiled\wiimj2d\dol\bases\d_a_en_eatcoin.o bin\sliced\wiimj2d\filler_45.o bin\compiled\wiimj2d\dol\bases\d_a_en_hatena_balloon.o bin\compiled\wiimj2d\dol\bases\d_a_enemy_ice.o bin\sliced\wiimj2d\filler_46.o bin\compiled\wiimj2d\dol\bases\d_a_fireball_player.o bin\sliced\wiimj2d\filler_47.o bin\compiled\wiimj2d\dol\bases\d_a_iceball.o bin\sliced\wiimj2d\filler_48.o bin\compiled\wiimj2d\dol\bases\d_last_actor.o bin\sliced\wiimj2d\filler_49.o bin\compiled\wiimj2d\dol\bases\d_a_player.o bin\sliced\wiimj2d\filler_50.o bin\compiled\wiimj2d\dol\bases\d_pausewindow.o bin\compiled\wiimj2d\dol\bases\d_s_boot.o bin\sliced\wiimj2d\filler_51.o bin\compiled\wiimj2d\dol\sLib\s_lib.o bin\compiled\wiimj2d\dol\sLib\s_Phase.o bin\sliced\wiimj2d\filler_52.o bin\compiled\wiimj2d\dol\sLib\s_StateID.o bin\compiled\wiimj2d\dol\sLib\s_StateMethod.o bin\compiled\wiimj2d\dol\sLib\s_StateMethodUsr_FI.o bin\compiled\wiimj2d\dol\cLib\c_counter.o bin\sliced\wiimj2d\filler_53.o bin\compiled\wiimj2d\dol\cLib\c_dylink.o bin\sliced\wiimj2d\filler_54.o bin\compiled\wiimj2d\dol\cLib\c_list.o bin\compiled\wiimj2d\dol\cLib\c_m3d.o bin\sliced\wiimj2d\filler_55.o bin\compiled\wiimj2d\dol\cLib\c_math.o bin\compiled\wiimj2d\dol\cLib\c_random.o bin\compiled\wiimj2d\dol\cLib\c_tree.o bin\compiled\wiimj2d\dol\cLib\c_owner_set.o bin\compiled\wiimj2d\dol\framework\f_helper_unk.o bin\compiled\wiimj2d\dol\framework\f_base.o bin\compiled\wiimj2d\dol\framework\f_list.o bin\compiled\wiimj2d\dol\framework\f_manager.o bin\compiled\wiimj2d\dol\framework\f_profile.o bin\compiled\wiimj2d\dol\framework\f_tree.o bin\sliced\wiimj2d\filler_56.o bin\compiled\wiimj2d\dol\mLib\m_2d.o bin\compiled\wiimj2d\dol\mLib\m_3d.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr_blend.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_mat_clr.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_pat.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_srt.o bin\compiled\wiimj2d\dol\mLib\m_3d\anm_vis.o bin\compiled\wiimj2d\dol\mLib\m_3d\banm.o bin\compiled\wiimj2d\dol\mLib\m_3d\bmdl.o bin\compiled\wiimj2d\dol\mLib\m_3d\calc_ratio.o bin\compiled\wiimj2d\dol\mLib\m_3d\fanm.o bin\compiled\wiimj2d\dol\mLib\m_3d\m_3d_capture.o bin\compiled\wiimj2d\dol\mLib\m_3d\mdl.o bin\compiled\wiimj2d\dol\mLib\m_3d\scn_leaf.o bin\compiled\wiimj2d\dol\mLib\m_3d\smdl.o bin\compiled\wiimj2d\dol\mLib\m_allocator.o bin\compiled\wiimj2d\dol\mLib\m_angle.o bin\sliced\wiimj2d\filler_57.o bin\compiled\wiimj2d\dol\mLib\m_color_fader.o bin\sliced\wiimj2d\filler_58.o bin\compiled\wiimj2d\dol\mLib\m_fader.o bin\sliced\wiimj2d\filler_59.o bin\compiled\wiimj2d\dol\mLib\m_fader_base.o bin\sliced\wiimj2d\filler_60.o bin\compiled\wiimj2d\dol\mLib\m_heap.o bin\sliced\wiimj2d\filler_61.o bin\compiled\wiimj2d\dol\mLib\m_mtx.o bin\sliced\wiimj2d\filler_62.o bin\compiled\wiimj2d\dol\mLib\m_vec.o bin\sliced\wiimj2d\filler_63.o bin\compiled\wiimj2d\dol\mLib\m_wipe_fader.o bin\sliced\wiimj2d\filler_64.o bin\compiled\wiimj2d\lib\nw4hbm\ut\list.o bin\sliced\wiimj2d\filler_65.o bin\compiled\wiimj2d\lib\revolution\ax\AXAlloc.o bin\sliced\wiimj2d\filler_66.o bin\compiled\wiimj2d\lib\revolution\base\PPCArch.o bin\sliced\wiimj2d\filler_67.o bin\compiled\wiimj2d\lib\revolution\os\OSArena.o bin\sliced\wiimj2d\filler_68.o bin\compiled\wiimj2d\lib\revolution\os\OSCache.o bin\sliced\wiimj2d\filler_69.o bin\compiled\wiimj2d\lib\revolution\os\OSMutex.o bin\sliced\wiimj2d\filler_70.o bin\compiled\wiimj2d\lib\revolution\gx\GXAttr.o bin\sliced\wiimj2d\filler_71.o bin\compiled\wiimj2d\lib\revolution\gx\GXLight.o bin\sliced\wiimj2d\filler_72.o bin\compiled\wiimj2d\lib\revolution\gx\GXTev.o bin\sliced\wiimj2d\filler_73.o bin\compiled\wiimj2d\lib\revolution\gx\GXPixel.o bin\sliced\wiimj2d\filler_74.o bin\compiled\wiimj2d\lib\revolution\gx\GXTransform.o bin\sliced\wiimj2d\filler_75.o bin\compiled\wiimj2d\lib\revolution\mem\mem_frameHeap.o bin\sliced\wiimj2d\filler_76.o bin\compiled\wiimj2d\lib\nw4r\ut\ut_list.o bin\sliced\wiimj2d\filler_77.o bin\compiled\wiimj2d\lib\egg\core\eggDisposer.o bin\sliced\wiimj2d\filler_78.o bin\compiled\wiimj2d\lib\egg\core\eggColorFader.o bin\sliced\wiimj2d\filler_79.o bin\compiled\wiimj2d\runtime\global_destructor_chain.o bin\compiled\wiimj2d\runtime\class_arrays.o bin\sliced\wiimj2d\filler_80.o bin\compiled\wiimj2d\runtime\__init_cpp_exceptions.o bin\sliced\wiimj2d\filler_81.o | bin\wiimj2d.lcf
+  lcf = bin\wiimj2d.lcf
+  ldflags = -proc gekko -fp hard
+
+build bin\wiimj2d.dol: build_dol bin\wiimj2d.elf
+
+build bin\d_profileNP.preplf: link bin\compiled\d_profileNP\runtime\rel_init.o bin\compiled\d_profileNP\runtime\global_destructor_chain.o bin\compiled\d_profileNP\d_profileNP\d_profile.o bin\compiled\d_profileNP\d_profileNP\bases\d_controller_information.o bin\compiled\d_profileNP\d_profileNP\bases\d_yes_no_window.o | bin\d_profileNP.lcf
+  lcf = bin\d_profileNP.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r
+
+build bin\d_profileNP.plf: link bin\compiled\d_profileNP\runtime\rel_init.o bin\compiled\d_profileNP\runtime\global_destructor_chain.o bin\compiled\d_profileNP\d_profileNP\d_profile.o bin\compiled\d_profileNP\d_profileNP\bases\d_controller_information.o bin\compiled\d_profileNP\d_profileNP\bases\d_yes_no_window.o | bin\modules.lcf
+  lcf = bin\modules.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off
+
+build bin\d_profileNP.rel: build_rel bin\wiimj2d.elf bin\d_profileNP.plf bin\d_basesNP.plf bin\d_enemiesNP.plf bin\d_en_bossNP.plf bin\wiimj2d.str
+
+build bin\sliced\d_basesNP\filler_0.o bin\sliced\d_basesNP\filler_1.o bin\sliced\d_basesNP\filler_2.o bin\sliced\d_basesNP\filler_3.o bin\sliced\d_basesNP\filler_4.o bin\sliced\d_basesNP\filler_5.o bin\sliced\d_basesNP\filler_6.o bin\sliced\d_basesNP\filler_7.o bin\sliced\d_basesNP\filler_8.o bin\sliced\d_basesNP\filler_9.o bin\sliced\d_basesNP\filler_10.o bin\sliced\d_basesNP\filler_11.o bin\sliced\d_basesNP\filler_12.o bin\sliced\d_basesNP\filler_13.o bin\sliced\d_basesNP\filler_14.o bin\sliced\d_basesNP\filler_15.o bin\sliced\d_basesNP\filler_16.o: slice_rel original\d_basesNP.rel | alias_db.txt slices\d_basesNP.json
+  alias_file = alias_db.txt
+  out_dir = bin\sliced
+
+build bin\d_basesNP.preplf: link bin\compiled\d_basesNP\runtime\rel_init.o bin\compiled\d_basesNP\runtime\global_destructor_chain.o bin\sliced\d_basesNP\filler_0.o bin\compiled\d_basesNP\d_basesNP\bases\d_awa.o bin\sliced\d_basesNP\filler_1.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_branch.o bin\sliced\d_basesNP\filler_2.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.o bin\sliced\d_basesNP\filler_3.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_ac_switch.o bin\sliced\d_basesNP\filler_4.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.o bin\sliced\d_basesNP\filler_5.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_remo_door.o bin\sliced\d_basesNP\filler_6.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_antlion.o bin\sliced\d_basesNP\filler_7.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cannon.o bin\sliced\d_basesNP\filler_8.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cloud.o bin\sliced\d_basesNP\filler_9.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_ghost.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_grid.o bin\sliced\d_basesNP\filler_10.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.o bin\sliced\d_basesNP\filler_11.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_note.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.o bin\sliced\d_basesNP\filler_12.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.o bin\sliced\d_basesNP\filler_13.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_tower.o bin\sliced\d_basesNP\filler_14.o bin\compiled\d_basesNP\d_basesNP\bases\d_s_autoselect.o bin\sliced\d_basesNP\filler_15.o bin\compiled\d_basesNP\d_basesNP\bases\d_s_select.o bin\sliced\d_basesNP\filler_16.o | bin\d_basesNP.lcf
+  lcf = bin\d_basesNP.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r
+
+build bin\d_basesNP.plf: link bin\compiled\d_basesNP\runtime\rel_init.o bin\compiled\d_basesNP\runtime\global_destructor_chain.o bin\sliced\d_basesNP\filler_0.o bin\compiled\d_basesNP\d_basesNP\bases\d_awa.o bin\sliced\d_basesNP\filler_1.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_branch.o bin\sliced\d_basesNP\filler_2.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.o bin\sliced\d_basesNP\filler_3.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_ac_switch.o bin\sliced\d_basesNP\filler_4.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.o bin\sliced\d_basesNP\filler_5.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_remo_door.o bin\sliced\d_basesNP\filler_6.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_antlion.o bin\sliced\d_basesNP\filler_7.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cannon.o bin\sliced\d_basesNP\filler_8.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cloud.o bin\sliced\d_basesNP\filler_9.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_ghost.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_grid.o bin\sliced\d_basesNP\filler_10.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.o bin\sliced\d_basesNP\filler_11.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_note.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.o bin\sliced\d_basesNP\filler_12.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.o bin\sliced\d_basesNP\filler_13.o bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_tower.o bin\sliced\d_basesNP\filler_14.o bin\compiled\d_basesNP\d_basesNP\bases\d_s_autoselect.o bin\sliced\d_basesNP\filler_15.o bin\compiled\d_basesNP\d_basesNP\bases\d_s_select.o bin\sliced\d_basesNP\filler_16.o | bin\modules.lcf
+  lcf = bin\modules.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off
+
+build bin\d_basesNP.rel: build_rel bin\wiimj2d.elf bin\d_profileNP.plf bin\d_basesNP.plf bin\d_enemiesNP.plf bin\d_en_bossNP.plf bin\wiimj2d.str
+
+build bin\sliced\d_enemiesNP\filler_0.o bin\sliced\d_enemiesNP\filler_1.o bin\sliced\d_enemiesNP\filler_2.o: slice_rel original\d_enemiesNP.rel | alias_db.txt slices\d_enemiesNP.json
+  alias_file = alias_db.txt
+  out_dir = bin\sliced
+
+build bin\d_enemiesNP.preplf: link bin\compiled\d_enemiesNP\runtime\rel_init.o bin\compiled\d_enemiesNP\runtime\global_destructor_chain.o bin\sliced\d_enemiesNP\filler_0.o bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.o bin\sliced\d_enemiesNP\filler_1.o bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.o bin\sliced\d_enemiesNP\filler_2.o | bin\d_enemiesNP.lcf
+  lcf = bin\d_enemiesNP.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r
+
+build bin\d_enemiesNP.plf: link bin\compiled\d_enemiesNP\runtime\rel_init.o bin\compiled\d_enemiesNP\runtime\global_destructor_chain.o bin\sliced\d_enemiesNP\filler_0.o bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.o bin\sliced\d_enemiesNP\filler_1.o bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.o bin\sliced\d_enemiesNP\filler_2.o | bin\modules.lcf
+  lcf = bin\modules.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off
+
+build bin\d_enemiesNP.rel: build_rel bin\wiimj2d.elf bin\d_profileNP.plf bin\d_basesNP.plf bin\d_enemiesNP.plf bin\d_en_bossNP.plf bin\wiimj2d.str
+
+build bin\sliced\d_en_bossNP\filler_0.o: slice_rel original\d_en_bossNP.rel | alias_db.txt slices\d_en_bossNP.json
+  alias_file = alias_db.txt
+  out_dir = bin\sliced
+
+build bin\d_en_bossNP.preplf: link bin\compiled\d_en_bossNP\runtime\rel_init.o bin\sliced\d_en_bossNP\filler_0.o | bin\d_en_bossNP.lcf
+  lcf = bin\d_en_bossNP.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r
+
+build bin\d_en_bossNP.plf: link bin\compiled\d_en_bossNP\runtime\rel_init.o bin\sliced\d_en_bossNP\filler_0.o | bin\modules.lcf
+  lcf = bin\modules.lcf
+  ldflags = -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off
+
+build bin\d_en_bossNP.rel: build_rel bin\wiimj2d.elf bin\d_profileNP.plf bin\d_basesNP.plf bin\d_enemiesNP.plf bin\d_en_bossNP.plf bin\wiimj2d.str
+
+build bin\wiimj2d.str: write_str
+  paths = d:\home\Project\WIIMJ2D\EU\PRD\RVL\bin\d_profileNP.plf $
+    d:\home\Project\WIIMJ2D\EU\PRD\RVL\bin\d_basesNP.plf $
+    d:\home\Project\WIIMJ2D\EU\PRD\RVL\bin\d_enemiesNP.plf $
+    d:\home\Project\WIIMJ2D\EU\PRD\RVL\bin\d_en_bossNP.plf
+
+build bin\modules.lcf: gen_linkerscript slices\d_profileNP.json slices\d_basesNP.json slices\d_enemiesNP.json slices\d_en_bossNP.json | bin\d_profileNP.preplf bin\d_basesNP.preplf bin\d_enemiesNP.preplf bin\d_en_bossNP.preplf
+
+build bin\decompctx\wiimj2d\dol\bases\d_2d.hpp: decomp_context source\dol\bases\d_2d.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_2d.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_CourseSelectGuide.hpp: decomp_context source\dol\bases\d_CourseSelectGuide.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_CourseSelectGuide.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_SmallScore.hpp: decomp_context source\dol\bases\d_SmallScore.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_SmallScore.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wipe_circle.hpp: decomp_context source\dol\bases\d_wipe_circle.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_circle.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wipe_dokan.hpp: decomp_context source\dol\bases\d_wipe_dokan.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_dokan.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wipe_kuppa.hpp: decomp_context source\dol\bases\d_wipe_kuppa.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_kuppa.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wipe_mario.hpp: decomp_context source\dol\bases\d_wipe_mario.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wipe_mario.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_bigpile.hpp: decomp_context source\dol\bases\d_a_en_bigpile.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_bigpile.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_blockmain.hpp: decomp_context source\dol\bases\d_a_en_blockmain.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_blockmain.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_bros_base.hpp: decomp_context source\dol\bases\d_a_en_bros_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_bros_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_carry.hpp: decomp_context source\dol\bases\d_a_en_carry.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_carry.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_dfpakkun.hpp: decomp_context source\dol\bases\d_a_en_dfpakkun.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_dfpakkun.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_door.hpp: decomp_context source\dol\bases\d_a_en_door.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_door.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_dpakkun.hpp: decomp_context source\dol\bases\d_a_en_dpakkun.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_dpakkun_base.hpp: decomp_context source\dol\bases\d_a_en_dpakkun_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_dpakkun_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_jimen_pakkun_base.hpp: decomp_context source\dol\bases\d_a_en_jimen_pakkun_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_jimen_pakkun_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_kuribo_base.hpp: decomp_context source\dol\bases\d_a_en_kuribo_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_kuribo_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_lkuribo_base.hpp: decomp_context source\dol\bases\d_a_en_lkuribo_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_lkuribo_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_net_nokonoko_base.hpp: decomp_context source\dol\bases\d_a_en_net_nokonoko_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_net_nokonoko_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_shell.hpp: decomp_context source\dol\bases\d_a_en_shell.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_shell.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_super_bigpile.hpp: decomp_context source\dol\bases\d_a_en_super_bigpile.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_super_bigpile.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_togezo_base.hpp: decomp_context source\dol\bases\d_a_en_togezo_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_togezo_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_fireball_base.hpp: decomp_context source\dol\bases\d_a_fireball_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_fireball_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_net_enemy.hpp: decomp_context source\dol\bases\d_a_net_enemy.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_net_enemy.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_player_base.hpp: decomp_context source\dol\bases\d_a_player_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_player_demo_manager.hpp: decomp_context source\dol\bases\d_a_player_demo_manager.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player_demo_manager.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_player_hio_ADJ.hpp: decomp_context source\dol\bases\d_a_player_hio_ADJ.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player_hio_ADJ.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_ac_py_key.hpp: decomp_context source\dol\bases\d_ac_py_key.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_ac_py_key.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_right_base.hpp: decomp_context source\dol\bases\d_a_right_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_right_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_rot_block.hpp: decomp_context source\dol\bases\d_a_rot_block.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_rot_block.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_rot_objs_base.hpp: decomp_context source\dol\bases\d_a_rot_objs_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_rot_objs_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_sink_dokan.hpp: decomp_context source\dol\bases\d_a_sink_dokan.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_sink_dokan.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_spin_child_base.hpp: decomp_context source\dol\bases\d_a_spin_child_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_spin_child_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_actor.hpp: decomp_context source\dol\bases\d_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_actor_state.hpp: decomp_context source\dol\bases\d_actor_state.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_actor_state.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_actorcreate_manager.hpp: decomp_context source\dol\bases\d_actorcreate_manager.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_actorcreate_manager.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_base.hpp: decomp_context source\dol\bases\d_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_base.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_base_actor.hpp: decomp_context source\dol\bases\d_base_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_base_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_cc.hpp: decomp_context source\dol\bases\d_cc.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_cc.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_coin.hpp: decomp_context source\dol\bases\d_coin.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_coin.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_cd.hpp: decomp_context source\dol\bases\d_cd.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_cd.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_cyuukan.hpp: decomp_context source\dol\bases\d_cyuukan.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_cyuukan.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_dylink.hpp: decomp_context source\dol\bases\d_dylink.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_dylink.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_enemy.hpp: decomp_context source\dol\bases\d_enemy.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_enemy_carry.hpp: decomp_context source\dol\bases\d_enemy_carry.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy_carry.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_enemy_death.hpp: decomp_context source\dol\bases\d_enemy_death.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy_death.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_enemy_state.hpp: decomp_context source\dol\bases\d_enemy_state.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_enemy_state.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_lytbase.hpp: decomp_context source\dol\bases\d_lytbase.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_lytbase.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_lyttextbox.hpp: decomp_context source\dol\bases\d_lyttextbox.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_lyttextbox.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_main.hpp: decomp_context source\dol\bases\d_main.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_main.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_md_actor.hpp: decomp_context source\dol\bases\d_md_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_md_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_mj2d_data.hpp: decomp_context source\dol\bases\d_mj2d_data.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_mj2d_data.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_multi_manager.hpp: decomp_context source\dol\bases\d_multi_manager.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_multi_manager.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_next.hpp: decomp_context source\dol\bases\d_next.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_next.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_rail.hpp: decomp_context source\dol\bases\d_rail.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_rail.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_res_info.hpp: decomp_context source\dol\bases\d_res_info.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_res_info.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_res.hpp: decomp_context source\dol\bases\d_res.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_res.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_res_mng.hpp: decomp_context source\dol\bases\d_res_mng.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_res_mng.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_scene.hpp: decomp_context source\dol\bases\d_scene.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_scene.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_system.hpp: decomp_context source\dol\bases\d_system.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_system.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_tag_processor.hpp: decomp_context source\dol\bases\d_tag_processor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_tag_processor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_util_frame_counter.hpp: decomp_context source\dol\bases\d_util_frame_counter.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_util_frame_counter.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_actor.hpp: decomp_context source\dol\bases\d_wm_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_csvdata.hpp: decomp_context source\dol\bases\d_wm_csvdata.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_csvdata.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_demo_actor.hpp: decomp_context source\dol\bases\d_wm_demo_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_demo_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_en_path.hpp: decomp_context source\dol\bases\d_wm_en_path.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_en_path.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_enemy.hpp: decomp_context source\dol\bases\d_wm_enemy.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_enemy.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_obj_actor.hpp: decomp_context source\dol\bases\d_wm_obj_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_obj_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_wm_path.hpp: decomp_context source\dol\bases\d_wm_path.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_wm_path.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_SelectCursor.hpp: decomp_context source\dol\bases\d_SelectCursor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_SelectCursor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_SmallScoreManager.hpp: decomp_context source\dol\bases\d_SmallScoreManager.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_SmallScoreManager.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_WiiStrap.hpp: decomp_context source\dol\bases\d_WiiStrap.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_WiiStrap.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_cursor.hpp: decomp_context source\dol\bases\d_a_cursor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_cursor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_eatcoin.hpp: decomp_context source\dol\bases\d_a_en_eatcoin.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_eatcoin.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_en_hatena_balloon.hpp: decomp_context source\dol\bases\d_a_en_hatena_balloon.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_en_hatena_balloon.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_enemy_ice.hpp: decomp_context source\dol\bases\d_a_enemy_ice.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_enemy_ice.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_fireball_player.hpp: decomp_context source\dol\bases\d_a_fireball_player.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_fireball_player.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_iceball.hpp: decomp_context source\dol\bases\d_a_iceball.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_iceball.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_last_actor.hpp: decomp_context source\dol\bases\d_last_actor.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_last_actor.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_a_player.hpp: decomp_context source\dol\bases\d_a_player.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_a_player.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_pausewindow.hpp: decomp_context source\dol\bases\d_pausewindow.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_pausewindow.d
+
+build bin\decompctx\wiimj2d\dol\bases\d_s_boot.hpp: decomp_context source\dol\bases\d_s_boot.cpp
+  depfile = bin\compiled\wiimj2d\dol\bases\d_s_boot.d
+
+build bin\decompctx\wiimj2d\dol\sLib\s_lib.hpp: decomp_context source\dol\sLib\s_lib.cpp
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_lib.d
+
+build bin\decompctx\wiimj2d\dol\sLib\s_Phase.hpp: decomp_context source\dol\sLib\s_Phase.cpp
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_Phase.d
+
+build bin\decompctx\wiimj2d\dol\sLib\s_StateID.hpp: decomp_context source\dol\sLib\s_StateID.cpp
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_StateID.d
+
+build bin\decompctx\wiimj2d\dol\sLib\s_StateMethod.hpp: decomp_context source\dol\sLib\s_StateMethod.cpp
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_StateMethod.d
+
+build bin\decompctx\wiimj2d\dol\sLib\s_StateMethodUsr_FI.hpp: decomp_context source\dol\sLib\s_StateMethodUsr_FI.cpp
+  depfile = bin\compiled\wiimj2d\dol\sLib\s_StateMethodUsr_FI.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_counter.hpp: decomp_context source\dol\cLib\c_counter.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_counter.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_dylink.hpp: decomp_context source\dol\cLib\c_dylink.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_dylink.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_list.hpp: decomp_context source\dol\cLib\c_list.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_list.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_m3d.hpp: decomp_context source\dol\cLib\c_m3d.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_m3d.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_math.hpp: decomp_context source\dol\cLib\c_math.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_math.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_random.hpp: decomp_context source\dol\cLib\c_random.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_random.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_tree.hpp: decomp_context source\dol\cLib\c_tree.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_tree.d
+
+build bin\decompctx\wiimj2d\dol\cLib\c_owner_set.hpp: decomp_context source\dol\cLib\c_owner_set.cpp
+  depfile = bin\compiled\wiimj2d\dol\cLib\c_owner_set.d
+
+build bin\decompctx\wiimj2d\dol\framework\f_helper_unk.hpp: decomp_context source\dol\framework\f_helper_unk.cpp
+  depfile = bin\compiled\wiimj2d\dol\framework\f_helper_unk.d
+
+build bin\decompctx\wiimj2d\dol\framework\f_base.hpp: decomp_context source\dol\framework\f_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\framework\f_base.d
+
+build bin\decompctx\wiimj2d\dol\framework\f_list.hpp: decomp_context source\dol\framework\f_list.cpp
+  depfile = bin\compiled\wiimj2d\dol\framework\f_list.d
+
+build bin\decompctx\wiimj2d\dol\framework\f_manager.hpp: decomp_context source\dol\framework\f_manager.cpp
+  depfile = bin\compiled\wiimj2d\dol\framework\f_manager.d
+
+build bin\decompctx\wiimj2d\dol\framework\f_profile.hpp: decomp_context source\dol\framework\f_profile.cpp
+  depfile = bin\compiled\wiimj2d\dol\framework\f_profile.d
+
+build bin\decompctx\wiimj2d\dol\framework\f_tree.hpp: decomp_context source\dol\framework\f_tree.cpp
+  depfile = bin\compiled\wiimj2d\dol\framework\f_tree.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_2d.hpp: decomp_context source\dol\mLib\m_2d.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_2d.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d.hpp: decomp_context source\dol\mLib\m_3d.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\anm_chr.hpp: decomp_context source\dol\mLib\m_3d\anm_chr.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\anm_chr_blend.hpp: decomp_context source\dol\mLib\m_3d\anm_chr_blend.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_chr_blend.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\anm_mat_clr.hpp: decomp_context source\dol\mLib\m_3d\anm_mat_clr.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_mat_clr.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\anm_tex_pat.hpp: decomp_context source\dol\mLib\m_3d\anm_tex_pat.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_pat.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\anm_tex_srt.hpp: decomp_context source\dol\mLib\m_3d\anm_tex_srt.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_tex_srt.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\anm_vis.hpp: decomp_context source\dol\mLib\m_3d\anm_vis.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\anm_vis.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\banm.hpp: decomp_context source\dol\mLib\m_3d\banm.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\banm.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\bmdl.hpp: decomp_context source\dol\mLib\m_3d\bmdl.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\bmdl.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\calc_ratio.hpp: decomp_context source\dol\mLib\m_3d\calc_ratio.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\calc_ratio.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\fanm.hpp: decomp_context source\dol\mLib\m_3d\fanm.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\fanm.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\m_3d_capture.hpp: decomp_context source\dol\mLib\m_3d\m_3d_capture.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\m_3d_capture.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\mdl.hpp: decomp_context source\dol\mLib\m_3d\mdl.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\mdl.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\scn_leaf.hpp: decomp_context source\dol\mLib\m_3d\scn_leaf.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\scn_leaf.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_3d\smdl.hpp: decomp_context source\dol\mLib\m_3d\smdl.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_3d\smdl.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_allocator.hpp: decomp_context source\dol\mLib\m_allocator.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_allocator.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_angle.hpp: decomp_context source\dol\mLib\m_angle.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_angle.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_color_fader.hpp: decomp_context source\dol\mLib\m_color_fader.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_color_fader.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_fader.hpp: decomp_context source\dol\mLib\m_fader.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_fader.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_fader_base.hpp: decomp_context source\dol\mLib\m_fader_base.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_fader_base.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_heap.hpp: decomp_context source\dol\mLib\m_heap.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_heap.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_mtx.hpp: decomp_context source\dol\mLib\m_mtx.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_mtx.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_vec.hpp: decomp_context source\dol\mLib\m_vec.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_vec.d
+
+build bin\decompctx\wiimj2d\dol\mLib\m_wipe_fader.hpp: decomp_context source\dol\mLib\m_wipe_fader.cpp
+  depfile = bin\compiled\wiimj2d\dol\mLib\m_wipe_fader.d
+
+build bin\decompctx\wiimj2d\lib\nw4hbm\ut\list.hpp: decomp_context source\lib\nw4hbm\ut\list.cpp
+  depfile = bin\compiled\wiimj2d\lib\nw4hbm\ut\list.d
+
+build bin\decompctx\wiimj2d\lib\revolution\ax\AXAlloc.hpp: decomp_context source\lib\revolution\ax\AXAlloc.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\ax\AXAlloc.d
+
+build bin\decompctx\wiimj2d\lib\revolution\base\PPCArch.hpp: decomp_context source\lib\revolution\base\PPCArch.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\base\PPCArch.d
+
+build bin\decompctx\wiimj2d\lib\revolution\os\OSArena.hpp: decomp_context source\lib\revolution\os\OSArena.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\os\OSArena.d
+
+build bin\decompctx\wiimj2d\lib\revolution\os\OSCache.hpp: decomp_context source\lib\revolution\os\OSCache.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\os\OSCache.d
+
+build bin\decompctx\wiimj2d\lib\revolution\os\OSMutex.hpp: decomp_context source\lib\revolution\os\OSMutex.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\os\OSMutex.d
+
+build bin\decompctx\wiimj2d\lib\revolution\gx\GXAttr.hpp: decomp_context source\lib\revolution\gx\GXAttr.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXAttr.d
+
+build bin\decompctx\wiimj2d\lib\revolution\gx\GXLight.hpp: decomp_context source\lib\revolution\gx\GXLight.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXLight.d
+
+build bin\decompctx\wiimj2d\lib\revolution\gx\GXTev.hpp: decomp_context source\lib\revolution\gx\GXTev.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXTev.d
+
+build bin\decompctx\wiimj2d\lib\revolution\gx\GXPixel.hpp: decomp_context source\lib\revolution\gx\GXPixel.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXPixel.d
+
+build bin\decompctx\wiimj2d\lib\revolution\gx\GXTransform.hpp: decomp_context source\lib\revolution\gx\GXTransform.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\gx\GXTransform.d
+
+build bin\decompctx\wiimj2d\lib\revolution\mem\mem_frameHeap.hpp: decomp_context source\lib\revolution\mem\mem_frameHeap.c
+  depfile = bin\compiled\wiimj2d\lib\revolution\mem\mem_frameHeap.d
+
+build bin\decompctx\wiimj2d\lib\nw4r\ut\ut_list.hpp: decomp_context source\lib\nw4r\ut\ut_list.cpp
+  depfile = bin\compiled\wiimj2d\lib\nw4r\ut\ut_list.d
+
+build bin\decompctx\wiimj2d\lib\egg\core\eggDisposer.hpp: decomp_context source\lib\egg\core\eggDisposer.cpp
+  depfile = bin\compiled\wiimj2d\lib\egg\core\eggDisposer.d
+
+build bin\decompctx\wiimj2d\lib\egg\core\eggColorFader.hpp: decomp_context source\lib\egg\core\eggColorFader.cpp
+  depfile = bin\compiled\wiimj2d\lib\egg\core\eggColorFader.d
+
+build bin\decompctx\wiimj2d\runtime\global_destructor_chain.hpp: decomp_context source\runtime\global_destructor_chain.c
+  depfile = bin\compiled\wiimj2d\runtime\global_destructor_chain.d
+
+build bin\decompctx\wiimj2d\runtime\class_arrays.hpp: decomp_context source\runtime\class_arrays.cpp
+  depfile = bin\compiled\wiimj2d\runtime\class_arrays.d
+
+build bin\decompctx\wiimj2d\runtime\__init_cpp_exceptions.hpp: decomp_context source\runtime\__init_cpp_exceptions.cpp
+  depfile = bin\compiled\wiimj2d\runtime\__init_cpp_exceptions.d
+
+build bin\decompctx\d_profileNP\runtime\rel_init.hpp: decomp_context source\runtime\rel_init.cpp
+  depfile = bin\compiled\d_profileNP\runtime\rel_init.d
+
+build bin\decompctx\d_profileNP\runtime\global_destructor_chain.hpp: decomp_context source\runtime\global_destructor_chain.c
+  depfile = bin\compiled\d_profileNP\runtime\global_destructor_chain.d
+
+build bin\decompctx\d_profileNP\d_profileNP\d_profile.hpp: decomp_context source\d_profileNP\d_profile.cpp
+  depfile = bin\compiled\d_profileNP\d_profileNP\d_profile.d
+
+build bin\decompctx\d_profileNP\d_profileNP\bases\d_controller_information.hpp: decomp_context source\d_profileNP\bases\d_controller_information.cpp
+  depfile = bin\compiled\d_profileNP\d_profileNP\bases\d_controller_information.d
+
+build bin\decompctx\d_profileNP\d_profileNP\bases\d_yes_no_window.hpp: decomp_context source\d_profileNP\bases\d_yes_no_window.cpp
+  depfile = bin\compiled\d_profileNP\d_profileNP\bases\d_yes_no_window.d
+
+build bin\decompctx\d_basesNP\runtime\rel_init.hpp: decomp_context source\runtime\rel_init.cpp
+  depfile = bin\compiled\d_basesNP\runtime\rel_init.d
+
+build bin\decompctx\d_basesNP\runtime\global_destructor_chain.hpp: decomp_context source\runtime\global_destructor_chain.c
+  depfile = bin\compiled\d_basesNP\runtime\global_destructor_chain.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_awa.hpp: decomp_context source\d_basesNP\bases\d_awa.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_awa.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_branch.hpp: decomp_context source\d_basesNP\bases\d_a_branch.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_branch.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.hpp: decomp_context source\d_basesNP\bases\d_a_dummy_door_child.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_child.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.hpp: decomp_context source\d_basesNP\bases\d_a_dummy_door_parent.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_dummy_door_parent.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_ac_switch.hpp: decomp_context source\d_basesNP\bases\d_a_ac_switch.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_ac_switch.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.hpp: decomp_context source\d_basesNP\bases\d_a_obj_fruit_tree.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_obj_fruit_tree.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_remo_door.hpp: decomp_context source\d_basesNP\bases\d_a_remo_door.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_remo_door.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_antlion.hpp: decomp_context source\d_basesNP\bases\d_a_wm_antlion.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_antlion.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_cannon.hpp: decomp_context source\d_basesNP\bases\d_a_wm_cannon.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cannon.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_cloud.hpp: decomp_context source\d_basesNP\bases\d_a_wm_cloud.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_cloud.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_dokan.hpp: decomp_context source\d_basesNP\bases\d_a_wm_dokan.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.hpp: decomp_context source\d_basesNP\bases\d_a_wm_dokan_route.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_dokan_route.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_ghost.hpp: decomp_context source\d_basesNP\bases\d_a_wm_ghost.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_ghost.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_grid.hpp: decomp_context source\d_basesNP\bases\d_a_wm_grid.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_grid.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.hpp: decomp_context source\d_basesNP\bases\d_a_wm_kinoko_1up.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_1up.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.hpp: decomp_context source\d_basesNP\bases\d_a_wm_kinoko_base.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_base.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.hpp: decomp_context source\d_basesNP\bases\d_a_wm_kinoko_red.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_red.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.hpp: decomp_context source\d_basesNP\bases\d_a_wm_kinoko_star.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_kinoko_star.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_note.hpp: decomp_context source\d_basesNP\bases\d_a_wm_note.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_note.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_peach.hpp: decomp_context source\d_basesNP\bases\d_a_wm_peach.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.hpp: decomp_context source\d_basesNP\bases\d_a_wm_peach_castle.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_peach_castle.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.hpp: decomp_context source\d_basesNP\bases\d_a_wm_sinkship.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_sinkship.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.hpp: decomp_context source\d_basesNP\bases\d_a_wm_smallcloud.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_smallcloud.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_a_wm_tower.hpp: decomp_context source\d_basesNP\bases\d_a_wm_tower.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_a_wm_tower.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_s_autoselect.hpp: decomp_context source\d_basesNP\bases\d_s_autoselect.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_s_autoselect.d
+
+build bin\decompctx\d_basesNP\d_basesNP\bases\d_s_select.hpp: decomp_context source\d_basesNP\bases\d_s_select.cpp
+  depfile = bin\compiled\d_basesNP\d_basesNP\bases\d_s_select.d
+
+build bin\decompctx\d_enemiesNP\runtime\rel_init.hpp: decomp_context source\runtime\rel_init.cpp
+  depfile = bin\compiled\d_enemiesNP\runtime\rel_init.d
+
+build bin\decompctx\d_enemiesNP\runtime\global_destructor_chain.hpp: decomp_context source\runtime\global_destructor_chain.c
+  depfile = bin\compiled\d_enemiesNP\runtime\global_destructor_chain.d
+
+build bin\decompctx\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.hpp: decomp_context source\d_enemiesNP\bases\d_a_en_noko.cpp
+  depfile = bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_noko.d
+
+build bin\decompctx\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.hpp: decomp_context source\d_enemiesNP\bases\d_a_en_snake_block.cpp
+  depfile = bin\compiled\d_enemiesNP\d_enemiesNP\bases\d_a_en_snake_block.d
+
+build bin\decompctx\d_en_bossNP\runtime\rel_init.hpp: decomp_context source\runtime\rel_init.cpp
+  depfile = bin\compiled\d_en_bossNP\runtime\rel_init.d
+
+build build.ninja: configure slices\wiimj2d.json slices\d_profileNP.json slices\d_basesNP.json slices\d_enemiesNP.json slices\d_en_bossNP.json
+
+default bin\wiimj2d.dol bin\d_profileNP.rel bin\d_basesNP.rel bin\d_enemiesNP.rel bin\d_en_bossNP.rel

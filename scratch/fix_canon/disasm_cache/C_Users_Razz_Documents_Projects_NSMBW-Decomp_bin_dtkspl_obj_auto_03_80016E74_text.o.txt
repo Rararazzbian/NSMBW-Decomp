@@ -1,0 +1,1891 @@
+.include "macros.inc"
+.file "auto_03_80016E74_text"
+
+# 0x80016E74..0x80018330 | size: 0x14BC
+.text
+.balign 4
+
+# .text:0x0 | 0x80016E74 | size: 0xC
+.fn pad_03_80016E74_text, local
+/* 80016E74 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80016E78 00000044  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80016E7C 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_80016E74_text
+
+# .text:0xC | 0x80016E80 | size: 0x58
+# sFStateID_c<dWarningBattery_c>::~sFStateID_c()
+.fn "__dt__32sFStateID_c<17dWarningBattery_c>Fv", global
+/* 80016E80 0000004C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80016E84 00000050  7C 08 02 A6 */	mflr r0
+/* 80016E88 00000054  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80016E8C 00000058  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80016E90 0000005C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80016E94 00000060  7C 9F 23 78 */	mr r31, r4
+/* 80016E98 00000064  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80016E9C 00000068  7C 7E 1B 78 */	mr r30, r3
+/* 80016EA0 0000006C  41 82 00 1C */	beq .L_80016EBC
+/* 80016EA4 00000070  38 80 00 00 */	li r4, 0x0
+/* 80016EA8 00000074  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 80016EAC 00000078  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80016EB0 0000007C  40 81 00 0C */	ble .L_80016EBC
+/* 80016EB4 00000080  7F C3 F3 78 */	mr r3, r30
+/* 80016EB8 00000084  48 00 00 01 */	bl __dl__FPv
+.L_80016EBC:
+/* 80016EBC 00000088  7F C3 F3 78 */	mr r3, r30
+/* 80016EC0 0000008C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80016EC4 00000090  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80016EC8 00000094  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80016ECC 00000098  7C 08 03 A6 */	mtlr r0
+/* 80016ED0 0000009C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80016ED4 000000A0  4E 80 00 20 */	blr
+.endfn "__dt__32sFStateID_c<17dWarningBattery_c>Fv"
+
+# .text:0x64 | 0x80016ED8 | size: 0x8
+.fn gap_03_80016ED8_text, global
+.hidden gap_03_80016ED8_text
+/* 80016ED8 000000A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80016EDC 000000A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80016ED8_text
+
+# .text:0x6C | 0x80016EE0 | size: 0x88
+# sFStateID_c<dWarningBattery_c>::isSameName(const char*) const
+.fn "isSameName__32sFStateID_c<17dWarningBattery_c>CFPCc", global
+/* 80016EE0 000000AC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80016EE4 000000B0  7C 08 02 A6 */	mflr r0
+/* 80016EE8 000000B4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80016EEC 000000B8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80016EF0 000000BC  7C 9F 23 78 */	mr r31, r4
+/* 80016EF4 000000C0  38 80 00 3A */	li r4, 0x3a
+/* 80016EF8 000000C4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80016EFC 000000C8  7C 7E 1B 78 */	mr r30, r3
+/* 80016F00 000000CC  7F E3 FB 78 */	mr r3, r31
+/* 80016F04 000000D0  48 00 00 01 */	bl strrchr
+/* 80016F08 000000D4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80016F0C 000000D8  41 82 00 08 */	beq .L_80016F14
+/* 80016F10 000000DC  3B E3 00 01 */	addi r31, r3, 0x1
+.L_80016F14:
+/* 80016F14 000000E0  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80016F18 000000E4  7F C3 F3 78 */	mr r3, r30
+/* 80016F1C 000000E8  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80016F20 000000EC  7D 89 03 A6 */	mtctr r12
+/* 80016F24 000000F0  4E 80 04 21 */	bctrl
+/* 80016F28 000000F4  38 80 00 3A */	li r4, 0x3a
+/* 80016F2C 000000F8  48 00 00 01 */	bl strrchr
+/* 80016F30 000000FC  7F E4 FB 78 */	mr r4, r31
+/* 80016F34 00000100  38 63 00 01 */	addi r3, r3, 0x1
+/* 80016F38 00000104  48 00 00 01 */	bl strcmp
+/* 80016F3C 00000108  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80016F40 0000010C  40 82 00 0C */	bne .L_80016F4C
+/* 80016F44 00000110  38 60 00 01 */	li r3, 0x1
+/* 80016F48 00000114  48 00 00 08 */	b .L_80016F50
+.L_80016F4C:
+/* 80016F4C 00000118  38 60 00 00 */	li r3, 0x0
+.L_80016F50:
+/* 80016F50 0000011C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80016F54 00000120  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80016F58 00000124  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80016F5C 00000128  7C 08 03 A6 */	mtlr r0
+/* 80016F60 0000012C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80016F64 00000130  4E 80 00 20 */	blr
+.endfn "isSameName__32sFStateID_c<17dWarningBattery_c>CFPCc"
+
+# .text:0xF4 | 0x80016F68 | size: 0x8
+.fn gap_03_80016F68_text, global
+.hidden gap_03_80016F68_text
+/* 80016F68 00000134  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80016F6C 00000138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80016F68_text
+
+# .text:0xFC | 0x80016F70 | size: 0xAC
+# dWarningErrorInfo_c::dWarningErrorInfo_c()
+.fn __ct__19dWarningErrorInfo_cFv, global
+/* 80016F70 0000013C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80016F74 00000140  7C 08 02 A6 */	mflr r0
+/* 80016F78 00000144  3C 80 00 00 */	lis r4, __vt__19dWarningErrorInfo_c@ha
+/* 80016F7C 00000148  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80016F80 0000014C  38 84 00 00 */	addi r4, r4, __vt__19dWarningErrorInfo_c@l
+/* 80016F84 00000150  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80016F88 00000154  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80016F8C 00000158  7C 7E 1B 78 */	mr r30, r3
+/* 80016F90 0000015C  90 83 00 00 */	stw r4, 0x0(r3)
+/* 80016F94 00000160  38 63 00 08 */	addi r3, r3, 0x8
+/* 80016F98 00000164  48 00 00 01 */	bl __ct__9LytBase_cFv
+/* 80016F9C 00000168  3C 60 00 00 */	lis r3, "__vt__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@ha
+/* 80016FA0 0000016C  3D 20 00 00 */	lis r9, __vt__13sStateIDChk_c@ha
+/* 80016FA4 00000170  3D 00 00 00 */	lis r8, "__vt__35sFStateFct_c<19dWarningErrorInfo_c>"@ha
+/* 80016FA8 00000174  3C E0 00 00 */	lis r7, "__vt__32sFState_c<19dWarningErrorInfo_c>"@ha
+/* 80016FAC 00000178  38 63 00 00 */	addi r3, r3, "__vt__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@l
+/* 80016FB0 0000017C  39 29 00 00 */	addi r9, r9, __vt__13sStateIDChk_c@l
+/* 80016FB4 00000180  39 08 00 00 */	addi r8, r8, "__vt__35sFStateFct_c<19dWarningErrorInfo_c>"@l
+/* 80016FB8 00000184  38 E7 00 00 */	addi r7, r7, "__vt__32sFState_c<19dWarningErrorInfo_c>"@l
+/* 80016FBC 00000188  3B E0 00 00 */	li r31, 0x0
+/* 80016FC0 0000018C  3C C0 00 00 */	lis r6, StateID_DispWait__19dWarningErrorInfo_c@ha
+/* 80016FC4 00000190  90 7E 01 A0 */	stw r3, 0x1a0(r30)
+/* 80016FC8 00000194  38 BE 01 A8 */	addi r5, r30, 0x1a8
+/* 80016FCC 00000198  38 9E 01 A4 */	addi r4, r30, 0x1a4
+/* 80016FD0 0000019C  38 7E 01 B8 */	addi r3, r30, 0x1b8
+/* 80016FD4 000001A0  91 3E 01 A4 */	stw r9, 0x1a4(r30)
+/* 80016FD8 000001A4  38 C6 00 00 */	addi r6, r6, StateID_DispWait__19dWarningErrorInfo_c@l
+/* 80016FDC 000001A8  91 1E 01 A8 */	stw r8, 0x1a8(r30)
+/* 80016FE0 000001AC  90 FE 01 AC */	stw r7, 0x1ac(r30)
+/* 80016FE4 000001B0  93 DE 01 B0 */	stw r30, 0x1b0(r30)
+/* 80016FE8 000001B4  93 FE 01 B4 */	stw r31, 0x1b4(r30)
+/* 80016FEC 000001B8  48 00 00 01 */	bl __ct__20sStateMethodUsr_FI_cFR15sStateIDChkIf_cR13sStateFctIf_cRC12sStateIDIf_c
+/* 80016FF0 000001BC  3C 60 00 00 */	lis r3, "__vt__58sFStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c>"@ha
+/* 80016FF4 000001C0  9B FE 02 2C */	stb r31, 0x22c(r30)
+/* 80016FF8 000001C4  38 63 00 00 */	addi r3, r3, "__vt__58sFStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c>"@l
+/* 80016FFC 000001C8  90 7E 01 A0 */	stw r3, 0x1a0(r30)
+/* 80017000 000001CC  7F C3 F3 78 */	mr r3, r30
+/* 80017004 000001D0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017008 000001D4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8001700C 000001D8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017010 000001DC  7C 08 03 A6 */	mtlr r0
+/* 80017014 000001E0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017018 000001E4  4E 80 00 20 */	blr
+.endfn __ct__19dWarningErrorInfo_cFv
+
+# .text:0x1A8 | 0x8001701C | size: 0x4
+.fn gap_03_8001701C_text, global
+.hidden gap_03_8001701C_text
+/* 8001701C 000001E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001701C_text
+
+# .text:0x1AC | 0x80017020 | size: 0x40
+# sFState_c<dWarningErrorInfo_c>::~sFState_c()
+.fn "__dt__32sFState_c<19dWarningErrorInfo_c>Fv", global
+/* 80017020 000001EC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017024 000001F0  7C 08 02 A6 */	mflr r0
+/* 80017028 000001F4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001702C 000001F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017030 000001FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017034 00000200  7C 7F 1B 78 */	mr r31, r3
+/* 80017038 00000204  41 82 00 10 */	beq .L_80017048
+/* 8001703C 00000208  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80017040 0000020C  40 81 00 08 */	ble .L_80017048
+/* 80017044 00000210  48 00 00 01 */	bl __dl__FPv
+.L_80017048:
+/* 80017048 00000214  7F E3 FB 78 */	mr r3, r31
+/* 8001704C 00000218  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017050 0000021C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017054 00000220  7C 08 03 A6 */	mtlr r0
+/* 80017058 00000224  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001705C 00000228  4E 80 00 20 */	blr
+.endfn "__dt__32sFState_c<19dWarningErrorInfo_c>Fv"
+
+# .text:0x1EC | 0x80017060 | size: 0x40
+# sFStateFct_c<dWarningErrorInfo_c>::~sFStateFct_c()
+.fn "__dt__35sFStateFct_c<19dWarningErrorInfo_c>Fv", global
+/* 80017060 0000022C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017064 00000230  7C 08 02 A6 */	mflr r0
+/* 80017068 00000234  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001706C 00000238  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017070 0000023C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017074 00000240  7C 7F 1B 78 */	mr r31, r3
+/* 80017078 00000244  41 82 00 10 */	beq .L_80017088
+/* 8001707C 00000248  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80017080 0000024C  40 81 00 08 */	ble .L_80017088
+/* 80017084 00000250  48 00 00 01 */	bl __dl__FPv
+.L_80017088:
+/* 80017088 00000254  7F E3 FB 78 */	mr r3, r31
+/* 8001708C 00000258  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017090 0000025C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017094 00000260  7C 08 03 A6 */	mtlr r0
+/* 80017098 00000264  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001709C 00000268  4E 80 00 20 */	blr
+.endfn "__dt__35sFStateFct_c<19dWarningErrorInfo_c>Fv"
+
+# .text:0x22C | 0x800170A0 | size: 0x60
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::~sStateMgr_c()
+.fn "__dt__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 800170A0 0000026C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800170A4 00000270  7C 08 02 A6 */	mflr r0
+/* 800170A8 00000274  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800170AC 00000278  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800170B0 0000027C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800170B4 00000280  7C 9F 23 78 */	mr r31, r4
+/* 800170B8 00000284  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800170BC 00000288  7C 7E 1B 78 */	mr r30, r3
+/* 800170C0 0000028C  41 82 00 24 */	beq .L_800170E4
+/* 800170C4 00000290  34 63 00 18 */	addic. r3, r3, 0x18
+/* 800170C8 00000294  41 82 00 0C */	beq .L_800170D4
+/* 800170CC 00000298  38 80 00 00 */	li r4, 0x0
+/* 800170D0 0000029C  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_800170D4:
+/* 800170D4 000002A0  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800170D8 000002A4  40 81 00 0C */	ble .L_800170E4
+/* 800170DC 000002A8  7F C3 F3 78 */	mr r3, r30
+/* 800170E0 000002AC  48 00 00 01 */	bl __dl__FPv
+.L_800170E4:
+/* 800170E4 000002B0  7F C3 F3 78 */	mr r3, r30
+/* 800170E8 000002B4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800170EC 000002B8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800170F0 000002BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800170F4 000002C0  7C 08 03 A6 */	mtlr r0
+/* 800170F8 000002C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 800170FC 000002C8  4E 80 00 20 */	blr
+.endfn "__dt__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x28C | 0x80017100 | size: 0x64
+# sFStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c>::~sFStateMgr_c()
+.fn "__dt__58sFStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c>Fv", global
+/* 80017100 000002CC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017104 000002D0  7C 08 02 A6 */	mflr r0
+/* 80017108 000002D4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001710C 000002D8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017110 000002DC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017114 000002E0  7C 9F 23 78 */	mr r31, r4
+/* 80017118 000002E4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8001711C 000002E8  7C 7E 1B 78 */	mr r30, r3
+/* 80017120 000002EC  41 82 00 28 */	beq .L_80017148
+/* 80017124 000002F0  41 82 00 14 */	beq .L_80017138
+/* 80017128 000002F4  34 63 00 18 */	addic. r3, r3, 0x18
+/* 8001712C 000002F8  41 82 00 0C */	beq .L_80017138
+/* 80017130 000002FC  38 80 00 00 */	li r4, 0x0
+/* 80017134 00000300  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_80017138:
+/* 80017138 00000304  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8001713C 00000308  40 81 00 0C */	ble .L_80017148
+/* 80017140 0000030C  7F C3 F3 78 */	mr r3, r30
+/* 80017144 00000310  48 00 00 01 */	bl __dl__FPv
+.L_80017148:
+/* 80017148 00000314  7F C3 F3 78 */	mr r3, r30
+/* 8001714C 00000318  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017150 0000031C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80017154 00000320  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017158 00000324  7C 08 03 A6 */	mtlr r0
+/* 8001715C 00000328  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017160 0000032C  4E 80 00 20 */	blr
+.endfn "__dt__58sFStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c>Fv"
+
+# .text:0x2F0 | 0x80017164 | size: 0xC
+.fn gap_03_80017164_text, global
+.hidden gap_03_80017164_text
+/* 80017164 00000330  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017168 00000334  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001716C 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017164_text
+
+# .text:0x2FC | 0x80017170 | size: 0x78
+# dWarningErrorInfo_c::~dWarningErrorInfo_c()
+.fn __dt__19dWarningErrorInfo_cFv, global
+/* 80017170 0000033C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017174 00000340  7C 08 02 A6 */	mflr r0
+/* 80017178 00000344  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001717C 00000348  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017180 0000034C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017184 00000350  7C 9F 23 78 */	mr r31, r4
+/* 80017188 00000354  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8001718C 00000358  7C 7E 1B 78 */	mr r30, r3
+/* 80017190 0000035C  41 82 00 3C */	beq .L_800171CC
+/* 80017194 00000360  34 03 01 A0 */	addic. r0, r3, 0x1a0
+/* 80017198 00000364  41 82 00 18 */	beq .L_800171B0
+/* 8001719C 00000368  41 82 00 14 */	beq .L_800171B0
+/* 800171A0 0000036C  34 60 00 18 */	addic. r3, r0, 0x18
+/* 800171A4 00000370  41 82 00 0C */	beq .L_800171B0
+/* 800171A8 00000374  38 80 00 00 */	li r4, 0x0
+/* 800171AC 00000378  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_800171B0:
+/* 800171B0 0000037C  38 7E 00 08 */	addi r3, r30, 0x8
+/* 800171B4 00000380  38 80 FF FF */	li r4, -0x1
+/* 800171B8 00000384  48 00 00 01 */	bl __dt__9LytBase_cFv
+/* 800171BC 00000388  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800171C0 0000038C  40 81 00 0C */	ble .L_800171CC
+/* 800171C4 00000390  7F C3 F3 78 */	mr r3, r30
+/* 800171C8 00000394  48 00 00 01 */	bl __dl__FPv
+.L_800171CC:
+/* 800171CC 00000398  7F C3 F3 78 */	mr r3, r30
+/* 800171D0 0000039C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800171D4 000003A0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800171D8 000003A4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800171DC 000003A8  7C 08 03 A6 */	mtlr r0
+/* 800171E0 000003AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 800171E4 000003B0  4E 80 00 20 */	blr
+.endfn __dt__19dWarningErrorInfo_cFv
+
+# .text:0x374 | 0x800171E8 | size: 0x8
+.fn gap_03_800171E8_text, global
+.hidden gap_03_800171E8_text
+/* 800171E8 000003B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800171EC 000003B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800171E8_text
+
+# .text:0x37C | 0x800171F0 | size: 0x14C
+# dWarningErrorInfo_c::createLayout()
+.fn createLayout__19dWarningErrorInfo_cFv, global
+/* 800171F0 000003BC  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800171F4 000003C0  7C 08 02 A6 */	mflr r0
+/* 800171F8 000003C4  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800171FC 000003C8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80017200 000003CC  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80017204 000003D0  3F C0 00 00 */	lis r30, "@69372_803000B8"@ha
+/* 80017208 000003D4  3B DE 00 00 */	addi r30, r30, "@69372_803000B8"@l
+/* 8001720C 000003D8  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80017210 000003DC  7C 7D 1B 78 */	mr r29, r3
+/* 80017214 000003E0  88 03 02 2C */	lbz r0, 0x22c(r3)
+/* 80017218 000003E4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001721C 000003E8  41 82 00 0C */	beq .L_80017228
+/* 80017220 000003EC  38 60 00 01 */	li r3, 0x1
+/* 80017224 000003F0  48 00 00 FC */	b .L_80017320
+.L_80017228:
+/* 80017228 000003F4  38 9E 03 18 */	addi r4, r30, 0x318
+/* 8001722C 000003F8  38 A0 00 00 */	li r5, 0x0
+/* 80017230 000003FC  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017234 00000400  48 00 00 01 */	bl ReadResource__9LytBase_cFPCcb
+/* 80017238 00000404  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001723C 00000408  40 82 00 0C */	bne .L_80017248
+/* 80017240 0000040C  38 60 00 00 */	li r3, 0x0
+/* 80017244 00000410  48 00 00 DC */	b .L_80017320
+.L_80017248:
+/* 80017248 00000414  81 9D 00 10 */	lwz r12, 0x10(r29)
+/* 8001724C 00000418  38 7D 00 08 */	addi r3, r29, 0x8
+/* 80017250 0000041C  38 9E 03 30 */	addi r4, r30, 0x330
+/* 80017254 00000420  38 A0 00 00 */	li r5, 0x0
+/* 80017258 00000424  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8001725C 00000428  7D 89 03 A6 */	mtctr r12
+/* 80017260 0000042C  4E 80 04 21 */	bctrl
+/* 80017264 00000430  38 7D 00 08 */	addi r3, r29, 0x8
+/* 80017268 00000434  38 9E 01 60 */	addi r4, r30, 0x160
+/* 8001726C 00000438  38 A0 00 0A */	li r5, 0xa
+/* 80017270 0000043C  48 00 00 01 */	bl AnimeResRegister__9LytBase_cFPPCci
+/* 80017274 00000440  3C A0 00 00 */	lis r5, "@LOCAL@createLayout__19dWarningErrorInfo_cFv@ANIME_INDEX_TBL@1"@ha
+/* 80017278 00000444  38 7D 00 08 */	addi r3, r29, 0x8
+/* 8001727C 00000448  38 9E 01 E0 */	addi r4, r30, 0x1e0
+/* 80017280 0000044C  38 C0 00 14 */	li r6, 0x14
+/* 80017284 00000450  38 A5 00 00 */	addi r5, r5, "@LOCAL@createLayout__19dWarningErrorInfo_cFv@ANIME_INDEX_TBL@1"@l
+/* 80017288 00000454  48 00 00 01 */	bl GroupRegister__9LytBase_cFPPCcPCii
+/* 8001728C 00000458  38 7D 00 08 */	addi r3, r29, 0x8
+/* 80017290 0000045C  48 00 00 01 */	bl getRootPane__Q23d2d7Multi_cFv
+/* 80017294 00000460  90 7D 01 DC */	stw r3, 0x1dc(r29)
+/* 80017298 00000464  38 7D 00 08 */	addi r3, r29, 0x8
+/* 8001729C 00000468  38 9E 02 84 */	addi r4, r30, 0x284
+/* 800172A0 0000046C  38 BD 01 E0 */	addi r5, r29, 0x1e0
+/* 800172A4 00000470  38 C0 00 09 */	li r6, 0x9
+/* 800172A8 00000474  48 00 00 01 */	bl TPaneRegister__9LytBase_cFPPCcPP12LytTextBox_ci
+/* 800172AC 00000478  38 7D 00 08 */	addi r3, r29, 0x8
+/* 800172B0 0000047C  38 80 00 00 */	li r4, "@LOCAL@createLayout__19dWarningErrorInfo_cFv@T_PANE_TBL@3"@sda21
+/* 800172B4 00000480  38 A0 00 00 */	li r5, "@LOCAL@createLayout__19dWarningErrorInfo_cFv@MESSAGE_DATA_TBL@4"@sda21
+/* 800172B8 00000484  38 C0 00 C9 */	li r6, 0xc9
+/* 800172BC 00000488  38 E0 00 01 */	li r7, 0x1
+/* 800172C0 0000048C  48 00 00 01 */	bl TPaneNameRegister__9LytBase_cFPPCcPCiii
+/* 800172C4 00000490  3B E0 00 00 */	li r31, 0x0
+/* 800172C8 00000494  93 FD 02 20 */	stw r31, 0x220(r29)
+/* 800172CC 00000498  38 7D 00 08 */	addi r3, r29, 0x8
+/* 800172D0 0000049C  38 BD 02 04 */	addi r5, r29, 0x204
+/* 800172D4 000004A0  38 80 00 00 */	li r4, "@LOCAL@createLayout__19dWarningErrorInfo_cFv@NPANE_NAME_DT@5"@sda21
+/* 800172D8 000004A4  38 C0 00 02 */	li r6, 0x2
+/* 800172DC 000004A8  48 00 00 01 */	bl NPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt4Panei
+/* 800172E0 000004AC  38 7D 00 08 */	addi r3, r29, 0x8
+/* 800172E4 000004B0  38 9E 03 08 */	addi r4, r30, 0x308
+/* 800172E8 000004B4  38 BD 02 0C */	addi r5, r29, 0x20c
+/* 800172EC 000004B8  38 C0 00 03 */	li r6, 0x3
+/* 800172F0 000004BC  48 00 00 01 */	bl PPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt7Picturei
+/* 800172F4 000004C0  80 DD 01 DC */	lwz r6, 0x1dc(r29)
+/* 800172F8 000004C4  38 80 00 97 */	li r4, 0x97
+/* 800172FC 000004C8  38 00 00 01 */	li r0, 0x1
+/* 80017300 000004CC  38 60 00 01 */	li r3, 0x1
+/* 80017304 000004D0  88 A6 00 BB */	lbz r5, 0xbb(r6)
+/* 80017308 000004D4  54 A5 06 3C */	rlwinm r5, r5, 0, 24, 30
+/* 8001730C 000004D8  98 A6 00 BB */	stb r5, 0xbb(r6)
+/* 80017310 000004DC  98 9D 00 14 */	stb r4, 0x14(r29)
+/* 80017314 000004E0  98 1D 02 2C */	stb r0, 0x22c(r29)
+/* 80017318 000004E4  9B FD 02 2D */	stb r31, 0x22d(r29)
+/* 8001731C 000004E8  9B FD 02 2E */	stb r31, 0x22e(r29)
+.L_80017320:
+/* 80017320 000004EC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80017324 000004F0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80017328 000004F4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8001732C 000004F8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80017330 000004FC  7C 08 03 A6 */	mtlr r0
+/* 80017334 00000500  38 21 00 20 */	addi r1, r1, 0x20
+/* 80017338 00000504  4E 80 00 20 */	blr
+.endfn createLayout__19dWarningErrorInfo_cFv
+
+# .text:0x4C8 | 0x8001733C | size: 0x4
+.fn gap_03_8001733C_text, global
+.hidden gap_03_8001733C_text
+/* 8001733C 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001733C_text
+
+# .text:0x4CC | 0x80017340 | size: 0xDC
+# dWarningErrorInfo_c::execute()
+.fn execute__19dWarningErrorInfo_cFv, global
+/* 80017340 0000050C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017344 00000510  7C 08 02 A6 */	mflr r0
+/* 80017348 00000514  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001734C 00000518  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017350 0000051C  7C 7F 1B 78 */	mr r31, r3
+/* 80017354 00000520  88 03 02 2E */	lbz r0, 0x22e(r3)
+/* 80017358 00000524  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001735C 00000528  41 82 00 80 */	beq .L_800173DC
+/* 80017360 0000052C  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017364 00000530  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 80017368 00000534  38 00 00 00 */	li r0, 0x0
+/* 8001736C 00000538  98 1F 02 2E */	stb r0, 0x22e(r31)
+/* 80017370 0000053C  80 60 00 00 */	lwz r3, m_instance__15dSelectCursor_c@sda21(r0)
+/* 80017374 00000540  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017378 00000544  41 82 00 0C */	beq .L_80017384
+/* 8001737C 00000548  38 80 00 00 */	li r4, 0x0
+/* 80017380 0000054C  48 00 00 01 */	bl Cancel__15dSelectCursor_cFi
+.L_80017384:
+/* 80017384 00000550  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017388 00000554  38 80 00 01 */	li r4, 0x1
+/* 8001738C 00000558  38 A0 00 01 */	li r5, 0x1
+/* 80017390 0000055C  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 80017394 00000560  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017398 00000564  38 80 00 02 */	li r4, 0x2
+/* 8001739C 00000568  38 A0 00 01 */	li r5, 0x1
+/* 800173A0 0000056C  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 800173A4 00000570  38 7F 00 08 */	addi r3, r31, 0x8
+/* 800173A8 00000574  38 80 00 03 */	li r4, 0x3
+/* 800173AC 00000578  38 A0 00 01 */	li r5, 0x1
+/* 800173B0 0000057C  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 800173B4 00000580  38 00 00 00 */	li r0, 0x0
+/* 800173B8 00000584  98 1F 02 2D */	stb r0, 0x22d(r31)
+/* 800173BC 00000588  3C 80 00 00 */	lis r4, StateID_DispWait__19dWarningErrorInfo_c@ha
+/* 800173C0 0000058C  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 800173C4 00000590  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 800173C8 00000594  38 84 00 00 */	addi r4, r4, StateID_DispWait__19dWarningErrorInfo_c@l
+/* 800173CC 00000598  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800173D0 0000059C  7D 89 03 A6 */	mtctr r12
+/* 800173D4 000005A0  4E 80 04 21 */	bctrl
+/* 800173D8 000005A4  48 00 00 14 */	b .L_800173EC
+.L_800173DC:
+/* 800173DC 000005A8  85 83 01 A0 */	lwzu r12, 0x1a0(r3)
+/* 800173E0 000005AC  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 800173E4 000005B0  7D 89 03 A6 */	mtctr r12
+/* 800173E8 000005B4  4E 80 04 21 */	bctrl
+.L_800173EC:
+/* 800173EC 000005B8  38 7F 00 08 */	addi r3, r31, 0x8
+/* 800173F0 000005BC  48 00 00 01 */	bl AnimePlay__9LytBase_cFv
+/* 800173F4 000005C0  81 9F 00 10 */	lwz r12, 0x10(r31)
+/* 800173F8 000005C4  38 7F 00 08 */	addi r3, r31, 0x8
+/* 800173FC 000005C8  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80017400 000005CC  7D 89 03 A6 */	mtctr r12
+/* 80017404 000005D0  4E 80 04 21 */	bctrl
+/* 80017408 000005D4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001740C 000005D8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017410 000005DC  7C 08 03 A6 */	mtlr r0
+/* 80017414 000005E0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017418 000005E4  4E 80 00 20 */	blr
+.endfn execute__19dWarningErrorInfo_cFv
+
+# .text:0x5A8 | 0x8001741C | size: 0x4
+.fn gap_03_8001741C_text, global
+.hidden gap_03_8001741C_text
+/* 8001741C 000005E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001741C_text
+
+# .text:0x5AC | 0x80017420 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::changeState(const sStateIDIf_c&)
+.fn "changeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c", global
+/* 80017420 000005EC  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80017424 000005F0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017428 000005F4  7D 89 03 A6 */	mtctr r12
+/* 8001742C 000005F8  4E 80 04 20 */	bctr
+.endfn "changeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+
+# .text:0x5BC | 0x80017430 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::executeState()
+.fn "executeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 80017430 000005FC  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80017434 00000600  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80017438 00000604  7D 89 03 A6 */	mtctr r12
+/* 8001743C 00000608  4E 80 04 20 */	bctr
+.endfn "executeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x5CC | 0x80017440 | size: 0x18
+# dWarningErrorInfo_c::draw()
+.fn draw__19dWarningErrorInfo_cFv, global
+/* 80017440 0000060C  88 03 02 2D */	lbz r0, 0x22d(r3)
+/* 80017444 00000610  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017448 00000614  4D 82 00 20 */	beqlr
+/* 8001744C 00000618  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017450 0000061C  48 00 00 00 */	b entry__Q23d2d7Multi_cFv
+/* 80017454 00000620  4E 80 00 20 */	blr
+.endfn draw__19dWarningErrorInfo_cFv
+
+# .text:0x5E4 | 0x80017458 | size: 0x8
+.fn gap_03_80017458_text, global
+.hidden gap_03_80017458_text
+/* 80017458 00000624  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001745C 00000628  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017458_text
+
+# .text:0x5EC | 0x80017460 | size: 0x4
+# dWarningErrorInfo_c::initializeState_DispWait()
+.fn initializeState_DispWait__19dWarningErrorInfo_cFv, global
+/* 80017460 0000062C  4E 80 00 20 */	blr
+.endfn initializeState_DispWait__19dWarningErrorInfo_cFv
+
+# .text:0x5F0 | 0x80017464 | size: 0xC
+.fn gap_03_80017464_text, global
+.hidden gap_03_80017464_text
+/* 80017464 00000630  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017468 00000634  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001746C 00000638  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017464_text
+
+# .text:0x5FC | 0x80017470 | size: 0x34
+# dWarningErrorInfo_c::executeState_DispWait()
+.fn executeState_DispWait__19dWarningErrorInfo_cFv, global
+/* 80017470 0000063C  38 00 00 01 */	li r0, 0x1
+/* 80017474 00000640  98 03 02 2D */	stb r0, 0x22d(r3)
+/* 80017478 00000644  80 A3 01 DC */	lwz r5, 0x1dc(r3)
+/* 8001747C 00000648  3C 80 00 00 */	lis r4, StateID_OpenAnimeEndWait__19dWarningErrorInfo_c@ha
+/* 80017480 0000064C  38 84 00 00 */	addi r4, r4, StateID_OpenAnimeEndWait__19dWarningErrorInfo_c@l
+/* 80017484 00000650  88 05 00 BB */	lbz r0, 0xbb(r5)
+/* 80017488 00000654  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8001748C 00000658  60 00 00 01 */	ori r0, r0, 0x1
+/* 80017490 0000065C  98 05 00 BB */	stb r0, 0xbb(r5)
+/* 80017494 00000660  85 83 01 A0 */	lwzu r12, 0x1a0(r3)
+/* 80017498 00000664  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8001749C 00000668  7D 89 03 A6 */	mtctr r12
+/* 800174A0 0000066C  4E 80 04 20 */	bctr
+.endfn executeState_DispWait__19dWarningErrorInfo_cFv
+
+# .text:0x630 | 0x800174A4 | size: 0xC
+.fn gap_03_800174A4_text, global
+.hidden gap_03_800174A4_text
+/* 800174A4 00000670  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800174A8 00000674  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800174AC 00000678  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800174A4_text
+
+# .text:0x63C | 0x800174B0 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_DispWait()
+.fn finalizeState_DispWait__19dWarningErrorInfo_cFv, global
+/* 800174B0 0000067C  4E 80 00 20 */	blr
+.endfn finalizeState_DispWait__19dWarningErrorInfo_cFv
+
+# .text:0x640 | 0x800174B4 | size: 0xC
+.fn gap_03_800174B4_text, global
+.hidden gap_03_800174B4_text
+/* 800174B4 00000680  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800174B8 00000684  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800174BC 00000688  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800174B4_text
+
+# .text:0x64C | 0x800174C0 | size: 0x100
+# dWarningErrorInfo_c::initializeState_OpenAnimeEndWait()
+.fn initializeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 800174C0 0000068C  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 800174C4 00000690  7C 08 02 A6 */	mflr r0
+/* 800174C8 00000694  90 01 00 44 */	stw r0, 0x44(r1)
+/* 800174CC 00000698  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 800174D0 0000069C  93 C1 00 38 */	stw r30, 0x38(r1)
+/* 800174D4 000006A0  93 A1 00 34 */	stw r29, 0x34(r1)
+/* 800174D8 000006A4  93 81 00 30 */	stw r28, 0x30(r1)
+/* 800174DC 000006A8  7C 7C 1B 78 */	mr r28, r3
+/* 800174E0 000006AC  48 00 00 01 */	bl getMesRes__10dMessage_cFv
+/* 800174E4 000006B0  7C 7D 1B 78 */	mr r29, r3
+/* 800174E8 000006B4  38 81 00 08 */	addi r4, r1, 0x8
+/* 800174EC 000006B8  38 60 00 01 */	li r3, 0x1
+/* 800174F0 000006BC  38 A0 00 10 */	li r5, 0x10
+/* 800174F4 000006C0  38 C0 00 01 */	li r6, 0x1
+/* 800174F8 000006C4  38 E0 00 00 */	li r7, 0x0
+/* 800174FC 000006C8  48 00 00 01 */	bl fn_800CDEA0
+/* 80017500 000006CC  80 1C 02 20 */	lwz r0, 0x220(r28)
+/* 80017504 000006D0  3F C0 00 00 */	lis r30, "@LOCAL@initializeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv@MESSAGE_MAIN_ID_TBL"@ha
+/* 80017508 000006D4  3F E0 00 00 */	lis r31, "@LOCAL@initializeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv@MESSAGE_SUB_ID_TBL@0"@ha
+/* 8001750C 000006D8  80 7C 01 E0 */	lwz r3, 0x1e0(r28)
+/* 80017510 000006DC  54 00 10 3A */	slwi r0, r0, 2
+/* 80017514 000006E0  3B DE 00 00 */	addi r30, r30, "@LOCAL@initializeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv@MESSAGE_MAIN_ID_TBL"@l
+/* 80017518 000006E4  3B FF 00 00 */	addi r31, r31, "@LOCAL@initializeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv@MESSAGE_SUB_ID_TBL@0"@l
+/* 8001751C 000006E8  7C BE 00 2E */	lwzx r5, r30, r0
+/* 80017520 000006EC  7C DF 00 2E */	lwzx r6, r31, r0
+/* 80017524 000006F0  7F A4 EB 78 */	mr r4, r29
+/* 80017528 000006F4  39 01 00 08 */	addi r8, r1, 0x8
+/* 8001752C 000006F8  38 E0 00 01 */	li r7, 0x1
+/* 80017530 000006FC  4C C6 31 82 */	crclr cr1eq
+/* 80017534 00000700  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 80017538 00000704  80 1C 02 20 */	lwz r0, 0x220(r28)
+/* 8001753C 00000708  7F A4 EB 78 */	mr r4, r29
+/* 80017540 0000070C  80 7C 01 E4 */	lwz r3, 0x1e4(r28)
+/* 80017544 00000710  39 01 00 08 */	addi r8, r1, 0x8
+/* 80017548 00000714  54 00 10 3A */	slwi r0, r0, 2
+/* 8001754C 00000718  38 E0 00 01 */	li r7, 0x1
+/* 80017550 0000071C  7C BE 00 2E */	lwzx r5, r30, r0
+/* 80017554 00000720  7C DF 00 2E */	lwzx r6, r31, r0
+/* 80017558 00000724  4C C6 31 82 */	crclr cr1eq
+/* 8001755C 00000728  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 80017560 0000072C  38 7C 00 08 */	addi r3, r28, 0x8
+/* 80017564 00000730  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 80017568 00000734  38 7C 00 08 */	addi r3, r28, 0x8
+/* 8001756C 00000738  38 80 00 10 */	li r4, 0x10
+/* 80017570 0000073C  38 A0 00 00 */	li r5, 0x0
+/* 80017574 00000740  48 00 00 01 */	bl ReverseAnimeStartSetup__9LytBase_cFib
+/* 80017578 00000744  38 7C 00 08 */	addi r3, r28, 0x8
+/* 8001757C 00000748  38 80 00 00 */	li r4, 0x0
+/* 80017580 0000074C  38 A0 00 00 */	li r5, 0x0
+/* 80017584 00000750  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 80017588 00000754  80 9C 02 08 */	lwz r4, 0x208(r28)
+/* 8001758C 00000758  38 00 00 00 */	li r0, 0x0
+/* 80017590 0000075C  88 64 00 BB */	lbz r3, 0xbb(r4)
+/* 80017594 00000760  54 63 06 3C */	rlwinm r3, r3, 0, 24, 30
+/* 80017598 00000764  98 64 00 BB */	stb r3, 0xbb(r4)
+/* 8001759C 00000768  98 1C 02 2E */	stb r0, 0x22e(r28)
+/* 800175A0 0000076C  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 800175A4 00000770  83 C1 00 38 */	lwz r30, 0x38(r1)
+/* 800175A8 00000774  83 A1 00 34 */	lwz r29, 0x34(r1)
+/* 800175AC 00000778  83 81 00 30 */	lwz r28, 0x30(r1)
+/* 800175B0 0000077C  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 800175B4 00000780  7C 08 03 A6 */	mtlr r0
+/* 800175B8 00000784  38 21 00 40 */	addi r1, r1, 0x40
+/* 800175BC 00000788  4E 80 00 20 */	blr
+.endfn initializeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x74C | 0x800175C0 | size: 0x58
+# dWarningErrorInfo_c::executeState_OpenAnimeEndWait()
+.fn executeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 800175C0 0000078C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800175C4 00000790  7C 08 02 A6 */	mflr r0
+/* 800175C8 00000794  38 80 FF FF */	li r4, -0x1
+/* 800175CC 00000798  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800175D0 0000079C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800175D4 000007A0  7C 7F 1B 78 */	mr r31, r3
+/* 800175D8 000007A4  38 63 00 08 */	addi r3, r3, 0x8
+/* 800175DC 000007A8  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 800175E0 000007AC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800175E4 000007B0  40 82 00 20 */	bne .L_80017604
+/* 800175E8 000007B4  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 800175EC 000007B8  3C 80 00 00 */	lis r4, StateID_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_c@ha
+/* 800175F0 000007BC  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 800175F4 000007C0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800175F8 000007C4  38 84 00 00 */	addi r4, r4, StateID_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_c@l
+/* 800175FC 000007C8  7D 89 03 A6 */	mtctr r12
+/* 80017600 000007CC  4E 80 04 21 */	bctrl
+.L_80017604:
+/* 80017604 000007D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017608 000007D4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001760C 000007D8  7C 08 03 A6 */	mtlr r0
+/* 80017610 000007DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017614 000007E0  4E 80 00 20 */	blr
+.endfn executeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x7A4 | 0x80017618 | size: 0x8
+.fn gap_03_80017618_text, global
+.hidden gap_03_80017618_text
+/* 80017618 000007E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001761C 000007E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017618_text
+
+# .text:0x7AC | 0x80017620 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_OpenAnimeEndWait()
+.fn finalizeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017620 000007EC  4E 80 00 20 */	blr
+.endfn finalizeState_OpenAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x7B0 | 0x80017624 | size: 0xC
+.fn gap_03_80017624_text, global
+.hidden gap_03_80017624_text
+/* 80017624 000007F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017628 000007F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001762C 000007F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017624_text
+
+# .text:0x7BC | 0x80017630 | size: 0x2E0
+# dWarningErrorInfo_c::initializeState_ButtonOnStageAnimeEndWait()
+.fn initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017630 000007FC  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80017634 00000800  7C 08 02 A6 */	mflr r0
+/* 80017638 00000804  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8001763C 00000808  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80017640 0000080C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80017644 00000810  7C 7E 1B 78 */	mr r30, r3
+/* 80017648 00000814  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8001764C 00000818  93 81 00 10 */	stw r28, 0x10(r1)
+/* 80017650 0000081C  48 00 00 01 */	bl getMesRes__10dMessage_cFv
+/* 80017654 00000820  80 BE 02 20 */	lwz r5, 0x220(r30)
+/* 80017658 00000824  3C 80 00 00 */	lis r4, "@LOCAL@initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv@PANE_DISP_TBL"@ha
+/* 8001765C 00000828  80 DE 02 04 */	lwz r6, 0x204(r30)
+/* 80017660 0000082C  38 84 00 00 */	addi r4, r4, "@LOCAL@initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv@PANE_DISP_TBL"@l
+/* 80017664 00000830  54 A0 10 3A */	slwi r0, r5, 2
+/* 80017668 00000834  7C 7F 1B 78 */	mr r31, r3
+/* 8001766C 00000838  7C 60 2A 14 */	add r3, r0, r5
+/* 80017670 0000083C  88 06 00 BB */	lbz r0, 0xbb(r6)
+/* 80017674 00000840  7C 64 18 AE */	lbzx r3, r4, r3
+/* 80017678 00000844  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8001767C 00000848  7C 00 1B 78 */	or r0, r0, r3
+/* 80017680 0000084C  98 06 00 BB */	stb r0, 0xbb(r6)
+/* 80017684 00000850  80 7E 02 20 */	lwz r3, 0x220(r30)
+/* 80017688 00000854  80 BE 02 08 */	lwz r5, 0x208(r30)
+/* 8001768C 00000858  54 60 10 3A */	slwi r0, r3, 2
+/* 80017690 0000085C  7C 60 1A 14 */	add r3, r0, r3
+/* 80017694 00000860  88 05 00 BB */	lbz r0, 0xbb(r5)
+/* 80017698 00000864  7C 64 1A 14 */	add r3, r4, r3
+/* 8001769C 00000868  88 63 00 01 */	lbz r3, 0x1(r3)
+/* 800176A0 0000086C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 800176A4 00000870  7C 00 1B 78 */	or r0, r0, r3
+/* 800176A8 00000874  98 05 00 BB */	stb r0, 0xbb(r5)
+/* 800176AC 00000878  80 7E 02 20 */	lwz r3, 0x220(r30)
+/* 800176B0 0000087C  80 BE 02 0C */	lwz r5, 0x20c(r30)
+/* 800176B4 00000880  54 60 10 3A */	slwi r0, r3, 2
+/* 800176B8 00000884  7C 60 1A 14 */	add r3, r0, r3
+/* 800176BC 00000888  88 05 00 BB */	lbz r0, 0xbb(r5)
+/* 800176C0 0000088C  7C 64 1A 14 */	add r3, r4, r3
+/* 800176C4 00000890  88 63 00 02 */	lbz r3, 0x2(r3)
+/* 800176C8 00000894  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 800176CC 00000898  7C 00 1B 78 */	or r0, r0, r3
+/* 800176D0 0000089C  98 05 00 BB */	stb r0, 0xbb(r5)
+/* 800176D4 000008A0  80 7E 02 20 */	lwz r3, 0x220(r30)
+/* 800176D8 000008A4  80 BE 02 10 */	lwz r5, 0x210(r30)
+/* 800176DC 000008A8  54 60 10 3A */	slwi r0, r3, 2
+/* 800176E0 000008AC  7C 60 1A 14 */	add r3, r0, r3
+/* 800176E4 000008B0  88 05 00 BB */	lbz r0, 0xbb(r5)
+/* 800176E8 000008B4  7C 64 1A 14 */	add r3, r4, r3
+/* 800176EC 000008B8  88 63 00 03 */	lbz r3, 0x3(r3)
+/* 800176F0 000008BC  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 800176F4 000008C0  7C 00 1B 78 */	or r0, r0, r3
+/* 800176F8 000008C4  98 05 00 BB */	stb r0, 0xbb(r5)
+/* 800176FC 000008C8  80 7E 02 20 */	lwz r3, 0x220(r30)
+/* 80017700 000008CC  80 BE 02 14 */	lwz r5, 0x214(r30)
+/* 80017704 000008D0  54 60 10 3A */	slwi r0, r3, 2
+/* 80017708 000008D4  7C 60 1A 14 */	add r3, r0, r3
+/* 8001770C 000008D8  88 05 00 BB */	lbz r0, 0xbb(r5)
+/* 80017710 000008DC  7C 64 1A 14 */	add r3, r4, r3
+/* 80017714 000008E0  88 63 00 04 */	lbz r3, 0x4(r3)
+/* 80017718 000008E4  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8001771C 000008E8  7C 00 1B 78 */	or r0, r0, r3
+/* 80017720 000008EC  98 05 00 BB */	stb r0, 0xbb(r5)
+/* 80017724 000008F0  80 7E 02 20 */	lwz r3, 0x220(r30)
+/* 80017728 000008F4  54 60 10 3A */	slwi r0, r3, 2
+/* 8001772C 000008F8  7C 00 1A 14 */	add r0, r0, r3
+/* 80017730 000008FC  7C 04 00 AE */	lbzx r0, r4, r0
+/* 80017734 00000900  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017738 00000904  41 82 00 30 */	beq .L_80017768
+/* 8001773C 00000908  80 DE 02 18 */	lwz r6, 0x218(r30)
+/* 80017740 0000090C  7F E4 FB 78 */	mr r4, r31
+/* 80017744 00000910  80 7E 01 E8 */	lwz r3, 0x1e8(r30)
+/* 80017748 00000914  38 A0 00 C9 */	li r5, 0xc9
+/* 8001774C 00000918  38 C6 00 01 */	addi r6, r6, 0x1
+/* 80017750 0000091C  38 E0 00 00 */	li r7, 0x0
+/* 80017754 00000920  4C C6 31 82 */	crclr cr1eq
+/* 80017758 00000924  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8001775C 00000928  38 00 00 00 */	li r0, 0x0
+/* 80017760 0000092C  98 1E 02 2F */	stb r0, 0x22f(r30)
+/* 80017764 00000930  48 00 01 24 */	b .L_80017888
+.L_80017768:
+/* 80017768 00000934  1C 03 00 0C */	mulli r0, r3, 0xc
+/* 8001776C 00000938  3F A0 00 00 */	lis r29, "@LOCAL@initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv@MSG_SUB_ID_TBL@0"@ha
+/* 80017770 0000093C  3B BD 00 00 */	addi r29, r29, "@LOCAL@initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv@MSG_SUB_ID_TBL@0"@l
+/* 80017774 00000940  7C DD 00 2E */	lwzx r6, r29, r0
+/* 80017778 00000944  2C 06 00 00 */	cmpwi r6, 0x0
+/* 8001777C 00000948  41 82 00 94 */	beq .L_80017810
+/* 80017780 0000094C  3F 80 00 01 */	lis r28, 0x1
+/* 80017784 00000950  80 7E 01 EC */	lwz r3, 0x1ec(r30)
+/* 80017788 00000954  7F E4 FB 78 */	mr r4, r31
+/* 8001778C 00000958  38 E0 00 00 */	li r7, 0x0
+/* 80017790 0000095C  38 BC 5F 90 */	addi r5, r28, 0x5f90
+/* 80017794 00000960  4C C6 31 82 */	crclr cr1eq
+/* 80017798 00000964  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8001779C 00000968  80 1E 02 20 */	lwz r0, 0x220(r30)
+/* 800177A0 0000096C  7F E4 FB 78 */	mr r4, r31
+/* 800177A4 00000970  80 7E 01 F0 */	lwz r3, 0x1f0(r30)
+/* 800177A8 00000974  38 BC 5F 90 */	addi r5, r28, 0x5f90
+/* 800177AC 00000978  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 800177B0 0000097C  38 E0 00 00 */	li r7, 0x0
+/* 800177B4 00000980  7C DD 00 2E */	lwzx r6, r29, r0
+/* 800177B8 00000984  4C C6 31 82 */	crclr cr1eq
+/* 800177BC 00000988  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 800177C0 0000098C  80 1E 02 20 */	lwz r0, 0x220(r30)
+/* 800177C4 00000990  7F E4 FB 78 */	mr r4, r31
+/* 800177C8 00000994  80 7E 01 F4 */	lwz r3, 0x1f4(r30)
+/* 800177CC 00000998  38 BC 5F 90 */	addi r5, r28, 0x5f90
+/* 800177D0 0000099C  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 800177D4 000009A0  38 E0 00 00 */	li r7, 0x0
+/* 800177D8 000009A4  7C DD 02 14 */	add r6, r29, r0
+/* 800177DC 000009A8  80 C6 00 04 */	lwz r6, 0x4(r6)
+/* 800177E0 000009AC  4C C6 31 82 */	crclr cr1eq
+/* 800177E4 000009B0  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 800177E8 000009B4  80 1E 02 20 */	lwz r0, 0x220(r30)
+/* 800177EC 000009B8  7F E4 FB 78 */	mr r4, r31
+/* 800177F0 000009BC  80 7E 01 F8 */	lwz r3, 0x1f8(r30)
+/* 800177F4 000009C0  38 BC 5F 90 */	addi r5, r28, 0x5f90
+/* 800177F8 000009C4  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 800177FC 000009C8  38 E0 00 00 */	li r7, 0x0
+/* 80017800 000009CC  7C DD 02 14 */	add r6, r29, r0
+/* 80017804 000009D0  80 C6 00 04 */	lwz r6, 0x4(r6)
+/* 80017808 000009D4  4C C6 31 82 */	crclr cr1eq
+/* 8001780C 000009D8  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+.L_80017810:
+/* 80017810 000009DC  80 1E 02 20 */	lwz r0, 0x220(r30)
+/* 80017814 000009E0  3F 80 00 00 */	lis r28, "@LOCAL@initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv@MSG_SUB_ID_TBL@0"@ha
+/* 80017818 000009E4  3B 9C 00 00 */	addi r28, r28, "@LOCAL@initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv@MSG_SUB_ID_TBL@0"@l
+/* 8001781C 000009E8  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 80017820 000009EC  7C 7C 02 14 */	add r3, r28, r0
+/* 80017824 000009F0  80 C3 00 08 */	lwz r6, 0x8(r3)
+/* 80017828 000009F4  2C 06 00 00 */	cmpwi r6, 0x0
+/* 8001782C 000009F8  41 82 00 54 */	beq .L_80017880
+/* 80017830 000009FC  3F A0 00 01 */	lis r29, 0x1
+/* 80017834 00000A00  80 7E 01 FC */	lwz r3, 0x1fc(r30)
+/* 80017838 00000A04  7F E4 FB 78 */	mr r4, r31
+/* 8001783C 00000A08  38 E0 00 00 */	li r7, 0x0
+/* 80017840 00000A0C  38 BD 5F 90 */	addi r5, r29, 0x5f90
+/* 80017844 00000A10  4C C6 31 82 */	crclr cr1eq
+/* 80017848 00000A14  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8001784C 00000A18  80 1E 02 20 */	lwz r0, 0x220(r30)
+/* 80017850 00000A1C  7F E4 FB 78 */	mr r4, r31
+/* 80017854 00000A20  80 7E 02 00 */	lwz r3, 0x200(r30)
+/* 80017858 00000A24  38 BD 5F 90 */	addi r5, r29, 0x5f90
+/* 8001785C 00000A28  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 80017860 00000A2C  38 E0 00 00 */	li r7, 0x0
+/* 80017864 00000A30  7C DC 02 14 */	add r6, r28, r0
+/* 80017868 00000A34  80 C6 00 08 */	lwz r6, 0x8(r6)
+/* 8001786C 00000A38  4C C6 31 82 */	crclr cr1eq
+/* 80017870 00000A3C  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 80017874 00000A40  38 00 00 01 */	li r0, 0x1
+/* 80017878 00000A44  98 1E 02 2F */	stb r0, 0x22f(r30)
+/* 8001787C 00000A48  48 00 00 0C */	b .L_80017888
+.L_80017880:
+/* 80017880 00000A4C  38 00 00 00 */	li r0, 0x0
+/* 80017884 00000A50  98 1E 02 2F */	stb r0, 0x22f(r30)
+.L_80017888:
+/* 80017888 00000A54  80 7E 02 04 */	lwz r3, 0x204(r30)
+/* 8001788C 00000A58  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 80017890 00000A5C  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 80017894 00000A60  41 82 00 18 */	beq .L_800178AC
+/* 80017898 00000A64  38 7E 00 08 */	addi r3, r30, 0x8
+/* 8001789C 00000A68  38 80 00 10 */	li r4, 0x10
+/* 800178A0 00000A6C  38 A0 00 00 */	li r5, 0x0
+/* 800178A4 00000A70  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 800178A8 00000A74  48 00 00 48 */	b .L_800178F0
+.L_800178AC:
+/* 800178AC 00000A78  80 7E 02 08 */	lwz r3, 0x208(r30)
+/* 800178B0 00000A7C  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 800178B4 00000A80  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 800178B8 00000A84  41 82 00 28 */	beq .L_800178E0
+/* 800178BC 00000A88  38 7E 00 08 */	addi r3, r30, 0x8
+/* 800178C0 00000A8C  38 80 00 01 */	li r4, 0x1
+/* 800178C4 00000A90  38 A0 00 00 */	li r5, 0x0
+/* 800178C8 00000A94  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 800178CC 00000A98  38 7E 00 08 */	addi r3, r30, 0x8
+/* 800178D0 00000A9C  38 80 00 02 */	li r4, 0x2
+/* 800178D4 00000AA0  38 A0 00 00 */	li r5, 0x0
+/* 800178D8 00000AA4  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 800178DC 00000AA8  48 00 00 14 */	b .L_800178F0
+.L_800178E0:
+/* 800178E0 00000AAC  38 7E 00 08 */	addi r3, r30, 0x8
+/* 800178E4 00000AB0  38 80 00 03 */	li r4, 0x3
+/* 800178E8 00000AB4  38 A0 00 00 */	li r5, 0x0
+/* 800178EC 00000AB8  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_800178F0:
+/* 800178F0 00000ABC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800178F4 00000AC0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800178F8 00000AC4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800178FC 00000AC8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80017900 00000ACC  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 80017904 00000AD0  7C 08 03 A6 */	mtlr r0
+/* 80017908 00000AD4  38 21 00 20 */	addi r1, r1, 0x20
+/* 8001790C 00000AD8  4E 80 00 20 */	blr
+.endfn initializeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0xA9C | 0x80017910 | size: 0xC8
+# dWarningErrorInfo_c::executeState_ButtonOnStageAnimeEndWait()
+.fn executeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017910 00000ADC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017914 00000AE0  7C 08 02 A6 */	mflr r0
+/* 80017918 00000AE4  38 80 FF FF */	li r4, -0x1
+/* 8001791C 00000AE8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017920 00000AEC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017924 00000AF0  3F E0 00 00 */	lis r31, "@69426_80352328"@ha
+/* 80017928 00000AF4  3B FF 00 00 */	addi r31, r31, "@69426_80352328"@l
+/* 8001792C 00000AF8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80017930 00000AFC  7C 7E 1B 78 */	mr r30, r3
+/* 80017934 00000B00  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017938 00000B04  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 8001793C 00000B08  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017940 00000B0C  40 82 00 80 */	bne .L_800179C0
+/* 80017944 00000B10  80 7E 02 08 */	lwz r3, 0x208(r30)
+/* 80017948 00000B14  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8001794C 00000B18  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 80017950 00000B1C  40 82 00 10 */	bne .L_80017960
+/* 80017954 00000B20  88 1E 02 2F */	lbz r0, 0x22f(r30)
+/* 80017958 00000B24  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001795C 00000B28  41 82 00 20 */	beq .L_8001797C
+.L_80017960:
+/* 80017960 00000B2C  81 9E 01 A0 */	lwz r12, 0x1a0(r30)
+/* 80017964 00000B30  38 7E 01 A0 */	addi r3, r30, 0x1a0
+/* 80017968 00000B34  38 9F 00 D0 */	addi r4, r31, 0xd0
+/* 8001796C 00000B38  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017970 00000B3C  7D 89 03 A6 */	mtctr r12
+/* 80017974 00000B40  4E 80 04 21 */	bctrl
+/* 80017978 00000B44  48 00 00 48 */	b .L_800179C0
+.L_8001797C:
+/* 8001797C 00000B48  80 7E 02 04 */	lwz r3, 0x204(r30)
+/* 80017980 00000B4C  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 80017984 00000B50  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 80017988 00000B54  41 82 00 20 */	beq .L_800179A8
+/* 8001798C 00000B58  81 9E 01 A0 */	lwz r12, 0x1a0(r30)
+/* 80017990 00000B5C  38 7E 01 A0 */	addi r3, r30, 0x1a0
+/* 80017994 00000B60  38 9F 01 90 */	addi r4, r31, 0x190
+/* 80017998 00000B64  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8001799C 00000B68  7D 89 03 A6 */	mtctr r12
+/* 800179A0 00000B6C  4E 80 04 21 */	bctrl
+/* 800179A4 00000B70  48 00 00 1C */	b .L_800179C0
+.L_800179A8:
+/* 800179A8 00000B74  81 9E 01 A0 */	lwz r12, 0x1a0(r30)
+/* 800179AC 00000B78  38 7E 01 A0 */	addi r3, r30, 0x1a0
+/* 800179B0 00000B7C  38 9F 02 90 */	addi r4, r31, 0x290
+/* 800179B4 00000B80  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800179B8 00000B84  7D 89 03 A6 */	mtctr r12
+/* 800179BC 00000B88  4E 80 04 21 */	bctrl
+.L_800179C0:
+/* 800179C0 00000B8C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800179C4 00000B90  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800179C8 00000B94  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800179CC 00000B98  7C 08 03 A6 */	mtlr r0
+/* 800179D0 00000B9C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800179D4 00000BA0  4E 80 00 20 */	blr
+.endfn executeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0xB64 | 0x800179D8 | size: 0x8
+.fn gap_03_800179D8_text, global
+.hidden gap_03_800179D8_text
+/* 800179D8 00000BA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800179DC 00000BA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800179D8_text
+
+# .text:0xB6C | 0x800179E0 | size: 0x2C
+# dWarningErrorInfo_c::finalizeState_ButtonOnStageAnimeEndWait()
+.fn finalizeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 800179E0 00000BAC  88 03 02 2F */	lbz r0, 0x22f(r3)
+/* 800179E4 00000BB0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800179E8 00000BB4  41 82 00 10 */	beq .L_800179F8
+/* 800179EC 00000BB8  38 00 00 02 */	li r0, 0x2
+/* 800179F0 00000BBC  90 03 02 24 */	stw r0, 0x224(r3)
+/* 800179F4 00000BC0  48 00 00 0C */	b .L_80017A00
+.L_800179F8:
+/* 800179F8 00000BC4  38 00 00 01 */	li r0, 0x1
+/* 800179FC 00000BC8  90 03 02 24 */	stw r0, 0x224(r3)
+.L_80017A00:
+/* 80017A00 00000BCC  38 00 FF FF */	li r0, -0x1
+/* 80017A04 00000BD0  90 03 02 28 */	stw r0, 0x228(r3)
+/* 80017A08 00000BD4  4E 80 00 20 */	blr
+.endfn finalizeState_ButtonOnStageAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0xB98 | 0x80017A0C | size: 0x4
+.fn gap_03_80017A0C_text, global
+.hidden gap_03_80017A0C_text
+/* 80017A0C 00000BD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017A0C_text
+
+# .text:0xB9C | 0x80017A10 | size: 0x80
+# dWarningErrorInfo_c::initializeState_ButtonChange()
+.fn initializeState_ButtonChange__19dWarningErrorInfo_cFv, global
+/* 80017A10 00000BDC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017A14 00000BE0  7C 08 02 A6 */	mflr r0
+/* 80017A18 00000BE4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017A1C 00000BE8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017A20 00000BEC  7C 7F 1B 78 */	mr r31, r3
+/* 80017A24 00000BF0  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017A28 00000BF4  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 80017A2C 00000BF8  88 1F 02 2F */	lbz r0, 0x22f(r31)
+/* 80017A30 00000BFC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017A34 00000C00  41 82 00 18 */	beq .L_80017A4C
+/* 80017A38 00000C04  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017A3C 00000C08  38 80 00 06 */	li r4, 0x6
+/* 80017A40 00000C0C  38 A0 00 00 */	li r5, 0x0
+/* 80017A44 00000C10  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 80017A48 00000C14  48 00 00 34 */	b .L_80017A7C
+.L_80017A4C:
+/* 80017A4C 00000C18  80 9F 02 28 */	lwz r4, 0x228(r31)
+/* 80017A50 00000C1C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 80017A54 00000C20  41 80 00 14 */	blt .L_80017A68
+/* 80017A58 00000C24  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017A5C 00000C28  38 84 00 0D */	addi r4, r4, 0xd
+/* 80017A60 00000C2C  38 A0 00 00 */	li r5, 0x0
+/* 80017A64 00000C30  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_80017A68:
+/* 80017A68 00000C34  80 9F 02 24 */	lwz r4, 0x224(r31)
+/* 80017A6C 00000C38  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017A70 00000C3C  38 A0 00 00 */	li r5, 0x0
+/* 80017A74 00000C40  38 84 00 04 */	addi r4, r4, 0x4
+/* 80017A78 00000C44  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_80017A7C:
+/* 80017A7C 00000C48  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017A80 00000C4C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017A84 00000C50  7C 08 03 A6 */	mtlr r0
+/* 80017A88 00000C54  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017A8C 00000C58  4E 80 00 20 */	blr
+.endfn initializeState_ButtonChange__19dWarningErrorInfo_cFv
+
+# .text:0xC1C | 0x80017A90 | size: 0x80
+# dWarningErrorInfo_c::executeState_ButtonChange()
+.fn executeState_ButtonChange__19dWarningErrorInfo_cFv, global
+/* 80017A90 00000C5C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017A94 00000C60  7C 08 02 A6 */	mflr r0
+/* 80017A98 00000C64  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017A9C 00000C68  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017AA0 00000C6C  7C 7F 1B 78 */	mr r31, r3
+/* 80017AA4 00000C70  88 03 02 2F */	lbz r0, 0x22f(r3)
+/* 80017AA8 00000C74  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017AAC 00000C78  41 82 00 1C */	beq .L_80017AC8
+/* 80017AB0 00000C7C  38 80 FF FF */	li r4, -0x1
+/* 80017AB4 00000C80  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017AB8 00000C84  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 80017ABC 00000C88  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017AC0 00000C8C  41 82 00 20 */	beq .L_80017AE0
+/* 80017AC4 00000C90  48 00 00 38 */	b .L_80017AFC
+.L_80017AC8:
+/* 80017AC8 00000C94  80 83 02 24 */	lwz r4, 0x224(r3)
+/* 80017ACC 00000C98  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017AD0 00000C9C  38 84 00 04 */	addi r4, r4, 0x4
+/* 80017AD4 00000CA0  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 80017AD8 00000CA4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017ADC 00000CA8  40 82 00 20 */	bne .L_80017AFC
+.L_80017AE0:
+/* 80017AE0 00000CAC  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 80017AE4 00000CB0  3C 80 00 00 */	lis r4, StateID_ButtonSelect__19dWarningErrorInfo_c@ha
+/* 80017AE8 00000CB4  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 80017AEC 00000CB8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017AF0 00000CBC  38 84 00 00 */	addi r4, r4, StateID_ButtonSelect__19dWarningErrorInfo_c@l
+/* 80017AF4 00000CC0  7D 89 03 A6 */	mtctr r12
+/* 80017AF8 00000CC4  4E 80 04 21 */	bctrl
+.L_80017AFC:
+/* 80017AFC 00000CC8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017B00 00000CCC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017B04 00000CD0  7C 08 03 A6 */	mtlr r0
+/* 80017B08 00000CD4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017B0C 00000CD8  4E 80 00 20 */	blr
+.endfn executeState_ButtonChange__19dWarningErrorInfo_cFv
+
+# .text:0xC9C | 0x80017B10 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_ButtonChange()
+.fn finalizeState_ButtonChange__19dWarningErrorInfo_cFv, global
+/* 80017B10 00000CDC  4E 80 00 20 */	blr
+.endfn finalizeState_ButtonChange__19dWarningErrorInfo_cFv
+
+# .text:0xCA0 | 0x80017B14 | size: 0xC
+.fn gap_03_80017B14_text, global
+.hidden gap_03_80017B14_text
+/* 80017B14 00000CE0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017B18 00000CE4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017B1C 00000CE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017B14_text
+
+# .text:0xCAC | 0x80017B20 | size: 0x88
+# dWarningErrorInfo_c::initializeState_ButtonSelect()
+.fn initializeState_ButtonSelect__19dWarningErrorInfo_cFv, global
+/* 80017B20 00000CEC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017B24 00000CF0  7C 08 02 A6 */	mflr r0
+/* 80017B28 00000CF4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017B2C 00000CF8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017B30 00000CFC  7C 7F 1B 78 */	mr r31, r3
+/* 80017B34 00000D00  88 03 02 2F */	lbz r0, 0x22f(r3)
+/* 80017B38 00000D04  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017B3C 00000D08  41 82 00 28 */	beq .L_80017B64
+/* 80017B40 00000D0C  80 63 02 14 */	lwz r3, 0x214(r3)
+/* 80017B44 00000D10  38 80 00 00 */	li r4, 0x0
+/* 80017B48 00000D14  38 A0 00 01 */	li r5, 0x1
+/* 80017B4C 00000D18  48 00 00 01 */	bl SelectCursorSetup__8dGameComFPQ34nw4r3lyt4Paneib
+/* 80017B50 00000D1C  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017B54 00000D20  38 80 00 09 */	li r4, 0x9
+/* 80017B58 00000D24  38 A0 00 00 */	li r5, 0x0
+/* 80017B5C 00000D28  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 80017B60 00000D2C  48 00 00 34 */	b .L_80017B94
+.L_80017B64:
+/* 80017B64 00000D30  80 03 02 24 */	lwz r0, 0x224(r3)
+/* 80017B68 00000D34  38 80 00 00 */	li r4, 0x0
+/* 80017B6C 00000D38  38 A0 00 01 */	li r5, 0x1
+/* 80017B70 00000D3C  54 00 10 3A */	slwi r0, r0, 2
+/* 80017B74 00000D40  7C 63 02 14 */	add r3, r3, r0
+/* 80017B78 00000D44  80 63 02 0C */	lwz r3, 0x20c(r3)
+/* 80017B7C 00000D48  48 00 00 01 */	bl SelectCursorSetup__8dGameComFPQ34nw4r3lyt4Paneib
+/* 80017B80 00000D4C  80 9F 02 24 */	lwz r4, 0x224(r31)
+/* 80017B84 00000D50  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017B88 00000D54  38 A0 00 00 */	li r5, 0x0
+/* 80017B8C 00000D58  38 84 00 07 */	addi r4, r4, 0x7
+/* 80017B90 00000D5C  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_80017B94:
+/* 80017B94 00000D60  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017B98 00000D64  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017B9C 00000D68  7C 08 03 A6 */	mtlr r0
+/* 80017BA0 00000D6C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017BA4 00000D70  4E 80 00 20 */	blr
+.endfn initializeState_ButtonSelect__19dWarningErrorInfo_cFv
+
+# .text:0xD34 | 0x80017BA8 | size: 0x8
+.fn gap_03_80017BA8_text, global
+.hidden gap_03_80017BA8_text
+/* 80017BA8 00000D74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017BAC 00000D78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017BA8_text
+
+# .text:0xD3C | 0x80017BB0 | size: 0x124
+# dWarningErrorInfo_c::executeState_ButtonSelect()
+.fn executeState_ButtonSelect__19dWarningErrorInfo_cFv, global
+/* 80017BB0 00000D7C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017BB4 00000D80  7C 08 02 A6 */	mflr r0
+/* 80017BB8 00000D84  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017BBC 00000D88  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017BC0 00000D8C  7C 7F 1B 78 */	mr r31, r3
+/* 80017BC4 00000D90  88 03 02 2F */	lbz r0, 0x22f(r3)
+/* 80017BC8 00000D94  80 C3 02 24 */	lwz r6, 0x224(r3)
+/* 80017BCC 00000D98  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017BD0 00000D9C  80 A0 00 00 */	lwz r5, m_instance__10dGameKey_c@sda21(r0)
+/* 80017BD4 00000DA0  7C C8 33 78 */	mr r8, r6
+/* 80017BD8 00000DA4  40 82 00 80 */	bne .L_80017C58
+/* 80017BDC 00000DA8  80 E0 00 00 */	lwz r7, g_currentCoreID__4mPad@sda21(r0)
+/* 80017BE0 00000DAC  54 E0 10 3A */	slwi r0, r7, 2
+/* 80017BE4 00000DB0  7C 85 02 14 */	add r4, r5, r0
+/* 80017BE8 00000DB4  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 80017BEC 00000DB8  80 04 00 1C */	lwz r0, 0x1c(r4)
+/* 80017BF0 00000DBC  54 00 07 39 */	rlwinm. r0, r0, 0, 28, 28
+/* 80017BF4 00000DC0  41 82 00 08 */	beq .L_80017BFC
+/* 80017BF8 00000DC4  39 00 00 01 */	li r8, 0x1
+.L_80017BFC:
+/* 80017BFC 00000DC8  54 E0 10 3A */	slwi r0, r7, 2
+/* 80017C00 00000DCC  7C 85 02 14 */	add r4, r5, r0
+/* 80017C04 00000DD0  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 80017C08 00000DD4  80 04 00 1C */	lwz r0, 0x1c(r4)
+/* 80017C0C 00000DD8  54 00 07 7B */	rlwinm. r0, r0, 0, 29, 29
+/* 80017C10 00000DDC  41 82 00 08 */	beq .L_80017C18
+/* 80017C14 00000DE0  39 00 00 00 */	li r8, 0x0
+.L_80017C18:
+/* 80017C18 00000DE4  7C 08 30 00 */	cmpw r8, r6
+/* 80017C1C 00000DE8  41 82 00 3C */	beq .L_80017C58
+/* 80017C20 00000DEC  90 C3 02 28 */	stw r6, 0x228(r3)
+/* 80017C24 00000DF0  38 80 00 78 */	li r4, 0x78
+/* 80017C28 00000DF4  38 A0 00 01 */	li r5, 0x1
+/* 80017C2C 00000DF8  91 03 02 24 */	stw r8, 0x224(r3)
+/* 80017C30 00000DFC  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 80017C34 00000E00  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 80017C38 00000E04  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 80017C3C 00000E08  3C 80 00 00 */	lis r4, StateID_ButtonChange__19dWarningErrorInfo_c@ha
+/* 80017C40 00000E0C  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 80017C44 00000E10  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017C48 00000E14  38 84 00 00 */	addi r4, r4, StateID_ButtonChange__19dWarningErrorInfo_c@l
+/* 80017C4C 00000E18  7D 89 03 A6 */	mtctr r12
+/* 80017C50 00000E1C  4E 80 04 21 */	bctrl
+/* 80017C54 00000E20  48 00 00 6C */	b .L_80017CC0
+.L_80017C58:
+/* 80017C58 00000E24  80 60 00 00 */	lwz r3, g_currentCore__4mPad@sda21(r0)
+/* 80017C5C 00000E28  38 80 09 00 */	li r4, 0x900
+/* 80017C60 00000E2C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80017C64 00000E30  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80017C68 00000E34  7D 89 03 A6 */	mtctr r12
+/* 80017C6C 00000E38  4E 80 04 21 */	bctrl
+/* 80017C70 00000E3C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017C74 00000E40  41 82 00 4C */	beq .L_80017CC0
+/* 80017C78 00000E44  80 1F 02 24 */	lwz r0, 0x224(r31)
+/* 80017C7C 00000E48  3C 80 00 00 */	lis r4, StateID_ButtonHitAnimeEndWait__19dWarningErrorInfo_c@ha
+/* 80017C80 00000E4C  90 1F 02 28 */	stw r0, 0x228(r31)
+/* 80017C84 00000E50  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 80017C88 00000E54  38 84 00 00 */	addi r4, r4, StateID_ButtonHitAnimeEndWait__19dWarningErrorInfo_c@l
+/* 80017C8C 00000E58  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 80017C90 00000E5C  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017C94 00000E60  7D 89 03 A6 */	mtctr r12
+/* 80017C98 00000E64  4E 80 04 21 */	bctrl
+/* 80017C9C 00000E68  A0 00 00 00 */	lhz r0, m_nowScene__8dScene_c@sda21(r0)
+/* 80017CA0 00000E6C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017CA4 00000E70  40 82 00 1C */	bne .L_80017CC0
+/* 80017CA8 00000E74  80 1F 02 20 */	lwz r0, 0x220(r31)
+/* 80017CAC 00000E78  2C 00 00 03 */	cmpwi r0, 0x3
+/* 80017CB0 00000E7C  40 82 00 10 */	bne .L_80017CC0
+/* 80017CB4 00000E80  48 00 00 01 */	bl GetInstance__Q26dReset8Manage_cFv
+/* 80017CB8 00000E84  38 80 00 01 */	li r4, 0x1
+/* 80017CBC 00000E88  48 00 00 01 */	bl ActiveSaveWindow__Q26dReset8Manage_cFb
+.L_80017CC0:
+/* 80017CC0 00000E8C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017CC4 00000E90  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017CC8 00000E94  7C 08 03 A6 */	mtlr r0
+/* 80017CCC 00000E98  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017CD0 00000E9C  4E 80 00 20 */	blr
+.endfn executeState_ButtonSelect__19dWarningErrorInfo_cFv
+
+# .text:0xE60 | 0x80017CD4 | size: 0xC
+.fn gap_03_80017CD4_text, global
+.hidden gap_03_80017CD4_text
+/* 80017CD4 00000EA0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017CD8 00000EA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017CDC 00000EA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017CD4_text
+
+# .text:0xE6C | 0x80017CE0 | size: 0x18
+# EGG::CoreController::downTrigger(unsigned long) const
+.fn downTrigger__Q23EGG14CoreControllerCFUl, global
+/* 80017CE0 00000EAC  80 03 00 1C */	lwz r0, 0x1c(r3)
+/* 80017CE4 00000EB0  7C 83 00 38 */	and r3, r4, r0
+/* 80017CE8 00000EB4  7C 03 00 D0 */	neg r0, r3
+/* 80017CEC 00000EB8  7C 00 1B 78 */	or r0, r0, r3
+/* 80017CF0 00000EBC  54 03 0F FE */	srwi r3, r0, 31
+/* 80017CF4 00000EC0  4E 80 00 20 */	blr
+.endfn downTrigger__Q23EGG14CoreControllerCFUl
+
+# .text:0xE84 | 0x80017CF8 | size: 0x8
+.fn gap_03_80017CF8_text, global
+.hidden gap_03_80017CF8_text
+/* 80017CF8 00000EC4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017CFC 00000EC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017CF8_text
+
+# .text:0xE8C | 0x80017D00 | size: 0x60
+# dWarningErrorInfo_c::finalizeState_ButtonSelect()
+.fn finalizeState_ButtonSelect__19dWarningErrorInfo_cFv, global
+/* 80017D00 00000ECC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017D04 00000ED0  7C 08 02 A6 */	mflr r0
+/* 80017D08 00000ED4  38 80 00 00 */	li r4, 0x0
+/* 80017D0C 00000ED8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017D10 00000EDC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017D14 00000EE0  7C 7F 1B 78 */	mr r31, r3
+/* 80017D18 00000EE4  80 60 00 00 */	lwz r3, m_instance__15dSelectCursor_c@sda21(r0)
+/* 80017D1C 00000EE8  48 00 00 01 */	bl Cancel__15dSelectCursor_cFi
+/* 80017D20 00000EEC  88 1F 02 2F */	lbz r0, 0x22f(r31)
+/* 80017D24 00000EF0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017D28 00000EF4  41 82 00 14 */	beq .L_80017D3C
+/* 80017D2C 00000EF8  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017D30 00000EFC  38 80 00 09 */	li r4, 0x9
+/* 80017D34 00000F00  48 00 00 01 */	bl AnimeEndSetup__9LytBase_cFi
+/* 80017D38 00000F04  48 00 00 14 */	b .L_80017D4C
+.L_80017D3C:
+/* 80017D3C 00000F08  80 9F 02 28 */	lwz r4, 0x228(r31)
+/* 80017D40 00000F0C  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017D44 00000F10  38 84 00 07 */	addi r4, r4, 0x7
+/* 80017D48 00000F14  48 00 00 01 */	bl AnimeEndSetup__9LytBase_cFi
+.L_80017D4C:
+/* 80017D4C 00000F18  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017D50 00000F1C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017D54 00000F20  7C 08 03 A6 */	mtlr r0
+/* 80017D58 00000F24  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017D5C 00000F28  4E 80 00 20 */	blr
+.endfn finalizeState_ButtonSelect__19dWarningErrorInfo_cFv
+
+# .text:0xEEC | 0x80017D60 | size: 0x80
+# dWarningErrorInfo_c::initializeState_ButtonHitAnimeEndWait()
+.fn initializeState_ButtonHitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017D60 00000F2C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017D64 00000F30  7C 08 02 A6 */	mflr r0
+/* 80017D68 00000F34  38 80 00 79 */	li r4, 0x79
+/* 80017D6C 00000F38  38 A0 00 01 */	li r5, 0x1
+/* 80017D70 00000F3C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017D74 00000F40  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017D78 00000F44  7C 7F 1B 78 */	mr r31, r3
+/* 80017D7C 00000F48  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 80017D80 00000F4C  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 80017D84 00000F50  88 1F 02 2F */	lbz r0, 0x22f(r31)
+/* 80017D88 00000F54  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017D8C 00000F58  41 82 00 18 */	beq .L_80017DA4
+/* 80017D90 00000F5C  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017D94 00000F60  38 80 00 0C */	li r4, 0xc
+/* 80017D98 00000F64  38 A0 00 00 */	li r5, 0x0
+/* 80017D9C 00000F68  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 80017DA0 00000F6C  48 00 00 18 */	b .L_80017DB8
+.L_80017DA4:
+/* 80017DA4 00000F70  80 9F 02 24 */	lwz r4, 0x224(r31)
+/* 80017DA8 00000F74  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017DAC 00000F78  38 A0 00 00 */	li r5, 0x0
+/* 80017DB0 00000F7C  38 84 00 0A */	addi r4, r4, 0xa
+/* 80017DB4 00000F80  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_80017DB8:
+/* 80017DB8 00000F84  80 1F 02 24 */	lwz r0, 0x224(r31)
+/* 80017DBC 00000F88  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017DC0 00000F8C  40 82 00 0C */	bne .L_80017DCC
+/* 80017DC4 00000F90  38 00 00 1E */	li r0, 0x1e
+/* 80017DC8 00000F94  90 1F 02 1C */	stw r0, 0x21c(r31)
+.L_80017DCC:
+/* 80017DCC 00000F98  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017DD0 00000F9C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017DD4 00000FA0  7C 08 03 A6 */	mtlr r0
+/* 80017DD8 00000FA4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017DDC 00000FA8  4E 80 00 20 */	blr
+.endfn initializeState_ButtonHitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0xF6C | 0x80017DE0 | size: 0xD4
+# dWarningErrorInfo_c::executeState_ButtonHitAnimeEndWait()
+.fn executeState_ButtonHitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017DE0 00000FAC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017DE4 00000FB0  7C 08 02 A6 */	mflr r0
+/* 80017DE8 00000FB4  38 80 FF FF */	li r4, -0x1
+/* 80017DEC 00000FB8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017DF0 00000FBC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017DF4 00000FC0  3F E0 00 00 */	lis r31, "@69426_80352328"@ha
+/* 80017DF8 00000FC4  3B FF 00 00 */	addi r31, r31, "@69426_80352328"@l
+/* 80017DFC 00000FC8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80017E00 00000FCC  7C 7E 1B 78 */	mr r30, r3
+/* 80017E04 00000FD0  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017E08 00000FD4  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 80017E0C 00000FD8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017E10 00000FDC  40 82 00 8C */	bne .L_80017E9C
+/* 80017E14 00000FE0  80 1E 02 24 */	lwz r0, 0x224(r30)
+/* 80017E18 00000FE4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80017E1C 00000FE8  40 82 00 38 */	bne .L_80017E54
+/* 80017E20 00000FEC  80 7E 02 1C */	lwz r3, 0x21c(r30)
+/* 80017E24 00000FF0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017E28 00000FF4  41 82 00 10 */	beq .L_80017E38
+/* 80017E2C 00000FF8  38 03 FF FF */	subi r0, r3, 0x1
+/* 80017E30 00000FFC  90 1E 02 1C */	stw r0, 0x21c(r30)
+/* 80017E34 00001000  48 00 00 68 */	b .L_80017E9C
+.L_80017E38:
+/* 80017E38 00001004  81 9E 01 A0 */	lwz r12, 0x1a0(r30)
+/* 80017E3C 00001008  38 7E 01 A0 */	addi r3, r30, 0x1a0
+/* 80017E40 0000100C  38 9F 02 10 */	addi r4, r31, 0x210
+/* 80017E44 00001010  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017E48 00001014  7D 89 03 A6 */	mtctr r12
+/* 80017E4C 00001018  4E 80 04 21 */	bctrl
+/* 80017E50 0000101C  48 00 00 4C */	b .L_80017E9C
+.L_80017E54:
+/* 80017E54 00001020  80 1E 02 20 */	lwz r0, 0x220(r30)
+/* 80017E58 00001024  2C 00 00 03 */	cmpwi r0, 0x3
+/* 80017E5C 00001028  40 82 00 20 */	bne .L_80017E7C
+/* 80017E60 0000102C  81 9E 01 A0 */	lwz r12, 0x1a0(r30)
+/* 80017E64 00001030  38 7E 01 A0 */	addi r3, r30, 0x1a0
+/* 80017E68 00001034  38 9F 02 50 */	addi r4, r31, 0x250
+/* 80017E6C 00001038  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017E70 0000103C  7D 89 03 A6 */	mtctr r12
+/* 80017E74 00001040  4E 80 04 21 */	bctrl
+/* 80017E78 00001044  48 00 00 24 */	b .L_80017E9C
+.L_80017E7C:
+/* 80017E7C 00001048  48 00 00 01 */	bl GetInstance__Q26dReset8Manage_cFv
+/* 80017E80 0000104C  48 00 00 01 */	bl SetInteriorReturnDataManager__Q26dReset8Manage_cFv
+/* 80017E84 00001050  81 9E 01 A0 */	lwz r12, 0x1a0(r30)
+/* 80017E88 00001054  38 7E 01 A0 */	addi r3, r30, 0x1a0
+/* 80017E8C 00001058  38 9F 02 90 */	addi r4, r31, 0x290
+/* 80017E90 0000105C  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017E94 00001060  7D 89 03 A6 */	mtctr r12
+/* 80017E98 00001064  4E 80 04 21 */	bctrl
+.L_80017E9C:
+/* 80017E9C 00001068  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017EA0 0000106C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017EA4 00001070  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80017EA8 00001074  7C 08 03 A6 */	mtlr r0
+/* 80017EAC 00001078  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017EB0 0000107C  4E 80 00 20 */	blr
+.endfn executeState_ButtonHitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x1040 | 0x80017EB4 | size: 0xC
+.fn gap_03_80017EB4_text, global
+.hidden gap_03_80017EB4_text
+/* 80017EB4 00001080  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017EB8 00001084  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017EBC 00001088  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017EB4_text
+
+# .text:0x104C | 0x80017EC0 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_ButtonHitAnimeEndWait()
+.fn finalizeState_ButtonHitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017EC0 0000108C  4E 80 00 20 */	blr
+.endfn finalizeState_ButtonHitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x1050 | 0x80017EC4 | size: 0xC
+.fn gap_03_80017EC4_text, global
+.hidden gap_03_80017EC4_text
+/* 80017EC4 00001090  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017EC8 00001094  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017ECC 00001098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017EC4_text
+
+# .text:0x105C | 0x80017ED0 | size: 0xC
+# dWarningErrorInfo_c::initializeState_DispEndWait()
+.fn initializeState_DispEndWait__19dWarningErrorInfo_cFv, global
+/* 80017ED0 0000109C  38 80 00 11 */	li r4, 0x11
+/* 80017ED4 000010A0  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017ED8 000010A4  48 00 00 00 */	b LoopAnimeStartSetup__9LytBase_cFi
+.endfn initializeState_DispEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x1068 | 0x80017EDC | size: 0x4
+.fn gap_03_80017EDC_text, global
+.hidden gap_03_80017EDC_text
+/* 80017EDC 000010A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017EDC_text
+
+# .text:0x106C | 0x80017EE0 | size: 0x74
+# dWarningErrorInfo_c::executeState_DispEndWait()
+.fn executeState_DispEndWait__19dWarningErrorInfo_cFv, global
+/* 80017EE0 000010AC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017EE4 000010B0  7C 08 02 A6 */	mflr r0
+/* 80017EE8 000010B4  3C A0 00 00 */	lis r5, g_core__4mPad@ha
+/* 80017EEC 000010B8  38 80 09 00 */	li r4, 0x900
+/* 80017EF0 000010BC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017EF4 000010C0  38 A5 00 00 */	addi r5, r5, g_core__4mPad@l
+/* 80017EF8 000010C4  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017EFC 000010C8  7C 7F 1B 78 */	mr r31, r3
+/* 80017F00 000010CC  80 03 02 18 */	lwz r0, 0x218(r3)
+/* 80017F04 000010D0  54 00 10 3A */	slwi r0, r0, 2
+/* 80017F08 000010D4  7C 65 00 2E */	lwzx r3, r5, r0
+/* 80017F0C 000010D8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80017F10 000010DC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80017F14 000010E0  7D 89 03 A6 */	mtctr r12
+/* 80017F18 000010E4  4E 80 04 21 */	bctrl
+/* 80017F1C 000010E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017F20 000010EC  41 82 00 20 */	beq .L_80017F40
+/* 80017F24 000010F0  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 80017F28 000010F4  3C 80 00 00 */	lis r4, StateID_HitAnimeEndWait__19dWarningErrorInfo_c@ha
+/* 80017F2C 000010F8  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 80017F30 000010FC  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80017F34 00001100  38 84 00 00 */	addi r4, r4, StateID_HitAnimeEndWait__19dWarningErrorInfo_c@l
+/* 80017F38 00001104  7D 89 03 A6 */	mtctr r12
+/* 80017F3C 00001108  4E 80 04 21 */	bctrl
+.L_80017F40:
+/* 80017F40 0000110C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017F44 00001110  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017F48 00001114  7C 08 03 A6 */	mtlr r0
+/* 80017F4C 00001118  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017F50 0000111C  4E 80 00 20 */	blr
+.endfn executeState_DispEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x10E0 | 0x80017F54 | size: 0xC
+.fn gap_03_80017F54_text, global
+.hidden gap_03_80017F54_text
+/* 80017F54 00001120  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017F58 00001124  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017F5C 00001128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017F54_text
+
+# .text:0x10EC | 0x80017F60 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_DispEndWait()
+.fn finalizeState_DispEndWait__19dWarningErrorInfo_cFv, global
+/* 80017F60 0000112C  4E 80 00 20 */	blr
+.endfn finalizeState_DispEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x10F0 | 0x80017F64 | size: 0xC
+.fn gap_03_80017F64_text, global
+.hidden gap_03_80017F64_text
+/* 80017F64 00001130  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017F68 00001134  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80017F6C 00001138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017F64_text
+
+# .text:0x10FC | 0x80017F70 | size: 0x5C
+# dWarningErrorInfo_c::initializeState_HitAnimeEndWait()
+.fn initializeState_HitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017F70 0000113C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017F74 00001140  7C 08 02 A6 */	mflr r0
+/* 80017F78 00001144  38 80 00 81 */	li r4, 0x81
+/* 80017F7C 00001148  38 A0 00 01 */	li r5, 0x1
+/* 80017F80 0000114C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017F84 00001150  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017F88 00001154  7C 7F 1B 78 */	mr r31, r3
+/* 80017F8C 00001158  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 80017F90 0000115C  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 80017F94 00001160  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017F98 00001164  38 80 00 11 */	li r4, 0x11
+/* 80017F9C 00001168  48 00 00 01 */	bl AnimeEndSetup__9LytBase_cFi
+/* 80017FA0 0000116C  38 7F 00 08 */	addi r3, r31, 0x8
+/* 80017FA4 00001170  38 80 00 12 */	li r4, 0x12
+/* 80017FA8 00001174  38 A0 00 00 */	li r5, 0x0
+/* 80017FAC 00001178  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 80017FB0 0000117C  38 00 00 1E */	li r0, 0x1e
+/* 80017FB4 00001180  90 1F 02 1C */	stw r0, 0x21c(r31)
+/* 80017FB8 00001184  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80017FBC 00001188  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80017FC0 0000118C  7C 08 03 A6 */	mtlr r0
+/* 80017FC4 00001190  38 21 00 10 */	addi r1, r1, 0x10
+/* 80017FC8 00001194  4E 80 00 20 */	blr
+.endfn initializeState_HitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x1158 | 0x80017FCC | size: 0x4
+.fn gap_03_80017FCC_text, global
+.hidden gap_03_80017FCC_text
+/* 80017FCC 00001198  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80017FCC_text
+
+# .text:0x115C | 0x80017FD0 | size: 0x70
+# dWarningErrorInfo_c::executeState_HitAnimeEndWait()
+.fn executeState_HitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80017FD0 0000119C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80017FD4 000011A0  7C 08 02 A6 */	mflr r0
+/* 80017FD8 000011A4  38 80 FF FF */	li r4, -0x1
+/* 80017FDC 000011A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80017FE0 000011AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80017FE4 000011B0  7C 7F 1B 78 */	mr r31, r3
+/* 80017FE8 000011B4  38 63 00 08 */	addi r3, r3, 0x8
+/* 80017FEC 000011B8  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 80017FF0 000011BC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80017FF4 000011C0  40 82 00 38 */	bne .L_8001802C
+/* 80017FF8 000011C4  80 7F 02 1C */	lwz r3, 0x21c(r31)
+/* 80017FFC 000011C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80018000 000011CC  41 82 00 10 */	beq .L_80018010
+/* 80018004 000011D0  38 03 FF FF */	subi r0, r3, 0x1
+/* 80018008 000011D4  90 1F 02 1C */	stw r0, 0x21c(r31)
+/* 8001800C 000011D8  48 00 00 20 */	b .L_8001802C
+.L_80018010:
+/* 80018010 000011DC  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 80018014 000011E0  3C 80 00 00 */	lis r4, StateID_ExitAnimeEndWait__19dWarningErrorInfo_c@ha
+/* 80018018 000011E4  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 8001801C 000011E8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80018020 000011EC  38 84 00 00 */	addi r4, r4, StateID_ExitAnimeEndWait__19dWarningErrorInfo_c@l
+/* 80018024 000011F0  7D 89 03 A6 */	mtctr r12
+/* 80018028 000011F4  4E 80 04 21 */	bctrl
+.L_8001802C:
+/* 8001802C 000011F8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80018030 000011FC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80018034 00001200  7C 08 03 A6 */	mtlr r0
+/* 80018038 00001204  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001803C 00001208  4E 80 00 20 */	blr
+.endfn executeState_HitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x11CC | 0x80018040 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_HitAnimeEndWait()
+.fn finalizeState_HitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80018040 0000120C  4E 80 00 20 */	blr
+.endfn finalizeState_HitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x11D0 | 0x80018044 | size: 0xC
+.fn gap_03_80018044_text, global
+.hidden gap_03_80018044_text
+/* 80018044 00001210  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80018048 00001214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001804C 00001218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80018044_text
+
+# .text:0x11DC | 0x80018050 | size: 0x10
+# dWarningErrorInfo_c::initializeState_ExitAnimeEndWait()
+.fn initializeState_ExitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80018050 0000121C  38 80 00 13 */	li r4, 0x13
+/* 80018054 00001220  38 A0 00 00 */	li r5, 0x0
+/* 80018058 00001224  38 63 00 08 */	addi r3, r3, 0x8
+/* 8001805C 00001228  48 00 00 00 */	b AnimeStartSetup__9LytBase_cFib
+.endfn initializeState_ExitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x11EC | 0x80018060 | size: 0x70
+# dWarningErrorInfo_c::executeState_ExitAnimeEndWait()
+.fn executeState_ExitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 80018060 0000122C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80018064 00001230  7C 08 02 A6 */	mflr r0
+/* 80018068 00001234  38 80 FF FF */	li r4, -0x1
+/* 8001806C 00001238  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80018070 0000123C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80018074 00001240  7C 7F 1B 78 */	mr r31, r3
+/* 80018078 00001244  38 63 00 08 */	addi r3, r3, 0x8
+/* 8001807C 00001248  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 80018080 0000124C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80018084 00001250  40 82 00 38 */	bne .L_800180BC
+/* 80018088 00001254  38 00 00 00 */	li r0, 0x0
+/* 8001808C 00001258  98 1F 02 2D */	stb r0, 0x22d(r31)
+/* 80018090 0000125C  80 BF 01 DC */	lwz r5, 0x1dc(r31)
+/* 80018094 00001260  3C 80 00 00 */	lis r4, StateID_DispWait__19dWarningErrorInfo_c@ha
+/* 80018098 00001264  38 7F 01 A0 */	addi r3, r31, 0x1a0
+/* 8001809C 00001268  88 05 00 BB */	lbz r0, 0xbb(r5)
+/* 800180A0 0000126C  38 84 00 00 */	addi r4, r4, StateID_DispWait__19dWarningErrorInfo_c@l
+/* 800180A4 00001270  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 800180A8 00001274  98 05 00 BB */	stb r0, 0xbb(r5)
+/* 800180AC 00001278  81 9F 01 A0 */	lwz r12, 0x1a0(r31)
+/* 800180B0 0000127C  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800180B4 00001280  7D 89 03 A6 */	mtctr r12
+/* 800180B8 00001284  4E 80 04 21 */	bctrl
+.L_800180BC:
+/* 800180BC 00001288  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800180C0 0000128C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800180C4 00001290  7C 08 03 A6 */	mtlr r0
+/* 800180C8 00001294  38 21 00 10 */	addi r1, r1, 0x10
+/* 800180CC 00001298  4E 80 00 20 */	blr
+.endfn executeState_ExitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x125C | 0x800180D0 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_ExitAnimeEndWait()
+.fn finalizeState_ExitAnimeEndWait__19dWarningErrorInfo_cFv, global
+/* 800180D0 0000129C  4E 80 00 20 */	blr
+.endfn finalizeState_ExitAnimeEndWait__19dWarningErrorInfo_cFv
+
+# .text:0x1260 | 0x800180D4 | size: 0xC
+.fn gap_03_800180D4_text, global
+.hidden gap_03_800180D4_text
+/* 800180D4 000012A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800180D8 000012A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800180DC 000012A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800180D4_text
+
+# .text:0x126C | 0x800180E0 | size: 0x8
+# dWarningErrorInfo_c::initializeState_FileDeleteWait()
+.fn initializeState_FileDeleteWait__19dWarningErrorInfo_cFv, global
+/* 800180E0 000012AC  80 60 00 00 */	lwz r3, m_instance__13dNandThread_c@sda21(r0)
+/* 800180E4 000012B0  48 00 00 00 */	b cmdDeleteFile__13dNandThread_cFv
+.endfn initializeState_FileDeleteWait__19dWarningErrorInfo_cFv
+
+# .text:0x1274 | 0x800180E8 | size: 0x8
+.fn gap_03_800180E8_text, global
+.hidden gap_03_800180E8_text
+/* 800180E8 000012B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800180EC 000012B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800180E8_text
+
+# .text:0x127C | 0x800180F0 | size: 0x2C
+# dWarningErrorInfo_c::executeState_FileDeleteWait()
+.fn executeState_FileDeleteWait__19dWarningErrorInfo_cFv, global
+/* 800180F0 000012BC  80 80 00 00 */	lwz r4, m_instance__13dNandThread_c@sda21(r0)
+/* 800180F4 000012C0  80 04 00 74 */	lwz r0, 0x74(r4)
+/* 800180F8 000012C4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800180FC 000012C8  4C 82 00 20 */	bnelr
+/* 80018100 000012CC  85 83 01 A0 */	lwzu r12, 0x1a0(r3)
+/* 80018104 000012D0  3C 80 00 00 */	lis r4, StateID_ExitAnimeEndWait__19dWarningErrorInfo_c@ha
+/* 80018108 000012D4  38 84 00 00 */	addi r4, r4, StateID_ExitAnimeEndWait__19dWarningErrorInfo_c@l
+/* 8001810C 000012D8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80018110 000012DC  7D 89 03 A6 */	mtctr r12
+/* 80018114 000012E0  4E 80 04 20 */	bctr
+/* 80018118 000012E4  4E 80 00 20 */	blr
+.endfn executeState_FileDeleteWait__19dWarningErrorInfo_cFv
+
+# .text:0x12A8 | 0x8001811C | size: 0x4
+.fn gap_03_8001811C_text, global
+.hidden gap_03_8001811C_text
+/* 8001811C 000012E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001811C_text
+
+# .text:0x12AC | 0x80018120 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_FileDeleteWait()
+.fn finalizeState_FileDeleteWait__19dWarningErrorInfo_cFv, global
+/* 80018120 000012EC  4E 80 00 20 */	blr
+.endfn finalizeState_FileDeleteWait__19dWarningErrorInfo_cFv
+
+# .text:0x12B0 | 0x80018124 | size: 0xC
+.fn gap_03_80018124_text, global
+.hidden gap_03_80018124_text
+/* 80018124 000012F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80018128 000012F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001812C 000012F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80018124_text
+
+# .text:0x12BC | 0x80018130 | size: 0x4
+# dWarningErrorInfo_c::initializeState_InfinityDisp()
+.fn initializeState_InfinityDisp__19dWarningErrorInfo_cFv, global
+/* 80018130 000012FC  4E 80 00 20 */	blr
+.endfn initializeState_InfinityDisp__19dWarningErrorInfo_cFv
+
+# .text:0x12C0 | 0x80018134 | size: 0xC
+.fn gap_03_80018134_text, global
+.hidden gap_03_80018134_text
+/* 80018134 00001300  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80018138 00001304  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001813C 00001308  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80018134_text
+
+# .text:0x12CC | 0x80018140 | size: 0x4
+# dWarningErrorInfo_c::executeState_InfinityDisp()
+.fn executeState_InfinityDisp__19dWarningErrorInfo_cFv, global
+/* 80018140 0000130C  4E 80 00 20 */	blr
+.endfn executeState_InfinityDisp__19dWarningErrorInfo_cFv
+
+# .text:0x12D0 | 0x80018144 | size: 0xC
+.fn gap_03_80018144_text, global
+.hidden gap_03_80018144_text
+/* 80018144 00001310  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80018148 00001314  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001814C 00001318  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80018144_text
+
+# .text:0x12DC | 0x80018150 | size: 0x4
+# dWarningErrorInfo_c::finalizeState_InfinityDisp()
+.fn finalizeState_InfinityDisp__19dWarningErrorInfo_cFv, global
+/* 80018150 0000131C  4E 80 00 20 */	blr
+.endfn finalizeState_InfinityDisp__19dWarningErrorInfo_cFv
+
+# .text:0x12E0 | 0x80018154 | size: 0xC
+.fn gap_03_80018154_text, global
+.hidden gap_03_80018154_text
+/* 80018154 00001320  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80018158 00001324  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001815C 00001328  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80018154_text
+
+# .text:0x12EC | 0x80018160 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::initializeState()
+.fn "initializeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 80018160 0000132C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018164 00001330  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80018168 00001334  7D 89 03 A6 */	mtctr r12
+/* 8001816C 00001338  4E 80 04 20 */	bctr
+.endfn "initializeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x12FC | 0x80018170 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::finalizeState()
+.fn "finalizeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 80018170 0000133C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018174 00001340  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 80018178 00001344  7D 89 03 A6 */	mtctr r12
+/* 8001817C 00001348  4E 80 04 20 */	bctr
+.endfn "finalizeState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x130C | 0x80018180 | size: 0x60
+# sFStateFct_c<dWarningErrorInfo_c>::build(const sStateIDIf_c&)
+.fn "build__35sFStateFct_c<19dWarningErrorInfo_c>FRC12sStateIDIf_c", global
+/* 80018180 0000134C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80018184 00001350  7C 08 02 A6 */	mflr r0
+/* 80018188 00001354  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001818C 00001358  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80018190 0000135C  7C 9F 23 78 */	mr r31, r4
+/* 80018194 00001360  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80018198 00001364  7C 7E 1B 78 */	mr r30, r3
+/* 8001819C 00001368  7F E3 FB 78 */	mr r3, r31
+/* 800181A0 0000136C  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 800181A4 00001370  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 800181A8 00001374  7D 89 03 A6 */	mtctr r12
+/* 800181AC 00001378  4E 80 04 21 */	bctrl
+/* 800181B0 0000137C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800181B4 00001380  40 82 00 10 */	bne .L_800181C4
+/* 800181B8 00001384  93 FE 00 0C */	stw r31, 0xc(r30)
+/* 800181BC 00001388  38 7E 00 04 */	addi r3, r30, 0x4
+/* 800181C0 0000138C  48 00 00 08 */	b .L_800181C8
+.L_800181C4:
+/* 800181C4 00001390  38 60 00 00 */	li r3, 0x0
+.L_800181C8:
+/* 800181C8 00001394  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800181CC 00001398  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800181D0 0000139C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800181D4 000013A0  7C 08 03 A6 */	mtlr r0
+/* 800181D8 000013A4  38 21 00 10 */	addi r1, r1, 0x10
+/* 800181DC 000013A8  4E 80 00 20 */	blr
+.endfn "build__35sFStateFct_c<19dWarningErrorInfo_c>FRC12sStateIDIf_c"
+
+# .text:0x136C | 0x800181E0 | size: 0xC
+# sFStateFct_c<dWarningErrorInfo_c>::dispose(sStateIf_c*&)
+.fn "dispose__35sFStateFct_c<19dWarningErrorInfo_c>FRP10sStateIf_c", global
+/* 800181E0 000013AC  38 00 00 00 */	li r0, 0x0
+/* 800181E4 000013B0  90 04 00 00 */	stw r0, 0x0(r4)
+/* 800181E8 000013B4  4E 80 00 20 */	blr
+.endfn "dispose__35sFStateFct_c<19dWarningErrorInfo_c>FRP10sStateIf_c"
+
+# .text:0x1378 | 0x800181EC | size: 0x4
+.fn gap_03_800181EC_text, global
+.hidden gap_03_800181EC_text
+/* 800181EC 000013B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800181EC_text
+
+# .text:0x137C | 0x800181F0 | size: 0x1C
+# sFState_c<dWarningErrorInfo_c>::initialize()
+.fn "initialize__32sFState_c<19dWarningErrorInfo_c>Fv", global
+/* 800181F0 000013BC  7C 64 1B 78 */	mr r4, r3
+/* 800181F4 000013C0  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 800181F8 000013C4  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 800181FC 000013C8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80018200 000013CC  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 80018204 000013D0  7D 89 03 A6 */	mtctr r12
+/* 80018208 000013D4  4E 80 04 20 */	bctr
+.endfn "initialize__32sFState_c<19dWarningErrorInfo_c>Fv"
+
+# .text:0x1398 | 0x8001820C | size: 0x4
+.fn gap_03_8001820C_text, global
+.hidden gap_03_8001820C_text
+/* 8001820C 000013D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001820C_text
+
+# .text:0x139C | 0x80018210 | size: 0x1C
+# sFState_c<dWarningErrorInfo_c>::execute()
+.fn "execute__32sFState_c<19dWarningErrorInfo_c>Fv", global
+/* 80018210 000013DC  7C 64 1B 78 */	mr r4, r3
+/* 80018214 000013E0  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 80018218 000013E4  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8001821C 000013E8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80018220 000013EC  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 80018224 000013F0  7D 89 03 A6 */	mtctr r12
+/* 80018228 000013F4  4E 80 04 20 */	bctr
+.endfn "execute__32sFState_c<19dWarningErrorInfo_c>Fv"
+
+# .text:0x13B8 | 0x8001822C | size: 0x4
+.fn gap_03_8001822C_text, global
+.hidden gap_03_8001822C_text
+/* 8001822C 000013F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001822C_text
+
+# .text:0x13BC | 0x80018230 | size: 0x1C
+# sFState_c<dWarningErrorInfo_c>::finalize()
+.fn "finalize__32sFState_c<19dWarningErrorInfo_c>Fv", global
+/* 80018230 000013FC  7C 64 1B 78 */	mr r4, r3
+/* 80018234 00001400  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 80018238 00001404  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8001823C 00001408  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80018240 0000140C  81 8C 00 30 */	lwz r12, 0x30(r12)
+/* 80018244 00001410  7D 89 03 A6 */	mtctr r12
+/* 80018248 00001414  4E 80 04 20 */	bctr
+.endfn "finalize__32sFState_c<19dWarningErrorInfo_c>Fv"
+
+# .text:0x13D8 | 0x8001824C | size: 0x4
+.fn gap_03_8001824C_text, global
+.hidden gap_03_8001824C_text
+/* 8001824C 00001418  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001824C_text
+
+# .text:0x13DC | 0x80018250 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::refreshState()
+.fn "refreshState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 80018250 0000141C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018254 00001420  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 80018258 00001424  7D 89 03 A6 */	mtctr r12
+/* 8001825C 00001428  4E 80 04 20 */	bctr
+.endfn "refreshState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x13EC | 0x80018260 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getState() const
+.fn "getState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 80018260 0000142C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018264 00001430  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80018268 00001434  7D 89 03 A6 */	mtctr r12
+/* 8001826C 00001438  4E 80 04 20 */	bctr
+.endfn "getState__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x13FC | 0x80018270 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getNewStateID() const
+.fn "getNewStateID__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 80018270 0000143C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018274 00001440  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 80018278 00001444  7D 89 03 A6 */	mtctr r12
+/* 8001827C 00001448  4E 80 04 20 */	bctr
+.endfn "getNewStateID__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x140C | 0x80018280 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getStateID() const
+.fn "getStateID__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 80018280 0000144C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018284 00001450  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 80018288 00001454  7D 89 03 A6 */	mtctr r12
+/* 8001828C 00001458  4E 80 04 20 */	bctr
+.endfn "getStateID__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x141C | 0x80018290 | size: 0x10
+# sStateMgr_c<dWarningErrorInfo_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getOldStateID() const
+.fn "getOldStateID__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 80018290 0000145C  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 80018294 00001460  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 80018298 00001464  7D 89 03 A6 */	mtctr r12
+/* 8001829C 00001468  4E 80 04 20 */	bctr
+.endfn "getOldStateID__88sStateMgr_c<19dWarningErrorInfo_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x142C | 0x800182A0 | size: 0x30
+# sFStateID_c<dWarningErrorInfo_c>::finalizeState(dWarningErrorInfo_c&) const
+.fn "finalizeState__34sFStateID_c<19dWarningErrorInfo_c>CFR19dWarningErrorInfo_c", global
+/* 800182A0 0000146C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800182A4 00001470  7C 08 02 A6 */	mflr r0
+/* 800182A8 00001474  7C 65 1B 78 */	mr r5, r3
+/* 800182AC 00001478  7C 83 23 78 */	mr r3, r4
+/* 800182B0 0000147C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800182B4 00001480  39 85 00 24 */	addi r12, r5, 0x24
+/* 800182B8 00001484  48 00 00 01 */	bl __ptmf_scall
+/* 800182BC 00001488  60 00 00 00 */	nop
+/* 800182C0 0000148C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800182C4 00001490  7C 08 03 A6 */	mtlr r0
+/* 800182C8 00001494  38 21 00 10 */	addi r1, r1, 0x10
+/* 800182CC 00001498  4E 80 00 20 */	blr
+.endfn "finalizeState__34sFStateID_c<19dWarningErrorInfo_c>CFR19dWarningErrorInfo_c"
+
+# .text:0x145C | 0x800182D0 | size: 0x30
+# sFStateID_c<dWarningErrorInfo_c>::executeState(dWarningErrorInfo_c&) const
+.fn "executeState__34sFStateID_c<19dWarningErrorInfo_c>CFR19dWarningErrorInfo_c", global
+/* 800182D0 0000149C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800182D4 000014A0  7C 08 02 A6 */	mflr r0
+/* 800182D8 000014A4  7C 65 1B 78 */	mr r5, r3
+/* 800182DC 000014A8  7C 83 23 78 */	mr r3, r4
+/* 800182E0 000014AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800182E4 000014B0  39 85 00 18 */	addi r12, r5, 0x18
+/* 800182E8 000014B4  48 00 00 01 */	bl __ptmf_scall
+/* 800182EC 000014B8  60 00 00 00 */	nop
+/* 800182F0 000014BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800182F4 000014C0  7C 08 03 A6 */	mtlr r0
+/* 800182F8 000014C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 800182FC 000014C8  4E 80 00 20 */	blr
+.endfn "executeState__34sFStateID_c<19dWarningErrorInfo_c>CFR19dWarningErrorInfo_c"
+
+# .text:0x148C | 0x80018300 | size: 0x30
+# sFStateID_c<dWarningErrorInfo_c>::initializeState(dWarningErrorInfo_c&) const
+.fn "initializeState__34sFStateID_c<19dWarningErrorInfo_c>CFR19dWarningErrorInfo_c", global
+/* 80018300 000014CC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80018304 000014D0  7C 08 02 A6 */	mflr r0
+/* 80018308 000014D4  7C 65 1B 78 */	mr r5, r3
+/* 8001830C 000014D8  7C 83 23 78 */	mr r3, r4
+/* 80018310 000014DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80018314 000014E0  39 85 00 0C */	addi r12, r5, 0xc
+/* 80018318 000014E4  48 00 00 01 */	bl __ptmf_scall
+/* 8001831C 000014E8  60 00 00 00 */	nop
+/* 80018320 000014EC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80018324 000014F0  7C 08 03 A6 */	mtlr r0
+/* 80018328 000014F4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001832C 000014F8  4E 80 00 20 */	blr
+.endfn "initializeState__34sFStateID_c<19dWarningErrorInfo_c>CFR19dWarningErrorInfo_c"

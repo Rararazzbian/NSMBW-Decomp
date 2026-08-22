@@ -1,0 +1,26 @@
+diff --git a/tools/slicelib.py b/tools/slicelib.py
+index da55359..7276875 100644
+--- a/tools/slicelib.py
++++ b/tools/slicelib.py
+@@ -120,6 +120,21 @@ def make_filler_slice(slice_name: str, sec_range: dict[str, tuple[int, int]], sl
+         start, end = section
+         if start == end:
+             continue
++        if end < start:
++            # Backstop for the -0x10360 class of failure. The caller's
++            # ascending-order guard catches an out-of-order slice list, but the
++            # TRAILING filler is computed as (last claim's end -> section end)
++            # and is not covered by it: a claim that runs past its section's
++            # recorded size makes this negative too. A negative PROGBITS range
++            # slices to b'' silently and a negative .bss range becomes a
++            # negative sh_size that only blows up later inside struct.pack.
++            # Refuse it here, where the numbers are still legible.
++            raise ValueError(
++                f'{slice_name}: filler for {section_name} would run backwards, '
++                f'{start:#x}-{end:#x} (size {end - start:#x}). A filler range is '
++                f'never negative in a well-formed slice file; the usual cause is '
++                f'a slice claiming past the end of {section_name} or a slice list '
++                f'that is not in ascending address order.')
+ 
+         section_info = slice_meta.sections[section_name]
+         align = natural_alignment(start, section_info.align)

@@ -1,0 +1,730 @@
+.include "macros.inc"
+.file "d_wipe_dokan.cpp"
+
+# 0x8001BB90..0x8001C170 | size: 0x5E0
+.text
+.balign 4
+
+# .text:0x0 | 0x8001BB90 | size: 0x5C
+# dWipeDokan_c::dWipeDokan_c(nw4r::ut::Color, mFaderBase_c::EStatus)
+.fn __ct__12dWipeDokan_cFQ34nw4r2ut5ColorQ212mFaderBase_c7EStatus, global
+/* 8001BB90 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8001BB94 00000044  7C 08 02 A6 */	mflr r0
+/* 8001BB98 00000048  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8001BB9C 0000004C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8001BBA0 00000050  7C 7F 1B 78 */	mr r31, r3
+/* 8001BBA4 00000054  80 04 00 00 */	lwz r0, 0x0(r4)
+/* 8001BBA8 00000058  38 81 00 08 */	addi r4, r1, 0x8
+/* 8001BBAC 0000005C  90 01 00 08 */	stw r0, 0x8(r1)
+/* 8001BBB0 00000060  48 00 00 01 */	bl __ct__12mFaderBase_cFRC6mColorQ212mFaderBase_c7EStatus
+/* 8001BBB4 00000064  3C 80 00 00 */	lis r4, __vt__12dWipeDokan_c@ha
+/* 8001BBB8 00000068  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BBBC 0000006C  38 84 00 00 */	addi r4, r4, __vt__12dWipeDokan_c@l
+/* 8001BBC0 00000070  90 9F 00 00 */	stw r4, 0x0(r31)
+/* 8001BBC4 00000074  48 00 00 01 */	bl __ct__9LytBase_cFv
+/* 8001BBC8 00000078  93 E0 00 00 */	stw r31, m_instance__12dWipeDokan_c@sda21(r0)
+/* 8001BBCC 0000007C  38 00 00 00 */	li r0, 0x0
+/* 8001BBD0 00000080  7F E3 FB 78 */	mr r3, r31
+/* 8001BBD4 00000084  98 1F 01 B8 */	stb r0, 0x1b8(r31)
+/* 8001BBD8 00000088  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8001BBDC 0000008C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8001BBE0 00000090  7C 08 03 A6 */	mtlr r0
+/* 8001BBE4 00000094  38 21 00 20 */	addi r1, r1, 0x20
+/* 8001BBE8 00000098  4E 80 00 20 */	blr
+.endfn __ct__12dWipeDokan_cFQ34nw4r2ut5ColorQ212mFaderBase_c7EStatus
+
+# .text:0x5C | 0x8001BBEC | size: 0x4
+.fn gap_03_8001BBEC_text, global
+.hidden gap_03_8001BBEC_text
+/* 8001BBEC 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BBEC_text
+
+# .text:0x60 | 0x8001BBF0 | size: 0x70
+# dWipeDokan_c::~dWipeDokan_c()
+.fn __dt__12dWipeDokan_cFv, global
+/* 8001BBF0 000000A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BBF4 000000A4  7C 08 02 A6 */	mflr r0
+/* 8001BBF8 000000A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BBFC 000000AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BC00 000000B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BC04 000000B4  7C 9F 23 78 */	mr r31, r4
+/* 8001BC08 000000B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8001BC0C 000000BC  7C 7E 1B 78 */	mr r30, r3
+/* 8001BC10 000000C0  41 82 00 34 */	beq .L_8001BC44
+/* 8001BC14 000000C4  38 00 00 00 */	li r0, 0x0
+/* 8001BC18 000000C8  90 00 00 00 */	stw r0, m_instance__12dWipeDokan_c@sda21(r0)
+/* 8001BC1C 000000CC  38 80 FF FF */	li r4, -0x1
+/* 8001BC20 000000D0  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001BC24 000000D4  48 00 00 01 */	bl __dt__9LytBase_cFv
+/* 8001BC28 000000D8  7F C3 F3 78 */	mr r3, r30
+/* 8001BC2C 000000DC  38 80 00 00 */	li r4, 0x0
+/* 8001BC30 000000E0  48 00 00 01 */	bl __dt__12mFaderBase_cFv
+/* 8001BC34 000000E4  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8001BC38 000000E8  40 81 00 0C */	ble .L_8001BC44
+/* 8001BC3C 000000EC  7F C3 F3 78 */	mr r3, r30
+/* 8001BC40 000000F0  48 00 00 01 */	bl __dl__FPv
+.L_8001BC44:
+/* 8001BC44 000000F4  7F C3 F3 78 */	mr r3, r30
+/* 8001BC48 000000F8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BC4C 000000FC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8001BC50 00000100  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BC54 00000104  7C 08 03 A6 */	mtlr r0
+/* 8001BC58 00000108  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BC5C 0000010C  4E 80 00 20 */	blr
+.endfn __dt__12dWipeDokan_cFv
+
+# .text:0xD0 | 0x8001BC60 | size: 0x104
+# dWipeDokan_c::createLayout()
+.fn createLayout__12dWipeDokan_cFv, global
+/* 8001BC60 00000110  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BC64 00000114  7C 08 02 A6 */	mflr r0
+/* 8001BC68 00000118  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BC6C 0000011C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BC70 00000120  3F E0 00 00 */	lis r31, "@22518"@ha
+/* 8001BC74 00000124  3B FF 00 00 */	addi r31, r31, "@22518"@l
+/* 8001BC78 00000128  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8001BC7C 0000012C  7C 7E 1B 78 */	mr r30, r3
+/* 8001BC80 00000130  88 03 01 B8 */	lbz r0, 0x1b8(r3)
+/* 8001BC84 00000134  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001BC88 00000138  41 82 00 0C */	beq .L_8001BC94
+/* 8001BC8C 0000013C  38 60 00 01 */	li r3, 0x1
+/* 8001BC90 00000140  48 00 00 BC */	b .L_8001BD4C
+.L_8001BC94:
+/* 8001BC94 00000144  38 9F 00 C0 */	addi r4, r31, 0xc0
+/* 8001BC98 00000148  38 A0 00 00 */	li r5, 0x0
+/* 8001BC9C 0000014C  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001BCA0 00000150  48 00 00 01 */	bl ReadResource__9LytBase_cFPCcb
+/* 8001BCA4 00000154  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BCA8 00000158  40 82 00 0C */	bne .L_8001BCB4
+/* 8001BCAC 0000015C  38 60 00 00 */	li r3, 0x0
+/* 8001BCB0 00000160  48 00 00 9C */	b .L_8001BD4C
+.L_8001BCB4:
+/* 8001BCB4 00000164  81 9E 00 1C */	lwz r12, 0x1c(r30)
+/* 8001BCB8 00000168  38 7E 00 14 */	addi r3, r30, 0x14
+/* 8001BCBC 0000016C  38 9F 00 D8 */	addi r4, r31, 0xd8
+/* 8001BCC0 00000170  38 A0 00 00 */	li r5, 0x0
+/* 8001BCC4 00000174  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8001BCC8 00000178  7D 89 03 A6 */	mtctr r12
+/* 8001BCCC 0000017C  4E 80 04 21 */	bctrl
+/* 8001BCD0 00000180  38 7E 00 14 */	addi r3, r30, 0x14
+/* 8001BCD4 00000184  38 9F 00 80 */	addi r4, r31, 0x80
+/* 8001BCD8 00000188  38 A0 00 04 */	li r5, 0x4
+/* 8001BCDC 0000018C  48 00 00 01 */	bl AnimeResRegister__9LytBase_cFPPCci
+/* 8001BCE0 00000190  3C A0 00 00 */	lis r5, "@LOCAL@createLayout__12dWipeDokan_cFv@ANIME_INDEX_TBL@1"@ha
+/* 8001BCE4 00000194  38 7E 00 14 */	addi r3, r30, 0x14
+/* 8001BCE8 00000198  38 9F 00 A0 */	addi r4, r31, 0xa0
+/* 8001BCEC 0000019C  38 C0 00 04 */	li r6, 0x4
+/* 8001BCF0 000001A0  38 A5 00 00 */	addi r5, r5, "@LOCAL@createLayout__12dWipeDokan_cFv@ANIME_INDEX_TBL@1"@l
+/* 8001BCF4 000001A4  48 00 00 01 */	bl GroupRegister__9LytBase_cFPPCcPCii
+/* 8001BCF8 000001A8  38 7E 00 14 */	addi r3, r30, 0x14
+/* 8001BCFC 000001AC  48 00 00 01 */	bl getRootPane__Q23d2d7Multi_cFv
+/* 8001BD00 000001B0  90 7E 01 AC */	stw r3, 0x1ac(r30)
+/* 8001BD04 000001B4  38 7E 00 14 */	addi r3, r30, 0x14
+/* 8001BD08 000001B8  38 BE 01 B0 */	addi r5, r30, 0x1b0
+/* 8001BD0C 000001BC  38 80 00 00 */	li r4, "@LOCAL@createLayout__12dWipeDokan_cFv@PPANE_NAME_DT@2"@sda21
+/* 8001BD10 000001C0  38 C0 00 01 */	li r6, 0x1
+/* 8001BD14 000001C4  48 00 00 01 */	bl PPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt7Picturei
+/* 8001BD18 000001C8  38 00 00 01 */	li r0, 0x1
+/* 8001BD1C 000001CC  98 1E 01 B8 */	stb r0, 0x1b8(r30)
+/* 8001BD20 000001D0  38 7E 00 14 */	addi r3, r30, 0x14
+/* 8001BD24 000001D4  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 8001BD28 000001D8  80 DE 01 AC */	lwz r6, 0x1ac(r30)
+/* 8001BD2C 000001DC  38 80 00 9A */	li r4, 0x9a
+/* 8001BD30 000001E0  38 00 00 03 */	li r0, 0x3
+/* 8001BD34 000001E4  38 60 00 01 */	li r3, 0x1
+/* 8001BD38 000001E8  88 A6 00 BB */	lbz r5, 0xbb(r6)
+/* 8001BD3C 000001EC  54 A5 06 3C */	rlwinm r5, r5, 0, 24, 30
+/* 8001BD40 000001F0  98 A6 00 BB */	stb r5, 0xbb(r6)
+/* 8001BD44 000001F4  98 9E 00 20 */	stb r4, 0x20(r30)
+/* 8001BD48 000001F8  90 1E 01 B4 */	stw r0, 0x1b4(r30)
+.L_8001BD4C:
+/* 8001BD4C 000001FC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BD50 00000200  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BD54 00000204  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8001BD58 00000208  7C 08 03 A6 */	mtlr r0
+/* 8001BD5C 0000020C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BD60 00000210  4E 80 00 20 */	blr
+.endfn createLayout__12dWipeDokan_cFv
+
+# .text:0x1D4 | 0x8001BD64 | size: 0xC
+.fn gap_03_8001BD64_text, global
+.hidden gap_03_8001BD64_text
+/* 8001BD64 00000214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001BD68 00000218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001BD6C 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BD64_text
+
+# .text:0x1E0 | 0x8001BD70 | size: 0x80
+# dWipeDokan_c::calc()
+.fn calc__12dWipeDokan_cFv, global
+/* 8001BD70 00000220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BD74 00000224  7C 08 02 A6 */	mflr r0
+/* 8001BD78 00000228  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BD7C 0000022C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BD80 00000230  7C 7F 1B 78 */	mr r31, r3
+/* 8001BD84 00000234  88 03 01 B8 */	lbz r0, 0x1b8(r3)
+/* 8001BD88 00000238  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001BD8C 0000023C  40 82 00 0C */	bne .L_8001BD98
+/* 8001BD90 00000240  38 60 00 01 */	li r3, 0x1
+/* 8001BD94 00000244  48 00 00 48 */	b .L_8001BDDC
+.L_8001BD98:
+/* 8001BD98 00000248  80 03 01 B4 */	lwz r0, 0x1b4(r3)
+/* 8001BD9C 0000024C  2C 00 00 03 */	cmpwi r0, 0x3
+/* 8001BDA0 00000250  41 82 00 38 */	beq .L_8001BDD8
+/* 8001BDA4 00000254  1C 00 00 0C */	mulli r0, r0, 0xc
+/* 8001BDA8 00000258  3C 80 00 00 */	lis r4, "@LOCAL@calc__12dWipeDokan_cFv@Proc_tbl"@ha
+/* 8001BDAC 0000025C  38 84 00 00 */	addi r4, r4, "@LOCAL@calc__12dWipeDokan_cFv@Proc_tbl"@l
+/* 8001BDB0 00000260  7D 84 02 14 */	add r12, r4, r0
+/* 8001BDB4 00000264  48 00 00 01 */	bl __ptmf_scall
+/* 8001BDB8 00000268  60 00 00 00 */	nop
+/* 8001BDBC 0000026C  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BDC0 00000270  48 00 00 01 */	bl AnimePlay__9LytBase_cFv
+/* 8001BDC4 00000274  81 9F 00 1C */	lwz r12, 0x1c(r31)
+/* 8001BDC8 00000278  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BDCC 0000027C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8001BDD0 00000280  7D 89 03 A6 */	mtctr r12
+/* 8001BDD4 00000284  4E 80 04 21 */	bctrl
+.L_8001BDD8:
+/* 8001BDD8 00000288  38 60 00 01 */	li r3, 0x1
+.L_8001BDDC:
+/* 8001BDDC 0000028C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BDE0 00000290  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BDE4 00000294  7C 08 03 A6 */	mtlr r0
+/* 8001BDE8 00000298  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BDEC 0000029C  4E 80 00 20 */	blr
+.endfn calc__12dWipeDokan_cFv
+
+# .text:0x260 | 0x8001BDF0 | size: 0x18
+# dWipeDokan_c::draw()
+.fn draw__12dWipeDokan_cFv, global
+/* 8001BDF0 000002A0  88 03 01 B8 */	lbz r0, 0x1b8(r3)
+/* 8001BDF4 000002A4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001BDF8 000002A8  4D 82 00 20 */	beqlr
+/* 8001BDFC 000002AC  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001BE00 000002B0  48 00 00 00 */	b entry__Q23d2d7Multi_cFv
+/* 8001BE04 000002B4  4E 80 00 20 */	blr
+.endfn draw__12dWipeDokan_cFv
+
+# .text:0x278 | 0x8001BE08 | size: 0x8
+.fn gap_03_8001BE08_text, global
+.hidden gap_03_8001BE08_text
+/* 8001BE08 000002B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001BE0C 000002BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BE08_text
+
+# .text:0x280 | 0x8001BE10 | size: 0x6C
+# dWipeDokan_c::OpenSetup()
+.fn OpenSetup__12dWipeDokan_cFv, global
+/* 8001BE10 000002C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BE14 000002C4  7C 08 02 A6 */	mflr r0
+/* 8001BE18 000002C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BE1C 000002CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BE20 000002D0  7C 7F 1B 78 */	mr r31, r3
+/* 8001BE24 000002D4  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001BE28 000002D8  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 8001BE2C 000002DC  7F E3 FB 78 */	mr r3, r31
+/* 8001BE30 000002E0  48 00 00 01 */	bl MuKiDecision__12dWipeDokan_cFv
+/* 8001BE34 000002E4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BE38 000002E8  41 82 00 18 */	beq .L_8001BE50
+/* 8001BE3C 000002EC  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BE40 000002F0  38 80 00 02 */	li r4, 0x2
+/* 8001BE44 000002F4  38 A0 00 00 */	li r5, 0x0
+/* 8001BE48 000002F8  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 8001BE4C 000002FC  48 00 00 14 */	b .L_8001BE60
+.L_8001BE50:
+/* 8001BE50 00000300  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BE54 00000304  38 80 00 01 */	li r4, 0x1
+/* 8001BE58 00000308  38 A0 00 00 */	li r5, 0x0
+/* 8001BE5C 0000030C  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_8001BE60:
+/* 8001BE60 00000310  38 00 00 01 */	li r0, 0x1
+/* 8001BE64 00000314  90 1F 01 B4 */	stw r0, 0x1b4(r31)
+/* 8001BE68 00000318  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BE6C 0000031C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BE70 00000320  7C 08 03 A6 */	mtlr r0
+/* 8001BE74 00000324  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BE78 00000328  4E 80 00 20 */	blr
+.endfn OpenSetup__12dWipeDokan_cFv
+
+# .text:0x2EC | 0x8001BE7C | size: 0x4
+.fn gap_03_8001BE7C_text, global
+.hidden gap_03_8001BE7C_text
+/* 8001BE7C 0000032C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BE7C_text
+
+# .text:0x2F0 | 0x8001BE80 | size: 0x9C
+# dWipeDokan_c::AnimeEndCheck()
+.fn AnimeEndCheck__12dWipeDokan_cFv, global
+/* 8001BE80 00000330  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BE84 00000334  7C 08 02 A6 */	mflr r0
+/* 8001BE88 00000338  38 80 FF FF */	li r4, -0x1
+/* 8001BE8C 0000033C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BE90 00000340  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BE94 00000344  7C 7F 1B 78 */	mr r31, r3
+/* 8001BE98 00000348  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001BE9C 0000034C  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 8001BEA0 00000350  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BEA4 00000354  40 82 00 64 */	bne .L_8001BF08
+/* 8001BEA8 00000358  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 8001BEAC 0000035C  7F E3 FB 78 */	mr r3, r31
+/* 8001BEB0 00000360  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8001BEB4 00000364  7D 89 03 A6 */	mtctr r12
+/* 8001BEB8 00000368  4E 80 04 21 */	bctrl
+/* 8001BEBC 0000036C  2C 03 00 02 */	cmpwi r3, 0x2
+/* 8001BEC0 00000370  40 82 00 2C */	bne .L_8001BEEC
+/* 8001BEC4 00000374  88 1F 00 08 */	lbz r0, 0x8(r31)
+/* 8001BEC8 00000378  38 60 00 01 */	li r3, 0x1
+/* 8001BECC 0000037C  90 7F 00 04 */	stw r3, 0x4(r31)
+/* 8001BED0 00000380  60 00 00 01 */	ori r0, r0, 0x1
+/* 8001BED4 00000384  80 7F 01 AC */	lwz r3, 0x1ac(r31)
+/* 8001BED8 00000388  98 1F 00 08 */	stb r0, 0x8(r31)
+/* 8001BEDC 0000038C  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8001BEE0 00000390  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8001BEE4 00000394  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8001BEE8 00000398  48 00 00 18 */	b .L_8001BF00
+.L_8001BEEC:
+/* 8001BEEC 0000039C  88 1F 00 08 */	lbz r0, 0x8(r31)
+/* 8001BEF0 000003A0  38 60 00 00 */	li r3, 0x0
+/* 8001BEF4 000003A4  90 7F 00 04 */	stw r3, 0x4(r31)
+/* 8001BEF8 000003A8  60 00 00 02 */	ori r0, r0, 0x2
+/* 8001BEFC 000003AC  98 1F 00 08 */	stb r0, 0x8(r31)
+.L_8001BF00:
+/* 8001BF00 000003B0  38 00 00 03 */	li r0, 0x3
+/* 8001BF04 000003B4  90 1F 01 B4 */	stw r0, 0x1b4(r31)
+.L_8001BF08:
+/* 8001BF08 000003B8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BF0C 000003BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BF10 000003C0  7C 08 03 A6 */	mtlr r0
+/* 8001BF14 000003C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BF18 000003C8  4E 80 00 20 */	blr
+.endfn AnimeEndCheck__12dWipeDokan_cFv
+
+# .text:0x38C | 0x8001BF1C | size: 0x4
+.fn gap_03_8001BF1C_text, global
+.hidden gap_03_8001BF1C_text
+/* 8001BF1C 000003CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BF1C_text
+
+# .text:0x390 | 0x8001BF20 | size: 0x68
+# dWipeDokan_c::MuKiDecision()
+.fn MuKiDecision__12dWipeDokan_cFv, global
+/* 8001BF20 000003D0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BF24 000003D4  7C 08 02 A6 */	mflr r0
+/* 8001BF28 000003D8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BF2C 000003DC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BF30 000003E0  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8001BF34 000003E4  80 63 00 80 */	lwz r3, 0x80(r3)
+/* 8001BF38 000003E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BF3C 000003EC  40 80 00 0C */	bge .L_8001BF48
+/* 8001BF40 000003F0  38 60 00 00 */	li r3, 0x0
+/* 8001BF44 000003F4  48 00 00 30 */	b .L_8001BF74
+.L_8001BF48:
+/* 8001BF48 000003F8  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8001BF4C 000003FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BF50 00000400  7C 7F 1B 78 */	mr r31, r3
+/* 8001BF54 00000404  40 82 00 0C */	bne .L_8001BF60
+/* 8001BF58 00000408  38 60 00 00 */	li r3, 0x0
+/* 8001BF5C 0000040C  48 00 00 18 */	b .L_8001BF74
+.L_8001BF60:
+/* 8001BF60 00000410  48 00 00 01 */	bl getDispCenterY__8dGameComFv
+/* 8001BF64 00000414  C0 1F 00 B0 */	lfs f0, 0xb0(r31)
+/* 8001BF68 00000418  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8001BF6C 0000041C  7C 60 00 26 */	mfcr r3
+/* 8001BF70 00000420  54 63 0F FE */	srwi r3, r3, 31
+.L_8001BF74:
+/* 8001BF74 00000424  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BF78 00000428  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BF7C 0000042C  7C 08 03 A6 */	mtlr r0
+/* 8001BF80 00000430  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BF84 00000434  4E 80 00 20 */	blr
+.endfn MuKiDecision__12dWipeDokan_cFv
+
+# .text:0x3F8 | 0x8001BF88 | size: 0x8
+.fn gap_03_8001BF88_text, global
+.hidden gap_03_8001BF88_text
+/* 8001BF88 00000438  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001BF8C 0000043C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BF88_text
+
+# .text:0x400 | 0x8001BF90 | size: 0x6C
+# dWipeDokan_c::CloseSetup()
+.fn CloseSetup__12dWipeDokan_cFv, global
+/* 8001BF90 00000440  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001BF94 00000444  7C 08 02 A6 */	mflr r0
+/* 8001BF98 00000448  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001BF9C 0000044C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001BFA0 00000450  7C 7F 1B 78 */	mr r31, r3
+/* 8001BFA4 00000454  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001BFA8 00000458  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 8001BFAC 0000045C  7F E3 FB 78 */	mr r3, r31
+/* 8001BFB0 00000460  48 00 00 01 */	bl MuKiDecision__12dWipeDokan_cFv
+/* 8001BFB4 00000464  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001BFB8 00000468  41 82 00 18 */	beq .L_8001BFD0
+/* 8001BFBC 0000046C  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BFC0 00000470  38 80 00 03 */	li r4, 0x3
+/* 8001BFC4 00000474  38 A0 00 00 */	li r5, 0x0
+/* 8001BFC8 00000478  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 8001BFCC 0000047C  48 00 00 14 */	b .L_8001BFE0
+.L_8001BFD0:
+/* 8001BFD0 00000480  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001BFD4 00000484  38 80 00 00 */	li r4, 0x0
+/* 8001BFD8 00000488  38 A0 00 00 */	li r5, 0x0
+/* 8001BFDC 0000048C  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_8001BFE0:
+/* 8001BFE0 00000490  38 00 00 01 */	li r0, 0x1
+/* 8001BFE4 00000494  90 1F 01 B4 */	stw r0, 0x1b4(r31)
+/* 8001BFE8 00000498  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001BFEC 0000049C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001BFF0 000004A0  7C 08 03 A6 */	mtlr r0
+/* 8001BFF4 000004A4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001BFF8 000004A8  4E 80 00 20 */	blr
+.endfn CloseSetup__12dWipeDokan_cFv
+
+# .text:0x46C | 0x8001BFFC | size: 0x4
+.fn gap_03_8001BFFC_text, global
+.hidden gap_03_8001BFFC_text
+/* 8001BFFC 000004AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001BFFC_text
+
+# .text:0x470 | 0x8001C000 | size: 0xE4
+# dWipeDokan_c::setStatus(mFaderBase_c::EStatus)
+.fn setStatus__12dWipeDokan_cFQ212mFaderBase_c7EStatus, global
+/* 8001C000 000004B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001C004 000004B4  7C 08 02 A6 */	mflr r0
+/* 8001C008 000004B8  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8001C00C 000004BC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001C010 000004C0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001C014 000004C4  7C 7F 1B 78 */	mr r31, r3
+/* 8001C018 000004C8  40 82 00 5C */	bne .L_8001C074
+/* 8001C01C 000004CC  80 A3 01 B0 */	lwz r5, 0x1b0(r3)
+/* 8001C020 000004D0  38 00 00 00 */	li r0, 0x0
+/* 8001C024 000004D4  90 03 00 04 */	stw r0, 0x4(r3)
+/* 8001C028 000004D8  38 00 00 FF */	li r0, 0xff
+/* 8001C02C 000004DC  38 80 00 01 */	li r4, 0x1
+/* 8001C030 000004E0  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001C034 000004E4  98 05 00 B8 */	stb r0, 0xb8(r5)
+/* 8001C038 000004E8  38 A0 00 00 */	li r5, 0x0
+/* 8001C03C 000004EC  48 00 00 01 */	bl ReverseAnimeStartSetup__9LytBase_cFib
+/* 8001C040 000004F0  80 9F 01 AC */	lwz r4, 0x1ac(r31)
+/* 8001C044 000004F4  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001C048 000004F8  88 04 00 BB */	lbz r0, 0xbb(r4)
+/* 8001C04C 000004FC  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8001C050 00000500  60 00 00 01 */	ori r0, r0, 0x1
+/* 8001C054 00000504  98 04 00 BB */	stb r0, 0xbb(r4)
+/* 8001C058 00000508  48 00 00 01 */	bl AnimePlay__9LytBase_cFv
+/* 8001C05C 0000050C  81 9F 00 1C */	lwz r12, 0x1c(r31)
+/* 8001C060 00000510  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001C064 00000514  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8001C068 00000518  7D 89 03 A6 */	mtctr r12
+/* 8001C06C 0000051C  4E 80 04 21 */	bctrl
+/* 8001C070 00000520  48 00 00 60 */	b .L_8001C0D0
+.L_8001C074:
+/* 8001C074 00000524  2C 04 00 01 */	cmpwi r4, 0x1
+/* 8001C078 00000528  40 82 00 58 */	bne .L_8001C0D0
+/* 8001C07C 0000052C  80 A3 01 B0 */	lwz r5, 0x1b0(r3)
+/* 8001C080 00000530  38 00 00 01 */	li r0, 0x1
+/* 8001C084 00000534  90 03 00 04 */	stw r0, 0x4(r3)
+/* 8001C088 00000538  38 00 00 00 */	li r0, 0x0
+/* 8001C08C 0000053C  38 80 00 00 */	li r4, 0x0
+/* 8001C090 00000540  38 63 00 14 */	addi r3, r3, 0x14
+/* 8001C094 00000544  98 05 00 B8 */	stb r0, 0xb8(r5)
+/* 8001C098 00000548  38 A0 00 00 */	li r5, 0x0
+/* 8001C09C 0000054C  48 00 00 01 */	bl ReverseAnimeStartSetup__9LytBase_cFib
+/* 8001C0A0 00000550  80 9F 01 AC */	lwz r4, 0x1ac(r31)
+/* 8001C0A4 00000554  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001C0A8 00000558  88 04 00 BB */	lbz r0, 0xbb(r4)
+/* 8001C0AC 0000055C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8001C0B0 00000560  60 00 00 01 */	ori r0, r0, 0x1
+/* 8001C0B4 00000564  98 04 00 BB */	stb r0, 0xbb(r4)
+/* 8001C0B8 00000568  48 00 00 01 */	bl AnimePlay__9LytBase_cFv
+/* 8001C0BC 0000056C  81 9F 00 1C */	lwz r12, 0x1c(r31)
+/* 8001C0C0 00000570  38 7F 00 14 */	addi r3, r31, 0x14
+/* 8001C0C4 00000574  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8001C0C8 00000578  7D 89 03 A6 */	mtctr r12
+/* 8001C0CC 0000057C  4E 80 04 21 */	bctrl
+.L_8001C0D0:
+/* 8001C0D0 00000580  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001C0D4 00000584  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001C0D8 00000588  7C 08 03 A6 */	mtlr r0
+/* 8001C0DC 0000058C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001C0E0 00000590  4E 80 00 20 */	blr
+.endfn setStatus__12dWipeDokan_cFQ212mFaderBase_c7EStatus
+
+# .text:0x554 | 0x8001C0E4 | size: 0xC
+.fn gap_03_8001C0E4_text, global
+.hidden gap_03_8001C0E4_text
+/* 8001C0E4 00000594  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001C0E8 00000598  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001C0EC 0000059C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001C0E4_text
+
+# .text:0x560 | 0x8001C0F0 | size: 0x3C
+# dWipeDokan_c::fadeIn()
+.fn fadeIn__12dWipeDokan_cFv, global
+/* 8001C0F0 000005A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001C0F4 000005A4  7C 08 02 A6 */	mflr r0
+/* 8001C0F8 000005A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001C0FC 000005AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001C100 000005B0  7C 7F 1B 78 */	mr r31, r3
+/* 8001C104 000005B4  48 00 00 01 */	bl fadeIn__12mFaderBase_cFv
+/* 8001C108 000005B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001C10C 000005BC  41 82 00 0C */	beq .L_8001C118
+/* 8001C110 000005C0  38 00 00 00 */	li r0, 0x0
+/* 8001C114 000005C4  90 1F 01 B4 */	stw r0, 0x1b4(r31)
+.L_8001C118:
+/* 8001C118 000005C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001C11C 000005CC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001C120 000005D0  7C 08 03 A6 */	mtlr r0
+/* 8001C124 000005D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001C128 000005D8  4E 80 00 20 */	blr
+.endfn fadeIn__12dWipeDokan_cFv
+
+# .text:0x59C | 0x8001C12C | size: 0x4
+.fn gap_03_8001C12C_text, global
+.hidden gap_03_8001C12C_text
+/* 8001C12C 000005DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001C12C_text
+
+# .text:0x5A0 | 0x8001C130 | size: 0x3C
+# dWipeDokan_c::fadeOut()
+.fn fadeOut__12dWipeDokan_cFv, global
+/* 8001C130 000005E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001C134 000005E4  7C 08 02 A6 */	mflr r0
+/* 8001C138 000005E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001C13C 000005EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001C140 000005F0  7C 7F 1B 78 */	mr r31, r3
+/* 8001C144 000005F4  48 00 00 01 */	bl fadeOut__12mFaderBase_cFv
+/* 8001C148 000005F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001C14C 000005FC  41 82 00 0C */	beq .L_8001C158
+/* 8001C150 00000600  38 00 00 02 */	li r0, 0x2
+/* 8001C154 00000604  90 1F 01 B4 */	stw r0, 0x1b4(r31)
+.L_8001C158:
+/* 8001C158 00000608  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001C15C 0000060C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001C160 00000610  7C 08 03 A6 */	mtlr r0
+/* 8001C164 00000614  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001C168 00000618  4E 80 00 20 */	blr
+.endfn fadeOut__12dWipeDokan_cFv
+
+# .text:0x5DC | 0x8001C16C | size: 0x4
+.fn gap_03_8001C16C_text, global
+.hidden gap_03_8001C16C_text
+/* 8001C16C 0000061C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001C16C_text
+
+# 0x802EE360..0x802EE398 | size: 0x38
+.rodata
+.balign 8
+
+# .rodata:0x0 | 0x802EE360 | size: 0x10
+.obj "@LOCAL@createLayout__12dWipeDokan_cFv@ANIME_INDEX_TBL@1", local
+	.4byte 0x00000000
+	.4byte 0x00000001
+	.4byte 0x00000002
+	.4byte 0x00000003
+.endobj "@LOCAL@createLayout__12dWipeDokan_cFv@ANIME_INDEX_TBL@1"
+
+# .rodata:0x10 | 0x802EE370 | size: 0x24
+# dWipeDokan_c::calc()::Proc_tbl
+.obj "@LOCAL@calc__12dWipeDokan_cFv@Proc_tbl", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte OpenSetup__12dWipeDokan_cFv
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte AnimeEndCheck__12dWipeDokan_cFv
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte CloseSetup__12dWipeDokan_cFv
+.endobj "@LOCAL@calc__12dWipeDokan_cFv@Proc_tbl"
+
+# .rodata:0x34 | 0x802EE394 | size: 0x4
+.obj gap_06_802EE394_rodata, global
+.hidden gap_06_802EE394_rodata
+	.4byte 0x00000000
+.endobj gap_06_802EE394_rodata
+
+# 0x80301560..0x80301670 | size: 0x110
+.data
+.balign 8
+
+# .data:0x0 | 0x80301560 | size: 0x1F
+.obj "@22518", local
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.4byte 0x6E5F3032
+	.4byte 0x5F696E42
+	.4byte 0x6C61636B
+	.4byte 0x446F776E
+	.4byte 0x2E62726C
+	.byte 0x61, 0x6E, 0x00
+.endobj "@22518"
+
+# .data:0x1F | 0x8030157F | size: 0x1
+.obj gap_07_8030157F_data, global
+.hidden gap_07_8030157F_data
+	.byte 0x00
+.endobj gap_07_8030157F_data
+
+# .data:0x20 | 0x80301580 | size: 0x1E
+.obj "@22519", local
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.4byte 0x6E5F3032
+	.4byte 0x5F6F7574
+	.4byte 0x426C6163
+	.4byte 0x6B55702E
+	.4byte 0x62726C61
+	.2byte 0x6E00
+.endobj "@22519"
+
+# .data:0x3E | 0x8030159E | size: 0x2
+.obj gap_07_8030159E_data, global
+.hidden gap_07_8030159E_data
+	.2byte 0x0000
+.endobj gap_07_8030159E_data
+
+# .data:0x40 | 0x803015A0 | size: 0x20
+.obj "@22520", local
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.4byte 0x6E5F3032
+	.4byte 0x5F6F7574
+	.4byte 0x426C6163
+	.4byte 0x6B446F77
+	.4byte 0x6E2E6272
+	.4byte 0x6C616E00
+.endobj "@22520"
+
+# .data:0x60 | 0x803015C0 | size: 0x1D
+.obj "@22521", local
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.4byte 0x6E5F3032
+	.4byte 0x5F696E42
+	.4byte 0x6C61636B
+	.4byte 0x55702E62
+	.4byte 0x726C616E
+	.byte 0x00
+.endobj "@22521"
+
+# .data:0x7D | 0x803015DD | size: 0x3
+.obj gap_07_803015DD_data, global
+.hidden gap_07_803015DD_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_803015DD_data
+
+# .data:0x80 | 0x803015E0 | size: 0x10
+# dWipeDokan_c::createLayout()::AnmNameTbl
+.obj "@LOCAL@createLayout__12dWipeDokan_cFv@AnmNameTbl", local
+	.4byte "@22518"
+	.4byte "@22519"
+	.4byte "@22520"
+	.4byte "@22521"
+.endobj "@LOCAL@createLayout__12dWipeDokan_cFv@AnmNameTbl"
+
+# .data:0x90 | 0x803015F0 | size: 0xE
+.obj "@22522", local
+	.4byte 0x4130305F
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.2byte 0x6E00
+.endobj "@22522"
+
+# .data:0x9E | 0x803015FE | size: 0x2
+.obj gap_07_803015FE_data, global
+.hidden gap_07_803015FE_data
+	.2byte 0x0000
+.endobj gap_07_803015FE_data
+
+# .data:0xA0 | 0x80301600 | size: 0x10
+.obj "@LOCAL@createLayout__12dWipeDokan_cFv@GROUP_NAME_DT@0", local
+	.4byte "@22522"
+	.4byte "@22522"
+	.4byte "@22522"
+	.4byte "@22522"
+.endobj "@LOCAL@createLayout__12dWipeDokan_cFv@GROUP_NAME_DT@0"
+
+# .data:0xB0 | 0x80301610 | size: 0xF
+.obj "@22523", local
+	.4byte 0x505F6261
+	.4byte 0x7365426C
+	.4byte 0x61636B5F
+	.byte 0x30, 0x30, 0x00
+.endobj "@22523"
+
+# .data:0xBF | 0x8030161F | size: 0x1
+.obj gap_07_8030161F_data, global
+.hidden gap_07_8030161F_data
+	.byte 0x00
+.endobj gap_07_8030161F_data
+
+# .data:0xC0 | 0x80301620 | size: 0x18
+.obj "@22808", local
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.4byte 0x6E2F7769
+	.4byte 0x7065446F
+	.4byte 0x6B616E2E
+	.4byte 0x61726300
+.endobj "@22808"
+
+# .data:0xD8 | 0x80301638 | size: 0x13
+.obj "@22809", local
+	.4byte 0x77697065
+	.4byte 0x446F6B61
+	.4byte 0x6E5F3032
+	.4byte 0x2E62726C
+	.byte 0x79, 0x74, 0x00
+.endobj "@22809"
+
+# .data:0xEB | 0x8030164B | size: 0x1
+.obj gap_07_8030164B_data, global
+.hidden gap_07_8030164B_data
+	.byte 0x00
+.endobj gap_07_8030164B_data
+
+# .data:0xEC | 0x8030164C | size: 0x24
+# dWipeDokan_c::__vtable
+.obj __vt__12dWipeDokan_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__12dWipeDokan_cFv
+	.4byte setStatus__12dWipeDokan_cFQ212mFaderBase_c7EStatus
+	.4byte getStatus__12mFaderBase_cCFv
+	.4byte fadeIn__12dWipeDokan_cFv
+	.4byte fadeOut__12dWipeDokan_cFv
+	.4byte calc__12dWipeDokan_cFv
+	.4byte draw__12dWipeDokan_cFv
+.endobj __vt__12dWipeDokan_c
+
+# 0x80427AC8..0x80427AD0 | size: 0x8
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80427AC8 | size: 0x4
+.obj "@LOCAL@createLayout__12dWipeDokan_cFv@PPANE_NAME_DT@2", local
+	.4byte "@22523"
+.endobj "@LOCAL@createLayout__12dWipeDokan_cFv@PPANE_NAME_DT@2"
+
+# .sdata:0x4 | 0x80427ACC | size: 0x4
+.obj gap_09_80427ACC_sdata, global
+.hidden gap_09_80427ACC_sdata
+	.4byte 0x00000000
+.endobj gap_09_80427ACC_sdata
+
+# 0x80429F18..0x80429F20 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x80429F18 | size: 0x4
+# dWipeDokan_c::m_instance
+.obj m_instance__12dWipeDokan_c, global
+	.skip 0x4
+.endobj m_instance__12dWipeDokan_c
+
+# .sbss:0x4 | 0x80429F1C | size: 0x4
+.obj gap_10_80429F1C_sbss, global
+.hidden gap_10_80429F1C_sbss
+	.skip 0x4
+.endobj gap_10_80429F1C_sbss

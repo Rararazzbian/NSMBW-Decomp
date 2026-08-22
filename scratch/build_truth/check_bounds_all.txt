@@ -1,0 +1,1613 @@
+##############################################################################
+# MODULE d_profileNP  (5 slice entries)  convention: REL offsets (no conversion)
+##############################################################################
+
+===== d_profileNP :: runtime/rel_init.cpp  -> FAIL
+
+.text  0x0-0x70  (0x70 bytes)
+  first: 0x000000 _prolog                          (0x2c)
+  last : 0x000060 _unresolved                      (0x4)
+  the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER
+  its OWN array destructor, which sits past its __sinit, not at the __sinit.
+  _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0xf2e, 0xf32.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+2 problem(s) -- do not build this
+
+
+===== d_profileNP :: runtime/global_destructor_chain.c  -> FAIL
+
+.text  0x70-0xf0  (0x80 bytes)
+  first: 0x000070 __register_global_object         (0x1c)
+  last : 0x000090 __destroy_global_chain           (0x54)
+  __register_global_object (0x70, 0x1c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x97a, 0x98a.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.dtors  0x0-0x8  (0x8 bytes)
+  first: 0x000000 __destroy_global_chain_reference (0x4)
+  last : 0x000004 __destroy_global_chain_reference (0x4)
+
+.bss  0x0-0x8  (0x8 bytes)
+  first: 0x000000 __global_destructor_chain        (0x4)
+  last : 0x000000 __global_destructor_chain        (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== d_profileNP :: d_profileNP/d_profile.cpp  -> PASS
+
+===== d_profileNP :: d_profileNP/bases/d_controller_information.cpp  -> FAIL
+
+.text  0x130-0x4e0  (0x3b0 bytes)
+  first: 0x000130 dControllerInformation_c_classInit__Fv (0x30)
+  last : 0x0004d0 doDelete__24dControllerInformation_cFv (0x8)
+  __ct__24dControllerInformation_cFv (0x160, 0x4c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x153a, 0x1546.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.data  0xbb8-0xd28  (0x170 bytes)
+  first: 0x000bb8 g_profile_CONTROLLER_INFORMATION (0x8)
+  last : 0x000cd8 __vt__24dControllerInformation_c (0x50)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.rodata  0x0-0x18  (0x18 bytes)
+  first: 0x000000 @LOCAL@createLayout__24dControllerInformation_cFv@ANIME_INDEX_TBL@0 (0xc)
+  last : 0x000010 @LOCAL@createLayout__24dControllerInformation_cFv@MESSAGE_DATA_TBL@2 (0x8)
+
+2 problem(s) -- do not build this
+
+
+===== d_profileNP :: d_profileNP/bases/d_yes_no_window.cpp  -> FAIL
+
+.text  0x4e0-0x1fb8  (0x1ad8 bytes)
+  first: 0x0004e0 dYesNoWindow_c_classInit__Fv     (0x30)
+  last : 0x001f30 isSameName__29sFStateID_c<14dYesNoWindow_c>CFPCc (0x88)
+
+.ctors  0x0-0x4  (0x4 bytes)
+  first: 0x000000 _ctors                           (0x0)
+  last : 0x000000 _ctors                           (0x0)
+
+.data  0xd28-0x15fc  (0x8d4 bytes)
+  first: 0x000d28 g_profile_YES_NO_WINDOW          (0x8)
+  last : 0x0015c8 __vt__29sFStateID_c<14dYesNoWindow_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.rodata  0x18-0x1d8  (0x1c0 bytes)
+  first: 0x000018 @LOCAL@create__14dYesNoWindow_cFv@ANIME_INDEX_TBL@0 (0x5c)
+  last : 0x0001c8 SoundEffects                     (0x10)
+
+.bss  0x8-0x208  (0x200 bytes)
+  first: 0x000008 @19666                           (0xc)
+  last : 0x0001d8 StateID_HitAnimeAfterWait__14dYesNoWindow_c (0x30)
+
+1 problem(s) -- do not build this
+
+##############################################################################
+# MODULE d_basesNP  (28 slice entries)  convention: REL offsets (no conversion)
+##############################################################################
+
+===== d_basesNP :: runtime/rel_init.cpp  -> FAIL
+
+.text  0x0-0x70  (0x70 bytes)
+  first: 0x000000 _prolog                          (0x2c)
+  last : 0x000060 _unresolved                      (0x4)
+  the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER
+  its OWN array destructor, which sits past its __sinit, not at the __sinit.
+  _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 21 references come from outside every
+  claimed range, e.g. 0x74, 0xeee, 0xef6, 0x12f6.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+2 problem(s) -- do not build this
+
+
+===== d_basesNP :: runtime/global_destructor_chain.c  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_awa.cpp  -> FAIL
+
+.text  0x4b0d0-0x4b730  (0x660 bytes)
+  first: 0x04b0d0 dAwa_c_classInit__Fv             (0xac)
+  last : 0x04b720 getType__Q23m3d8anmChr_cCFv      (0x8)
+  calc__6dAwa_cFv (0x4b570, 0x54 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 6 references come from outside every
+  claimed range, e.g. 0x1a12da, 0x1a12e2, 0x1a1ae6, 0x1a1af2.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.rodata  0x1f98-0x1fe8  (0x50 bytes)
+  first: 0x001f98 @LOCAL@create__6dAwa_cFv@DUMMY_ORDERING (0x8)
+  last : 0x001fe0 @12975                           (0x4)
+  @LOCAL@create__6dAwa_cFv@Proc_tbl@0 (0x1fa0, 0x30 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x17ee2, 0x17eee.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.data  0x13190-0x132b0  (0x120 bytes)
+  first: 0x013190 g_profile_AWA                    (0xc)
+  last : 0x013298 __vt__Q23m3d8anmChr_c            (0x18)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+3 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_branch.cpp  -> FAIL
+
+.text  0x676f0-0x677b0  (0xc0 bytes)
+  first: 0x0676f0 fn_2_676F0                       (0x4c)
+  last : 0x067750 fn_2_67750                       (0x58)
+
+.data  0x176f8-0x177d8  (0xe0 bytes)
+  first: 0x0176f8 g_profile_BRANCH                 (0xc)
+  last : 0x017704 lbl_2_data_17704                 (0xd4)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_dummy_door_child.cpp  -> FAIL
+
+.text  0x77af0-0x77ba0  (0xb0 bytes)
+  first: 0x077af0 fn_2_77AF0                       (0x4c)
+  last : 0x077b40 fn_2_77B40                       (0x58)
+
+.data  0x1aa08-0x1aae8  (0xe0 bytes)
+  first: 0x01aa08 g_profile_DUMMY_DOOR_CHILD       (0xc)
+  last : 0x01aa14 lbl_2_data_1AA14                 (0xd4)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_dummy_door_parent.cpp  -> FAIL
+
+.text  0x77ba0-0x77c50  (0xb0 bytes)
+  first: 0x077ba0 fn_2_77BA0                       (0x4c)
+  last : 0x077bf0 fn_2_77BF0                       (0x58)
+
+.data  0x1aae8-0x1abc8  (0xe0 bytes)
+  first: 0x01aae8 g_profile_DUMMY_DOOR_PARENT      (0xc)
+  last : 0x01aaf4 lbl_2_data_1AAF4                 (0xd4)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_ac_switch.cpp  -> FAIL
+
+.text  0x7d400-0x7d630  (0x230 bytes)
+  first: 0x07d400 fn_2_7D400                       (0x4c)
+  last : 0x07d5e0 fn_2_7D5E0                       (0x4c)
+
+.data  0x1bbd8-0x1bc30  (0x58 bytes)
+  first: 0x01bbd8 g_profile_AC_FLAGON              (0xc)
+  last : 0x01bc20 g_profile_AC_RNSWICH             (0x10)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+  g_profile_AC_FLAGON (0x1bbd8, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x7ed06, 0x7ed0e.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  g_profile_AC_4SWICHOR (0x1bbf0, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x3c.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+3 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_obj_fruit_tree.cpp  -> FAIL
+
+.text  0x108360-0x108970  (0x610 bytes)
+  first: 0x108360 daObjFruitTree_c_classInit__Fv   (0x84)
+  last : 0x1088e0 __dt__16daObjFruitTree_cFv       (0x84)
+
+.rodata  0x6180-0x6198  (0x18 bytes)
+  first: 0x006180 @13945                           (0x4)
+  last : 0x006194 @13978                           (0x4)
+
+.data  0x34058-0x343e0  (0x388 bytes)
+  first: 0x034058 g_profile_OBJ_FRUITTREE          (0xc)
+  last : 0x034148 __vt__16daObjFruitTree_c         (0x280)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+  @13935 (0x34088, 0x1b bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xd5c8.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @13936 (0x340a4, 0x11 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xd604.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @13937 (0x340b8, 0xe bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xd5f8.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @13939 (0x340d8, 0xe bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xd5ec.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @13940 (0x340e8, 0xf bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xd628.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+6 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_remo_door.cpp  -> FAIL
+
+.text  0x128170-0x128b00  (0x990 bytes)
+  first: 0x128170 daRemoDoor_c_classInit__Fv       (0x64)
+  last : 0x128ad0 finalizeState__27sFStateID_c<12daRemoDoor_c>CFR12daRemoDoor_c (0x30)
+
+.ctors  0x2f8-0x2fc  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x6cd0-0x6d00  (0x30 bytes)
+  first: 0x006cd0 @21160                           (0x4)
+  last : 0x006cf8 SOUND_OPEN__12daRemoDoor_c       (0x4)
+  @21163 (0x6cdc, 0x4 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x6d40.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.data  0x3a748-0x3a960  (0x218 bytes)
+  first: 0x03a748 g_profile_REMO_DOOR              (0xc)
+  last : 0x03a928 __vt__27sFStateID_c<12daRemoDoor_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+  @21284 (0x3a860, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xf4e0.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @21285 (0x3a86c, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xf4d4.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.bss  0xdd88-0xde48  (0xc0 bytes)
+  first: 0x00dd88 @20630                           (0xc)
+  last : 0x00de18 StateID_Close__12daRemoDoor_c    (0x30)
+  @20634 (0xddc8, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 4 references come from outside every
+  claimed range, e.g. 0x36bd2, 0x36bd6, 0x39316, 0x3931e.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+5 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_antlion.cpp  -> FAIL
+
+.text  0x15ac80-0x15b590  (0x910 bytes)
+  first: 0x15ac80 fn_2_15AC80                      (0x30)
+  last : 0x15b570 fn_2_15B570                      (0x1c)
+
+.ctors  0x3b4-0x3b8  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x8598-0x85b4  (0x1c bytes)
+  first: 0x008598 lbl_2_rodata_8598                (0x4)
+  last : 0x0085a0 lbl_2_rodata_85A0                (0x20)
+  END cuts lbl_2_rodata_85A0 short: it ends at 0x85c0, past the claim
+
+.data  0x43788-0x43920  (0x198 bytes)
+  first: 0x043788 lbl_2_data_43788                 (0x8)
+  last : 0x043810 lbl_2_data_43810                 (0x110)
+
+.bss  0xfcd0-0xfce0  (0x10 bytes)
+  first: 0x00fcd0 lbl_2_bss_FCD0                   (0xc)
+  last : 0x00fcdc lbl_2_bss_FCDC                   (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_cannon.cpp  -> FAIL
+
+.text  0x15e7e0-0x15ecc0  (0x4e0 bytes)
+  first: 0x15e7e0 daWmCannon_c_classInit__Fv       (0x30)
+  last : 0x15eca0 __arraydtor$12743                (0x1c)
+
+.ctors  0x3c4-0x3c8  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x86d0-0x86e8  (0x18 bytes)
+  first: 0x0086d0 @12961                           (0x4)
+  last : 0x0086e0 @13055                           (0x4)
+
+.data  0x43ef8-0x43fd0  (0xd8 bytes)
+  first: 0x043ef8 @12741                           (0x5)
+  last : 0x043f58 __vt__12daWmCannon_c             (0x78)
+  g_profile_WM_CANNON (0x43f2c, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x11ac4, 0x11af4.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.bss  0xfd38-0xfd48  (0x10 bytes)
+  first: 0x00fd38 @12744                           (0xc)
+  last : 0x00fd44 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_cloud.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_dokan.cpp  -> FAIL
+
+.text  0x1622b0-0x162580  (0x2d0 bytes)
+  first: 0x1622b0 daWmDokan_c_classInit__Fv        (0x30)
+  last : 0x162560 __arraydtor$12553                (0x1c)
+
+.ctors  0x3d8-0x3dc  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x8830-0x8840  (0x10 bytes)
+  first: 0x008830 @12725                           (0x4)
+  last : 0x00883c @12764                           (0x4)
+  @12763 (0x8838, 0x4 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x8880.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.data  0x44768-0x44820  (0xb8 bytes)
+  first: 0x044768 @12551                           (0x5)
+  last : 0x0447a8 __vt__11daWmDokan_c              (0x78)
+
+.bss  0xfd98-0xfda8  (0x10 bytes)
+  first: 0x00fd98 @12554                           (0xc)
+  last : 0x00fda4 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_dokan_route.cpp  -> FAIL
+
+.text  0x162580-0x163620  (0x10a0 bytes)
+  first: 0x162580 daWmDokanRoute_c_classInit__Fv   (0x30)
+  last : 0x163600 __arraydtor$12752                (0x1c)
+
+.ctors  0x3dc-0x3e0  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x8840-0x8880  (0x40 bytes)
+  first: 0x008840 sExitTypes__16daWmDokanRoute_c   (0x6)
+  last : 0x008878 @13878                           (0x4)
+  @13651 (0x8860, 0x4 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x888c.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.data  0x44820-0x44a68  (0x248 bytes)
+  first: 0x044820 @12750                           (0x5)
+  last : 0x044960 __vt__16daWmDokanRoute_c         (0x78)
+  @13557 (0x44940, 0x10 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x121a0.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.bss  0xfda8-0xfdc0  (0x18 bytes)
+  first: 0x00fda8 @12753                           (0xc)
+  last : 0x00fdb8 @GUARD@mData__33sGlobalData_c<16daWmDokanRoute_c> (0x1)
+
+2 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_ghost.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_grid.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_kinoko_1up.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_kinoko_base.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_kinoko_red.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_kinoko_star.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_note.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_peach.cpp  -> FAIL
+
+.text  0x176630-0x176cd0  (0x6a0 bytes)
+  first: 0x176630 daWmPeach_c_classInit__Fv        (0x30)
+  last : 0x176cb0 __arraydtor$12722                (0x1c)
+
+.ctors  0x420-0x424  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x8ea0-0x8ed0  (0x30 bytes)
+  first: 0x008ea0 @12981                           (0x4)
+  last : 0x008ecc @13088                           (0x4)
+
+.data  0x46838-0x46940  (0x108 bytes)
+  first: 0x046838 @12720                           (0x5)
+  last : 0x0468b8 __vt__11daWmPeach_c              (0x70)
+  @13028 (0x468a0, 0x10 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x12868.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.bss  0x10020-0x10030  (0x10 bytes)
+  first: 0x010020 @12723                           (0xc)
+  last : 0x01002c c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_peach_castle.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_sinkship.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_smallcloud.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_a_wm_tower.cpp  -> PASS
+
+===== d_basesNP :: d_basesNP/bases/d_s_autoselect.cpp  -> FAIL
+
+.text  0x1b13f0-0x1b14a0  (0xb0 bytes)
+  first: 0x1b13f0 dScAutoSelect_c_classInit__Fv    (0x4c)
+  last : 0x1b1440 __dt__15dScAutoSelect_cFv        (0x58)
+
+.data  0x4dfa0-0x4dff8  (0x58 bytes)
+  first: 0x04dfa0 g_profile_AUTO_SELECT            (0x8)
+  last : 0x04dfa8 __vt__15dScAutoSelect_c          (0x50)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+1 problem(s) -- do not build this
+
+
+===== d_basesNP :: d_basesNP/bases/d_s_select.cpp  -> FAIL
+
+.text  0x1b63f0-0x1b64a0  (0xb0 bytes)
+  first: 0x1b63f0 dScSelect_c_classInit__Fv        (0x4c)
+  last : 0x1b6440 __dt__11dScSelect_cFv            (0x58)
+
+.data  0x4f1a8-0x4f200  (0x58 bytes)
+  first: 0x04f1a8 g_profile_SELECT                 (0x8)
+  last : 0x04f1b0 __vt__11dScSelect_c              (0x50)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+1 problem(s) -- do not build this
+
+##############################################################################
+# MODULE d_enemiesNP  (4 slice entries)  convention: REL offsets (no conversion)
+##############################################################################
+
+===== d_enemiesNP :: runtime/rel_init.cpp  -> FAIL
+
+.text  0x0-0x70  (0x70 bytes)
+  first: 0x000000 _prolog                          (0x2c)
+  last : 0x000060 _unresolved                      (0x4)
+  the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER
+  its OWN array destructor, which sits past its __sinit, not at the __sinit.
+  _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 4 references come from outside every
+  claimed range, e.g. 0x70, 0x74, 0x1966, 0x196a.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  _unresolved (0x60, 0x4 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x78.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+3 problem(s) -- do not build this
+
+
+===== d_enemiesNP :: runtime/global_destructor_chain.c  -> FAIL
+
+.text  0x70-0xf0  (0x80 bytes)
+  first: 0x000070 __register_global_object         (0x1c)
+  last : 0x000090 __destroy_global_chain           (0x54)
+  __register_global_object (0x70, 0x1c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 4 references come from outside every
+  claimed range, e.g. 0x151a, 0x1522, 0x1a66, 0x1a6e.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.dtors  0x0-0x4  (0x4 bytes)
+  first: 0x000000 __destroy_global_chain_reference (0x4)
+  last : 0x000000 _dtors                           (0x0)
+
+.bss  0x0-0x8  (0x8 bytes)
+  first: 0x000000 __global_destructor_chain        (0x4)
+  last : 0x000000 __global_destructor_chain        (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== d_enemiesNP :: d_enemiesNP/bases/d_a_en_noko.cpp  -> FAIL
+
+.text  0xcf710-0xd2930  (0x3220 bytes)
+  first: 0x0cf710 daEnNoko_c_classInit__Fv         (0x110)
+  last : 0x0d2900 finalizeState__25sFStateID_c<10daEnNoko_c>CFR10daEnNoko_c (0x30)
+
+.ctors  0x1b4-0x1b8  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x6008-0x60f0  (0xe8 bytes)
+  first: 0x006008 l_noko_head                      (0xc)
+  last : 0x0060e8 @23024                           (0x4)
+  l_noko_cc (0x6038, 0x24 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x9c952, 0x9c95e.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @22624 (0x6088, 0x8 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x9caaa, 0x9cab6.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.data  0x28250-0x289d0  (0x780 bytes)
+  first: 0x028250 g_profile_EN_NOKONOKO            (0xc)
+  last : 0x0289bc @STRING@kickEffect__11daEnShell_cF7mVec3_c (0xe)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+  @23157 (0x28740, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x8530.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @23159 (0x28758, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x8518.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @23161 (0x28770, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x8524.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @23179 (0x28888, 0x22 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0x8434.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.bss  0x7e60-0x80a0  (0x240 bytes)
+  first: 0x007e60 @20946                           (0xc)
+  last : 0x00806c StateID_WakeupTurn__10daEnNoko_c (0x34)
+  StateID_BlockAppear__10daEnNoko_c (0x7e70, 0x30 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 4 references come from outside every
+  claimed range, e.g. 0x11e5da, 0x11e5e2, 0x11e65e, 0x11e682.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @20950 (0x7ea0, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 4 references come from outside every
+  claimed range, e.g. 0x11d002, 0x11d016, 0x11d15a, 0x11d16a.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @20954 (0x7ee0, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 6 references come from outside every
+  claimed range, e.g. 0x11d9b2, 0x11d9ba, 0x11dc2e, 0x11dc3a.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  StateID_SpitOut_Ready__10daEnNoko_c (0x7f70, 0x30 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 13 references come from outside every
+  claimed range, e.g. 0x11fce2, 0x11fce6, 0x11ff3e, 0x11ff42.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  StateID_WakeupTurn__10daEnNoko_c (0x806c, 0x34 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 7 references come from outside every
+  claimed range, e.g. 0x14ec, 0x121bbe, 0x121bc6, 0x122162.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+12 problem(s) -- do not build this
+
+
+===== d_enemiesNP :: d_enemiesNP/bases/d_a_en_snake_block.cpp  -> FAIL
+
+.text  0x103a50-0x106960  (0x2f10 bytes)
+  first: 0x103a50 daEnSnakeBlock_c_classInit__Fv   (0xa4)
+  last : 0x106930 finalizeState__31sFStateID_c<16daEnSnakeBlock_c>CFR16daEnSnakeBlock_c (0x30)
+
+.ctors  0x228-0x22c  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x72a0-0x7310  (0x70 bytes)
+  first: 0x0072a0 sc_FallAccel__16daEnSnakeBlock_c (0x4)
+  last : 0x007308 scSnakeSoundID__16daEnSnakeBlock_c (0x4)
+
+.data  0x33680-0x33b90  (0x510 bytes)
+  first: 0x033680 g_profile_EN_SNAKEBLOCK          (0xc)
+  last : 0x033b5c __vt__31sFStateID_c<16daEnSnakeBlock_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+  @21729 (0x33a30, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 1 references come from outside every
+  claimed range, e.g. 0xaa68.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @21758 (0x33ad0, 0x24 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0xaa50, 0xaa5c.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+.bss  0x9f30-0xa178  (0x248 bytes)
+  first: 0x009f30 @GUARD@calcCollapse1__Q216daEnSnakeBlock_c8dBlock_cFPSc@offsets (0x1)
+  last : 0x00a150 @LOCAL@initializeState_Collapse1__16daEnSnakeBlock_cFv@sc_collapseSpeeds (0x28)
+  @19152 (0xa048, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x31686, 0x31692.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  @19160 (0xa0c8, 0xc bytes) is NEVER referenced from anywhere
+  inside this unit -- all 2 references come from outside every
+  claimed range, e.g. 0x318f6, 0x31902.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+5 problem(s) -- do not build this
+
+##############################################################################
+# MODULE d_en_bossNP  (1 slice entries)  convention: REL offsets (no conversion)
+##############################################################################
+
+===== d_en_bossNP :: runtime/rel_init.cpp  -> FAIL
+
+.text  0x0-0x70  (0x70 bytes)
+  first: 0x000000 _prolog                          (0x2c)
+  last : 0x000060 _unresolved                      (0x4)
+  the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER
+  its OWN array destructor, which sits past its __sinit, not at the __sinit.
+  _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere
+  inside this unit -- all 8 references come from outside every
+  claimed range, e.g. 0x7c, 0x80, 0x90a, 0x912.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+  _unresolved (0x60, 0x4 bytes) is NEVER referenced from anywhere
+  inside this unit -- all 18 references come from outside every
+  claimed range, e.g. 0x1392, 0x139a, 0x13b6, 0x159e.
+  This object belongs to a NEIGHBOUR. The claim reaches too far.
+
+3 problem(s) -- do not build this
+
+##############################################################################
+# MODULE wiimj2d  (144 slice entries)  convention: offsets -> VA via meta.sections[sec].addr
+##############################################################################
+
+===== wiimj2d :: dol/bases/d_2d.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_CourseSelectGuide.cpp  -> FAIL
+
+.text  0x8000fbf0-0x80014330  (0x4740 bytes)
+  first: 0x8000fbf0 __dt__7mVec3_cFv                 (0x40)
+  last : 0x800142a0 isSameName__35sFStateID_c<20dCourseSelectGuide_c>CFPCc (0x88)
+
+.ctors  0x802edce8-0x802edcec  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x802edfe0-0x802ee0a0  (0xc0 bytes)
+  first: 0x802edfe0 sc_PLAYER_ORDER__9daPyCom_c      (0x10)
+  last : 0x802ee078 @LOCAL@CourseSelectSet__20dCourseSelectGuide_cFQ26dWmLib11PointType_e@sc_startPointIcons (0x28)
+
+.data  0x802fe7a8-0x802ff970  (0x11c8 bytes)
+  first: 0x802fe7a8 sc_ForceList__6dWmLib            (0x24)
+  last : 0x802ff93c __vt__35sFStateID_c<20dCourseSelectGuide_c> (0x34)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.bss  0x803519a0-0x803521a8  (0x808 bytes)
+  first: 0x803519a0 @13768                           (0xc)
+  last : 0x80352178 StateID_ScrollGuideExitAnimeEndCheck__20dCourseSelectGuide_c (0x30)
+
+.sdata  0x80427a48-0x80427a58  (0x10 bytes)
+  first: 0x80427a48 @13765                           (0x5)
+  last : 0x80427a50 @13766                           (0x5)
+
+.sbss  0x80429ed8-0x80429ee8  (0x10 bytes)
+  first: 0x80429ed8 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x80429ee4 @GUARD@mData__37sGlobalData_c<20dCourseSelectGuide_c> (0x1)
+
+.sdata2  0x8042b430-0x8042b460  (0x30 bytes)
+  first: 0x8042b430 c_DISP_WAIT_TIMER__20dCourseSelectGuide_c (0x4)
+  last : 0x8042b45c @26284                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_SmallScore.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_wipe_circle.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_wipe_dokan.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_wipe_kuppa.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_wipe_mario.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_bigpile.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_blockmain.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_bros_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_carry.cpp  -> FAIL
+
+.text  0x80026bb0-0x800272f0  (0x740 bytes)
+  first: 0x80026bb0 baseID_Carry<10sStateID_c>__Fv_RC12sStateIDIf_c (0xc)
+  last : 0x800272c0 finalizeState__26sFStateID_c<11daEnCarry_c>CFR11daEnCarry_c (0x30)
+  the next symbol init__14daEnCoinMain_cFv is 0x1c -- array-destructor sized. A wm unit ends AFTER
+  its OWN array destructor, which sits past its __sinit, not at the __sinit.
+
+.ctors  0x802edd14-0x802edd18  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80302ce0-0x80303018  (0x338 bytes)
+  first: 0x80302ce0 __vt__11daEnCarry_c              (0x28c)
+  last : 0x80302fe0 __vt__26sFStateID_c<11daEnCarry_c> (0x34)
+
+.bss  0x803530a8-0x803530e8  (0x40 bytes)
+  first: 0x803530a8 @13151                           (0xc)
+  last : 0x803530b4 StateID_Carry__11daEnCarry_c     (0x34)
+
+.sdata2  0x8042b628-0x8042b630  (0x8 bytes)
+  first: 0x8042b628 @13559                           (0x4)
+  last : 0x8042b628 @13559                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_en_dfpakkun.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_door.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_dpakkun.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_dpakkun_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_jimen_pakkun_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_kuribo_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_lkuribo_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_net_nokonoko_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_shell.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_super_bigpile.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_en_togezo_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_fireball_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_net_enemy.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_player_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_player_demo_manager.cpp  -> FAIL
+
+.text  0x8005b3a0-0x8005d7e0  (0x2440 bytes)
+  first: 0x8005b3a0 __ct__13daPyDemoMng_cFv          (0x40)
+  last : 0x8005d7c0 __arraydtor$72504                (0x1c)
+
+.ctors  0x802edd60-0x802edd64  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80309908-0x80309a28  (0x120 bytes)
+  first: 0x80309908 sc_ForceList__6dWmLib            (0x24)
+  last : 0x80309a18 __vt__13daPyDemoMng_c            (0xc)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.sdata  0x80427bf0-0x80427c00  (0x10 bytes)
+  first: 0x80427bf0 @72502                           (0x5)
+  last : 0x80427bf8 @72503                           (0x5)
+
+.rodata  0x802eeea0-0x802ef100  (0x260 bytes)
+  first: 0x802eeea0 @75115                           (0x10)
+  last : 0x802ef0f0 @75781                           (0x10)
+
+.bss  0x80354f20-0x80354f30  (0x10 bytes)
+  first: 0x80354f20 @72505                           (0xc)
+  last : 0x80354f20 @72505                           (0xc)
+
+.sbss  0x80429f70-0x80429f78  (0x8 bytes)
+  first: 0x80429f70 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x80429f74 mspInstance__13daPyDemoMng_c     (0x4)
+
+.sdata2  0x8042bcf8-0x8042bd28  (0x30 bytes)
+  first: 0x8042bcf8 @77479                           (0x4)
+  last : 0x8042bd20 @78251                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_player_hio_ADJ.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_ac_py_key.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_right_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_rot_block.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_rot_objs_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_sink_dokan.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_spin_child_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_actor.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_actor_state.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_actorcreate_manager.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_base.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_base_actor.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_cc.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_coin.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_cd.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_cyuukan.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_dylink.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_enemy.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_enemy_carry.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_enemy_death.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_enemy_state.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_lytbase.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_lyttextbox.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_main.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_md_actor.cpp  -> FAIL
+
+.text  0x800cd800-0x800cdb60  (0x360 bytes)
+  first: 0x800cd800 __ct__10dMdActor_cFv             (0x60)
+  last : 0x800cdb40 __arraydtor$14206                (0x1c)
+
+.ctors  0x802ede08-0x802ede0c  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80317c08-0x80317c90  (0x88 bytes)
+  first: 0x80317c08 sc_ForceList__6dWmLib            (0x24)
+  last : 0x80317c30 __vt__10dMdActor_c               (0x60)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.bss  0x80359f80-0x80359f90  (0x10 bytes)
+  first: 0x80359f80 @14207                           (0xc)
+  last : 0x80359f80 @14207                           (0xc)
+
+.sdata  0x80427f60-0x80427f70  (0x10 bytes)
+  first: 0x80427f60 @14204                           (0x5)
+  last : 0x80427f68 @14205                           (0x5)
+
+.sbss  0x8042a288-0x8042a290  (0x8 bytes)
+  first: 0x8042a288 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a288 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+.sdata2  0x8042cc78-0x8042cc90  (0x18 bytes)
+  first: 0x8042cc78 @14438                           (0x4)
+  last : 0x8042cc88 @14518                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_mj2d_data.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_multi_manager.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_next.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_rail.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_res_info.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_res.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_res_mng.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_scene.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_system.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_tag_processor.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_util_frame_counter.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_wm_actor.cpp  -> FAIL
+
+.text  0x800f2820-0x800f2c00  (0x3e0 bytes)
+  first: 0x800f2820 __ct__10dWmActor_cFv             (0x60)
+  last : 0x800f2be0 __arraydtor$14214                (0x1c)
+
+.ctors  0x802ede48-0x802ede4c  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x8031bf50-0x8031bfd8  (0x88 bytes)
+  first: 0x8031bf50 sc_ForceList__6dWmLib            (0x24)
+  last : 0x8031bf78 __vt__10dWmActor_c               (0x60)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.bss  0x80373fb0-0x80373fc0  (0x10 bytes)
+  first: 0x80373fb0 @14215                           (0xc)
+  last : 0x80373fb0 @14215                           (0xc)
+
+.sdata  0x80428bf8-0x80428c08  (0x10 bytes)
+  first: 0x80428bf8 @14212                           (0x5)
+  last : 0x80428c00 @14213                           (0x5)
+
+.sbss  0x8042a408-0x8042a410  (0x8 bytes)
+  first: 0x8042a408 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a408 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+.sdata2  0x8042d210-0x8042d228  (0x18 bytes)
+  first: 0x8042d210 @14483                           (0x4)
+  last : 0x8042d220 @14580                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_wm_csvdata.cpp  -> FAIL
+
+.bss  0x80373fd0-0x80373fe0  (0x10 bytes)
+  first: 0x80373fd0 @11373                           (0xc)
+  last : 0x80373fd0 @11373                           (0xc)
+
+.ctors  0x802ede50-0x802ede54  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x8031c000-0x8031c148  (0x148 bytes)
+  first: 0x8031c000 sc_ForceList__6dWmLib            (0x24)
+  last : 0x8031c138 __vt__10dCsvData_c               (0xc)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.rodata  0x802f3670-0x802f36c0  (0x50 bytes)
+  first: 0x802f3670 @LOCAL@ReadAction__10dCsvData_cFPcRi@l_actionType@0 (0x4c)
+  last : 0x802f3670 @LOCAL@ReadAction__10dCsvData_cFPcRi@l_actionType@0 (0x4c)
+
+.sbss  0x8042a418-0x8042a430  (0x18 bytes)
+  first: 0x8042a418 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a424 l_swapName                       (0xc)
+
+.sdata  0x80428c18-0x80428da8  (0x190 bytes)
+  first: 0x80428c18 @11370                           (0x5)
+  last : 0x80428da4 @13753                           (0x2)
+
+.sdata2  0x8042d240-0x8042d278  (0x38 bytes)
+  first: 0x8042d240 c_COURSE_ID__10dCsvData_c        (0x4)
+  last : 0x8042d274 @14081                           (0x4)
+
+.text  0x800f3570-0x800f60e0  (0x2b70 bytes)
+  first: 0x800f3570 read__FPcPCci                    (0x94)
+  last : 0x800f60c0 __arraydtor$11372                (0x1c)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_wm_demo_actor.cpp  -> FAIL
+
+.text  0x800f60e0-0x800f7050  (0xf70 bytes)
+  first: 0x800f60e0 __ct__14dWmDemoActor_cFv         (0x4c)
+  last : 0x800f7030 __arraydtor$12712                (0x1c)
+
+.ctors  0x802ede54-0x802ede58  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x8031c148-0x8031c1e0  (0x98 bytes)
+  first: 0x8031c148 sc_ForceList__6dWmLib            (0x24)
+  last : 0x8031c170 __vt__14dWmDemoActor_c           (0x70)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.bss  0x80373fe0-0x80373ff0  (0x10 bytes)
+  first: 0x80373fe0 @12713                           (0xc)
+  last : 0x80373fe0 @12713                           (0xc)
+
+.sdata  0x80428da8-0x80428db8  (0x10 bytes)
+  first: 0x80428da8 @12710                           (0x5)
+  last : 0x80428db0 @12711                           (0x5)
+
+.sbss  0x8042a430-0x8042a438  (0x8 bytes)
+  first: 0x8042a430 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a430 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+.sdata2  0x8042d278-0x8042d2b0  (0x38 bytes)
+  first: 0x8042d278 @13416                           (0x4)
+  last : 0x8042d2ac @13733                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_wm_en_path.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_wm_enemy.cpp  -> FAIL
+
+.text  0x800f7510-0x800f9380  (0x1e70 bytes)
+  first: 0x800f7510 isEnemyWalk__8dWmEnemyFv         (0x94)
+  last : 0x800f9360 __arraydtor$12520                (0x1c)
+
+.ctors  0x802ede58-0x802ede5c  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x8031c1f0-0x8031c378  (0x188 bytes)
+  first: 0x8031c1f0 sc_ForceList__6dWmLib            (0x24)
+  last : 0x8031c280 __vt__10dWmEnemy_c               (0xf8)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.rodata  0x802f36c0-0x802f3720  (0x60 bytes)
+  first: 0x802f36c0 sc_EnemyProfName__8dWmEnemy      (0xa)
+  last : 0x802f3708 @LOCAL@IsExecEnable__10dWmEnemy_cFv@cutsceneCommands (0x14)
+
+.bss  0x80373ff0-0x80374000  (0x10 bytes)
+  first: 0x80373ff0 @12521                           (0xc)
+  last : 0x80373ff0 @12521                           (0xc)
+
+.sdata  0x80428db8-0x80428ea0  (0xe8 bytes)
+  first: 0x80428db8 @12518                           (0x5)
+  last : 0x80428e98 @14531                           (0x5)
+
+.sbss  0x8042a438-0x8042a440  (0x8 bytes)
+  first: 0x8042a438 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a438 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+.sdata2  0x8042d2b0-0x8042d2d8  (0x28 bytes)
+  first: 0x8042d2b0 @15766                           (0x4)
+  last : 0x8042d2d0 @16131                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_wm_obj_actor.cpp  -> FAIL
+
+.text  0x800fd8f0-0x800fdb60  (0x270 bytes)
+  first: 0x800fd8f0 GetOpenStatus__13dWmObjActor_cFv (0x14)
+  last : 0x800fdb40 __arraydtor$12429                (0x1c)
+
+.ctors  0x802ede60-0x802ede64  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x8031c4d0-0x8031c4f8  (0x28 bytes)
+  first: 0x8031c4d0 sc_ForceList__6dWmLib            (0x24)
+  last : 0x8031c4d0 sc_ForceList__6dWmLib            (0x24)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.bss  0x80374010-0x80374020  (0x10 bytes)
+  first: 0x80374010 @12430                           (0xc)
+  last : 0x80374010 @12430                           (0xc)
+
+.sdata  0x80428ec0-0x80428ed0  (0x10 bytes)
+  first: 0x80428ec0 @12427                           (0x5)
+  last : 0x80428ec8 @12428                           (0x5)
+
+.sbss  0x8042a448-0x8042a450  (0x8 bytes)
+  first: 0x8042a448 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a448 c_StartPointKinokoHouseID__6dWmLib (0x4)
+
+.sdata2  0x8042d318-0x8042d328  (0x10 bytes)
+  first: 0x8042d318 @12591                           (0x4)
+  last : 0x8042d320 @12593                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_wm_path.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_SelectCursor.cpp  -> FAIL
+
+.data  0x803229e8-0x80322b18  (0x130 bytes)
+  first: 0x803229e8 g_profile_SELECT_CURSOR          (0xc)
+  last : 0x80322ac8 __vt__15dSelectCursor_c          (0x50)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.sbss  0x8042a5a8-0x8042a5b0  (0x8 bytes)
+  first: 0x8042a5a8 m_instance__15dSelectCursor_c    (0x4)
+  last : 0x8042a5a8 m_instance__15dSelectCursor_c    (0x4)
+
+.sbss2  0x8042fed8-0x8042fee0  (0x8 bytes)
+  first: 0x8042fed8 @LOCAL@create__15dSelectCursor_cFv@ANIME_INDEX_TBL@1 (0x4)
+  last : 0x8042fed8 @LOCAL@create__15dSelectCursor_cFv@ANIME_INDEX_TBL@1 (0x4)
+
+.sdata  0x80429508-0x80429538  (0x30 bytes)
+  first: 0x80429508 @LOCAL@create__15dSelectCursor_cFv@AnmNameTbl (0x4)
+  last : 0x80429530 @7316                            (0x1)
+
+.sdata2  0x8042d5e8-0x8042d5f0  (0x8 bytes)
+  first: 0x8042d5e8 @7157                            (0x4)
+  last : 0x8042d5ec @7304                            (0x4)
+
+.text  0x8010c130-0x8010cae0  (0x9b0 bytes)
+  first: 0x8010c130 dSelectCursor_c_classInit__Fv    (0x30)
+  last : 0x8010cab0 SetAlpha__15dSelectCursor_cFPCQ34nw4r3lyt4Panei (0x30)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_SmallScoreManager.cpp  -> FAIL
+
+.text  0x8010cae0-0x8010d270  (0x790 bytes)
+  first: 0x8010cae0 dSmallScoreManager_c_classInit__Fv (0x30)
+  last : 0x8010d200 __sinit_\d_SmallScoreManager_cpp (0x70)
+
+.ctors  0x802edea0-0x802edea4  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.bss  0x80375180-0x803751b8  (0x38 bytes)
+  first: 0x80375180 mData__37sGlobalData_c<20dSmallScoreManager_c> (0x38)
+  last : 0x80375180 mData__37sGlobalData_c<20dSmallScoreManager_c> (0x38)
+
+.data  0x80322b18-0x80322b98  (0x80 bytes)
+  first: 0x80322b18 g_profile_SMALL_SCORE_MANAGER    (0xc)
+  last : 0x80322b48 __vt__20dSmallScoreManager_c     (0x50)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.sbss  0x8042a5b0-0x8042a5b8  (0x8 bytes)
+  first: 0x8042a5b0 m_instance__20dSmallScoreManager_c (0x4)
+  last : 0x8042a5b4 @GUARD@mData__37sGlobalData_c<20dSmallScoreManager_c> (0x1)
+
+.sdata2  0x8042d5f0-0x8042d630  (0x40 bytes)
+  first: 0x8042d5f0 c_SMALL_SCORE_SIZE_4_3_X__20dSmallScoreManager_c (0x4)
+  last : 0x8042d628 @14612                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_WiiStrap.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_cursor.cpp  -> FAIL
+
+.text  0x8010f530-0x8010f9a0  (0x470 bytes)
+  first: 0x8010f530 dAcCursor_c_classInit__Fv        (0x74)
+  last : 0x8010f980 __sinit_\d_a_cursor_cpp          (0x14)
+
+.ctors  0x802edea8-0x802edeac  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80323168-0x80323288  (0x120 bytes)
+  first: 0x80323168 g_profile_CURSOR                 (0xc)
+  last : 0x80323238 __vt__11dAcCursor_c              (0x50)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.sbss  0x8042a5c8-0x8042a5d8  (0x10 bytes)
+  first: 0x8042a5c8 l_cursor__11dAcCursor_c          (0x4)
+  last : 0x8042a5d0 l_pos__11dAcCursor_c             (0x8)
+
+.sdata2  0x8042d630-0x8042d648  (0x18 bytes)
+  first: 0x8042d630 @6916                            (0x4)
+  last : 0x8042d640 @6934                            (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_en_eatcoin.cpp  -> FAIL
+
+.text  0x8010f9a0-0x801102b0  (0x910 bytes)
+  first: 0x8010f9a0 daEnEatCoin_c_classInit__Fv      (0x64)
+  last : 0x80110280 finalizeState__28sFStateID_c<13daEnEatCoin_c>CFR13daEnEatCoin_c (0x30)
+
+.ctors  0x802edeac-0x802edeb0  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80323288-0x80323620  (0x398 bytes)
+  first: 0x80323288 g_profile_EN_EATCOIN             (0xc)
+  last : 0x803235e8 __vt__28sFStateID_c<13daEnEatCoin_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.bss  0x803753b8-0x803753f8  (0x40 bytes)
+  first: 0x803753b8 @20952                           (0xc)
+  last : 0x803753c4 StateID_EatOut__13daEnEatCoin_c  (0x34)
+
+.sdata2  0x8042d648-0x8042d650  (0x8 bytes)
+  first: 0x8042d648 @21539                           (0x4)
+  last : 0x8042d648 @21539                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_en_hatena_balloon.cpp  -> FAIL
+
+.text  0x801102b0-0x80114c00  (0x4950 bytes)
+  first: 0x801102b0 daEnHatenaBalloon_c_classInit__Fv (0x160)
+  last : 0x80114bd0 finalizeState__34sFStateID_c<19daEnHatenaBalloon_c>CFR19daEnHatenaBalloon_c (0x30)
+
+.ctors  0x802edeb0-0x802edeb4  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80323620-0x80323b60  (0x540 bytes)
+  first: 0x80323620 g_profile_EN_HATENA_BALLOON      (0xc)
+  last : 0x80323b2c __vt__34sFStateID_c<19daEnHatenaBalloon_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.bss  0x803753f8-0x803755a0  (0x1a8 bytes)
+  first: 0x803753f8 @77306                           (0xc)
+  last : 0x80375590 sm_bg_check_size_super__19daEnHatenaBalloon_c (0xc)
+
+.sdata  0x80429570-0x804295c0  (0x50 bytes)
+  first: 0x80429570 sm_hio_gravity__19daEnHatenaBalloon_c (0x4)
+  last : 0x804295b8 lbl_804295B8                     (0x8)
+
+.sdata2  0x8042d650-0x8042d710  (0xc0 bytes)
+  first: 0x8042d650 @80815                           (0x4)
+  last : 0x8042d70c @82405                           (0x4)
+
+.rodata  0x802f4e20-0x802f4ef8  (0xd8 bytes)
+  first: 0x802f4e20 s_someCheckData__19daEnHatenaBalloon_c (0x50)
+  last : 0x802f4eb8 l_speed_ratiodt                  (0x40)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_enemy_ice.cpp  -> FAIL
+
+.text  0x80114c00-0x80115bd0  (0xfd0 bytes)
+  first: 0x80114c00 daEnemyIce_c_classInit__Fv       (0xe0)
+  last : 0x80115ba0 finalizeState__27sFStateID_c<12daEnemyIce_c>CFR12daEnemyIce_c (0x30)
+
+.ctors  0x802edeb4-0x802edeb8  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80323b60-0x80323df8  (0x298 bytes)
+  first: 0x80323b60 g_profile_ENEMY_ICE              (0xc)
+  last : 0x80323dc0 __vt__27sFStateID_c<12daEnemyIce_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.bss  0x803755a0-0x80375730  (0x190 bytes)
+  first: 0x803755a0 smc_ICE_DEFSIZE_SQUARE__12daEnemyIce_c (0xc)
+  last : 0x80375700 StateID_Break__12daEnemyIce_c    (0x30)
+
+.sdata  0x804295c0-0x804295f8  (0x38 bytes)
+  first: 0x804295c0 @14435                           (0x7)
+  last : 0x804295f0 @15165                           (0x4)
+
+.sdata2  0x8042d710-0x8042d740  (0x30 bytes)
+  first: 0x8042d710 @15132                           (0x4)
+  last : 0x8042d73c @15360                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_fireball_player.cpp  -> FAIL
+
+.text  0x8011a5b0-0x8011b640  (0x1090 bytes)
+  first: 0x8011a5b0 daFireBall_Player_c_classInit__Fv (0xd4)
+  last : 0x8011b610 finalizeState__34sFStateID_c<19daFireBall_Player_c>CFR19daFireBall_Player_c (0x30)
+
+.ctors  0x802edebc-0x802edec0  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x802f4f08-0x802f4f80  (0x78 bytes)
+  first: 0x802f4f08 l_fball_cc_data                  (0x24)
+  last : 0x802f4f58 @LOCAL@setSakaSpeed__19daFireBall_Player_cFUcUc@cs_saka_speed_y@0 (0x28)
+
+.data  0x80324060-0x80324288  (0x228 bytes)
+  first: 0x80324060 g_profile_PL_FIREBALL            (0xc)
+  last : 0x80324250 __vt__34sFStateID_c<19daFireBall_Player_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.bss  0x80375840-0x803758a0  (0x60 bytes)
+  first: 0x80375840 sm_FireBallCnt__19daFireBall_Player_c (0x10)
+  last : 0x8037586c StateID_Move__19daFireBall_Player_c (0x34)
+
+.sdata2  0x8042d7c0-0x8042d7f8  (0x38 bytes)
+  first: 0x8042d7c0 @21872                           (0x4)
+  last : 0x8042d7f0 @22056                           (0x8)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_a_iceball.cpp  -> FAIL
+
+.text  0x801233f0-0x80124d40  (0x1950 bytes)
+  first: 0x801233f0 daIceBall_c_classInit__Fv        (0x74)
+  last : 0x80124d10 finalizeState__26sFStateID_c<11daIceBall_c>CFR11daIceBall_c (0x30)
+
+.ctors  0x802edec4-0x802edec8  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.rodata  0x802f5000-0x802f5068  (0x68 bytes)
+  first: 0x802f5000 mData__28sGlobalData_c<11daIceBall_c> (0x10)
+  last : 0x802f5058 l_cull_data                      (0x10)
+
+.data  0x80324aa8-0x80324d28  (0x280 bytes)
+  first: 0x80324aa8 g_profile_ICEBALL                (0xc)
+  last : 0x80324cf0 __vt__26sFStateID_c<11daIceBall_c> (0x34)
+  .data begins at a PROFILE symbol. A wm unit opens on its two anonymous
+  sc_ForceList strings, so this claim is very likely 0x34 too high.
+
+.bss  0x80375da8-0x80375f08  (0x160 bytes)
+  first: 0x80375da8 sm_IceBallCount__11daIceBall_c   (0x10)
+  last : 0x80375ed8 StateID_Kill__11daIceBall_c      (0x30)
+
+.sdata2  0x8042d950-0x8042d9c0  (0x70 bytes)
+  first: 0x8042d950 @21827                           (0x4)
+  last : 0x8042d9b8 @22122                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_last_actor.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_a_player.cpp  -> PASS
+
+===== wiimj2d :: dol/bases/d_pausewindow.cpp  -> FAIL
+
+.text  0x8015a480-0x8015ba70  (0x15f0 bytes)
+  first: 0x8015a480 Pausewindow_c_classInit__Fv      (0x30)
+  last : 0x8015b9e0 isSameName__28sFStateID_c<13Pausewindow_c>CFPCc (0x88)
+
+.ctors  0x802eded8-0x802ededc  (0x4 bytes)
+  no symbols in range -- cannot validate (dtk may not label this section)
+
+.data  0x80327d00-0x803283d8  (0x6d8 bytes)
+  first: 0x80327d00 sc_ForceList__6dWmLib            (0x24)
+  last : 0x803283a0 __vt__28sFStateID_c<13Pausewindow_c> (0x34)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.rodata  0x802f5ce0-0x802f5d30  (0x50 bytes)
+  first: 0x802f5ce0 @LOCAL@create__13Pausewindow_cFv@ANIME_INDEX_TBL@1 (0x2c)
+  last : 0x802f5d20 @LOCAL@create__13Pausewindow_cFv@msgIdTbl2@5 (0xc)
+
+.bss  0x80377468-0x803775f0  (0x188 bytes)
+  first: 0x80377468 @14465                           (0xc)
+  last : 0x803775c0 StateID_ClouseAnimeEndWait__13Pausewindow_c (0x30)
+
+.sdata  0x804296d0-0x804296e8  (0x18 bytes)
+  first: 0x804296d0 @14462                           (0x5)
+  last : 0x804296e0 @LOCAL@create__13Pausewindow_cFv@WPANE_NAME_DT@7 (0x4)
+
+.sbss  0x8042a618-0x8042a620  (0x8 bytes)
+  first: 0x8042a618 c_StartPointKinokoHouseID__6dWmLib (0x4)
+  last : 0x8042a61c m_instance__13Pausewindow_c      (0x4)
+
+.sdata2  0x8042deb8-0x8042ded0  (0x18 bytes)
+  first: 0x8042deb8 @LOCAL@SelectCursorSetup__13Pausewindow_cFv@PANE_IDX_TBL (0x8)
+  last : 0x8042dec8 @20594                           (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/bases/d_s_boot.cpp  -> PASS
+
+===== wiimj2d :: dol/sLib/s_lib.cpp  -> PASS
+
+===== wiimj2d :: dol/sLib/s_Phase.cpp  -> PASS
+
+===== wiimj2d :: dol/sLib/s_StateID.cpp  -> PASS
+
+===== wiimj2d :: dol/sLib/s_StateMethod.cpp  -> PASS
+
+===== wiimj2d :: dol/sLib/s_StateMethodUsr_FI.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_counter.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_dylink.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_list.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_m3d.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_math.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_random.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_tree.cpp  -> PASS
+
+===== wiimj2d :: dol/cLib/c_owner_set.cpp  -> PASS
+
+===== wiimj2d :: dol/framework/f_helper_unk.cpp  -> PASS
+
+===== wiimj2d :: dol/framework/f_base.cpp  -> PASS
+
+===== wiimj2d :: dol/framework/f_list.cpp  -> PASS
+
+===== wiimj2d :: dol/framework/f_manager.cpp  -> PASS
+
+===== wiimj2d :: dol/framework/f_profile.cpp  -> PASS
+
+===== wiimj2d :: dol/framework/f_tree.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_2d.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/anm_chr.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/anm_chr_blend.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/anm_mat_clr.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/anm_tex_pat.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/anm_tex_srt.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/anm_vis.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/banm.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/bmdl.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/calc_ratio.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/fanm.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/m_3d_capture.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/mdl.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/scn_leaf.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_3d/smdl.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_allocator.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_angle.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_color_fader.cpp  -> FAIL
+
+.text  0x8016acd0-0x8016b090  (0x3c0 bytes)
+  first: 0x8016acd0 __ct__13mColorFader_cF6mColorQ212mFaderBase_c7EStatus (0x44)
+  last : 0x8016ae70 draw__13mColorFader_cFv          (0x214)
+
+.data  0x80329a48-0x80329a70  (0x28 bytes)
+  first: 0x80329a48 __vt__13mColorFader_c            (0x24)
+  last : 0x80329a48 __vt__13mColorFader_c            (0x24)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.sdata2  0x8042dfd0-0x8042dfe8  (0x18 bytes)
+  first: 0x8042dfd0 @4699                            (0x4)
+  last : 0x8042dfe4 @4704                            (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/mLib/m_fader.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_fader_base.cpp  -> FAIL
+
+.text  0x8016dd40-0x8016df40  (0x200 bytes)
+  first: 0x8016dd40 __ct__12mFaderBase_cFRC6mColorQ212mFaderBase_c7EStatus (0x9c)
+  last : 0x8016dec0 calc__12mFaderBase_cFv           (0x7c)
+
+.data  0x80329e20-0x80329e48  (0x28 bytes)
+  first: 0x80329e20 __vt__12mFaderBase_c             (0x24)
+  last : 0x80329e20 __vt__12mFaderBase_c             (0x24)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: dol/mLib/m_heap.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_mtx.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_vec.cpp  -> PASS
+
+===== wiimj2d :: dol/mLib/m_wipe_fader.cpp  -> PASS
+
+===== wiimj2d :: lib/nw4hbm/ut/list.cpp  -> PASS
+
+===== wiimj2d :: lib/revolution/ax/AXAlloc.c  -> PASS
+
+===== wiimj2d :: lib/revolution/base/PPCArch.c  -> PASS
+
+===== wiimj2d :: lib/revolution/os/OSArena.c  -> PASS
+
+===== wiimj2d :: lib/revolution/os/OSCache.c  -> PASS
+
+===== wiimj2d :: lib/revolution/os/OSMutex.c  -> PASS
+
+===== wiimj2d :: lib/revolution/gx/GXAttr.c  -> PASS
+
+===== wiimj2d :: lib/revolution/gx/GXLight.c  -> PASS
+
+===== wiimj2d :: lib/revolution/gx/GXTev.c  -> PASS
+
+===== wiimj2d :: lib/revolution/gx/GXPixel.c  -> PASS
+
+===== wiimj2d :: lib/revolution/gx/GXTransform.c  -> PASS
+
+===== wiimj2d :: lib/revolution/mem/mem_frameHeap.c  -> PASS
+
+===== wiimj2d :: lib/nw4r/ut/ut_list.cpp  -> PASS
+
+===== wiimj2d :: lib/egg/core/eggDisposer.cpp  -> PASS
+
+===== wiimj2d :: lib/egg/core/eggColorFader.cpp  -> FAIL
+
+.text  0x802bb170-0x802bb6c0  (0x550 bytes)
+  first: 0x802bb170 __ct__Q23EGG10ColorFaderFffffQ34nw4r2ut5ColorQ33EGG5Fader7EStatus (0xac)
+  last : 0x802bb680 __dt__Q23EGG10ColorFaderFv       (0x40)
+
+.data  0x80350218-0x80350240  (0x28 bytes)
+  first: 0x80350218 __vt__Q23EGG10ColorFader         (0x24)
+  last : 0x80350218 __vt__Q23EGG10ColorFader         (0x24)
+  .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous
+  5-byte strings it points at come FIRST and belong to this unit, so the
+  claim is very likely 0x10 too high. (This is grid's original error.)
+
+.sdata2  0x8042f410-0x8042f418  (0x8 bytes)
+  first: 0x8042f410 @3552                            (0x4)
+  last : 0x8042f414 @3553                            (0x4)
+
+1 problem(s) -- do not build this
+
+
+===== wiimj2d :: runtime/global_destructor_chain.c  -> PASS
+
+===== wiimj2d :: runtime/class_arrays.cpp  -> PASS
+
+===== wiimj2d :: runtime/__init_cpp_exceptions.cpp  -> PASS
+
+==============================================================================
+SUMMARY
+==============================================================================
+d_profileNP  runtime/rel_init.cpp                                    last : 0x000060 _unresolved                      (0x4); the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER; its OWN array destructor, which sits past its __sinit, not at the __sinit.; _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere; inside this unit -- all 2 references come from outside every; claimed range, e.g. 0xf2e, 0xf32.; This object
+d_profileNP  runtime/global_destructor_chain.c                       last : 0x000090 __destroy_global_chain           (0x54); __register_global_object (0x70, 0x1c bytes) is NEVER referenced from anywhere; inside this unit -- all 2 references come from outside every; claimed range, e.g. 0x97a, 0x98a.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x000004 __destroy_global_chain_reference (0x4); last : 0x000000 __global_destructor_chain      
+d_profileNP  d_profileNP/bases/d_controller_information.cpp          last : 0x0004d0 doDelete__24dControllerInformation_cFv (0x8); __ct__24dControllerInformation_cFv (0x160, 0x4c bytes) is NEVER referenced from anywhere; inside this unit -- all 2 references come from outside every; claimed range, e.g. 0x153a, 0x1546.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x000cd8 __vt__24dControllerInformation_c (0x50); .data begins at a PROFILE sy
+d_profileNP  d_profileNP/bases/d_yes_no_window.cpp                   last : 0x001f30 isSameName__29sFStateID_c<14dYesNoWindow_c>CFPCc (0x88); last : 0x000000 _ctors                           (0x0); last : 0x0015c8 __vt__29sFStateID_c<14dYesNoWindow_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x0001c8 SoundEffects                     (0x10); last : 0x0001
+d_basesNP    runtime/rel_init.cpp                                    last : 0x000060 _unresolved                      (0x4); the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER; its OWN array destructor, which sits past its __sinit, not at the __sinit.; _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere; inside this unit -- all 21 references come from outside every; claimed range, e.g. 0x74, 0xeee, 0xef6, 0x12f
+d_basesNP    d_basesNP/bases/d_awa.cpp                               last : 0x04b720 getType__Q23m3d8anmChr_cCFv      (0x8); calc__6dAwa_cFv (0x4b570, 0x54 bytes) is NEVER referenced from anywhere; inside this unit -- all 6 references come from outside every; claimed range, e.g. 0x1a12da, 0x1a12e2, 0x1a1ae6, 0x1a1af2.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x001fe0 @12975                           (0x4); @LOCAL@create__6dAwa_cFv@Pro
+d_basesNP    d_basesNP/bases/d_a_branch.cpp                          last : 0x067750 fn_2_67750                       (0x58); last : 0x017704 lbl_2_data_17704                 (0xd4); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.
+d_basesNP    d_basesNP/bases/d_a_dummy_door_child.cpp                last : 0x077b40 fn_2_77B40                       (0x58); last : 0x01aa14 lbl_2_data_1AA14                 (0xd4); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.
+d_basesNP    d_basesNP/bases/d_a_dummy_door_parent.cpp               last : 0x077bf0 fn_2_77BF0                       (0x58); last : 0x01aaf4 lbl_2_data_1AAF4                 (0xd4); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.
+d_basesNP    d_basesNP/bases/d_a_ac_switch.cpp                       last : 0x07d5e0 fn_2_7D5E0                       (0x4c); last : 0x01bc20 g_profile_AC_RNSWICH             (0x10); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; g_profile_AC_FLAGON (0x1bbd8, 0xc bytes) is NEVER referenced from anywhere; inside this unit -- all 2 references come from outside every; claimed r
+d_basesNP    d_basesNP/bases/d_a_obj_fruit_tree.cpp                  last : 0x1088e0 __dt__16daObjFruitTree_cFv       (0x84); last : 0x006194 @13978                           (0x4); last : 0x034148 __vt__16daObjFruitTree_c         (0x280); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; @13935 (0x34088, 0x1b bytes) is NEVER referenced from anywhere; inside this unit -- all 1 
+d_basesNP    d_basesNP/bases/d_a_remo_door.cpp                       last : 0x128ad0 finalizeState__27sFStateID_c<12daRemoDoor_c>CFR12daRemoDoor_c (0x30); last : 0x006cf8 SOUND_OPEN__12daRemoDoor_c       (0x4); @21163 (0x6cdc, 0x4 bytes) is NEVER referenced from anywhere; inside this unit -- all 1 references come from outside every; claimed range, e.g. 0x6d40.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x03a928 __vt__27sFStateID_c<12daR
+d_basesNP    d_basesNP/bases/d_a_wm_antlion.cpp                      last : 0x15b570 fn_2_15B570                      (0x1c); last : 0x0085a0 lbl_2_rodata_85A0                (0x20); END cuts lbl_2_rodata_85A0 short: it ends at 0x85c0, past the claim; last : 0x043810 lbl_2_data_43810                 (0x110); last : 0x00fcdc lbl_2_bss_FCDC                   (0x4)
+d_basesNP    d_basesNP/bases/d_a_wm_cannon.cpp                       last : 0x15eca0 __arraydtor$12743                (0x1c); last : 0x0086e0 @13055                           (0x4); last : 0x043f58 __vt__12daWmCannon_c             (0x78); g_profile_WM_CANNON (0x43f2c, 0xc bytes) is NEVER referenced from anywhere; inside this unit -- all 2 references come from outside every; claimed range, e.g. 0x11ac4, 0x11af4.; This object belongs to a NEIGHBOUR. The claim reaches
+d_basesNP    d_basesNP/bases/d_a_wm_dokan.cpp                        last : 0x162560 __arraydtor$12553                (0x1c); last : 0x00883c @12764                           (0x4); @12763 (0x8838, 0x4 bytes) is NEVER referenced from anywhere; inside this unit -- all 1 references come from outside every; claimed range, e.g. 0x8880.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x0447a8 __vt__11daWmDokan_c              (0x78); last : 0x00fd
+d_basesNP    d_basesNP/bases/d_a_wm_dokan_route.cpp                  last : 0x163600 __arraydtor$12752                (0x1c); last : 0x008878 @13878                           (0x4); @13651 (0x8860, 0x4 bytes) is NEVER referenced from anywhere; inside this unit -- all 1 references come from outside every; claimed range, e.g. 0x888c.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x044960 __vt__16daWmDokanRoute_c         (0x78); @13557 (0x449
+d_basesNP    d_basesNP/bases/d_a_wm_peach.cpp                        last : 0x176cb0 __arraydtor$12722                (0x1c); last : 0x008ecc @13088                           (0x4); last : 0x0468b8 __vt__11daWmPeach_c              (0x70); @13028 (0x468a0, 0x10 bytes) is NEVER referenced from anywhere; inside this unit -- all 1 references come from outside every; claimed range, e.g. 0x12868.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x0
+d_basesNP    d_basesNP/bases/d_s_autoselect.cpp                      last : 0x1b1440 __dt__15dScAutoSelect_cFv        (0x58); last : 0x04dfa8 __vt__15dScAutoSelect_c          (0x50); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.
+d_basesNP    d_basesNP/bases/d_s_select.cpp                          last : 0x1b6440 __dt__11dScSelect_cFv            (0x58); last : 0x04f1b0 __vt__11dScSelect_c              (0x50); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.
+d_enemiesNP  runtime/rel_init.cpp                                    last : 0x000060 _unresolved                      (0x4); the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER; its OWN array destructor, which sits past its __sinit, not at the __sinit.; _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere; inside this unit -- all 4 references come from outside every; claimed range, e.g. 0x70, 0x74, 0x1966, 0x196a
+d_enemiesNP  runtime/global_destructor_chain.c                       last : 0x000090 __destroy_global_chain           (0x54); __register_global_object (0x70, 0x1c bytes) is NEVER referenced from anywhere; inside this unit -- all 4 references come from outside every; claimed range, e.g. 0x151a, 0x1522, 0x1a66, 0x1a6e.; This object belongs to a NEIGHBOUR. The claim reaches too far.; last : 0x000000 _dtors                           (0x0); last : 0x000000 __global_dest
+d_enemiesNP  d_enemiesNP/bases/d_a_en_noko.cpp                       last : 0x0d2900 finalizeState__25sFStateID_c<10daEnNoko_c>CFR10daEnNoko_c (0x30); last : 0x0060e8 @23024                           (0x4); l_noko_cc (0x6038, 0x24 bytes) is NEVER referenced from anywhere; inside this unit -- all 2 references come from outside every; claimed range, e.g. 0x9c952, 0x9c95e.; This object belongs to a NEIGHBOUR. The claim reaches too far.; @22624 (0x6088, 0x8 bytes) is N
+d_enemiesNP  d_enemiesNP/bases/d_a_en_snake_block.cpp                last : 0x106930 finalizeState__31sFStateID_c<16daEnSnakeBlock_c>CFR16daEnSnakeBlock_c (0x30); last : 0x007308 scSnakeSoundID__16daEnSnakeBlock_c (0x4); last : 0x033b5c __vt__31sFStateID_c<16daEnSnakeBlock_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; @21729 (0x33a30, 0xc bytes) is NEVER referenc
+d_en_bossNP  runtime/rel_init.cpp                                    last : 0x000060 _unresolved                      (0x4); the next symbol __register_global_object is 0x1c -- array-destructor sized. A wm unit ends AFTER; its OWN array destructor, which sits past its __sinit, not at the __sinit.; _epilog (0x30, 0x2c bytes) is NEVER referenced from anywhere; inside this unit -- all 8 references come from outside every; claimed range, e.g. 0x7c, 0x80, 0x90a, 0x912.;
+wiimj2d      dol/bases/d_CourseSelectGuide.cpp                       last : 0x800142a0 isSameName__35sFStateID_c<20dCourseSelectGuide_c>CFPCc (0x88); last : 0x802ee078 @LOCAL@CourseSelectSet__20dCourseSelectGuide_cFQ26dWmLib11PointType_e@sc_startPointIcons (0x28); last : 0x802ff93c __vt__35sFStateID_c<20dCourseSelectGuide_c> (0x34); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this un
+wiimj2d      dol/bases/d_a_en_carry.cpp                              last : 0x800272c0 finalizeState__26sFStateID_c<11daEnCarry_c>CFR11daEnCarry_c (0x30); the next symbol init__14daEnCoinMain_cFv is 0x1c -- array-destructor sized. A wm unit ends AFTER; its OWN array destructor, which sits past its __sinit, not at the __sinit.; last : 0x80302fe0 __vt__26sFStateID_c<11daEnCarry_c> (0x34); last : 0x803530b4 StateID_Carry__11daEnCarry_c     (0x34); last : 0x8042b628 @1
+wiimj2d      dol/bases/d_a_player_demo_manager.cpp                   last : 0x8005d7c0 __arraydtor$72504                (0x1c); last : 0x80309a18 __vt__13daPyDemoMng_c            (0xc); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x80427bf8 @72503                           (0x5); last : 0x
+wiimj2d      dol/bases/d_md_actor.cpp                                last : 0x800cdb40 __arraydtor$14206                (0x1c); last : 0x80317c30 __vt__10dMdActor_c               (0x60); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x80359f80 @14207                           (0xc); last : 0
+wiimj2d      dol/bases/d_wm_actor.cpp                                last : 0x800f2be0 __arraydtor$14214                (0x1c); last : 0x8031bf78 __vt__10dWmActor_c               (0x60); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x80373fb0 @14215                           (0xc); last : 0
+wiimj2d      dol/bases/d_wm_csvdata.cpp                              last : 0x80373fd0 @11373                           (0xc); last : 0x8031c138 __vt__10dCsvData_c               (0xc); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x802f3670 @LOCAL@ReadAction__10dCsvData_cFPcRi@l_actionType@
+wiimj2d      dol/bases/d_wm_demo_actor.cpp                           last : 0x800f7030 __arraydtor$12712                (0x1c); last : 0x8031c170 __vt__14dWmDemoActor_c           (0x70); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x80373fe0 @12713                           (0xc); last : 0
+wiimj2d      dol/bases/d_wm_enemy.cpp                                last : 0x800f9360 __arraydtor$12520                (0x1c); last : 0x8031c280 __vt__10dWmEnemy_c               (0xf8); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x802f3708 @LOCAL@IsExecEnable__10dWmEnemy_cFv@cutsceneComm
+wiimj2d      dol/bases/d_wm_obj_actor.cpp                            last : 0x800fdb40 __arraydtor$12429                (0x1c); last : 0x8031c4d0 sc_ForceList__6dWmLib            (0x24); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x80374010 @12430                           (0xc); last : 0
+wiimj2d      dol/bases/d_SelectCursor.cpp                            last : 0x80322ac8 __vt__15dSelectCursor_c          (0x50); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x8042a5a8 m_instance__15dSelectCursor_c    (0x4); last : 0x8042fed8 @LOCAL@create__15dSelectCursor_cFv@ANIME_INDEX_TBL@1 (0x4); last : 0x80429530 @7316                            (0x1); last : 0
+wiimj2d      dol/bases/d_SmallScoreManager.cpp                       last : 0x8010d200 __sinit_\d_SmallScoreManager_cpp (0x70); last : 0x80375180 mData__37sGlobalData_c<20dSmallScoreManager_c> (0x38); last : 0x80322b48 __vt__20dSmallScoreManager_c     (0x50); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x8042a5b4 @GUARD@mData__37sGlobalData_c<20dSmallScoreManager_c
+wiimj2d      dol/bases/d_a_cursor.cpp                                last : 0x8010f980 __sinit_\d_a_cursor_cpp          (0x14); last : 0x80323238 __vt__11dAcCursor_c              (0x50); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x8042a5d0 l_pos__11dAcCursor_c             (0x8); last : 0x8042d640 @6934                            (0x4)
+wiimj2d      dol/bases/d_a_en_eatcoin.cpp                            last : 0x80110280 finalizeState__28sFStateID_c<13daEnEatCoin_c>CFR13daEnEatCoin_c (0x30); last : 0x803235e8 __vt__28sFStateID_c<13daEnEatCoin_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x803753c4 StateID_EatOut__13daEnEatCoin_c  (0x34); last : 0x8042d648 @21539                         
+wiimj2d      dol/bases/d_a_en_hatena_balloon.cpp                     last : 0x80114bd0 finalizeState__34sFStateID_c<19daEnHatenaBalloon_c>CFR19daEnHatenaBalloon_c (0x30); last : 0x80323b2c __vt__34sFStateID_c<19daEnHatenaBalloon_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x80375590 sm_bg_check_size_super__19daEnHatenaBalloon_c (0xc); last : 0x804295b8 l
+wiimj2d      dol/bases/d_a_enemy_ice.cpp                             last : 0x80115ba0 finalizeState__27sFStateID_c<12daEnemyIce_c>CFR12daEnemyIce_c (0x30); last : 0x80323dc0 __vt__27sFStateID_c<12daEnemyIce_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x80375700 StateID_Break__12daEnemyIce_c    (0x30); last : 0x804295f0 @15165                           (
+wiimj2d      dol/bases/d_a_fireball_player.cpp                       last : 0x8011b610 finalizeState__34sFStateID_c<19daFireBall_Player_c>CFR19daFireBall_Player_c (0x30); last : 0x802f4f58 @LOCAL@setSakaSpeed__19daFireBall_Player_cFUcUc@cs_saka_speed_y@0 (0x28); last : 0x80324250 __vt__34sFStateID_c<19daFireBall_Player_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.
+wiimj2d      dol/bases/d_a_iceball.cpp                               last : 0x80124d10 finalizeState__26sFStateID_c<11daIceBall_c>CFR11daIceBall_c (0x30); last : 0x802f5058 l_cull_data                      (0x10); last : 0x80324cf0 __vt__26sFStateID_c<11daIceBall_c> (0x34); .data begins at a PROFILE symbol. A wm unit opens on its two anonymous; sc_ForceList strings, so this claim is very likely 0x34 too high.; last : 0x80375ed8 StateID_Kill__11daIceBall_c      (0x3
+wiimj2d      dol/bases/d_pausewindow.cpp                             last : 0x8015b9e0 isSameName__28sFStateID_c<13Pausewindow_c>CFPCc (0x88); last : 0x803283a0 __vt__28sFStateID_c<13Pausewindow_c> (0x34); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x802f5d20 @LOCAL@create__13Pausewindow_
+wiimj2d      dol/mLib/m_color_fader.cpp                              last : 0x8016ae70 draw__13mColorFader_cFv          (0x214); last : 0x80329a48 __vt__13mColorFader_c            (0x24); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x8042dfe4 @4704                            (0x4)
+wiimj2d      dol/mLib/m_fader_base.cpp                               last : 0x8016dec0 calc__12mFaderBase_cFv           (0x7c); last : 0x80329e20 __vt__12mFaderBase_c             (0x24); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.)
+wiimj2d      lib/egg/core/eggColorFader.cpp                          last : 0x802bb680 __dt__Q23EGG10ColorFaderFv       (0x40); last : 0x80350218 __vt__Q23EGG10ColorFader         (0x24); .data begins at a 0x24 object -- that is sc_ForceList. The two anonymous; 5-byte strings it points at come FIRST and belong to this unit, so the; claim is very likely 0x10 too high. (This is grid's original error.); last : 0x8042f414 @3553                            (0x4)
+
+45 of 182 slice entries reported a problem.

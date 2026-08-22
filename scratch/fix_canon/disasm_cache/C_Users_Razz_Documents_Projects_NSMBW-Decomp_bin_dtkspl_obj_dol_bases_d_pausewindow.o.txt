@@ -1,0 +1,3033 @@
+.include "macros.inc"
+.file "d_pausewindow.cpp"
+
+# 0x8015A480..0x8015BA70 | size: 0x15F0
+.text
+.balign 4
+
+# .text:0x0 | 0x8015A480 | size: 0x30
+# Pausewindow_c_classInit()
+.fn Pausewindow_c_classInit__Fv, global
+/* 8015A480 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A484 00000044  7C 08 02 A6 */	mflr r0
+/* 8015A488 00000048  38 60 02 98 */	li r3, 0x298
+/* 8015A48C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A490 00000050  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 8015A494 00000054  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A498 00000058  41 82 00 08 */	beq .L_8015A4A0
+/* 8015A49C 0000005C  48 00 00 01 */	bl __ct__13Pausewindow_cFv
+.L_8015A4A0:
+/* 8015A4A0 00000060  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A4A4 00000064  7C 08 03 A6 */	mtlr r0
+/* 8015A4A8 00000068  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A4AC 0000006C  4E 80 00 20 */	blr
+.endfn Pausewindow_c_classInit__Fv
+
+# .text:0x30 | 0x8015A4B0 | size: 0xB4
+# Pausewindow_c::Pausewindow_c()
+.fn __ct__13Pausewindow_cFv, global
+/* 8015A4B0 00000070  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A4B4 00000074  7C 08 02 A6 */	mflr r0
+/* 8015A4B8 00000078  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A4BC 0000007C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A4C0 00000080  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015A4C4 00000084  7C 7E 1B 78 */	mr r30, r3
+/* 8015A4C8 00000088  48 00 00 01 */	bl __ct__7dBase_cFv
+/* 8015A4CC 0000008C  3C 80 00 00 */	lis r4, __vt__13Pausewindow_c@ha
+/* 8015A4D0 00000090  38 7E 00 70 */	addi r3, r30, 0x70
+/* 8015A4D4 00000094  38 84 00 00 */	addi r4, r4, __vt__13Pausewindow_c@l
+/* 8015A4D8 00000098  90 9E 00 60 */	stw r4, 0x60(r30)
+/* 8015A4DC 0000009C  48 00 00 01 */	bl __ct__9LytBase_cFv
+/* 8015A4E0 000000A0  3C 60 00 00 */	lis r3, "__vt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@ha
+/* 8015A4E4 000000A4  3D 20 00 00 */	lis r9, __vt__13sStateIDChk_c@ha
+/* 8015A4E8 000000A8  3D 00 00 00 */	lis r8, "__vt__29sFStateFct_c<13Pausewindow_c>"@ha
+/* 8015A4EC 000000AC  3C E0 00 00 */	lis r7, "__vt__26sFState_c<13Pausewindow_c>"@ha
+/* 8015A4F0 000000B0  38 63 00 00 */	addi r3, r3, "__vt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@l
+/* 8015A4F4 000000B4  39 29 00 00 */	addi r9, r9, __vt__13sStateIDChk_c@l
+/* 8015A4F8 000000B8  39 08 00 00 */	addi r8, r8, "__vt__29sFStateFct_c<13Pausewindow_c>"@l
+/* 8015A4FC 000000BC  38 E7 00 00 */	addi r7, r7, "__vt__26sFState_c<13Pausewindow_c>"@l
+/* 8015A500 000000C0  3B E0 00 00 */	li r31, 0x0
+/* 8015A504 000000C4  3C C0 00 00 */	lis r6, StateID_InitWait__13Pausewindow_c@ha
+/* 8015A508 000000C8  90 7E 02 08 */	stw r3, 0x208(r30)
+/* 8015A50C 000000CC  38 BE 02 10 */	addi r5, r30, 0x210
+/* 8015A510 000000D0  38 9E 02 0C */	addi r4, r30, 0x20c
+/* 8015A514 000000D4  38 7E 02 20 */	addi r3, r30, 0x220
+/* 8015A518 000000D8  91 3E 02 0C */	stw r9, 0x20c(r30)
+/* 8015A51C 000000DC  38 C6 00 00 */	addi r6, r6, StateID_InitWait__13Pausewindow_c@l
+/* 8015A520 000000E0  91 1E 02 10 */	stw r8, 0x210(r30)
+/* 8015A524 000000E4  90 FE 02 14 */	stw r7, 0x214(r30)
+/* 8015A528 000000E8  93 DE 02 18 */	stw r30, 0x218(r30)
+/* 8015A52C 000000EC  93 FE 02 1C */	stw r31, 0x21c(r30)
+/* 8015A530 000000F0  48 00 00 01 */	bl __ct__20sStateMethodUsr_FI_cFR15sStateIDChkIf_cR13sStateFctIf_cRC12sStateIDIf_c
+/* 8015A534 000000F4  3C 60 00 00 */	lis r3, "__vt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>"@ha
+/* 8015A538 000000F8  9B FE 02 90 */	stb r31, 0x290(r30)
+/* 8015A53C 000000FC  38 63 00 00 */	addi r3, r3, "__vt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>"@l
+/* 8015A540 00000100  90 7E 02 08 */	stw r3, 0x208(r30)
+/* 8015A544 00000104  7F C3 F3 78 */	mr r3, r30
+/* 8015A548 00000108  93 C0 00 00 */	stw r30, m_instance__13Pausewindow_c@sda21(r0)
+/* 8015A54C 0000010C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A550 00000110  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015A554 00000114  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A558 00000118  7C 08 03 A6 */	mtlr r0
+/* 8015A55C 0000011C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A560 00000120  4E 80 00 20 */	blr
+.endfn __ct__13Pausewindow_cFv
+
+# .text:0xE4 | 0x8015A564 | size: 0xC
+.fn gap_03_8015A564_text, global
+.hidden gap_03_8015A564_text
+/* 8015A564 00000124  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015A568 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015A56C 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015A564_text
+
+# .text:0xF0 | 0x8015A570 | size: 0x40
+# sFState_c<Pausewindow_c>::~sFState_c()
+.fn "__dt__26sFState_c<13Pausewindow_c>Fv", weak
+/* 8015A570 00000130  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A574 00000134  7C 08 02 A6 */	mflr r0
+/* 8015A578 00000138  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A57C 0000013C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A580 00000140  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A584 00000144  7C 7F 1B 78 */	mr r31, r3
+/* 8015A588 00000148  41 82 00 10 */	beq .L_8015A598
+/* 8015A58C 0000014C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8015A590 00000150  40 81 00 08 */	ble .L_8015A598
+/* 8015A594 00000154  48 00 00 01 */	bl __dl__FPv
+.L_8015A598:
+/* 8015A598 00000158  7F E3 FB 78 */	mr r3, r31
+/* 8015A59C 0000015C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A5A0 00000160  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A5A4 00000164  7C 08 03 A6 */	mtlr r0
+/* 8015A5A8 00000168  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A5AC 0000016C  4E 80 00 20 */	blr
+.endfn "__dt__26sFState_c<13Pausewindow_c>Fv"
+
+# .text:0x130 | 0x8015A5B0 | size: 0x40
+# sFStateFct_c<Pausewindow_c>::~sFStateFct_c()
+.fn "__dt__29sFStateFct_c<13Pausewindow_c>Fv", weak
+/* 8015A5B0 00000170  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A5B4 00000174  7C 08 02 A6 */	mflr r0
+/* 8015A5B8 00000178  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A5BC 0000017C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A5C0 00000180  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A5C4 00000184  7C 7F 1B 78 */	mr r31, r3
+/* 8015A5C8 00000188  41 82 00 10 */	beq .L_8015A5D8
+/* 8015A5CC 0000018C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8015A5D0 00000190  40 81 00 08 */	ble .L_8015A5D8
+/* 8015A5D4 00000194  48 00 00 01 */	bl __dl__FPv
+.L_8015A5D8:
+/* 8015A5D8 00000198  7F E3 FB 78 */	mr r3, r31
+/* 8015A5DC 0000019C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A5E0 000001A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A5E4 000001A4  7C 08 03 A6 */	mtlr r0
+/* 8015A5E8 000001A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A5EC 000001AC  4E 80 00 20 */	blr
+.endfn "__dt__29sFStateFct_c<13Pausewindow_c>Fv"
+
+# .text:0x170 | 0x8015A5F0 | size: 0x60
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::~sStateMgr_c()
+.fn "__dt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 8015A5F0 000001B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A5F4 000001B4  7C 08 02 A6 */	mflr r0
+/* 8015A5F8 000001B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A5FC 000001BC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A600 000001C0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A604 000001C4  7C 9F 23 78 */	mr r31, r4
+/* 8015A608 000001C8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015A60C 000001CC  7C 7E 1B 78 */	mr r30, r3
+/* 8015A610 000001D0  41 82 00 24 */	beq .L_8015A634
+/* 8015A614 000001D4  34 63 00 18 */	addic. r3, r3, 0x18
+/* 8015A618 000001D8  41 82 00 0C */	beq .L_8015A624
+/* 8015A61C 000001DC  38 80 00 00 */	li r4, 0x0
+/* 8015A620 000001E0  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_8015A624:
+/* 8015A624 000001E4  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8015A628 000001E8  40 81 00 0C */	ble .L_8015A634
+/* 8015A62C 000001EC  7F C3 F3 78 */	mr r3, r30
+/* 8015A630 000001F0  48 00 00 01 */	bl __dl__FPv
+.L_8015A634:
+/* 8015A634 000001F4  7F C3 F3 78 */	mr r3, r30
+/* 8015A638 000001F8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A63C 000001FC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015A640 00000200  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A644 00000204  7C 08 03 A6 */	mtlr r0
+/* 8015A648 00000208  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A64C 0000020C  4E 80 00 20 */	blr
+.endfn "__dt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x1D0 | 0x8015A650 | size: 0x64
+# sFStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c>::~sFStateMgr_c()
+.fn "__dt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>Fv", weak
+/* 8015A650 00000210  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A654 00000214  7C 08 02 A6 */	mflr r0
+/* 8015A658 00000218  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A65C 0000021C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A660 00000220  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A664 00000224  7C 9F 23 78 */	mr r31, r4
+/* 8015A668 00000228  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015A66C 0000022C  7C 7E 1B 78 */	mr r30, r3
+/* 8015A670 00000230  41 82 00 28 */	beq .L_8015A698
+/* 8015A674 00000234  41 82 00 14 */	beq .L_8015A688
+/* 8015A678 00000238  34 63 00 18 */	addic. r3, r3, 0x18
+/* 8015A67C 0000023C  41 82 00 0C */	beq .L_8015A688
+/* 8015A680 00000240  38 80 00 00 */	li r4, 0x0
+/* 8015A684 00000244  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_8015A688:
+/* 8015A688 00000248  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8015A68C 0000024C  40 81 00 0C */	ble .L_8015A698
+/* 8015A690 00000250  7F C3 F3 78 */	mr r3, r30
+/* 8015A694 00000254  48 00 00 01 */	bl __dl__FPv
+.L_8015A698:
+/* 8015A698 00000258  7F C3 F3 78 */	mr r3, r30
+/* 8015A69C 0000025C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A6A0 00000260  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015A6A4 00000264  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A6A8 00000268  7C 08 03 A6 */	mtlr r0
+/* 8015A6AC 0000026C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A6B0 00000270  4E 80 00 20 */	blr
+.endfn "__dt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>Fv"
+
+# .text:0x234 | 0x8015A6B4 | size: 0xC
+.fn gap_03_8015A6B4_text, global
+.hidden gap_03_8015A6B4_text
+/* 8015A6B4 00000274  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015A6B8 00000278  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015A6BC 0000027C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015A6B4_text
+
+# .text:0x240 | 0x8015A6C0 | size: 0x84
+# Pausewindow_c::~Pausewindow_c()
+.fn __dt__13Pausewindow_cFv, global
+/* 8015A6C0 00000280  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A6C4 00000284  7C 08 02 A6 */	mflr r0
+/* 8015A6C8 00000288  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A6CC 0000028C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A6D0 00000290  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A6D4 00000294  7C 9F 23 78 */	mr r31, r4
+/* 8015A6D8 00000298  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015A6DC 0000029C  7C 7E 1B 78 */	mr r30, r3
+/* 8015A6E0 000002A0  41 82 00 48 */	beq .L_8015A728
+/* 8015A6E4 000002A4  34 03 02 08 */	addic. r0, r3, 0x208
+/* 8015A6E8 000002A8  41 82 00 18 */	beq .L_8015A700
+/* 8015A6EC 000002AC  41 82 00 14 */	beq .L_8015A700
+/* 8015A6F0 000002B0  34 60 00 18 */	addic. r3, r0, 0x18
+/* 8015A6F4 000002B4  41 82 00 0C */	beq .L_8015A700
+/* 8015A6F8 000002B8  38 80 00 00 */	li r4, 0x0
+/* 8015A6FC 000002BC  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_8015A700:
+/* 8015A700 000002C0  38 7E 00 70 */	addi r3, r30, 0x70
+/* 8015A704 000002C4  38 80 FF FF */	li r4, -0x1
+/* 8015A708 000002C8  48 00 00 01 */	bl __dt__9LytBase_cFv
+/* 8015A70C 000002CC  7F C3 F3 78 */	mr r3, r30
+/* 8015A710 000002D0  38 80 00 00 */	li r4, 0x0
+/* 8015A714 000002D4  48 00 00 01 */	bl __dt__7dBase_cFv
+/* 8015A718 000002D8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8015A71C 000002DC  40 81 00 0C */	ble .L_8015A728
+/* 8015A720 000002E0  7F C3 F3 78 */	mr r3, r30
+/* 8015A724 000002E4  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_8015A728:
+/* 8015A728 000002E8  7F C3 F3 78 */	mr r3, r30
+/* 8015A72C 000002EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A730 000002F0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015A734 000002F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A738 000002F8  7C 08 03 A6 */	mtlr r0
+/* 8015A73C 000002FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A740 00000300  4E 80 00 20 */	blr
+.endfn __dt__13Pausewindow_cFv
+
+# .text:0x2C4 | 0x8015A744 | size: 0xC
+.fn gap_03_8015A744_text, global
+.hidden gap_03_8015A744_text
+/* 8015A744 00000304  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015A748 00000308  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015A74C 0000030C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015A744_text
+
+# .text:0x2D0 | 0x8015A750 | size: 0x1FC
+# Pausewindow_c::create()
+.fn create__13Pausewindow_cFv, global
+/* 8015A750 00000310  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8015A754 00000314  7C 08 02 A6 */	mflr r0
+/* 8015A758 00000318  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8015A75C 0000031C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8015A760 00000320  7C 7F 1B 78 */	mr r31, r3
+/* 8015A764 00000324  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8015A768 00000328  3F C0 00 00 */	lis r30, sc_ForceList__6dWmLib@ha
+/* 8015A76C 0000032C  3B DE 00 00 */	addi r30, r30, sc_ForceList__6dWmLib@l
+/* 8015A770 00000330  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8015A774 00000334  3F A0 00 00 */	lis r29, "@LOCAL@create__13Pausewindow_cFv@ANIME_INDEX_TBL@1"@ha
+/* 8015A778 00000338  3B BD 00 00 */	addi r29, r29, "@LOCAL@create__13Pausewindow_cFv@ANIME_INDEX_TBL@1"@l
+/* 8015A77C 0000033C  88 03 02 90 */	lbz r0, 0x290(r3)
+/* 8015A780 00000340  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015A784 00000344  41 82 00 0C */	beq .L_8015A790
+/* 8015A788 00000348  38 60 00 01 */	li r3, 0x1
+/* 8015A78C 0000034C  48 00 01 A4 */	b .L_8015A930
+.L_8015A790:
+/* 8015A790 00000350  38 9E 02 F8 */	addi r4, r30, 0x2f8
+/* 8015A794 00000354  38 A0 00 00 */	li r5, 0x0
+/* 8015A798 00000358  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015A79C 0000035C  48 00 00 01 */	bl ReadResource__9LytBase_cFPCcb
+/* 8015A7A0 00000360  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A7A4 00000364  40 82 00 0C */	bne .L_8015A7B0
+/* 8015A7A8 00000368  38 60 00 00 */	li r3, 0x0
+/* 8015A7AC 0000036C  48 00 01 84 */	b .L_8015A930
+.L_8015A7B0:
+/* 8015A7B0 00000370  81 9F 00 78 */	lwz r12, 0x78(r31)
+/* 8015A7B4 00000374  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A7B8 00000378  38 9E 03 10 */	addi r4, r30, 0x310
+/* 8015A7BC 0000037C  38 A0 00 00 */	li r5, 0x0
+/* 8015A7C0 00000380  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8015A7C4 00000384  7D 89 03 A6 */	mtctr r12
+/* 8015A7C8 00000388  4E 80 04 21 */	bctrl
+/* 8015A7CC 0000038C  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A7D0 00000390  38 9E 01 04 */	addi r4, r30, 0x104
+/* 8015A7D4 00000394  38 A0 00 07 */	li r5, 0x7
+/* 8015A7D8 00000398  48 00 00 01 */	bl AnimeResRegister__9LytBase_cFPPCci
+/* 8015A7DC 0000039C  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A7E0 000003A0  38 9E 01 54 */	addi r4, r30, 0x154
+/* 8015A7E4 000003A4  38 BD 00 00 */	addi r5, r29, 0x0
+/* 8015A7E8 000003A8  38 C0 00 0B */	li r6, 0xb
+/* 8015A7EC 000003AC  48 00 00 01 */	bl GroupRegister__9LytBase_cFPPCcPCii
+/* 8015A7F0 000003B0  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A7F4 000003B4  38 9E 01 B8 */	addi r4, r30, 0x1b8
+/* 8015A7F8 000003B8  38 BD 00 30 */	addi r5, r29, 0x30
+/* 8015A7FC 000003BC  38 C0 00 01 */	li r6, 0x1
+/* 8015A800 000003C0  38 E0 00 04 */	li r7, 0x4
+/* 8015A804 000003C4  48 00 00 01 */	bl TPaneNameRegister__9LytBase_cFPPCcPCiii
+/* 8015A808 000003C8  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A80C 000003CC  38 9E 01 F0 */	addi r4, r30, 0x1f0
+/* 8015A810 000003D0  38 BD 00 40 */	addi r5, r29, 0x40
+/* 8015A814 000003D4  38 C0 00 02 */	li r6, 0x2
+/* 8015A818 000003D8  38 E0 00 03 */	li r7, 0x3
+/* 8015A81C 000003DC  48 00 00 01 */	bl TPaneNameRegister__9LytBase_cFPPCcPCiii
+/* 8015A820 000003E0  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A824 000003E4  38 9E 02 30 */	addi r4, r30, 0x230
+/* 8015A828 000003E8  38 BF 02 44 */	addi r5, r31, 0x244
+/* 8015A82C 000003EC  38 C0 00 04 */	li r6, 0x4
+/* 8015A830 000003F0  48 00 00 01 */	bl PPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt7Picturei
+/* 8015A834 000003F4  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A838 000003F8  38 BF 02 54 */	addi r5, r31, 0x254
+/* 8015A83C 000003FC  38 80 00 00 */	li r4, "@LOCAL@create__13Pausewindow_cFv@WPANE_NAME_DT@7"@sda21
+/* 8015A840 00000400  38 C0 00 01 */	li r6, 0x1
+/* 8015A844 00000404  48 00 00 01 */	bl WPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt6Windowi
+/* 8015A848 00000408  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A84C 0000040C  38 9E 02 98 */	addi r4, r30, 0x298
+/* 8015A850 00000410  38 BF 02 58 */	addi r5, r31, 0x258
+/* 8015A854 00000414  38 C0 00 08 */	li r6, 0x8
+/* 8015A858 00000418  48 00 00 01 */	bl TPaneRegister__9LytBase_cFPPCcPP12LytTextBox_ci
+/* 8015A85C 0000041C  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A860 00000420  38 9E 02 EC */	addi r4, r30, 0x2ec
+/* 8015A864 00000424  38 BF 02 78 */	addi r5, r31, 0x278
+/* 8015A868 00000428  38 C0 00 03 */	li r6, 0x3
+/* 8015A86C 0000042C  48 00 00 01 */	bl NPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt4Panei
+/* 8015A870 00000430  38 60 00 00 */	li r3, 0x0
+/* 8015A874 00000434  38 80 00 8D */	li r4, 0x8d
+/* 8015A878 00000438  38 00 00 01 */	li r0, 0x1
+/* 8015A87C 0000043C  98 9F 00 7C */	stb r4, 0x7c(r31)
+/* 8015A880 00000440  98 7F 02 91 */	stb r3, 0x291(r31)
+/* 8015A884 00000444  98 1F 02 90 */	stb r0, 0x290(r31)
+/* 8015A888 00000448  98 7F 02 94 */	stb r3, 0x294(r31)
+/* 8015A88C 0000044C  90 7F 02 8C */	stw r3, 0x28c(r31)
+/* 8015A890 00000450  98 7F 02 95 */	stb r3, 0x295(r31)
+/* 8015A894 00000454  98 7F 02 93 */	stb r3, 0x293(r31)
+/* 8015A898 00000458  48 00 00 01 */	bl isNowCourseClear__8dGameComFv
+/* 8015A89C 0000045C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015A8A0 00000460  40 82 00 24 */	bne .L_8015A8C4
+/* 8015A8A4 00000464  A0 00 00 00 */	lhz r0, m_nowScene__8dScene_c@sda21(r0)
+/* 8015A8A8 00000468  28 00 00 05 */	cmplwi r0, 0x5
+/* 8015A8AC 0000046C  40 82 00 18 */	bne .L_8015A8C4
+/* 8015A8B0 00000470  3C 60 00 00 */	lis r3, m_startGameInfo__7dInfo_c@ha
+/* 8015A8B4 00000474  38 63 00 00 */	addi r3, r3, m_startGameInfo__7dInfo_c@l
+/* 8015A8B8 00000478  88 03 00 0D */	lbz r0, 0xd(r3)
+/* 8015A8BC 0000047C  28 00 00 23 */	cmplwi r0, 0x23
+/* 8015A8C0 00000480  40 82 00 18 */	bne .L_8015A8D8
+.L_8015A8C4:
+/* 8015A8C4 00000484  80 7F 02 4C */	lwz r3, 0x24c(r31)
+/* 8015A8C8 00000488  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015A8CC 0000048C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015A8D0 00000490  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8015A8D4 00000494  48 00 00 18 */	b .L_8015A8EC
+.L_8015A8D8:
+/* 8015A8D8 00000498  80 7F 02 4C */	lwz r3, 0x24c(r31)
+/* 8015A8DC 0000049C  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015A8E0 000004A0  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015A8E4 000004A4  60 00 00 01 */	ori r0, r0, 0x1
+/* 8015A8E8 000004A8  98 03 00 BB */	stb r0, 0xbb(r3)
+.L_8015A8EC:
+/* 8015A8EC 000004AC  3C 60 00 00 */	lis r3, m_startGameInfo__7dInfo_c@ha
+/* 8015A8F0 000004B0  38 63 00 00 */	addi r3, r3, m_startGameInfo__7dInfo_c@l
+/* 8015A8F4 000004B4  88 63 00 0D */	lbz r3, 0xd(r3)
+/* 8015A8F8 000004B8  38 03 00 E0 */	addi r0, r3, 0xe0
+/* 8015A8FC 000004BC  54 00 06 3E */	clrlwi r0, r0, 24
+/* 8015A900 000004C0  28 00 00 02 */	cmplwi r0, 0x2
+/* 8015A904 000004C4  41 81 00 18 */	bgt .L_8015A91C
+/* 8015A908 000004C8  80 7F 02 4C */	lwz r3, 0x24c(r31)
+/* 8015A90C 000004CC  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015A910 000004D0  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015A914 000004D4  60 00 00 01 */	ori r0, r0, 0x1
+/* 8015A918 000004D8  98 03 00 BB */	stb r0, 0xbb(r3)
+.L_8015A91C:
+/* 8015A91C 000004DC  7F E3 FB 78 */	mr r3, r31
+/* 8015A920 000004E0  48 00 00 01 */	bl TitleDispChkWrite__13Pausewindow_cFv
+/* 8015A924 000004E4  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A928 000004E8  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 8015A92C 000004EC  38 60 00 01 */	li r3, 0x1
+.L_8015A930:
+/* 8015A930 000004F0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8015A934 000004F4  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8015A938 000004F8  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8015A93C 000004FC  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8015A940 00000500  7C 08 03 A6 */	mtlr r0
+/* 8015A944 00000504  38 21 00 20 */	addi r1, r1, 0x20
+/* 8015A948 00000508  4E 80 00 20 */	blr
+.endfn create__13Pausewindow_cFv
+
+# .text:0x4CC | 0x8015A94C | size: 0x4
+.fn gap_03_8015A94C_text, global
+.hidden gap_03_8015A94C_text
+/* 8015A94C 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015A94C_text
+
+# .text:0x4D0 | 0x8015A950 | size: 0x70
+# Pausewindow_c::execute()
+.fn execute__13Pausewindow_cFv, global
+/* 8015A950 00000510  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A954 00000514  7C 08 02 A6 */	mflr r0
+/* 8015A958 00000518  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A95C 0000051C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015A960 00000520  7C 7F 1B 78 */	mr r31, r3
+/* 8015A964 00000524  88 03 02 90 */	lbz r0, 0x290(r3)
+/* 8015A968 00000528  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015A96C 0000052C  41 82 00 3C */	beq .L_8015A9A8
+/* 8015A970 00000530  88 03 02 91 */	lbz r0, 0x291(r3)
+/* 8015A974 00000534  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015A978 00000538  41 82 00 30 */	beq .L_8015A9A8
+/* 8015A97C 0000053C  85 83 02 08 */	lwzu r12, 0x208(r3)
+/* 8015A980 00000540  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8015A984 00000544  7D 89 03 A6 */	mtctr r12
+/* 8015A988 00000548  4E 80 04 21 */	bctrl
+/* 8015A98C 0000054C  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A990 00000550  48 00 00 01 */	bl AnimePlay__9LytBase_cFv
+/* 8015A994 00000554  81 9F 00 78 */	lwz r12, 0x78(r31)
+/* 8015A998 00000558  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015A99C 0000055C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8015A9A0 00000560  7D 89 03 A6 */	mtctr r12
+/* 8015A9A4 00000564  4E 80 04 21 */	bctrl
+.L_8015A9A8:
+/* 8015A9A8 00000568  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015A9AC 0000056C  38 60 00 01 */	li r3, 0x1
+/* 8015A9B0 00000570  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015A9B4 00000574  7C 08 03 A6 */	mtlr r0
+/* 8015A9B8 00000578  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015A9BC 0000057C  4E 80 00 20 */	blr
+.endfn execute__13Pausewindow_cFv
+
+# .text:0x540 | 0x8015A9C0 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::executeState()
+.fn "executeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 8015A9C0 00000580  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015A9C4 00000584  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8015A9C8 00000588  7D 89 03 A6 */	mtctr r12
+/* 8015A9CC 0000058C  4E 80 04 20 */	bctr
+.endfn "executeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x550 | 0x8015A9D0 | size: 0x40
+# Pausewindow_c::draw()
+.fn draw__13Pausewindow_cFv, global
+/* 8015A9D0 00000590  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015A9D4 00000594  7C 08 02 A6 */	mflr r0
+/* 8015A9D8 00000598  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015A9DC 0000059C  88 03 02 90 */	lbz r0, 0x290(r3)
+/* 8015A9E0 000005A0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015A9E4 000005A4  41 82 00 18 */	beq .L_8015A9FC
+/* 8015A9E8 000005A8  88 03 02 91 */	lbz r0, 0x291(r3)
+/* 8015A9EC 000005AC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015A9F0 000005B0  41 82 00 0C */	beq .L_8015A9FC
+/* 8015A9F4 000005B4  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015A9F8 000005B8  48 00 00 01 */	bl entry__Q23d2d7Multi_cFv
+.L_8015A9FC:
+/* 8015A9FC 000005BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015AA00 000005C0  38 60 00 01 */	li r3, 0x1
+/* 8015AA04 000005C4  7C 08 03 A6 */	mtlr r0
+/* 8015AA08 000005C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015AA0C 000005CC  4E 80 00 20 */	blr
+.endfn draw__13Pausewindow_cFv
+
+# .text:0x590 | 0x8015AA10 | size: 0x40
+# Pausewindow_c::doDelete()
+.fn doDelete__13Pausewindow_cFv, global
+/* 8015AA10 000005D0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015AA14 000005D4  7C 08 02 A6 */	mflr r0
+/* 8015AA18 000005D8  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015AA1C 000005DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015AA20 000005E0  48 00 00 01 */	bl doDelete__9LytBase_cFv
+/* 8015AA24 000005E4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015AA28 000005E8  40 82 00 0C */	bne .L_8015AA34
+/* 8015AA2C 000005EC  38 60 00 00 */	li r3, 0x0
+/* 8015AA30 000005F0  48 00 00 10 */	b .L_8015AA40
+.L_8015AA34:
+/* 8015AA34 000005F4  38 00 00 00 */	li r0, 0x0
+/* 8015AA38 000005F8  90 00 00 00 */	stw r0, m_instance__13Pausewindow_c@sda21(r0)
+/* 8015AA3C 000005FC  38 60 00 01 */	li r3, 0x1
+.L_8015AA40:
+/* 8015AA40 00000600  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015AA44 00000604  7C 08 03 A6 */	mtlr r0
+/* 8015AA48 00000608  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015AA4C 0000060C  4E 80 00 20 */	blr
+.endfn doDelete__13Pausewindow_cFv
+
+# .text:0x5D0 | 0x8015AA50 | size: 0x20C
+# Pausewindow_c::setWorldCourseWrite()
+.fn setWorldCourseWrite__13Pausewindow_cFv, global
+/* 8015AA50 00000610  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8015AA54 00000614  7C 08 02 A6 */	mflr r0
+/* 8015AA58 00000618  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8015AA5C 0000061C  39 61 00 20 */	addi r11, r1, 0x20
+/* 8015AA60 00000620  48 00 00 01 */	bl _savegpr_27
+/* 8015AA64 00000624  7C 7F 1B 78 */	mr r31, r3
+/* 8015AA68 00000628  48 00 00 01 */	bl getMesRes__10dMessage_cFv
+/* 8015AA6C 0000062C  3C 80 00 00 */	lis r4, m_startGameInfo__7dInfo_c@ha
+/* 8015AA70 00000630  83 C0 00 00 */	lwz r30, m_instance__7dInfo_c@sda21(r0)
+/* 8015AA74 00000634  38 84 00 00 */	addi r4, r4, m_startGameInfo__7dInfo_c@l
+/* 8015AA78 00000638  7C 7C 1B 78 */	mr r28, r3
+/* 8015AA7C 0000063C  8B 64 00 0C */	lbz r27, 0xc(r4)
+/* 8015AA80 00000640  8B A4 00 0D */	lbz r29, 0xd(r4)
+/* 8015AA84 00000644  28 1B 00 09 */	cmplwi r27, 0x9
+/* 8015AA88 00000648  40 81 00 08 */	ble .L_8015AA90
+/* 8015AA8C 0000064C  3B 60 00 09 */	li r27, 0x9
+.L_8015AA90:
+/* 8015AA90 00000650  57 63 06 3E */	clrlwi r3, r27, 24
+/* 8015AA94 00000654  7F 84 E3 78 */	mr r4, r28
+/* 8015AA98 00000658  38 03 00 01 */	addi r0, r3, 0x1
+/* 8015AA9C 0000065C  90 1E 03 B4 */	stw r0, 0x3b4(r30)
+/* 8015AAA0 00000660  38 A0 00 02 */	li r5, 0x2
+/* 8015AAA4 00000664  38 C0 00 51 */	li r6, 0x51
+/* 8015AAA8 00000668  80 7F 02 68 */	lwz r3, 0x268(r31)
+/* 8015AAAC 0000066C  38 E0 00 00 */	li r7, 0x0
+/* 8015AAB0 00000670  4C C6 31 82 */	crclr cr1eq
+/* 8015AAB4 00000674  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8015AAB8 00000678  38 1D FF EC */	subi r0, r29, 0x14
+/* 8015AABC 0000067C  28 00 00 14 */	cmplwi r0, 0x14
+/* 8015AAC0 00000680  41 81 00 FC */	bgt .L_8015ABBC
+/* 8015AAC4 00000684  3C 60 00 00 */	lis r3, "@20456"@ha
+/* 8015AAC8 00000688  54 00 10 3A */	slwi r0, r0, 2
+/* 8015AACC 0000068C  38 63 00 00 */	addi r3, r3, "@20456"@l
+/* 8015AAD0 00000690  7C 63 00 2E */	lwzx r3, r3, r0
+/* 8015AAD4 00000694  7C 69 03 A6 */	mtctr r3
+/* 8015AAD8 00000698  4E 80 04 20 */	bctr
+.L_8015AADC:
+/* 8015AADC 0000069C  38 C0 00 55 */	li r6, 0x55
+/* 8015AAE0 000006A0  48 00 01 28 */	b .L_8015AC08
+.L_8015AAE4:
+/* 8015AAE4 000006A4  38 C0 00 54 */	li r6, 0x54
+/* 8015AAE8 000006A8  48 00 01 20 */	b .L_8015AC08
+.L_8015AAEC:
+/* 8015AAEC 000006AC  57 60 06 3E */	clrlwi r0, r27, 24
+/* 8015AAF0 000006B0  28 00 00 07 */	cmplwi r0, 0x7
+/* 8015AAF4 000006B4  41 82 00 0C */	beq .L_8015AB00
+/* 8015AAF8 000006B8  38 C0 00 53 */	li r6, 0x53
+/* 8015AAFC 000006BC  48 00 01 0C */	b .L_8015AC08
+.L_8015AB00:
+/* 8015AB00 000006C0  38 C0 00 5D */	li r6, 0x5d
+/* 8015AB04 000006C4  48 00 01 04 */	b .L_8015AC08
+.L_8015AB08:
+/* 8015AB08 000006C8  7F A4 EB 78 */	mr r4, r29
+/* 8015AB0C 000006CC  57 63 06 3E */	clrlwi r3, r27, 24
+/* 8015AB10 000006D0  38 A0 00 80 */	li r5, 0x80
+/* 8015AB14 000006D4  48 00 00 01 */	bl IsCourseType__9dScWMap_cFiiQ29dScWMap_c12CourseType_e
+/* 8015AB18 000006D8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015AB1C 000006DC  41 82 00 0C */	beq .L_8015AB28
+/* 8015AB20 000006E0  38 C0 00 5B */	li r6, 0x5b
+/* 8015AB24 000006E4  48 00 00 E4 */	b .L_8015AC08
+.L_8015AB28:
+/* 8015AB28 000006E8  7F A4 EB 78 */	mr r4, r29
+/* 8015AB2C 000006EC  57 63 06 3E */	clrlwi r3, r27, 24
+/* 8015AB30 000006F0  38 A0 02 00 */	li r5, 0x200
+/* 8015AB34 000006F4  48 00 00 01 */	bl IsCourseType__9dScWMap_cFiiQ29dScWMap_c12CourseType_e
+/* 8015AB38 000006F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015AB3C 000006FC  41 82 00 0C */	beq .L_8015AB48
+/* 8015AB40 00000700  38 C0 00 5C */	li r6, 0x5c
+/* 8015AB44 00000704  48 00 00 C4 */	b .L_8015AC08
+.L_8015AB48:
+/* 8015AB48 00000708  38 C0 00 58 */	li r6, 0x58
+/* 8015AB4C 0000070C  48 00 00 BC */	b .L_8015AC08
+.L_8015AB50:
+/* 8015AB50 00000710  48 00 00 01 */	bl isStartPointKinokoHouseStar__6dWmLibFv
+/* 8015AB54 00000714  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015AB58 00000718  41 82 00 0C */	beq .L_8015AB64
+/* 8015AB5C 0000071C  38 C0 00 5C */	li r6, 0x5c
+/* 8015AB60 00000720  48 00 00 A8 */	b .L_8015AC08
+.L_8015AB64:
+/* 8015AB64 00000724  48 00 00 01 */	bl isStartPointKinokoHouseRed__6dWmLibFv
+/* 8015AB68 00000728  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015AB6C 0000072C  41 82 00 0C */	beq .L_8015AB78
+/* 8015AB70 00000730  38 C0 00 58 */	li r6, 0x58
+/* 8015AB74 00000734  48 00 00 94 */	b .L_8015AC08
+.L_8015AB78:
+/* 8015AB78 00000738  38 C0 00 5B */	li r6, 0x5b
+/* 8015AB7C 0000073C  48 00 00 8C */	b .L_8015AC08
+.L_8015AB80:
+/* 8015AB80 00000740  38 C0 00 5E */	li r6, 0x5e
+/* 8015AB84 00000744  48 00 00 84 */	b .L_8015AC08
+.L_8015AB88:
+/* 8015AB88 00000748  38 C0 00 56 */	li r6, 0x56
+/* 8015AB8C 0000074C  48 00 00 7C */	b .L_8015AC08
+.L_8015AB90:
+/* 8015AB90 00000750  38 C0 00 5A */	li r6, 0x5a
+/* 8015AB94 00000754  48 00 00 74 */	b .L_8015AC08
+.L_8015AB98:
+/* 8015AB98 00000758  38 C0 00 5F */	li r6, 0x5f
+/* 8015AB9C 0000075C  48 00 00 6C */	b .L_8015AC08
+.L_8015ABA0:
+/* 8015ABA0 00000760  48 00 00 01 */	bl isKoopaShipAnchor__6dWmLibFv
+/* 8015ABA4 00000764  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015ABA8 00000768  41 82 00 0C */	beq .L_8015ABB4
+/* 8015ABAC 0000076C  38 C0 00 5F */	li r6, 0x5f
+/* 8015ABB0 00000770  48 00 00 58 */	b .L_8015AC08
+.L_8015ABB4:
+/* 8015ABB4 00000774  38 C0 00 57 */	li r6, 0x57
+/* 8015ABB8 00000778  48 00 00 50 */	b .L_8015AC08
+.L_8015ABBC:
+/* 8015ABBC 0000077C  38 1D 00 01 */	addi r0, r29, 0x1
+/* 8015ABC0 00000780  90 1E 03 B8 */	stw r0, 0x3b8(r30)
+/* 8015ABC4 00000784  7F 84 E3 78 */	mr r4, r28
+/* 8015ABC8 00000788  38 A0 00 02 */	li r5, 0x2
+/* 8015ABCC 0000078C  80 7F 02 6C */	lwz r3, 0x26c(r31)
+/* 8015ABD0 00000790  38 C0 00 52 */	li r6, 0x52
+/* 8015ABD4 00000794  38 E0 00 00 */	li r7, 0x0
+/* 8015ABD8 00000798  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015ABDC 0000079C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015ABE0 000007A0  60 00 00 01 */	ori r0, r0, 0x1
+/* 8015ABE4 000007A4  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8015ABE8 000007A8  80 7F 02 6C */	lwz r3, 0x26c(r31)
+/* 8015ABEC 000007AC  4C C6 31 82 */	crclr cr1eq
+/* 8015ABF0 000007B0  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8015ABF4 000007B4  80 7F 02 70 */	lwz r3, 0x270(r31)
+/* 8015ABF8 000007B8  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015ABFC 000007BC  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015AC00 000007C0  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8015AC04 000007C4  48 00 00 40 */	b .L_8015AC44
+.L_8015AC08:
+/* 8015AC08 000007C8  80 7F 02 6C */	lwz r3, 0x26c(r31)
+/* 8015AC0C 000007CC  7F 84 E3 78 */	mr r4, r28
+/* 8015AC10 000007D0  38 A0 00 02 */	li r5, 0x2
+/* 8015AC14 000007D4  38 E0 00 00 */	li r7, 0x0
+/* 8015AC18 000007D8  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015AC1C 000007DC  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015AC20 000007E0  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8015AC24 000007E4  80 7F 02 70 */	lwz r3, 0x270(r31)
+/* 8015AC28 000007E8  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015AC2C 000007EC  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015AC30 000007F0  60 00 00 01 */	ori r0, r0, 0x1
+/* 8015AC34 000007F4  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8015AC38 000007F8  80 7F 02 70 */	lwz r3, 0x270(r31)
+/* 8015AC3C 000007FC  4C C6 31 82 */	crclr cr1eq
+/* 8015AC40 00000800  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+.L_8015AC44:
+/* 8015AC44 00000804  39 61 00 20 */	addi r11, r1, 0x20
+/* 8015AC48 00000808  48 00 00 01 */	bl _restgpr_27
+/* 8015AC4C 0000080C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8015AC50 00000810  7C 08 03 A6 */	mtlr r0
+/* 8015AC54 00000814  38 21 00 20 */	addi r1, r1, 0x20
+/* 8015AC58 00000818  4E 80 00 20 */	blr
+.endfn setWorldCourseWrite__13Pausewindow_cFv
+
+# .text:0x7DC | 0x8015AC5C | size: 0x4
+.fn gap_03_8015AC5C_text, global
+.hidden gap_03_8015AC5C_text
+/* 8015AC5C 0000081C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AC5C_text
+
+# .text:0x7E0 | 0x8015AC60 | size: 0x10C
+# Pausewindow_c::TitleDispChkWrite()
+.fn TitleDispChkWrite__13Pausewindow_cFv, global
+/* 8015AC60 00000820  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015AC64 00000824  7C 08 02 A6 */	mflr r0
+/* 8015AC68 00000828  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015AC6C 0000082C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015AC70 00000830  7C 7F 1B 78 */	mr r31, r3
+/* 8015AC74 00000834  80 83 02 78 */	lwz r4, 0x278(r3)
+/* 8015AC78 00000838  88 04 00 BB */	lbz r0, 0xbb(r4)
+/* 8015AC7C 0000083C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015AC80 00000840  60 00 00 01 */	ori r0, r0, 0x1
+/* 8015AC84 00000844  98 04 00 BB */	stb r0, 0xbb(r4)
+/* 8015AC88 00000848  80 83 02 7C */	lwz r4, 0x27c(r3)
+/* 8015AC8C 0000084C  88 04 00 BB */	lbz r0, 0xbb(r4)
+/* 8015AC90 00000850  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015AC94 00000854  98 04 00 BB */	stb r0, 0xbb(r4)
+/* 8015AC98 00000858  80 63 02 80 */	lwz r3, 0x280(r3)
+/* 8015AC9C 0000085C  88 03 00 BB */	lbz r0, 0xbb(r3)
+/* 8015ACA0 00000860  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015ACA4 00000864  98 03 00 BB */	stb r0, 0xbb(r3)
+/* 8015ACA8 00000868  48 00 00 01 */	bl getMesRes__10dMessage_cFv
+/* 8015ACAC 0000086C  81 20 00 00 */	lwz r9, m_instance__7dInfo_c@sda21(r0)
+/* 8015ACB0 00000870  80 89 03 E8 */	lwz r4, 0x3e8(r9)
+/* 8015ACB4 00000874  2C 04 00 0A */	cmpwi r4, 0xa
+/* 8015ACB8 00000878  41 80 00 08 */	blt .L_8015ACC0
+/* 8015ACBC 0000087C  38 84 FF F6 */	subi r4, r4, 0xa
+.L_8015ACC0:
+/* 8015ACC0 00000880  80 00 00 00 */	lwz r0, mGameFlag__7dInfo_c@sda21(r0)
+/* 8015ACC4 00000884  54 00 06 73 */	rlwinm. r0, r0, 0, 25, 25
+/* 8015ACC8 00000888  41 82 00 78 */	beq .L_8015AD40
+/* 8015ACCC 0000088C  80 09 03 E4 */	lwz r0, 0x3e4(r9)
+/* 8015ACD0 00000890  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015ACD4 00000894  40 82 00 6C */	bne .L_8015AD40
+/* 8015ACD8 00000898  2C 04 00 05 */	cmpwi r4, 0x5
+/* 8015ACDC 0000089C  40 80 00 64 */	bge .L_8015AD40
+/* 8015ACE0 000008A0  81 1F 02 6C */	lwz r8, 0x26c(r31)
+/* 8015ACE4 000008A4  38 04 00 01 */	addi r0, r4, 0x1
+/* 8015ACE8 000008A8  7C 64 1B 78 */	mr r4, r3
+/* 8015ACEC 000008AC  38 A0 00 02 */	li r5, 0x2
+/* 8015ACF0 000008B0  88 68 00 BB */	lbz r3, 0xbb(r8)
+/* 8015ACF4 000008B4  38 C0 00 52 */	li r6, 0x52
+/* 8015ACF8 000008B8  38 E0 00 00 */	li r7, 0x0
+/* 8015ACFC 000008BC  54 63 06 3C */	rlwinm r3, r3, 0, 24, 30
+/* 8015AD00 000008C0  60 63 00 01 */	ori r3, r3, 0x1
+/* 8015AD04 000008C4  98 68 00 BB */	stb r3, 0xbb(r8)
+/* 8015AD08 000008C8  81 1F 02 70 */	lwz r8, 0x270(r31)
+/* 8015AD0C 000008CC  88 68 00 BB */	lbz r3, 0xbb(r8)
+/* 8015AD10 000008D0  54 63 06 3C */	rlwinm r3, r3, 0, 24, 30
+/* 8015AD14 000008D4  98 68 00 BB */	stb r3, 0xbb(r8)
+/* 8015AD18 000008D8  81 1F 02 50 */	lwz r8, 0x250(r31)
+/* 8015AD1C 000008DC  88 68 00 BB */	lbz r3, 0xbb(r8)
+/* 8015AD20 000008E0  54 63 06 3C */	rlwinm r3, r3, 0, 24, 30
+/* 8015AD24 000008E4  60 63 00 01 */	ori r3, r3, 0x1
+/* 8015AD28 000008E8  98 68 00 BB */	stb r3, 0xbb(r8)
+/* 8015AD2C 000008EC  90 09 03 B8 */	stw r0, 0x3b8(r9)
+/* 8015AD30 000008F0  80 7F 02 6C */	lwz r3, 0x26c(r31)
+/* 8015AD34 000008F4  4C C6 31 82 */	crclr cr1eq
+/* 8015AD38 000008F8  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8015AD3C 000008FC  48 00 00 1C */	b .L_8015AD58
+.L_8015AD40:
+/* 8015AD40 00000900  80 9F 02 50 */	lwz r4, 0x250(r31)
+/* 8015AD44 00000904  7F E3 FB 78 */	mr r3, r31
+/* 8015AD48 00000908  88 04 00 BB */	lbz r0, 0xbb(r4)
+/* 8015AD4C 0000090C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 8015AD50 00000910  98 04 00 BB */	stb r0, 0xbb(r4)
+/* 8015AD54 00000914  48 00 00 01 */	bl setWorldCourseWrite__13Pausewindow_cFv
+.L_8015AD58:
+/* 8015AD58 00000918  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015AD5C 0000091C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015AD60 00000920  7C 08 03 A6 */	mtlr r0
+/* 8015AD64 00000924  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015AD68 00000928  4E 80 00 20 */	blr
+.endfn TitleDispChkWrite__13Pausewindow_cFv
+
+# .text:0x8EC | 0x8015AD6C | size: 0x4
+.fn gap_03_8015AD6C_text, global
+.hidden gap_03_8015AD6C_text
+/* 8015AD6C 0000092C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AD6C_text
+
+# .text:0x8F0 | 0x8015AD70 | size: 0x28
+# Pausewindow_c::SelectCursorSetup()
+.fn SelectCursorSetup__13Pausewindow_cFv, global
+/* 8015AD70 00000930  80 03 02 84 */	lwz r0, 0x284(r3)
+/* 8015AD74 00000934  38 C0 00 00 */	li r6, "@LOCAL@SelectCursorSetup__13Pausewindow_cFv@PANE_IDX_TBL"@sda21
+/* 8015AD78 00000938  38 80 00 00 */	li r4, 0x0
+/* 8015AD7C 0000093C  38 A0 00 00 */	li r5, 0x0
+/* 8015AD80 00000940  54 00 10 3A */	slwi r0, r0, 2
+/* 8015AD84 00000944  7C 06 00 2E */	lwzx r0, r6, r0
+/* 8015AD88 00000948  54 00 10 3A */	slwi r0, r0, 2
+/* 8015AD8C 0000094C  7C 63 02 14 */	add r3, r3, r0
+/* 8015AD90 00000950  80 63 02 44 */	lwz r3, 0x244(r3)
+/* 8015AD94 00000954  48 00 00 00 */	b SelectCursorSetup__8dGameComFPQ34nw4r3lyt4Paneib
+.endfn SelectCursorSetup__13Pausewindow_cFv
+
+# .text:0x918 | 0x8015AD98 | size: 0x8
+.fn gap_03_8015AD98_text, global
+.hidden gap_03_8015AD98_text
+/* 8015AD98 00000958  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015AD9C 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AD98_text
+
+# .text:0x920 | 0x8015ADA0 | size: 0x4
+# Pausewindow_c::initializeState_InitWait()
+.fn initializeState_InitWait__13Pausewindow_cFv, global
+/* 8015ADA0 00000960  4E 80 00 20 */	blr
+.endfn initializeState_InitWait__13Pausewindow_cFv
+
+# .text:0x924 | 0x8015ADA4 | size: 0xC
+.fn gap_03_8015ADA4_text, global
+.hidden gap_03_8015ADA4_text
+/* 8015ADA4 00000964  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015ADA8 00000968  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015ADAC 0000096C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015ADA4_text
+
+# .text:0x930 | 0x8015ADB0 | size: 0xEC
+# Pausewindow_c::executeState_InitWait()
+.fn executeState_InitWait__13Pausewindow_cFv, global
+/* 8015ADB0 00000970  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015ADB4 00000974  7C 08 02 A6 */	mflr r0
+/* 8015ADB8 00000978  38 80 00 00 */	li r4, 0x0
+/* 8015ADBC 0000097C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015ADC0 00000980  38 00 00 01 */	li r0, 0x1
+/* 8015ADC4 00000984  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015ADC8 00000988  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015ADCC 0000098C  7C 7E 1B 78 */	mr r30, r3
+/* 8015ADD0 00000990  90 83 02 84 */	stw r4, 0x284(r3)
+/* 8015ADD4 00000994  80 83 02 8C */	lwz r4, 0x28c(r3)
+/* 8015ADD8 00000998  98 03 02 91 */	stb r0, 0x291(r3)
+/* 8015ADDC 0000099C  80 63 02 54 */	lwz r3, 0x254(r3)
+/* 8015ADE0 000009A0  48 00 00 01 */	bl WindowPaneColorSet__8dGameComFPQ34nw4r3lyt6Windowi
+/* 8015ADE4 000009A4  88 1E 02 95 */	lbz r0, 0x295(r30)
+/* 8015ADE8 000009A8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015ADEC 000009AC  41 82 00 7C */	beq .L_8015AE68
+/* 8015ADF0 000009B0  48 00 00 01 */	bl getMesRes__10dMessage_cFv
+/* 8015ADF4 000009B4  7C 7F 1B 78 */	mr r31, r3
+/* 8015ADF8 000009B8  80 7E 02 58 */	lwz r3, 0x258(r30)
+/* 8015ADFC 000009BC  7F E4 FB 78 */	mr r4, r31
+/* 8015AE00 000009C0  38 A0 00 32 */	li r5, 0x32
+/* 8015AE04 000009C4  38 C0 00 17 */	li r6, 0x17
+/* 8015AE08 000009C8  38 E0 00 00 */	li r7, 0x0
+/* 8015AE0C 000009CC  4C C6 31 82 */	crclr cr1eq
+/* 8015AE10 000009D0  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8015AE14 000009D4  80 7E 02 5C */	lwz r3, 0x25c(r30)
+/* 8015AE18 000009D8  7F E4 FB 78 */	mr r4, r31
+/* 8015AE1C 000009DC  38 A0 00 32 */	li r5, 0x32
+/* 8015AE20 000009E0  38 C0 00 17 */	li r6, 0x17
+/* 8015AE24 000009E4  38 E0 00 00 */	li r7, 0x0
+/* 8015AE28 000009E8  4C C6 31 82 */	crclr cr1eq
+/* 8015AE2C 000009EC  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8015AE30 000009F0  80 7E 02 60 */	lwz r3, 0x260(r30)
+/* 8015AE34 000009F4  7F E4 FB 78 */	mr r4, r31
+/* 8015AE38 000009F8  38 A0 00 32 */	li r5, 0x32
+/* 8015AE3C 000009FC  38 C0 00 18 */	li r6, 0x18
+/* 8015AE40 00000A00  38 E0 00 00 */	li r7, 0x0
+/* 8015AE44 00000A04  4C C6 31 82 */	crclr cr1eq
+/* 8015AE48 00000A08  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+/* 8015AE4C 00000A0C  80 7E 02 64 */	lwz r3, 0x264(r30)
+/* 8015AE50 00000A10  7F E4 FB 78 */	mr r4, r31
+/* 8015AE54 00000A14  38 A0 00 32 */	li r5, 0x32
+/* 8015AE58 00000A18  38 C0 00 18 */	li r6, 0x18
+/* 8015AE5C 00000A1C  38 E0 00 00 */	li r7, 0x0
+/* 8015AE60 00000A20  4C C6 31 82 */	crclr cr1eq
+/* 8015AE64 00000A24  48 00 00 01 */	bl setMessage__12LytTextBox_cFP8MsgRes_cUlUlle
+.L_8015AE68:
+/* 8015AE68 00000A28  81 9E 02 08 */	lwz r12, 0x208(r30)
+/* 8015AE6C 00000A2C  3C 80 00 00 */	lis r4, StateID_OpenAnimeEndWait__13Pausewindow_c@ha
+/* 8015AE70 00000A30  38 7E 02 08 */	addi r3, r30, 0x208
+/* 8015AE74 00000A34  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015AE78 00000A38  38 84 00 00 */	addi r4, r4, StateID_OpenAnimeEndWait__13Pausewindow_c@l
+/* 8015AE7C 00000A3C  7D 89 03 A6 */	mtctr r12
+/* 8015AE80 00000A40  4E 80 04 21 */	bctrl
+/* 8015AE84 00000A44  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015AE88 00000A48  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015AE8C 00000A4C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015AE90 00000A50  7C 08 03 A6 */	mtlr r0
+/* 8015AE94 00000A54  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015AE98 00000A58  4E 80 00 20 */	blr
+.endfn executeState_InitWait__13Pausewindow_cFv
+
+# .text:0xA1C | 0x8015AE9C | size: 0x4
+.fn gap_03_8015AE9C_text, global
+.hidden gap_03_8015AE9C_text
+/* 8015AE9C 00000A5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AE9C_text
+
+# .text:0xA20 | 0x8015AEA0 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::changeState(const sStateIDIf_c&)
+.fn "changeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c", weak
+/* 8015AEA0 00000A60  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015AEA4 00000A64  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015AEA8 00000A68  7D 89 03 A6 */	mtctr r12
+/* 8015AEAC 00000A6C  4E 80 04 20 */	bctr
+.endfn "changeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+
+# .text:0xA30 | 0x8015AEB0 | size: 0x4
+# Pausewindow_c::finalizeState_InitWait()
+.fn finalizeState_InitWait__13Pausewindow_cFv, global
+/* 8015AEB0 00000A70  4E 80 00 20 */	blr
+.endfn finalizeState_InitWait__13Pausewindow_cFv
+
+# .text:0xA34 | 0x8015AEB4 | size: 0xC
+.fn gap_03_8015AEB4_text, global
+.hidden gap_03_8015AEB4_text
+/* 8015AEB4 00000A74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015AEB8 00000A78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015AEBC 00000A7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AEB4_text
+
+# .text:0xA40 | 0x8015AEC0 | size: 0x68
+# Pausewindow_c::initializeState_OpenAnimeEndWait()
+.fn initializeState_OpenAnimeEndWait__13Pausewindow_cFv, global
+/* 8015AEC0 00000A80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015AEC4 00000A84  7C 08 02 A6 */	mflr r0
+/* 8015AEC8 00000A88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015AECC 00000A8C  38 00 00 01 */	li r0, 0x1
+/* 8015AED0 00000A90  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015AED4 00000A94  7C 7F 1B 78 */	mr r31, r3
+/* 8015AED8 00000A98  98 03 02 94 */	stb r0, 0x294(r3)
+/* 8015AEDC 00000A9C  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015AEE0 00000AA0  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 8015AEE4 00000AA4  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015AEE8 00000AA8  38 80 00 03 */	li r4, 0x3
+/* 8015AEEC 00000AAC  38 A0 00 00 */	li r5, 0x0
+/* 8015AEF0 00000AB0  48 00 00 01 */	bl ReverseAnimeStartSetup__9LytBase_cFib
+/* 8015AEF4 00000AB4  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015AEF8 00000AB8  38 80 00 04 */	li r4, 0x4
+/* 8015AEFC 00000ABC  38 A0 00 00 */	li r5, 0x0
+/* 8015AF00 00000AC0  48 00 00 01 */	bl ReverseAnimeStartSetup__9LytBase_cFib
+/* 8015AF04 00000AC4  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015AF08 00000AC8  38 80 00 00 */	li r4, 0x0
+/* 8015AF0C 00000ACC  38 A0 00 00 */	li r5, 0x0
+/* 8015AF10 00000AD0  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 8015AF14 00000AD4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015AF18 00000AD8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015AF1C 00000ADC  7C 08 03 A6 */	mtlr r0
+/* 8015AF20 00000AE0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015AF24 00000AE4  4E 80 00 20 */	blr
+.endfn initializeState_OpenAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xAA8 | 0x8015AF28 | size: 0x8
+.fn gap_03_8015AF28_text, global
+.hidden gap_03_8015AF28_text
+/* 8015AF28 00000AE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015AF2C 00000AEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AF28_text
+
+# .text:0xAB0 | 0x8015AF30 | size: 0x54
+# Pausewindow_c::executeState_OpenAnimeEndWait()
+.fn executeState_OpenAnimeEndWait__13Pausewindow_cFv, global
+/* 8015AF30 00000AF0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015AF34 00000AF4  7C 08 02 A6 */	mflr r0
+/* 8015AF38 00000AF8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015AF3C 00000AFC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015AF40 00000B00  7C 7F 1B 78 */	mr r31, r3
+/* 8015AF44 00000B04  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015AF48 00000B08  48 00 00 01 */	bl isAllAnime__9LytBase_cFv
+/* 8015AF4C 00000B0C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015AF50 00000B10  40 82 00 20 */	bne .L_8015AF70
+/* 8015AF54 00000B14  81 9F 02 08 */	lwz r12, 0x208(r31)
+/* 8015AF58 00000B18  3C 80 00 00 */	lis r4, StateID_ButtonChangeAnimeEndWait__13Pausewindow_c@ha
+/* 8015AF5C 00000B1C  38 7F 02 08 */	addi r3, r31, 0x208
+/* 8015AF60 00000B20  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015AF64 00000B24  38 84 00 00 */	addi r4, r4, StateID_ButtonChangeAnimeEndWait__13Pausewindow_c@l
+/* 8015AF68 00000B28  7D 89 03 A6 */	mtctr r12
+/* 8015AF6C 00000B2C  4E 80 04 21 */	bctrl
+.L_8015AF70:
+/* 8015AF70 00000B30  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015AF74 00000B34  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015AF78 00000B38  7C 08 03 A6 */	mtlr r0
+/* 8015AF7C 00000B3C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015AF80 00000B40  4E 80 00 20 */	blr
+.endfn executeState_OpenAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xB04 | 0x8015AF84 | size: 0xC
+.fn gap_03_8015AF84_text, global
+.hidden gap_03_8015AF84_text
+/* 8015AF84 00000B44  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015AF88 00000B48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015AF8C 00000B4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AF84_text
+
+# .text:0xB10 | 0x8015AF90 | size: 0x1C
+# Pausewindow_c::finalizeState_OpenAnimeEndWait()
+.fn finalizeState_OpenAnimeEndWait__13Pausewindow_cFv, global
+/* 8015AF90 00000B50  38 80 00 00 */	li r4, 0x0
+/* 8015AF94 00000B54  38 00 FF FF */	li r0, -0x1
+/* 8015AF98 00000B58  98 83 02 94 */	stb r4, 0x294(r3)
+/* 8015AF9C 00000B5C  98 83 02 92 */	stb r4, 0x292(r3)
+/* 8015AFA0 00000B60  98 83 02 93 */	stb r4, 0x293(r3)
+/* 8015AFA4 00000B64  90 03 02 88 */	stw r0, 0x288(r3)
+/* 8015AFA8 00000B68  4E 80 00 20 */	blr
+.endfn finalizeState_OpenAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xB2C | 0x8015AFAC | size: 0x4
+.fn gap_03_8015AFAC_text, global
+.hidden gap_03_8015AFAC_text
+/* 8015AFAC 00000B6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015AFAC_text
+
+# .text:0xB30 | 0x8015AFB0 | size: 0x6C
+# Pausewindow_c::initializeState_ButtonChangeAnimeEndWait()
+.fn initializeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv, global
+/* 8015AFB0 00000B70  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015AFB4 00000B74  7C 08 02 A6 */	mflr r0
+/* 8015AFB8 00000B78  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015AFBC 00000B7C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015AFC0 00000B80  7C 7F 1B 78 */	mr r31, r3
+/* 8015AFC4 00000B84  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015AFC8 00000B88  48 00 00 01 */	bl AllAnimeEndSetup__9LytBase_cFv
+/* 8015AFCC 00000B8C  80 9F 02 88 */	lwz r4, 0x288(r31)
+/* 8015AFD0 00000B90  38 00 00 01 */	li r0, 0x1
+/* 8015AFD4 00000B94  98 1F 02 94 */	stb r0, 0x294(r31)
+/* 8015AFD8 00000B98  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8015AFDC 00000B9C  41 80 00 14 */	blt .L_8015AFF0
+/* 8015AFE0 00000BA0  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015AFE4 00000BA4  38 84 00 07 */	addi r4, r4, 0x7
+/* 8015AFE8 00000BA8  38 A0 00 00 */	li r5, 0x0
+/* 8015AFEC 00000BAC  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+.L_8015AFF0:
+/* 8015AFF0 00000BB0  80 9F 02 84 */	lwz r4, 0x284(r31)
+/* 8015AFF4 00000BB4  38 7F 00 70 */	addi r3, r31, 0x70
+/* 8015AFF8 00000BB8  90 9F 02 88 */	stw r4, 0x288(r31)
+/* 8015AFFC 00000BBC  38 A0 00 00 */	li r5, 0x0
+/* 8015B000 00000BC0  38 84 00 03 */	addi r4, r4, 0x3
+/* 8015B004 00000BC4  48 00 00 01 */	bl AnimeStartSetup__9LytBase_cFib
+/* 8015B008 00000BC8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B00C 00000BCC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B010 00000BD0  7C 08 03 A6 */	mtlr r0
+/* 8015B014 00000BD4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B018 00000BD8  4E 80 00 20 */	blr
+.endfn initializeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xB9C | 0x8015B01C | size: 0x4
+.fn gap_03_8015B01C_text, global
+.hidden gap_03_8015B01C_text
+/* 8015B01C 00000BDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B01C_text
+
+# .text:0xBA0 | 0x8015B020 | size: 0x58
+# Pausewindow_c::executeState_ButtonChangeAnimeEndWait()
+.fn executeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B020 00000BE0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B024 00000BE4  7C 08 02 A6 */	mflr r0
+/* 8015B028 00000BE8  38 80 FF FF */	li r4, -0x1
+/* 8015B02C 00000BEC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B030 00000BF0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B034 00000BF4  7C 7F 1B 78 */	mr r31, r3
+/* 8015B038 00000BF8  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015B03C 00000BFC  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 8015B040 00000C00  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015B044 00000C04  40 82 00 20 */	bne .L_8015B064
+/* 8015B048 00000C08  81 9F 02 08 */	lwz r12, 0x208(r31)
+/* 8015B04C 00000C0C  3C 80 00 00 */	lis r4, StateID_PauseDisp__13Pausewindow_c@ha
+/* 8015B050 00000C10  38 7F 02 08 */	addi r3, r31, 0x208
+/* 8015B054 00000C14  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015B058 00000C18  38 84 00 00 */	addi r4, r4, StateID_PauseDisp__13Pausewindow_c@l
+/* 8015B05C 00000C1C  7D 89 03 A6 */	mtctr r12
+/* 8015B060 00000C20  4E 80 04 21 */	bctrl
+.L_8015B064:
+/* 8015B064 00000C24  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B068 00000C28  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B06C 00000C2C  7C 08 03 A6 */	mtlr r0
+/* 8015B070 00000C30  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B074 00000C34  4E 80 00 20 */	blr
+.endfn executeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xBF8 | 0x8015B078 | size: 0x8
+.fn gap_03_8015B078_text, global
+.hidden gap_03_8015B078_text
+/* 8015B078 00000C38  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B07C 00000C3C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B078_text
+
+# .text:0xC00 | 0x8015B080 | size: 0xC
+# Pausewindow_c::finalizeState_ButtonChangeAnimeEndWait()
+.fn finalizeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B080 00000C40  38 00 00 00 */	li r0, 0x0
+/* 8015B084 00000C44  98 03 02 94 */	stb r0, 0x294(r3)
+/* 8015B088 00000C48  4E 80 00 20 */	blr
+.endfn finalizeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xC0C | 0x8015B08C | size: 0x4
+.fn gap_03_8015B08C_text, global
+.hidden gap_03_8015B08C_text
+/* 8015B08C 00000C4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B08C_text
+
+# .text:0xC10 | 0x8015B090 | size: 0x4
+# Pausewindow_c::initializeState_PauseDisp()
+.fn initializeState_PauseDisp__13Pausewindow_cFv, global
+/* 8015B090 00000C50  48 00 00 00 */	b SelectCursorSetup__13Pausewindow_cFv
+.endfn initializeState_PauseDisp__13Pausewindow_cFv
+
+# .text:0xC14 | 0x8015B094 | size: 0xC
+.fn gap_03_8015B094_text, global
+.hidden gap_03_8015B094_text
+/* 8015B094 00000C54  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B098 00000C58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B09C 00000C5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B094_text
+
+# .text:0xC20 | 0x8015B0A0 | size: 0xB8
+# Pausewindow_c::executeState_PauseDisp()
+.fn executeState_PauseDisp__13Pausewindow_cFv, global
+/* 8015B0A0 00000C60  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B0A4 00000C64  7C 08 02 A6 */	mflr r0
+/* 8015B0A8 00000C68  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B0AC 00000C6C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B0B0 00000C70  3F E0 00 00 */	lis r31, "@14465"@ha
+/* 8015B0B4 00000C74  3B FF 00 00 */	addi r31, r31, "@14465"@l
+/* 8015B0B8 00000C78  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015B0BC 00000C7C  7C 7E 1B 78 */	mr r30, r3
+/* 8015B0C0 00000C80  88 03 02 92 */	lbz r0, 0x292(r3)
+/* 8015B0C4 00000C84  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015B0C8 00000C88  41 82 00 1C */	beq .L_8015B0E4
+/* 8015B0CC 00000C8C  85 83 02 08 */	lwzu r12, 0x208(r3)
+/* 8015B0D0 00000C90  38 9F 01 58 */	addi r4, r31, 0x158
+/* 8015B0D4 00000C94  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015B0D8 00000C98  7D 89 03 A6 */	mtctr r12
+/* 8015B0DC 00000C9C  4E 80 04 21 */	bctrl
+/* 8015B0E0 00000CA0  48 00 00 60 */	b .L_8015B140
+.L_8015B0E4:
+/* 8015B0E4 00000CA4  88 03 02 93 */	lbz r0, 0x293(r3)
+/* 8015B0E8 00000CA8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8015B0EC 00000CAC  41 82 00 1C */	beq .L_8015B108
+/* 8015B0F0 00000CB0  85 83 02 08 */	lwzu r12, 0x208(r3)
+/* 8015B0F4 00000CB4  38 9F 01 18 */	addi r4, r31, 0x118
+/* 8015B0F8 00000CB8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015B0FC 00000CBC  7D 89 03 A6 */	mtctr r12
+/* 8015B100 00000CC0  4E 80 04 21 */	bctrl
+/* 8015B104 00000CC4  48 00 00 3C */	b .L_8015B140
+.L_8015B108:
+/* 8015B108 00000CC8  80 83 02 88 */	lwz r4, 0x288(r3)
+/* 8015B10C 00000CCC  80 03 02 84 */	lwz r0, 0x284(r3)
+/* 8015B110 00000CD0  7C 04 00 00 */	cmpw r4, r0
+/* 8015B114 00000CD4  41 82 00 2C */	beq .L_8015B140
+/* 8015B118 00000CD8  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 8015B11C 00000CDC  38 80 00 78 */	li r4, 0x78
+/* 8015B120 00000CE0  38 A0 00 01 */	li r5, 0x1
+/* 8015B124 00000CE4  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 8015B128 00000CE8  81 9E 02 08 */	lwz r12, 0x208(r30)
+/* 8015B12C 00000CEC  38 7E 02 08 */	addi r3, r30, 0x208
+/* 8015B130 00000CF0  38 9F 00 98 */	addi r4, r31, 0x98
+/* 8015B134 00000CF4  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015B138 00000CF8  7D 89 03 A6 */	mtctr r12
+/* 8015B13C 00000CFC  4E 80 04 21 */	bctrl
+.L_8015B140:
+/* 8015B140 00000D00  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B144 00000D04  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B148 00000D08  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015B14C 00000D0C  7C 08 03 A6 */	mtlr r0
+/* 8015B150 00000D10  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B154 00000D14  4E 80 00 20 */	blr
+.endfn executeState_PauseDisp__13Pausewindow_cFv
+
+# .text:0xCD8 | 0x8015B158 | size: 0x8
+.fn gap_03_8015B158_text, global
+.hidden gap_03_8015B158_text
+/* 8015B158 00000D18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B15C 00000D1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B158_text
+
+# .text:0xCE0 | 0x8015B160 | size: 0xC
+# Pausewindow_c::finalizeState_PauseDisp()
+.fn finalizeState_PauseDisp__13Pausewindow_cFv, global
+/* 8015B160 00000D20  80 60 00 00 */	lwz r3, m_instance__15dSelectCursor_c@sda21(r0)
+/* 8015B164 00000D24  38 80 00 00 */	li r4, 0x0
+/* 8015B168 00000D28  48 00 00 00 */	b Cancel__15dSelectCursor_cFi
+.endfn finalizeState_PauseDisp__13Pausewindow_cFv
+
+# .text:0xCEC | 0x8015B16C | size: 0x4
+.fn gap_03_8015B16C_text, global
+.hidden gap_03_8015B16C_text
+/* 8015B16C 00000D2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B16C_text
+
+# .text:0xCF0 | 0x8015B170 | size: 0x1C
+# Pausewindow_c::initializeState_HitAnimeEndWait()
+.fn initializeState_HitAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B170 00000D30  80 83 02 84 */	lwz r4, 0x284(r3)
+/* 8015B174 00000D34  38 00 00 01 */	li r0, 0x1
+/* 8015B178 00000D38  98 03 02 94 */	stb r0, 0x294(r3)
+/* 8015B17C 00000D3C  38 A0 00 00 */	li r5, 0x0
+/* 8015B180 00000D40  38 84 00 09 */	addi r4, r4, 0x9
+/* 8015B184 00000D44  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015B188 00000D48  48 00 00 00 */	b AnimeStartSetup__9LytBase_cFib
+.endfn initializeState_HitAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xD0C | 0x8015B18C | size: 0x4
+.fn gap_03_8015B18C_text, global
+.hidden gap_03_8015B18C_text
+/* 8015B18C 00000D4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B18C_text
+
+# .text:0xD10 | 0x8015B190 | size: 0x58
+# Pausewindow_c::executeState_HitAnimeEndWait()
+.fn executeState_HitAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B190 00000D50  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B194 00000D54  7C 08 02 A6 */	mflr r0
+/* 8015B198 00000D58  38 80 FF FF */	li r4, -0x1
+/* 8015B19C 00000D5C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B1A0 00000D60  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B1A4 00000D64  7C 7F 1B 78 */	mr r31, r3
+/* 8015B1A8 00000D68  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015B1AC 00000D6C  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 8015B1B0 00000D70  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015B1B4 00000D74  40 82 00 20 */	bne .L_8015B1D4
+/* 8015B1B8 00000D78  81 9F 02 08 */	lwz r12, 0x208(r31)
+/* 8015B1BC 00000D7C  3C 80 00 00 */	lis r4, StateID_ClouseAnimeEndWait__13Pausewindow_c@ha
+/* 8015B1C0 00000D80  38 7F 02 08 */	addi r3, r31, 0x208
+/* 8015B1C4 00000D84  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015B1C8 00000D88  38 84 00 00 */	addi r4, r4, StateID_ClouseAnimeEndWait__13Pausewindow_c@l
+/* 8015B1CC 00000D8C  7D 89 03 A6 */	mtctr r12
+/* 8015B1D0 00000D90  4E 80 04 21 */	bctrl
+.L_8015B1D4:
+/* 8015B1D4 00000D94  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B1D8 00000D98  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B1DC 00000D9C  7C 08 03 A6 */	mtlr r0
+/* 8015B1E0 00000DA0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B1E4 00000DA4  4E 80 00 20 */	blr
+.endfn executeState_HitAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xD68 | 0x8015B1E8 | size: 0x8
+.fn gap_03_8015B1E8_text, global
+.hidden gap_03_8015B1E8_text
+/* 8015B1E8 00000DA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B1EC 00000DAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B1E8_text
+
+# .text:0xD70 | 0x8015B1F0 | size: 0xC
+# Pausewindow_c::finalizeState_HitAnimeEndWait()
+.fn finalizeState_HitAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B1F0 00000DB0  38 00 00 00 */	li r0, 0x0
+/* 8015B1F4 00000DB4  98 03 02 94 */	stb r0, 0x294(r3)
+/* 8015B1F8 00000DB8  4E 80 00 20 */	blr
+.endfn finalizeState_HitAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xD7C | 0x8015B1FC | size: 0x4
+.fn gap_03_8015B1FC_text, global
+.hidden gap_03_8015B1FC_text
+/* 8015B1FC 00000DBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B1FC_text
+
+# .text:0xD80 | 0x8015B200 | size: 0x18
+# Pausewindow_c::initializeState_ClouseAnimeEndWait()
+.fn initializeState_ClouseAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B200 00000DC0  38 00 00 01 */	li r0, 0x1
+/* 8015B204 00000DC4  98 03 02 94 */	stb r0, 0x294(r3)
+/* 8015B208 00000DC8  38 80 00 02 */	li r4, 0x2
+/* 8015B20C 00000DCC  38 A0 00 00 */	li r5, 0x0
+/* 8015B210 00000DD0  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015B214 00000DD4  48 00 00 00 */	b AnimeStartSetup__9LytBase_cFib
+.endfn initializeState_ClouseAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xD98 | 0x8015B218 | size: 0x8
+.fn gap_03_8015B218_text, global
+.hidden gap_03_8015B218_text
+/* 8015B218 00000DD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B21C 00000DDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B218_text
+
+# .text:0xDA0 | 0x8015B220 | size: 0x60
+# Pausewindow_c::executeState_ClouseAnimeEndWait()
+.fn executeState_ClouseAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B220 00000DE0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B224 00000DE4  7C 08 02 A6 */	mflr r0
+/* 8015B228 00000DE8  38 80 FF FF */	li r4, -0x1
+/* 8015B22C 00000DEC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B230 00000DF0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B234 00000DF4  7C 7F 1B 78 */	mr r31, r3
+/* 8015B238 00000DF8  38 63 00 70 */	addi r3, r3, 0x70
+/* 8015B23C 00000DFC  48 00 00 01 */	bl isAnime__9LytBase_cFi
+/* 8015B240 00000E00  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015B244 00000E04  40 82 00 28 */	bne .L_8015B26C
+/* 8015B248 00000E08  38 00 00 00 */	li r0, 0x0
+/* 8015B24C 00000E0C  98 1F 02 91 */	stb r0, 0x291(r31)
+/* 8015B250 00000E10  3C 80 00 00 */	lis r4, StateID_InitWait__13Pausewindow_c@ha
+/* 8015B254 00000E14  38 7F 02 08 */	addi r3, r31, 0x208
+/* 8015B258 00000E18  81 9F 02 08 */	lwz r12, 0x208(r31)
+/* 8015B25C 00000E1C  38 84 00 00 */	addi r4, r4, StateID_InitWait__13Pausewindow_c@l
+/* 8015B260 00000E20  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8015B264 00000E24  7D 89 03 A6 */	mtctr r12
+/* 8015B268 00000E28  4E 80 04 21 */	bctrl
+.L_8015B26C:
+/* 8015B26C 00000E2C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B270 00000E30  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B274 00000E34  7C 08 03 A6 */	mtlr r0
+/* 8015B278 00000E38  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B27C 00000E3C  4E 80 00 20 */	blr
+.endfn executeState_ClouseAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xE00 | 0x8015B280 | size: 0xC
+# Pausewindow_c::finalizeState_ClouseAnimeEndWait()
+.fn finalizeState_ClouseAnimeEndWait__13Pausewindow_cFv, global
+/* 8015B280 00000E40  38 00 00 00 */	li r0, 0x0
+/* 8015B284 00000E44  98 03 02 94 */	stb r0, 0x294(r3)
+/* 8015B288 00000E48  4E 80 00 20 */	blr
+.endfn finalizeState_ClouseAnimeEndWait__13Pausewindow_cFv
+
+# .text:0xE0C | 0x8015B28C | size: 0x4
+.fn gap_03_8015B28C_text, global
+.hidden gap_03_8015B28C_text
+/* 8015B28C 00000E4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B28C_text
+
+# .text:0xE10 | 0x8015B290 | size: 0x60
+# sFStateFct_c<Pausewindow_c>::build(const sStateIDIf_c&)
+.fn "build__29sFStateFct_c<13Pausewindow_c>FRC12sStateIDIf_c", weak
+/* 8015B290 00000E50  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B294 00000E54  7C 08 02 A6 */	mflr r0
+/* 8015B298 00000E58  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B29C 00000E5C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B2A0 00000E60  7C 9F 23 78 */	mr r31, r4
+/* 8015B2A4 00000E64  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015B2A8 00000E68  7C 7E 1B 78 */	mr r30, r3
+/* 8015B2AC 00000E6C  7F E3 FB 78 */	mr r3, r31
+/* 8015B2B0 00000E70  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 8015B2B4 00000E74  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8015B2B8 00000E78  7D 89 03 A6 */	mtctr r12
+/* 8015B2BC 00000E7C  4E 80 04 21 */	bctrl
+/* 8015B2C0 00000E80  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015B2C4 00000E84  40 82 00 10 */	bne .L_8015B2D4
+/* 8015B2C8 00000E88  93 FE 00 0C */	stw r31, 0xc(r30)
+/* 8015B2CC 00000E8C  38 7E 00 04 */	addi r3, r30, 0x4
+/* 8015B2D0 00000E90  48 00 00 08 */	b .L_8015B2D8
+.L_8015B2D4:
+/* 8015B2D4 00000E94  38 60 00 00 */	li r3, 0x0
+.L_8015B2D8:
+/* 8015B2D8 00000E98  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B2DC 00000E9C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B2E0 00000EA0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015B2E4 00000EA4  7C 08 03 A6 */	mtlr r0
+/* 8015B2E8 00000EA8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B2EC 00000EAC  4E 80 00 20 */	blr
+.endfn "build__29sFStateFct_c<13Pausewindow_c>FRC12sStateIDIf_c"
+
+# .text:0xE70 | 0x8015B2F0 | size: 0xC
+# sFStateFct_c<Pausewindow_c>::dispose(sStateIf_c*&)
+.fn "dispose__29sFStateFct_c<13Pausewindow_c>FRP10sStateIf_c", weak
+/* 8015B2F0 00000EB0  38 00 00 00 */	li r0, 0x0
+/* 8015B2F4 00000EB4  90 04 00 00 */	stw r0, 0x0(r4)
+/* 8015B2F8 00000EB8  4E 80 00 20 */	blr
+.endfn "dispose__29sFStateFct_c<13Pausewindow_c>FRP10sStateIf_c"
+
+# .text:0xE7C | 0x8015B2FC | size: 0x4
+.fn gap_03_8015B2FC_text, global
+.hidden gap_03_8015B2FC_text
+/* 8015B2FC 00000EBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B2FC_text
+
+# .text:0xE80 | 0x8015B300 | size: 0x1C
+# sFState_c<Pausewindow_c>::initialize()
+.fn "initialize__26sFState_c<13Pausewindow_c>Fv", weak
+/* 8015B300 00000EC0  7C 64 1B 78 */	mr r4, r3
+/* 8015B304 00000EC4  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 8015B308 00000EC8  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8015B30C 00000ECC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8015B310 00000ED0  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8015B314 00000ED4  7D 89 03 A6 */	mtctr r12
+/* 8015B318 00000ED8  4E 80 04 20 */	bctr
+.endfn "initialize__26sFState_c<13Pausewindow_c>Fv"
+
+# .text:0xE9C | 0x8015B31C | size: 0x4
+.fn gap_03_8015B31C_text, global
+.hidden gap_03_8015B31C_text
+/* 8015B31C 00000EDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B31C_text
+
+# .text:0xEA0 | 0x8015B320 | size: 0x1C
+# sFState_c<Pausewindow_c>::execute()
+.fn "execute__26sFState_c<13Pausewindow_c>Fv", weak
+/* 8015B320 00000EE0  7C 64 1B 78 */	mr r4, r3
+/* 8015B324 00000EE4  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 8015B328 00000EE8  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8015B32C 00000EEC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8015B330 00000EF0  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 8015B334 00000EF4  7D 89 03 A6 */	mtctr r12
+/* 8015B338 00000EF8  4E 80 04 20 */	bctr
+.endfn "execute__26sFState_c<13Pausewindow_c>Fv"
+
+# .text:0xEBC | 0x8015B33C | size: 0x4
+.fn gap_03_8015B33C_text, global
+.hidden gap_03_8015B33C_text
+/* 8015B33C 00000EFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B33C_text
+
+# .text:0xEC0 | 0x8015B340 | size: 0x1C
+# sFState_c<Pausewindow_c>::finalize()
+.fn "finalize__26sFState_c<13Pausewindow_c>Fv", weak
+/* 8015B340 00000F00  7C 64 1B 78 */	mr r4, r3
+/* 8015B344 00000F04  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 8015B348 00000F08  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8015B34C 00000F0C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8015B350 00000F10  81 8C 00 30 */	lwz r12, 0x30(r12)
+/* 8015B354 00000F14  7D 89 03 A6 */	mtctr r12
+/* 8015B358 00000F18  4E 80 04 20 */	bctr
+.endfn "finalize__26sFState_c<13Pausewindow_c>Fv"
+
+# .text:0xEDC | 0x8015B35C | size: 0x4
+.fn gap_03_8015B35C_text, global
+.hidden gap_03_8015B35C_text
+/* 8015B35C 00000F1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B35C_text
+
+# .text:0xEE0 | 0x8015B360 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::initializeState()
+.fn "initializeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 8015B360 00000F20  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B364 00000F24  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8015B368 00000F28  7D 89 03 A6 */	mtctr r12
+/* 8015B36C 00000F2C  4E 80 04 20 */	bctr
+.endfn "initializeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xEF0 | 0x8015B370 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::finalizeState()
+.fn "finalizeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 8015B370 00000F30  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B374 00000F34  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8015B378 00000F38  7D 89 03 A6 */	mtctr r12
+/* 8015B37C 00000F3C  4E 80 04 20 */	bctr
+.endfn "finalizeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xF00 | 0x8015B380 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::refreshState()
+.fn "refreshState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", weak
+/* 8015B380 00000F40  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B384 00000F44  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 8015B388 00000F48  7D 89 03 A6 */	mtctr r12
+/* 8015B38C 00000F4C  4E 80 04 20 */	bctr
+.endfn "refreshState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0xF10 | 0x8015B390 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getState() const
+.fn "getState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 8015B390 00000F50  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B394 00000F54  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 8015B398 00000F58  7D 89 03 A6 */	mtctr r12
+/* 8015B39C 00000F5C  4E 80 04 20 */	bctr
+.endfn "getState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xF20 | 0x8015B3A0 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getNewStateID() const
+.fn "getNewStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 8015B3A0 00000F60  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B3A4 00000F64  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 8015B3A8 00000F68  7D 89 03 A6 */	mtctr r12
+/* 8015B3AC 00000F6C  4E 80 04 20 */	bctr
+.endfn "getNewStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xF30 | 0x8015B3B0 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getStateID() const
+.fn "getStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 8015B3B0 00000F70  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B3B4 00000F74  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8015B3B8 00000F78  7D 89 03 A6 */	mtctr r12
+/* 8015B3BC 00000F7C  4E 80 04 20 */	bctr
+.endfn "getStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xF40 | 0x8015B3C0 | size: 0x10
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getOldStateID() const
+.fn "getOldStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", weak
+/* 8015B3C0 00000F80  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8015B3C4 00000F84  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 8015B3C8 00000F88  7D 89 03 A6 */	mtctr r12
+/* 8015B3CC 00000F8C  4E 80 04 20 */	bctr
+.endfn "getOldStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0xF50 | 0x8015B3D0 | size: 0x30
+# sFStateID_c<Pausewindow_c>::finalizeState(Pausewindow_c&) const
+.fn "finalizeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c", weak
+/* 8015B3D0 00000F90  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B3D4 00000F94  7C 08 02 A6 */	mflr r0
+/* 8015B3D8 00000F98  7C 65 1B 78 */	mr r5, r3
+/* 8015B3DC 00000F9C  7C 83 23 78 */	mr r3, r4
+/* 8015B3E0 00000FA0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B3E4 00000FA4  39 85 00 24 */	addi r12, r5, 0x24
+/* 8015B3E8 00000FA8  48 00 00 01 */	bl __ptmf_scall
+/* 8015B3EC 00000FAC  60 00 00 00 */	nop
+/* 8015B3F0 00000FB0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B3F4 00000FB4  7C 08 03 A6 */	mtlr r0
+/* 8015B3F8 00000FB8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B3FC 00000FBC  4E 80 00 20 */	blr
+.endfn "finalizeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c"
+
+# .text:0xF80 | 0x8015B400 | size: 0x30
+# sFStateID_c<Pausewindow_c>::executeState(Pausewindow_c&) const
+.fn "executeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c", weak
+/* 8015B400 00000FC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B404 00000FC4  7C 08 02 A6 */	mflr r0
+/* 8015B408 00000FC8  7C 65 1B 78 */	mr r5, r3
+/* 8015B40C 00000FCC  7C 83 23 78 */	mr r3, r4
+/* 8015B410 00000FD0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B414 00000FD4  39 85 00 18 */	addi r12, r5, 0x18
+/* 8015B418 00000FD8  48 00 00 01 */	bl __ptmf_scall
+/* 8015B41C 00000FDC  60 00 00 00 */	nop
+/* 8015B420 00000FE0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B424 00000FE4  7C 08 03 A6 */	mtlr r0
+/* 8015B428 00000FE8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B42C 00000FEC  4E 80 00 20 */	blr
+.endfn "executeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c"
+
+# .text:0xFB0 | 0x8015B430 | size: 0x30
+# sFStateID_c<Pausewindow_c>::initializeState(Pausewindow_c&) const
+.fn "initializeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c", weak
+/* 8015B430 00000FF0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B434 00000FF4  7C 08 02 A6 */	mflr r0
+/* 8015B438 00000FF8  7C 65 1B 78 */	mr r5, r3
+/* 8015B43C 00000FFC  7C 83 23 78 */	mr r3, r4
+/* 8015B440 00001000  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B444 00001004  39 85 00 0C */	addi r12, r5, 0xc
+/* 8015B448 00001008  48 00 00 01 */	bl __ptmf_scall
+/* 8015B44C 0000100C  60 00 00 00 */	nop
+/* 8015B450 00001010  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B454 00001014  7C 08 03 A6 */	mtlr r0
+/* 8015B458 00001018  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B45C 0000101C  4E 80 00 20 */	blr
+.endfn "initializeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c"
+
+# .text:0xFE0 | 0x8015B460 | size: 0x4FC
+.fn "__sinit_\d_pausewindow_cpp", local
+/* 8015B460 00001020  94 21 FE F0 */	stwu r1, -0x110(r1)
+/* 8015B464 00001024  7C 08 02 A6 */	mflr r0
+/* 8015B468 00001028  90 01 01 14 */	stw r0, 0x114(r1)
+/* 8015B46C 0000102C  39 61 01 10 */	addi r11, r1, 0x110
+/* 8015B470 00001030  48 00 00 01 */	bl _savegpr_27
+/* 8015B474 00001034  3F A0 00 00 */	lis r29, sc_ForceList__6dWmLib@ha
+/* 8015B478 00001038  C0 40 00 00 */	lfs f2, "@20592"@sda21(r0)
+/* 8015B47C 0000103C  3B BD 00 00 */	addi r29, r29, sc_ForceList__6dWmLib@l
+/* 8015B480 00001040  C0 20 00 00 */	lfs f1, "@20593"@sda21(r0)
+/* 8015B484 00001044  38 DD 00 00 */	addi r6, r29, 0x0
+/* 8015B488 00001048  C0 00 00 00 */	lfs f0, "@20594"@sda21(r0)
+/* 8015B48C 0000104C  80 00 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@sda21(r0)
+/* 8015B490 00001050  3F 80 00 00 */	lis r28, "@14465"@ha
+/* 8015B494 00001054  3B 9C 00 00 */	addi r28, r28, "@14465"@l
+/* 8015B498 00001058  3C 80 00 00 */	lis r4, __arraydtor$14464@ha
+/* 8015B49C 0000105C  90 06 00 0C */	stw r0, 0xc(r6)
+/* 8015B4A0 00001060  38 84 00 00 */	addi r4, r4, __arraydtor$14464@l
+/* 8015B4A4 00001064  38 BC 00 00 */	addi r5, r28, 0x0
+/* 8015B4A8 00001068  38 60 00 00 */	li r3, 0x0
+/* 8015B4AC 0000106C  D0 41 00 E0 */	stfs f2, 0xe0(r1)
+/* 8015B4B0 00001070  D0 21 00 E4 */	stfs f1, 0xe4(r1)
+/* 8015B4B4 00001074  D0 01 00 E8 */	stfs f0, 0xe8(r1)
+/* 8015B4B8 00001078  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 8015B4BC 0000107C  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 8015B4C0 00001080  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 8015B4C4 00001084  48 00 00 01 */	bl __register_global_object
+/* 8015B4C8 00001088  38 FD 04 D8 */	addi r7, r29, 0x4d8
+/* 8015B4CC 0000108C  38 DD 04 E4 */	addi r6, r29, 0x4e4
+/* 8015B4D0 00001090  38 BD 04 F0 */	addi r5, r29, 0x4f0
+/* 8015B4D4 00001094  83 C0 00 00 */	lwz r30, c_START_ID__10dCsvData_c@sda21(r0)
+/* 8015B4D8 00001098  83 7D 04 D8 */	lwz r27, 0x4d8(r29)
+/* 8015B4DC 0000109C  38 9D 05 B0 */	addi r4, r29, 0x5b0
+/* 8015B4E0 000010A0  81 87 00 04 */	lwz r12, 0x4(r7)
+/* 8015B4E4 000010A4  38 7C 00 18 */	addi r3, r28, 0x18
+/* 8015B4E8 000010A8  81 67 00 08 */	lwz r11, 0x8(r7)
+/* 8015B4EC 000010AC  81 5D 04 E4 */	lwz r10, 0x4e4(r29)
+/* 8015B4F0 000010B0  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 8015B4F4 000010B4  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 8015B4F8 000010B8  80 FD 04 F0 */	lwz r7, 0x4f0(r29)
+/* 8015B4FC 000010BC  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 8015B500 000010C0  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8015B504 000010C4  93 C0 00 00 */	stw r30, c_StartPointKinokoHouseID__6dWmLib@sda21(r0)
+/* 8015B508 000010C8  93 61 00 BC */	stw r27, 0xbc(r1)
+/* 8015B50C 000010CC  91 81 00 C0 */	stw r12, 0xc0(r1)
+/* 8015B510 000010D0  91 61 00 C4 */	stw r11, 0xc4(r1)
+/* 8015B514 000010D4  91 41 00 C8 */	stw r10, 0xc8(r1)
+/* 8015B518 000010D8  91 21 00 CC */	stw r9, 0xcc(r1)
+/* 8015B51C 000010DC  91 01 00 D0 */	stw r8, 0xd0(r1)
+/* 8015B520 000010E0  90 E1 00 D4 */	stw r7, 0xd4(r1)
+/* 8015B524 000010E4  90 C1 00 D8 */	stw r6, 0xd8(r1)
+/* 8015B528 000010E8  90 01 00 DC */	stw r0, 0xdc(r1)
+/* 8015B52C 000010EC  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 8015B530 000010F0  3F C0 00 00 */	lis r30, "__vt__28sFStateID_c<13Pausewindow_c>"@ha
+/* 8015B534 000010F4  38 7C 00 18 */	addi r3, r28, 0x18
+/* 8015B538 000010F8  83 61 00 D4 */	lwz r27, 0xd4(r1)
+/* 8015B53C 000010FC  3B DE 00 00 */	addi r30, r30, "__vt__28sFStateID_c<13Pausewindow_c>"@l
+/* 8015B540 00001100  81 81 00 D8 */	lwz r12, 0xd8(r1)
+/* 8015B544 00001104  3F E0 00 00 */	lis r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@ha
+/* 8015B548 00001108  81 61 00 DC */	lwz r11, 0xdc(r1)
+/* 8015B54C 0000110C  38 9F 00 00 */	addi r4, r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@l
+/* 8015B550 00001110  81 41 00 C8 */	lwz r10, 0xc8(r1)
+/* 8015B554 00001114  38 BC 00 0C */	addi r5, r28, 0xc
+/* 8015B558 00001118  81 21 00 CC */	lwz r9, 0xcc(r1)
+/* 8015B55C 0000111C  81 01 00 D0 */	lwz r8, 0xd0(r1)
+/* 8015B560 00001120  80 E1 00 BC */	lwz r7, 0xbc(r1)
+/* 8015B564 00001124  80 C1 00 C0 */	lwz r6, 0xc0(r1)
+/* 8015B568 00001128  80 01 00 C4 */	lwz r0, 0xc4(r1)
+/* 8015B56C 0000112C  93 DC 00 18 */	stw r30, 0x18(r28)
+/* 8015B570 00001130  93 63 00 0C */	stw r27, 0xc(r3)
+/* 8015B574 00001134  91 83 00 10 */	stw r12, 0x10(r3)
+/* 8015B578 00001138  91 63 00 14 */	stw r11, 0x14(r3)
+/* 8015B57C 0000113C  91 43 00 18 */	stw r10, 0x18(r3)
+/* 8015B580 00001140  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 8015B584 00001144  91 03 00 20 */	stw r8, 0x20(r3)
+/* 8015B588 00001148  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 8015B58C 0000114C  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 8015B590 00001150  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 8015B594 00001154  48 00 00 01 */	bl __register_global_object
+/* 8015B598 00001158  38 7D 04 FC */	addi r3, r29, 0x4fc
+/* 8015B59C 0000115C  38 DD 05 08 */	addi r6, r29, 0x508
+/* 8015B5A0 00001160  38 BD 05 14 */	addi r5, r29, 0x514
+/* 8015B5A4 00001164  83 7D 04 FC */	lwz r27, 0x4fc(r29)
+/* 8015B5A8 00001168  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 8015B5AC 0000116C  38 9D 05 D0 */	addi r4, r29, 0x5d0
+/* 8015B5B0 00001170  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 8015B5B4 00001174  38 7C 00 58 */	addi r3, r28, 0x58
+/* 8015B5B8 00001178  81 5D 05 08 */	lwz r10, 0x508(r29)
+/* 8015B5BC 0000117C  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 8015B5C0 00001180  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 8015B5C4 00001184  80 FD 05 14 */	lwz r7, 0x514(r29)
+/* 8015B5C8 00001188  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 8015B5CC 0000118C  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8015B5D0 00001190  93 61 00 98 */	stw r27, 0x98(r1)
+/* 8015B5D4 00001194  91 81 00 9C */	stw r12, 0x9c(r1)
+/* 8015B5D8 00001198  91 61 00 A0 */	stw r11, 0xa0(r1)
+/* 8015B5DC 0000119C  91 41 00 A4 */	stw r10, 0xa4(r1)
+/* 8015B5E0 000011A0  91 21 00 A8 */	stw r9, 0xa8(r1)
+/* 8015B5E4 000011A4  91 01 00 AC */	stw r8, 0xac(r1)
+/* 8015B5E8 000011A8  90 E1 00 B0 */	stw r7, 0xb0(r1)
+/* 8015B5EC 000011AC  90 C1 00 B4 */	stw r6, 0xb4(r1)
+/* 8015B5F0 000011B0  90 01 00 B8 */	stw r0, 0xb8(r1)
+/* 8015B5F4 000011B4  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 8015B5F8 000011B8  38 7C 00 58 */	addi r3, r28, 0x58
+/* 8015B5FC 000011BC  83 61 00 B0 */	lwz r27, 0xb0(r1)
+/* 8015B600 000011C0  81 81 00 B4 */	lwz r12, 0xb4(r1)
+/* 8015B604 000011C4  38 9F 00 00 */	addi r4, r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@l
+/* 8015B608 000011C8  81 61 00 B8 */	lwz r11, 0xb8(r1)
+/* 8015B60C 000011CC  38 BC 00 48 */	addi r5, r28, 0x48
+/* 8015B610 000011D0  81 41 00 A4 */	lwz r10, 0xa4(r1)
+/* 8015B614 000011D4  81 21 00 A8 */	lwz r9, 0xa8(r1)
+/* 8015B618 000011D8  81 01 00 AC */	lwz r8, 0xac(r1)
+/* 8015B61C 000011DC  80 E1 00 98 */	lwz r7, 0x98(r1)
+/* 8015B620 000011E0  80 C1 00 9C */	lwz r6, 0x9c(r1)
+/* 8015B624 000011E4  80 01 00 A0 */	lwz r0, 0xa0(r1)
+/* 8015B628 000011E8  93 DC 00 58 */	stw r30, 0x58(r28)
+/* 8015B62C 000011EC  93 63 00 0C */	stw r27, 0xc(r3)
+/* 8015B630 000011F0  91 83 00 10 */	stw r12, 0x10(r3)
+/* 8015B634 000011F4  91 63 00 14 */	stw r11, 0x14(r3)
+/* 8015B638 000011F8  91 43 00 18 */	stw r10, 0x18(r3)
+/* 8015B63C 000011FC  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 8015B640 00001200  91 03 00 20 */	stw r8, 0x20(r3)
+/* 8015B644 00001204  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 8015B648 00001208  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 8015B64C 0000120C  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 8015B650 00001210  48 00 00 01 */	bl __register_global_object
+/* 8015B654 00001214  38 7D 05 20 */	addi r3, r29, 0x520
+/* 8015B658 00001218  38 DD 05 2C */	addi r6, r29, 0x52c
+/* 8015B65C 0000121C  38 BD 05 38 */	addi r5, r29, 0x538
+/* 8015B660 00001220  83 7D 05 20 */	lwz r27, 0x520(r29)
+/* 8015B664 00001224  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 8015B668 00001228  38 9D 05 F8 */	addi r4, r29, 0x5f8
+/* 8015B66C 0000122C  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 8015B670 00001230  38 7C 00 98 */	addi r3, r28, 0x98
+/* 8015B674 00001234  81 5D 05 2C */	lwz r10, 0x52c(r29)
+/* 8015B678 00001238  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 8015B67C 0000123C  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 8015B680 00001240  80 FD 05 38 */	lwz r7, 0x538(r29)
+/* 8015B684 00001244  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 8015B688 00001248  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8015B68C 0000124C  93 61 00 74 */	stw r27, 0x74(r1)
+/* 8015B690 00001250  91 81 00 78 */	stw r12, 0x78(r1)
+/* 8015B694 00001254  91 61 00 7C */	stw r11, 0x7c(r1)
+/* 8015B698 00001258  91 41 00 80 */	stw r10, 0x80(r1)
+/* 8015B69C 0000125C  91 21 00 84 */	stw r9, 0x84(r1)
+/* 8015B6A0 00001260  91 01 00 88 */	stw r8, 0x88(r1)
+/* 8015B6A4 00001264  90 E1 00 8C */	stw r7, 0x8c(r1)
+/* 8015B6A8 00001268  90 C1 00 90 */	stw r6, 0x90(r1)
+/* 8015B6AC 0000126C  90 01 00 94 */	stw r0, 0x94(r1)
+/* 8015B6B0 00001270  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 8015B6B4 00001274  38 7C 00 98 */	addi r3, r28, 0x98
+/* 8015B6B8 00001278  83 61 00 8C */	lwz r27, 0x8c(r1)
+/* 8015B6BC 0000127C  81 81 00 90 */	lwz r12, 0x90(r1)
+/* 8015B6C0 00001280  38 9F 00 00 */	addi r4, r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@l
+/* 8015B6C4 00001284  81 61 00 94 */	lwz r11, 0x94(r1)
+/* 8015B6C8 00001288  38 BC 00 88 */	addi r5, r28, 0x88
+/* 8015B6CC 0000128C  81 41 00 80 */	lwz r10, 0x80(r1)
+/* 8015B6D0 00001290  81 21 00 84 */	lwz r9, 0x84(r1)
+/* 8015B6D4 00001294  81 01 00 88 */	lwz r8, 0x88(r1)
+/* 8015B6D8 00001298  80 E1 00 74 */	lwz r7, 0x74(r1)
+/* 8015B6DC 0000129C  80 C1 00 78 */	lwz r6, 0x78(r1)
+/* 8015B6E0 000012A0  80 01 00 7C */	lwz r0, 0x7c(r1)
+/* 8015B6E4 000012A4  93 DC 00 98 */	stw r30, 0x98(r28)
+/* 8015B6E8 000012A8  93 63 00 0C */	stw r27, 0xc(r3)
+/* 8015B6EC 000012AC  91 83 00 10 */	stw r12, 0x10(r3)
+/* 8015B6F0 000012B0  91 63 00 14 */	stw r11, 0x14(r3)
+/* 8015B6F4 000012B4  91 43 00 18 */	stw r10, 0x18(r3)
+/* 8015B6F8 000012B8  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 8015B6FC 000012BC  91 03 00 20 */	stw r8, 0x20(r3)
+/* 8015B700 000012C0  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 8015B704 000012C4  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 8015B708 000012C8  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 8015B70C 000012CC  48 00 00 01 */	bl __register_global_object
+/* 8015B710 000012D0  38 7D 05 44 */	addi r3, r29, 0x544
+/* 8015B714 000012D4  38 DD 05 50 */	addi r6, r29, 0x550
+/* 8015B718 000012D8  38 BD 05 5C */	addi r5, r29, 0x55c
+/* 8015B71C 000012DC  83 7D 05 44 */	lwz r27, 0x544(r29)
+/* 8015B720 000012E0  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 8015B724 000012E4  38 9D 06 28 */	addi r4, r29, 0x628
+/* 8015B728 000012E8  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 8015B72C 000012EC  38 7C 00 D8 */	addi r3, r28, 0xd8
+/* 8015B730 000012F0  81 5D 05 50 */	lwz r10, 0x550(r29)
+/* 8015B734 000012F4  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 8015B738 000012F8  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 8015B73C 000012FC  80 FD 05 5C */	lwz r7, 0x55c(r29)
+/* 8015B740 00001300  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 8015B744 00001304  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8015B748 00001308  93 61 00 50 */	stw r27, 0x50(r1)
+/* 8015B74C 0000130C  91 81 00 54 */	stw r12, 0x54(r1)
+/* 8015B750 00001310  91 61 00 58 */	stw r11, 0x58(r1)
+/* 8015B754 00001314  91 41 00 5C */	stw r10, 0x5c(r1)
+/* 8015B758 00001318  91 21 00 60 */	stw r9, 0x60(r1)
+/* 8015B75C 0000131C  91 01 00 64 */	stw r8, 0x64(r1)
+/* 8015B760 00001320  90 E1 00 68 */	stw r7, 0x68(r1)
+/* 8015B764 00001324  90 C1 00 6C */	stw r6, 0x6c(r1)
+/* 8015B768 00001328  90 01 00 70 */	stw r0, 0x70(r1)
+/* 8015B76C 0000132C  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 8015B770 00001330  38 7C 00 D8 */	addi r3, r28, 0xd8
+/* 8015B774 00001334  83 61 00 68 */	lwz r27, 0x68(r1)
+/* 8015B778 00001338  81 81 00 6C */	lwz r12, 0x6c(r1)
+/* 8015B77C 0000133C  38 9F 00 00 */	addi r4, r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@l
+/* 8015B780 00001340  81 61 00 70 */	lwz r11, 0x70(r1)
+/* 8015B784 00001344  38 BC 00 C8 */	addi r5, r28, 0xc8
+/* 8015B788 00001348  81 41 00 5C */	lwz r10, 0x5c(r1)
+/* 8015B78C 0000134C  81 21 00 60 */	lwz r9, 0x60(r1)
+/* 8015B790 00001350  81 01 00 64 */	lwz r8, 0x64(r1)
+/* 8015B794 00001354  80 E1 00 50 */	lwz r7, 0x50(r1)
+/* 8015B798 00001358  80 C1 00 54 */	lwz r6, 0x54(r1)
+/* 8015B79C 0000135C  80 01 00 58 */	lwz r0, 0x58(r1)
+/* 8015B7A0 00001360  93 DC 00 D8 */	stw r30, 0xd8(r28)
+/* 8015B7A4 00001364  93 63 00 0C */	stw r27, 0xc(r3)
+/* 8015B7A8 00001368  91 83 00 10 */	stw r12, 0x10(r3)
+/* 8015B7AC 0000136C  91 63 00 14 */	stw r11, 0x14(r3)
+/* 8015B7B0 00001370  91 43 00 18 */	stw r10, 0x18(r3)
+/* 8015B7B4 00001374  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 8015B7B8 00001378  91 03 00 20 */	stw r8, 0x20(r3)
+/* 8015B7BC 0000137C  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 8015B7C0 00001380  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 8015B7C4 00001384  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 8015B7C8 00001388  48 00 00 01 */	bl __register_global_object
+/* 8015B7CC 0000138C  38 7D 05 68 */	addi r3, r29, 0x568
+/* 8015B7D0 00001390  38 DD 05 74 */	addi r6, r29, 0x574
+/* 8015B7D4 00001394  38 BD 05 80 */	addi r5, r29, 0x580
+/* 8015B7D8 00001398  83 7D 05 68 */	lwz r27, 0x568(r29)
+/* 8015B7DC 0000139C  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 8015B7E0 000013A0  38 9D 06 4C */	addi r4, r29, 0x64c
+/* 8015B7E4 000013A4  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 8015B7E8 000013A8  38 7C 01 18 */	addi r3, r28, 0x118
+/* 8015B7EC 000013AC  81 5D 05 74 */	lwz r10, 0x574(r29)
+/* 8015B7F0 000013B0  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 8015B7F4 000013B4  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 8015B7F8 000013B8  80 FD 05 80 */	lwz r7, 0x580(r29)
+/* 8015B7FC 000013BC  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 8015B800 000013C0  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8015B804 000013C4  93 61 00 2C */	stw r27, 0x2c(r1)
+/* 8015B808 000013C8  91 81 00 30 */	stw r12, 0x30(r1)
+/* 8015B80C 000013CC  91 61 00 34 */	stw r11, 0x34(r1)
+/* 8015B810 000013D0  91 41 00 38 */	stw r10, 0x38(r1)
+/* 8015B814 000013D4  91 21 00 3C */	stw r9, 0x3c(r1)
+/* 8015B818 000013D8  91 01 00 40 */	stw r8, 0x40(r1)
+/* 8015B81C 000013DC  90 E1 00 44 */	stw r7, 0x44(r1)
+/* 8015B820 000013E0  90 C1 00 48 */	stw r6, 0x48(r1)
+/* 8015B824 000013E4  90 01 00 4C */	stw r0, 0x4c(r1)
+/* 8015B828 000013E8  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 8015B82C 000013EC  38 7C 01 18 */	addi r3, r28, 0x118
+/* 8015B830 000013F0  83 61 00 44 */	lwz r27, 0x44(r1)
+/* 8015B834 000013F4  81 81 00 48 */	lwz r12, 0x48(r1)
+/* 8015B838 000013F8  38 9F 00 00 */	addi r4, r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@l
+/* 8015B83C 000013FC  81 61 00 4C */	lwz r11, 0x4c(r1)
+/* 8015B840 00001400  38 BC 01 08 */	addi r5, r28, 0x108
+/* 8015B844 00001404  81 41 00 38 */	lwz r10, 0x38(r1)
+/* 8015B848 00001408  81 21 00 3C */	lwz r9, 0x3c(r1)
+/* 8015B84C 0000140C  81 01 00 40 */	lwz r8, 0x40(r1)
+/* 8015B850 00001410  80 E1 00 2C */	lwz r7, 0x2c(r1)
+/* 8015B854 00001414  80 C1 00 30 */	lwz r6, 0x30(r1)
+/* 8015B858 00001418  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 8015B85C 0000141C  93 DC 01 18 */	stw r30, 0x118(r28)
+/* 8015B860 00001420  93 63 00 0C */	stw r27, 0xc(r3)
+/* 8015B864 00001424  91 83 00 10 */	stw r12, 0x10(r3)
+/* 8015B868 00001428  91 63 00 14 */	stw r11, 0x14(r3)
+/* 8015B86C 0000142C  91 43 00 18 */	stw r10, 0x18(r3)
+/* 8015B870 00001430  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 8015B874 00001434  91 03 00 20 */	stw r8, 0x20(r3)
+/* 8015B878 00001438  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 8015B87C 0000143C  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 8015B880 00001440  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 8015B884 00001444  48 00 00 01 */	bl __register_global_object
+/* 8015B888 00001448  38 7D 05 8C */	addi r3, r29, 0x58c
+/* 8015B88C 0000144C  38 DD 05 98 */	addi r6, r29, 0x598
+/* 8015B890 00001450  38 BD 05 A4 */	addi r5, r29, 0x5a4
+/* 8015B894 00001454  83 7D 05 8C */	lwz r27, 0x58c(r29)
+/* 8015B898 00001458  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 8015B89C 0000145C  38 9D 06 74 */	addi r4, r29, 0x674
+/* 8015B8A0 00001460  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 8015B8A4 00001464  38 7C 01 58 */	addi r3, r28, 0x158
+/* 8015B8A8 00001468  81 5D 05 98 */	lwz r10, 0x598(r29)
+/* 8015B8AC 0000146C  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 8015B8B0 00001470  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 8015B8B4 00001474  80 FD 05 A4 */	lwz r7, 0x5a4(r29)
+/* 8015B8B8 00001478  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 8015B8BC 0000147C  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8015B8C0 00001480  93 61 00 08 */	stw r27, 0x8(r1)
+/* 8015B8C4 00001484  91 81 00 0C */	stw r12, 0xc(r1)
+/* 8015B8C8 00001488  91 61 00 10 */	stw r11, 0x10(r1)
+/* 8015B8CC 0000148C  91 41 00 14 */	stw r10, 0x14(r1)
+/* 8015B8D0 00001490  91 21 00 18 */	stw r9, 0x18(r1)
+/* 8015B8D4 00001494  91 01 00 1C */	stw r8, 0x1c(r1)
+/* 8015B8D8 00001498  90 E1 00 20 */	stw r7, 0x20(r1)
+/* 8015B8DC 0000149C  90 C1 00 24 */	stw r6, 0x24(r1)
+/* 8015B8E0 000014A0  90 01 00 28 */	stw r0, 0x28(r1)
+/* 8015B8E4 000014A4  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 8015B8E8 000014A8  38 7C 01 58 */	addi r3, r28, 0x158
+/* 8015B8EC 000014AC  83 A1 00 20 */	lwz r29, 0x20(r1)
+/* 8015B8F0 000014B0  81 81 00 24 */	lwz r12, 0x24(r1)
+/* 8015B8F4 000014B4  7F 67 DB 78 */	mr r7, r27
+/* 8015B8F8 000014B8  81 61 00 28 */	lwz r11, 0x28(r1)
+/* 8015B8FC 000014BC  38 9F 00 00 */	addi r4, r31, "__dt__28sFStateID_c<13Pausewindow_c>Fv"@l
+/* 8015B900 000014C0  81 41 00 14 */	lwz r10, 0x14(r1)
+/* 8015B904 000014C4  38 BC 01 48 */	addi r5, r28, 0x148
+/* 8015B908 000014C8  81 21 00 18 */	lwz r9, 0x18(r1)
+/* 8015B90C 000014CC  81 01 00 1C */	lwz r8, 0x1c(r1)
+/* 8015B910 000014D0  80 C1 00 0C */	lwz r6, 0xc(r1)
+/* 8015B914 000014D4  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 8015B918 000014D8  93 DC 01 58 */	stw r30, 0x158(r28)
+/* 8015B91C 000014DC  93 A3 00 0C */	stw r29, 0xc(r3)
+/* 8015B920 000014E0  91 83 00 10 */	stw r12, 0x10(r3)
+/* 8015B924 000014E4  91 63 00 14 */	stw r11, 0x14(r3)
+/* 8015B928 000014E8  91 43 00 18 */	stw r10, 0x18(r3)
+/* 8015B92C 000014EC  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 8015B930 000014F0  91 03 00 20 */	stw r8, 0x20(r3)
+/* 8015B934 000014F4  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 8015B938 000014F8  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 8015B93C 000014FC  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 8015B940 00001500  48 00 00 01 */	bl __register_global_object
+/* 8015B944 00001504  39 61 01 10 */	addi r11, r1, 0x110
+/* 8015B948 00001508  48 00 00 01 */	bl _restgpr_27
+/* 8015B94C 0000150C  80 01 01 14 */	lwz r0, 0x114(r1)
+/* 8015B950 00001510  7C 08 03 A6 */	mtlr r0
+/* 8015B954 00001514  38 21 01 10 */	addi r1, r1, 0x110
+/* 8015B958 00001518  4E 80 00 20 */	blr
+.endfn "__sinit_\d_pausewindow_cpp"
+
+# .text:0x14DC | 0x8015B95C | size: 0x4
+.fn gap_03_8015B95C_text, global
+.hidden gap_03_8015B95C_text
+/* 8015B95C 0000151C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B95C_text
+
+# .text:0x14E0 | 0x8015B960 | size: 0x1C
+.fn __arraydtor$14464, local
+/* 8015B960 00001520  3C 60 00 00 */	lis r3, sc_ForceList__6dWmLib@ha
+/* 8015B964 00001524  3C 80 00 00 */	lis r4, __dt__Q26dWmLib19ForceInCourseList_tFv@ha
+/* 8015B968 00001528  38 63 00 00 */	addi r3, r3, sc_ForceList__6dWmLib@l
+/* 8015B96C 0000152C  38 A0 00 24 */	li r5, 0x24
+/* 8015B970 00001530  38 84 00 00 */	addi r4, r4, __dt__Q26dWmLib19ForceInCourseList_tFv@l
+/* 8015B974 00001534  38 C0 00 01 */	li r6, 0x1
+/* 8015B978 00001538  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$14464
+
+# .text:0x14FC | 0x8015B97C | size: 0x4
+.fn gap_03_8015B97C_text, global
+.hidden gap_03_8015B97C_text
+/* 8015B97C 0000153C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B97C_text
+
+# .text:0x1500 | 0x8015B980 | size: 0x58
+# sFStateID_c<Pausewindow_c>::~sFStateID_c()
+.fn "__dt__28sFStateID_c<13Pausewindow_c>Fv", weak
+/* 8015B980 00001540  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B984 00001544  7C 08 02 A6 */	mflr r0
+/* 8015B988 00001548  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015B98C 0000154C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B990 00001550  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B994 00001554  7C 9F 23 78 */	mr r31, r4
+/* 8015B998 00001558  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015B99C 0000155C  7C 7E 1B 78 */	mr r30, r3
+/* 8015B9A0 00001560  41 82 00 1C */	beq .L_8015B9BC
+/* 8015B9A4 00001564  38 80 00 00 */	li r4, 0x0
+/* 8015B9A8 00001568  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 8015B9AC 0000156C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8015B9B0 00001570  40 81 00 0C */	ble .L_8015B9BC
+/* 8015B9B4 00001574  7F C3 F3 78 */	mr r3, r30
+/* 8015B9B8 00001578  48 00 00 01 */	bl __dl__FPv
+.L_8015B9BC:
+/* 8015B9BC 0000157C  7F C3 F3 78 */	mr r3, r30
+/* 8015B9C0 00001580  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015B9C4 00001584  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015B9C8 00001588  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015B9CC 0000158C  7C 08 03 A6 */	mtlr r0
+/* 8015B9D0 00001590  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015B9D4 00001594  4E 80 00 20 */	blr
+.endfn "__dt__28sFStateID_c<13Pausewindow_c>Fv"
+
+# .text:0x1558 | 0x8015B9D8 | size: 0x8
+.fn gap_03_8015B9D8_text, global
+.hidden gap_03_8015B9D8_text
+/* 8015B9D8 00001598  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015B9DC 0000159C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015B9D8_text
+
+# .text:0x1560 | 0x8015B9E0 | size: 0x88
+# sFStateID_c<Pausewindow_c>::isSameName(const char*) const
+.fn "isSameName__28sFStateID_c<13Pausewindow_c>CFPCc", weak
+/* 8015B9E0 000015A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015B9E4 000015A4  7C 08 02 A6 */	mflr r0
+/* 8015B9E8 000015A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015B9EC 000015AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015B9F0 000015B0  7C 9F 23 78 */	mr r31, r4
+/* 8015B9F4 000015B4  38 80 00 3A */	li r4, 0x3a
+/* 8015B9F8 000015B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015B9FC 000015BC  7C 7E 1B 78 */	mr r30, r3
+/* 8015BA00 000015C0  7F E3 FB 78 */	mr r3, r31
+/* 8015BA04 000015C4  48 00 00 01 */	bl strrchr
+/* 8015BA08 000015C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015BA0C 000015CC  41 82 00 08 */	beq .L_8015BA14
+/* 8015BA10 000015D0  3B E3 00 01 */	addi r31, r3, 0x1
+.L_8015BA14:
+/* 8015BA14 000015D4  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 8015BA18 000015D8  7F C3 F3 78 */	mr r3, r30
+/* 8015BA1C 000015DC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 8015BA20 000015E0  7D 89 03 A6 */	mtctr r12
+/* 8015BA24 000015E4  4E 80 04 21 */	bctrl
+/* 8015BA28 000015E8  38 80 00 3A */	li r4, 0x3a
+/* 8015BA2C 000015EC  48 00 00 01 */	bl strrchr
+/* 8015BA30 000015F0  7F E4 FB 78 */	mr r4, r31
+/* 8015BA34 000015F4  38 63 00 01 */	addi r3, r3, 0x1
+/* 8015BA38 000015F8  48 00 00 01 */	bl strcmp
+/* 8015BA3C 000015FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8015BA40 00001600  40 82 00 0C */	bne .L_8015BA4C
+/* 8015BA44 00001604  38 60 00 01 */	li r3, 0x1
+/* 8015BA48 00001608  48 00 00 08 */	b .L_8015BA50
+.L_8015BA4C:
+/* 8015BA4C 0000160C  38 60 00 00 */	li r3, 0x0
+.L_8015BA50:
+/* 8015BA50 00001610  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015BA54 00001614  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015BA58 00001618  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015BA5C 0000161C  7C 08 03 A6 */	mtlr r0
+/* 8015BA60 00001620  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015BA64 00001624  4E 80 00 20 */	blr
+.endfn "isSameName__28sFStateID_c<13Pausewindow_c>CFPCc"
+
+# .text:0x15E8 | 0x8015BA68 | size: 0x8
+.fn gap_03_8015BA68_text, global
+.hidden gap_03_8015BA68_text
+/* 8015BA68 00001628  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015BA6C 0000162C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015BA68_text
+
+# 0x802EDED8..0x802EDEDC | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_pausewindow_cpp"
+
+# 0x802F5CE0..0x802F5D30 | size: 0x50
+.rodata
+.balign 8
+
+# .rodata:0x0 | 0x802F5CE0 | size: 0x2C
+.obj "@LOCAL@create__13Pausewindow_cFv@ANIME_INDEX_TBL@1", local
+	.4byte 0x00000000
+	.4byte 0x00000001
+	.4byte 0x00000002
+	.4byte 0x00000003
+	.4byte 0x00000003
+	.4byte 0x00000004
+	.4byte 0x00000004
+	.4byte 0x00000005
+	.4byte 0x00000005
+	.4byte 0x00000006
+	.4byte 0x00000006
+.endobj "@LOCAL@create__13Pausewindow_cFv@ANIME_INDEX_TBL@1"
+
+# .rodata:0x2C | 0x802F5D0C | size: 0x4
+.obj gap_06_802F5D0C_rodata, global
+.hidden gap_06_802F5D0C_rodata
+	.4byte 0x00000000
+.endobj gap_06_802F5D0C_rodata
+
+# .rodata:0x30 | 0x802F5D10 | size: 0x10
+.obj "@LOCAL@create__13Pausewindow_cFv@msgIdTbl@3", local
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000001
+	.4byte 0x00000001
+.endobj "@LOCAL@create__13Pausewindow_cFv@msgIdTbl@3"
+
+# .rodata:0x40 | 0x802F5D20 | size: 0xC
+.obj "@LOCAL@create__13Pausewindow_cFv@msgIdTbl2@5", local
+	.4byte 0x00000050
+	.4byte 0x00000060
+	.4byte 0x00000062
+.endobj "@LOCAL@create__13Pausewindow_cFv@msgIdTbl2@5"
+
+# .rodata:0x4C | 0x802F5D2C | size: 0x4
+.obj gap_06_802F5D2C_rodata, global
+.hidden gap_06_802F5D2C_rodata
+	.4byte 0x00000000
+.endobj gap_06_802F5D2C_rodata
+
+# 0x80327D00..0x803283D8 | size: 0x6D8
+.data
+.balign 8
+
+# .data:0x0 | 0x80327D00 | size: 0x24
+# dWmLib::sc_ForceList
+.obj sc_ForceList__6dWmLib, local
+	.4byte 0x00000006
+	.4byte "@14462"
+	.4byte 0x00000006
+	.4byte 0x00000000
+	.4byte 0x00000004
+	.4byte "@14463"
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj sc_ForceList__6dWmLib
+
+# .data:0x24 | 0x80327D24 | size: 0xC
+.obj g_profile_PAUSEWINDOW, global
+	.4byte Pausewindow_c_classInit__Fv
+	.4byte 0x02C602C6
+	.4byte 0x00000000
+.endobj g_profile_PAUSEWINDOW
+
+# .data:0x30 | 0x80327D30 | size: 0x1C
+.obj "@19487", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F696E57
+	.4byte 0x696E646F
+	.4byte 0x772E6272
+	.4byte 0x6C616E00
+.endobj "@19487"
+
+# .data:0x4C | 0x80327D4C | size: 0x1E
+.obj "@19488", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F6C6F6F
+	.4byte 0x7057696E
+	.4byte 0x646F772E
+	.4byte 0x62726C61
+	.2byte 0x6E00
+.endobj "@19488"
+
+# .data:0x6A | 0x80327D6A | size: 0x2
+.obj gap_07_80327D6A_data, global
+.hidden gap_07_80327D6A_data
+	.2byte 0x0000
+.endobj gap_07_80327D6A_data
+
+# .data:0x6C | 0x80327D6C | size: 0x1D
+.obj "@19489", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F6F7574
+	.4byte 0x57696E64
+	.4byte 0x6F772E62
+	.4byte 0x726C616E
+	.byte 0x00
+.endobj "@19489"
+
+# .data:0x89 | 0x80327D89 | size: 0x3
+.obj gap_07_80327D89_data, global
+.hidden gap_07_80327D89_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327D89_data
+
+# .data:0x8C | 0x80327D8C | size: 0x1C
+.obj "@19490", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F6F6E42
+	.4byte 0x7574746F
+	.4byte 0x6E2E6272
+	.4byte 0x6C616E00
+.endobj "@19490"
+
+# .data:0xA8 | 0x80327DA8 | size: 0x1E
+.obj "@19491", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F69646C
+	.4byte 0x65427574
+	.4byte 0x746F6E2E
+	.4byte 0x62726C61
+	.2byte 0x6E00
+.endobj "@19491"
+
+# .data:0xC6 | 0x80327DC6 | size: 0x2
+.obj gap_07_80327DC6_data, global
+.hidden gap_07_80327DC6_data
+	.2byte 0x0000
+.endobj gap_07_80327DC6_data
+
+# .data:0xC8 | 0x80327DC8 | size: 0x1C
+.obj "@19492", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F6F6666
+	.4byte 0x4275746F
+	.4byte 0x6E2E6272
+	.4byte 0x6C616E00
+.endobj "@19492"
+
+# .data:0xE4 | 0x80327DE4 | size: 0x1D
+.obj "@19493", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x5F686974
+	.4byte 0x42757474
+	.4byte 0x6F6E2E62
+	.4byte 0x726C616E
+	.byte 0x00
+.endobj "@19493"
+
+# .data:0x101 | 0x80327E01 | size: 0x3
+.obj gap_07_80327E01_data, global
+.hidden gap_07_80327E01_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327E01_data
+
+# .data:0x104 | 0x80327E04 | size: 0x1C
+# Pausewindow_c::create()::AnmNameTbl
+.obj "@LOCAL@create__13Pausewindow_cFv@AnmNameTbl", local
+	.4byte "@19487"
+	.4byte "@19488"
+	.4byte "@19489"
+	.4byte "@19490"
+	.4byte "@19491"
+	.4byte "@19492"
+	.4byte "@19493"
+.endobj "@LOCAL@create__13Pausewindow_cFv@AnmNameTbl"
+
+# .data:0x120 | 0x80327E20 | size: 0xD
+.obj "@19494", local
+	.4byte 0x4130305F
+	.4byte 0x696E5769
+	.4byte 0x6E646F77
+	.byte 0x00
+.endobj "@19494"
+
+# .data:0x12D | 0x80327E2D | size: 0x3
+.obj gap_07_80327E2D_data, global
+.hidden gap_07_80327E2D_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327E2D_data
+
+# .data:0x130 | 0x80327E30 | size: 0x11
+.obj "@19495", local
+	.4byte 0x4230305F
+	.4byte 0x74757A75
+	.4byte 0x6B754275
+	.4byte 0x74746F6E
+	.byte 0x00
+.endobj "@19495"
+
+# .data:0x141 | 0x80327E41 | size: 0x3
+.obj gap_07_80327E41_data, global
+.hidden gap_07_80327E41_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327E41_data
+
+# .data:0x144 | 0x80327E44 | size: 0xF
+.obj "@19496", local
+	.4byte 0x4230325F
+	.4byte 0x6D656E75
+	.4byte 0x42757474
+	.byte 0x6F, 0x6E, 0x00
+.endobj "@19496"
+
+# .data:0x153 | 0x80327E53 | size: 0x1
+.obj gap_07_80327E53_data, global
+.hidden gap_07_80327E53_data
+	.byte 0x00
+.endobj gap_07_80327E53_data
+
+# .data:0x154 | 0x80327E54 | size: 0x2C
+.obj "@LOCAL@create__13Pausewindow_cFv@GROUP_NAME_DT@0", local
+	.4byte "@19494"
+	.4byte "@19494"
+	.4byte "@19494"
+	.4byte "@19495"
+	.4byte "@19496"
+	.4byte "@19495"
+	.4byte "@19496"
+	.4byte "@19495"
+	.4byte "@19496"
+	.4byte "@19495"
+	.4byte "@19496"
+.endobj "@LOCAL@create__13Pausewindow_cFv@GROUP_NAME_DT@0"
+
+# .data:0x180 | 0x80327E80 | size: 0xE
+.obj "@19497", local
+	.4byte 0x545F7475
+	.4byte 0x7A756B65
+	.4byte 0x72755F30
+	.2byte 0x3000
+.endobj "@19497"
+
+# .data:0x18E | 0x80327E8E | size: 0x2
+.obj gap_07_80327E8E_data, global
+.hidden gap_07_80327E8E_data
+	.2byte 0x0000
+.endobj gap_07_80327E8E_data
+
+# .data:0x190 | 0x80327E90 | size: 0xE
+.obj "@19498", local
+	.4byte 0x545F7475
+	.4byte 0x7A756B65
+	.4byte 0x72755F30
+	.2byte 0x3100
+.endobj "@19498"
+
+# .data:0x19E | 0x80327E9E | size: 0x2
+.obj gap_07_80327E9E_data, global
+.hidden gap_07_80327E9E_data
+	.2byte 0x0000
+.endobj gap_07_80327E9E_data
+
+# .data:0x1A0 | 0x80327EA0 | size: 0xC
+.obj "@19499", local
+	.4byte 0x545F6D6F
+	.4byte 0x646F7275
+	.4byte 0x5F303000
+.endobj "@19499"
+
+# .data:0x1AC | 0x80327EAC | size: 0xC
+.obj "@19500", local
+	.4byte 0x545F6D6F
+	.4byte 0x646F7275
+	.4byte 0x5F303100
+.endobj "@19500"
+
+# .data:0x1B8 | 0x80327EB8 | size: 0x10
+.obj "@LOCAL@create__13Pausewindow_cFv@textBox@2", local
+	.4byte "@19497"
+	.4byte "@19498"
+	.4byte "@19499"
+	.4byte "@19500"
+.endobj "@LOCAL@create__13Pausewindow_cFv@textBox@2"
+
+# .data:0x1C8 | 0x80327EC8 | size: 0xB
+.obj "@19501", local
+	.4byte 0x545F776F
+	.4byte 0x726C645F
+	.byte 0x30, 0x30, 0x00
+.endobj "@19501"
+
+# .data:0x1D3 | 0x80327ED3 | size: 0x1
+.obj gap_07_80327ED3_data, global
+.hidden gap_07_80327ED3_data
+	.byte 0x00
+.endobj gap_07_80327ED3_data
+
+# .data:0x1D4 | 0x80327ED4 | size: 0xC
+.obj "@19502", local
+	.4byte 0x545F6879
+	.4byte 0x7068656E
+	.4byte 0x5F303000
+.endobj "@19502"
+
+# .data:0x1E0 | 0x80327EE0 | size: 0xF
+.obj "@19503", local
+	.4byte 0x545F6D75
+	.4byte 0x6C746954
+	.4byte 0x6578745F
+	.byte 0x30, 0x30, 0x00
+.endobj "@19503"
+
+# .data:0x1EF | 0x80327EEF | size: 0x1
+.obj gap_07_80327EEF_data, global
+.hidden gap_07_80327EEF_data
+	.byte 0x00
+.endobj gap_07_80327EEF_data
+
+# .data:0x1F0 | 0x80327EF0 | size: 0xC
+.obj "@LOCAL@create__13Pausewindow_cFv@textBox2@4", local
+	.4byte "@19501"
+	.4byte "@19502"
+	.4byte "@19503"
+.endobj "@LOCAL@create__13Pausewindow_cFv@textBox2@4"
+
+# .data:0x1FC | 0x80327EFC | size: 0xC
+.obj "@19504", local
+	.4byte 0x505F5342
+	.4byte 0x42617365
+	.4byte 0x5F303000
+.endobj "@19504"
+
+# .data:0x208 | 0x80327F08 | size: 0xC
+.obj "@19505", local
+	.4byte 0x505F5342
+	.4byte 0x42617365
+	.4byte 0x5F303200
+.endobj "@19505"
+
+# .data:0x214 | 0x80327F14 | size: 0xE
+.obj "@19506", local
+	.4byte 0x505F7368
+	.4byte 0x61646F77
+	.4byte 0x426C6163
+	.2byte 0x6B00
+.endobj "@19506"
+
+# .data:0x222 | 0x80327F22 | size: 0x2
+.obj gap_07_80327F22_data, global
+.hidden gap_07_80327F22_data
+	.2byte 0x0000
+.endobj gap_07_80327F22_data
+
+# .data:0x224 | 0x80327F24 | size: 0xA
+.obj "@19507", local
+	.4byte 0x505F636F
+	.4byte 0x696E5F30
+	.2byte 0x3000
+.endobj "@19507"
+
+# .data:0x22E | 0x80327F2E | size: 0x2
+.obj gap_07_80327F2E_data, global
+.hidden gap_07_80327F2E_data
+	.2byte 0x0000
+.endobj gap_07_80327F2E_data
+
+# .data:0x230 | 0x80327F30 | size: 0x10
+.obj "@LOCAL@create__13Pausewindow_cFv@PPANE_NAME_DT@6", local
+	.4byte "@19504"
+	.4byte "@19505"
+	.4byte "@19506"
+	.4byte "@19507"
+.endobj "@LOCAL@create__13Pausewindow_cFv@PPANE_NAME_DT@6"
+
+# .data:0x240 | 0x80327F40 | size: 0x11
+.obj "@19508", local
+	.4byte 0x575F4E5F
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3030
+	.byte 0x00
+.endobj "@19508"
+
+# .data:0x251 | 0x80327F51 | size: 0x3
+.obj gap_07_80327F51_data, global
+.hidden gap_07_80327F51_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327F51_data
+
+# .data:0x254 | 0x80327F54 | size: 0xE
+.obj "@19509", local
+	.4byte 0x545F776F
+	.4byte 0x726C644E
+	.4byte 0x756D5F30
+	.2byte 0x3000
+.endobj "@19509"
+
+# .data:0x262 | 0x80327F62 | size: 0x2
+.obj gap_07_80327F62_data, global
+.hidden gap_07_80327F62_data
+	.2byte 0x0000
+.endobj gap_07_80327F62_data
+
+# .data:0x264 | 0x80327F64 | size: 0xE
+.obj "@19510", local
+	.4byte 0x545F636F
+	.4byte 0x7273654E
+	.4byte 0x756D5F30
+	.2byte 0x3000
+.endobj "@19510"
+
+# .data:0x272 | 0x80327F72 | size: 0x2
+.obj gap_07_80327F72_data, global
+.hidden gap_07_80327F72_data
+	.2byte 0x0000
+.endobj gap_07_80327F72_data
+
+# .data:0x274 | 0x80327F74 | size: 0xE
+.obj "@19511", local
+	.4byte 0x545F636F
+	.4byte 0x72736550
+	.4byte 0x69635F30
+	.2byte 0x3000
+.endobj "@19511"
+
+# .data:0x282 | 0x80327F82 | size: 0x2
+.obj gap_07_80327F82_data, global
+.hidden gap_07_80327F82_data
+	.2byte 0x0000
+.endobj gap_07_80327F82_data
+
+# .data:0x284 | 0x80327F84 | size: 0x11
+.obj "@19512", local
+	.4byte 0x545F6F73
+	.4byte 0x7573756D
+	.4byte 0x65546578
+	.4byte 0x745F3030
+	.byte 0x00
+.endobj "@19512"
+
+# .data:0x295 | 0x80327F95 | size: 0x3
+.obj gap_07_80327F95_data, global
+.hidden gap_07_80327F95_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327F95_data
+
+# .data:0x298 | 0x80327F98 | size: 0x20
+.obj "@LOCAL@create__13Pausewindow_cFv@T_PANE_NAME_TBL@8", local
+	.4byte "@19497"
+	.4byte "@19498"
+	.4byte "@19499"
+	.4byte "@19500"
+	.4byte "@19509"
+	.4byte "@19510"
+	.4byte "@19511"
+	.4byte "@19512"
+.endobj "@LOCAL@create__13Pausewindow_cFv@T_PANE_NAME_TBL@8"
+
+# .data:0x2B8 | 0x80327FB8 | size: 0xF
+.obj "@19513", local
+	.4byte 0x4E5F776F
+	.4byte 0x726C6454
+	.4byte 0x6578745F
+	.byte 0x30, 0x30, 0x00
+.endobj "@19513"
+
+# .data:0x2C7 | 0x80327FC7 | size: 0x1
+.obj gap_07_80327FC7_data, global
+.hidden gap_07_80327FC7_data
+	.byte 0x00
+.endobj gap_07_80327FC7_data
+
+# .data:0x2C8 | 0x80327FC8 | size: 0x11
+.obj "@19514", local
+	.4byte 0x4E5F6F73
+	.4byte 0x7573756D
+	.4byte 0x65546578
+	.4byte 0x745F3030
+	.byte 0x00
+.endobj "@19514"
+
+# .data:0x2D9 | 0x80327FD9 | size: 0x3
+.obj gap_07_80327FD9_data, global
+.hidden gap_07_80327FD9_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80327FD9_data
+
+# .data:0x2DC | 0x80327FDC | size: 0xF
+.obj "@19515", local
+	.4byte 0x4E5F6D75
+	.4byte 0x6C746954
+	.4byte 0x6578745F
+	.byte 0x30, 0x30, 0x00
+.endobj "@19515"
+
+# .data:0x2EB | 0x80327FEB | size: 0x1
+.obj gap_07_80327FEB_data, global
+.hidden gap_07_80327FEB_data
+	.byte 0x00
+.endobj gap_07_80327FEB_data
+
+# .data:0x2EC | 0x80327FEC | size: 0xC
+.obj "@LOCAL@create__13Pausewindow_cFv@NPANE_NAME_DT@9", local
+	.4byte "@19513"
+	.4byte "@19514"
+	.4byte "@19515"
+.endobj "@LOCAL@create__13Pausewindow_cFv@NPANE_NAME_DT@9"
+
+# .data:0x2F8 | 0x80327FF8 | size: 0x18
+.obj "@20401", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x752F7061
+	.4byte 0x7573654D
+	.4byte 0x656E752E
+	.4byte 0x61726300
+.endobj "@20401"
+
+# .data:0x310 | 0x80328010 | size: 0x13
+.obj "@20402", local
+	.4byte 0x70617573
+	.4byte 0x654D656E
+	.4byte 0x755F3136
+	.4byte 0x2E62726C
+	.byte 0x79, 0x74, 0x00
+.endobj "@20402"
+
+# .data:0x323 | 0x80328023 | size: 0x1
+.obj gap_07_80328023_data, global
+.hidden gap_07_80328023_data
+	.byte 0x00
+.endobj gap_07_80328023_data
+
+# .data:0x324 | 0x80328024 | size: 0x54
+.obj "@20456", local
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AADC
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AAE4
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AAE4
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AAEC
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AAEC
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB08
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB80
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB80
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB80
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB88
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB98
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015ABA0
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB50
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015ABBC
+	.rel setWorldCourseWrite__13Pausewindow_cFv, .L_8015AB90
+.endobj "@20456"
+
+# .data:0x378 | 0x80328078 | size: 0x50
+# Pausewindow_c::__vtable
+.obj __vt__13Pausewindow_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__13Pausewindow_cFv
+	.4byte preCreate__7dBase_cFv
+	.4byte postCreate__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__13Pausewindow_cFv
+	.4byte preDelete__7dBase_cFv
+	.4byte postDelete__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__13Pausewindow_cFv
+	.4byte preExecute__7dBase_cFv
+	.4byte postExecute__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__13Pausewindow_cFv
+	.4byte preDraw__7dBase_cFv
+	.4byte postDraw__7dBase_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__13Pausewindow_cFv
+	.4byte getKindString__7dBase_cCFv
+.endobj __vt__13Pausewindow_c
+
+# .data:0x3C8 | 0x803280C8 | size: 0x30
+# sFStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c>::__vtable
+.obj "__vt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>Fv"
+	.4byte "initializeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "executeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "finalizeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "changeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+	.4byte "refreshState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "getState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getNewStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getOldStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+.endobj "__vt__52sFStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c>"
+
+# .data:0x3F8 | 0x803280F8 | size: 0x30
+# sStateMgr_c<Pausewindow_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::__vtable
+.obj "__vt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "initializeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "executeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "finalizeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "changeState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+	.4byte "refreshState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+	.4byte "getState__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getNewStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+	.4byte "getOldStateID__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+.endobj "__vt__82sStateMgr_c<13Pausewindow_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"
+
+# .data:0x428 | 0x80328128 | size: 0x14
+# sFStateFct_c<Pausewindow_c>::__vtable
+.obj "__vt__29sFStateFct_c<13Pausewindow_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__29sFStateFct_c<13Pausewindow_c>Fv"
+	.4byte "build__29sFStateFct_c<13Pausewindow_c>FRC12sStateIDIf_c"
+	.4byte "dispose__29sFStateFct_c<13Pausewindow_c>FRP10sStateIf_c"
+.endobj "__vt__29sFStateFct_c<13Pausewindow_c>"
+
+# .data:0x43C | 0x8032813C | size: 0x4
+.obj gap_07_8032813C_data, global
+.hidden gap_07_8032813C_data
+	.4byte 0x00000000
+.endobj gap_07_8032813C_data
+
+# .data:0x440 | 0x80328140 | size: 0x18
+# sFState_c<Pausewindow_c>::__vtable
+.obj "__vt__26sFState_c<13Pausewindow_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__26sFState_c<13Pausewindow_c>Fv"
+	.4byte "initialize__26sFState_c<13Pausewindow_c>Fv"
+	.4byte "execute__26sFState_c<13Pausewindow_c>Fv"
+	.4byte "finalize__26sFState_c<13Pausewindow_c>Fv"
+.endobj "__vt__26sFState_c<13Pausewindow_c>"
+
+# .data:0x458 | 0x80328158 | size: 0x80
+.obj gap_07_80328158_data, global
+.hidden gap_07_80328158_data
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+.endobj gap_07_80328158_data
+
+# .data:0x4D8 | 0x803281D8 | size: 0xC
+.obj "@20565", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_InitWait__13Pausewindow_cFv
+.endobj "@20565"
+
+# .data:0x4E4 | 0x803281E4 | size: 0xC
+.obj "@20566", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_InitWait__13Pausewindow_cFv
+.endobj "@20566"
+
+# .data:0x4F0 | 0x803281F0 | size: 0xC
+.obj "@20567", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_InitWait__13Pausewindow_cFv
+.endobj "@20567"
+
+# .data:0x4FC | 0x803281FC | size: 0xC
+.obj "@20568", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_OpenAnimeEndWait__13Pausewindow_cFv
+.endobj "@20568"
+
+# .data:0x508 | 0x80328208 | size: 0xC
+.obj "@20569", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_OpenAnimeEndWait__13Pausewindow_cFv
+.endobj "@20569"
+
+# .data:0x514 | 0x80328214 | size: 0xC
+.obj "@20570", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_OpenAnimeEndWait__13Pausewindow_cFv
+.endobj "@20570"
+
+# .data:0x520 | 0x80328220 | size: 0xC
+.obj "@20571", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv
+.endobj "@20571"
+
+# .data:0x52C | 0x8032822C | size: 0xC
+.obj "@20572", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv
+.endobj "@20572"
+
+# .data:0x538 | 0x80328238 | size: 0xC
+.obj "@20573", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_ButtonChangeAnimeEndWait__13Pausewindow_cFv
+.endobj "@20573"
+
+# .data:0x544 | 0x80328244 | size: 0xC
+.obj "@20574", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_PauseDisp__13Pausewindow_cFv
+.endobj "@20574"
+
+# .data:0x550 | 0x80328250 | size: 0xC
+.obj "@20575", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_PauseDisp__13Pausewindow_cFv
+.endobj "@20575"
+
+# .data:0x55C | 0x8032825C | size: 0xC
+.obj "@20576", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_PauseDisp__13Pausewindow_cFv
+.endobj "@20576"
+
+# .data:0x568 | 0x80328268 | size: 0xC
+.obj "@20577", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_HitAnimeEndWait__13Pausewindow_cFv
+.endobj "@20577"
+
+# .data:0x574 | 0x80328274 | size: 0xC
+.obj "@20578", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_HitAnimeEndWait__13Pausewindow_cFv
+.endobj "@20578"
+
+# .data:0x580 | 0x80328280 | size: 0xC
+.obj "@20579", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_HitAnimeEndWait__13Pausewindow_cFv
+.endobj "@20579"
+
+# .data:0x58C | 0x8032828C | size: 0xC
+.obj "@20580", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_ClouseAnimeEndWait__13Pausewindow_cFv
+.endobj "@20580"
+
+# .data:0x598 | 0x80328298 | size: 0xC
+.obj "@20581", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_ClouseAnimeEndWait__13Pausewindow_cFv
+.endobj "@20581"
+
+# .data:0x5A4 | 0x803282A4 | size: 0xC
+.obj "@20582", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_ClouseAnimeEndWait__13Pausewindow_cFv
+.endobj "@20582"
+
+# .data:0x5B0 | 0x803282B0 | size: 0x20
+.obj "@20595", local
+	.4byte 0x50617573
+	.4byte 0x6577696E
+	.4byte 0x646F775F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F49
+	.4byte 0x6E697457
+	.4byte 0x61697400
+.endobj "@20595"
+
+# .data:0x5D0 | 0x803282D0 | size: 0x28
+.obj "@20596", local
+	.4byte 0x50617573
+	.4byte 0x6577696E
+	.4byte 0x646F775F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F4F
+	.4byte 0x70656E41
+	.4byte 0x6E696D65
+	.4byte 0x456E6457
+	.4byte 0x61697400
+.endobj "@20596"
+
+# .data:0x5F8 | 0x803282F8 | size: 0x30
+.obj "@20597", local
+	.4byte 0x50617573
+	.4byte 0x6577696E
+	.4byte 0x646F775F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F42
+	.4byte 0x7574746F
+	.4byte 0x6E436861
+	.4byte 0x6E676541
+	.4byte 0x6E696D65
+	.4byte 0x456E6457
+	.4byte 0x61697400
+.endobj "@20597"
+
+# .data:0x628 | 0x80328328 | size: 0x21
+.obj "@20598", local
+	.4byte 0x50617573
+	.4byte 0x6577696E
+	.4byte 0x646F775F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F50
+	.4byte 0x61757365
+	.4byte 0x44697370
+	.byte 0x00
+.endobj "@20598"
+
+# .data:0x649 | 0x80328349 | size: 0x3
+.obj gap_07_80328349_data, global
+.hidden gap_07_80328349_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_80328349_data
+
+# .data:0x64C | 0x8032834C | size: 0x27
+.obj "@20599", local
+	.4byte 0x50617573
+	.4byte 0x6577696E
+	.4byte 0x646F775F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F48
+	.4byte 0x6974416E
+	.4byte 0x696D6545
+	.4byte 0x6E645761
+	.byte 0x69, 0x74, 0x00
+.endobj "@20599"
+
+# .data:0x673 | 0x80328373 | size: 0x1
+.obj gap_07_80328373_data, global
+.hidden gap_07_80328373_data
+	.byte 0x00
+.endobj gap_07_80328373_data
+
+# .data:0x674 | 0x80328374 | size: 0x2A
+.obj "@20600", local
+	.4byte 0x50617573
+	.4byte 0x6577696E
+	.4byte 0x646F775F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F43
+	.4byte 0x6C6F7573
+	.4byte 0x65416E69
+	.4byte 0x6D65456E
+	.4byte 0x64576169
+	.2byte 0x7400
+.endobj "@20600"
+
+# .data:0x69E | 0x8032839E | size: 0x2
+.obj gap_07_8032839E_data, global
+.hidden gap_07_8032839E_data
+	.2byte 0x0000
+.endobj gap_07_8032839E_data
+
+# .data:0x6A0 | 0x803283A0 | size: 0x34
+# sFStateID_c<Pausewindow_c>::__vtable
+.obj "__vt__28sFStateID_c<13Pausewindow_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__28sFStateID_c<13Pausewindow_c>Fv"
+	.4byte isNull__10sStateID_cCFv
+	.4byte isEqual__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __eq__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __ne__10sStateID_cCFRC12sStateIDIf_c
+	.4byte "isSameName__28sFStateID_c<13Pausewindow_c>CFPCc"
+	.4byte name__10sStateID_cCFv
+	.4byte number__10sStateID_cCFv
+	.4byte "initializeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c"
+	.4byte "executeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c"
+	.4byte "finalizeState__28sFStateID_c<13Pausewindow_c>CFR13Pausewindow_c"
+.endobj "__vt__28sFStateID_c<13Pausewindow_c>"
+
+# .data:0x6D4 | 0x803283D4 | size: 0x4
+.obj gap_07_803283D4_data, global
+.hidden gap_07_803283D4_data
+	.4byte 0x00000000
+.endobj gap_07_803283D4_data
+
+# 0x80377468..0x803775F0 | size: 0x188
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | 0x80377468 | size: 0xC
+.obj "@14465", local
+	.skip 0xC
+.endobj "@14465"
+
+# .bss:0xC | 0x80377474 | size: 0xC
+.obj "@19410", local
+	.skip 0xC
+.endobj "@19410"
+
+# .bss:0x18 | 0x80377480 | size: 0x30
+# Pausewindow_c::StateID_InitWait
+.obj StateID_InitWait__13Pausewindow_c, global
+	.skip 0x30
+.endobj StateID_InitWait__13Pausewindow_c
+
+# .bss:0x48 | 0x803774B0 | size: 0xC
+.obj "@19414", local
+	.skip 0xC
+.endobj "@19414"
+
+# .bss:0x54 | 0x803774BC | size: 0x4
+.obj gap_08_803774BC_bss, global
+.hidden gap_08_803774BC_bss
+	.skip 0x4
+.endobj gap_08_803774BC_bss
+
+# .bss:0x58 | 0x803774C0 | size: 0x30
+# Pausewindow_c::StateID_OpenAnimeEndWait
+.obj StateID_OpenAnimeEndWait__13Pausewindow_c, global
+	.skip 0x30
+.endobj StateID_OpenAnimeEndWait__13Pausewindow_c
+
+# .bss:0x88 | 0x803774F0 | size: 0xC
+.obj "@19418", local
+	.skip 0xC
+.endobj "@19418"
+
+# .bss:0x94 | 0x803774FC | size: 0x4
+.obj gap_08_803774FC_bss, global
+.hidden gap_08_803774FC_bss
+	.skip 0x4
+.endobj gap_08_803774FC_bss
+
+# .bss:0x98 | 0x80377500 | size: 0x30
+# Pausewindow_c::StateID_ButtonChangeAnimeEndWait
+.obj StateID_ButtonChangeAnimeEndWait__13Pausewindow_c, global
+	.skip 0x30
+.endobj StateID_ButtonChangeAnimeEndWait__13Pausewindow_c
+
+# .bss:0xC8 | 0x80377530 | size: 0xC
+.obj "@19422", local
+	.skip 0xC
+.endobj "@19422"
+
+# .bss:0xD4 | 0x8037753C | size: 0x4
+.obj gap_08_8037753C_bss, global
+.hidden gap_08_8037753C_bss
+	.skip 0x4
+.endobj gap_08_8037753C_bss
+
+# .bss:0xD8 | 0x80377540 | size: 0x30
+# Pausewindow_c::StateID_PauseDisp
+.obj StateID_PauseDisp__13Pausewindow_c, global
+	.skip 0x30
+.endobj StateID_PauseDisp__13Pausewindow_c
+
+# .bss:0x108 | 0x80377570 | size: 0xC
+.obj "@19426", local
+	.skip 0xC
+.endobj "@19426"
+
+# .bss:0x114 | 0x8037757C | size: 0x4
+.obj gap_08_8037757C_bss, global
+.hidden gap_08_8037757C_bss
+	.skip 0x4
+.endobj gap_08_8037757C_bss
+
+# .bss:0x118 | 0x80377580 | size: 0x30
+# Pausewindow_c::StateID_HitAnimeEndWait
+.obj StateID_HitAnimeEndWait__13Pausewindow_c, global
+	.skip 0x30
+.endobj StateID_HitAnimeEndWait__13Pausewindow_c
+
+# .bss:0x148 | 0x803775B0 | size: 0xC
+.obj "@19430", local
+	.skip 0xC
+.endobj "@19430"
+
+# .bss:0x154 | 0x803775BC | size: 0x4
+.obj gap_08_803775BC_bss, global
+.hidden gap_08_803775BC_bss
+	.skip 0x4
+.endobj gap_08_803775BC_bss
+
+# .bss:0x158 | 0x803775C0 | size: 0x30
+# Pausewindow_c::StateID_ClouseAnimeEndWait
+.obj StateID_ClouseAnimeEndWait__13Pausewindow_c, global
+	.skip 0x30
+.endobj StateID_ClouseAnimeEndWait__13Pausewindow_c
+
+# 0x804296D0..0x804296E8 | size: 0x18
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x804296D0 | size: 0x5
+.obj "@14462", local
+	.4byte 0x46374330
+	.byte 0x00
+.endobj "@14462"
+
+# .sdata:0x5 | 0x804296D5 | size: 0x3
+.obj gap_09_804296D5_sdata, global
+.hidden gap_09_804296D5_sdata
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_804296D5_sdata
+
+# .sdata:0x8 | 0x804296D8 | size: 0x5
+.obj "@14463", local
+	.4byte 0x57374330
+	.byte 0x00
+.endobj "@14463"
+
+# .sdata:0xD | 0x804296DD | size: 0x3
+.obj gap_09_804296DD_sdata, global
+.hidden gap_09_804296DD_sdata
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_804296DD_sdata
+
+# .sdata:0x10 | 0x804296E0 | size: 0x4
+.obj "@LOCAL@create__13Pausewindow_cFv@WPANE_NAME_DT@7", local
+	.4byte "@19508"
+.endobj "@LOCAL@create__13Pausewindow_cFv@WPANE_NAME_DT@7"
+
+# .sdata:0x14 | 0x804296E4 | size: 0x4
+.obj gap_09_804296E4_sdata, global
+.hidden gap_09_804296E4_sdata
+	.4byte 0x00000000
+.endobj gap_09_804296E4_sdata
+
+# 0x8042A618..0x8042A620 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A618 | size: 0x4
+# dWmLib::c_StartPointKinokoHouseID
+.obj c_StartPointKinokoHouseID__6dWmLib, local
+	.skip 0x4
+.endobj c_StartPointKinokoHouseID__6dWmLib
+
+# .sbss:0x4 | 0x8042A61C | size: 0x4
+# Pausewindow_c::m_instance
+.obj m_instance__13Pausewindow_c, global
+	.skip 0x4
+.endobj m_instance__13Pausewindow_c
+
+# 0x8042DEB8..0x8042DED0 | size: 0x18
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042DEB8 | size: 0x8
+# Pausewindow_c::SelectCursorSetup()::PANE_IDX_TBL
+.obj "@LOCAL@SelectCursorSetup__13Pausewindow_cFv@PANE_IDX_TBL", local
+	.4byte 0x00000000
+	.4byte 0x00000001
+.endobj "@LOCAL@SelectCursorSetup__13Pausewindow_cFv@PANE_IDX_TBL"
+
+# .sdata2:0x8 | 0x8042DEC0 | size: 0x4
+.obj "@20592", local
+	.4byte 0x45070000
+.endobj "@20592"
+
+# .sdata2:0xC | 0x8042DEC4 | size: 0x4
+.obj "@20593", local
+	.4byte 0xC1F00000
+.endobj "@20593"
+
+# .sdata2:0x10 | 0x8042DEC8 | size: 0x4
+.obj "@20594", local
+	.4byte 0xC3EF0000
+.endobj "@20594"
+
+# .sdata2:0x14 | 0x8042DECC | size: 0x4
+.obj gap_11_8042DECC_sdata2, global
+.hidden gap_11_8042DECC_sdata2
+	.4byte 0x00000000
+.endobj gap_11_8042DECC_sdata2

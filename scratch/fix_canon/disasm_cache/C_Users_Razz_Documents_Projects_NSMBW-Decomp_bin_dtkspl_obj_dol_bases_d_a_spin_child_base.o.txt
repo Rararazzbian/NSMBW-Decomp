@@ -1,0 +1,912 @@
+.include "macros.inc"
+.file "d_a_spin_child_base.cpp"
+
+# 0x80063820..0x80063F80 | size: 0x760
+.text
+.balign 4
+
+# .text:0x0 | 0x80063820 | size: 0x58
+# daSpinChildBase_c::searchParent(unsigned int)
+.fn searchParent__17daSpinChildBase_cFUi, global
+/* 80063820 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063824 00000044  7C 08 02 A6 */	mflr r0
+/* 80063828 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006382C 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063830 00000050  7C 7F 1B 78 */	mr r31, r3
+/* 80063834 00000054  38 60 00 00 */	li r3, 0x0
+/* 80063838 00000058  48 00 00 14 */	b .L_8006384C
+.L_8006383C:
+/* 8006383C 0000005C  88 03 04 38 */	lbz r0, 0x438(r3)
+/* 80063840 00000060  7C 1F 00 40 */	cmplw r31, r0
+/* 80063844 00000064  40 82 00 08 */	bne .L_8006384C
+/* 80063848 00000068  48 00 00 1C */	b .L_80063864
+.L_8006384C:
+/* 8006384C 0000006C  7C 64 1B 78 */	mr r4, r3
+/* 80063850 00000070  38 60 02 3C */	li r3, 0x23c
+/* 80063854 00000074  48 00 00 01 */	bl searchBaseByProfName__10fManager_cFUsPC7fBase_c
+/* 80063858 00000078  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006385C 0000007C  40 82 FF E0 */	bne .L_8006383C
+/* 80063860 00000080  38 60 00 00 */	li r3, 0x0
+.L_80063864:
+/* 80063864 00000084  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063868 00000088  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006386C 0000008C  7C 08 03 A6 */	mtlr r0
+/* 80063870 00000090  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063874 00000094  4E 80 00 20 */	blr
+.endfn searchParent__17daSpinChildBase_cFUi
+
+# .text:0x58 | 0x80063878 | size: 0x8
+.fn gap_03_80063878_text, global
+.hidden gap_03_80063878_text
+/* 80063878 00000098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006387C 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063878_text
+
+# .text:0x60 | 0x80063880 | size: 0xC
+# daSpinChildBase_c::setParentInfo(dActor_c*)
+.fn setParentInfo__17daSpinChildBase_cFP8dActor_c, global
+/* 80063880 000000A0  80 04 00 00 */	lwz r0, 0x0(r4)
+/* 80063884 000000A4  90 03 03 D0 */	stw r0, 0x3d0(r3)
+/* 80063888 000000A8  4E 80 00 20 */	blr
+.endfn setParentInfo__17daSpinChildBase_cFP8dActor_c
+
+# .text:0x6C | 0x8006388C | size: 0x4
+.fn gap_03_8006388C_text, global
+.hidden gap_03_8006388C_text
+/* 8006388C 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006388C_text
+
+# .text:0x70 | 0x80063890 | size: 0x6C
+# daSpinChildBase_c::move_with_parent(dActor_c*)
+.fn move_with_parent__17daSpinChildBase_cFP8dActor_c, global
+/* 80063890 000000B0  88 03 03 DD */	lbz r0, 0x3dd(r3)
+/* 80063894 000000B4  C0 24 04 34 */	lfs f1, 0x434(r4)
+/* 80063898 000000B8  C0 03 03 D4 */	lfs f0, 0x3d4(r3)
+/* 8006389C 000000BC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800638A0 000000C0  EC 21 00 32 */	fmuls f1, f1, f0
+/* 800638A4 000000C4  41 82 00 18 */	beq .L_800638BC
+/* 800638A8 000000C8  2C 00 00 01 */	cmpwi r0, 0x1
+/* 800638AC 000000CC  41 82 00 20 */	beq .L_800638CC
+/* 800638B0 000000D0  2C 00 00 02 */	cmpwi r0, 0x2
+/* 800638B4 000000D4  41 82 00 28 */	beq .L_800638DC
+/* 800638B8 000000D8  48 00 00 34 */	b .L_800638EC
+.L_800638BC:
+/* 800638BC 000000DC  C0 03 03 D8 */	lfs f0, 0x3d8(r3)
+/* 800638C0 000000E0  EC 00 08 2A */	fadds f0, f0, f1
+/* 800638C4 000000E4  D0 03 00 AC */	stfs f0, 0xac(r3)
+/* 800638C8 000000E8  4E 80 00 20 */	blr
+.L_800638CC:
+/* 800638CC 000000EC  C0 03 03 D8 */	lfs f0, 0x3d8(r3)
+/* 800638D0 000000F0  EC 00 08 28 */	fsubs f0, f0, f1
+/* 800638D4 000000F4  D0 03 00 AC */	stfs f0, 0xac(r3)
+/* 800638D8 000000F8  4E 80 00 20 */	blr
+.L_800638DC:
+/* 800638DC 000000FC  C0 03 03 D8 */	lfs f0, 0x3d8(r3)
+/* 800638E0 00000100  EC 00 08 2A */	fadds f0, f0, f1
+/* 800638E4 00000104  D0 03 00 B0 */	stfs f0, 0xb0(r3)
+/* 800638E8 00000108  4E 80 00 20 */	blr
+.L_800638EC:
+/* 800638EC 0000010C  C0 03 03 D8 */	lfs f0, 0x3d8(r3)
+/* 800638F0 00000110  EC 00 08 28 */	fsubs f0, f0, f1
+/* 800638F4 00000114  D0 03 00 B0 */	stfs f0, 0xb0(r3)
+/* 800638F8 00000118  4E 80 00 20 */	blr
+.endfn move_with_parent__17daSpinChildBase_cFP8dActor_c
+
+# .text:0xDC | 0x800638FC | size: 0x4
+.fn gap_03_800638FC_text, global
+.hidden gap_03_800638FC_text
+/* 800638FC 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800638FC_text
+
+# .text:0xE0 | 0x80063900 | size: 0x54
+# daSpinChildBase_c::move_with_parent()
+.fn move_with_parent__17daSpinChildBase_cFv, global
+/* 80063900 00000120  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063904 00000124  7C 08 02 A6 */	mflr r0
+/* 80063908 00000128  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006390C 0000012C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063910 00000130  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80063914 00000134  7C 7E 1B 78 */	mr r30, r3
+/* 80063918 00000138  80 63 03 D0 */	lwz r3, 0x3d0(r3)
+/* 8006391C 0000013C  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 80063920 00000140  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063924 00000144  7C 7F 1B 78 */	mr r31, r3
+/* 80063928 00000148  41 82 00 10 */	beq .L_80063938
+/* 8006392C 0000014C  7F C3 F3 78 */	mr r3, r30
+/* 80063930 00000150  7F E4 FB 78 */	mr r4, r31
+/* 80063934 00000154  48 00 00 01 */	bl move_with_parent__17daSpinChildBase_cFP8dActor_c
+.L_80063938:
+/* 80063938 00000158  7F E3 FB 78 */	mr r3, r31
+/* 8006393C 0000015C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80063940 00000160  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80063944 00000164  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063948 00000168  7C 08 03 A6 */	mtlr r0
+/* 8006394C 0000016C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063950 00000170  4E 80 00 20 */	blr
+.endfn move_with_parent__17daSpinChildBase_cFv
+
+# .text:0x134 | 0x80063954 | size: 0xC
+.fn gap_03_80063954_text, global
+.hidden gap_03_80063954_text
+/* 80063954 00000174  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063958 00000178  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006395C 0000017C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063954_text
+
+# .text:0x140 | 0x80063960 | size: 0x7C
+# daSpinChildBase_c::setParentInfo(unsigned int)
+.fn setParentInfo__17daSpinChildBase_cFUi, global
+/* 80063960 00000180  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063964 00000184  7C 08 02 A6 */	mflr r0
+/* 80063968 00000188  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006396C 0000018C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063970 00000190  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80063974 00000194  7C 7E 1B 78 */	mr r30, r3
+/* 80063978 00000198  7C 83 23 78 */	mr r3, r4
+/* 8006397C 0000019C  48 00 00 01 */	bl searchParent__17daSpinChildBase_cFUi
+/* 80063980 000001A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063984 000001A4  7C 7F 1B 78 */	mr r31, r3
+/* 80063988 000001A8  41 82 00 38 */	beq .L_800639C0
+/* 8006398C 000001AC  7F C3 F3 78 */	mr r3, r30
+/* 80063990 000001B0  7F E4 FB 78 */	mr r4, r31
+/* 80063994 000001B4  48 00 00 01 */	bl setParentInfo__17daSpinChildBase_cFP8dActor_c
+/* 80063998 000001B8  7F C3 F3 78 */	mr r3, r30
+/* 8006399C 000001BC  7F E4 FB 78 */	mr r4, r31
+/* 800639A0 000001C0  48 00 00 01 */	bl move_with_parent__17daSpinChildBase_cFP8dActor_c
+/* 800639A4 000001C4  81 9E 03 94 */	lwz r12, 0x394(r30)
+/* 800639A8 000001C8  3C 80 00 00 */	lis r4, StateID_Move__17daSpinChildBase_c@ha
+/* 800639AC 000001CC  38 7E 03 94 */	addi r3, r30, 0x394
+/* 800639B0 000001D0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800639B4 000001D4  38 84 00 00 */	addi r4, r4, StateID_Move__17daSpinChildBase_c@l
+/* 800639B8 000001D8  7D 89 03 A6 */	mtctr r12
+/* 800639BC 000001DC  4E 80 04 21 */	bctrl
+.L_800639C0:
+/* 800639C0 000001E0  7F E3 FB 78 */	mr r3, r31
+/* 800639C4 000001E4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800639C8 000001E8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800639CC 000001EC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800639D0 000001F0  7C 08 03 A6 */	mtlr r0
+/* 800639D4 000001F4  38 21 00 10 */	addi r1, r1, 0x10
+/* 800639D8 000001F8  4E 80 00 20 */	blr
+.endfn setParentInfo__17daSpinChildBase_cFUi
+
+# .text:0x1BC | 0x800639DC | size: 0x4
+.fn gap_03_800639DC_text, global
+.hidden gap_03_800639DC_text
+/* 800639DC 000001FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800639DC_text
+
+# .text:0x1C0 | 0x800639E0 | size: 0xE0
+# daSpinChildBase_c::create()
+.fn create__17daSpinChildBase_cFv, global
+/* 800639E0 00000200  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800639E4 00000204  7C 08 02 A6 */	mflr r0
+/* 800639E8 00000208  3C 80 43 30 */	lis r4, 0x4330
+/* 800639EC 0000020C  C8 20 00 00 */	lfd f1, "@13169"@sda21(r0)
+/* 800639F0 00000210  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800639F4 00000214  38 C0 00 00 */	li r6, 0x0
+/* 800639F8 00000218  38 00 00 03 */	li r0, 0x3
+/* 800639FC 0000021C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80063A00 00000220  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80063A04 00000224  7C 7E 1B 78 */	mr r30, r3
+/* 80063A08 00000228  80 E3 00 04 */	lwz r7, 0x4(r3)
+/* 80063A0C 0000022C  90 81 00 08 */	stw r4, 0x8(r1)
+/* 80063A10 00000230  54 E5 C7 FE */	extrwi r5, r7, 1, 23
+/* 80063A14 00000234  54 FF 27 3E */	srwi r31, r7, 28
+/* 80063A18 00000238  90 A1 00 0C */	stw r5, 0xc(r1)
+/* 80063A1C 0000023C  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 80063A20 00000240  90 C3 03 D0 */	stw r6, 0x3d0(r3)
+/* 80063A24 00000244  EC 00 08 28 */	fsubs f0, f0, f1
+/* 80063A28 00000248  9B E3 03 DC */	stb r31, 0x3dc(r3)
+/* 80063A2C 0000024C  D0 03 03 D4 */	stfs f0, 0x3d4(r3)
+/* 80063A30 00000250  98 03 03 DD */	stb r0, 0x3dd(r3)
+/* 80063A34 00000254  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80063A38 00000258  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 80063A3C 0000025C  7D 89 03 A6 */	mtctr r12
+/* 80063A40 00000260  4E 80 04 21 */	bctrl
+/* 80063A44 00000264  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063A48 00000268  40 82 00 0C */	bne .L_80063A54
+/* 80063A4C 0000026C  38 60 00 00 */	li r3, 0x0
+/* 80063A50 00000270  48 00 00 58 */	b .L_80063AA8
+.L_80063A54:
+/* 80063A54 00000274  88 1E 03 DD */	lbz r0, 0x3dd(r30)
+/* 80063A58 00000278  28 00 00 01 */	cmplwi r0, 0x1
+/* 80063A5C 0000027C  41 81 00 10 */	bgt .L_80063A6C
+/* 80063A60 00000280  C0 1E 00 AC */	lfs f0, 0xac(r30)
+/* 80063A64 00000284  D0 1E 03 D8 */	stfs f0, 0x3d8(r30)
+/* 80063A68 00000288  48 00 00 0C */	b .L_80063A74
+.L_80063A6C:
+/* 80063A6C 0000028C  C0 1E 00 B0 */	lfs f0, 0xb0(r30)
+/* 80063A70 00000290  D0 1E 03 D8 */	stfs f0, 0x3d8(r30)
+.L_80063A74:
+/* 80063A74 00000294  7F C3 F3 78 */	mr r3, r30
+/* 80063A78 00000298  7F E4 FB 78 */	mr r4, r31
+/* 80063A7C 0000029C  48 00 00 01 */	bl setParentInfo__17daSpinChildBase_cFUi
+/* 80063A80 000002A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063A84 000002A4  40 82 00 20 */	bne .L_80063AA4
+/* 80063A88 000002A8  81 9E 03 94 */	lwz r12, 0x394(r30)
+/* 80063A8C 000002AC  3C 80 00 00 */	lis r4, StateID_SearchID__17daSpinChildBase_c@ha
+/* 80063A90 000002B0  38 7E 03 94 */	addi r3, r30, 0x394
+/* 80063A94 000002B4  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80063A98 000002B8  38 84 00 00 */	addi r4, r4, StateID_SearchID__17daSpinChildBase_c@l
+/* 80063A9C 000002BC  7D 89 03 A6 */	mtctr r12
+/* 80063AA0 000002C0  4E 80 04 21 */	bctrl
+.L_80063AA4:
+/* 80063AA4 000002C4  38 60 00 01 */	li r3, 0x1
+.L_80063AA8:
+/* 80063AA8 000002C8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80063AAC 000002CC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80063AB0 000002D0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80063AB4 000002D4  7C 08 03 A6 */	mtlr r0
+/* 80063AB8 000002D8  38 21 00 20 */	addi r1, r1, 0x20
+/* 80063ABC 000002DC  4E 80 00 20 */	blr
+.endfn create__17daSpinChildBase_cFv
+
+# .text:0x2A0 | 0x80063AC0 | size: 0x9C
+# daSpinChildBase_c::execute()
+.fn execute__17daSpinChildBase_cFv, global
+/* 80063AC0 000002E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063AC4 000002E4  7C 08 02 A6 */	mflr r0
+/* 80063AC8 000002E8  38 80 00 00 */	li r4, 0x0
+/* 80063ACC 000002EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063AD0 000002F0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063AD4 000002F4  7C 7F 1B 78 */	mr r31, r3
+/* 80063AD8 000002F8  48 00 00 01 */	bl ActorScrOutCheck__8dActor_cFUs
+/* 80063ADC 000002FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063AE0 00000300  41 82 00 0C */	beq .L_80063AEC
+/* 80063AE4 00000304  38 60 00 01 */	li r3, 0x1
+/* 80063AE8 00000308  48 00 00 60 */	b .L_80063B48
+.L_80063AEC:
+/* 80063AEC 0000030C  80 1F 03 D0 */	lwz r0, 0x3d0(r31)
+/* 80063AF0 00000310  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80063AF4 00000314  41 82 00 28 */	beq .L_80063B1C
+/* 80063AF8 00000318  7F E3 FB 78 */	mr r3, r31
+/* 80063AFC 0000031C  48 00 00 01 */	bl move_with_parent__17daSpinChildBase_cFv
+/* 80063B00 00000320  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063B04 00000324  40 82 00 18 */	bne .L_80063B1C
+/* 80063B08 00000328  7F E3 FB 78 */	mr r3, r31
+/* 80063B0C 0000032C  38 80 00 01 */	li r4, 0x1
+/* 80063B10 00000330  48 00 00 01 */	bl deleteActor__8dActor_cFUc
+/* 80063B14 00000334  38 60 00 01 */	li r3, 0x1
+/* 80063B18 00000338  48 00 00 30 */	b .L_80063B48
+.L_80063B1C:
+/* 80063B1C 0000033C  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 80063B20 00000340  38 7F 03 94 */	addi r3, r31, 0x394
+/* 80063B24 00000344  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80063B28 00000348  7D 89 03 A6 */	mtctr r12
+/* 80063B2C 0000034C  4E 80 04 21 */	bctrl
+/* 80063B30 00000350  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 80063B34 00000354  7F E3 FB 78 */	mr r3, r31
+/* 80063B38 00000358  81 8C 00 E8 */	lwz r12, 0xe8(r12)
+/* 80063B3C 0000035C  7D 89 03 A6 */	mtctr r12
+/* 80063B40 00000360  4E 80 04 21 */	bctrl
+/* 80063B44 00000364  38 60 00 01 */	li r3, 0x1
+.L_80063B48:
+/* 80063B48 00000368  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063B4C 0000036C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80063B50 00000370  7C 08 03 A6 */	mtlr r0
+/* 80063B54 00000374  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063B58 00000378  4E 80 00 20 */	blr
+.endfn execute__17daSpinChildBase_cFv
+
+# .text:0x33C | 0x80063B5C | size: 0x4
+.fn gap_03_80063B5C_text, global
+.hidden gap_03_80063B5C_text
+/* 80063B5C 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063B5C_text
+
+# .text:0x340 | 0x80063B60 | size: 0x4C
+# daSpinChildBase_c::preDraw()
+.fn preDraw__17daSpinChildBase_cFv, global
+/* 80063B60 00000380  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063B64 00000384  7C 08 02 A6 */	mflr r0
+/* 80063B68 00000388  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063B6C 0000038C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063B70 00000390  7C 7F 1B 78 */	mr r31, r3
+/* 80063B74 00000394  48 00 00 01 */	bl preDraw__8dActor_cFv
+/* 80063B78 00000398  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063B7C 0000039C  40 82 00 0C */	bne .L_80063B88
+/* 80063B80 000003A0  38 60 00 00 */	li r3, 0x0
+/* 80063B84 000003A4  48 00 00 14 */	b .L_80063B98
+.L_80063B88:
+/* 80063B88 000003A8  80 7F 03 D0 */	lwz r3, 0x3d0(r31)
+/* 80063B8C 000003AC  7C 03 00 D0 */	neg r0, r3
+/* 80063B90 000003B0  7C 00 1B 78 */	or r0, r0, r3
+/* 80063B94 000003B4  54 03 0F FE */	srwi r3, r0, 31
+.L_80063B98:
+/* 80063B98 000003B8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063B9C 000003BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80063BA0 000003C0  7C 08 03 A6 */	mtlr r0
+/* 80063BA4 000003C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063BA8 000003C8  4E 80 00 20 */	blr
+.endfn preDraw__17daSpinChildBase_cFv
+
+# .text:0x38C | 0x80063BAC | size: 0x4
+.fn gap_03_80063BAC_text, global
+.hidden gap_03_80063BAC_text
+/* 80063BAC 000003CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063BAC_text
+
+# .text:0x390 | 0x80063BB0 | size: 0x8
+# daSpinChildBase_c::init()
+.fn init__17daSpinChildBase_cFv, global
+/* 80063BB0 000003D0  38 60 00 01 */	li r3, 0x1
+/* 80063BB4 000003D4  4E 80 00 20 */	blr
+.endfn init__17daSpinChildBase_cFv
+
+# .text:0x398 | 0x80063BB8 | size: 0x8
+.fn gap_03_80063BB8_text, global
+.hidden gap_03_80063BB8_text
+/* 80063BB8 000003D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BBC 000003DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063BB8_text
+
+# .text:0x3A0 | 0x80063BC0 | size: 0x4
+# daSpinChildBase_c::init_move()
+.fn init_move__17daSpinChildBase_cFv, global
+/* 80063BC0 000003E0  4E 80 00 20 */	blr
+.endfn init_move__17daSpinChildBase_cFv
+
+# .text:0x3A4 | 0x80063BC4 | size: 0xC
+.fn gap_03_80063BC4_text, global
+.hidden gap_03_80063BC4_text
+/* 80063BC4 000003E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BC8 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BCC 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063BC4_text
+
+# .text:0x3B0 | 0x80063BD0 | size: 0x4
+# daSpinChildBase_c::post_execute_state()
+.fn post_execute_state__17daSpinChildBase_cFv, global
+/* 80063BD0 000003F0  4E 80 00 20 */	blr
+.endfn post_execute_state__17daSpinChildBase_cFv
+
+# .text:0x3B4 | 0x80063BD4 | size: 0xC
+.fn gap_03_80063BD4_text, global
+.hidden gap_03_80063BD4_text
+/* 80063BD4 000003F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BD8 000003F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BDC 000003FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063BD4_text
+
+# .text:0x3C0 | 0x80063BE0 | size: 0x4
+# daSpinChildBase_c::initializeState_SearchID()
+.fn initializeState_SearchID__17daSpinChildBase_cFv, global
+/* 80063BE0 00000400  4E 80 00 20 */	blr
+.endfn initializeState_SearchID__17daSpinChildBase_cFv
+
+# .text:0x3C4 | 0x80063BE4 | size: 0xC
+.fn gap_03_80063BE4_text, global
+.hidden gap_03_80063BE4_text
+/* 80063BE4 00000404  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BE8 00000408  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BEC 0000040C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063BE4_text
+
+# .text:0x3D0 | 0x80063BF0 | size: 0x4
+# daSpinChildBase_c::finalizeState_SearchID()
+.fn finalizeState_SearchID__17daSpinChildBase_cFv, global
+/* 80063BF0 00000410  4E 80 00 20 */	blr
+.endfn finalizeState_SearchID__17daSpinChildBase_cFv
+
+# .text:0x3D4 | 0x80063BF4 | size: 0xC
+.fn gap_03_80063BF4_text, global
+.hidden gap_03_80063BF4_text
+/* 80063BF4 00000414  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BF8 00000418  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063BFC 0000041C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063BF4_text
+
+# .text:0x3E0 | 0x80063C00 | size: 0x8
+# daSpinChildBase_c::executeState_SearchID()
+.fn executeState_SearchID__17daSpinChildBase_cFv, global
+/* 80063C00 00000420  88 83 03 DC */	lbz r4, 0x3dc(r3)
+/* 80063C04 00000424  48 00 00 00 */	b setParentInfo__17daSpinChildBase_cFUi
+.endfn executeState_SearchID__17daSpinChildBase_cFv
+
+# .text:0x3E8 | 0x80063C08 | size: 0x8
+.fn gap_03_80063C08_text, global
+.hidden gap_03_80063C08_text
+/* 80063C08 00000428  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063C0C 0000042C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063C08_text
+
+# .text:0x3F0 | 0x80063C10 | size: 0x10
+# daSpinChildBase_c::initializeState_Move()
+.fn initializeState_Move__17daSpinChildBase_cFv, global
+/* 80063C10 00000430  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80063C14 00000434  81 8C 00 E4 */	lwz r12, 0xe4(r12)
+/* 80063C18 00000438  7D 89 03 A6 */	mtctr r12
+/* 80063C1C 0000043C  4E 80 04 20 */	bctr
+.endfn initializeState_Move__17daSpinChildBase_cFv
+
+# .text:0x400 | 0x80063C20 | size: 0x4
+# daSpinChildBase_c::finalizeState_Move()
+.fn finalizeState_Move__17daSpinChildBase_cFv, global
+/* 80063C20 00000440  4E 80 00 20 */	blr
+.endfn finalizeState_Move__17daSpinChildBase_cFv
+
+# .text:0x404 | 0x80063C24 | size: 0xC
+.fn gap_03_80063C24_text, global
+.hidden gap_03_80063C24_text
+/* 80063C24 00000444  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063C28 00000448  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063C2C 0000044C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063C24_text
+
+# .text:0x410 | 0x80063C30 | size: 0x4
+# daSpinChildBase_c::executeState_Move()
+.fn executeState_Move__17daSpinChildBase_cFv, global
+/* 80063C30 00000450  4E 80 00 20 */	blr
+.endfn executeState_Move__17daSpinChildBase_cFv
+
+# .text:0x414 | 0x80063C34 | size: 0xC
+.fn gap_03_80063C34_text, global
+.hidden gap_03_80063C34_text
+/* 80063C34 00000454  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063C38 00000458  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063C3C 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063C34_text
+
+# .text:0x420 | 0x80063C40 | size: 0x1C0
+.fn "__sinit_\d_a_spin_child_base_cpp", local
+/* 80063C40 00000460  94 21 FF 90 */	stwu r1, -0x70(r1)
+/* 80063C44 00000464  7C 08 02 A6 */	mflr r0
+/* 80063C48 00000468  90 01 00 74 */	stw r0, 0x74(r1)
+/* 80063C4C 0000046C  39 61 00 70 */	addi r11, r1, 0x70
+/* 80063C50 00000470  48 00 00 01 */	bl _savegpr_27
+/* 80063C54 00000474  3F A0 00 00 */	lis r29, __vt__17daSpinChildBase_c@ha
+/* 80063C58 00000478  3F 80 00 00 */	lis r28, "@12816"@ha
+/* 80063C5C 0000047C  3B BD 00 00 */	addi r29, r29, __vt__17daSpinChildBase_c@l
+/* 80063C60 00000480  38 7D 00 EC */	addi r3, r29, 0xec
+/* 80063C64 00000484  83 7D 00 EC */	lwz r27, 0xec(r29)
+/* 80063C68 00000488  38 DD 00 F8 */	addi r6, r29, 0xf8
+/* 80063C6C 0000048C  38 BD 01 04 */	addi r5, r29, 0x104
+/* 80063C70 00000490  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 80063C74 00000494  3B 9C 00 00 */	addi r28, r28, "@12816"@l
+/* 80063C78 00000498  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 80063C7C 0000049C  38 9D 01 34 */	addi r4, r29, 0x134
+/* 80063C80 000004A0  81 5D 00 F8 */	lwz r10, 0xf8(r29)
+/* 80063C84 000004A4  38 7C 00 10 */	addi r3, r28, 0x10
+/* 80063C88 000004A8  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 80063C8C 000004AC  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 80063C90 000004B0  80 FD 01 04 */	lwz r7, 0x104(r29)
+/* 80063C94 000004B4  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 80063C98 000004B8  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 80063C9C 000004BC  93 61 00 2C */	stw r27, 0x2c(r1)
+/* 80063CA0 000004C0  91 81 00 30 */	stw r12, 0x30(r1)
+/* 80063CA4 000004C4  91 61 00 34 */	stw r11, 0x34(r1)
+/* 80063CA8 000004C8  91 41 00 38 */	stw r10, 0x38(r1)
+/* 80063CAC 000004CC  91 21 00 3C */	stw r9, 0x3c(r1)
+/* 80063CB0 000004D0  91 01 00 40 */	stw r8, 0x40(r1)
+/* 80063CB4 000004D4  90 E1 00 44 */	stw r7, 0x44(r1)
+/* 80063CB8 000004D8  90 C1 00 48 */	stw r6, 0x48(r1)
+/* 80063CBC 000004DC  90 01 00 4C */	stw r0, 0x4c(r1)
+/* 80063CC0 000004E0  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 80063CC4 000004E4  3F C0 00 00 */	lis r30, "__vt__32sFStateID_c<17daSpinChildBase_c>"@ha
+/* 80063CC8 000004E8  38 7C 00 10 */	addi r3, r28, 0x10
+/* 80063CCC 000004EC  83 61 00 44 */	lwz r27, 0x44(r1)
+/* 80063CD0 000004F0  3B DE 00 00 */	addi r30, r30, "__vt__32sFStateID_c<17daSpinChildBase_c>"@l
+/* 80063CD4 000004F4  81 81 00 48 */	lwz r12, 0x48(r1)
+/* 80063CD8 000004F8  3F E0 00 00 */	lis r31, "__dt__32sFStateID_c<17daSpinChildBase_c>Fv"@ha
+/* 80063CDC 000004FC  81 61 00 4C */	lwz r11, 0x4c(r1)
+/* 80063CE0 00000500  38 9F 00 00 */	addi r4, r31, "__dt__32sFStateID_c<17daSpinChildBase_c>Fv"@l
+/* 80063CE4 00000504  81 41 00 38 */	lwz r10, 0x38(r1)
+/* 80063CE8 00000508  38 BC 00 00 */	addi r5, r28, 0x0
+/* 80063CEC 0000050C  81 21 00 3C */	lwz r9, 0x3c(r1)
+/* 80063CF0 00000510  81 01 00 40 */	lwz r8, 0x40(r1)
+/* 80063CF4 00000514  80 E1 00 2C */	lwz r7, 0x2c(r1)
+/* 80063CF8 00000518  80 C1 00 30 */	lwz r6, 0x30(r1)
+/* 80063CFC 0000051C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80063D00 00000520  93 DC 00 10 */	stw r30, 0x10(r28)
+/* 80063D04 00000524  93 63 00 0C */	stw r27, 0xc(r3)
+/* 80063D08 00000528  91 83 00 10 */	stw r12, 0x10(r3)
+/* 80063D0C 0000052C  91 63 00 14 */	stw r11, 0x14(r3)
+/* 80063D10 00000530  91 43 00 18 */	stw r10, 0x18(r3)
+/* 80063D14 00000534  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 80063D18 00000538  91 03 00 20 */	stw r8, 0x20(r3)
+/* 80063D1C 0000053C  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 80063D20 00000540  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 80063D24 00000544  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 80063D28 00000548  48 00 00 01 */	bl __register_global_object
+/* 80063D2C 0000054C  38 7D 01 10 */	addi r3, r29, 0x110
+/* 80063D30 00000550  38 DD 01 1C */	addi r6, r29, 0x11c
+/* 80063D34 00000554  38 BD 01 28 */	addi r5, r29, 0x128
+/* 80063D38 00000558  83 7D 01 10 */	lwz r27, 0x110(r29)
+/* 80063D3C 0000055C  81 83 00 04 */	lwz r12, 0x4(r3)
+/* 80063D40 00000560  38 9D 01 58 */	addi r4, r29, 0x158
+/* 80063D44 00000564  81 63 00 08 */	lwz r11, 0x8(r3)
+/* 80063D48 00000568  38 7C 00 50 */	addi r3, r28, 0x50
+/* 80063D4C 0000056C  81 5D 01 1C */	lwz r10, 0x11c(r29)
+/* 80063D50 00000570  81 26 00 04 */	lwz r9, 0x4(r6)
+/* 80063D54 00000574  81 06 00 08 */	lwz r8, 0x8(r6)
+/* 80063D58 00000578  80 FD 01 28 */	lwz r7, 0x128(r29)
+/* 80063D5C 0000057C  80 C5 00 04 */	lwz r6, 0x4(r5)
+/* 80063D60 00000580  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 80063D64 00000584  93 61 00 08 */	stw r27, 0x8(r1)
+/* 80063D68 00000588  91 81 00 0C */	stw r12, 0xc(r1)
+/* 80063D6C 0000058C  91 61 00 10 */	stw r11, 0x10(r1)
+/* 80063D70 00000590  91 41 00 14 */	stw r10, 0x14(r1)
+/* 80063D74 00000594  91 21 00 18 */	stw r9, 0x18(r1)
+/* 80063D78 00000598  91 01 00 1C */	stw r8, 0x1c(r1)
+/* 80063D7C 0000059C  90 E1 00 20 */	stw r7, 0x20(r1)
+/* 80063D80 000005A0  90 C1 00 24 */	stw r6, 0x24(r1)
+/* 80063D84 000005A4  90 01 00 28 */	stw r0, 0x28(r1)
+/* 80063D88 000005A8  48 00 00 01 */	bl __ct__10sStateID_cFPCc
+/* 80063D8C 000005AC  38 7C 00 50 */	addi r3, r28, 0x50
+/* 80063D90 000005B0  83 A1 00 20 */	lwz r29, 0x20(r1)
+/* 80063D94 000005B4  81 81 00 24 */	lwz r12, 0x24(r1)
+/* 80063D98 000005B8  7F 67 DB 78 */	mr r7, r27
+/* 80063D9C 000005BC  81 61 00 28 */	lwz r11, 0x28(r1)
+/* 80063DA0 000005C0  38 9F 00 00 */	addi r4, r31, "__dt__32sFStateID_c<17daSpinChildBase_c>Fv"@l
+/* 80063DA4 000005C4  81 41 00 14 */	lwz r10, 0x14(r1)
+/* 80063DA8 000005C8  38 BC 00 40 */	addi r5, r28, 0x40
+/* 80063DAC 000005CC  81 21 00 18 */	lwz r9, 0x18(r1)
+/* 80063DB0 000005D0  81 01 00 1C */	lwz r8, 0x1c(r1)
+/* 80063DB4 000005D4  80 C1 00 0C */	lwz r6, 0xc(r1)
+/* 80063DB8 000005D8  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 80063DBC 000005DC  93 DC 00 50 */	stw r30, 0x50(r28)
+/* 80063DC0 000005E0  93 A3 00 0C */	stw r29, 0xc(r3)
+/* 80063DC4 000005E4  91 83 00 10 */	stw r12, 0x10(r3)
+/* 80063DC8 000005E8  91 63 00 14 */	stw r11, 0x14(r3)
+/* 80063DCC 000005EC  91 43 00 18 */	stw r10, 0x18(r3)
+/* 80063DD0 000005F0  91 23 00 1C */	stw r9, 0x1c(r3)
+/* 80063DD4 000005F4  91 03 00 20 */	stw r8, 0x20(r3)
+/* 80063DD8 000005F8  90 E3 00 24 */	stw r7, 0x24(r3)
+/* 80063DDC 000005FC  90 C3 00 28 */	stw r6, 0x28(r3)
+/* 80063DE0 00000600  90 03 00 2C */	stw r0, 0x2c(r3)
+/* 80063DE4 00000604  48 00 00 01 */	bl __register_global_object
+/* 80063DE8 00000608  39 61 00 70 */	addi r11, r1, 0x70
+/* 80063DEC 0000060C  48 00 00 01 */	bl _restgpr_27
+/* 80063DF0 00000610  80 01 00 74 */	lwz r0, 0x74(r1)
+/* 80063DF4 00000614  7C 08 03 A6 */	mtlr r0
+/* 80063DF8 00000618  38 21 00 70 */	addi r1, r1, 0x70
+/* 80063DFC 0000061C  4E 80 00 20 */	blr
+.endfn "__sinit_\d_a_spin_child_base_cpp"
+
+# .text:0x5E0 | 0x80063E00 | size: 0x58
+# sFStateID_c<daSpinChildBase_c>::~sFStateID_c()
+.fn "__dt__32sFStateID_c<17daSpinChildBase_c>Fv", weak
+/* 80063E00 00000620  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063E04 00000624  7C 08 02 A6 */	mflr r0
+/* 80063E08 00000628  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063E0C 0000062C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063E10 00000630  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063E14 00000634  7C 9F 23 78 */	mr r31, r4
+/* 80063E18 00000638  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80063E1C 0000063C  7C 7E 1B 78 */	mr r30, r3
+/* 80063E20 00000640  41 82 00 1C */	beq .L_80063E3C
+/* 80063E24 00000644  38 80 00 00 */	li r4, 0x0
+/* 80063E28 00000648  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 80063E2C 0000064C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80063E30 00000650  40 81 00 0C */	ble .L_80063E3C
+/* 80063E34 00000654  7F C3 F3 78 */	mr r3, r30
+/* 80063E38 00000658  48 00 00 01 */	bl __dl__FPv
+.L_80063E3C:
+/* 80063E3C 0000065C  7F C3 F3 78 */	mr r3, r30
+/* 80063E40 00000660  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80063E44 00000664  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80063E48 00000668  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063E4C 0000066C  7C 08 03 A6 */	mtlr r0
+/* 80063E50 00000670  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063E54 00000674  4E 80 00 20 */	blr
+.endfn "__dt__32sFStateID_c<17daSpinChildBase_c>Fv"
+
+# .text:0x638 | 0x80063E58 | size: 0x8
+.fn gap_03_80063E58_text, global
+.hidden gap_03_80063E58_text
+/* 80063E58 00000678  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063E5C 0000067C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063E58_text
+
+# .text:0x640 | 0x80063E60 | size: 0x88
+# sFStateID_c<daSpinChildBase_c>::isSameName(const char*) const
+.fn "isSameName__32sFStateID_c<17daSpinChildBase_c>CFPCc", weak
+/* 80063E60 00000680  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063E64 00000684  7C 08 02 A6 */	mflr r0
+/* 80063E68 00000688  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063E6C 0000068C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80063E70 00000690  7C 9F 23 78 */	mr r31, r4
+/* 80063E74 00000694  38 80 00 3A */	li r4, 0x3a
+/* 80063E78 00000698  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80063E7C 0000069C  7C 7E 1B 78 */	mr r30, r3
+/* 80063E80 000006A0  7F E3 FB 78 */	mr r3, r31
+/* 80063E84 000006A4  48 00 00 01 */	bl strrchr
+/* 80063E88 000006A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063E8C 000006AC  41 82 00 08 */	beq .L_80063E94
+/* 80063E90 000006B0  3B E3 00 01 */	addi r31, r3, 0x1
+.L_80063E94:
+/* 80063E94 000006B4  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80063E98 000006B8  7F C3 F3 78 */	mr r3, r30
+/* 80063E9C 000006BC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80063EA0 000006C0  7D 89 03 A6 */	mtctr r12
+/* 80063EA4 000006C4  4E 80 04 21 */	bctrl
+/* 80063EA8 000006C8  38 80 00 3A */	li r4, 0x3a
+/* 80063EAC 000006CC  48 00 00 01 */	bl strrchr
+/* 80063EB0 000006D0  7F E4 FB 78 */	mr r4, r31
+/* 80063EB4 000006D4  38 63 00 01 */	addi r3, r3, 0x1
+/* 80063EB8 000006D8  48 00 00 01 */	bl strcmp
+/* 80063EBC 000006DC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80063EC0 000006E0  40 82 00 0C */	bne .L_80063ECC
+/* 80063EC4 000006E4  38 60 00 01 */	li r3, 0x1
+/* 80063EC8 000006E8  48 00 00 08 */	b .L_80063ED0
+.L_80063ECC:
+/* 80063ECC 000006EC  38 60 00 00 */	li r3, 0x0
+.L_80063ED0:
+/* 80063ED0 000006F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063ED4 000006F4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80063ED8 000006F8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80063EDC 000006FC  7C 08 03 A6 */	mtlr r0
+/* 80063EE0 00000700  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063EE4 00000704  4E 80 00 20 */	blr
+.endfn "isSameName__32sFStateID_c<17daSpinChildBase_c>CFPCc"
+
+# .text:0x6C8 | 0x80063EE8 | size: 0x8
+.fn gap_03_80063EE8_text, global
+.hidden gap_03_80063EE8_text
+/* 80063EE8 00000708  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80063EEC 0000070C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80063EE8_text
+
+# .text:0x6D0 | 0x80063EF0 | size: 0x30
+# sFStateID_c<daSpinChildBase_c>::initializeState(daSpinChildBase_c&) const
+.fn "initializeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c", weak
+/* 80063EF0 00000710  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063EF4 00000714  7C 08 02 A6 */	mflr r0
+/* 80063EF8 00000718  7C 65 1B 78 */	mr r5, r3
+/* 80063EFC 0000071C  7C 83 23 78 */	mr r3, r4
+/* 80063F00 00000720  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063F04 00000724  39 85 00 0C */	addi r12, r5, 0xc
+/* 80063F08 00000728  48 00 00 01 */	bl __ptmf_scall
+/* 80063F0C 0000072C  60 00 00 00 */	nop
+/* 80063F10 00000730  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063F14 00000734  7C 08 03 A6 */	mtlr r0
+/* 80063F18 00000738  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063F1C 0000073C  4E 80 00 20 */	blr
+.endfn "initializeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c"
+
+# .text:0x700 | 0x80063F20 | size: 0x30
+# sFStateID_c<daSpinChildBase_c>::executeState(daSpinChildBase_c&) const
+.fn "executeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c", weak
+/* 80063F20 00000740  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063F24 00000744  7C 08 02 A6 */	mflr r0
+/* 80063F28 00000748  7C 65 1B 78 */	mr r5, r3
+/* 80063F2C 0000074C  7C 83 23 78 */	mr r3, r4
+/* 80063F30 00000750  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063F34 00000754  39 85 00 18 */	addi r12, r5, 0x18
+/* 80063F38 00000758  48 00 00 01 */	bl __ptmf_scall
+/* 80063F3C 0000075C  60 00 00 00 */	nop
+/* 80063F40 00000760  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063F44 00000764  7C 08 03 A6 */	mtlr r0
+/* 80063F48 00000768  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063F4C 0000076C  4E 80 00 20 */	blr
+.endfn "executeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c"
+
+# .text:0x730 | 0x80063F50 | size: 0x30
+# sFStateID_c<daSpinChildBase_c>::finalizeState(daSpinChildBase_c&) const
+.fn "finalizeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c", weak
+/* 80063F50 00000770  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80063F54 00000774  7C 08 02 A6 */	mflr r0
+/* 80063F58 00000778  7C 65 1B 78 */	mr r5, r3
+/* 80063F5C 0000077C  7C 83 23 78 */	mr r3, r4
+/* 80063F60 00000780  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80063F64 00000784  39 85 00 24 */	addi r12, r5, 0x24
+/* 80063F68 00000788  48 00 00 01 */	bl __ptmf_scall
+/* 80063F6C 0000078C  60 00 00 00 */	nop
+/* 80063F70 00000790  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80063F74 00000794  7C 08 03 A6 */	mtlr r0
+/* 80063F78 00000798  38 21 00 10 */	addi r1, r1, 0x10
+/* 80063F7C 0000079C  4E 80 00 20 */	blr
+.endfn "finalizeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c"
+
+# 0x802EDD74..0x802EDD78 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_a_spin_child_base_cpp"
+
+# 0x8030A0A0..0x8030A250 | size: 0x1B0
+.data
+.balign 8
+
+# .data:0x0 | 0x8030A0A0 | size: 0xEC
+# daSpinChildBase_c::__vtable
+.obj __vt__17daSpinChildBase_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__17daSpinChildBase_cFv
+	.4byte preCreate__8dActor_cFv
+	.4byte postCreate__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__7fBase_cFv
+	.4byte preDelete__8dActor_cFv
+	.4byte postDelete__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__17daSpinChildBase_cFv
+	.4byte preExecute__8dActor_cFv
+	.4byte postExecute__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__7fBase_cFv
+	.4byte preDraw__17daSpinChildBase_cFv
+	.4byte postDraw__8dActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__17daSpinChildBase_cFv
+	.4byte getKindString__8dActor_cCFv
+	.4byte draw2D__12dBaseActor_cFv
+	.4byte draw2D_lyt2__12dBaseActor_cFv
+	.4byte GetActorType__12dBaseActor_cFv
+	.4byte finalUpdate__12dBaseActor_cFv
+	.4byte ActorDrawCullCheck__8dActor_cFv
+	.4byte block_hit_init__8dActor_cFv
+	.4byte vf68__8dActor_cFP9dBg_ctr_c
+	.4byte getPlrNo__8dActor_cFv
+	.4byte getLookatPos__8dActor_cCFv
+	.4byte isSpinLiftUpEnable__8dActor_cFv
+	.4byte setSpinLiftUpActor__8dActor_cFP8dActor_c
+	.4byte setCarryFall__8dActor_cFP8dActor_ci
+	.4byte setEatTongue__8dActor_cFP8dActor_c
+	.4byte setEatTongueOff__8dActor_cFP8dActor_c
+	.4byte setEatMouth__8dActor_cFP8dActor_c
+	.4byte setEatSpitOut__8dActor_cFP8dActor_c
+	.4byte setEatGlupDown__8dActor_cFP8dActor_c
+	.4byte eatMove__8dActor_cFP8dActor_c
+	.4byte removeCc__8dActor_cFv
+	.4byte reviveCc__8dActor_cFv
+	.4byte setAfterEatScale__8dActor_cFv
+	.4byte calcSpitOutPos__8dActor_cFP8dActor_c
+	.4byte calcEatScaleRate__8dActor_cFP8dActor_c
+	.4byte calcEatInScale__8dActor_cFP8dActor_c
+	.4byte allEnemyDeathEffSet__8dActor_cFv
+	.4byte vfb4__8dActor_cFv
+	.4byte funsuiMoveX__8dActor_cFv
+	.4byte cancelFunsuiActUpper__8dActor_cFv
+	.4byte cancelFunsuiActSide__8dActor_cFi
+	.4byte cancelFunsuiActVanish__8dActor_cFv
+	.4byte waterSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte yoganSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte poisonSplashEffect__8dActor_cFRC7mVec3_cf
+	.4byte initializeState_Gegneric__13dActorState_cFv
+	.4byte executeState_Gegneric__13dActorState_cFv
+	.4byte finalizeState_Gegneric__13dActorState_cFv
+	.4byte init__17daSpinChildBase_cFv
+	.4byte init_move__17daSpinChildBase_cFv
+	.4byte post_execute_state__17daSpinChildBase_cFv
+.endobj __vt__17daSpinChildBase_c
+
+# .data:0xEC | 0x8030A18C | size: 0xC
+.obj "@13201", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_SearchID__17daSpinChildBase_cFv
+.endobj "@13201"
+
+# .data:0xF8 | 0x8030A198 | size: 0xC
+.obj "@13202", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_SearchID__17daSpinChildBase_cFv
+.endobj "@13202"
+
+# .data:0x104 | 0x8030A1A4 | size: 0xC
+.obj "@13203", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_SearchID__17daSpinChildBase_cFv
+.endobj "@13203"
+
+# .data:0x110 | 0x8030A1B0 | size: 0xC
+.obj "@13204", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte finalizeState_Move__17daSpinChildBase_cFv
+.endobj "@13204"
+
+# .data:0x11C | 0x8030A1BC | size: 0xC
+.obj "@13205", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte executeState_Move__17daSpinChildBase_cFv
+.endobj "@13205"
+
+# .data:0x128 | 0x8030A1C8 | size: 0xC
+.obj "@13206", local
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte initializeState_Move__17daSpinChildBase_cFv
+.endobj "@13206"
+
+# .data:0x134 | 0x8030A1D4 | size: 0x24
+.obj "@13208", local
+	.4byte 0x64615370
+	.4byte 0x696E4368
+	.4byte 0x696C6442
+	.4byte 0x6173655F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F53
+	.4byte 0x65617263
+	.4byte 0x68494400
+.endobj "@13208"
+
+# .data:0x158 | 0x8030A1F8 | size: 0x20
+.obj "@13209", local
+	.4byte 0x64615370
+	.4byte 0x696E4368
+	.4byte 0x696C6442
+	.4byte 0x6173655F
+	.4byte 0x633A3A53
+	.4byte 0x74617465
+	.4byte 0x49445F4D
+	.4byte 0x6F766500
+.endobj "@13209"
+
+# .data:0x178 | 0x8030A218 | size: 0x34
+# sFStateID_c<daSpinChildBase_c>::__vtable
+.obj "__vt__32sFStateID_c<17daSpinChildBase_c>", weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte "__dt__32sFStateID_c<17daSpinChildBase_c>Fv"
+	.4byte isNull__10sStateID_cCFv
+	.4byte isEqual__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __eq__10sStateID_cCFRC12sStateIDIf_c
+	.4byte __ne__10sStateID_cCFRC12sStateIDIf_c
+	.4byte "isSameName__32sFStateID_c<17daSpinChildBase_c>CFPCc"
+	.4byte name__10sStateID_cCFv
+	.4byte number__10sStateID_cCFv
+	.4byte "initializeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c"
+	.4byte "executeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c"
+	.4byte "finalizeState__32sFStateID_c<17daSpinChildBase_c>CFR17daSpinChildBase_c"
+.endobj "__vt__32sFStateID_c<17daSpinChildBase_c>"
+
+# .data:0x1AC | 0x8030A24C | size: 0x4
+.obj gap_07_8030A24C_data, global
+.hidden gap_07_8030A24C_data
+	.4byte 0x00000000
+.endobj gap_07_8030A24C_data
+
+# 0x803560C0..0x80356140 | size: 0x80
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | 0x803560C0 | size: 0xC
+.obj "@12816", local
+	.skip 0xC
+.endobj "@12816"
+
+# .bss:0xC | 0x803560CC | size: 0x4
+.obj gap_08_803560CC_bss, global
+.hidden gap_08_803560CC_bss
+	.skip 0x4
+.endobj gap_08_803560CC_bss
+
+# .bss:0x10 | 0x803560D0 | size: 0x30
+# daSpinChildBase_c::StateID_SearchID
+.obj StateID_SearchID__17daSpinChildBase_c, global
+	.skip 0x30
+.endobj StateID_SearchID__17daSpinChildBase_c
+
+# .bss:0x40 | 0x80356100 | size: 0xC
+.obj "@12820", local
+	.skip 0xC
+.endobj "@12820"
+
+# .bss:0x4C | 0x8035610C | size: 0x4
+.obj gap_08_8035610C_bss, global
+.hidden gap_08_8035610C_bss
+	.skip 0x4
+.endobj gap_08_8035610C_bss
+
+# .bss:0x50 | 0x80356110 | size: 0x30
+# daSpinChildBase_c::StateID_Move
+.obj StateID_Move__17daSpinChildBase_c, global
+	.skip 0x30
+.endobj StateID_Move__17daSpinChildBase_c
+
+# 0x8042BDD0..0x8042BDD8 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042BDD0 | size: 0x8
+.obj "@13169", local
+	.4byte 0x43300000
+	.4byte 0x00000000
+.endobj "@13169"

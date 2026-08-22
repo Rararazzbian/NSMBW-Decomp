@@ -1,0 +1,194 @@
+.include "macros.inc"
+.file "auto_03_8009F5F0_text"
+
+# 0x8009F5F0..0x8009F7C0 | size: 0x1D0
+.text
+.balign 4
+
+# .text:0x0 | 0x8009F5F0 | size: 0x38
+# dEnCombo_c::calcPlFumiCnt(dActor_c*)
+.fn calcPlFumiCnt__10dEnCombo_cFP8dActor_c, global
+/* 8009F5F0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8009F5F4 00000044  7C 08 02 A6 */	mflr r0
+/* 8009F5F8 00000048  38 80 00 08 */	li r4, 0x8
+/* 8009F5FC 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8009F600 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8009F604 00000054  7C 7F 1B 78 */	mr r31, r3
+/* 8009F608 00000058  48 00 00 01 */	bl calcTreadCount__10daPlBase_cFi
+/* 8009F60C 0000005C  88 7F 10 80 */	lbz r3, 0x1080(r31)
+/* 8009F610 00000060  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8009F614 00000064  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8009F618 00000068  7C 63 07 74 */	extsb r3, r3
+/* 8009F61C 0000006C  7C 08 03 A6 */	mtlr r0
+/* 8009F620 00000070  38 21 00 10 */	addi r1, r1, 0x10
+/* 8009F624 00000074  4E 80 00 20 */	blr
+.endfn calcPlFumiCnt__10dEnCombo_cFP8dActor_c
+
+# .text:0x38 | 0x8009F628 | size: 0x8
+.fn gap_03_8009F628_text, global
+.hidden gap_03_8009F628_text
+/* 8009F628 00000078  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F62C 0000007C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8009F628_text
+
+# .text:0x40 | 0x8009F630 | size: 0x54
+# dEnCombo_c::calcPlStarCnt(dActor_c*)
+.fn calcPlStarCnt__10dEnCombo_cFP8dActor_c, global
+/* 8009F630 00000080  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8009F634 00000084  7C 08 02 A6 */	mflr r0
+/* 8009F638 00000088  38 80 00 08 */	li r4, 0x8
+/* 8009F63C 0000008C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8009F640 00000090  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8009F644 00000094  7C 7F 1B 78 */	mr r31, r3
+/* 8009F648 00000098  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8009F64C 0000009C  81 8C 03 EC */	lwz r12, 0x3ec(r12)
+/* 8009F650 000000A0  7D 89 03 A6 */	mtctr r12
+/* 8009F654 000000A4  4E 80 04 21 */	bctrl
+/* 8009F658 000000A8  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8009F65C 000000AC  7F E3 FB 78 */	mr r3, r31
+/* 8009F660 000000B0  81 8C 03 E8 */	lwz r12, 0x3e8(r12)
+/* 8009F664 000000B4  7D 89 03 A6 */	mtctr r12
+/* 8009F668 000000B8  4E 80 04 21 */	bctrl
+/* 8009F66C 000000BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8009F670 000000C0  7C 63 07 74 */	extsb r3, r3
+/* 8009F674 000000C4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8009F678 000000C8  7C 08 03 A6 */	mtlr r0
+/* 8009F67C 000000CC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8009F680 000000D0  4E 80 00 20 */	blr
+.endfn calcPlStarCnt__10dEnCombo_cFP8dActor_c
+
+# .text:0x94 | 0x8009F684 | size: 0xC
+.fn gap_03_8009F684_text, global
+.hidden gap_03_8009F684_text
+/* 8009F684 000000D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F688 000000D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F68C 000000DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8009F684_text
+
+# .text:0xA0 | 0x8009F690 | size: 0x38
+# dEnCombo_c::calcPlComboCnt(dActor_c*)
+.fn calcPlComboCnt__10dEnCombo_cFP8dActor_c, global
+/* 8009F690 000000E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8009F694 000000E4  7C 08 02 A6 */	mflr r0
+/* 8009F698 000000E8  38 80 00 08 */	li r4, 0x8
+/* 8009F69C 000000EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8009F6A0 000000F0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8009F6A4 000000F4  7C 7F 1B 78 */	mr r31, r3
+/* 8009F6A8 000000F8  48 00 00 01 */	bl calcComboCount__10daPlBase_cFi
+/* 8009F6AC 000000FC  88 7F 10 82 */	lbz r3, 0x1082(r31)
+/* 8009F6B0 00000100  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8009F6B4 00000104  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8009F6B8 00000108  7C 63 07 74 */	extsb r3, r3
+/* 8009F6BC 0000010C  7C 08 03 A6 */	mtlr r0
+/* 8009F6C0 00000110  38 21 00 10 */	addi r1, r1, 0x10
+/* 8009F6C4 00000114  4E 80 00 20 */	blr
+.endfn calcPlComboCnt__10dEnCombo_cFP8dActor_c
+
+# .text:0xD8 | 0x8009F6C8 | size: 0x8
+.fn gap_03_8009F6C8_text, global
+.hidden gap_03_8009F6C8_text
+/* 8009F6C8 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F6CC 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8009F6C8_text
+
+# .text:0xE0 | 0x8009F6D0 | size: 0x18
+# dEnCombo_c::getDamageScore() const
+.fn getDamageScore__10dEnCombo_cCFv, global
+/* 8009F6D0 00000120  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8009F6D4 00000124  3C 60 00 00 */	lis r3, "@LOCAL@getDamageScore__10dEnCombo_cCFv@cs_damage_score"@ha
+/* 8009F6D8 00000128  38 63 00 00 */	addi r3, r3, "@LOCAL@getDamageScore__10dEnCombo_cCFv@cs_damage_score"@l
+/* 8009F6DC 0000012C  54 00 10 3A */	slwi r0, r0, 2
+/* 8009F6E0 00000130  7C 63 00 2E */	lwzx r3, r3, r0
+/* 8009F6E4 00000134  4E 80 00 20 */	blr
+.endfn getDamageScore__10dEnCombo_cCFv
+
+# .text:0xF8 | 0x8009F6E8 | size: 0x8
+.fn gap_03_8009F6E8_text, global
+.hidden gap_03_8009F6E8_text
+/* 8009F6E8 00000138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F6EC 0000013C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8009F6E8_text
+
+# .text:0x100 | 0x8009F6F0 | size: 0x14
+# dEnCombo_c::getQuakeScore(int) const
+.fn getQuakeScore__10dEnCombo_cCFi, global
+/* 8009F6F0 00000140  2C 04 00 08 */	cmpwi r4, 0x8
+/* 8009F6F4 00000144  40 81 00 08 */	ble .L_8009F6FC
+/* 8009F6F8 00000148  38 80 00 08 */	li r4, 0x8
+.L_8009F6FC:
+/* 8009F6FC 0000014C  7C 83 23 78 */	mr r3, r4
+/* 8009F700 00000150  4E 80 00 20 */	blr
+.endfn getQuakeScore__10dEnCombo_cCFi
+
+# .text:0x114 | 0x8009F704 | size: 0xC
+.fn gap_03_8009F704_text, global
+.hidden gap_03_8009F704_text
+/* 8009F704 00000154  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F708 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F70C 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8009F704_text
+
+# .text:0x120 | 0x8009F710 | size: 0x60
+# dEnCombo_c::getComboScore(int)
+.fn getComboScore__10dEnCombo_cFi, global
+/* 8009F710 00000160  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8009F714 00000164  40 80 00 0C */	bge .L_8009F720
+/* 8009F718 00000168  38 60 FF FF */	li r3, -0x1
+/* 8009F71C 0000016C  4E 80 00 20 */	blr
+.L_8009F720:
+/* 8009F720 00000170  28 04 00 09 */	cmplwi r4, 0x9
+/* 8009F724 00000174  41 80 00 08 */	blt .L_8009F72C
+/* 8009F728 00000178  38 80 00 08 */	li r4, 0x8
+.L_8009F72C:
+/* 8009F72C 0000017C  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8009F730 00000180  38 60 FF FF */	li r3, -0x1
+/* 8009F734 00000184  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8009F738 00000188  41 82 00 10 */	beq .L_8009F748
+/* 8009F73C 0000018C  2C 00 00 02 */	cmpwi r0, 0x2
+/* 8009F740 00000190  41 82 00 1C */	beq .L_8009F75C
+/* 8009F744 00000194  4E 80 00 20 */	blr
+.L_8009F748:
+/* 8009F748 00000198  3C 60 00 00 */	lis r3, lbl_802F0814@ha
+/* 8009F74C 0000019C  54 80 10 3A */	slwi r0, r4, 2
+/* 8009F750 000001A0  38 63 00 00 */	addi r3, r3, lbl_802F0814@l
+/* 8009F754 000001A4  7C 63 00 2E */	lwzx r3, r3, r0
+/* 8009F758 000001A8  4E 80 00 20 */	blr
+.L_8009F75C:
+/* 8009F75C 000001AC  3C 60 00 00 */	lis r3, lbl_802F0838@ha
+/* 8009F760 000001B0  54 80 10 3A */	slwi r0, r4, 2
+/* 8009F764 000001B4  38 63 00 00 */	addi r3, r3, lbl_802F0838@l
+/* 8009F768 000001B8  7C 63 00 2E */	lwzx r3, r3, r0
+/* 8009F76C 000001BC  4E 80 00 20 */	blr
+.endfn getComboScore__10dEnCombo_cFi
+
+# .text:0x180 | 0x8009F770 | size: 0x44
+# dEnCombo_c::setScore(dActor_c*, int, int) const
+.fn setScore__10dEnCombo_cCFP8dActor_cii, global
+/* 8009F770 000001C0  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8009F774 000001C4  4D 80 00 20 */	bltlr
+/* 8009F778 000001C8  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8009F77C 000001CC  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8009F780 000001D0  41 82 00 10 */	beq .L_8009F790
+/* 8009F784 000001D4  2C 00 00 02 */	cmpwi r0, 0x2
+/* 8009F788 000001D8  41 82 00 18 */	beq .L_8009F7A0
+/* 8009F78C 000001DC  4E 80 00 20 */	blr
+.L_8009F790:
+/* 8009F790 000001E0  80 60 00 00 */	lwz r3, m_instance__11dScoreMng_c@sda21(r0)
+/* 8009F794 000001E4  C0 20 00 00 */	lfs f1, smc_SCORE_X__11dScoreMng_c@sda21(r0)
+/* 8009F798 000001E8  C0 40 00 00 */	lfs f2, smc_SCORE_Y__11dScoreMng_c@sda21(r0)
+/* 8009F79C 000001EC  48 00 00 00 */	b ScoreSet__11dScoreMng_cFP8dActor_cUliff
+.L_8009F7A0:
+/* 8009F7A0 000001F0  80 60 00 00 */	lwz r3, m_instance__11dScoreMng_c@sda21(r0)
+/* 8009F7A4 000001F4  C0 20 00 00 */	lfs f1, smc_SCORE_X__11dScoreMng_c@sda21(r0)
+/* 8009F7A8 000001F8  C0 40 00 00 */	lfs f2, smc_SCORE_Y__11dScoreMng_c@sda21(r0)
+/* 8009F7AC 000001FC  48 00 00 00 */	b ScoreSet2__11dScoreMng_cFP8dActor_cUliff
+/* 8009F7B0 00000200  4E 80 00 20 */	blr
+.endfn setScore__10dEnCombo_cCFP8dActor_cii
+
+# .text:0x1C4 | 0x8009F7B4 | size: 0xC
+.fn gap_03_8009F7B4_text, global
+.hidden gap_03_8009F7B4_text
+/* 8009F7B4 00000204  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F7B8 00000208  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8009F7BC 0000020C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8009F7B4_text

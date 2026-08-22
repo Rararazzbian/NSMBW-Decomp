@@ -1,0 +1,24 @@
+143 landed wiimj2d.dol units in slices/wiimj2d.json
+235 addressed retail split objects indexed, 139 name-only (__sinit) objects not indexed by address
+
+
+=== DOL SUMMARY ===
+units with both a compiled object and a retail dump, actually checked: 30
+skipped, no compiled object in bin/compiled/wiimj2d: 0
+skipped, no overlapping retail split object in bin/dtkspl/obj: 113
+skipped, disasm failure: 0
+
+POOL: 578 lfs/lfd @sda21 refs compared by value, 0 mismatched
+BL  : 1788 bl/bla refs compared by target name, 7 mismatched
+
+@ha/@l pool-form refs found (NOT checked by poolcheck.py, blind spot): 0 across 0 functions
+
+BL MISMATCH: dol/bases/d_a_en_blockmain.cpp  ObjBg_PonCheck__15daEnBlockMain_cFv  instr 24  retail='fn_80021470' draft='blockPonJumpSet__FP15daEnBlockMain_cSc'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+BL MISMATCH: dol/bases/d_a_en_blockmain.cpp  ObjBg_PonCheck_jump__15daEnBlockMain_cFv  instr 24  retail='fn_80021580' draft='blockPonJumpSet_jump__FP15daEnBlockMain_cSc'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+BL MISMATCH: dol/bases/d_a_en_blockmain.cpp  player_set__15daEnBlockMain_cFii  instr 25  retail='fn_8005F4D0' draft='fn_8005f4d0'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+BL MISMATCH: dol/bases/d_a_rot_block.cpp  rot_block_init__12daRotBlock_cFff  instr 43  retail='fn_80062600' draft='setBgData__15daRotObjsBase_cFP9dBg_ctr_cP9dBg_ctr_cPQ215daRotObjsBase_c13obj_bg_data_t'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+BL MISMATCH: dol/bases/d_tag_processor.cpp  preProcess__14TagProcessor_cFPCwPwUlPilP16__va_list_structP8MsgRes_c  instr 114  retail='fn_800E7170' draft='getPlayerNum__14TagProcessor_cFv'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+BL MISMATCH: dol/bases/d_a_en_hatena_balloon.cpp  fly_xdisp_check__19daEnHatenaBalloon_cFb  instr 18  retail='fn_80112040' draft='bg_dispx_get__FP19daEnHatenaBalloon_c'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+BL MISMATCH: dol/bases/d_a_en_hatena_balloon.cpp  executeState_DispFlyMove__19daEnHatenaBalloon_cFv  instr 20  retail='fn_80112040' draft='bg_dispx_get__FP19daEnHatenaBalloon_c'  addr=-  gate=RAW-BYTES-ONLY (dangerous)
+
+Written: C:\Users\Razz\Documents\Projects\NSMBW-Decomp\scratch\fp_sweep\landed\dol_report.json

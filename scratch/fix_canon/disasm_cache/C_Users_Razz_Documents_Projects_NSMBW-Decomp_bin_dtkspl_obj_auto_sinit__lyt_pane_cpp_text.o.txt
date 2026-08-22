@@ -1,0 +1,19 @@
+.include "macros.inc"
+.file "auto_sinit__lyt_pane_cpp_text"
+
+# 0x801847D0..0x801847E0 | size: 0x10
+.text
+.balign 4
+
+# .text:0x0 | 0x801847D0 | size: 0x10
+.fn "__sinit_\lyt_pane_cpp", local
+/* 801847D0 00000040  3C 60 00 00 */	lis r3, typeInfo__Q36nw4hbm3lyt4Pane@ha
+/* 801847D4 00000044  38 00 00 00 */	li r0, 0x0
+/* 801847D8 00000048  90 03 00 00 */	stw r0, typeInfo__Q36nw4hbm3lyt4Pane@l(r3)
+/* 801847DC 0000004C  4E 80 00 20 */	blr
+.endfn "__sinit_\lyt_pane_cpp"
+
+# 0x802EDF08..0x802EDF0C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\lyt_pane_cpp"

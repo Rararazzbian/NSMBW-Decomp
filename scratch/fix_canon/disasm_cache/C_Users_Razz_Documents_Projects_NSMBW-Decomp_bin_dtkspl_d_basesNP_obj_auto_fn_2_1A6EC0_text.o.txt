@@ -1,0 +1,33 @@
+.include "macros.inc"
+.file "auto_fn_2_1A6EC0_text"
+
+# 0x001A6EC0..0x001A6F08 | size: 0x48
+.text
+.balign 4
+
+# .text:0x0 | 0x1A6EC0 | size: 0x48
+.fn fn_2_1A6EC0, global
+/* 001A6EC0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 001A6EC4 00000044  7C 08 02 A6 */	mflr r0
+/* 001A6EC8 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 001A6ECC 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 001A6ED0 00000050  3F E0 00 00 */	lis r31, lbl_2_bss_10A9C@ha
+/* 001A6ED4 00000054  38 7F 00 00 */	addi r3, r31, lbl_2_bss_10A9C@l
+/* 001A6ED8 00000058  48 00 00 01 */	bl fn_2_1A6690
+/* 001A6EDC 0000005C  3C 80 00 00 */	lis r4, fn_2_1A66A0@ha
+/* 001A6EE0 00000060  3C A0 00 00 */	lis r5, lbl_2_bss_10A90@ha
+/* 001A6EE4 00000064  38 7F 00 00 */	addi r3, r31, lbl_2_bss_10A9C@l
+/* 001A6EE8 00000068  38 84 00 00 */	addi r4, r4, fn_2_1A66A0@l
+/* 001A6EEC 0000006C  38 A5 00 00 */	addi r5, r5, lbl_2_bss_10A90@l
+/* 001A6EF0 00000070  48 00 00 01 */	bl __register_global_object
+/* 001A6EF4 00000074  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 001A6EF8 00000078  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 001A6EFC 0000007C  7C 08 03 A6 */	mtlr r0
+/* 001A6F00 00000080  38 21 00 10 */	addi r1, r1, 0x10
+/* 001A6F04 00000084  4E 80 00 20 */	blr
+.endfn fn_2_1A6EC0
+
+# 0x000004B8..0x000004BC | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte fn_2_1A6EC0

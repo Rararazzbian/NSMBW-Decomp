@@ -1,0 +1,58 @@
+.include "macros.inc"
+.file "auto_sinit__ut_TextWriter_text"
+
+# 0x80191040..0x801910E4 | size: 0xA4
+.text
+.balign 4
+
+# .text:0x0 | 0x80191040 | size: 0xA4
+.fn "__sinit_\ut_TextWriterBase_cpp", local
+/* 80191040 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80191044 00000044  7C 08 02 A6 */	mflr r0
+/* 80191048 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8019104C 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80191050 00000050  3F E0 00 00 */	lis r31, "@GUARD@mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<c>"@ha
+/* 80191054 00000054  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80191058 00000058  88 1F 00 00 */	lbz r0, "@GUARD@mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<c>"@l(r31)
+/* 8019105C 0000005C  7C 00 07 75 */	extsb. r0, r0
+/* 80191060 00000060  40 82 00 30 */	bne .L_80191090
+/* 80191064 00000064  3F C0 00 00 */	lis r30, "mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<c>"@ha
+/* 80191068 00000068  38 7E 00 00 */	addi r3, r30, "mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<c>"@l
+/* 8019106C 0000006C  48 00 00 01 */	bl "__ct__Q36nw4hbm2ut19TagProcessorBase<c>Fv"
+/* 80191070 00000070  3C 80 00 00 */	lis r4, "__dt__Q36nw4hbm2ut19TagProcessorBase<c>Fv"@ha
+/* 80191074 00000074  3C A0 00 00 */	lis r5, "@5899_80378348"@ha
+/* 80191078 00000078  38 7E 00 00 */	addi r3, r30, "mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<c>"@l
+/* 8019107C 0000007C  38 84 00 00 */	addi r4, r4, "__dt__Q36nw4hbm2ut19TagProcessorBase<c>Fv"@l
+/* 80191080 00000080  38 A5 00 00 */	addi r5, r5, "@5899_80378348"@l
+/* 80191084 00000084  48 00 00 01 */	bl __register_global_object
+/* 80191088 00000088  38 00 00 01 */	li r0, 0x1
+/* 8019108C 0000008C  98 1F 00 00 */	stb r0, "@GUARD@mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<c>"@l(r31)
+.L_80191090:
+/* 80191090 00000090  3F C0 00 00 */	lis r30, "@GUARD@mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<w>"@ha
+/* 80191094 00000094  88 1E 00 00 */	lbz r0, "@GUARD@mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<w>"@l(r30)
+/* 80191098 00000098  7C 00 07 75 */	extsb. r0, r0
+/* 8019109C 0000009C  40 82 00 30 */	bne .L_801910CC
+/* 801910A0 000000A0  3F E0 00 00 */	lis r31, "mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<w>"@ha
+/* 801910A4 000000A4  38 7F 00 00 */	addi r3, r31, "mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<w>"@l
+/* 801910A8 000000A8  48 00 00 01 */	bl "__ct__Q36nw4hbm2ut19TagProcessorBase<w>Fv"
+/* 801910AC 000000AC  3C 80 00 00 */	lis r4, "__dt__Q36nw4hbm2ut19TagProcessorBase<w>Fv"@ha
+/* 801910B0 000000B0  3C A0 00 00 */	lis r5, "@6316_80378354"@ha
+/* 801910B4 000000B4  38 7F 00 00 */	addi r3, r31, "mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<w>"@l
+/* 801910B8 000000B8  38 84 00 00 */	addi r4, r4, "__dt__Q36nw4hbm2ut19TagProcessorBase<w>Fv"@l
+/* 801910BC 000000BC  38 A5 00 00 */	addi r5, r5, "@6316_80378354"@l
+/* 801910C0 000000C0  48 00 00 01 */	bl __register_global_object
+/* 801910C4 000000C4  38 00 00 01 */	li r0, 0x1
+/* 801910C8 000000C8  98 1E 00 00 */	stb r0, "@GUARD@mDefaultTagProcessor__Q36nw4hbm2ut17TextWriterBase<w>"@l(r30)
+.L_801910CC:
+/* 801910CC 000000CC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801910D0 000000D0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801910D4 000000D4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 801910D8 000000D8  7C 08 03 A6 */	mtlr r0
+/* 801910DC 000000DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 801910E0 000000E0  4E 80 00 20 */	blr
+.endfn "__sinit_\ut_TextWriterBase_cpp"
+
+# 0x802EDF18..0x802EDF1C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\ut_TextWriterBase_cpp"

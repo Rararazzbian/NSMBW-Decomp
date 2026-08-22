@@ -1,0 +1,1213 @@
+ `.text` gaps in `dol/` game code, from `slices/wiimj2d.json`:
+
+```
+0x20290   0xA1F90 -> 0xC2220    d_enemy_state.cpp  -> d_lytbase.cpp
+0x1F2C0   0x667C0 -> 0x85A80    d_base_actor.cpp   -> d_cc.cpp
+0xFC50   0x1440B0 -> 0x153D00   d_a_player.cpp     -> d_pausewindow.cpp
+0xE4F0    0xF74C0 -> 0x1059B0   d_wm_path.cpp      -> d_SelectCursor.cpp
+0xA410    0xE1C90 -> 0xEC0A0    d_util_frame_counter.cpp -> d_wm_actor.cpp
+```
+
+The first is the best hunting ground: it sits directly after the enemy-state base
+class, and **eighteen `d_a_en_*` TUs are already landed**, so candidates there
+come with a large shelf of solved siblings. Being scouted now into
+`wip/dol_scout/DOL_TARGETS.md`.
+
+### What NOT to reopen
+
+RIVER, CASTLE_BG (24/33), and the five order-blocked units. Those walls are
+**measured, not merely hit** — RIVER alone burned ten source-level variants
+across two rounds. Reopening any of them costs a round and returns nothing.
+
+## THE DOL NAMES ITS OWN TRANSLATION UNITS — `__sinit_\<file>_cpp` in the symbol map
+
+The single most useful thing found while scouting the DOL, and it inverts the
+REL playbook.
+
+`bin/dtk/wiimj2d_symbols.txt` contains symbols of the form:
+
+```
+__sinit_\d_line_mng_cpp            = .text:0x800C7600; // size:0x12A4
+__sinit_\d_iggy_wan_kusari_cpp     = .text:0x800BA630; // size:0x4D4
+__sinit_\d_enemy_toride_kokoopa_cpp = .text:0x800AED40; // size:0x1698
+```
+
+**These name the real source file directly.** For any TU with static state, the
+filename is GIVEN, not inferred — and the `__sinit` address is a hard anchor
+inside that TU's `.text`.
+
+Contrast the REL lane, where a unit's identity had to be reconstructed from
+profile names and pool-ownership overlap, and where mis-scoping cost whole rounds
+twice (WM_ANTLION with both ends wrong, WM_ANTLION_MNG scoped at 79 functions
+when it is 22).
+
+**`bin/dtk/dtk_splits_wiimj2d.txt` does NOT contain these** — verified by grep,
+none of the three names above appear in it. That file is generated from landed
+slices and lists only solved units, exactly as `scout_unit.py`'s docstring warns.
+The `__sinit` symbols are in the FULL symbol map and are a separate, better
+source. Do not confuse the two.
+
+**Also: `scout_unit.py` does not transfer to the DOL.** It walks a REL's
+relocation stream; the DOL is fully linked and position-fixed, so there is no
+relocation stream. `.ctors` in the DOL is a plain array of already-resolved
+absolute function pointers, readable straight out of `original/wiimj2d.dol`, and
+reading it gives a contiguous, gapless ordering of every sinit-bearing TU. That
+is a second independent way to bracket a unit.
+
+### The scouted gap was NOT what I predicted, and the agent said so
+
+I sent the scout in on the premise that the region after `d_enemy_state.cpp` was
+"more `d_a_en_*` enemies, with eighteen landed siblings." **It carves into 23 TUs
+of which exactly ONE is an enemy actor, and that one is blocked** — its vtable is
+375 slots against `dEnBoss_c`'s 226, and `dEnBoss_c` is an undeclared base class
+living in a DIFFERENT unclaimed gap (`0x91BD0`-`0x98370`). The rest is
+infrastructure: faders, font manager, game-pad cores, lift-draw helpers, a
+line/rail movement manager.
+
+**The right resemblance axis was not the actor family but the STATE-MACHINE
+FRAMEWORK** — the useful siblings turned out to be `d_pausewindow.cpp` and
+`d_a_spin_child_base.cpp`. A brief that names the wrong similarity axis is worse
+than one that names none; the agent flagging it beat force-fitting my premise.
+
+## FIRST DOL TARGET: `d_line_mng.cpp` — 31,712 bytes and 25 NAMED states
+
+Chosen and verified before dispatch:
+
+```
+.text  0x800C0DC0-0x800C89A0   (offset 0xBA640-0xC2220)   0x7BE0 = 31712 bytes
+182 functions: 38 state-framework instantiations, ~144 real dLineMng_c methods
+NO __vt__10dLineMng_c  ->  the class has no vtable of its own
+__sinit_\d_line_mng_cpp at 0x800C7600, size 0x12A4  ->  exactly one .ctors entry
+```
+
+**31,712 bytes is 0.49% of the whole project in one unit** — larger than the last
+six landed units combined, and larger than either of the two big DOL landings.
+
+Why it was picked over the other 22 candidates:
+- **No own vtable.** The blocker that stops the one enemy unit in that gap
+  (undeclared base class, wrong slot count) cannot arise here.
+- **The symbol map names all 25 states**: `Idle, FallDown, Side, Height, Circle,
+  CornerHeightLine, CornerSideLine, Left45, Right45, Left30Left, Left30Right,
+  Right30Left, Right30Right, Left60Up, Left60Down, Right60Up, Right60Down,
+  Circle2x2Leftup, Circle2x2LeftDown, Circle2x2Rightup, Circle2x2RightDown,
+  Circle4x4LeftUp, Circle4x4LeftDown, Circle4x4Rightup, Circle4x4RightDown`
+  (the inconsistent "up"/"Up" capitalisation is REAL — copy it exactly).
+  On LEMMY, declaring FIVE states emitted twenty functions free. There are
+  twenty-five here.
+- **The methods are self-contained `mVec2_c` geometry with fully-typed
+  signatures** — `line_cross_slope_check__10dLineMng_cFRC7mVec2_cRC7mVec2_cRfRf`
+  is `(const mVec2_c&, const mVec2_c&, float&, float&)`. No actor lifecycle, no
+  resource handles, no model/animation code.
+- **A landed structural sibling exists**: `source/dol/bases/d_pausewindow.cpp`
+  uses the identical `sFStateMgr_c<Class, sStateMethodUsr_FI_c>` member shape.
+
+Detail worth keeping: `is_unit_circle2x2` and `is_unit_circle4x4` each own a
+FUNCTION-LOCAL STATIC array named `d_unit`
+(`@LOCAL@is_unit_circle2x2__10dLineMng_cFUl@d_unit`, `.rodata`, `0x10`/`0x20`).
+The `@LOCAL@...@name` form in the symbol map gives you a function-local static's
+name outright — worth grepping for on any unit.
+
+No `include/game/bases/d_line_mng.hpp` exists; a header will have to be proposed.
+
+## A NINTH wrong return type — and the SIZE DIAGNOSTIC found what six rounds of counting missed
+
+LEMMY's two `vUnk2A4()` copies (`fn_2_C5F30`, `fn_2_C64D0`) were declared `void`.
+The target epilogues, verified independently here in
+`wip/wm_units/agent_lemmy/target_C58E0.txt`:
+
+```
+/* 000C5FE0 */  lwz  r31, 0x3c(r1)
+/* 000C5FE4 */  li   r3, 0x1        <-- INSIDE the epilogue
+/* 000C5FE8 */  lwz  r0, 0x44(r1)
+/* 000C5FEC */  mtlr r0
+/* 000C5FF0 */  addi r1, r1, 0x40
+/* 000C5FF4 */  blr
+```
+
+`li r3, 0x1` after the register restores and before `mtlr` is a **return value**,
+not dead code. A `void` declaration cannot emit it. Both are `int` returning `1`.
+**Ninth wrong return type on this project.** Return types are ABSENT from CFront
+mangling; only parameters are encoded. Never take one from analogy.
+
+### The part that matters more than the ninth instance: HOW it was found
+
+For SIX rounds these two functions were logged as **"pool-position residual
+only, confirmed by line-by-line read."** They were not. They were one word short,
+and that one word was the return value.
+
+**The size mismatch was sitting in the notes the whole time and was read as
+noise.** This project's own rule says a size mismatch is STRUCTURAL in both
+directions — a pool-position residual physically CANNOT change the instruction
+count, because it only changes displacement operands. Applying that rule to an
+already-written note, with no new disassembly, produced the ninth return type.
+
+**So: a one-word-short draft with `li r3, <N>` in the target's epilogue is a
+DIRECT TELL for a missing return value.** That is a cheap, mechanical sweep and
+it should be run across every parked unit.
+
+Fixing it exposed two more real defects in the same function pair, both content:
+- the plain `daLemmyFoothold_c` copy had been given `daLemmyFootholdMain_c`'s
+  literal constants; real values measured out of `original/d_basesNP.rel`'s
+  `.rodata` bytes;
+- the target initialises the `mVec3_c` argument BEFORE the `sBgSetInfo` local;
+  the draft had it reversed.
+
+Result: `fn_2_C64D0` 49 words vs 48 / 46 differing -> **48/48 words, 3 differing**.
+`fn_2_C5F30` 49 vs 50 / 21 differing -> **50/50 words, 5 differing**.
+
+### My Lead 3 hypothesis was REFUTED, with arithmetic
+
+I proposed the `__sinit` 35-word gap hid a miscoded PMF triple. It does not.
+All 268 mnemonics match target in order. Of 53 textually-differing lines, 18 are
+symbol-name-only (relocated, raw bytes identical) and **exactly 35 are immediate
+displacements decomposing into 5 blocks of 7 — one per state — with uniform
+deltas (+0x14, +0x10)**. A uniform per-state delta is a pool-position signature,
+not a miscoding. The round-4 PMF fix is fully applied, not partial.
+
+**A residual that decomposes into equal blocks with a constant delta is
+positional. A residual that changes the instruction COUNT is content.** That pair
+of signatures separates the two classes mechanically, and should be checked
+before either is called "residual".
+
+## LEMMY_FOOTHOLD PARKED at 42/51 — blocked on register choice, not content
+
+Every function is written. Both size mismatches are now closed. The remaining
+nine gaps are four register-choice residuals (`create()` x2,
+`executeState_DemoDown`/`Up`) plus positional displacement.
+
+**It cannot land**: register-allocation differences are genuinely different
+instructions, so they fail MD5 regardless of link-time placement. This is a
+"bytes" objection, not a "structural" one, so the try-the-build move does not
+apply. Parked, not abandoned — if a lever for MWCC register allocation is ever
+found, this unit is one lever away from N/N.
+
+## `d_line_mng.cpp` 0/182 -> 67/182 from DECLARATIONS ALONE — but read the BYTE figure, not the count
+
+Declaring the class layout and all 25 states, with only the constructor and five
+legitimately-empty state stubs authored, took the unit from nothing to 67 of 182
+functions matching. **Independently re-measured here** by recompiling
+`wip/agent_line_mng/work/named/d_line_mng.cpp` and comparing with the project's
+own `harness.canonicalise`, not by trusting the report:
+
+```
+common function names   115
+length matches           67
+exact text matches       56
+CANONICALISED matches    67   <- the project-standard figure, agent's claim confirmed
+```
+
+The 11 that match canonicalised but not textually are all state-framework
+template functions differing only in pool symbol naming. Legitimate.
+
+### THE COUNT IS NOT THE PROGRESS — 36.8% of functions is 6.9% of BYTES
+
+```
+target total   7631 words (30524 bytes)
+matched         527 words ( 2108 bytes)  =  6.9% BY BYTES
+by count        67/182                   = 36.8%
+remaining      7104 words (28416 bytes)
+```
+
+**The state framework emits MANY SMALL functions** — destructors, ID accessors,
+trampolines, `isSameName`. They are real matches and they are free, but a
+function count overstates them by more than five to one on this unit. **Report
+byte-weighted progress on any unit where the framework did the work.** A future
+round reading "67/182" without this line would badly misjudge how far along it is.
+
+### The brief's sibling was WRONG, and the agent said so with three-way evidence
+
+I named `d_pausewindow.cpp` as the structural sibling. It is not.
+`dLineMng_c::mStateMgr` is
+`sFStateStateMgr_c<dLineMng_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c>` — a
+**state-of-states** manager holding two full `sFStateMgr_c` sub-objects
+(`mainMgr`/`subMgr`) plus a `currentMgr` pointer — where Pausewindow uses a plain
+single `sFStateMgr_c`. Evidenced three independent ways: both template families
+present in the symbol map; vtable slot counts (`0x30` = 10 slots inner, `0x40` =
+14 outer); and two real out-of-line `sStateMethodUsr_FI_c` constructions at
+`this+0x70` and `this+0xac` in the constructor's own disassembly.
+
+Also: **the constructor passes `sStateID::null`, not `StateID_Idle`.** The first
+real state is set later, in `init()`, via a virtual `changeState()`.
+
+### Layout: `sizeof(dLineMng_c) == 0xEC`, verified by COMPILED assertion
+
+Every offset was checked with a compiled `offsetof`/`Probe<N>` assertion **plus a
+negative control proving the check discriminates** — not read off a disassembly
+and asserted. That is the right standard for a layout, which is the shared
+prerequisite every later function depends on.
+
+```
+0x00  mVec2_c mDirVec[7]     (partly lazy-static-initialised)
+0x38  0x40  0x48  0x50  0x58 five more mVec2_c (mSpeed, mPos, mOldPos, mUnitBasePos, +1 unnamed)
+0x60  f32 mBaseSpeed    0x64  u16 mAngle    0x66..0x69  four u8 flags
+0x6c  mStateMgr, size 0x80  ->  object ends at 0xEC
+```
+
+**Open question, flagged not hidden:** no allocation site for `dLineMng_c` exists
+anywhere in `wiimj2d_symbols.txt`, so `sizeof` has no independent second source.
+
+### `__sinit` is OVERSIZED — that is STRUCTURAL, not scheduling
+
+The agent reports `__sinit` at 1220 words against a 1193-word target and calls it
+"a scheduling/`STATE_DEFINE`-order issue, not structural." **That contradicts this
+project's own rule, recorded twice above** ("The size diagnostic works in BOTH
+directions — an OVERSIZED draft is also structural"), and it is the exact
+misreading that hid a wrong return type on LEMMY for six rounds. 27 excess words
+is CONTENT. To be re-opened as such.
+
+## The missing-return sweep across 31 parked units: a CLEAN NEGATIVE
+
+Ran the mechanical tell (draft one word short + `r3` written in the target
+epilogue between the register restore and `mtlr`) across every parked unit.
+
+**0 of 31 units move.** 1616 target functions measured, 175 with a 1-3 word
+delta, 18 with a uniquely-assigned non-filler draft candidate — all 18 read by
+hand, none shows the epilogue `r3` write.
+
+**The useful distinction it drew:** a separate 20 targets DO have the tell's
+epilogue shape (`li r3, 0x1`, the documented `SUCCEEDED` convention), but each
+pairs only to a generic multiply-reused filler function chosen by size
+coincidence. **Those targets are simply UNAUTHORED — not existing drafts with a
+wrong type.** The tell only fires on a function someone has actually written.
+
+So LEMMY's ninth return type was found by REASONING OVER AN OLD NOTE, and that
+did not generalise into a mechanical sweep. Worth the round to establish; do not
+run it again. Method detail preserved: a name-based diff is useless on the WM
+family (1638/1667 falsely "unauthored") because targets are anonymous
+`fn_2_XXXXXX` whose names bake in an address that differs between a standalone
+compile and the linked REL — use `verify_anon.py`'s content-based pairing.
+
+## TOOLING DEFECT: `harness.canonicalise` reports FALSE MISMATCHES — use raw BYTES as the gate
+
+Found on `d_line_mng`'s `mov_to_*` family. All four functions were **length-exact
+AND byte-identical** to target, and canonicalise called them differing.
+
+The cause: the target's disassembly QUOTES a symbol name
+(`"@49614_80359100"`) where a standalone `.o` shows the unresolved form
+(`...bss.0`). **The quote characters survive canonicalisation**, so the two sides
+never compare equal no matter how the symbol is renumbered.
+
+This is not academic. Counting with canonicalise alone **undercounted this unit
+by four functions** — 71 reported against 75 real — and those four are 1188 words,
+the single largest block authored that round. A round could easily have been
+spent "fixing" four functions that were already byte-perfect.
+
+**The correct gate is the UNION:**
+
+```
+matched  ==  raw instruction bytes equal   OR   canonicalised text equal
+```
+
+Bytes first, because byte equality IS the project's criterion; canonicalise is a
+convenience for the cases where relocation genuinely makes bytes differ in a
+standalone `.o`. Implemented as `wip/line_mng_shared/tally.py`, which also
+reports **byte-weighted** progress and labels every outstanding function
+`MISSING` / `LEN OK` / `STRUCTURAL` (a length mismatch) so the size diagnostic is
+applied automatically rather than by memory.
+
+Note the parsing trap it hit on the way: target disassembly lines use TWO spaces
+before the byte field and CRLF endings. A fixed-width byte regex silently matches
+nothing and yields an empty parse — which presents as "0 functions matched",
+not as an error.
+
+## `d_line_mng`: `mov_to_*`/`mov_frm_*` 8/8 byte-exact, and THREE proven declaration fixes
+
+1188 words authored, all eight byte-exact. Unit went **6.9% -> 22.5% by bytes**
+(75/182 functions).
+
+**Three declaration errors, every one proven from CALL-SITE register behaviour:**
+
+```
+mov_to_* x4       void -> bool      callers cmpwi r3,0 / bne;
+                                    bodies end every path li r3,0x1 / li r3,0x0
+getLineUnitNo     void -> u32       callers mr r31,r3 right after the bl
+                                    (width u32 vs u8 vs int still unsettled)
+is_unit_circle*   -> static         call sites set ONE register (r3 = the id),
+                                    never a this pointer; a non-static decl emits
+                                    an extra mr pair the target does not have
+```
+
+That is **ten, eleven and twelve** wrong declarations on this project. The method
+is always the same and always beats analogy: **read what the CALLER does with the
+return register immediately after the `bl` — read, or clobber.**
+
+The `static` case is a new variety worth naming: **an argument-count mismatch at
+the call site is a STORAGE-CLASS tell.** One register set where two are expected
+means no implicit `this`, so the function is static — nothing about the return
+type at all.
+
+### A `.data` "constant table" may be a SWITCH JUMP TABLE
+
+The four `.data` blocks the scout flagged as "per-`mov_to_*` constant lookup
+tables" are **MWCC-generated switch jump tables**. Writing the right
+`switch`/`case` structure reproduces them automatically; there is no hand-authored
+data to transcribe. The case->state mapping was recovered by decoding the jump
+tables out of `original/wiimj2d.dol`.
+
+**Suspect a `switch` before transcribing constants** — the shapes are easy to
+confuse and transcribing is the expensive mistake.
+
+### And a control-flow trap: re-read branch targets ARITHMETICALLY
+
+A real structural bug was caught only by computing branch target addresses by
+hand rather than trusting the disassembly's apparent flow: the first
+`id != threshold` check skips **the entire `change_dir()` + `changeState()`
+block**, not just the `change_dir()` call it appears to guard. Related:
+`change_dir()` polarity around the circle cases is NOT a clean rule — it inverts
+between right-side and left-side functions and one case breaks the pattern
+outright. Settled per-case from the actual `beq`/`bne` bytes.
+
+## A LAYOUT field read as PADDING for a whole round — the argument from silence
+
+`dLineMng_c` offset `0x6a` was recorded in `MAPPING.md` as *"2 bytes of implicit
+padding (alignment for mStateMgr's vtable pointer). Not a named member."* The
+reasoning given was that `init()` never touches it.
+
+**It is a real one-byte field.** Verified independently here in the target:
+
+```
+/* 800C1608  9B DD 00 6A */  stb r30, 0x6a(r29)    start_line_move(), r30 = 0
+/* 800C19D8  98 1C 00 6A */  stb r0,  0x6a(r28)    check_term(), r0 = 1
+```
+
+Both store through the OBJECT pointer (`r29`, `r28`), not through `r1` — so
+neither is a stack spill. Only `0x6b` is true alignment padding.
+
+**The defect in the original reasoning is worth naming, because it will recur:
+`init()` never touching a field is an ARGUMENT FROM SILENCE.** A field written by
+no constructor and no initialiser, only by two state-transition methods, is
+invisible to exactly the functions a layout reconstruction reads first. The
+counter-technique is cheap: **before calling any offset padding, grep the target
+disassembly for that offset across the WHOLE unit**, not just the functions you
+happened to read. `grep -n "0x6a(" target.txt` would have found it in one command.
+
+This matters more than one field, because layout is the shared prerequisite every
+other function depends on — an agent authoring against a wrong layout burns its
+whole round.
+
+## `d_line_mng` authoring wave: four parallel agents, and what each proved
+
+```
+author_mov     8/8   byte-exact   mov_to_* x4, mov_frm_* x4   (1188 words)
+author_geom    0/16  byte-exact, 10/16 LENGTH-exact (register residual only)
+author_states  32/60 byte-exact, including all nine Circle* variants
+author_core    8/17  byte-exact, plus fn_800C15B0
+```
+
+**Sixteen further wrong declarations, all found by the same call-site method**, on
+top of the three earlier in the day:
+- five free predicates are `static` (`line_cross_chk1/2/3`,
+  `line_cross_slope_check`, `line_cross_range_check`) — proven by
+  calling-convention register accounting, no register left for an implicit `this`
+- all sixteen `*_cross_chk` predicates return `bool`, not `void`
+- `check_term` returns `bool` — **found independently by two agents**, one
+  mid-authoring and one flagging it as its highest-value follow-up
+- `getLineUnitNo` is `u32` — now **triple-confirmed**, most decisively from
+  `cmplwi` used directly on `r3` twice with no masking, which rules out `u8`
+
+**One return type is DELIBERATELY weaker than the rest and is flagged as such:**
+`CalcAdjustPosY` is `f32`, argued from dead-code-elimination behaviour because
+**no caller exists anywhere in the TU**, so the call-site method could not be
+applied at all. That is the right way to leave it — labelled, not quietly ranked
+alongside the proven ones.
+
+### Codegen levers found this wave
+
+- MWCC evaluates `.set()` arguments RIGHT-TO-LEFT (matching the known
+  constructor-argument rule).
+- Constant folding via same-TU initialisers.
+- `!=` versus `<` in a loop condition **defeats counted-loop conversion** — a
+  source-level lever on loop shape, which is rare on this project.
+- The angle-clamp steps that read as subtractions of `0x3f00`/`0x7f00` are
+  ADDITIONS of the complementary constants (`0xc100`, `0x8100`), confirmed from
+  the `addis` instruction rather than the disassembler's rendering.
+- A named local for a value reused after a call makes MWCC spill it to a
+  nonvolatile FPR (wrong bytes, frame grows `0x10`); writing the expression twice
+  avoids the spill at 1-3 extra words. **Reported as a characterised tradeoff
+  rather than papered over** — the right call.
+
+### Cross-checking that paid off
+
+`author_states` re-proved `getLineUnitNo` as `u32` **independently, before seeing
+my header update**, by different evidence than `author_mov` used. `author_core`
+first guessed `u8` from the callee body and **proved itself wrong by testing a
+caller** — the callee body alone is not sufficient evidence for a return width.
+
+## MAJOR: `_savegpr_N`/`_restgpr_N` is a WHOLE-TU decision — standalone compiles differ STRUCTURALLY
+
+The most consequential finding of the `d_line_mng` merge, and it bears on every
+unit on this project, because **every agent here authors standalone.**
+
+MWCC can either emit the shared register-save helpers:
+
+```
+bl _savegpr_27   ...   bl _restgpr_27
+```
+
+or **inline every register store**. The choice is made per translation unit, not
+per function. Measured on `__sinit_\d_line_mng_cpp`:
+
+```
+target and correct drafts   bl _savegpr_27 / _restgpr_27    frame 0x3b0   1193 words
+isolated author_states      register stores inlined         frame 0x3a0   1220 words
+isolated author_core        register stores inlined         frame 0x3a0   1220 words
+full merge                  bl _savegpr_27 / _restgpr_27    frame 0x3b0   1193 words  <- matches
+```
+
+Verified independently here: the merged draft's helper usage matches the target
+**exactly** — one `_savegpr_22`, five `_savegpr_27`, and the matching restores —
+where the isolated compiles had none.
+
+### What this means, and it is not small
+
+**A function compiled in ISOLATION can differ STRUCTURALLY from the same function
+in the full TU — by 27 words in this case — with identical source.** The
+difference is a whole-TU codegen heuristic, so it is invisible to any amount of
+staring at one function.
+
+Consequences to act on:
+- **A size mismatch in a standalone draft is not automatically content.** The
+  size rule ("a length mismatch is CONTENT, never scheduling") still holds
+  *within a fixed compilation context*, but the context itself can change the
+  length. Before spending a round hunting a missing word, check whether the
+  target uses `_savegpr_*`/`_restgpr_*` and your isolated draft does not.
+- I flagged this unit's `__sinit` as STRUCTURAL twice on exactly that reasoning.
+  **I was wrong both times** — it was 1193 all along in any correct whole-TU
+  configuration, and the 1220 was an artifact of isolated compilation.
+- It plausibly explains residuals on OTHER parked units. LEMMY's `__sinit` was
+  characterised as a "standalone-compile pool-position artifact" with 35 words of
+  uniform per-state displacement deltas. That characterisation now has a
+  confirmed mechanism behind it rather than being a guess.
+
+**Cheap diagnostic:** `grep -c "_savegpr_\|_restgpr_" <target.txt>` against the
+same count in your draft. A mismatch there explains a whole class of otherwise
+baffling length differences.
+
+The merging agent labelled the root mechanism its best-supported inference rather
+than a fully bisected result. That is the right level of confidence to claim.
+
+## `d_line_mng` MERGED: 100/182 functions, 27.7% BY BYTES
+
+```
+matched 100/182 functions   2115/7631 words = 27.7% BY BYTES
+```
+
+Independently re-measured, not taken from the report. Compiles clean.
+
+**No real collisions** — the four authors' scope was cleanly disjoint. Two
+apparent overlaps were complementary (one agent declared externs, another
+supplied the bodies).
+
+**A merge-only BONUS worth knowing about:** eight `initializeState_*` functions
+went from length-exact to fully byte-exact once another agent's helper body
+landed in the same TU. **Merging can IMPROVE functions, not only risk them** —
+the same whole-TU effect as the `_savegpr` finding, working in our favour.
+
+**One genuine regression, correctly diagnosed:** `fn_800C15B0` was byte-exact in
+isolation only because its author had added a throwaway
+`DUMMY_FORCE_EMIT_800C15B0()` wrapper, explicitly marked "DELETE at merge."
+Removed as instructed; with no real caller it is dead-stripped by `-O4` and is
+absent. It will return when its true caller `fn_800C31C0` is authored. **A
+function kept alive by a scaffold is not evidence it will survive the merge** —
+note the scaffold in the tally, not just the match.
+
+### `tally.py` has a NAME-KEY flaw: unnamed target functions read as MISSING
+
+`fn_800C1EE0`, `fn_800C3B20`, `fn_800C3B60` report `MISSING` but are present
+under mangled draft names. The tool keys on the `.fn` label, so a bare target
+name never matches a mangled draft name. Same defect class as the one
+`verify_anon.py` exists to solve for the REL units.
+
+It does not change this headline (none of the three would have matched anyway),
+but **the tool undercounts any unit with anonymous target functions** and needs
+content-based pairing as a fallback before it is trusted on one.
+
+## NEGATIVE CONTROL: a `_savegpr` regime mismatch is UBIQUITOUS and BENIGN — it does NOT predict a defect
+
+Immediately after establishing that `_savegpr_N`/`_restgpr_N` versus inlined
+register stores is a whole-TU decision, I proposed the obvious diagnostic:
+compare helper counts between a standalone draft and its target, and treat a
+mismatch as an explanation for unexplained length residuals.
+
+**I tested it across every parked unit before recommending it. It does not hold
+up as a defect predictor, and the control is decisive.**
+
+Sixteen units show a mismatch. **Six of them are ALREADY LANDED and
+byte-perfect:**
+
+```
+agent_manta       target=36  draft=0    LANDED  d_a_wm_manta.cpp
+agent_ac_switch   target=6   draft=0    LANDED  d_a_ac_switch.cpp
+agent_castle      target=0   draft=2    LANDED  d_a_peach_castle_sequence.cpp
+agent_dummy_door  target=2   draft=0    LANDED  d_a_dummy_door.cpp
+agent_floor_jr_b  target=2   draft=0    LANDED  d_a_floor_jr_b.cpp
+agent_sandpillar  target=2   draft=4    LANDED  d_a_wm_sandpillar.cpp
+```
+
+`manta` has the **largest mismatch on the board** — 36 helper calls in target
+against zero in the draft — and it landed byte-perfect. That single row is enough
+to kill the diagnostic as a predictor.
+
+### What the finding actually licenses, stated narrowly
+
+The whole-TU behaviour is REAL and the `__sinit` measurement stands: identical
+source, 1220 words isolated versus 1193 merged, and the merge matched target.
+What is wrong is the inference I drew from it.
+
+- **A regime mismatch between a standalone draft and a linked target is the
+  NORMAL state of affairs.** Standalone objects routinely differ here and resolve
+  at real build time. It is not evidence of anything.
+- The finding is an **available EXPLANATION for a length residual that is
+  otherwise unexplained**, not a test to run over a tree. Reach for it when a
+  function's length is off and every source-level avenue is exhausted — not
+  before, and never as a screen.
+- **Do not re-run this sweep.** It is recorded here so nobody pays for it twice.
+
+**The general lesson is the one worth keeping:** a mechanism being real does not
+make a test built on it discriminating. The mechanism explains a difference; it
+does not predict which differences matter. I nearly shipped this as guidance to
+four agents on the strength of the mechanism alone — the negative control took
+two commands and stopped it.
+
+## `getLineUnitNo` is STATIC — a fourth storage-class error, and it hid behind CANCELLING ERRORS
+
+An agent measured that the target **never sets `r3` for a `getLineUnitNo` call**
+and concluded it was "a whole-TU MWCC decision, same class as the `_savegpr`
+finding, not fixable per-function." **That diagnosis was wrong, and the right one
+was already recorded above it in this file.**
+
+It is the storage-class tell, third instance today: **one register set at a call
+site where two are expected means no implicit `this`.**
+
+Verified here before applying, three ways:
+
+```
+1.  ALL NINETEEN call sites set no r3 in the preceding six instructions.
+2.  Instruction-level, in start_line_move:
+        draft  w23   7F A3 EB 78   mr  r3, r29
+        target w23   C0 BD 00 44   lfs f5, 0x44(r29)
+    The draft spends a word passing `this` exactly where the target loads a float.
+3.  A/B on the declaration alone:
+        start_line_move   95w -> 94w   (target 94)   74 differing -> 4 differing
+        getLineUnitNo     26w -> 26w   BYTE-MATCHES EITHER WAY
+```
+
+### Why it survived four rounds of careful work
+
+**A static member function whose body never touches `this` compiles BYTE-
+IDENTICALLY to the non-static version.** `getLineUnitNo` was reported byte-exact
+by its author and re-confirmed by me — correctly, both times. **The error is
+invisible in the function itself and only ever appears at its CALL SITES.**
+
+So: when a function matches but its callers do not, suspect its DECLARATION, not
+their bodies. Nothing about the callee can reveal this.
+
+### The part that matters most: TWO ERRORS WERE CANCELLING
+
+Before the fix, four `executeState_*` functions were **length-exact**. After it,
+they are one word SHORT:
+
+```
+                        target   before   after
+Left30Right               100      100      99
+Left60Down                102      102     101
+Right30Right              104      104     103
+Right60Down               104      104     103
+```
+
+Those four were exact **by cancellation** — a spurious `mr r3` masking a genuine
+one-word content gap. **A correct fix made the tally look worse**, and a round
+that trusted the length column would have reverted it.
+
+This is the sharpest example yet of why *"a differing count is meaningless when
+lengths differ"* has a partner rule: **a length that MATCHES is not proof either,
+when two errors can offset.** The only trustworthy gate is bytes.
+
+Net effect of one word in a header: `start_line_move` from 74 differing to 4, and
+eight `executeState_*` functions now carrying an honest, newly-visible one-word
+gap instead of a hidden one.
+
+## `fn_800C31C0` 547/549 — and MY premise about the orphan function was wrong
+
+I dispatched the 549-word helper on the stated premise that it was the true
+caller of `fn_800C15B0`, the function that vanished from the first merge when its
+scaffold was removed. **It is not.** The agent enumerated all 23 of its callees
+from the target disassembly and grepped all 182 functions for any reference.
+There are none.
+
+Its real caller is `executeState_FallDown`, which the merge had left an empty
+stub — a tail call (`b fn_800C31C0`) at `0x800C562C`. The agent authored that too
+(15 words of gravity integration), which is what actually keeps the big function
+alive in the object.
+
+**Results, measured:** `fn_800C31C0` **547/549 words** with the full
+switch/loop/jump-table structure reproduced — and confirmed against the raw
+`.data` jump-table BYTES rather than transcribed as lookup data, which is the
+distinction recorded earlier today. `check_term` closed to exact length,
+`start_line_move` closed as a side effect, `line_cross_chk1` had a real sign bug
+(`-0.1f`, not `0.1f`), `init_term_ck_pos` needed static storage duration.
+
+**Fourteen more `lineN_cross_chk` functions must return `bool`, not `void`** —
+they had never been called by anything before, so nothing had exercised their
+declarations. That is the pattern of the day: **a declaration is only tested by a
+CALL SITE, so an uncalled function's declaration is unverified no matter how
+byte-exact its body is.**
+
+### The orphan `fn_800C15B0`: zero absolute references in the ENTIRE DOL
+
+I searched the whole `original/wiimj2d.dol` for `0x800C15B0` as a big-endian
+word. **Zero occurrences.** Nothing in `.text` calls it and no pointer anywhere
+in the image holds its address.
+
+**The resolution is that branches in a DOL are RELATIVE.** A `bl` from another
+translation unit encodes a displacement, not an address, so an absolute-word
+search structurally cannot find it. If the function has EXTERNAL linkage it is
+emitted whether or not this TU calls it; declared `static` with no caller, `-O4`
+strips it — which is exactly what happens now.
+
+Being under test. **The general point stands either way: absence of an absolute
+reference is NOT evidence a function is dead**, and on a fully-linked image it is
+barely evidence of anything.
+
+## `tally.py` name-key flaw FIXED — content-based fallback added
+
+An unnamed target function (`fn_800C31C0`) never keys against a draft's mangled
+or static name, so the name pass reported it `MISSING` while the authoring agent
+correctly reported 547/549. Same defect class `verify_anon.py` exists to solve for
+the RELs.
+
+The fallback pairs leftovers on **BYTE EQUALITY ONLY**. That is sound by
+definition — identical bytes IS a match — and cannot invent a pairing the way a
+fuzzy length-or-similarity heuristic could. It prints how many were paired by
+content so the number is never silently folded into the headline.
+
+It is currently INERT on this unit (nothing byte-identical is unnamed), so it
+changes no figure reported today. It matters for any unit with anonymous targets,
+which is most of the REL work.
+
+## The `.fn <name>, global` tag answers LINKAGE, not the `static` MEMBER question — do not conflate them
+
+`fn_800C15B0`'s linkage was settled by evidence sitting in the disassembly all
+along: `target.txt`'s own `.fn fn_800C15B0, global` tag. Declaring it non-`static`
+is sufficient — MWCC emits it unconditionally as an external symbol and it is
+byte-identical at 7 words. **Positive result, and the tag is direct evidence
+rather than inference.**
+
+**But it does NOT generalise to the question it looks like it answers.** Checked
+here across the whole unit: **every one of the 156 named functions is tagged
+`global`**, including both functions PROVEN today to be static members:
+
+```
+.fn fn_800C15B0, global                      <- file-scope, EXTERNAL linkage
+.fn getLineUnitNo__10dLineMng_cFff, global   <- PROVEN static member (no `this`)
+.fn is_unit_circle2x2__10dLineMng_cFUl, global <- PROVEN static member (no `this`)
+```
+
+**C++ uses one keyword for two unrelated things:**
+- `static` on a FILE-SCOPE function means INTERNAL linkage. The tag sees this —
+  such a function would be `local`.
+- `static` on a MEMBER function means NO IMPLICIT `this`. Linkage is still
+  external, so the tag reads `global` and is silent on it.
+
+**So:** use the tag to decide file-scope `static`. **Never** use it to decide
+whether a member function is static — that question is answered ONLY by the
+call-site register count (one register where two are expected), which is the tell
+that has now found four instances.
+
+Getting this backwards would produce confident, wrong answers on exactly the
+class of bug that has cost the most rounds today.
+
+## `d_line_mng` second merge: 101/182, 27.8% by bytes
+
+```
+(1 paired by CONTENT -- unnamed target vs mangled draft name)
+matched 101/182 functions   2122/7631 words = 27.8% BY BYTES
+```
+
+The content-based fallback added to `tally.py` an hour ago **paid off immediately**
+— `fn_800C15B0` is the one function it correctly counts that the name-keyed pass
+would have called MISSING.
+
+**Zero regressions**, verified by exact set difference against the prior merge's
+100, not by comparing totals. **No collisions**, but one near-miss worth the
+technique: two `executeState_*` functions LOOKED like they already carried the
+better `mVec2_c` shape and actually recomputed an offset inside each branch
+instead of once before the call. **Caught by direct diff, not by visual
+similarity** — which is the only way that class of thing is ever caught.
+
+**The 14 `bool` return-type changes are now load-bearing for COMPILATION itself:**
+reverting them to `void` makes the file fail to compile, because `fn_800C31C0`'s
+switch tests every one of those return values. A declaration that started as an
+unverifiable guess is now pinned by a caller.
+
+### The eight `executeState_*` one-word gaps did NOT close — and are now honest
+
+With the spurious `mr r3` gone, all eight show a clean, uncancelled shortfall.
+The residual is the target reloading `mUnitBasePos.x + 16.0f` a second time
+rather than reusing the live register. A `volatile`-forcing trick closes it but
+exposes a separate pre-existing register-swap residual (`f0`/`f1` for
+`mBaseSpeed`/`0.8910065f`) unaffected by operand-order swapping — the documented
+"not source-addressable" pattern. **Correctly NOT shipped: a forcing hack with no
+net matching benefit is a worse artifact than an honest gap.**
+
+## Peer rounds verified: Qwen r17 and Gemini r15 both DELIVERED and both reproduce
+
+### Qwen round 17 — `d_bg_actor_mng.cpp`, 19/22 byte-exact
+
+Independently recompiled `scratch/round17/d_bg_actor_mng.cpp` against its own
+shadow headers (clean compile) and compared every function's length against the
+symbol map. **Its table reproduces exactly** — 16 named functions length-OK plus
+four `__arraydtor$` thunks, and `__sinit_\d_bg_actor_mng_cpp` **byte-exact at
+685 words**, which is the bulk of the unit.
+
+**But two of its three failures are MISLABELLED, and the label matters:**
+
+```
+ProcMain__17dBgActorManager_cFv        target 179   draft 160   -19 words
+createObjList__17dBgActorManager_cFb   target 116   draft 107   -9 words
+```
+
+Qwen called both *"register allocation in grid loops."* **A length mismatch is
+CONTENT — register allocation physically cannot change an instruction count.**
+Those two functions are 28 words of MISSING CODE between them, not a scheduling
+residual, and they are a concrete authoring target rather than a wall.
+
+**This is the fourth agent today to file a length mismatch under
+register-allocation or scheduling.** It is the single most common misdiagnosis on
+this project and it always costs the same thing: a real content gap gets parked
+as unfixable. The tell is mechanical and needs no judgement — **compare lengths
+before reading a single instruction.**
+
+### Gemini round 15 — `dEnBoss_c` declaration order, every number confirmed
+
+Re-derived the whole vtable arithmetic from `bin/dtk/wiimj2d_symbols.txt`:
+
+```
+__vt__8dActor_c            0x0D4  ->  51 slots
+__vt__5dEn_c               0x280  -> 158 slots
+__vt__9dEnBoss_c           0x390  -> 226 slots   ->  68 new over dEn_c
+__vt__18dEnTorideKokoopa_c 0x5E4  -> 375 slots   -> 149 new over dEnBoss_c
+```
+
+Exact, slot for slot. And it did not stop at argument: **it compiled the proposed
+header with the real CodeWarrior and matched all 226 slots against retail
+one-for-one**, then placed a derived Kokoopa test class and confirmed its first
+new slot lands at 226. That is verification, not reasoning, and it is the right
+standard for a declaration-order claim where being 42 slots out is invisible in
+prose.
+
+**Task B is a confirmed NEGATIVE and worth as much as the positive:**
+`include/game/bases/d_enemy.hpp` declares exactly **158** virtual slots and every
+one matches retail with zero divergence. That header sits under every enemy unit
+in the project; a defect there would have been latent everywhere. It is clean.
+
+**The 33,552-byte `d_enemy_toride_kokoopa.cpp` is therefore UNBLOCKED** — larger
+than the last six landed units on this project combined.
+
+## `__sinit`'s residual is WEAK-SYMBOL LINKER DEDUPLICATION — and the symbol map TAGS it
+
+`__sinit_\d_line_mng_cpp` is length-exact at 1193/1193. Its 175 differing words
+decompose into **25 blocks of 7 — one per declared state — with a flat, uniform
+`+0x40` shift.**
+
+The cause, traced and independently confirmed here: `r28` anchors into a `.data`
+pool holding 12 `s_State.hpp` framework vtables. Six are templated on
+`dLineMng_c` and genuinely belong to this TU. **The other six are plain,
+non-template interface vtables shared project-wide, and they are physically
+hosted elsewhere in the image:**
+
+```
+__vt__13sStateIDChk_c = .data:0x802FEDF8; // size:0x10  scope:weak
+                                    ^^^^^^^^^^^^^^^^^ tagged WEAK in the map
+this TU's own .data slice is 0x80316CA0-0x80317738 -- nowhere near it
+```
+
+**`scope:weak` is written into `bin/dtk/wiimj2d_symbols.txt` directly.** That is
+a cheap, general way to spot link-deduplicated objects: grep the map for
+`scope:weak` before assuming an object belongs to the unit that references it.
+
+An isolated compile emits its own copy of every weak vtable; the real link keeps
+one and discards the rest, shifting everything downstream. **This is a
+whole-program link-time effect, invisible to per-TU compilation** — the same
+family as the `_savegpr` finding, and it means the residual is not addressable
+from inside `d_line_mng.cpp` at all. Correctly, no source change was made.
+
+(Consistent with the standing note that unreferenced weak symbols are not placed
+— an object's size must not be read as a link overflow.)
+
+### MY BRIEF CREATED A PHANTOM CONTRADICTION — the two figures were never in conflict
+
+I told the agent this unit's `__sinit` residual had been "measured to decompose
+into 5 blocks of 7, one per state, with uniform deltas (+0x14, +0x10)" and asked
+it to check whether that still held. It measured **25 blocks of 7 with +0x40**,
+flagged the contradiction rather than quietly reconciling it, and was right to.
+
+**The contradiction was mine.** The 5-blocks-of-7 measurement is **LEMMY's**
+`__sinit`, recorded earlier in this file. LEMMY has **5 states**; `d_line_mng` has
+**25**. Seven words per state, one block per state — the two measurements are the
+*same phenomenon scaled by state count*, and were never in conflict. I attributed
+one unit's number to another when writing the round brief.
+
+**Lesson for briefs, not for the compiler:** a measurement is only portable
+between units if the quantity it scales with is the same. Seven words per state
+is portable; "35 words" is not. **Quote the per-unit RATE, never the total**, and
+name the unit it came from.
+
+## `fn_800C31C0` reaches 549/549 — but the fix is a `volatile` proxy and is NOT being shipped
+
+Root cause found and cleanly measured: the source reads `mPos.x`/`mPos.y` twice,
+~18 statements apart, and `-O4` common-subexpression-eliminates the second read
+against the still-live register. **The target genuinely reloads both fields from
+memory.** Forcing the reload with `*(volatile f32 *)&self->mPos.x` closes it, and
+the evidence is clean and additive: **each field's forcing is worth exactly +1
+word — 547->548 alone, 547->549 together.** That additivity is what makes the
+mechanism believable rather than coincidental.
+
+**It is still not byte-exact** — the switch-dispatch body has a register
+permutation and branch-polarity wall that a previous agent already tried and
+reverted (it regressed 547->564). This agent correctly did not repeat it.
+
+**Decision: do NOT ship the `volatile` casts.** The original source cannot have
+contained them; they are a proxy for whatever real construct forces the reload.
+Shipping them would buy a length match that **does not convert into a byte
+match**, at the cost of an inauthentic construct sitting in the source
+permanently. That is the same call an earlier agent made for the `executeState_*`
+family, and it was right then too.
+
+**What to keep is the MECHANISM, not the hack:** the target reloads a field the
+compiler would rather keep in a register, and the real question is what source
+shape causes MWCC to do that without `volatile`. Same underlying question as the
+eight `executeState_*` gaps ("Gap A"), so **one answer closes both** — roughly
+1,360 words across nine functions.
+
+## GAP A IS ANSWERED: an AGGREGATE COPY is not CSE'd against earlier scalar reads
+
+The question left open above — *what source shape makes MWCC reload a field it is
+still holding in a register, without `volatile`* — has a one-line answer:
+
+```
+    mVec2_c newBase = mUnitBasePos;   // aggregate copy: BOTH fields reload
+    newBase.x += 16.0f;               // ...and the add is recomputed
+```
+
+**The field loads MWCC emits for an aggregate copy are not
+common-subexpression-eliminated against earlier scalar reads of the same
+members.** Writing the same thing as a constructor call —
+`mVec2_c newBase(mUnitBasePos.x + 16.0f, mUnitBasePos.y)` — lets `-O4` reuse the
+sum it computed for the `mPos.x >= mUnitBasePos.x + 16.0f` test one line above,
+and that is exactly the two words every one of these functions was short.
+
+Nothing exotic, no `volatile`, no compiler-baiting construct: it is ordinary
+source that any programmer might write either way, and the two ways are not
+equivalent to MWCC.
+
+### What it closes, measured
+
+`executeState_Left30Left`, the worked example (99 words in retail):
+
+```
+constructor form   97 insns   -2   reload + re-add missing, stores in x,y order
+copy-then-adjust   99 insns   +0   reload, re-add and y-before-x store order ALL exact
+```
+
+The **entire** gap region disappears from the diff. What remains in that function
+is the separately-documented `f0`/`f1` permutation on `mBaseSpeed`, untouched.
+
+Applied to all eight sites (four `x ± 16.0f`, four `y ± 16.0f`), every one of the
+eight `executeState_*` functions moves from `STRUCTURAL` (wrong length) to
+`LEN OK`:
+
+```
+Right60Down 104  Right30Right 104  Right30Left 103  Left60Down 102
+Right60Up   101  Left60Up     101  Left30Right 100  Left30Left   99
+```
+
+### It also RETIRES the `volatile` hack in `fn_800C31C0`
+
+Same rule, applied to the other half of Gap A:
+
+```
+    mVec2_c base = self->mPos;                       // was: two volatile-cast reads
+    base.x = smc_UNIT_SIZE_X * (f32)(int)(base.x / smc_UNIT_SIZE_X) - 16.0f;
+    base.y = smc_UNIT_SIZE_X * (f32)(int)(base.y / smc_UNIT_SIZE_X) - 16.0f;
+```
+
+```
+plain reads    547/549
+volatile hack  549/549   rejected last round as inauthentic
+aggregate copy 549/549   BYTE-IDENTICAL to the volatile version
+```
+
+**Byte-identical** — so the construct that was rejected on authenticity grounds
+buys nothing the honest one does not. Both are now in the draft as the honest
+form; the `volatile` casts are gone from the unit entirely.
+
+### READ THE MATCHED COUNT HONESTLY: it did not move
+
+`101/182 functions, 2122/7631 words = 27.8%` before and after. **Length-exact is
+not byte-exact.** All nine functions still carry the pre-existing register
+permutation, so none of them flips to matched yet. What changed is that nine
+functions are now correct in *content and length*, with one known residual class
+between them and matching, instead of two — and the standing "roughly 1,360
+words" figure quoted above is the SIZE OF THE PRIZE, not progress banked.
+
+### Clean negative: commutative float operand order is CANONICALISED before allocation
+
+With the Gap A gap removed, the remaining `f0`/`f1` permutation was re-tested
+properly. Four source spellings of the same two products:
+
+```
+mBaseSpeed * 0.8910065f  /  0.5f * mSpeed.x     (control)
+0.8910065f * mBaseSpeed  /  0.5f * mSpeed.x
+mBaseSpeed * 0.8910065f  /  mSpeed.x * 0.5f
+0.8910065f * mBaseSpeed  /  mSpeed.x * 0.5f
+```
+
+**All four compile to byte-identical code.** MWCC canonicalises commutative
+floating-point operand order before register allocation, so source operand order
+is not a lever on it — for anyone, anywhere in this project. A fifth variant
+hoisting the product into a named local made it strictly worse (it perturbed
+register assignment across the whole function). This confirms an earlier agent's
+result, but now uncontaminated by the Gap A gap that was sitting next to it.
+
+Experiment rig kept at `wip/gapA/` — `try.py` (newBase shapes), `try2.py`
+(operand order), `try3.py` (`fn_800C31C0`), `apply.py` (sweep all eight sites).
+Each compiles one variant of the real TU and diffs one function against retail.
+
+## GAP B IS ANSWERED: a multiply operand needs its OWN DEF to reach f1, and `*=` escapes MWCC's literal-first slot rule
+
+**Result: 101/182 -> 104/182 functions, 2122 -> 2426 words, 27.8% -> 31.8% BY BYTES.**
+Verified with `python wip/line_mng_shared/tally.py wip/fix_bigtwo/d_line_mng.cpp wip/fix_bigtwo/shadow_include`
+both before and after. Three functions went from LEN OK to byte-exact:
+`executeState_Left30Left` (99w), `executeState_Right30Right` (104w), `executeState_Right60Up` (101w).
+All eight `executeState_*` siblings improved; none regressed.
+
+### The one-line answer
+
+    mSpeed.x = mBaseSpeed;          // NOT `mSpeed.x = mBaseSpeed * 0.8910065f;`
+    mSpeed.x *= 0.8910065f;
+
+### The residual this closes
+
+After the Gap A fix the nine `executeState_*` functions were all LEN OK but none byte-exact.
+In `executeState_Left30Left` (99 insns) the ENTIRE real residual was four lines -- everything
+else in the raw diff was symbol-name and branch-label noise:
+
+    idx  TARGET                                DRAFT
+    2    lfs f0, "@56309_8042CBA8"@sda21(r0)   lfs f1, "@7869"@sda21(r0)
+    10   lfs f1, 0x60(r3)                      lfs f0, 0x60(r3)
+    33   lfs f1, 0x60(r30)                     lfs f1, "@7869"@sda21(r0)
+    34   lfs f0, "@56309_8042CBA8"@sda21(r0)   lfs f0, 0x60(r30)
+
+Retail materialises the MEMBER first, into f1, and the CONSTANT second, into f0. The draft did
+the reverse. Same permutation at two independently-scheduled sites (function head via r3, and
+inside the `check_term()` branch via r30).
+
+### It was TWO STACKED RULES, which is why one-shot attempts kept failing
+
+**Rule 1 -- REGISTER CHOICE.** A multiply's variable operand only lands in f1 if it has a
+def-point of its own ahead of the multiply. Written as a single expression, `mBaseSpeed` has no
+def, is materialised as a bare operand, and lands in f0. Giving it ANY separate def flips both
+sites to retail's registers and retail's load order. A short local at the site does it:
+`f32 bs = mBaseSpeed; mSpeed.x = bs * 0.8910065f;` -> residual 4/99 drops to 2/99.
+
+**Rule 2 -- fmuls SLOT ORDER.** MWCC canonically places a float LITERAL operand in the FIRST
+source slot of `fmuls`, regardless of how the source is written. This is the mechanism behind the
+already-known dead end that commutative operand swaps compile byte-identical -- the canonicalisation
+happens before register allocation, so the source order never survives. After Rule 1 the draft
+still emitted `fmuls f6, f0, f1` against retail's `fmuls f6, f1, f0`.
+
+**The compound assignment satisfies both at once.** `x *= k` is not a binary expression, so
+Rule 2 does not apply -- the destination IS the first operand by construction -- and the
+assignment `mSpeed.x = mBaseSpeed;` supplies the def Rule 1 needs. 0/99.
+
+Decisive evidence for Rule 2 being "const first" rather than "earlier-defined first": at the
+branch site under the short-local form the constant is loaded SECOND yet still occupies slot 1.
+
+### Scope -- what to rewrite and what NOT to
+
+Rewrite ONLY the `mBaseSpeed * <literal>` products: 16 sites, `mSpeed.x` and `mSpeed.y`,
+both the head and the `check_term()` branch of each of the eight 30/60-degree state functions.
+
+**MEASURED strictly worse, do not retry:**
+- Extending the compound form to the HALF-products (`mSpeed.y = 0.5f * mSpeed.x`) breaks
+  Left30Left (0 -> 2), and destroys Right30Right (0 -> 79) and Right60Up (0 -> 78).
+- Applying `*=` to a scalar TEMP rather than to the member directly
+  (`f32 sx = mBaseSpeed; sx *= k; mSpeed.x = sx;`) re-schedules the prologue and loses the match.
+- Hoisting the member into a local at FUNCTION TOP rather than at the site: +3 instructions,
+  it forces the callee-saved f31. The def must be short-lived and adjacent.
+- `mSpeed.y = mBaseSpeed * 0.44550325f` (folding the half into the constant) is WRONG: retail
+  computes y from the x product register (`fmuls f6,f1,f0` then `fmuls f4,f5,f6`), so
+  `mSpeed.y = 0.5f * mSpeed.x` is the correct dependency and was already right.
+- Line 1351 (`mSpeed.x = -mBaseSpeed * nw4r::math::SinIdx(...)`) is deliberately NOT rewritten:
+  the right operand is not a literal, so Rule 2 does not apply there.
+
+### Four clean negatives established alongside it -- do not spend rounds on these
+
+**1. The constants are NOT named in the original source.** `bin/dtk/wiimj2d_symbols.txt` shows
+`smc_UNIT_SIZE_X__10dLineMng_c` at .sdata2:0x8042CB18 as a NAMED object, while the two values in
+question sit beside it as anonymous `scope:local` 4-byte literal-pool entries (`@55305` = 0.5f at
+0x8042CB5C, `@56309` = 0.8910065f at 0x8042CBA8). Anonymous pool entries are what an inline literal
+compiles to and nothing else does. Every named spelling emits a user-visible symbol the retail map
+proves is absent. Seven foldable named forms (file-scope const, anon namespace, class static defined
+in-TU, #define, const local, function-scope static, address-taken) all compile BYTE-IDENTICAL to the
+inline literal -- MWCC re-folds them. Non-foldable forms (extern, array element, struct member) DO
+flip the registers, but only by adding symbols retail does not have. Evidence, not a fix.
+
+**2. NOT translation-unit-order sensitive.** 17 variants: dummy earlier uses of each constant,
+injecting the statement into an earlier member function, moving the function to the head/tail of the
+file, reversing the eight state triples, deleting a function to shrink the pool. All 99 insns, all
+four lines unchanged. Verified non-null by dumping `.sdata2` each time and confirming the pool
+actually moved (one variant shifts the constants 17 slots earlier; another reproduces retail's exact
+relative pool order). Pool-order mismatch and the register permutation are INDEPENDENT facts.
+
+**3. NOT flag-sensitive.** ~145 command-line variants -- every optimisation level and `-opt`
+sub-keyword, every scheduling setting, every accepted `-fp`/IEEE/fsel/fmadd option, all inlining and
+IPA modes, small-data thresholds, assorted codegen knobs. Not one flipped the four lines. The
+project's current flags are the joint best (88/182 in that agent's partial-TU scoring); nothing beat
+them. `-schedule off` was the only variant to touch those indices at length 99, and direct inspection
+showed it merely RELOCATES the draft's ordering rather than changing it -- the permutation is decided
+upstream of scheduling. Also stable byte-for-byte across compiler versions 1.0, 1.3 and 1.7.
+
+**4. Aggregate/temporary store shapes do NOT help here.** `mSpeed = mVec2_c(...)` (103), an
+uninitialised `mVec2_c` temp (103), the literal Gap A copy-then-adjust shape on mSpeed (103),
+`.set()` (99 but moves 0.5f f5->f4), y-before-x (99, also flips the store order the wrong way).
+The Gap A lever is real but does not generalise to this statement.
+
+### A REAL INFRASTRUCTURE BUG found on the way, still open
+
+`harness.canonicalise` reports UNEQUAL for `executeState_Left30Left` even though all 99 raw bytes
+are identical to retail. It renumbers pool symbols but does not strip the surrounding QUOTES, so
+retail's `lis r31, "@49614_80359100"@ha` never compares equal to a draft's `lis r31, ...bss.0@ha`.
+Any function in this TU that references the .bss base fails the canonical gate permanently.
+Two independent agents hit this. The byte gate is the honest one and `tally.py` uses it, so no
+result in this file is affected -- but the canonicaliser should be fixed centrally before anyone
+trusts a canonical-only verdict elsewhere.
+
+### Secondary finding worth keeping for whoever fills in the remaining 78 functions
+
+Our float literal pool order genuinely differs from retail's:
+- retail: 16.0f(0x8042CB48) < 0.5f(CB5C) < 0.5 double(CBA0) < 0.8910065f(CBA8)
+- ours:   16.0f < 0.5 double < 0.8910065f < 0.5f
+
+MWCC lays literals into the pool in order of first use across the TU, so retail first-uses float
+`0.5f` EARLIER in the file than we do -- a fingerprint of a function still missing from our draft.
+It does not cause the register permutation (proven above), but it is a free completeness check:
+when the pool order matches retail's, the missing early function has been found.
+
+### Gap B addendum: the lever reaches beyond the eight, and it is not fmuls-specific
+
+Sweeping the rest of the unit: **104/182 -> 106/182, 2426 -> 2580 words, 31.8% -> 33.8% BY BYTES.**
+
+- `executeState_Left45` (60w) -- MATCHES. Same inversion, but the source held the
+  product in a shared local `dv`. The split must land on the MEMBER, not the local:
+  `mSpeed.x = mBaseSpeed; mSpeed.x *= 0.70703f; mSpeed.y = mSpeed.x;`. The def-point
+  rule has nothing to anchor to on a local.
+- `start_line_move` (94w) -- MATCHES. **The rule is not fmuls-specific: it governs
+  `fdivs` too.** `mPos.x / smc_UNIT_SIZE_X` written as a bare operand puts x and y in
+  the wrong registers; `f32 px = mPos.x;` immediately ahead of each divide fixes both.
+- `executeState_Right45` -- improved 24 real diffs -> 4, not closed. The remainder is
+  an unrelated f0/f1 swap in `mPos.y = mUnitBasePos.y - (mPos.x - mUnitBasePos.x)`.
+  Kept as a strict improvement.
+- `CalcAdjustPosY`, `executeState_Side`, `executeState_Height` -- CHECKED AND SKIPPED.
+  Their residuals only resemble the inversion; they are callee-saved FPR renumbering
+  (f29<->f30) and an f2/f3/f4 rotation, with no `member * literal` shape present.
+  Different bug class; the lever does not reach them.
+
+So the general statement of the lever is broader than first written: **a member
+operand of a float divide or multiply only lands in retail's register if it has its
+own def-point immediately ahead of the operation, and that def must be on the member
+itself.** Corroborated independently against the matched corpus, where division by a
+constant is one of exactly three source routes that produce member-first ordering.
+
+---
+
+# SESSION: d_line_mng 27.8% -> 65.9%, and four of my own rules were wrong
+
+## Where the unit stands
+
+`matched 165/182 functions   5031/7631 words = 65.9% BY BYTES`, up from 101/182
+and 27.8% at the start of the previous session and from 136/182 and 47.0% at the
+start of this one. Live draft: `wip/fix_bigtwo/d_line_mng.cpp`.
+
+**`__sinit` (1193w, 15.6% of the unit) is SOLVED but NOT LANDED.** It is gated on
+a shared-header change and on the build, which is broken -- see below. Landing it
+takes the unit to roughly **82%**.
+
+## CORRECTION to the entry immediately above this one
+
+That entry says `CalcAdjustPosY`, `executeState_Side` and `executeState_Height`
+were "CHECKED AND SKIPPED -- callee-saved FPR renumbering ... Different bug class;
+the lever does not reach them."
+
+**All three closed this session, byte-exact.** The bug class was correctly
+identified and the conclusion drawn from it was wrong. `CalcAdjustPosY`'s 23
+apparent differences collapsed to 10 real ones, all a single FP register pair.
+
+## The four rules that were wrong, and what replaced them
+
+1. **"Treat a pure register-permutation residual as not source-addressable."**
+   Measured on three hoisted base POINTERS -- GPRs -- and generalised without
+   testing. False for FPRs: callee-saved `f31…f28` are handed out in DECLARATION
+   order while the schedule follows ASSIGNMENT order, so `f32 v; ... v = expr;`
+   decouples them. This note had been actively steering agents away from what
+   became the session's largest wins; three separate agents and one peer AI all
+   cited it to close out work that was in fact closable.
+
+2. **"Lever 12 does not apply to double-precision `fadd`/`frsp` paths."** Written
+   off after one failed attempt whose real defect was an `f32` temp emitting its
+   `frsp` ten slots early. Levers 11 and 12 govern the OPERATION, not the
+   PRECISION.
+
+3. **"Put the def-point on the MEMBER, never a scalar temp."** True when the
+   member is being WRITTEN by an arithmetic statement. Backwards when it is being
+   READ and reused -- that wants a named local (lever 13), and a FRESH SECOND
+   local after a call, because reusing the outer one forces a cross-call spill.
+
+4. **The `__sinit` residual was assumed to be a base-register cascade** (by
+   analogy with kokoopa). It was not: base registers, frame and save level all
+   matched. It was one extra weak vtable in `.data` shifting every displacement
+   by a fixed `+0x40`.
+
+## New this session
+
+- **Lever 13** (read-side def-point) and the FPR declaration-order rule, both in
+  `AGENT_CONTEXT.md`.
+- **A leaf WITH a def-point numbers ASCENDING in declaration order; a bare leaf
+  numbers DESCENDING in evaluation order.** Opposite directions, so a four-leaf
+  statement pair can need its two orderings written backwards relative to each
+  other. Found by measuring ~25 variants on `check_term` (12 -> 8 -> 0 diffs).
+- **`tools/auto_decomp/pool.py`** -- decodes a literal-pool constant from the DOL
+  by address or by pasted dtk pool symbol, printing both the f32 and f64 reading.
+- **`wip/line_mng_shared/merge_agents.py`** -- function-granular merge for
+  parallel agent workspaces, with conflict detection. Merges function bodies
+  ONLY; file-scope changes need manual follow-up.
+
+## The false-positive trap is REAL and cost real work
+
+`lfs`/`lfd`/`bl` all have their address or pool-offset field zeroed in both
+disassemblies, so **a wrong constant or a wrong callee compares byte-identical.**
+Live instances this session: an agent "matched" five circle initialisers on
+invented constants like `1303.79833984375f` (real values: `16.0f`, `-16.0f`,
+`32.0f`, `0.0f`); and a peer AI produced 11 false positives across two rounds, all
+writing `0.0f` where retail has `5500.0f`, including two it had already been told
+about. `pool.py` exists because of this. Use it before claiming any match whose
+body is essentially one pooled-constant reference.
+
+## THE BUILD IS BROKEN -- and it predates this session
+
+`ninja` fails in two independent places. `source/` and `include/` are clean in
+git and this session's commits touched neither; the last successful build left
+artifacts dated ~10 days ago, and units have landed in `d_basesNP` since.
+
+1. **`d_a_wm_manta.cpp` no longer compiles** -- MWCC 10319, "ambiguous access to
+   name found `daWmManta_c` and `@unnamed@d_a_wm_manta_cpp@::daWmManta_c`".
+2. **`slice_rel.py` emits a `.bss` filler with size `-0x10360`** for `d_basesNP`
+   only; the other two RELs slice cleanly. `-0x10360` is exactly the highest
+   `.bss` end address claimed in `slices/d_basesNP.json`, and the module's real
+   `.bss` is `0x12484`.
+
+**Nothing can land until both are fixed**, including `__sinit`. Agents are on
+both. Until then, a "green tree" cannot be asserted -- and it has been asserted in
+recent commit messages on the strength of per-unit checks rather than a full
+build.

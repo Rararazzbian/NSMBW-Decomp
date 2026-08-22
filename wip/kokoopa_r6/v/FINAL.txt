@@ -1,0 +1,106 @@
+    // ---------------------------------------------------------------------
+    // The two guarded `mVec3_c` writes in this TU's `__sinit`.
+    //
+    // Layout, read off the target (`fn_2_191C30`) with `r30` = the anonymous
+    // `.bss` anchor `lbl_2_bss_10538`:
+    //   +0x00  `dWmLib::sc_ForceList`'s 0xc-byte array-registration node
+    //   +0x0c  `dWmLib::c_StartPointKinokoHouseID`  (`stw r3, 0xc(r30)`)
+    //   +0x10  s_koopaShipPos.mPos1                 (0.0f, 50.0f, -100.0f)
+    //   +0x1c  s_koopaShipPos.mPos2                 (0.0f,  0.0f, -100.0f)
+    //   +0x28  the guard byte                       (`lbz`/`extsb.`/`stb`)
+    //
+    // Values were read out of the target's raw `.rodata` bytes, not guessed
+    // -- see execute()'s comment below. The guard is `s8`, not `bool`: the
+    // target tests it with `extsb.`, which is the signed-char form; `bool`
+    // compiles to a separate `cmpwi`. And it carries NO initialiser, because
+    // an explicit `= false` is something MWCC folds, deleting the check.
+    //
+    // ---------------------------------------------------------------------
+    // WHY THE GUARD OWNS THE CONSTRUCTOR, AND THE POSITIONS DO NOT.
+    //
+    // This unit sat at 16/17 for several rounds with 13 differing here, and
+    // ~23 measured source shapes had failed to move it. The residual was
+    // always the same: the target materialises the derived pointer
+    // `addi r3, r30, 0x10` only AFTER the guard's `bne`, and gets `r3`
+    // (freed by the `stw r3, 0xc(r30)` immediately above); every draft
+    // materialised it BEFORE the guard test and therefore got `r4`.
+    //
+    // The cause was structural and had nothing to do with statement shape.
+    // Every previous shape put the dynamic initialiser on `KoopaShipPos_t`
+    // itself. An inlined constructor binds `this` at the CALL SITE, which in
+    // `__sinit` is unconditional -- so `&s_koopaShipPos` was materialised
+    // before the guard test no matter how deep the guard test was nested
+    // inside the body. Moving the guard test into the constructor, moving the
+    // writes into a `doInit()` at depth 1, naming `this` into a local,
+    // early-return, per-vector helpers -- all of them still bind `this`
+    // first, which is why all of them measured exactly 13.
+    //
+    // Putting the constructor on the GUARD instead removes the binding
+    // entirely. `this` is then the guard object (a single `0x28(r30)` use,
+    // which MWCC folds to base+displacement and never materialises), and
+    // `s_koopaShipPos` is reached as an ordinary global inside the branch --
+    // so its address is computed exactly where it is first needed, in `r3`,
+    // after the `bne`. That took the residual 13 -> 6.
+    //
+    // The remaining 6 were the two by-value `mVec3_c` temporaries' STACK
+    // SLOTS, swapped (`0x8`/`0x14` against the target's `0x14`/`0x8`).
+    // Writing the two assignments at depth 0, directly in the guard's
+    // constructor, allocates them forward; pushing them one inline level
+    // down into `doInit()` restores the reverse-order pool the target uses.
+    // That is the same depth/arity effect as the by-value inline-wrapper
+    // rule, applied to a temporary rather than to a call argument. 6 -> 0.
+    //
+    // So the working split is: guard test at depth 0 in the guard's own
+    // constructor, writes at depth 1 in `doInit()`, and the positions a
+    // plain global with no constructor of its own. Named-local forms for
+    // either or both vectors were measured too and are worse (6 and 9).
+    //
+    // ---------------------------------------------------------------------
+    // The guard type wraps the byte WITH its trailing 7 unwritten bytes
+    // (+0x29..+0x2f) in one object rather than declaring the padding as its
+    // own global: an unreferenced standalone global with no dynamic
+    // initialiser is exactly what `-ipa file` eliminates outright (measured
+    // -- `.bss` stayed under by the padding's size). Bundling it with the
+    // guard keeps the whole object, because `mDone` IS referenced.
+    //
+    // DECLARATION ORDER is load-bearing, as everywhere else in this project:
+    // the guard's DEFINITION must come AFTER `s_koopaShipPos` or it takes
+    // the `+0x10` slot instead of `+0x28`. `s_koopaShipPos` is therefore
+    // forward-declared `extern` so the guard's inline constructor can name
+    // it while its storage is still reserved second. An out-of-line
+    // constructor was tried as an alternative and reshuffled the whole
+    // `__sinit` (21 -> 56), so keep the constructor inline.
+    struct KoopaShipPos_t {
+        mVec3_c mPos1; ///< @unofficial (0.0f, 50.0f, -100.0f)
+        mVec3_c mPos2; ///< @unofficial (0.0f,  0.0f, -100.0f)
+    };
+
+    extern KoopaShipPos_t s_koopaShipPos;
+
+    struct KoopaShipPosGuard_t {
+        s8 mDone; ///< @unofficial Signed, not `bool`/`u8` -- the target's
+                   ///< `extsb.` is the signed-char test; `bool` gives `cmpwi`.
+        u8 mPad[7]; ///< @unofficial Never written by the target's `__sinit`;
+                     ///< rounds the claimed `.bss` span out to 0x30. Exact
+                     ///< meaning, if any, unknown.
+
+        /// @unofficial Depth 1 relative to the constructor. The extra inline
+        /// level is what puts the two `mVec3_c` temporaries in the target's
+        /// reverse-order stack pool; writing these two lines directly in the
+        /// constructor swaps their slots (measured, 6 differing).
+        void doInit() {
+            s_koopaShipPos.mPos1 = mVec3_c(0.0f, 50.0f, -100.0f);
+            s_koopaShipPos.mPos2 = mVec3_c(0.0f, 0.0f, -100.0f);
+            mDone = true;
+        }
+
+        KoopaShipPosGuard_t() {
+            if (!mDone) {
+                doInit();
+            }
+        }
+    };
+
+    KoopaShipPos_t s_koopaShipPos;
+    KoopaShipPosGuard_t s_koopaShipPosGuard;
+}

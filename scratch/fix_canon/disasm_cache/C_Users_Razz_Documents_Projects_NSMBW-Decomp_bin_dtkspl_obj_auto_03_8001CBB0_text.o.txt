@@ -1,0 +1,929 @@
+.include "macros.inc"
+.file "auto_03_8001CBB0_text"
+
+# 0x8001CBB0..0x8001D2C0 | size: 0x710
+.text
+.balign 4
+
+# .text:0x0 | 0x8001CBB0 | size: 0xC
+# const sStateIDIf_c& baseID_Ready<sStateID_c>()
+.fn "baseID_Ready<10sStateID_c>__Fv_RC12sStateIDIf_c", global
+/* 8001CBB0 00000040  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 8001CBB4 00000044  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 8001CBB8 00000048  4E 80 00 20 */	blr
+.endfn "baseID_Ready<10sStateID_c>__Fv_RC12sStateIDIf_c"
+
+# .text:0xC | 0x8001CBBC | size: 0x4
+.fn gap_03_8001CBBC_text, global
+.hidden gap_03_8001CBBC_text
+/* 8001CBBC 0000004C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CBBC_text
+
+# .text:0x10 | 0x8001CBC0 | size: 0xC
+# const sStateIDIf_c& baseID_BattleStDemo<sStateID_c>()
+.fn "baseID_BattleStDemo<10sStateID_c>__Fv_RC12sStateIDIf_c", global
+/* 8001CBC0 00000050  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 8001CBC4 00000054  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 8001CBC8 00000058  4E 80 00 20 */	blr
+.endfn "baseID_BattleStDemo<10sStateID_c>__Fv_RC12sStateIDIf_c"
+
+# .text:0x1C | 0x8001CBCC | size: 0x4
+.fn gap_03_8001CBCC_text, global
+.hidden gap_03_8001CBCC_text
+/* 8001CBCC 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CBCC_text
+
+# .text:0x20 | 0x8001CBD0 | size: 0xC
+# const sStateIDIf_c& baseID_BattleIn<sStateID_c>()
+.fn "baseID_BattleIn<10sStateID_c>__Fv_RC12sStateIDIf_c", global
+/* 8001CBD0 00000060  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 8001CBD4 00000064  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 8001CBD8 00000068  4E 80 00 20 */	blr
+.endfn "baseID_BattleIn<10sStateID_c>__Fv_RC12sStateIDIf_c"
+
+# .text:0x2C | 0x8001CBDC | size: 0x4
+.fn gap_03_8001CBDC_text, global
+.hidden gap_03_8001CBDC_text
+/* 8001CBDC 0000006C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CBDC_text
+
+# .text:0x30 | 0x8001CBE0 | size: 0xC
+# const sStateIDIf_c& baseID_BattleEdDemo<sStateID_c>()
+.fn "baseID_BattleEdDemo<10sStateID_c>__Fv_RC12sStateIDIf_c", global
+/* 8001CBE0 00000070  3C 60 00 00 */	lis r3, null__8sStateID@ha
+/* 8001CBE4 00000074  38 63 00 00 */	addi r3, r3, null__8sStateID@l
+/* 8001CBE8 00000078  4E 80 00 20 */	blr
+.endfn "baseID_BattleEdDemo<10sStateID_c>__Fv_RC12sStateIDIf_c"
+
+# .text:0x3C | 0x8001CBEC | size: 0x4
+.fn gap_03_8001CBEC_text, global
+.hidden gap_03_8001CBEC_text
+/* 8001CBEC 0000007C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CBEC_text
+
+# .text:0x40 | 0x8001CBF0 | size: 0x8C
+# daBossDemo_c::create()
+.fn create__12daBossDemo_cFv, global
+/* 8001CBF0 00000080  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CBF4 00000084  7C 08 02 A6 */	mflr r0
+/* 8001CBF8 00000088  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CBFC 0000008C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001CC00 00000090  7C 7F 1B 78 */	mr r31, r3
+/* 8001CC04 00000094  80 80 00 00 */	lwz r4, m_instance__11dActorMng_c@sda21(r0)
+/* 8001CC08 00000098  80 04 00 18 */	lwz r0, 0x18(r4)
+/* 8001CC0C 0000009C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001CC10 000000A0  41 82 00 10 */	beq .L_8001CC20
+/* 8001CC14 000000A4  48 00 00 01 */	bl deleteRequest__7fBase_cFv
+/* 8001CC18 000000A8  38 60 00 00 */	li r3, 0x0
+/* 8001CC1C 000000AC  48 00 00 4C */	b .L_8001CC68
+.L_8001CC20:
+/* 8001CC20 000000B0  90 64 00 18 */	stw r3, 0x18(r4)
+/* 8001CC24 000000B4  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8001CC28 000000B8  81 8C 01 38 */	lwz r12, 0x138(r12)
+/* 8001CC2C 000000BC  7D 89 03 A6 */	mtctr r12
+/* 8001CC30 000000C0  4E 80 04 21 */	bctrl
+/* 8001CC34 000000C4  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 8001CC38 000000C8  3C 80 00 00 */	lis r4, StateID_Ready__12daBossDemo_c@ha
+/* 8001CC3C 000000CC  38 7F 03 94 */	addi r3, r31, 0x394
+/* 8001CC40 000000D0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8001CC44 000000D4  38 84 00 00 */	addi r4, r4, StateID_Ready__12daBossDemo_c@l
+/* 8001CC48 000000D8  7D 89 03 A6 */	mtctr r12
+/* 8001CC4C 000000DC  4E 80 04 21 */	bctrl
+/* 8001CC50 000000E0  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 8001CC54 000000E4  38 7F 03 94 */	addi r3, r31, 0x394
+/* 8001CC58 000000E8  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 8001CC5C 000000EC  7D 89 03 A6 */	mtctr r12
+/* 8001CC60 000000F0  4E 80 04 21 */	bctrl
+/* 8001CC64 000000F4  38 60 00 01 */	li r3, 0x1
+.L_8001CC68:
+/* 8001CC68 000000F8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001CC6C 000000FC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001CC70 00000100  7C 08 03 A6 */	mtlr r0
+/* 8001CC74 00000104  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001CC78 00000108  4E 80 00 20 */	blr
+.endfn create__12daBossDemo_cFv
+
+# .text:0xCC | 0x8001CC7C | size: 0x4
+.fn gap_03_8001CC7C_text, global
+.hidden gap_03_8001CC7C_text
+/* 8001CC7C 0000010C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CC7C_text
+
+# .text:0xD0 | 0x8001CC80 | size: 0x4
+# daBossDemo_c::initialize()
+.fn initialize__12daBossDemo_cFv, global
+/* 8001CC80 00000110  4E 80 00 20 */	blr
+.endfn initialize__12daBossDemo_cFv
+
+# .text:0xD4 | 0x8001CC84 | size: 0xC
+.fn gap_03_8001CC84_text, global
+.hidden gap_03_8001CC84_text
+/* 8001CC84 00000114  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CC88 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CC8C 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CC84_text
+
+# .text:0xE0 | 0x8001CC90 | size: 0x10
+# sStateMgr_c<dActorState_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::changeState(const sStateIDIf_c&)
+.fn "changeState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c", global
+/* 8001CC90 00000120  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8001CC94 00000124  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8001CC98 00000128  7D 89 03 A6 */	mtctr r12
+/* 8001CC9C 0000012C  4E 80 04 20 */	bctr
+.endfn "changeState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+
+# .text:0xF0 | 0x8001CCA0 | size: 0x10
+# sStateMgr_c<dActorState_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::refreshState()
+.fn "refreshState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8001CCA0 00000130  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8001CCA4 00000134  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 8001CCA8 00000138  7D 89 03 A6 */	mtctr r12
+/* 8001CCAC 0000013C  4E 80 04 20 */	bctr
+.endfn "refreshState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x100 | 0x8001CCB0 | size: 0x30
+# daBossDemo_c::execute()
+.fn execute__12daBossDemo_cFv, global
+/* 8001CCB0 00000140  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CCB4 00000144  7C 08 02 A6 */	mflr r0
+/* 8001CCB8 00000148  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CCBC 0000014C  85 83 03 94 */	lwzu r12, 0x394(r3)
+/* 8001CCC0 00000150  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8001CCC4 00000154  7D 89 03 A6 */	mtctr r12
+/* 8001CCC8 00000158  4E 80 04 21 */	bctrl
+/* 8001CCCC 0000015C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001CCD0 00000160  38 60 00 01 */	li r3, 0x1
+/* 8001CCD4 00000164  7C 08 03 A6 */	mtlr r0
+/* 8001CCD8 00000168  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001CCDC 0000016C  4E 80 00 20 */	blr
+.endfn execute__12daBossDemo_cFv
+
+# .text:0x130 | 0x8001CCE0 | size: 0x10
+# sStateMgr_c<dActorState_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::executeState()
+.fn "executeState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8001CCE0 00000170  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8001CCE4 00000174  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8001CCE8 00000178  7D 89 03 A6 */	mtctr r12
+/* 8001CCEC 0000017C  4E 80 04 20 */	bctr
+.endfn "executeState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x140 | 0x8001CCF0 | size: 0x8
+# daBossDemo_c::draw()
+.fn draw__12daBossDemo_cFv, global
+/* 8001CCF0 00000180  38 60 00 01 */	li r3, 0x1
+/* 8001CCF4 00000184  4E 80 00 20 */	blr
+.endfn draw__12daBossDemo_cFv
+
+# .text:0x148 | 0x8001CCF8 | size: 0x8
+.fn gap_03_8001CCF8_text, global
+.hidden gap_03_8001CCF8_text
+/* 8001CCF8 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CCFC 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CCF8_text
+
+# .text:0x150 | 0x8001CD00 | size: 0x4
+# daBossDemo_c::deleteReady()
+.fn deleteReady__12daBossDemo_cFv, global
+/* 8001CD00 00000190  4E 80 00 20 */	blr
+.endfn deleteReady__12daBossDemo_cFv
+
+# .text:0x154 | 0x8001CD04 | size: 0xC
+.fn gap_03_8001CD04_text, global
+.hidden gap_03_8001CD04_text
+/* 8001CD04 00000194  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CD08 00000198  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CD0C 0000019C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CD04_text
+
+# .text:0x160 | 0x8001CD10 | size: 0x8
+# daBossDemo_c::doDelete()
+.fn doDelete__12daBossDemo_cFv, global
+/* 8001CD10 000001A0  38 60 00 01 */	li r3, 0x1
+/* 8001CD14 000001A4  4E 80 00 20 */	blr
+.endfn doDelete__12daBossDemo_cFv
+
+# .text:0x168 | 0x8001CD18 | size: 0x8
+.fn gap_03_8001CD18_text, global
+.hidden gap_03_8001CD18_text
+/* 8001CD18 000001A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CD1C 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CD18_text
+
+# .text:0x170 | 0x8001CD20 | size: 0x8C
+# daBossDemo_c::setBattleResult()
+.fn setBattleResult__12daBossDemo_cFv, global
+/* 8001CD20 000001B0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8001CD24 000001B4  7C 08 02 A6 */	mflr r0
+/* 8001CD28 000001B8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8001CD2C 000001BC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8001CD30 000001C0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8001CD34 000001C4  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8001CD38 000001C8  93 81 00 10 */	stw r28, 0x10(r1)
+/* 8001CD3C 000001CC  83 A0 00 00 */	lwz r29, mspInstance__11dMultiMng_c@sda21(r0)
+/* 8001CD40 000001D0  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 8001CD44 000001D4  41 82 00 48 */	beq .L_8001CD8C
+/* 8001CD48 000001D8  7F A3 EB 78 */	mr r3, r29
+/* 8001CD4C 000001DC  48 00 00 01 */	bl setCollectionCoin__11dMultiMng_cFv
+/* 8001CD50 000001E0  3F C0 00 00 */	lis r30, mPlayerType__9daPyMng_c@ha
+/* 8001CD54 000001E4  3F E0 00 00 */	lis r31, mRest__9daPyMng_c@ha
+/* 8001CD58 000001E8  3B DE 00 00 */	addi r30, r30, mPlayerType__9daPyMng_c@l
+/* 8001CD5C 000001EC  3B 80 00 00 */	li r28, 0x0
+/* 8001CD60 000001F0  3B FF 00 00 */	addi r31, r31, mRest__9daPyMng_c@l
+.L_8001CD64:
+/* 8001CD64 000001F4  80 1E 00 00 */	lwz r0, 0x0(r30)
+/* 8001CD68 000001F8  7F A3 EB 78 */	mr r3, r29
+/* 8001CD6C 000001FC  7F 85 E3 78 */	mr r5, r28
+/* 8001CD70 00000200  54 00 10 3A */	slwi r0, r0, 2
+/* 8001CD74 00000204  7C 9F 00 2E */	lwzx r4, r31, r0
+/* 8001CD78 00000208  48 00 00 01 */	bl setRest__11dMultiMng_cFii
+/* 8001CD7C 0000020C  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 8001CD80 00000210  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8001CD84 00000214  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 8001CD88 00000218  41 80 FF DC */	blt .L_8001CD64
+.L_8001CD8C:
+/* 8001CD8C 0000021C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8001CD90 00000220  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8001CD94 00000224  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8001CD98 00000228  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8001CD9C 0000022C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 8001CDA0 00000230  7C 08 03 A6 */	mtlr r0
+/* 8001CDA4 00000234  38 21 00 20 */	addi r1, r1, 0x20
+/* 8001CDA8 00000238  4E 80 00 20 */	blr
+.endfn setBattleResult__12daBossDemo_cFv
+
+# .text:0x1FC | 0x8001CDAC | size: 0x4
+.fn gap_03_8001CDAC_text, global
+.hidden gap_03_8001CDAC_text
+/* 8001CDAC 0000023C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CDAC_text
+
+# .text:0x200 | 0x8001CDB0 | size: 0x48
+# daBossDemo_c::setMultiCourseClear()
+.fn setMultiCourseClear__12daBossDemo_cFv, global
+/* 8001CDB0 00000240  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CDB4 00000244  7C 08 02 A6 */	mflr r0
+/* 8001CDB8 00000248  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CDBC 0000024C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001CDC0 00000250  83 E0 00 00 */	lwz r31, mNum__9daPyMng_c@sda21(r0)
+/* 8001CDC4 00000254  48 00 00 01 */	bl getEntryNum__9daPyMng_cFv
+/* 8001CDC8 00000258  7C 1F 18 00 */	cmpw r31, r3
+/* 8001CDCC 0000025C  40 82 00 10 */	bne .L_8001CDDC
+/* 8001CDD0 00000260  38 60 00 03 */	li r3, 0x3
+/* 8001CDD4 00000264  48 00 00 01 */	bl setMultiCourseClear__8dGameComFi
+/* 8001CDD8 00000268  48 00 00 0C */	b .L_8001CDE4
+.L_8001CDDC:
+/* 8001CDDC 0000026C  38 60 00 01 */	li r3, 0x1
+/* 8001CDE0 00000270  48 00 00 01 */	bl setMultiCourseClear__8dGameComFi
+.L_8001CDE4:
+/* 8001CDE4 00000274  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001CDE8 00000278  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001CDEC 0000027C  7C 08 03 A6 */	mtlr r0
+/* 8001CDF0 00000280  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001CDF4 00000284  4E 80 00 20 */	blr
+.endfn setMultiCourseClear__12daBossDemo_cFv
+
+# .text:0x248 | 0x8001CDF8 | size: 0x8
+.fn gap_03_8001CDF8_text, global
+.hidden gap_03_8001CDF8_text
+/* 8001CDF8 00000288  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CDFC 0000028C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CDF8_text
+
+# .text:0x250 | 0x8001CE00 | size: 0x34
+# daBossDemo_c::abandonRetryAfterOtehonClear()
+.fn abandonRetryAfterOtehonClear__12daBossDemo_cFv, global
+/* 8001CE00 00000290  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CE04 00000294  7C 08 02 A6 */	mflr r0
+/* 8001CE08 00000298  38 60 00 03 */	li r3, 0x3
+/* 8001CE0C 0000029C  38 80 00 00 */	li r4, 0x0
+/* 8001CE10 000002A0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CE14 000002A4  38 A0 00 00 */	li r5, 0x0
+/* 8001CE18 000002A8  38 C0 00 04 */	li r6, 0x4
+/* 8001CE1C 000002AC  48 00 00 01 */	bl setNextScene__10dScStage_cFUsiQ210dScStage_c6Exit_eQ28dFader_c12fader_type_e
+/* 8001CE20 000002B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001CE24 000002B4  38 60 00 00 */	li r3, 0x0
+/* 8001CE28 000002B8  7C 08 03 A6 */	mtlr r0
+/* 8001CE2C 000002BC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001CE30 000002C0  4E 80 00 20 */	blr
+.endfn abandonRetryAfterOtehonClear__12daBossDemo_cFv
+
+# .text:0x284 | 0x8001CE34 | size: 0xC
+.fn gap_03_8001CE34_text, global
+.hidden gap_03_8001CE34_text
+/* 8001CE34 000002C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CE38 000002C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CE3C 000002CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CE34_text
+
+# .text:0x290 | 0x8001CE40 | size: 0x14
+# daBossDemo_c::retryAfterOtehonClear()
+.fn retryAfterOtehonClear__12daBossDemo_cFv, global
+/* 8001CE40 000002D0  38 60 00 03 */	li r3, 0x3
+/* 8001CE44 000002D4  38 80 00 00 */	li r4, 0x0
+/* 8001CE48 000002D8  38 A0 00 02 */	li r5, 0x2
+/* 8001CE4C 000002DC  38 C0 00 01 */	li r6, 0x1
+/* 8001CE50 000002E0  48 00 00 00 */	b setNextScene__10dScStage_cFUsiQ210dScStage_c6Exit_eQ28dFader_c12fader_type_e
+.endfn retryAfterOtehonClear__12daBossDemo_cFv
+
+# .text:0x2A4 | 0x8001CE54 | size: 0xC
+.fn gap_03_8001CE54_text, global
+.hidden gap_03_8001CE54_text
+/* 8001CE54 000002E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CE58 000002E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CE5C 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CE54_text
+
+# .text:0x2B0 | 0x8001CE60 | size: 0x7C
+# daBossDemo_c::checkStartRetry(bool)
+.fn checkStartRetry__12daBossDemo_cFb, global
+/* 8001CE60 000002F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CE64 000002F4  7C 08 02 A6 */	mflr r0
+/* 8001CE68 000002F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CE6C 000002FC  88 00 00 00 */	lbz r0, lbl_8042FEC0@sda21(r0)
+/* 8001CE70 00000300  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001CE74 00000304  7C 9F 23 78 */	mr r31, r4
+/* 8001CE78 00000308  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001CE7C 0000030C  41 82 00 20 */	beq .L_8001CE9C
+/* 8001CE80 00000310  80 A0 00 00 */	lwz r5, m_OtehonClear_p__10dScStage_c@sda21(r0)
+/* 8001CE84 00000314  38 00 00 01 */	li r0, 0x1
+/* 8001CE88 00000318  38 60 00 01 */	li r3, 0x1
+/* 8001CE8C 0000031C  98 85 00 B9 */	stb r4, 0xb9(r5)
+/* 8001CE90 00000320  98 05 00 B8 */	stb r0, 0xb8(r5)
+/* 8001CE94 00000324  98 05 00 B5 */	stb r0, 0xb5(r5)
+/* 8001CE98 00000328  48 00 00 30 */	b .L_8001CEC8
+.L_8001CE9C:
+/* 8001CE9C 0000032C  48 00 00 01 */	bl fn_8001CEE0
+/* 8001CEA0 00000330  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001CEA4 00000334  41 82 00 20 */	beq .L_8001CEC4
+/* 8001CEA8 00000338  80 80 00 00 */	lwz r4, m_OtehonClear_p__10dScStage_c@sda21(r0)
+/* 8001CEAC 0000033C  38 00 00 01 */	li r0, 0x1
+/* 8001CEB0 00000340  38 60 00 01 */	li r3, 0x1
+/* 8001CEB4 00000344  9B E4 00 B9 */	stb r31, 0xb9(r4)
+/* 8001CEB8 00000348  98 04 00 B8 */	stb r0, 0xb8(r4)
+/* 8001CEBC 0000034C  98 04 00 B5 */	stb r0, 0xb5(r4)
+/* 8001CEC0 00000350  48 00 00 08 */	b .L_8001CEC8
+.L_8001CEC4:
+/* 8001CEC4 00000354  38 60 00 00 */	li r3, 0x0
+.L_8001CEC8:
+/* 8001CEC8 00000358  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001CECC 0000035C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001CED0 00000360  7C 08 03 A6 */	mtlr r0
+/* 8001CED4 00000364  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001CED8 00000368  4E 80 00 20 */	blr
+.endfn checkStartRetry__12daBossDemo_cFb
+
+# .text:0x32C | 0x8001CEDC | size: 0x4
+.fn gap_03_8001CEDC_text, global
+.hidden gap_03_8001CEDC_text
+/* 8001CEDC 0000036C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CEDC_text
+
+# .text:0x330 | 0x8001CEE0 | size: 0x70
+.fn fn_8001CEE0, global
+/* 8001CEE0 00000370  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CEE4 00000374  7C 08 02 A6 */	mflr r0
+/* 8001CEE8 00000378  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CEEC 0000037C  88 00 00 00 */	lbz r0, lbl_8042FEC0@sda21(r0)
+/* 8001CEF0 00000380  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001CEF4 00000384  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001CEF8 00000388  41 82 00 0C */	beq .L_8001CF04
+/* 8001CEFC 0000038C  38 60 00 01 */	li r3, 0x1
+/* 8001CF00 00000390  48 00 00 3C */	b .L_8001CF3C
+.L_8001CF04:
+/* 8001CF04 00000394  3C 60 00 00 */	lis r3, m_startGameInfo__7dInfo_c@ha
+/* 8001CF08 00000398  80 80 00 00 */	lwz r4, m_instance__10dScStage_c@sda21(r0)
+/* 8001CF0C 0000039C  38 63 00 00 */	addi r3, r3, m_startGameInfo__7dInfo_c@l
+/* 8001CF10 000003A0  3B E0 00 00 */	li r31, 0x0
+/* 8001CF14 000003A4  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 8001CF18 000003A8  88 64 12 0C */	lbz r3, 0x120c(r4)
+/* 8001CF1C 000003AC  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8001CF20 000003B0  88 84 12 0D */	lbz r4, 0x120d(r4)
+/* 8001CF24 000003B4  40 82 00 14 */	bne .L_8001CF38
+/* 8001CF28 000003B8  48 00 00 01 */	bl IsCourseClear__6dWmLibFii
+/* 8001CF2C 000003BC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001CF30 000003C0  40 82 00 08 */	bne .L_8001CF38
+/* 8001CF34 000003C4  3B E0 00 01 */	li r31, 0x1
+.L_8001CF38:
+/* 8001CF38 000003C8  7F E3 FB 78 */	mr r3, r31
+.L_8001CF3C:
+/* 8001CF3C 000003CC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001CF40 000003D0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001CF44 000003D4  7C 08 03 A6 */	mtlr r0
+/* 8001CF48 000003D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001CF4C 000003DC  4E 80 00 20 */	blr
+.endfn fn_8001CEE0
+
+# .text:0x3A0 | 0x8001CF50 | size: 0x4
+# daBossDemo_c::initializeState_Ready()
+.fn initializeState_Ready__12daBossDemo_cFv, global
+/* 8001CF50 000003E0  4E 80 00 20 */	blr
+.endfn initializeState_Ready__12daBossDemo_cFv
+
+# .text:0x3A4 | 0x8001CF54 | size: 0xC
+.fn gap_03_8001CF54_text, global
+.hidden gap_03_8001CF54_text
+/* 8001CF54 000003E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CF58 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CF5C 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CF54_text
+
+# .text:0x3B0 | 0x8001CF60 | size: 0x4
+# daBossDemo_c::finalizeState_Ready()
+.fn finalizeState_Ready__12daBossDemo_cFv, global
+/* 8001CF60 000003F0  4E 80 00 20 */	blr
+.endfn finalizeState_Ready__12daBossDemo_cFv
+
+# .text:0x3B4 | 0x8001CF64 | size: 0xC
+.fn gap_03_8001CF64_text, global
+.hidden gap_03_8001CF64_text
+/* 8001CF64 000003F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CF68 000003F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001CF6C 000003FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001CF64_text
+
+# .text:0x3C0 | 0x8001CF70 | size: 0xB4
+# daBossDemo_c::executeState_Ready()
+.fn executeState_Ready__12daBossDemo_cFv, global
+/* 8001CF70 00000400  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001CF74 00000404  7C 08 02 A6 */	mflr r0
+/* 8001CF78 00000408  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001CF7C 0000040C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001CF80 00000410  7C 7F 1B 78 */	mr r31, r3
+/* 8001CF84 00000414  80 03 03 D8 */	lwz r0, 0x3d8(r3)
+/* 8001CF88 00000418  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001CF8C 0000041C  40 82 00 24 */	bne .L_8001CFB0
+/* 8001CF90 00000420  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8001CF94 00000424  81 8C 01 34 */	lwz r12, 0x134(r12)
+/* 8001CF98 00000428  7D 89 03 A6 */	mtctr r12
+/* 8001CF9C 0000042C  4E 80 04 21 */	bctrl
+/* 8001CFA0 00000430  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001CFA4 00000434  41 82 00 0C */	beq .L_8001CFB0
+/* 8001CFA8 00000438  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8001CFAC 0000043C  90 1F 03 D8 */	stw r0, 0x3d8(r31)
+.L_8001CFB0:
+/* 8001CFB0 00000440  80 1F 03 D8 */	lwz r0, 0x3d8(r31)
+/* 8001CFB4 00000444  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8001CFB8 00000448  41 82 00 58 */	beq .L_8001D010
+/* 8001CFBC 0000044C  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8001CFC0 00000450  7F E3 FB 78 */	mr r3, r31
+/* 8001CFC4 00000454  81 8C 01 28 */	lwz r12, 0x128(r12)
+/* 8001CFC8 00000458  7D 89 03 A6 */	mtctr r12
+/* 8001CFCC 0000045C  4E 80 04 21 */	bctrl
+/* 8001CFD0 00000460  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001CFD4 00000464  41 82 00 3C */	beq .L_8001D010
+/* 8001CFD8 00000468  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8001CFDC 0000046C  7F E3 FB 78 */	mr r3, r31
+/* 8001CFE0 00000470  81 8C 01 30 */	lwz r12, 0x130(r12)
+/* 8001CFE4 00000474  7D 89 03 A6 */	mtctr r12
+/* 8001CFE8 00000478  4E 80 04 21 */	bctrl
+/* 8001CFEC 0000047C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001CFF0 00000480  41 82 00 20 */	beq .L_8001D010
+/* 8001CFF4 00000484  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 8001CFF8 00000488  3C 80 00 00 */	lis r4, StateID_BattleStDemo__12daBossDemo_c@ha
+/* 8001CFFC 0000048C  38 7F 03 94 */	addi r3, r31, 0x394
+/* 8001D000 00000490  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8001D004 00000494  38 84 00 00 */	addi r4, r4, StateID_BattleStDemo__12daBossDemo_c@l
+/* 8001D008 00000498  7D 89 03 A6 */	mtctr r12
+/* 8001D00C 0000049C  4E 80 04 21 */	bctrl
+.L_8001D010:
+/* 8001D010 000004A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001D014 000004A4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001D018 000004A8  7C 08 03 A6 */	mtlr r0
+/* 8001D01C 000004AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001D020 000004B0  4E 80 00 20 */	blr
+.endfn executeState_Ready__12daBossDemo_cFv
+
+# .text:0x474 | 0x8001D024 | size: 0xC
+.fn gap_03_8001D024_text, global
+.hidden gap_03_8001D024_text
+/* 8001D024 000004B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D028 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D02C 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D024_text
+
+# .text:0x480 | 0x8001D030 | size: 0x8
+# daBossDemo_c::bossSearch()
+.fn bossSearch__12daBossDemo_cFv, global
+/* 8001D030 000004C0  38 60 00 00 */	li r3, 0x0
+/* 8001D034 000004C4  4E 80 00 20 */	blr
+.endfn bossSearch__12daBossDemo_cFv
+
+# .text:0x488 | 0x8001D038 | size: 0x8
+.fn gap_03_8001D038_text, global
+.hidden gap_03_8001D038_text
+/* 8001D038 000004C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D03C 000004CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D038_text
+
+# .text:0x490 | 0x8001D040 | size: 0x8
+# daBossDemo_c::checkBattleStDemo()
+.fn checkBattleStDemo__12daBossDemo_cFv, global
+/* 8001D040 000004D0  38 60 00 00 */	li r3, 0x0
+/* 8001D044 000004D4  4E 80 00 20 */	blr
+.endfn checkBattleStDemo__12daBossDemo_cFv
+
+# .text:0x498 | 0x8001D048 | size: 0x8
+.fn gap_03_8001D048_text, global
+.hidden gap_03_8001D048_text
+/* 8001D048 000004D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D04C 000004DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D048_text
+
+# .text:0x4A0 | 0x8001D050 | size: 0x8
+# daBossDemo_c::demoScroll()
+.fn demoScroll__12daBossDemo_cFv, global
+/* 8001D050 000004E0  38 60 00 01 */	li r3, 0x1
+/* 8001D054 000004E4  4E 80 00 20 */	blr
+.endfn demoScroll__12daBossDemo_cFv
+
+# .text:0x4A8 | 0x8001D058 | size: 0x8
+.fn gap_03_8001D058_text, global
+.hidden gap_03_8001D058_text
+/* 8001D058 000004E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D05C 000004EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D058_text
+
+# .text:0x4B0 | 0x8001D060 | size: 0x4
+# daBossDemo_c::initializeState_BattleStDemo()
+.fn initializeState_BattleStDemo__12daBossDemo_cFv, global
+/* 8001D060 000004F0  4E 80 00 20 */	blr
+.endfn initializeState_BattleStDemo__12daBossDemo_cFv
+
+# .text:0x4B4 | 0x8001D064 | size: 0xC
+.fn gap_03_8001D064_text, global
+.hidden gap_03_8001D064_text
+/* 8001D064 000004F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D068 000004F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D06C 000004FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D064_text
+
+# .text:0x4C0 | 0x8001D070 | size: 0x4
+# daBossDemo_c::finalizeState_BattleStDemo()
+.fn finalizeState_BattleStDemo__12daBossDemo_cFv, global
+/* 8001D070 00000500  4E 80 00 20 */	blr
+.endfn finalizeState_BattleStDemo__12daBossDemo_cFv
+
+# .text:0x4C4 | 0x8001D074 | size: 0xC
+.fn gap_03_8001D074_text, global
+.hidden gap_03_8001D074_text
+/* 8001D074 00000504  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D078 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D07C 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D074_text
+
+# .text:0x4D0 | 0x8001D080 | size: 0x4
+# daBossDemo_c::executeState_BattleStDemo()
+.fn executeState_BattleStDemo__12daBossDemo_cFv, global
+/* 8001D080 00000510  4E 80 00 20 */	blr
+.endfn executeState_BattleStDemo__12daBossDemo_cFv
+
+# .text:0x4D4 | 0x8001D084 | size: 0xC
+.fn gap_03_8001D084_text, global
+.hidden gap_03_8001D084_text
+/* 8001D084 00000514  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D088 00000518  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D08C 0000051C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D084_text
+
+# .text:0x4E0 | 0x8001D090 | size: 0x5C
+# daBossDemo_c::initializeState_BattleIn()
+.fn initializeState_BattleIn__12daBossDemo_cFv, global
+/* 8001D090 00000520  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001D094 00000524  7C 08 02 A6 */	mflr r0
+/* 8001D098 00000528  38 80 00 01 */	li r4, 0x1
+/* 8001D09C 0000052C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001D0A0 00000530  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001D0A4 00000534  7C 7F 1B 78 */	mr r31, r3
+/* 8001D0A8 00000538  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8001D0AC 0000053C  48 00 00 01 */	bl releaseDemoMode__13daPyDemoMng_cFi
+/* 8001D0B0 00000540  80 7F 03 D8 */	lwz r3, 0x3d8(r31)
+/* 8001D0B4 00000544  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 8001D0B8 00000548  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001D0BC 0000054C  41 82 00 14 */	beq .L_8001D0D0
+/* 8001D0C0 00000550  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8001D0C4 00000554  81 8C 02 C8 */	lwz r12, 0x2c8(r12)
+/* 8001D0C8 00000558  7D 89 03 A6 */	mtctr r12
+/* 8001D0CC 0000055C  4E 80 04 21 */	bctrl
+.L_8001D0D0:
+/* 8001D0D0 00000560  38 00 00 00 */	li r0, 0x0
+/* 8001D0D4 00000564  90 1F 03 D4 */	stw r0, 0x3d4(r31)
+/* 8001D0D8 00000568  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001D0DC 0000056C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001D0E0 00000570  7C 08 03 A6 */	mtlr r0
+/* 8001D0E4 00000574  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001D0E8 00000578  4E 80 00 20 */	blr
+.endfn initializeState_BattleIn__12daBossDemo_cFv
+
+# .text:0x53C | 0x8001D0EC | size: 0x4
+.fn gap_03_8001D0EC_text, global
+.hidden gap_03_8001D0EC_text
+/* 8001D0EC 0000057C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D0EC_text
+
+# .text:0x540 | 0x8001D0F0 | size: 0x4
+# dEnBoss_c::setBattleReady()
+.fn setBattleReady__9dEnBoss_cFv, global
+/* 8001D0F0 00000580  4E 80 00 20 */	blr
+.endfn setBattleReady__9dEnBoss_cFv
+
+# .text:0x544 | 0x8001D0F4 | size: 0xC
+.fn gap_03_8001D0F4_text, global
+.hidden gap_03_8001D0F4_text
+/* 8001D0F4 00000584  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D0F8 00000588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D0FC 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D0F4_text
+
+# .text:0x550 | 0x8001D100 | size: 0x4
+# daBossDemo_c::finalizeState_BattleIn()
+.fn finalizeState_BattleIn__12daBossDemo_cFv, global
+/* 8001D100 00000590  4E 80 00 20 */	blr
+.endfn finalizeState_BattleIn__12daBossDemo_cFv
+
+# .text:0x554 | 0x8001D104 | size: 0xC
+.fn gap_03_8001D104_text, global
+.hidden gap_03_8001D104_text
+/* 8001D104 00000594  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D108 00000598  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D10C 0000059C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D104_text
+
+# .text:0x560 | 0x8001D110 | size: 0x5C
+# daBossDemo_c::executeState_BattleIn()
+.fn executeState_BattleIn__12daBossDemo_cFv, global
+/* 8001D110 000005A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001D114 000005A4  7C 08 02 A6 */	mflr r0
+/* 8001D118 000005A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001D11C 000005AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001D120 000005B0  7C 7F 1B 78 */	mr r31, r3
+/* 8001D124 000005B4  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8001D128 000005B8  81 8C 01 2C */	lwz r12, 0x12c(r12)
+/* 8001D12C 000005BC  7D 89 03 A6 */	mtctr r12
+/* 8001D130 000005C0  4E 80 04 21 */	bctrl
+/* 8001D134 000005C4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001D138 000005C8  41 82 00 20 */	beq .L_8001D158
+/* 8001D13C 000005CC  81 9F 03 94 */	lwz r12, 0x394(r31)
+/* 8001D140 000005D0  3C 80 00 00 */	lis r4, StateID_BattleEdDemo__12daBossDemo_c@ha
+/* 8001D144 000005D4  38 7F 03 94 */	addi r3, r31, 0x394
+/* 8001D148 000005D8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8001D14C 000005DC  38 84 00 00 */	addi r4, r4, StateID_BattleEdDemo__12daBossDemo_c@l
+/* 8001D150 000005E0  7D 89 03 A6 */	mtctr r12
+/* 8001D154 000005E4  4E 80 04 21 */	bctrl
+.L_8001D158:
+/* 8001D158 000005E8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001D15C 000005EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001D160 000005F0  7C 08 03 A6 */	mtlr r0
+/* 8001D164 000005F4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001D168 000005F8  4E 80 00 20 */	blr
+.endfn executeState_BattleIn__12daBossDemo_cFv
+
+# .text:0x5BC | 0x8001D16C | size: 0x4
+.fn gap_03_8001D16C_text, global
+.hidden gap_03_8001D16C_text
+/* 8001D16C 000005FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D16C_text
+
+# .text:0x5C0 | 0x8001D170 | size: 0x8
+# daBossDemo_c::checkBattleEdDemo()
+.fn checkBattleEdDemo__12daBossDemo_cFv, global
+/* 8001D170 00000600  80 63 03 D4 */	lwz r3, 0x3d4(r3)
+/* 8001D174 00000604  4E 80 00 20 */	blr
+.endfn checkBattleEdDemo__12daBossDemo_cFv
+
+# .text:0x5C8 | 0x8001D178 | size: 0x8
+.fn gap_03_8001D178_text, global
+.hidden gap_03_8001D178_text
+/* 8001D178 00000608  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D17C 0000060C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D178_text
+
+# .text:0x5D0 | 0x8001D180 | size: 0x4
+# daBossDemo_c::initializeState_BattleEdDemo()
+.fn initializeState_BattleEdDemo__12daBossDemo_cFv, global
+/* 8001D180 00000610  4E 80 00 20 */	blr
+.endfn initializeState_BattleEdDemo__12daBossDemo_cFv
+
+# .text:0x5D4 | 0x8001D184 | size: 0xC
+.fn gap_03_8001D184_text, global
+.hidden gap_03_8001D184_text
+/* 8001D184 00000614  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D188 00000618  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D18C 0000061C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D184_text
+
+# .text:0x5E0 | 0x8001D190 | size: 0x4
+# daBossDemo_c::finalizeState_BattleEdDemo()
+.fn finalizeState_BattleEdDemo__12daBossDemo_cFv, global
+/* 8001D190 00000620  4E 80 00 20 */	blr
+.endfn finalizeState_BattleEdDemo__12daBossDemo_cFv
+
+# .text:0x5E4 | 0x8001D194 | size: 0xC
+.fn gap_03_8001D194_text, global
+.hidden gap_03_8001D194_text
+/* 8001D194 00000624  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D198 00000628  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D19C 0000062C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D194_text
+
+# .text:0x5F0 | 0x8001D1A0 | size: 0x4
+# daBossDemo_c::executeState_BattleEdDemo()
+.fn executeState_BattleEdDemo__12daBossDemo_cFv, global
+/* 8001D1A0 00000630  4E 80 00 20 */	blr
+.endfn executeState_BattleEdDemo__12daBossDemo_cFv
+
+# .text:0x5F4 | 0x8001D1A4 | size: 0xC
+.fn gap_03_8001D1A4_text, global
+.hidden gap_03_8001D1A4_text
+/* 8001D1A4 00000634  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1A8 00000638  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1AC 0000063C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D1A4_text
+
+# .text:0x600 | 0x8001D1B0 | size: 0x4
+# dBaseActor_c::finalUpdate()
+.fn finalUpdate__12dBaseActor_cFv, global
+/* 8001D1B0 00000640  4E 80 00 20 */	blr
+.endfn finalUpdate__12dBaseActor_cFv
+
+# .text:0x604 | 0x8001D1B4 | size: 0xC
+.fn gap_03_8001D1B4_text, global
+.hidden gap_03_8001D1B4_text
+/* 8001D1B4 00000644  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1B8 00000648  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1BC 0000064C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D1B4_text
+
+# .text:0x610 | 0x8001D1C0 | size: 0x8
+# dBaseActor_c::GetActorType()
+.fn GetActorType__12dBaseActor_cFv, global
+/* 8001D1C0 00000650  38 60 00 08 */	li r3, 0x8
+/* 8001D1C4 00000654  4E 80 00 20 */	blr
+.endfn GetActorType__12dBaseActor_cFv
+
+# .text:0x618 | 0x8001D1C8 | size: 0x8
+.fn gap_03_8001D1C8_text, global
+.hidden gap_03_8001D1C8_text
+/* 8001D1C8 00000658  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1CC 0000065C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D1C8_text
+
+# .text:0x620 | 0x8001D1D0 | size: 0x4
+# dActor_c::funsuiMoveX()
+.fn funsuiMoveX__8dActor_cFv, global
+/* 8001D1D0 00000660  4E 80 00 20 */	blr
+.endfn funsuiMoveX__8dActor_cFv
+
+# .text:0x624 | 0x8001D1D4 | size: 0xC
+.fn gap_03_8001D1D4_text, global
+.hidden gap_03_8001D1D4_text
+/* 8001D1D4 00000664  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1D8 00000668  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1DC 0000066C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D1D4_text
+
+# .text:0x630 | 0x8001D1E0 | size: 0x4
+# dActor_c::setCarryFall(dActor_c*, int)
+.fn setCarryFall__8dActor_cFP8dActor_ci, global
+/* 8001D1E0 00000670  4E 80 00 20 */	blr
+.endfn setCarryFall__8dActor_cFP8dActor_ci
+
+# .text:0x634 | 0x8001D1E4 | size: 0xC
+.fn gap_03_8001D1E4_text, global
+.hidden gap_03_8001D1E4_text
+/* 8001D1E4 00000674  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1E8 00000678  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1EC 0000067C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D1E4_text
+
+# .text:0x640 | 0x8001D1F0 | size: 0x8
+# dActor_c::isSpinLiftUpEnable()
+.fn isSpinLiftUpEnable__8dActor_cFv, global
+/* 8001D1F0 00000680  38 60 00 01 */	li r3, 0x1
+/* 8001D1F4 00000684  4E 80 00 20 */	blr
+.endfn isSpinLiftUpEnable__8dActor_cFv
+
+# .text:0x648 | 0x8001D1F8 | size: 0x8
+.fn gap_03_8001D1F8_text, global
+.hidden gap_03_8001D1F8_text
+/* 8001D1F8 00000688  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D1FC 0000068C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D1F8_text
+
+# .text:0x650 | 0x8001D200 | size: 0x8
+# dActor_c::getPlrNo()
+.fn getPlrNo__8dActor_cFv, global
+/* 8001D200 00000690  38 63 03 8D */	addi r3, r3, 0x38d
+/* 8001D204 00000694  4E 80 00 20 */	blr
+.endfn getPlrNo__8dActor_cFv
+
+# .text:0x658 | 0x8001D208 | size: 0x8
+.fn gap_03_8001D208_text, global
+.hidden gap_03_8001D208_text
+/* 8001D208 00000698  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D20C 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D208_text
+
+# .text:0x660 | 0x8001D210 | size: 0x8
+# dActor_c::vf68(dBg_ctr_c*)
+.fn vf68__8dActor_cFP9dBg_ctr_c, global
+/* 8001D210 000006A0  38 60 00 01 */	li r3, 0x1
+/* 8001D214 000006A4  4E 80 00 20 */	blr
+.endfn vf68__8dActor_cFP9dBg_ctr_c
+
+# .text:0x668 | 0x8001D218 | size: 0x8
+.fn gap_03_8001D218_text, global
+.hidden gap_03_8001D218_text
+/* 8001D218 000006A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D21C 000006AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D218_text
+
+# .text:0x670 | 0x8001D220 | size: 0x8
+# daBossDemo_c::setBossID(fBaseID_e)
+.fn setBossID__12daBossDemo_cF9fBaseID_e, global
+/* 8001D220 000006B0  90 83 03 D8 */	stw r4, 0x3d8(r3)
+/* 8001D224 000006B4  4E 80 00 20 */	blr
+.endfn setBossID__12daBossDemo_cF9fBaseID_e
+
+# .text:0x678 | 0x8001D228 | size: 0x8
+.fn gap_03_8001D228_text, global
+.hidden gap_03_8001D228_text
+/* 8001D228 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D22C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D228_text
+
+# .text:0x680 | 0x8001D230 | size: 0x8
+# daBossDemo_c::getBossID()
+.fn getBossID__12daBossDemo_cFv, global
+/* 8001D230 000006C0  80 63 03 D8 */	lwz r3, 0x3d8(r3)
+/* 8001D234 000006C4  4E 80 00 20 */	blr
+.endfn getBossID__12daBossDemo_cFv
+
+# .text:0x688 | 0x8001D238 | size: 0x8
+.fn gap_03_8001D238_text, global
+.hidden gap_03_8001D238_text
+/* 8001D238 000006C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D23C 000006CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D238_text
+
+# .text:0x690 | 0x8001D240 | size: 0x4
+# daBossDemo_c::stopBGM()
+.fn stopBGM__12daBossDemo_cFv, global
+/* 8001D240 000006D0  4E 80 00 20 */	blr
+.endfn stopBGM__12daBossDemo_cFv
+
+# .text:0x694 | 0x8001D244 | size: 0xC
+.fn gap_03_8001D244_text, global
+.hidden gap_03_8001D244_text
+/* 8001D244 000006D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D248 000006D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D24C 000006DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D244_text
+
+# .text:0x6A0 | 0x8001D250 | size: 0x4
+# daBossDemo_c::startBGM()
+.fn startBGM__12daBossDemo_cFv, global
+/* 8001D250 000006E0  4E 80 00 20 */	blr
+.endfn startBGM__12daBossDemo_cFv
+
+# .text:0x6A4 | 0x8001D254 | size: 0xC
+.fn gap_03_8001D254_text, global
+.hidden gap_03_8001D254_text
+/* 8001D254 000006E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D258 000006E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D25C 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D254_text
+
+# .text:0x6B0 | 0x8001D260 | size: 0x58
+# daBossDemo_c::~daBossDemo_c()
+.fn __dt__12daBossDemo_cFv, global
+/* 8001D260 000006F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8001D264 000006F4  7C 08 02 A6 */	mflr r0
+/* 8001D268 000006F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8001D26C 000006FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8001D270 00000700  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8001D274 00000704  7C 9F 23 78 */	mr r31, r4
+/* 8001D278 00000708  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8001D27C 0000070C  7C 7E 1B 78 */	mr r30, r3
+/* 8001D280 00000710  41 82 00 1C */	beq .L_8001D29C
+/* 8001D284 00000714  38 80 00 00 */	li r4, 0x0
+/* 8001D288 00000718  48 00 00 01 */	bl __dt__13dActorState_cFv
+/* 8001D28C 0000071C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8001D290 00000720  40 81 00 0C */	ble .L_8001D29C
+/* 8001D294 00000724  7F C3 F3 78 */	mr r3, r30
+/* 8001D298 00000728  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_8001D29C:
+/* 8001D29C 0000072C  7F C3 F3 78 */	mr r3, r30
+/* 8001D2A0 00000730  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8001D2A4 00000734  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8001D2A8 00000738  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8001D2AC 0000073C  7C 08 03 A6 */	mtlr r0
+/* 8001D2B0 00000740  38 21 00 10 */	addi r1, r1, 0x10
+/* 8001D2B4 00000744  4E 80 00 20 */	blr
+.endfn __dt__12daBossDemo_cFv
+
+# .text:0x708 | 0x8001D2B8 | size: 0x8
+.fn gap_03_8001D2B8_text, global
+.hidden gap_03_8001D2B8_text
+/* 8001D2B8 00000748  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8001D2BC 0000074C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8001D2B8_text

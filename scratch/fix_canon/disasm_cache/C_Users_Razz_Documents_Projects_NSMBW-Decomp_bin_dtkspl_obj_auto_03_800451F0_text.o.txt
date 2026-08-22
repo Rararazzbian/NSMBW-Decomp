@@ -1,0 +1,1294 @@
+.include "macros.inc"
+.file "auto_03_800451F0_text"
+
+# 0x800451F0..0x800460D0 | size: 0xEE0
+.text
+.balign 4
+
+# .text:0x0 | 0x800451F0 | size: 0x80
+# daObjMoveOnBase_c::callBackF(dActor_c*, dActor_c*)
+.fn callBackF__17daObjMoveOnBase_cFP8dActor_cP8dActor_c, global
+/* 800451F0 00000040  88 A3 03 DA */	lbz r5, 0x3da(r3)
+/* 800451F4 00000044  7C 66 1B 78 */	mr r6, r3
+/* 800451F8 00000048  38 A5 00 01 */	addi r5, r5, 0x1
+/* 800451FC 0000004C  28 05 00 FF */	cmplwi r5, 0xff
+/* 80045200 00000050  40 81 00 08 */	ble .L_80045208
+/* 80045204 00000054  38 A0 00 FF */	li r5, 0xff
+.L_80045208:
+/* 80045208 00000058  98 A3 03 DA */	stb r5, 0x3da(r3)
+/* 8004520C 0000005C  88 A4 03 8C */	lbz r5, 0x38c(r4)
+/* 80045210 00000060  28 05 00 03 */	cmplwi r5, 0x3
+/* 80045214 00000064  4D 82 00 20 */	beqlr
+/* 80045218 00000068  88 03 03 D8 */	lbz r0, 0x3d8(r3)
+/* 8004521C 0000006C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80045220 00000070  4C 82 00 20 */	bnelr
+/* 80045224 00000074  28 05 00 01 */	cmplwi r5, 0x1
+/* 80045228 00000078  4C 82 00 20 */	bnelr
+/* 8004522C 0000007C  88 03 03 48 */	lbz r0, 0x348(r3)
+/* 80045230 00000080  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045234 00000084  41 81 00 08 */	bgt .L_8004523C
+/* 80045238 00000088  4E 80 00 20 */	blr
+.L_8004523C:
+/* 8004523C 0000008C  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 80045240 00000090  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 80045244 00000094  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045248 00000098  40 81 00 14 */	ble .L_8004525C
+/* 8004524C 0000009C  7C 83 23 78 */	mr r3, r4
+/* 80045250 000000A0  7C C4 33 78 */	mr r4, r6
+/* 80045254 000000A4  38 A0 00 01 */	li r5, 0x1
+/* 80045258 000000A8  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_8004525C:
+/* 8004525C 000000AC  7C 83 23 78 */	mr r3, r4
+/* 80045260 000000B0  7C C4 33 78 */	mr r4, r6
+/* 80045264 000000B4  38 A0 00 09 */	li r5, 0x9
+/* 80045268 000000B8  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+/* 8004526C 000000BC  4E 80 00 20 */	blr
+.endfn callBackF__17daObjMoveOnBase_cFP8dActor_cP8dActor_c
+
+# .text:0x80 | 0x80045270 | size: 0x68
+# daObjMoveOnBase_c::callBackH(dActor_c*, dActor_c*)
+.fn callBackH__17daObjMoveOnBase_cFP8dActor_cP8dActor_c, global
+/* 80045270 000000C0  88 A4 03 8C */	lbz r5, 0x38c(r4)
+/* 80045274 000000C4  7C 66 1B 78 */	mr r6, r3
+/* 80045278 000000C8  28 05 00 03 */	cmplwi r5, 0x3
+/* 8004527C 000000CC  4D 82 00 20 */	beqlr
+/* 80045280 000000D0  88 03 03 D8 */	lbz r0, 0x3d8(r3)
+/* 80045284 000000D4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80045288 000000D8  4C 82 00 20 */	bnelr
+/* 8004528C 000000DC  28 05 00 01 */	cmplwi r5, 0x1
+/* 80045290 000000E0  4C 82 00 20 */	bnelr
+/* 80045294 000000E4  88 03 03 48 */	lbz r0, 0x348(r3)
+/* 80045298 000000E8  28 00 00 01 */	cmplwi r0, 0x1
+/* 8004529C 000000EC  41 81 00 08 */	bgt .L_800452A4
+/* 800452A0 000000F0  4E 80 00 20 */	blr
+.L_800452A4:
+/* 800452A4 000000F4  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 800452A8 000000F8  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 800452AC 000000FC  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 800452B0 00000100  40 80 00 14 */	bge .L_800452C4
+/* 800452B4 00000104  7C 83 23 78 */	mr r3, r4
+/* 800452B8 00000108  7C C4 33 78 */	mr r4, r6
+/* 800452BC 0000010C  38 A0 00 02 */	li r5, 0x2
+/* 800452C0 00000110  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_800452C4:
+/* 800452C4 00000114  7C 83 23 78 */	mr r3, r4
+/* 800452C8 00000118  7C C4 33 78 */	mr r4, r6
+/* 800452CC 0000011C  38 A0 00 0A */	li r5, 0xa
+/* 800452D0 00000120  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+/* 800452D4 00000124  4E 80 00 20 */	blr
+.endfn callBackH__17daObjMoveOnBase_cFP8dActor_cP8dActor_c
+
+# .text:0xE8 | 0x800452D8 | size: 0x8
+.fn gap_03_800452D8_text, global
+.hidden gap_03_800452D8_text
+/* 800452D8 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800452DC 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800452D8_text
+
+# .text:0xF0 | 0x800452E0 | size: 0x9C
+# daObjMoveOnBase_c::callBackW(dActor_c*, dActor_c*, unsigned char)
+.fn callBackW__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc, global
+/* 800452E0 00000130  88 C4 03 8C */	lbz r6, 0x38c(r4)
+/* 800452E4 00000134  7C 67 1B 78 */	mr r7, r3
+/* 800452E8 00000138  28 06 00 03 */	cmplwi r6, 0x3
+/* 800452EC 0000013C  4D 82 00 20 */	beqlr
+/* 800452F0 00000140  88 03 03 D8 */	lbz r0, 0x3d8(r3)
+/* 800452F4 00000144  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800452F8 00000148  4C 82 00 20 */	bnelr
+/* 800452FC 0000014C  28 06 00 01 */	cmplwi r6, 0x1
+/* 80045300 00000150  4C 82 00 20 */	bnelr
+/* 80045304 00000154  88 03 03 48 */	lbz r0, 0x348(r3)
+/* 80045308 00000158  28 00 00 01 */	cmplwi r0, 0x1
+/* 8004530C 0000015C  4D 81 00 20 */	bgtlr
+/* 80045310 00000160  2C 05 00 00 */	cmpwi r5, 0x0
+/* 80045314 00000164  41 82 00 34 */	beq .L_80045348
+/* 80045318 00000168  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 8004531C 0000016C  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 80045320 00000170  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045324 00000174  40 81 00 14 */	ble .L_80045338
+/* 80045328 00000178  7C 83 23 78 */	mr r3, r4
+/* 8004532C 0000017C  7C E4 3B 78 */	mr r4, r7
+/* 80045330 00000180  38 A0 00 06 */	li r5, 0x6
+/* 80045334 00000184  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045338:
+/* 80045338 00000188  7C 83 23 78 */	mr r3, r4
+/* 8004533C 0000018C  7C E4 3B 78 */	mr r4, r7
+/* 80045340 00000190  38 A0 00 0C */	li r5, 0xc
+/* 80045344 00000194  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045348:
+/* 80045348 00000198  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 8004534C 0000019C  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 80045350 000001A0  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045354 000001A4  40 80 00 14 */	bge .L_80045368
+/* 80045358 000001A8  7C 83 23 78 */	mr r3, r4
+/* 8004535C 000001AC  7C E4 3B 78 */	mr r4, r7
+/* 80045360 000001B0  38 A0 00 05 */	li r5, 0x5
+/* 80045364 000001B4  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045368:
+/* 80045368 000001B8  7C 83 23 78 */	mr r3, r4
+/* 8004536C 000001BC  7C E4 3B 78 */	mr r4, r7
+/* 80045370 000001C0  38 A0 00 0B */	li r5, 0xb
+/* 80045374 000001C4  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+/* 80045378 000001C8  4E 80 00 20 */	blr
+.endfn callBackW__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc
+
+# .text:0x18C | 0x8004537C | size: 0x4
+.fn gap_03_8004537C_text, global
+.hidden gap_03_8004537C_text
+/* 8004537C 000001CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8004537C_text
+
+# .text:0x190 | 0x80045380 | size: 0x2C
+# daObjMoveOnBase_c::checkRevFoot(dActor_c*, dActor_c*)
+.fn checkRevFoot__17daObjMoveOnBase_cFP8dActor_cP8dActor_c, global
+/* 80045380 000001D0  88 03 03 D8 */	lbz r0, 0x3d8(r3)
+/* 80045384 000001D4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80045388 000001D8  41 82 00 0C */	beq .L_80045394
+/* 8004538C 000001DC  38 60 00 00 */	li r3, 0x0
+/* 80045390 000001E0  4E 80 00 20 */	blr
+.L_80045394:
+/* 80045394 000001E4  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 80045398 000001E8  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 8004539C 000001EC  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 800453A0 000001F0  7C 60 00 26 */	mfcr r3
+/* 800453A4 000001F4  54 63 17 FE */	extrwi r3, r3, 1, 1
+/* 800453A8 000001F8  4E 80 00 20 */	blr
+.endfn checkRevFoot__17daObjMoveOnBase_cFP8dActor_cP8dActor_c
+
+# .text:0x1BC | 0x800453AC | size: 0x4
+.fn gap_03_800453AC_text, global
+.hidden gap_03_800453AC_text
+/* 800453AC 000001FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800453AC_text
+
+# .text:0x1C0 | 0x800453B0 | size: 0x2C
+# daObjMoveOnBase_c::checkRevHead(dActor_c*, dActor_c*)
+.fn checkRevHead__17daObjMoveOnBase_cFP8dActor_cP8dActor_c, global
+/* 800453B0 00000200  88 03 03 D8 */	lbz r0, 0x3d8(r3)
+/* 800453B4 00000204  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800453B8 00000208  41 82 00 0C */	beq .L_800453C4
+/* 800453BC 0000020C  38 60 00 00 */	li r3, 0x0
+/* 800453C0 00000210  4E 80 00 20 */	blr
+.L_800453C4:
+/* 800453C4 00000214  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 800453C8 00000218  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 800453CC 0000021C  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 800453D0 00000220  7C 60 00 26 */	mfcr r3
+/* 800453D4 00000224  54 63 0F FE */	srwi r3, r3, 31
+/* 800453D8 00000228  4E 80 00 20 */	blr
+.endfn checkRevHead__17daObjMoveOnBase_cFP8dActor_cP8dActor_c
+
+# .text:0x1EC | 0x800453DC | size: 0x4
+.fn gap_03_800453DC_text, global
+.hidden gap_03_800453DC_text
+/* 800453DC 0000022C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800453DC_text
+
+# .text:0x1F0 | 0x800453E0 | size: 0x68
+# daObjMoveOnBase_c::checkRevWall(dActor_c*, dActor_c*, unsigned char)
+.fn checkRevWall__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc, global
+/* 800453E0 00000230  88 03 03 D8 */	lbz r0, 0x3d8(r3)
+/* 800453E4 00000234  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800453E8 00000238  41 82 00 0C */	beq .L_800453F4
+/* 800453EC 0000023C  38 60 00 00 */	li r3, 0x0
+/* 800453F0 00000240  4E 80 00 20 */	blr
+.L_800453F4:
+/* 800453F4 00000244  88 03 03 48 */	lbz r0, 0x348(r3)
+/* 800453F8 00000248  28 00 00 01 */	cmplwi r0, 0x1
+/* 800453FC 0000024C  40 81 00 0C */	ble .L_80045408
+/* 80045400 00000250  38 60 00 00 */	li r3, 0x0
+/* 80045404 00000254  4E 80 00 20 */	blr
+.L_80045408:
+/* 80045408 00000258  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8004540C 0000025C  41 82 00 1C */	beq .L_80045428
+/* 80045410 00000260  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 80045414 00000264  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 80045418 00000268  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8004541C 0000026C  40 81 00 24 */	ble .L_80045440
+/* 80045420 00000270  38 60 00 01 */	li r3, 0x1
+/* 80045424 00000274  4E 80 00 20 */	blr
+.L_80045428:
+/* 80045428 00000278  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 8004542C 0000027C  C0 00 00 00 */	lfs f0, "@68776_8042BAE8"@sda21(r0)
+/* 80045430 00000280  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045434 00000284  40 80 00 0C */	bge .L_80045440
+/* 80045438 00000288  38 60 00 01 */	li r3, 0x1
+/* 8004543C 0000028C  4E 80 00 20 */	blr
+.L_80045440:
+/* 80045440 00000290  38 60 00 00 */	li r3, 0x0
+/* 80045444 00000294  4E 80 00 20 */	blr
+.endfn checkRevWall__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc
+
+# .text:0x258 | 0x80045448 | size: 0x8
+.fn gap_03_80045448_text, global
+.hidden gap_03_80045448_text
+/* 80045448 00000298  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8004544C 0000029C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045448_text
+
+# .text:0x260 | 0x80045450 | size: 0x3C
+# daObjMoveOnBase_c::execute()
+.fn execute__17daObjMoveOnBase_cFv, global
+/* 80045450 000002A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045454 000002A4  7C 08 02 A6 */	mflr r0
+/* 80045458 000002A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8004545C 000002AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80045460 000002B0  7C 7F 1B 78 */	mr r31, r3
+/* 80045464 000002B4  38 63 03 DC */	addi r3, r3, 0x3dc
+/* 80045468 000002B8  48 00 00 01 */	bl calc__9dBg_ctr_cFv
+/* 8004546C 000002BC  38 00 00 00 */	li r0, 0x0
+/* 80045470 000002C0  98 1F 03 DA */	stb r0, 0x3da(r31)
+/* 80045474 000002C4  38 60 00 01 */	li r3, 0x1
+/* 80045478 000002C8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8004547C 000002CC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045480 000002D0  7C 08 03 A6 */	mtlr r0
+/* 80045484 000002D4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80045488 000002D8  4E 80 00 20 */	blr
+.endfn execute__17daObjMoveOnBase_cFv
+
+# .text:0x29C | 0x8004548C | size: 0x4
+.fn gap_03_8004548C_text, global
+.hidden gap_03_8004548C_text
+/* 8004548C 000002DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8004548C_text
+
+# .text:0x2A0 | 0x80045490 | size: 0x28
+# daObjMoveOnBase_c::doDelete()
+.fn doDelete__17daObjMoveOnBase_cFv, global
+/* 80045490 000002E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045494 000002E4  7C 08 02 A6 */	mflr r0
+/* 80045498 000002E8  38 63 03 DC */	addi r3, r3, 0x3dc
+/* 8004549C 000002EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800454A0 000002F0  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 800454A4 000002F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800454A8 000002F8  38 60 00 01 */	li r3, 0x1
+/* 800454AC 000002FC  7C 08 03 A6 */	mtlr r0
+/* 800454B0 00000300  38 21 00 10 */	addi r1, r1, 0x10
+/* 800454B4 00000304  4E 80 00 20 */	blr
+.endfn doDelete__17daObjMoveOnBase_cFv
+
+# .text:0x2C8 | 0x800454B8 | size: 0x8
+.fn gap_03_800454B8_text, global
+.hidden gap_03_800454B8_text
+/* 800454B8 00000308  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800454BC 0000030C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800454B8_text
+
+# .text:0x2D0 | 0x800454C0 | size: 0x28
+# daObjMoveOnBase_c::setObjBgInfoCallBack(sBgSetInfo&)
+.fn setObjBgInfoCallBack__17daObjMoveOnBase_cFR10sBgSetInfo, global
+/* 800454C0 00000310  3C C0 00 00 */	lis r6, callBackF__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@ha
+/* 800454C4 00000314  3C A0 00 00 */	lis r5, callBackH__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@ha
+/* 800454C8 00000318  3C 80 00 00 */	lis r4, callBackW__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc@ha
+/* 800454CC 0000031C  38 C6 00 00 */	addi r6, r6, callBackF__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@l
+/* 800454D0 00000320  38 A5 00 00 */	addi r5, r5, callBackH__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@l
+/* 800454D4 00000324  38 84 00 00 */	addi r4, r4, callBackW__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc@l
+/* 800454D8 00000328  90 C3 00 10 */	stw r6, 0x10(r3)
+/* 800454DC 0000032C  90 A3 00 14 */	stw r5, 0x14(r3)
+/* 800454E0 00000330  90 83 00 18 */	stw r4, 0x18(r3)
+/* 800454E4 00000334  4E 80 00 20 */	blr
+.endfn setObjBgInfoCallBack__17daObjMoveOnBase_cFR10sBgSetInfo
+
+# .text:0x2F8 | 0x800454E8 | size: 0x8
+.fn gap_03_800454E8_text, global
+.hidden gap_03_800454E8_text
+/* 800454E8 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800454EC 0000033C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800454E8_text
+
+# .text:0x300 | 0x800454F0 | size: 0x28
+# daObjMoveOnBase_c::setCheckRevCallBack()
+.fn setCheckRevCallBack__17daObjMoveOnBase_cFv, global
+/* 800454F0 00000340  3C C0 00 00 */	lis r6, checkRevFoot__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@ha
+/* 800454F4 00000344  3C A0 00 00 */	lis r5, checkRevHead__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@ha
+/* 800454F8 00000348  3C 80 00 00 */	lis r4, checkRevWall__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc@ha
+/* 800454FC 0000034C  38 C6 00 00 */	addi r6, r6, checkRevFoot__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@l
+/* 80045500 00000350  38 A5 00 00 */	addi r5, r5, checkRevHead__17daObjMoveOnBase_cFP8dActor_cP8dActor_c@l
+/* 80045504 00000354  38 84 00 00 */	addi r4, r4, checkRevWall__17daObjMoveOnBase_cFP8dActor_cP8dActor_cUc@l
+/* 80045508 00000358  90 C3 04 28 */	stw r6, 0x428(r3)
+/* 8004550C 0000035C  90 A3 04 2C */	stw r5, 0x42c(r3)
+/* 80045510 00000360  90 83 04 30 */	stw r4, 0x430(r3)
+/* 80045514 00000364  4E 80 00 20 */	blr
+.endfn setCheckRevCallBack__17daObjMoveOnBase_cFv
+
+# .text:0x328 | 0x80045518 | size: 0x8
+.fn gap_03_80045518_text, global
+.hidden gap_03_80045518_text
+/* 80045518 00000368  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8004551C 0000036C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045518_text
+
+# .text:0x330 | 0x80045520 | size: 0x70
+# daObjMoveOnBase_c::~daObjMoveOnBase_c()
+.fn __dt__17daObjMoveOnBase_cFv, global
+/* 80045520 00000370  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045524 00000374  7C 08 02 A6 */	mflr r0
+/* 80045528 00000378  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8004552C 0000037C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80045530 00000380  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80045534 00000384  7C 9F 23 78 */	mr r31, r4
+/* 80045538 00000388  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8004553C 0000038C  7C 7E 1B 78 */	mr r30, r3
+/* 80045540 00000390  41 82 00 34 */	beq .L_80045574
+/* 80045544 00000394  38 80 FF FF */	li r4, -0x1
+/* 80045548 00000398  38 63 03 DC */	addi r3, r3, 0x3dc
+/* 8004554C 0000039C  48 00 00 01 */	bl __dt__9dBg_ctr_cFv
+/* 80045550 000003A0  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 80045554 000003A4  41 82 00 10 */	beq .L_80045564
+/* 80045558 000003A8  7F C3 F3 78 */	mr r3, r30
+/* 8004555C 000003AC  38 80 00 00 */	li r4, 0x0
+/* 80045560 000003B0  48 00 00 01 */	bl __dt__13dActorState_cFv
+.L_80045564:
+/* 80045564 000003B4  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80045568 000003B8  40 81 00 0C */	ble .L_80045574
+/* 8004556C 000003BC  7F C3 F3 78 */	mr r3, r30
+/* 80045570 000003C0  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_80045574:
+/* 80045574 000003C4  7F C3 F3 78 */	mr r3, r30
+/* 80045578 000003C8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8004557C 000003CC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80045580 000003D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045584 000003D4  7C 08 03 A6 */	mtlr r0
+/* 80045588 000003D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8004558C 000003DC  4E 80 00 20 */	blr
+.endfn __dt__17daObjMoveOnBase_cFv
+
+# .text:0x3A0 | 0x80045590 | size: 0x6C
+.fn fn_80045590, global
+/* 80045590 000003E0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80045594 000003E4  7C 08 02 A6 */	mflr r0
+/* 80045598 000003E8  3D 00 43 30 */	lis r8, 0x4330
+/* 8004559C 000003EC  7C C7 33 78 */	mr r7, r6
+/* 800455A0 000003F0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800455A4 000003F4  7C A6 2B 78 */	mr r6, r5
+/* 800455A8 000003F8  C8 40 00 00 */	lfd f2, "@61345_8042BAF8"@sda21(r0)
+/* 800455AC 000003FC  38 A0 00 00 */	li r5, 0x0
+/* 800455B0 00000400  81 23 00 04 */	lwz r9, 0x4(r3)
+/* 800455B4 00000404  91 01 00 08 */	stw r8, 0x8(r1)
+/* 800455B8 00000408  55 20 07 3E */	clrlwi r0, r9, 28
+/* 800455BC 0000040C  C0 60 00 00 */	lfs f3, "@61341_8042BAF0"@sda21(r0)
+/* 800455C0 00000410  90 01 00 0C */	stw r0, 0xc(r1)
+/* 800455C4 00000414  55 20 E7 BE */	extrwi r0, r9, 2, 26
+/* 800455C8 00000418  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 800455CC 0000041C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800455D0 00000420  EC 20 10 28 */	fsubs f1, f0, f2
+/* 800455D4 00000424  91 01 00 10 */	stw r8, 0x10(r1)
+/* 800455D8 00000428  EC 21 00 F2 */	fmuls f1, f1, f3
+/* 800455DC 0000042C  C8 01 00 10 */	lfd f0, 0x10(r1)
+/* 800455E0 00000430  EC 40 10 28 */	fsubs f2, f0, f2
+/* 800455E4 00000434  EC 21 18 2A */	fadds f1, f1, f3
+/* 800455E8 00000438  48 00 00 01 */	bl fn_80045A10
+/* 800455EC 0000043C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800455F0 00000440  7C 08 03 A6 */	mtlr r0
+/* 800455F4 00000444  38 21 00 20 */	addi r1, r1, 0x20
+/* 800455F8 00000448  4E 80 00 20 */	blr
+.endfn fn_80045590
+
+# .text:0x40C | 0x800455FC | size: 0x4
+.fn gap_03_800455FC_text, global
+.hidden gap_03_800455FC_text
+/* 800455FC 0000044C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800455FC_text
+
+# .text:0x410 | 0x80045600 | size: 0x48
+# daObjPipe_c::execute()
+.fn execute__11daObjPipe_cFv, global
+/* 80045600 00000450  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045604 00000454  7C 08 02 A6 */	mflr r0
+/* 80045608 00000458  38 80 00 00 */	li r4, 0x0
+/* 8004560C 0000045C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80045610 00000460  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80045614 00000464  7C 7F 1B 78 */	mr r31, r3
+/* 80045618 00000468  48 00 00 01 */	bl ActorScrOutCheck__8dActor_cFUs
+/* 8004561C 0000046C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80045620 00000470  41 82 00 0C */	beq .L_8004562C
+/* 80045624 00000474  38 60 00 01 */	li r3, 0x1
+/* 80045628 00000478  48 00 00 0C */	b .L_80045634
+.L_8004562C:
+/* 8004562C 0000047C  7F E3 FB 78 */	mr r3, r31
+/* 80045630 00000480  48 00 00 01 */	bl execute__15daObjPipeBase_cFv
+.L_80045634:
+/* 80045634 00000484  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045638 00000488  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8004563C 0000048C  7C 08 03 A6 */	mtlr r0
+/* 80045640 00000490  38 21 00 10 */	addi r1, r1, 0x10
+/* 80045644 00000494  4E 80 00 20 */	blr
+.endfn execute__11daObjPipe_cFv
+
+# .text:0x458 | 0x80045648 | size: 0x8
+.fn gap_03_80045648_text, global
+.hidden gap_03_80045648_text
+/* 80045648 00000498  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8004564C 0000049C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045648_text
+
+# .text:0x460 | 0x80045650 | size: 0xBC
+# daObjPipeBase_c::~daObjPipeBase_c()
+.fn __dt__15daObjPipeBase_cFv, global
+/* 80045650 000004A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045654 000004A4  7C 08 02 A6 */	mflr r0
+/* 80045658 000004A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8004565C 000004AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80045660 000004B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80045664 000004B4  7C 9F 23 78 */	mr r31, r4
+/* 80045668 000004B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8004566C 000004BC  7C 7E 1B 78 */	mr r30, r3
+/* 80045670 000004C0  41 82 00 80 */	beq .L_800456F0
+/* 80045674 000004C4  38 80 FF FF */	li r4, -0x1
+/* 80045678 000004C8  38 63 04 E4 */	addi r3, r3, 0x4e4
+/* 8004567C 000004CC  48 00 00 01 */	bl __dt__9dBg_ctr_cFv
+/* 80045680 000004D0  3C 80 00 00 */	lis r4, __dt__Q23m3d11anmTexSrt_cFv@ha
+/* 80045684 000004D4  38 7E 04 8C */	addi r3, r30, 0x48c
+/* 80045688 000004D8  38 84 00 00 */	addi r4, r4, __dt__Q23m3d11anmTexSrt_cFv@l
+/* 8004568C 000004DC  38 A0 00 2C */	li r5, 0x2c
+/* 80045690 000004E0  38 C0 00 02 */	li r6, 0x2
+/* 80045694 000004E4  48 00 00 01 */	bl __destroy_arr
+/* 80045698 000004E8  3C 80 00 00 */	lis r4, __dt__Q23m3d11anmTexPat_cFv@ha
+/* 8004569C 000004EC  38 7E 04 34 */	addi r3, r30, 0x434
+/* 800456A0 000004F0  38 84 00 00 */	addi r4, r4, __dt__Q23m3d11anmTexPat_cFv@l
+/* 800456A4 000004F4  38 A0 00 2C */	li r5, 0x2c
+/* 800456A8 000004F8  38 C0 00 02 */	li r6, 0x2
+/* 800456AC 000004FC  48 00 00 01 */	bl __destroy_arr
+/* 800456B0 00000500  3C 80 00 00 */	lis r4, __dt__Q23m3d5mdl_cFv@ha
+/* 800456B4 00000504  38 7E 03 B4 */	addi r3, r30, 0x3b4
+/* 800456B8 00000508  38 84 00 00 */	addi r4, r4, __dt__Q23m3d5mdl_cFv@l
+/* 800456BC 0000050C  38 A0 00 40 */	li r5, 0x40
+/* 800456C0 00000510  38 C0 00 02 */	li r6, 0x2
+/* 800456C4 00000514  48 00 00 01 */	bl __destroy_arr
+/* 800456C8 00000518  38 7E 03 94 */	addi r3, r30, 0x394
+/* 800456CC 0000051C  38 80 FF FF */	li r4, -0x1
+/* 800456D0 00000520  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
+/* 800456D4 00000524  7F C3 F3 78 */	mr r3, r30
+/* 800456D8 00000528  38 80 00 00 */	li r4, 0x0
+/* 800456DC 0000052C  48 00 00 01 */	bl __dt__8dActor_cFv
+/* 800456E0 00000530  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800456E4 00000534  40 81 00 0C */	ble .L_800456F0
+/* 800456E8 00000538  7F C3 F3 78 */	mr r3, r30
+/* 800456EC 0000053C  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_800456F0:
+/* 800456F0 00000540  7F C3 F3 78 */	mr r3, r30
+/* 800456F4 00000544  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800456F8 00000548  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800456FC 0000054C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045700 00000550  7C 08 03 A6 */	mtlr r0
+/* 80045704 00000554  38 21 00 10 */	addi r1, r1, 0x10
+/* 80045708 00000558  4E 80 00 20 */	blr
+.endfn __dt__15daObjPipeBase_cFv
+
+# .text:0x51C | 0x8004570C | size: 0x4
+.fn gap_03_8004570C_text, global
+.hidden gap_03_8004570C_text
+/* 8004570C 0000055C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8004570C_text
+
+# .text:0x520 | 0x80045710 | size: 0x2DC
+# daObjPipeBase_c::createMdl(float)
+.fn createMdl__15daObjPipeBase_cFf, global
+/* 80045710 00000560  94 21 FF A0 */	stwu r1, -0x60(r1)
+/* 80045714 00000564  7C 08 02 A6 */	mflr r0
+/* 80045718 00000568  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 8004571C 0000056C  38 C0 00 00 */	li r6, 0x0
+/* 80045720 00000570  90 01 00 64 */	stw r0, 0x64(r1)
+/* 80045724 00000574  38 E0 00 20 */	li r7, 0x20
+/* 80045728 00000578  DB E1 00 58 */	stfd f31, 0x58(r1)
+/* 8004572C 0000057C  FF E0 08 90 */	fmr f31, f1
+/* 80045730 00000580  93 E1 00 54 */	stw r31, 0x54(r1)
+/* 80045734 00000584  93 C1 00 50 */	stw r30, 0x50(r1)
+/* 80045738 00000588  93 A1 00 4C */	stw r29, 0x4c(r1)
+/* 8004573C 0000058C  3F A0 00 00 */	lis r29, "@61703_80307D38"@ha
+/* 80045740 00000590  3B BD 00 00 */	addi r29, r29, "@61703_80307D38"@l
+/* 80045744 00000594  93 81 00 48 */	stw r28, 0x48(r1)
+/* 80045748 00000598  7C 7C 1B 78 */	mr r28, r3
+/* 8004574C 0000059C  38 63 03 94 */	addi r3, r3, 0x394
+/* 80045750 000005A0  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 80045754 000005A4  38 80 FF FF */	li r4, -0x1
+/* 80045758 000005A8  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 8004575C 000005AC  80 60 00 00 */	lwz r3, m_instance__9dResMng_c@sda21(r0)
+/* 80045760 000005B0  38 BD 00 00 */	addi r5, r29, 0x0
+/* 80045764 000005B4  38 9D 00 14 */	addi r4, r29, 0x14
+/* 80045768 000005B8  38 63 00 04 */	addi r3, r3, 0x4
+/* 8004576C 000005BC  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 80045770 000005C0  90 7C 03 B0 */	stw r3, 0x3b0(r28)
+/* 80045774 000005C4  38 7C 03 B0 */	addi r3, r28, 0x3b0
+/* 80045778 000005C8  38 9D 00 20 */	addi r4, r29, 0x20
+/* 8004577C 000005CC  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 80045780 000005D0  90 61 00 2C */	stw r3, 0x2c(r1)
+/* 80045784 000005D4  38 7C 03 B4 */	addi r3, r28, 0x3b4
+/* 80045788 000005D8  38 81 00 2C */	addi r4, r1, 0x2c
+/* 8004578C 000005DC  38 BC 03 94 */	addi r5, r28, 0x394
+/* 80045790 000005E0  38 C0 02 27 */	li r6, 0x227
+/* 80045794 000005E4  38 E0 00 01 */	li r7, 0x1
+/* 80045798 000005E8  39 00 00 00 */	li r8, 0x0
+/* 8004579C 000005EC  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 800457A0 000005F0  38 7C 03 B4 */	addi r3, r28, 0x3b4
+/* 800457A4 000005F4  48 00 00 01 */	bl setSoftLight_MapObj__8dActor_cFRQ23m3d6bmdl_c
+/* 800457A8 000005F8  38 7C 03 B0 */	addi r3, r28, 0x3b0
+/* 800457AC 000005FC  38 9D 00 2C */	addi r4, r29, 0x2c
+/* 800457B0 00000600  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 800457B4 00000604  90 61 00 28 */	stw r3, 0x28(r1)
+/* 800457B8 00000608  7C 7E 1B 78 */	mr r30, r3
+/* 800457BC 0000060C  38 7C 03 F4 */	addi r3, r28, 0x3f4
+/* 800457C0 00000610  38 81 00 28 */	addi r4, r1, 0x28
+/* 800457C4 00000614  38 BC 03 94 */	addi r5, r28, 0x394
+/* 800457C8 00000618  38 C0 02 27 */	li r6, 0x227
+/* 800457CC 0000061C  38 E0 00 01 */	li r7, 0x1
+/* 800457D0 00000620  39 00 00 00 */	li r8, 0x0
+/* 800457D4 00000624  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 800457D8 00000628  38 7C 03 F4 */	addi r3, r28, 0x3f4
+/* 800457DC 0000062C  48 00 00 01 */	bl setSoftLight_MapObj__8dActor_cFRQ23m3d6bmdl_c
+/* 800457E0 00000630  38 7C 03 B0 */	addi r3, r28, 0x3b0
+/* 800457E4 00000634  38 9D 00 20 */	addi r4, r29, 0x20
+/* 800457E8 00000638  48 00 00 01 */	bl GetResAnmTexPat__Q34nw4r3g3d7ResFileCFPCc
+/* 800457EC 0000063C  90 61 00 20 */	stw r3, 0x20(r1)
+/* 800457F0 00000640  7C 7F 1B 78 */	mr r31, r3
+/* 800457F4 00000644  38 7C 04 34 */	addi r3, r28, 0x434
+/* 800457F8 00000648  38 81 00 24 */	addi r4, r1, 0x24
+/* 800457FC 0000064C  93 C1 00 24 */	stw r30, 0x24(r1)
+/* 80045800 00000650  38 A1 00 20 */	addi r5, r1, 0x20
+/* 80045804 00000654  38 DC 03 94 */	addi r6, r28, 0x394
+/* 80045808 00000658  38 E0 00 00 */	li r7, 0x0
+/* 8004580C 0000065C  39 00 00 01 */	li r8, 0x1
+/* 80045810 00000660  48 00 00 01 */	bl create__Q23m3d11anmTexPat_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d12ResAnmTexPatP12mAllocator_cPUll
+/* 80045814 00000664  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 80045818 00000668  38 7C 04 34 */	addi r3, r28, 0x434
+/* 8004581C 0000066C  38 9C 03 B4 */	addi r4, r28, 0x3b4
+/* 80045820 00000670  38 A1 00 3C */	addi r5, r1, 0x3c
+/* 80045824 00000674  38 C0 00 00 */	li r6, 0x0
+/* 80045828 00000678  38 E0 00 01 */	li r7, 0x1
+/* 8004582C 0000067C  48 00 00 01 */	bl setAnm__Q23m3d11anmTexPat_cFRQ23m3d6bmdl_cQ34nw4r3g3d12ResAnmTexPatlQ23m3d10playMode_e
+/* 80045830 00000680  81 9C 03 B4 */	lwz r12, 0x3b4(r28)
+/* 80045834 00000684  38 7C 03 B4 */	addi r3, r28, 0x3b4
+/* 80045838 00000688  38 9C 04 34 */	addi r4, r28, 0x434
+/* 8004583C 0000068C  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80045840 00000690  7D 89 03 A6 */	mtctr r12
+/* 80045844 00000694  4E 80 04 21 */	bctrl
+/* 80045848 00000698  FC 20 F8 90 */	fmr f1, f31
+/* 8004584C 0000069C  38 7C 04 34 */	addi r3, r28, 0x434
+/* 80045850 000006A0  38 80 00 00 */	li r4, 0x0
+/* 80045854 000006A4  48 00 00 01 */	bl setFrame__Q23m3d11anmTexPat_cFfl
+/* 80045858 000006A8  38 7C 03 B0 */	addi r3, r28, 0x3b0
+/* 8004585C 000006AC  38 9D 00 2C */	addi r4, r29, 0x2c
+/* 80045860 000006B0  48 00 00 01 */	bl GetResAnmTexPat__Q34nw4r3g3d7ResFileCFPCc
+/* 80045864 000006B4  90 61 00 18 */	stw r3, 0x18(r1)
+/* 80045868 000006B8  7C 7F 1B 78 */	mr r31, r3
+/* 8004586C 000006BC  38 7C 04 60 */	addi r3, r28, 0x460
+/* 80045870 000006C0  38 81 00 1C */	addi r4, r1, 0x1c
+/* 80045874 000006C4  93 C1 00 1C */	stw r30, 0x1c(r1)
+/* 80045878 000006C8  38 A1 00 18 */	addi r5, r1, 0x18
+/* 8004587C 000006CC  38 DC 03 94 */	addi r6, r28, 0x394
+/* 80045880 000006D0  38 E0 00 00 */	li r7, 0x0
+/* 80045884 000006D4  39 00 00 01 */	li r8, 0x1
+/* 80045888 000006D8  48 00 00 01 */	bl create__Q23m3d11anmTexPat_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d12ResAnmTexPatP12mAllocator_cPUll
+/* 8004588C 000006DC  93 E1 00 38 */	stw r31, 0x38(r1)
+/* 80045890 000006E0  38 7C 04 60 */	addi r3, r28, 0x460
+/* 80045894 000006E4  38 9C 03 F4 */	addi r4, r28, 0x3f4
+/* 80045898 000006E8  38 A1 00 38 */	addi r5, r1, 0x38
+/* 8004589C 000006EC  38 C0 00 00 */	li r6, 0x0
+/* 800458A0 000006F0  38 E0 00 01 */	li r7, 0x1
+/* 800458A4 000006F4  48 00 00 01 */	bl setAnm__Q23m3d11anmTexPat_cFRQ23m3d6bmdl_cQ34nw4r3g3d12ResAnmTexPatlQ23m3d10playMode_e
+/* 800458A8 000006F8  81 9C 03 F4 */	lwz r12, 0x3f4(r28)
+/* 800458AC 000006FC  38 7C 03 F4 */	addi r3, r28, 0x3f4
+/* 800458B0 00000700  38 9C 04 60 */	addi r4, r28, 0x460
+/* 800458B4 00000704  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800458B8 00000708  7D 89 03 A6 */	mtctr r12
+/* 800458BC 0000070C  4E 80 04 21 */	bctrl
+/* 800458C0 00000710  FC 20 F8 90 */	fmr f1, f31
+/* 800458C4 00000714  38 7C 04 60 */	addi r3, r28, 0x460
+/* 800458C8 00000718  38 80 00 00 */	li r4, 0x0
+/* 800458CC 0000071C  48 00 00 01 */	bl setFrame__Q23m3d11anmTexPat_cFfl
+/* 800458D0 00000720  38 7C 03 B0 */	addi r3, r28, 0x3b0
+/* 800458D4 00000724  38 9D 00 20 */	addi r4, r29, 0x20
+/* 800458D8 00000728  48 00 00 01 */	bl GetResAnmTexSrt__Q34nw4r3g3d7ResFileCFPCc
+/* 800458DC 0000072C  90 61 00 10 */	stw r3, 0x10(r1)
+/* 800458E0 00000730  7C 7F 1B 78 */	mr r31, r3
+/* 800458E4 00000734  38 7C 04 8C */	addi r3, r28, 0x48c
+/* 800458E8 00000738  38 81 00 14 */	addi r4, r1, 0x14
+/* 800458EC 0000073C  93 C1 00 14 */	stw r30, 0x14(r1)
+/* 800458F0 00000740  38 A1 00 10 */	addi r5, r1, 0x10
+/* 800458F4 00000744  38 DC 03 94 */	addi r6, r28, 0x394
+/* 800458F8 00000748  38 E0 00 00 */	li r7, 0x0
+/* 800458FC 0000074C  39 00 00 01 */	li r8, 0x1
+/* 80045900 00000750  48 00 00 01 */	bl create__Q23m3d11anmTexSrt_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d12ResAnmTexSrtP12mAllocator_cPUll
+/* 80045904 00000754  93 E1 00 34 */	stw r31, 0x34(r1)
+/* 80045908 00000758  38 7C 04 8C */	addi r3, r28, 0x48c
+/* 8004590C 0000075C  38 9C 03 B4 */	addi r4, r28, 0x3b4
+/* 80045910 00000760  38 A1 00 34 */	addi r5, r1, 0x34
+/* 80045914 00000764  38 C0 00 00 */	li r6, 0x0
+/* 80045918 00000768  38 E0 00 01 */	li r7, 0x1
+/* 8004591C 0000076C  48 00 00 01 */	bl setAnm__Q23m3d11anmTexSrt_cFRQ23m3d6bmdl_cQ34nw4r3g3d12ResAnmTexSrtlQ23m3d10playMode_e
+/* 80045920 00000770  81 9C 03 B4 */	lwz r12, 0x3b4(r28)
+/* 80045924 00000774  38 7C 03 B4 */	addi r3, r28, 0x3b4
+/* 80045928 00000778  38 9C 04 8C */	addi r4, r28, 0x48c
+/* 8004592C 0000077C  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 80045930 00000780  7D 89 03 A6 */	mtctr r12
+/* 80045934 00000784  4E 80 04 21 */	bctrl
+/* 80045938 00000788  FC 20 F8 90 */	fmr f1, f31
+/* 8004593C 0000078C  38 7C 04 8C */	addi r3, r28, 0x48c
+/* 80045940 00000790  38 80 00 00 */	li r4, 0x0
+/* 80045944 00000794  48 00 00 01 */	bl setFrame__Q23m3d11anmTexSrt_cFfl
+/* 80045948 00000798  38 7C 03 B0 */	addi r3, r28, 0x3b0
+/* 8004594C 0000079C  38 9D 00 2C */	addi r4, r29, 0x2c
+/* 80045950 000007A0  48 00 00 01 */	bl GetResAnmTexSrt__Q34nw4r3g3d7ResFileCFPCc
+/* 80045954 000007A4  90 61 00 08 */	stw r3, 0x8(r1)
+/* 80045958 000007A8  7C 7F 1B 78 */	mr r31, r3
+/* 8004595C 000007AC  38 7C 04 B8 */	addi r3, r28, 0x4b8
+/* 80045960 000007B0  38 81 00 0C */	addi r4, r1, 0xc
+/* 80045964 000007B4  93 C1 00 0C */	stw r30, 0xc(r1)
+/* 80045968 000007B8  38 A1 00 08 */	addi r5, r1, 0x8
+/* 8004596C 000007BC  38 DC 03 94 */	addi r6, r28, 0x394
+/* 80045970 000007C0  38 E0 00 00 */	li r7, 0x0
+/* 80045974 000007C4  39 00 00 01 */	li r8, 0x1
+/* 80045978 000007C8  48 00 00 01 */	bl create__Q23m3d11anmTexSrt_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d12ResAnmTexSrtP12mAllocator_cPUll
+/* 8004597C 000007CC  93 E1 00 30 */	stw r31, 0x30(r1)
+/* 80045980 000007D0  38 7C 04 B8 */	addi r3, r28, 0x4b8
+/* 80045984 000007D4  38 9C 03 F4 */	addi r4, r28, 0x3f4
+/* 80045988 000007D8  38 A1 00 30 */	addi r5, r1, 0x30
+/* 8004598C 000007DC  38 C0 00 00 */	li r6, 0x0
+/* 80045990 000007E0  38 E0 00 01 */	li r7, 0x1
+/* 80045994 000007E4  48 00 00 01 */	bl setAnm__Q23m3d11anmTexSrt_cFRQ23m3d6bmdl_cQ34nw4r3g3d12ResAnmTexSrtlQ23m3d10playMode_e
+/* 80045998 000007E8  81 9C 03 F4 */	lwz r12, 0x3f4(r28)
+/* 8004599C 000007EC  38 7C 03 F4 */	addi r3, r28, 0x3f4
+/* 800459A0 000007F0  38 9C 04 B8 */	addi r4, r28, 0x4b8
+/* 800459A4 000007F4  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 800459A8 000007F8  7D 89 03 A6 */	mtctr r12
+/* 800459AC 000007FC  4E 80 04 21 */	bctrl
+/* 800459B0 00000800  FC 20 F8 90 */	fmr f1, f31
+/* 800459B4 00000804  38 7C 04 B8 */	addi r3, r28, 0x4b8
+/* 800459B8 00000808  38 80 00 00 */	li r4, 0x0
+/* 800459BC 0000080C  48 00 00 01 */	bl setFrame__Q23m3d11anmTexSrt_cFfl
+/* 800459C0 00000810  38 7C 03 94 */	addi r3, r28, 0x394
+/* 800459C4 00000814  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 800459C8 00000818  80 01 00 64 */	lwz r0, 0x64(r1)
+/* 800459CC 0000081C  CB E1 00 58 */	lfd f31, 0x58(r1)
+/* 800459D0 00000820  83 E1 00 54 */	lwz r31, 0x54(r1)
+/* 800459D4 00000824  83 C1 00 50 */	lwz r30, 0x50(r1)
+/* 800459D8 00000828  83 A1 00 4C */	lwz r29, 0x4c(r1)
+/* 800459DC 0000082C  83 81 00 48 */	lwz r28, 0x48(r1)
+/* 800459E0 00000830  7C 08 03 A6 */	mtlr r0
+/* 800459E4 00000834  38 21 00 60 */	addi r1, r1, 0x60
+/* 800459E8 00000838  4E 80 00 20 */	blr
+.endfn createMdl__15daObjPipeBase_cFf
+
+# .text:0x7FC | 0x800459EC | size: 0x4
+.fn gap_03_800459EC_text, global
+.hidden gap_03_800459EC_text
+/* 800459EC 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800459EC_text
+
+# .text:0x800 | 0x800459F0 | size: 0x14
+# daObjPipeBase_c::calc_scale()
+.fn calc_scale__15daObjPipeBase_cFv, global
+/* 800459F0 00000840  C0 20 00 00 */	lfs f1, "@61709_8042BB00"@sda21(r0)
+/* 800459F4 00000844  C0 03 05 C8 */	lfs f0, 0x5c8(r3)
+/* 800459F8 00000848  EC 01 00 32 */	fmuls f0, f1, f0
+/* 800459FC 0000084C  D0 03 00 E0 */	stfs f0, 0xe0(r3)
+/* 80045A00 00000850  4E 80 00 20 */	blr
+.endfn calc_scale__15daObjPipeBase_cFv
+
+# .text:0x814 | 0x80045A04 | size: 0xC
+.fn gap_03_80045A04_text, global
+.hidden gap_03_80045A04_text
+/* 80045A04 00000854  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045A08 00000858  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045A0C 0000085C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045A04_text
+
+# .text:0x820 | 0x80045A10 | size: 0xF4
+.fn fn_80045A10, global
+/* 80045A10 00000860  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80045A14 00000864  7C 08 02 A6 */	mflr r0
+/* 80045A18 00000868  C0 00 00 00 */	lfs f0, "@61716_8042BB08"@sda21(r0)
+/* 80045A1C 0000086C  39 00 00 03 */	li r8, 0x3
+/* 80045A20 00000870  90 01 00 34 */	stw r0, 0x34(r1)
+/* 80045A24 00000874  1C 04 00 0C */	mulli r0, r4, 0xc
+/* 80045A28 00000878  3C 80 00 00 */	lis r4, lbl_802EEC48@ha
+/* 80045A2C 0000087C  C0 A0 00 00 */	lfs f5, "@61715_8042BB04"@sda21(r0)
+/* 80045A30 00000880  DB E1 00 20 */	stfd f31, 0x20(r1)
+/* 80045A34 00000884  39 20 00 00 */	li r9, 0x0
+/* 80045A38 00000888  38 84 00 00 */	addi r4, r4, lbl_802EEC48@l
+/* 80045A3C 0000088C  F3 E1 00 28 */	psq_st f31, 0x28(r1), 0, qr0
+/* 80045A40 00000890  FF E0 10 90 */	fmr f31, f2
+/* 80045A44 00000894  EC 40 08 2A */	fadds f2, f0, f1
+/* 80045A48 00000898  C0 80 00 00 */	lfs f4, "@61717_8042BB0C"@sda21(r0)
+/* 80045A4C 0000089C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80045A50 000008A0  7F E4 02 14 */	add r31, r4, r0
+/* 80045A54 000008A4  C0 7F 00 04 */	lfs f3, 0x4(r31)
+/* 80045A58 000008A8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80045A5C 000008AC  7C DE 33 78 */	mr r30, r6
+/* 80045A60 000008B0  A8 1F 00 08 */	lha r0, 0x8(r31)
+/* 80045A64 000008B4  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80045A68 000008B8  7C BD 2B 78 */	mr r29, r5
+/* 80045A6C 000008BC  7C E5 3B 78 */	mr r5, r7
+/* 80045A70 000008C0  38 C0 00 00 */	li r6, 0x0
+/* 80045A74 000008C4  93 81 00 10 */	stw r28, 0x10(r1)
+/* 80045A78 000008C8  7C 7C 1B 78 */	mr r28, r3
+/* 80045A7C 000008CC  7F 84 E3 78 */	mr r4, r28
+/* 80045A80 000008D0  38 E0 00 00 */	li r7, 0x0
+/* 80045A84 000008D4  D0 23 05 C8 */	stfs f1, 0x5c8(r3)
+/* 80045A88 000008D8  FC 20 18 50 */	fneg f1, f3
+/* 80045A8C 000008DC  39 40 00 00 */	li r10, 0x0
+/* 80045A90 000008E0  D0 A3 00 DC */	stfs f5, 0xdc(r3)
+/* 80045A94 000008E4  D0 A3 00 E0 */	stfs f5, 0xe0(r3)
+/* 80045A98 000008E8  D0 A3 00 E4 */	stfs f5, 0xe4(r3)
+/* 80045A9C 000008EC  B0 03 01 04 */	sth r0, 0x104(r3)
+/* 80045AA0 000008F0  38 63 04 E4 */	addi r3, r3, 0x4e4
+/* 80045AA4 000008F4  48 00 00 01 */	bl set__9dBg_ctr_cFP8dActor_cffffPFP8dActor_cP8dActor_c_vPFP8dActor_cP8dActor_c_vPFP8dActor_cP8dActor_cUc_vUcUcP7mVec3_c
+/* 80045AA8 000008F8  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 80045AAC 000008FC  93 DC 05 B0 */	stw r30, 0x5b0(r28)
+/* 80045AB0 00000900  41 82 00 0C */	beq .L_80045ABC
+/* 80045AB4 00000904  38 00 00 01 */	li r0, 0x1
+/* 80045AB8 00000908  90 1C 05 B4 */	stw r0, 0x5b4(r28)
+.L_80045ABC:
+/* 80045ABC 0000090C  38 7C 04 E4 */	addi r3, r28, 0x4e4
+/* 80045AC0 00000910  48 00 00 01 */	bl entry__9dBg_ctr_cFv
+/* 80045AC4 00000914  C0 3F 00 00 */	lfs f1, 0x0(r31)
+/* 80045AC8 00000918  7F 83 E3 78 */	mr r3, r28
+/* 80045ACC 0000091C  EC 21 F8 2A */	fadds f1, f1, f31
+/* 80045AD0 00000920  48 00 00 01 */	bl createMdl__15daObjPipeBase_cFf
+/* 80045AD4 00000924  7F 83 E3 78 */	mr r3, r28
+/* 80045AD8 00000928  48 00 00 01 */	bl calc_scale__15daObjPipeBase_cFv
+/* 80045ADC 0000092C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80045AE0 00000930  E3 E1 00 28 */	psq_l f31, 0x28(r1), 0, qr0
+/* 80045AE4 00000934  CB E1 00 20 */	lfd f31, 0x20(r1)
+/* 80045AE8 00000938  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80045AEC 0000093C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80045AF0 00000940  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80045AF4 00000944  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 80045AF8 00000948  7C 08 03 A6 */	mtlr r0
+/* 80045AFC 0000094C  38 21 00 30 */	addi r1, r1, 0x30
+/* 80045B00 00000950  4E 80 00 20 */	blr
+.endfn fn_80045A10
+
+# .text:0x914 | 0x80045B04 | size: 0xC
+.fn gap_03_80045B04_text, global
+.hidden gap_03_80045B04_text
+/* 80045B04 00000954  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045B08 00000958  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045B0C 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045B04_text
+
+# .text:0x920 | 0x80045B10 | size: 0x3C
+# daObjPipeBase_c::execute()
+.fn execute__15daObjPipeBase_cFv, global
+/* 80045B10 00000960  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045B14 00000964  7C 08 02 A6 */	mflr r0
+/* 80045B18 00000968  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80045B1C 0000096C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80045B20 00000970  7C 7F 1B 78 */	mr r31, r3
+/* 80045B24 00000974  38 63 04 E4 */	addi r3, r3, 0x4e4
+/* 80045B28 00000978  48 00 00 01 */	bl calc__9dBg_ctr_cFv
+/* 80045B2C 0000097C  7F E3 FB 78 */	mr r3, r31
+/* 80045B30 00000980  48 00 00 01 */	bl calc_scale__15daObjPipeBase_cFv
+/* 80045B34 00000984  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80045B38 00000988  38 60 00 01 */	li r3, 0x1
+/* 80045B3C 0000098C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045B40 00000990  7C 08 03 A6 */	mtlr r0
+/* 80045B44 00000994  38 21 00 10 */	addi r1, r1, 0x10
+/* 80045B48 00000998  4E 80 00 20 */	blr
+.endfn execute__15daObjPipeBase_cFv
+
+# .text:0x95C | 0x80045B4C | size: 0x4
+.fn gap_03_80045B4C_text, global
+.hidden gap_03_80045B4C_text
+/* 80045B4C 0000099C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045B4C_text
+
+# .text:0x960 | 0x80045B50 | size: 0x178
+# daObjPipeBase_c::draw()
+.fn draw__15daObjPipeBase_cFv, global
+/* 80045B50 000009A0  94 21 FF 70 */	stwu r1, -0x90(r1)
+/* 80045B54 000009A4  7C 08 02 A6 */	mflr r0
+/* 80045B58 000009A8  90 01 00 94 */	stw r0, 0x94(r1)
+/* 80045B5C 000009AC  DB E1 00 80 */	stfd f31, 0x80(r1)
+/* 80045B60 000009B0  F3 E1 00 88 */	psq_st f31, 0x88(r1), 0, qr0
+/* 80045B64 000009B4  93 E1 00 7C */	stw r31, 0x7c(r1)
+/* 80045B68 000009B8  93 C1 00 78 */	stw r30, 0x78(r1)
+/* 80045B6C 000009BC  93 A1 00 74 */	stw r29, 0x74(r1)
+/* 80045B70 000009C0  7C 7D 1B 78 */	mr r29, r3
+/* 80045B74 000009C4  C3 E3 05 C8 */	lfs f31, 0x5c8(r3)
+/* 80045B78 000009C8  AB E3 01 04 */	lha r31, 0x104(r3)
+/* 80045B7C 000009CC  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 80045B80 000009D0  C0 43 00 B0 */	lfs f2, 0xb0(r3)
+/* 80045B84 000009D4  C0 63 00 B4 */	lfs f3, 0xb4(r3)
+/* 80045B88 000009D8  38 63 00 7C */	addi r3, r3, 0x7c
+/* 80045B8C 000009DC  48 00 00 01 */	bl PSMTXTrans
+/* 80045B90 000009E0  B3 E1 00 0C */	sth r31, 0xc(r1)
+/* 80045B94 000009E4  38 7D 00 7C */	addi r3, r29, 0x7c
+/* 80045B98 000009E8  38 81 00 0C */	addi r4, r1, 0xc
+/* 80045B9C 000009EC  48 00 00 01 */	bl ZrotM__6mMtx_cF4mAng
+/* 80045BA0 000009F0  C0 20 00 00 */	lfs f1, "@61717_8042BB0C"@sda21(r0)
+/* 80045BA4 000009F4  38 61 00 40 */	addi r3, r1, 0x40
+/* 80045BA8 000009F8  C0 00 00 00 */	lfs f0, "@61742_8042BB10"@sda21(r0)
+/* 80045BAC 000009FC  FC 60 08 90 */	fmr f3, f1
+/* 80045BB0 00000A00  EC 40 07 F2 */	fmuls f2, f0, f31
+/* 80045BB4 00000A04  48 00 00 01 */	bl PSMTXTrans
+/* 80045BB8 00000A08  38 7D 00 7C */	addi r3, r29, 0x7c
+/* 80045BBC 00000A0C  38 81 00 40 */	addi r4, r1, 0x40
+/* 80045BC0 00000A10  7C 65 1B 78 */	mr r5, r3
+/* 80045BC4 00000A14  48 00 00 01 */	bl PSMTXConcat
+/* 80045BC8 00000A18  3B DD 03 F4 */	addi r30, r29, 0x3f4
+/* 80045BCC 00000A1C  38 9D 00 7C */	addi r4, r29, 0x7c
+/* 80045BD0 00000A20  7F C3 F3 78 */	mr r3, r30
+/* 80045BD4 00000A24  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 80045BD8 00000A28  7F C3 F3 78 */	mr r3, r30
+/* 80045BDC 00000A2C  38 9D 00 DC */	addi r4, r29, 0xdc
+/* 80045BE0 00000A30  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 80045BE4 00000A34  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80045BE8 00000A38  7F C3 F3 78 */	mr r3, r30
+/* 80045BEC 00000A3C  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 80045BF0 00000A40  7D 89 03 A6 */	mtctr r12
+/* 80045BF4 00000A44  4E 80 04 21 */	bctrl
+/* 80045BF8 00000A48  C0 3D 00 AC */	lfs f1, 0xac(r29)
+/* 80045BFC 00000A4C  38 7D 00 7C */	addi r3, r29, 0x7c
+/* 80045C00 00000A50  C0 5D 00 B0 */	lfs f2, 0xb0(r29)
+/* 80045C04 00000A54  C0 7D 00 B4 */	lfs f3, 0xb4(r29)
+/* 80045C08 00000A58  48 00 00 01 */	bl PSMTXTrans
+/* 80045C0C 00000A5C  B3 E1 00 08 */	sth r31, 0x8(r1)
+/* 80045C10 00000A60  38 7D 00 7C */	addi r3, r29, 0x7c
+/* 80045C14 00000A64  38 81 00 08 */	addi r4, r1, 0x8
+/* 80045C18 00000A68  48 00 00 01 */	bl ZrotM__6mMtx_cF4mAng
+/* 80045C1C 00000A6C  C0 20 00 00 */	lfs f1, "@61717_8042BB0C"@sda21(r0)
+/* 80045C20 00000A70  FC 40 F8 90 */	fmr f2, f31
+/* 80045C24 00000A74  38 61 00 10 */	addi r3, r1, 0x10
+/* 80045C28 00000A78  FC 60 08 90 */	fmr f3, f1
+/* 80045C2C 00000A7C  48 00 00 01 */	bl PSMTXTrans
+/* 80045C30 00000A80  38 7D 00 7C */	addi r3, r29, 0x7c
+/* 80045C34 00000A84  38 81 00 10 */	addi r4, r1, 0x10
+/* 80045C38 00000A88  7C 65 1B 78 */	mr r5, r3
+/* 80045C3C 00000A8C  48 00 00 01 */	bl PSMTXConcat
+/* 80045C40 00000A90  3B DD 03 B4 */	addi r30, r29, 0x3b4
+/* 80045C44 00000A94  38 9D 00 7C */	addi r4, r29, 0x7c
+/* 80045C48 00000A98  7F C3 F3 78 */	mr r3, r30
+/* 80045C4C 00000A9C  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 80045C50 00000AA0  88 00 00 00 */	lbz r0, "@GUARD@draw__15daObjPipeBase_cFv@sc_scale"@sda21(r0)
+/* 80045C54 00000AA4  7C 00 07 75 */	extsb. r0, r0
+/* 80045C58 00000AA8  40 82 00 24 */	bne .L_80045C7C
+/* 80045C5C 00000AAC  3C 80 00 00 */	lis r4, "@LOCAL@draw__15daObjPipeBase_cFv@sc_scale"@ha
+/* 80045C60 00000AB0  C0 00 00 00 */	lfs f0, "@61715_8042BB04"@sda21(r0)
+/* 80045C64 00000AB4  38 64 00 00 */	addi r3, r4, "@LOCAL@draw__15daObjPipeBase_cFv@sc_scale"@l
+/* 80045C68 00000AB8  38 00 00 01 */	li r0, 0x1
+/* 80045C6C 00000ABC  D0 04 00 00 */	stfs f0, "@LOCAL@draw__15daObjPipeBase_cFv@sc_scale"@l(r4)
+/* 80045C70 00000AC0  D0 03 00 04 */	stfs f0, 0x4(r3)
+/* 80045C74 00000AC4  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 80045C78 00000AC8  98 00 00 00 */	stb r0, "@GUARD@draw__15daObjPipeBase_cFv@sc_scale"@sda21(r0)
+.L_80045C7C:
+/* 80045C7C 00000ACC  3C 80 00 00 */	lis r4, "@LOCAL@draw__15daObjPipeBase_cFv@sc_scale"@ha
+/* 80045C80 00000AD0  7F C3 F3 78 */	mr r3, r30
+/* 80045C84 00000AD4  38 84 00 00 */	addi r4, r4, "@LOCAL@draw__15daObjPipeBase_cFv@sc_scale"@l
+/* 80045C88 00000AD8  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 80045C8C 00000ADC  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80045C90 00000AE0  7F C3 F3 78 */	mr r3, r30
+/* 80045C94 00000AE4  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 80045C98 00000AE8  7D 89 03 A6 */	mtctr r12
+/* 80045C9C 00000AEC  4E 80 04 21 */	bctrl
+/* 80045CA0 00000AF0  E3 E1 00 88 */	psq_l f31, 0x88(r1), 0, qr0
+/* 80045CA4 00000AF4  38 60 00 01 */	li r3, 0x1
+/* 80045CA8 00000AF8  CB E1 00 80 */	lfd f31, 0x80(r1)
+/* 80045CAC 00000AFC  83 E1 00 7C */	lwz r31, 0x7c(r1)
+/* 80045CB0 00000B00  83 C1 00 78 */	lwz r30, 0x78(r1)
+/* 80045CB4 00000B04  83 A1 00 74 */	lwz r29, 0x74(r1)
+/* 80045CB8 00000B08  80 01 00 94 */	lwz r0, 0x94(r1)
+/* 80045CBC 00000B0C  7C 08 03 A6 */	mtlr r0
+/* 80045CC0 00000B10  38 21 00 90 */	addi r1, r1, 0x90
+/* 80045CC4 00000B14  4E 80 00 20 */	blr
+.endfn draw__15daObjPipeBase_cFv
+
+# .text:0xAD8 | 0x80045CC8 | size: 0x8
+.fn gap_03_80045CC8_text, global
+.hidden gap_03_80045CC8_text
+/* 80045CC8 00000B18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045CCC 00000B1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045CC8_text
+
+# .text:0xAE0 | 0x80045CD0 | size: 0x28
+# daObjPipeBase_c::doDelete()
+.fn doDelete__15daObjPipeBase_cFv, global
+/* 80045CD0 00000B20  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045CD4 00000B24  7C 08 02 A6 */	mflr r0
+/* 80045CD8 00000B28  38 63 04 E4 */	addi r3, r3, 0x4e4
+/* 80045CDC 00000B2C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80045CE0 00000B30  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 80045CE4 00000B34  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045CE8 00000B38  38 60 00 01 */	li r3, 0x1
+/* 80045CEC 00000B3C  7C 08 03 A6 */	mtlr r0
+/* 80045CF0 00000B40  38 21 00 10 */	addi r1, r1, 0x10
+/* 80045CF4 00000B44  4E 80 00 20 */	blr
+.endfn doDelete__15daObjPipeBase_cFv
+
+# .text:0xB08 | 0x80045CF8 | size: 0x8
+.fn gap_03_80045CF8_text, global
+.hidden gap_03_80045CF8_text
+/* 80045CF8 00000B48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045CFC 00000B4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045CF8_text
+
+# .text:0xB10 | 0x80045D00 | size: 0x14
+# daObjPipeBase_c::calcDownLength(float)
+.fn calcDownLength__15daObjPipeBase_cFf, global
+/* 80045D00 00000B50  C0 00 00 00 */	lfs f0, "@61716_8042BB08"@sda21(r0)
+/* 80045D04 00000B54  D0 23 05 C8 */	stfs f1, 0x5c8(r3)
+/* 80045D08 00000B58  38 63 04 E4 */	addi r3, r3, 0x4e4
+/* 80045D0C 00000B5C  EC 20 08 2A */	fadds f1, f0, f1
+/* 80045D10 00000B60  48 00 00 00 */	b setOfsY1__9dBg_ctr_cFf
+.endfn calcDownLength__15daObjPipeBase_cFf
+
+# .text:0xB24 | 0x80045D14 | size: 0xC
+.fn gap_03_80045D14_text, global
+.hidden gap_03_80045D14_text
+/* 80045D14 00000B64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045D18 00000B68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045D1C 00000B6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045D14_text
+
+# .text:0xB30 | 0x80045D20 | size: 0x5C
+# daObjSpinChildBase_c::callBackF(dActor_c*, dActor_c*)
+.fn callBackF__20daObjSpinChildBase_cFP8dActor_cP8dActor_c, global
+/* 80045D20 00000B70  88 04 03 8C */	lbz r0, 0x38c(r4)
+/* 80045D24 00000B74  7C 65 1B 78 */	mr r5, r3
+/* 80045D28 00000B78  28 00 00 03 */	cmplwi r0, 0x3
+/* 80045D2C 00000B7C  4D 82 00 20 */	beqlr
+/* 80045D30 00000B80  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045D34 00000B84  4C 82 00 20 */	bnelr
+/* 80045D38 00000B88  88 03 03 DD */	lbz r0, 0x3dd(r3)
+/* 80045D3C 00000B8C  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045D40 00000B90  41 81 00 08 */	bgt .L_80045D48
+/* 80045D44 00000B94  4E 80 00 20 */	blr
+.L_80045D48:
+/* 80045D48 00000B98  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 80045D4C 00000B9C  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045D50 00000BA0  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045D54 00000BA4  40 81 00 14 */	ble .L_80045D68
+/* 80045D58 00000BA8  7C 83 23 78 */	mr r3, r4
+/* 80045D5C 00000BAC  7C A4 2B 78 */	mr r4, r5
+/* 80045D60 00000BB0  38 A0 00 01 */	li r5, 0x1
+/* 80045D64 00000BB4  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045D68:
+/* 80045D68 00000BB8  7C 83 23 78 */	mr r3, r4
+/* 80045D6C 00000BBC  7C A4 2B 78 */	mr r4, r5
+/* 80045D70 00000BC0  38 A0 00 09 */	li r5, 0x9
+/* 80045D74 00000BC4  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+/* 80045D78 00000BC8  4E 80 00 20 */	blr
+.endfn callBackF__20daObjSpinChildBase_cFP8dActor_cP8dActor_c
+
+# .text:0xB8C | 0x80045D7C | size: 0x4
+.fn gap_03_80045D7C_text, global
+.hidden gap_03_80045D7C_text
+/* 80045D7C 00000BCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045D7C_text
+
+# .text:0xB90 | 0x80045D80 | size: 0x5C
+# daObjSpinChildBase_c::callBackH(dActor_c*, dActor_c*)
+.fn callBackH__20daObjSpinChildBase_cFP8dActor_cP8dActor_c, global
+/* 80045D80 00000BD0  88 04 03 8C */	lbz r0, 0x38c(r4)
+/* 80045D84 00000BD4  7C 65 1B 78 */	mr r5, r3
+/* 80045D88 00000BD8  28 00 00 03 */	cmplwi r0, 0x3
+/* 80045D8C 00000BDC  4D 82 00 20 */	beqlr
+/* 80045D90 00000BE0  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045D94 00000BE4  4C 82 00 20 */	bnelr
+/* 80045D98 00000BE8  88 03 03 DD */	lbz r0, 0x3dd(r3)
+/* 80045D9C 00000BEC  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045DA0 00000BF0  41 81 00 08 */	bgt .L_80045DA8
+/* 80045DA4 00000BF4  4E 80 00 20 */	blr
+.L_80045DA8:
+/* 80045DA8 00000BF8  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 80045DAC 00000BFC  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045DB0 00000C00  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045DB4 00000C04  40 80 00 14 */	bge .L_80045DC8
+/* 80045DB8 00000C08  7C 83 23 78 */	mr r3, r4
+/* 80045DBC 00000C0C  7C A4 2B 78 */	mr r4, r5
+/* 80045DC0 00000C10  38 A0 00 02 */	li r5, 0x2
+/* 80045DC4 00000C14  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045DC8:
+/* 80045DC8 00000C18  7C 83 23 78 */	mr r3, r4
+/* 80045DCC 00000C1C  7C A4 2B 78 */	mr r4, r5
+/* 80045DD0 00000C20  38 A0 00 0A */	li r5, 0xa
+/* 80045DD4 00000C24  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+/* 80045DD8 00000C28  4E 80 00 20 */	blr
+.endfn callBackH__20daObjSpinChildBase_cFP8dActor_cP8dActor_c
+
+# .text:0xBEC | 0x80045DDC | size: 0x4
+.fn gap_03_80045DDC_text, global
+.hidden gap_03_80045DDC_text
+/* 80045DDC 00000C2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045DDC_text
+
+# .text:0xBF0 | 0x80045DE0 | size: 0x90
+# daObjSpinChildBase_c::callBackW(dActor_c*, dActor_c*, unsigned char)
+.fn callBackW__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc, global
+/* 80045DE0 00000C30  88 04 03 8C */	lbz r0, 0x38c(r4)
+/* 80045DE4 00000C34  7C 66 1B 78 */	mr r6, r3
+/* 80045DE8 00000C38  28 00 00 03 */	cmplwi r0, 0x3
+/* 80045DEC 00000C3C  4D 82 00 20 */	beqlr
+/* 80045DF0 00000C40  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045DF4 00000C44  4C 82 00 20 */	bnelr
+/* 80045DF8 00000C48  88 03 03 DD */	lbz r0, 0x3dd(r3)
+/* 80045DFC 00000C4C  28 00 00 01 */	cmplwi r0, 0x1
+/* 80045E00 00000C50  4D 81 00 20 */	bgtlr
+/* 80045E04 00000C54  2C 05 00 00 */	cmpwi r5, 0x0
+/* 80045E08 00000C58  41 82 00 34 */	beq .L_80045E3C
+/* 80045E0C 00000C5C  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 80045E10 00000C60  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045E14 00000C64  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045E18 00000C68  40 81 00 14 */	ble .L_80045E2C
+/* 80045E1C 00000C6C  7C 83 23 78 */	mr r3, r4
+/* 80045E20 00000C70  7C C4 33 78 */	mr r4, r6
+/* 80045E24 00000C74  38 A0 00 06 */	li r5, 0x6
+/* 80045E28 00000C78  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045E2C:
+/* 80045E2C 00000C7C  7C 83 23 78 */	mr r3, r4
+/* 80045E30 00000C80  7C C4 33 78 */	mr r4, r6
+/* 80045E34 00000C84  38 A0 00 0C */	li r5, 0xc
+/* 80045E38 00000C88  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045E3C:
+/* 80045E3C 00000C8C  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 80045E40 00000C90  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045E44 00000C94  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045E48 00000C98  40 80 00 14 */	bge .L_80045E5C
+/* 80045E4C 00000C9C  7C 83 23 78 */	mr r3, r4
+/* 80045E50 00000CA0  7C C4 33 78 */	mr r4, r6
+/* 80045E54 00000CA4  38 A0 00 05 */	li r5, 0x5
+/* 80045E58 00000CA8  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+.L_80045E5C:
+/* 80045E5C 00000CAC  7C 83 23 78 */	mr r3, r4
+/* 80045E60 00000CB0  7C C4 33 78 */	mr r4, r6
+/* 80045E64 00000CB4  38 A0 00 0B */	li r5, 0xb
+/* 80045E68 00000CB8  48 00 00 00 */	b setBgPressReq__10daPlBase_cFP8dActor_cQ210daPlBase_c9BgPress_e
+/* 80045E6C 00000CBC  4E 80 00 20 */	blr
+.endfn callBackW__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc
+
+# .text:0xC80 | 0x80045E70 | size: 0x18
+# daObjSpinChildBase_c::checkRevFoot(dActor_c*, dActor_c*)
+.fn checkRevFoot__20daObjSpinChildBase_cFP8dActor_cP8dActor_c, global
+/* 80045E70 00000CC0  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 80045E74 00000CC4  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045E78 00000CC8  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045E7C 00000CCC  7C 60 00 26 */	mfcr r3
+/* 80045E80 00000CD0  54 63 17 FE */	extrwi r3, r3, 1, 1
+/* 80045E84 00000CD4  4E 80 00 20 */	blr
+.endfn checkRevFoot__20daObjSpinChildBase_cFP8dActor_cP8dActor_c
+
+# .text:0xC98 | 0x80045E88 | size: 0x8
+.fn gap_03_80045E88_text, global
+.hidden gap_03_80045E88_text
+/* 80045E88 00000CD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045E8C 00000CDC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045E88_text
+
+# .text:0xCA0 | 0x80045E90 | size: 0x18
+# daObjSpinChildBase_c::checkRevHead(dActor_c*, dActor_c*)
+.fn checkRevHead__20daObjSpinChildBase_cFP8dActor_cP8dActor_c, global
+/* 80045E90 00000CE0  C0 23 00 C8 */	lfs f1, 0xc8(r3)
+/* 80045E94 00000CE4  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045E98 00000CE8  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045E9C 00000CEC  7C 60 00 26 */	mfcr r3
+/* 80045EA0 00000CF0  54 63 0F FE */	srwi r3, r3, 31
+/* 80045EA4 00000CF4  4E 80 00 20 */	blr
+.endfn checkRevHead__20daObjSpinChildBase_cFP8dActor_cP8dActor_c
+
+# .text:0xCB8 | 0x80045EA8 | size: 0x8
+.fn gap_03_80045EA8_text, global
+.hidden gap_03_80045EA8_text
+/* 80045EA8 00000CF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045EAC 00000CFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045EA8_text
+
+# .text:0xCC0 | 0x80045EB0 | size: 0x40
+# daObjSpinChildBase_c::checkRevWall(dActor_c*, dActor_c*, unsigned char)
+.fn checkRevWall__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc, global
+/* 80045EB0 00000D00  2C 05 00 00 */	cmpwi r5, 0x0
+/* 80045EB4 00000D04  41 82 00 1C */	beq .L_80045ED0
+/* 80045EB8 00000D08  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 80045EBC 00000D0C  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045EC0 00000D10  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045EC4 00000D14  40 81 00 24 */	ble .L_80045EE8
+/* 80045EC8 00000D18  38 60 00 01 */	li r3, 0x1
+/* 80045ECC 00000D1C  4E 80 00 20 */	blr
+.L_80045ED0:
+/* 80045ED0 00000D20  C0 23 00 C4 */	lfs f1, 0xc4(r3)
+/* 80045ED4 00000D24  C0 00 00 00 */	lfs f0, "@68732_8042BB18"@sda21(r0)
+/* 80045ED8 00000D28  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80045EDC 00000D2C  40 80 00 0C */	bge .L_80045EE8
+/* 80045EE0 00000D30  38 60 00 01 */	li r3, 0x1
+/* 80045EE4 00000D34  4E 80 00 20 */	blr
+.L_80045EE8:
+/* 80045EE8 00000D38  38 60 00 00 */	li r3, 0x0
+/* 80045EEC 00000D3C  4E 80 00 20 */	blr
+.endfn checkRevWall__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc
+
+# .text:0xD00 | 0x80045EF0 | size: 0x28
+# daObjSpinChildBase_c::doDelete()
+.fn doDelete__20daObjSpinChildBase_cFv, global
+/* 80045EF0 00000D40  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80045EF4 00000D44  7C 08 02 A6 */	mflr r0
+/* 80045EF8 00000D48  38 63 03 E0 */	addi r3, r3, 0x3e0
+/* 80045EFC 00000D4C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80045F00 00000D50  48 00 00 01 */	bl release__9dBg_ctr_cFv
+/* 80045F04 00000D54  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80045F08 00000D58  38 60 00 01 */	li r3, 0x1
+/* 80045F0C 00000D5C  7C 08 03 A6 */	mtlr r0
+/* 80045F10 00000D60  38 21 00 10 */	addi r1, r1, 0x10
+/* 80045F14 00000D64  4E 80 00 20 */	blr
+.endfn doDelete__20daObjSpinChildBase_cFv
+
+# .text:0xD28 | 0x80045F18 | size: 0x8
+.fn gap_03_80045F18_text, global
+.hidden gap_03_80045F18_text
+/* 80045F18 00000D68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045F1C 00000D6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045F18_text
+
+# .text:0xD30 | 0x80045F20 | size: 0x8
+# daObjSpinChildBase_c::init_move()
+.fn init_move__20daObjSpinChildBase_cFv, global
+/* 80045F20 00000D70  38 63 03 E0 */	addi r3, r3, 0x3e0
+/* 80045F24 00000D74  48 00 00 00 */	b entry__9dBg_ctr_cFv
+.endfn init_move__20daObjSpinChildBase_cFv
+
+# .text:0xD38 | 0x80045F28 | size: 0x8
+.fn gap_03_80045F28_text, global
+.hidden gap_03_80045F28_text
+/* 80045F28 00000D78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045F2C 00000D7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045F28_text
+
+# .text:0xD40 | 0x80045F30 | size: 0x8
+# daObjSpinChildBase_c::post_execute_state()
+.fn post_execute_state__20daObjSpinChildBase_cFv, global
+/* 80045F30 00000D80  38 63 03 E0 */	addi r3, r3, 0x3e0
+/* 80045F34 00000D84  48 00 00 00 */	b calc__9dBg_ctr_cFv
+.endfn post_execute_state__20daObjSpinChildBase_cFv
+
+# .text:0xD48 | 0x80045F38 | size: 0x8
+.fn gap_03_80045F38_text, global
+.hidden gap_03_80045F38_text
+/* 80045F38 00000D88  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045F3C 00000D8C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045F38_text
+
+# .text:0xD50 | 0x80045F40 | size: 0xB4
+# daObjSpinChildBase_c::obj_bg_init(const mVec2_c&, const mVec2_c&)
+.fn obj_bg_init__20daObjSpinChildBase_cFRC7mVec2_cRC7mVec2_c, global
+/* 80045F40 00000D90  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80045F44 00000D94  7C 08 02 A6 */	mflr r0
+/* 80045F48 00000D98  3C E0 00 00 */	lis r7, callBackF__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@ha
+/* 80045F4C 00000D9C  3D 00 00 00 */	lis r8, callBackH__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@ha
+/* 80045F50 00000DA0  90 01 00 34 */	stw r0, 0x34(r1)
+/* 80045F54 00000DA4  3D 20 00 00 */	lis r9, callBackW__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc@ha
+/* 80045F58 00000DA8  C0 04 00 04 */	lfs f0, 0x4(r4)
+/* 80045F5C 00000DAC  38 00 00 00 */	li r0, 0x0
+/* 80045F60 00000DB0  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 80045F64 00000DB4  7C 7F 1B 78 */	mr r31, r3
+/* 80045F68 00000DB8  C0 24 00 00 */	lfs f1, 0x0(r4)
+/* 80045F6C 00000DBC  7F E4 FB 78 */	mr r4, r31
+/* 80045F70 00000DC0  C0 45 00 04 */	lfs f2, 0x4(r5)
+/* 80045F74 00000DC4  38 C1 00 10 */	addi r6, r1, 0x10
+/* 80045F78 00000DC8  C0 65 00 00 */	lfs f3, 0x0(r5)
+/* 80045F7C 00000DCC  38 A1 00 18 */	addi r5, r1, 0x18
+/* 80045F80 00000DD0  D0 21 00 18 */	stfs f1, 0x18(r1)
+/* 80045F84 00000DD4  38 E7 00 00 */	addi r7, r7, callBackF__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@l
+/* 80045F88 00000DD8  39 08 00 00 */	addi r8, r8, callBackH__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@l
+/* 80045F8C 00000DDC  39 29 00 00 */	addi r9, r9, callBackW__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc@l
+/* 80045F90 00000DE0  D0 01 00 1C */	stfs f0, 0x1c(r1)
+/* 80045F94 00000DE4  39 40 00 03 */	li r10, 0x3
+/* 80045F98 00000DE8  38 63 03 E0 */	addi r3, r3, 0x3e0
+/* 80045F9C 00000DEC  D0 61 00 10 */	stfs f3, 0x10(r1)
+/* 80045FA0 00000DF0  D0 41 00 14 */	stfs f2, 0x14(r1)
+/* 80045FA4 00000DF4  90 01 00 08 */	stw r0, 0x8(r1)
+/* 80045FA8 00000DF8  90 01 00 0C */	stw r0, 0xc(r1)
+/* 80045FAC 00000DFC  48 00 00 01 */	bl set__9dBg_ctr_cFP8dActor_c7mVec2_c7mVec2_cPFP8dActor_cP8dActor_c_vPFP8dActor_cP8dActor_c_vPFP8dActor_cP8dActor_cUc_vUcUcP7mVec3_c
+/* 80045FB0 00000E00  3C C0 00 00 */	lis r6, checkRevFoot__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@ha
+/* 80045FB4 00000E04  3C A0 00 00 */	lis r5, checkRevHead__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@ha
+/* 80045FB8 00000E08  3C 80 00 00 */	lis r4, checkRevWall__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc@ha
+/* 80045FBC 00000E0C  3C 60 00 38 */	lis r3, 0x38
+/* 80045FC0 00000E10  38 C6 00 00 */	addi r6, r6, checkRevFoot__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@l
+/* 80045FC4 00000E14  38 A5 00 00 */	addi r5, r5, checkRevHead__20daObjSpinChildBase_cFP8dActor_cP8dActor_c@l
+/* 80045FC8 00000E18  38 84 00 00 */	addi r4, r4, checkRevWall__20daObjSpinChildBase_cFP8dActor_cP8dActor_cUc@l
+/* 80045FCC 00000E1C  38 03 00 01 */	addi r0, r3, 0x1
+/* 80045FD0 00000E20  90 DF 04 2C */	stw r6, 0x42c(r31)
+/* 80045FD4 00000E24  90 BF 04 30 */	stw r5, 0x430(r31)
+/* 80045FD8 00000E28  90 9F 04 34 */	stw r4, 0x434(r31)
+/* 80045FDC 00000E2C  90 1F 04 B0 */	stw r0, 0x4b0(r31)
+/* 80045FE0 00000E30  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 80045FE4 00000E34  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80045FE8 00000E38  7C 08 03 A6 */	mtlr r0
+/* 80045FEC 00000E3C  38 21 00 30 */	addi r1, r1, 0x30
+/* 80045FF0 00000E40  4E 80 00 20 */	blr
+.endfn obj_bg_init__20daObjSpinChildBase_cFRC7mVec2_cRC7mVec2_c
+
+# .text:0xE04 | 0x80045FF4 | size: 0xC
+.fn gap_03_80045FF4_text, global
+.hidden gap_03_80045FF4_text
+/* 80045FF4 00000E44  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045FF8 00000E48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80045FFC 00000E4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80045FF4_text
+
+# .text:0xE10 | 0x80046000 | size: 0x70
+# daObjSpinChildBase_c::~daObjSpinChildBase_c()
+.fn __dt__20daObjSpinChildBase_cFv, global
+/* 80046000 00000E50  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80046004 00000E54  7C 08 02 A6 */	mflr r0
+/* 80046008 00000E58  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8004600C 00000E5C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80046010 00000E60  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80046014 00000E64  7C 9F 23 78 */	mr r31, r4
+/* 80046018 00000E68  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8004601C 00000E6C  7C 7E 1B 78 */	mr r30, r3
+/* 80046020 00000E70  41 82 00 34 */	beq .L_80046054
+/* 80046024 00000E74  38 80 FF FF */	li r4, -0x1
+/* 80046028 00000E78  38 63 03 E0 */	addi r3, r3, 0x3e0
+/* 8004602C 00000E7C  48 00 00 01 */	bl __dt__9dBg_ctr_cFv
+/* 80046030 00000E80  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 80046034 00000E84  41 82 00 10 */	beq .L_80046044
+/* 80046038 00000E88  7F C3 F3 78 */	mr r3, r30
+/* 8004603C 00000E8C  38 80 00 00 */	li r4, 0x0
+/* 80046040 00000E90  48 00 00 01 */	bl __dt__13dActorState_cFv
+.L_80046044:
+/* 80046044 00000E94  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80046048 00000E98  40 81 00 0C */	ble .L_80046054
+/* 8004604C 00000E9C  7F C3 F3 78 */	mr r3, r30
+/* 80046050 00000EA0  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_80046054:
+/* 80046054 00000EA4  7F C3 F3 78 */	mr r3, r30
+/* 80046058 00000EA8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8004605C 00000EAC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80046060 00000EB0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80046064 00000EB4  7C 08 03 A6 */	mtlr r0
+/* 80046068 00000EB8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8004606C 00000EBC  4E 80 00 20 */	blr
+.endfn __dt__20daObjSpinChildBase_cFv
+
+# .text:0xE80 | 0x80046070 | size: 0x58
+# daSpinChildBase_c::~daSpinChildBase_c()
+.fn __dt__17daSpinChildBase_cFv, global
+/* 80046070 00000EC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80046074 00000EC4  7C 08 02 A6 */	mflr r0
+/* 80046078 00000EC8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8004607C 00000ECC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80046080 00000ED0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80046084 00000ED4  7C 9F 23 78 */	mr r31, r4
+/* 80046088 00000ED8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8004608C 00000EDC  7C 7E 1B 78 */	mr r30, r3
+/* 80046090 00000EE0  41 82 00 1C */	beq .L_800460AC
+/* 80046094 00000EE4  38 80 00 00 */	li r4, 0x0
+/* 80046098 00000EE8  48 00 00 01 */	bl __dt__13dActorState_cFv
+/* 8004609C 00000EEC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800460A0 00000EF0  40 81 00 0C */	ble .L_800460AC
+/* 800460A4 00000EF4  7F C3 F3 78 */	mr r3, r30
+/* 800460A8 00000EF8  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_800460AC:
+/* 800460AC 00000EFC  7F C3 F3 78 */	mr r3, r30
+/* 800460B0 00000F00  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800460B4 00000F04  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800460B8 00000F08  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800460BC 00000F0C  7C 08 03 A6 */	mtlr r0
+/* 800460C0 00000F10  38 21 00 10 */	addi r1, r1, 0x10
+/* 800460C4 00000F14  4E 80 00 20 */	blr
+.endfn __dt__17daSpinChildBase_cFv
+
+# .text:0xED8 | 0x800460C8 | size: 0x8
+.fn gap_03_800460C8_text, global
+.hidden gap_03_800460C8_text
+/* 800460C8 00000F18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800460CC 00000F1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800460C8_text

@@ -1,0 +1,45 @@
+.include "macros.inc"
+.file "auto_sinit__eggVector_cpp_text"
+
+# 0x802BEA30..0x802BEAA8 | size: 0x78
+.text
+.balign 4
+
+# .text:0x0 | 0x802BEA30 | size: 0x78
+.fn "__sinit_\eggVector_cpp", global
+/* 802BEA30 00000040  3D 40 00 00 */	lis r10, zero__Q23EGG8Vector3f@ha
+/* 802BEA34 00000044  C0 20 00 00 */	lfs f1, "@9209_8042F480"@sda21(r0)
+/* 802BEA38 00000048  39 4A 00 00 */	addi r10, r10, zero__Q23EGG8Vector3f@l
+/* 802BEA3C 0000004C  C0 00 00 00 */	lfs f0, "@9210_8042F484"@sda21(r0)
+/* 802BEA40 00000050  38 CA 00 00 */	addi r6, r10, 0x0
+/* 802BEA44 00000054  39 20 00 00 */	li r9, zero__Q23EGG8Vector2f@sda21
+/* 802BEA48 00000058  38 AA 00 0C */	addi r5, r10, 0xc
+/* 802BEA4C 0000005C  38 8A 00 18 */	addi r4, r10, 0x18
+/* 802BEA50 00000060  38 6A 00 24 */	addi r3, r10, 0x24
+/* 802BEA54 00000064  39 00 00 00 */	li r8, ex__Q23EGG8Vector2f@sda21
+/* 802BEA58 00000068  38 E0 00 00 */	li r7, ey__Q23EGG8Vector2f@sda21
+/* 802BEA5C 0000006C  D0 20 00 00 */	stfs f1, zero__Q23EGG8Vector2f@sda21(r0)
+/* 802BEA60 00000070  D0 29 00 04 */	stfs f1, 0x4(r9)
+/* 802BEA64 00000074  D0 00 00 00 */	stfs f0, ex__Q23EGG8Vector2f@sda21(r0)
+/* 802BEA68 00000078  D0 28 00 04 */	stfs f1, 0x4(r8)
+/* 802BEA6C 0000007C  D0 20 00 00 */	stfs f1, ey__Q23EGG8Vector2f@sda21(r0)
+/* 802BEA70 00000080  D0 07 00 04 */	stfs f0, 0x4(r7)
+/* 802BEA74 00000084  D0 2A 00 00 */	stfs f1, 0x0(r10)
+/* 802BEA78 00000088  D0 26 00 04 */	stfs f1, 0x4(r6)
+/* 802BEA7C 0000008C  D0 26 00 08 */	stfs f1, 0x8(r6)
+/* 802BEA80 00000090  D0 0A 00 0C */	stfs f0, 0xc(r10)
+/* 802BEA84 00000094  D0 25 00 04 */	stfs f1, 0x4(r5)
+/* 802BEA88 00000098  D0 25 00 08 */	stfs f1, 0x8(r5)
+/* 802BEA8C 0000009C  D0 2A 00 18 */	stfs f1, 0x18(r10)
+/* 802BEA90 000000A0  D0 04 00 04 */	stfs f0, 0x4(r4)
+/* 802BEA94 000000A4  D0 24 00 08 */	stfs f1, 0x8(r4)
+/* 802BEA98 000000A8  D0 2A 00 24 */	stfs f1, 0x24(r10)
+/* 802BEA9C 000000AC  D0 23 00 04 */	stfs f1, 0x4(r3)
+/* 802BEAA0 000000B0  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 802BEAA4 000000B4  4E 80 00 20 */	blr
+.endfn "__sinit_\eggVector_cpp"
+
+# 0x802EDF8C..0x802EDF90 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\eggVector_cpp"

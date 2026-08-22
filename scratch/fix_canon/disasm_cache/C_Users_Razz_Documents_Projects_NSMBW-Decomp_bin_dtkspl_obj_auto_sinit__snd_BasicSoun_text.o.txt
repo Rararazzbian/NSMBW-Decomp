@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__snd_BasicSoun_text"
+
+# 0x80267930..0x8026793C | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x80267930 | size: 0xC
+.fn "__sinit_\snd_BasicSound_cpp", global
+/* 80267930 00000040  38 00 00 00 */	li r0, 0x0
+/* 80267934 00000044  90 00 00 00 */	stw r0, typeInfo__Q44nw4r3snd6detail10BasicSound@sda21(r0)
+/* 80267938 00000048  4E 80 00 20 */	blr
+.endfn "__sinit_\snd_BasicSound_cpp"
+
+# 0x802EDF40..0x802EDF44 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\snd_BasicSound_cpp"

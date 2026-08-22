@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__lyt_bounding_text_1"
+
+# 0x802B1E90..0x802B1E9C | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x802B1E90 | size: 0xC
+.fn "__sinit_\lyt_bounding_cpp", local
+/* 802B1E90 00000040  38 00 00 00 */	li r0, typeInfo__Q34nw4r3lyt4Pane@sda21
+/* 802B1E94 00000044  90 00 00 00 */	stw r0, typeInfo__Q34nw4r3lyt8Bounding@sda21(r0)
+/* 802B1E98 00000048  4E 80 00 20 */	blr
+.endfn "__sinit_\lyt_bounding_cpp"
+
+# 0x802EDF7C..0x802EDF80 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\lyt_bounding_cpp"

@@ -1,0 +1,91 @@
+.include "macros.inc"
+.file "auto_07_80350170_data"
+
+# 0x80350170..0x80350218 | size: 0xA8
+.data
+.balign 8
+
+# .data:0x0 | 0x80350170 | size: 0x18
+# EGG::Thread::__vtable
+.obj __vt__Q23EGG6Thread, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__Q23EGG6ThreadFv
+	.4byte run__Q23EGG6ThreadFv
+	.4byte onEnter__Q23EGG6ThreadFv
+	.4byte onExit__Q23EGG6ThreadFv
+.endobj __vt__Q23EGG6Thread
+
+# .data:0x18 | 0x80350188 | size: 0xC
+.obj "@18644_80350188", global
+	.4byte 0x45474752
+	.4byte 0x6F6F744D
+	.4byte 0x454D3100
+.endobj "@18644_80350188"
+
+# .data:0x24 | 0x80350194 | size: 0xC
+.obj "@18645", local
+	.4byte 0x45474752
+	.4byte 0x6F6F744D
+	.4byte 0x454D3200
+.endobj "@18645"
+
+# .data:0x30 | 0x803501A0 | size: 0xD
+.obj "@18646", local
+	.4byte 0x45474752
+	.4byte 0x6F6F7444
+	.4byte 0x65627567
+	.byte 0x00
+.endobj "@18646"
+
+# .data:0x3D | 0x803501AD | size: 0x3
+.obj gap_07_803501AD_data, global
+.hidden gap_07_803501AD_data
+	.byte 0x00, 0x00, 0x00
+.endobj gap_07_803501AD_data
+
+# .data:0x40 | 0x803501B0 | size: 0xA
+.obj "@18647", local
+	.4byte 0x45474753
+	.4byte 0x79737465
+	.2byte 0x6D00
+.endobj "@18647"
+
+# .data:0x4A | 0x803501BA | size: 0x6
+.obj gap_07_803501BA_data, global
+.hidden gap_07_803501BA_data
+	.4byte 0x00000000
+	.2byte 0x0000
+.endobj gap_07_803501BA_data
+
+# .data:0x50 | 0x803501C0 | size: 0x38
+# EGG::ConfigurationData::__vtable
+.obj __vt__Q23EGG17ConfigurationData, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte onBeginFrame__Q23EGG17ConfigurationDataFv
+	.4byte onEndFrame__Q23EGG17ConfigurationDataFv
+	.4byte initRenderMode__Q23EGG17ConfigurationDataFv
+	.4byte initMemory__Q23EGG17ConfigurationDataFv
+	.4byte run__Q23EGG17ConfigurationDataFv
+.endobj __vt__Q23EGG17ConfigurationData
+
+# .data:0x88 | 0x803501F8 | size: 0x20
+# EGG::Display::__vtable
+.obj __vt__Q23EGG7Display, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte beginFrame__Q23EGG7DisplayFb
+	.4byte beginRender__Q23EGG7DisplayFv
+	.4byte endRender__Q23EGG7DisplayFv
+	.4byte endFrame__Q23EGG7DisplayFv
+	.4byte getTickPerFrame__Q23EGG7DisplayFv
+	.4byte preVRetrace__Q23EGG7DisplayFv
+.endobj __vt__Q23EGG7Display

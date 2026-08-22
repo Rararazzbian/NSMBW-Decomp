@@ -1,0 +1,31 @@
+.include "macros.inc"
+.file "auto_sinit__snd_AxManager_text"
+
+# 0x80261E60..0x80261EA0 | size: 0x40
+.text
+.balign 4
+
+# .text:0x0 | 0x80261E60 | size: 0x40
+.fn "__sinit_\snd_AxManager_cpp", global
+/* 80261E60 00000040  3C E0 00 00 */	lis r7, __vt__Q44nw4r3snd6detail15BiquadFilterLpf@ha
+/* 80261E64 00000044  3C C0 00 00 */	lis r6, __vt__Q44nw4r3snd6detail15BiquadFilterHpf@ha
+/* 80261E68 00000048  3C A0 00 00 */	lis r5, __vt__Q44nw4r3snd6detail18BiquadFilterBpf512@ha
+/* 80261E6C 0000004C  3C 80 00 00 */	lis r4, __vt__Q44nw4r3snd6detail19BiquadFilterBpf1024@ha
+/* 80261E70 00000050  3C 60 00 00 */	lis r3, __vt__Q44nw4r3snd6detail19BiquadFilterBpf2048@ha
+/* 80261E74 00000054  38 E7 00 00 */	addi r7, r7, __vt__Q44nw4r3snd6detail15BiquadFilterLpf@l
+/* 80261E78 00000058  38 C6 00 00 */	addi r6, r6, __vt__Q44nw4r3snd6detail15BiquadFilterHpf@l
+/* 80261E7C 0000005C  38 A5 00 00 */	addi r5, r5, __vt__Q44nw4r3snd6detail18BiquadFilterBpf512@l
+/* 80261E80 00000060  38 84 00 00 */	addi r4, r4, __vt__Q44nw4r3snd6detail19BiquadFilterBpf1024@l
+/* 80261E84 00000064  38 63 00 00 */	addi r3, r3, __vt__Q44nw4r3snd6detail19BiquadFilterBpf2048@l
+/* 80261E88 00000068  90 E0 00 00 */	stw r7, sBiquadFilterLpf__Q44nw4r3snd6detail9AxManager@sda21(r0)
+/* 80261E8C 0000006C  90 C0 00 00 */	stw r6, sBiquadFilterHpf__Q44nw4r3snd6detail9AxManager@sda21(r0)
+/* 80261E90 00000070  90 A0 00 00 */	stw r5, sBiquadFilterBpf512__Q44nw4r3snd6detail9AxManager@sda21(r0)
+/* 80261E94 00000074  90 80 00 00 */	stw r4, sBiquadFilterBpf1024__Q44nw4r3snd6detail9AxManager@sda21(r0)
+/* 80261E98 00000078  90 60 00 00 */	stw r3, sBiquadFilterBpf2048__Q44nw4r3snd6detail9AxManager@sda21(r0)
+/* 80261E9C 0000007C  4E 80 00 20 */	blr
+.endfn "__sinit_\snd_AxManager_cpp"
+
+# 0x802EDF3C..0x802EDF40 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\snd_AxManager_cpp"

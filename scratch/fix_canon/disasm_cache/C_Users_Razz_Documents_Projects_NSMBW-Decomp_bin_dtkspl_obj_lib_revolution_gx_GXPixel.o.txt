@@ -1,0 +1,255 @@
+.include "macros.inc"
+.file "GXPixel.c"
+
+# 0x801C8F50..0x801C91E0 | size: 0x290
+.text
+.balign 4
+
+# .text:0x0 | 0x801C8F50 | size: 0x2C
+.fn GXSetColorUpdate, global
+/* 801C8F50 00000040  80 E0 00 00 */	lwz r7, __GXData@sda21(r0)
+/* 801C8F54 00000044  3C 80 CC 01 */	lis r4, 0xcc01
+/* 801C8F58 00000048  38 A0 00 61 */	li r5, 0x61
+/* 801C8F5C 0000004C  38 00 00 00 */	li r0, 0x0
+/* 801C8F60 00000050  80 C7 02 20 */	lwz r6, 0x220(r7)
+/* 801C8F64 00000054  50 66 1F 38 */	rlwimi r6, r3, 3, 28, 28
+/* 801C8F68 00000058  98 A4 80 00 */	stb r5, -0x8000(r4)
+/* 801C8F6C 0000005C  90 C4 80 00 */	stw r6, -0x8000(r4)
+/* 801C8F70 00000060  90 C7 02 20 */	stw r6, 0x220(r7)
+/* 801C8F74 00000064  B0 07 00 02 */	sth r0, 0x2(r7)
+/* 801C8F78 00000068  4E 80 00 20 */	blr
+.endfn GXSetColorUpdate
+
+# .text:0x2C | 0x801C8F7C | size: 0x4
+.fn gap_03_801C8F7C_text, global
+.hidden gap_03_801C8F7C_text
+/* 801C8F7C 0000006C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801C8F7C_text
+
+# .text:0x30 | 0x801C8F80 | size: 0x2C
+.fn GXSetAlphaUpdate, global
+/* 801C8F80 00000070  80 E0 00 00 */	lwz r7, __GXData@sda21(r0)
+/* 801C8F84 00000074  3C 80 CC 01 */	lis r4, 0xcc01
+/* 801C8F88 00000078  38 A0 00 61 */	li r5, 0x61
+/* 801C8F8C 0000007C  38 00 00 00 */	li r0, 0x0
+/* 801C8F90 00000080  80 C7 02 20 */	lwz r6, 0x220(r7)
+/* 801C8F94 00000084  50 66 26 F6 */	rlwimi r6, r3, 4, 27, 27
+/* 801C8F98 00000088  98 A4 80 00 */	stb r5, -0x8000(r4)
+/* 801C8F9C 0000008C  90 C4 80 00 */	stw r6, -0x8000(r4)
+/* 801C8FA0 00000090  90 C7 02 20 */	stw r6, 0x220(r7)
+/* 801C8FA4 00000094  B0 07 00 02 */	sth r0, 0x2(r7)
+/* 801C8FA8 00000098  4E 80 00 20 */	blr
+.endfn GXSetAlphaUpdate
+
+# .text:0x5C | 0x801C8FAC | size: 0x4
+.fn gap_03_801C8FAC_text, global
+.hidden gap_03_801C8FAC_text
+/* 801C8FAC 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801C8FAC_text
+
+# .text:0x60 | 0x801C8FB0 | size: 0x34
+.fn GXSetZMode, global
+/* 801C8FB0 000000A0  81 20 00 00 */	lwz r9, __GXData@sda21(r0)
+/* 801C8FB4 000000A4  3C C0 CC 01 */	lis r6, 0xcc01
+/* 801C8FB8 000000A8  38 E0 00 61 */	li r7, 0x61
+/* 801C8FBC 000000AC  38 00 00 00 */	li r0, 0x0
+/* 801C8FC0 000000B0  81 09 02 28 */	lwz r8, 0x228(r9)
+/* 801C8FC4 000000B4  50 68 07 FE */	rlwimi r8, r3, 0, 31, 31
+/* 801C8FC8 000000B8  50 88 0F 3C */	rlwimi r8, r4, 1, 28, 30
+/* 801C8FCC 000000BC  98 E6 80 00 */	stb r7, -0x8000(r6)
+/* 801C8FD0 000000C0  50 A8 26 F6 */	rlwimi r8, r5, 4, 27, 27
+/* 801C8FD4 000000C4  91 06 80 00 */	stw r8, -0x8000(r6)
+/* 801C8FD8 000000C8  91 09 02 28 */	stw r8, 0x228(r9)
+/* 801C8FDC 000000CC  B0 09 00 02 */	sth r0, 0x2(r9)
+/* 801C8FE0 000000D0  4E 80 00 20 */	blr
+.endfn GXSetZMode
+
+# .text:0x94 | 0x801C8FE4 | size: 0xC
+.fn gap_03_801C8FE4_text, global
+.hidden gap_03_801C8FE4_text
+/* 801C8FE4 000000D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801C8FE8 000000D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801C8FEC 000000DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801C8FE4_text
+
+# .text:0xA0 | 0x801C8FF0 | size: 0x30
+.fn GXSetZCompLoc, global
+/* 801C8FF0 000000E0  80 E0 00 00 */	lwz r7, __GXData@sda21(r0)
+/* 801C8FF4 000000E4  3C 80 CC 01 */	lis r4, 0xcc01
+/* 801C8FF8 000000E8  38 A0 00 61 */	li r5, 0x61
+/* 801C8FFC 000000EC  38 00 00 00 */	li r0, 0x0
+/* 801C9000 000000F0  80 C7 02 2C */	lwz r6, 0x22c(r7)
+/* 801C9004 000000F4  50 66 36 72 */	rlwimi r6, r3, 6, 25, 25
+/* 801C9008 000000F8  90 C7 02 2C */	stw r6, 0x22c(r7)
+/* 801C900C 000000FC  98 A4 80 00 */	stb r5, -0x8000(r4)
+/* 801C9010 00000100  80 67 02 2C */	lwz r3, 0x22c(r7)
+/* 801C9014 00000104  90 64 80 00 */	stw r3, -0x8000(r4)
+/* 801C9018 00000108  B0 07 00 02 */	sth r0, 0x2(r7)
+/* 801C901C 0000010C  4E 80 00 20 */	blr
+.endfn GXSetZCompLoc
+
+# .text:0xD0 | 0x801C9020 | size: 0xA8
+.fn GXSetPixelFmt, global
+/* 801C9020 00000110  81 20 00 00 */	lwz r9, __GXData@sda21(r0)
+/* 801C9024 00000114  3C C0 00 00 */	lis r6, "@LOCAL@GXSetPixelFmt__F11_GXPixelFmt9_GXZFmt16@p2f"@ha
+/* 801C9028 00000118  54 67 10 3A */	slwi r7, r3, 2
+/* 801C902C 0000011C  38 C6 00 00 */	addi r6, r6, "@LOCAL@GXSetPixelFmt__F11_GXPixelFmt9_GXZFmt16@p2f"@l
+/* 801C9030 00000120  81 09 02 2C */	lwz r8, 0x22c(r9)
+/* 801C9034 00000124  7C 06 38 2E */	lwzx r0, r6, r7
+/* 801C9038 00000128  7D 05 43 78 */	mr r5, r8
+/* 801C903C 0000012C  50 05 07 7E */	rlwimi r5, r0, 0, 29, 31
+/* 801C9040 00000130  50 85 1E B8 */	rlwimi r5, r4, 3, 26, 28
+/* 801C9044 00000134  90 A9 02 2C */	stw r5, 0x22c(r9)
+/* 801C9048 00000138  7C 08 28 40 */	cmplw r8, r5
+/* 801C904C 0000013C  41 82 00 38 */	beq .L_801C9084
+/* 801C9050 00000140  3C A0 CC 01 */	lis r5, 0xcc01
+/* 801C9054 00000144  38 00 00 61 */	li r0, 0x61
+/* 801C9058 00000148  98 05 80 00 */	stb r0, -0x8000(r5)
+/* 801C905C 0000014C  38 03 FF FE */	subi r0, r3, 0x2
+/* 801C9060 00000150  7C 04 00 34 */	cntlzw r4, r0
+/* 801C9064 00000154  80 09 02 2C */	lwz r0, 0x22c(r9)
+/* 801C9068 00000158  90 05 80 00 */	stw r0, -0x8000(r5)
+/* 801C906C 0000015C  80 09 02 54 */	lwz r0, 0x254(r9)
+/* 801C9070 00000160  50 80 25 AC */	rlwimi r0, r4, 4, 22, 22
+/* 801C9074 00000164  90 09 02 54 */	stw r0, 0x254(r9)
+/* 801C9078 00000168  80 09 05 FC */	lwz r0, 0x5fc(r9)
+/* 801C907C 0000016C  60 00 00 04 */	ori r0, r0, 0x4
+/* 801C9080 00000170  90 09 05 FC */	stw r0, 0x5fc(r9)
+.L_801C9084:
+/* 801C9084 00000174  7C 06 38 2E */	lwzx r0, r6, r7
+/* 801C9088 00000178  28 00 00 04 */	cmplwi r0, 0x4
+/* 801C908C 0000017C  40 82 00 30 */	bne .L_801C90BC
+/* 801C9090 00000180  38 03 FF FC */	subi r0, r3, 0x4
+/* 801C9094 00000184  80 89 02 24 */	lwz r4, 0x224(r9)
+/* 801C9098 00000188  50 04 4D 6C */	rlwimi r4, r0, 9, 21, 22
+/* 801C909C 0000018C  3C 60 CC 01 */	lis r3, 0xcc01
+/* 801C90A0 00000190  38 00 00 42 */	li r0, 0x42
+/* 801C90A4 00000194  50 04 C0 0E */	rlwimi r4, r0, 24, 0, 7
+/* 801C90A8 00000198  90 89 02 24 */	stw r4, 0x224(r9)
+/* 801C90AC 0000019C  38 00 00 61 */	li r0, 0x61
+/* 801C90B0 000001A0  98 03 80 00 */	stb r0, -0x8000(r3)
+/* 801C90B4 000001A4  80 09 02 24 */	lwz r0, 0x224(r9)
+/* 801C90B8 000001A8  90 03 80 00 */	stw r0, -0x8000(r3)
+.L_801C90BC:
+/* 801C90BC 000001AC  38 00 00 00 */	li r0, 0x0
+/* 801C90C0 000001B0  B0 09 00 02 */	sth r0, 0x2(r9)
+/* 801C90C4 000001B4  4E 80 00 20 */	blr
+.endfn GXSetPixelFmt
+
+# .text:0x178 | 0x801C90C8 | size: 0x8
+.fn gap_03_801C90C8_text, global
+.hidden gap_03_801C90C8_text
+/* 801C90C8 000001B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801C90CC 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801C90C8_text
+
+# .text:0x180 | 0x801C90D0 | size: 0x2C
+.fn GXSetDither, global
+/* 801C90D0 000001C0  80 E0 00 00 */	lwz r7, __GXData@sda21(r0)
+/* 801C90D4 000001C4  3C 80 CC 01 */	lis r4, 0xcc01
+/* 801C90D8 000001C8  38 A0 00 61 */	li r5, 0x61
+/* 801C90DC 000001CC  38 00 00 00 */	li r0, 0x0
+/* 801C90E0 000001D0  80 C7 02 20 */	lwz r6, 0x220(r7)
+/* 801C90E4 000001D4  50 66 17 7A */	rlwimi r6, r3, 2, 29, 29
+/* 801C90E8 000001D8  98 A4 80 00 */	stb r5, -0x8000(r4)
+/* 801C90EC 000001DC  90 C4 80 00 */	stw r6, -0x8000(r4)
+/* 801C90F0 000001E0  90 C7 02 20 */	stw r6, 0x220(r7)
+/* 801C90F4 000001E4  B0 07 00 02 */	sth r0, 0x2(r7)
+/* 801C90F8 000001E8  4E 80 00 20 */	blr
+.endfn GXSetDither
+
+# .text:0x1AC | 0x801C90FC | size: 0x4
+.fn gap_03_801C90FC_text, global
+.hidden gap_03_801C90FC_text
+/* 801C90FC 000001EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801C90FC_text
+
+# .text:0x1B0 | 0x801C9100 | size: 0x30
+.fn GXSetDstAlpha, global
+/* 801C9100 000001F0  81 00 00 00 */	lwz r8, __GXData@sda21(r0)
+/* 801C9104 000001F4  3C A0 CC 01 */	lis r5, 0xcc01
+/* 801C9108 000001F8  38 C0 00 61 */	li r6, 0x61
+/* 801C910C 000001FC  38 00 00 00 */	li r0, 0x0
+/* 801C9110 00000200  80 E8 02 24 */	lwz r7, 0x224(r8)
+/* 801C9114 00000204  50 87 06 3E */	rlwimi r7, r4, 0, 24, 31
+/* 801C9118 00000208  50 67 45 EE */	rlwimi r7, r3, 8, 23, 23
+/* 801C911C 0000020C  98 C5 80 00 */	stb r6, -0x8000(r5)
+/* 801C9120 00000210  90 E5 80 00 */	stw r7, -0x8000(r5)
+/* 801C9124 00000214  90 E8 02 24 */	stw r7, 0x224(r8)
+/* 801C9128 00000218  B0 08 00 02 */	sth r0, 0x2(r8)
+/* 801C912C 0000021C  4E 80 00 20 */	blr
+.endfn GXSetDstAlpha
+
+# .text:0x1E0 | 0x801C9130 | size: 0x34
+.fn GXSetFieldMask, global
+/* 801C9130 00000220  3C A0 CC 01 */	lis r5, 0xcc01
+/* 801C9134 00000224  38 00 00 61 */	li r0, 0x61
+/* 801C9138 00000228  98 05 80 00 */	stb r0, -0x8000(r5)
+/* 801C913C 0000022C  38 C0 00 00 */	li r6, 0x0
+/* 801C9140 00000230  38 00 00 44 */	li r0, 0x44
+/* 801C9144 00000234  50 86 07 FE */	rlwimi r6, r4, 0, 31, 31
+/* 801C9148 00000238  50 66 0F BC */	rlwimi r6, r3, 1, 30, 30
+/* 801C914C 0000023C  80 60 00 00 */	lwz r3, __GXData@sda21(r0)
+/* 801C9150 00000240  50 06 C0 0E */	rlwimi r6, r0, 24, 0, 7
+/* 801C9154 00000244  90 C5 80 00 */	stw r6, -0x8000(r5)
+/* 801C9158 00000248  38 00 00 00 */	li r0, 0x0
+/* 801C915C 0000024C  B0 03 00 02 */	sth r0, 0x2(r3)
+/* 801C9160 00000250  4E 80 00 20 */	blr
+.endfn GXSetFieldMask
+
+# .text:0x214 | 0x801C9164 | size: 0xC
+.fn gap_03_801C9164_text, global
+.hidden gap_03_801C9164_text
+/* 801C9164 00000254  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801C9168 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801C916C 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801C9164_text
+
+# .text:0x220 | 0x801C9170 | size: 0x70
+.fn GXSetFieldMode, global
+/* 801C9170 00000260  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801C9174 00000264  7C 08 02 A6 */	mflr r0
+/* 801C9178 00000268  80 A0 00 00 */	lwz r5, __GXData@sda21(r0)
+/* 801C917C 0000026C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801C9180 00000270  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 801C9184 00000274  3F E0 CC 01 */	lis r31, 0xcc01
+/* 801C9188 00000278  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 801C918C 0000027C  3B C0 00 61 */	li r30, 0x61
+/* 801C9190 00000280  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 801C9194 00000284  7C 7D 1B 78 */	mr r29, r3
+/* 801C9198 00000288  80 05 00 7C */	lwz r0, 0x7c(r5)
+/* 801C919C 0000028C  50 80 B2 52 */	rlwimi r0, r4, 22, 9, 9
+/* 801C91A0 00000290  90 05 00 7C */	stw r0, 0x7c(r5)
+/* 801C91A4 00000294  9B DF 80 00 */	stb r30, -0x8000(r31)
+/* 801C91A8 00000298  80 05 00 7C */	lwz r0, 0x7c(r5)
+/* 801C91AC 0000029C  90 1F 80 00 */	stw r0, -0x8000(r31)
+/* 801C91B0 000002A0  48 00 00 01 */	bl __GXFlushTextureState
+/* 801C91B4 000002A4  9B DF 80 00 */	stb r30, -0x8000(r31)
+/* 801C91B8 000002A8  67 A0 68 00 */	oris r0, r29, 0x6800
+/* 801C91BC 000002AC  90 1F 80 00 */	stw r0, -0x8000(r31)
+/* 801C91C0 000002B0  48 00 00 01 */	bl __GXFlushTextureState
+/* 801C91C4 000002B4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801C91C8 000002B8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 801C91CC 000002BC  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 801C91D0 000002C0  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 801C91D4 000002C4  7C 08 03 A6 */	mtlr r0
+/* 801C91D8 000002C8  38 21 00 20 */	addi r1, r1, 0x20
+/* 801C91DC 000002CC  4E 80 00 20 */	blr
+.endfn GXSetFieldMode
+
+# 0x803417B8..0x803417D8 | size: 0x20
+.data
+.balign 8
+
+# .data:0x0 | 0x803417B8 | size: 0x20
+# GXSetPixelFmt(_GXPixelFmt, _GXZFmt16)::p2f
+.obj "@LOCAL@GXSetPixelFmt__F11_GXPixelFmt9_GXZFmt16@p2f", weak
+	.4byte 0x00000000
+	.4byte 0x00000001
+	.4byte 0x00000002
+	.4byte 0x00000003
+	.4byte 0x00000004
+	.4byte 0x00000004
+	.4byte 0x00000004
+	.4byte 0x00000005
+.endobj "@LOCAL@GXSetPixelFmt__F11_GXPixelFmt9_GXZFmt16@p2f"

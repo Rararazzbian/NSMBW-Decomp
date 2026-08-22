@@ -1,0 +1,22 @@
+.include "macros.inc"
+.file "auto_10_80429F08_sbss"
+
+# 0x80429F08..0x80429F10 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x80429F08 | size: 0x2
+.obj lbl_80429F08, global
+	.skip 0x2
+.endobj lbl_80429F08
+
+# .sbss:0x2 | 0x80429F0A | size: 0x1
+.obj lbl_80429F0A, global
+	.skip 0x1
+.endobj lbl_80429F0A
+
+# .sbss:0x3 | 0x80429F0B | size: 0x5
+.obj gap_10_80429F0B_sbss, global
+.hidden gap_10_80429F0B_sbss
+	.skip 0x5
+.endobj gap_10_80429F0B_sbss

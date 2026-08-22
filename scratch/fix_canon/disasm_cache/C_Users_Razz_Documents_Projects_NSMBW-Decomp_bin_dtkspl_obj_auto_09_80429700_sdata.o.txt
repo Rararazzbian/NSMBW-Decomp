@@ -1,0 +1,17 @@
+.include "macros.inc"
+.file "auto_09_80429700_sdata"
+
+# 0x80429700..0x80429708 | size: 0x8
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80429700 | size: 0x4
+.obj lbl_80429700, global
+	.4byte vprintf
+.endobj lbl_80429700
+
+# .sdata:0x4 | 0x80429704 | size: 0x4
+.obj gap_09_80429704_sdata, global
+.hidden gap_09_80429704_sdata
+	.4byte 0x00000000
+.endobj gap_09_80429704_sdata

@@ -1,0 +1,141 @@
+.include "macros.inc"
+.file "auto_03_80123270_text"
+
+# 0x80123270..0x801233F0 | size: 0x180
+.text
+.balign 4
+
+# .text:0x0 | 0x80123270 | size: 0x58
+# sFStateID_c<daIce_c>::~sFStateID_c()
+.fn "__dt__21sFStateID_c<7daIce_c>Fv", global
+/* 80123270 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80123274 00000044  7C 08 02 A6 */	mflr r0
+/* 80123278 00000048  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8012327C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80123280 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80123284 00000054  7C 9F 23 78 */	mr r31, r4
+/* 80123288 00000058  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8012328C 0000005C  7C 7E 1B 78 */	mr r30, r3
+/* 80123290 00000060  41 82 00 1C */	beq .L_801232AC
+/* 80123294 00000064  38 80 00 00 */	li r4, 0x0
+/* 80123298 00000068  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 8012329C 0000006C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 801232A0 00000070  40 81 00 0C */	ble .L_801232AC
+/* 801232A4 00000074  7F C3 F3 78 */	mr r3, r30
+/* 801232A8 00000078  48 00 00 01 */	bl __dl__FPv
+.L_801232AC:
+/* 801232AC 0000007C  7F C3 F3 78 */	mr r3, r30
+/* 801232B0 00000080  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801232B4 00000084  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 801232B8 00000088  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801232BC 0000008C  7C 08 03 A6 */	mtlr r0
+/* 801232C0 00000090  38 21 00 10 */	addi r1, r1, 0x10
+/* 801232C4 00000094  4E 80 00 20 */	blr
+.endfn "__dt__21sFStateID_c<7daIce_c>Fv"
+
+# .text:0x58 | 0x801232C8 | size: 0x8
+.fn gap_03_801232C8_text, global
+.hidden gap_03_801232C8_text
+/* 801232C8 00000098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801232CC 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801232C8_text
+
+# .text:0x60 | 0x801232D0 | size: 0x88
+# sFStateID_c<daIce_c>::isSameName(const char*) const
+.fn "isSameName__21sFStateID_c<7daIce_c>CFPCc", global
+/* 801232D0 000000A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801232D4 000000A4  7C 08 02 A6 */	mflr r0
+/* 801232D8 000000A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801232DC 000000AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801232E0 000000B0  7C 9F 23 78 */	mr r31, r4
+/* 801232E4 000000B4  38 80 00 3A */	li r4, 0x3a
+/* 801232E8 000000B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 801232EC 000000BC  7C 7E 1B 78 */	mr r30, r3
+/* 801232F0 000000C0  7F E3 FB 78 */	mr r3, r31
+/* 801232F4 000000C4  48 00 00 01 */	bl strrchr
+/* 801232F8 000000C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801232FC 000000CC  41 82 00 08 */	beq .L_80123304
+/* 80123300 000000D0  3B E3 00 01 */	addi r31, r3, 0x1
+.L_80123304:
+/* 80123304 000000D4  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80123308 000000D8  7F C3 F3 78 */	mr r3, r30
+/* 8012330C 000000DC  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80123310 000000E0  7D 89 03 A6 */	mtctr r12
+/* 80123314 000000E4  4E 80 04 21 */	bctrl
+/* 80123318 000000E8  38 80 00 3A */	li r4, 0x3a
+/* 8012331C 000000EC  48 00 00 01 */	bl strrchr
+/* 80123320 000000F0  7F E4 FB 78 */	mr r4, r31
+/* 80123324 000000F4  38 63 00 01 */	addi r3, r3, 0x1
+/* 80123328 000000F8  48 00 00 01 */	bl strcmp
+/* 8012332C 000000FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80123330 00000100  40 82 00 0C */	bne .L_8012333C
+/* 80123334 00000104  38 60 00 01 */	li r3, 0x1
+/* 80123338 00000108  48 00 00 08 */	b .L_80123340
+.L_8012333C:
+/* 8012333C 0000010C  38 60 00 00 */	li r3, 0x0
+.L_80123340:
+/* 80123340 00000110  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80123344 00000114  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80123348 00000118  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8012334C 0000011C  7C 08 03 A6 */	mtlr r0
+/* 80123350 00000120  38 21 00 10 */	addi r1, r1, 0x10
+/* 80123354 00000124  4E 80 00 20 */	blr
+.endfn "isSameName__21sFStateID_c<7daIce_c>CFPCc"
+
+# .text:0xE8 | 0x80123358 | size: 0x8
+.fn gap_03_80123358_text, global
+.hidden gap_03_80123358_text
+/* 80123358 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8012335C 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80123358_text
+
+# .text:0xF0 | 0x80123360 | size: 0x30
+# sFStateID_c<daIce_c>::initializeState(daIce_c&) const
+.fn "initializeState__21sFStateID_c<7daIce_c>CFR7daIce_c", global
+/* 80123360 00000130  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80123364 00000134  7C 08 02 A6 */	mflr r0
+/* 80123368 00000138  7C 65 1B 78 */	mr r5, r3
+/* 8012336C 0000013C  7C 83 23 78 */	mr r3, r4
+/* 80123370 00000140  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80123374 00000144  39 85 00 0C */	addi r12, r5, 0xc
+/* 80123378 00000148  48 00 00 01 */	bl __ptmf_scall
+/* 8012337C 0000014C  60 00 00 00 */	nop
+/* 80123380 00000150  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80123384 00000154  7C 08 03 A6 */	mtlr r0
+/* 80123388 00000158  38 21 00 10 */	addi r1, r1, 0x10
+/* 8012338C 0000015C  4E 80 00 20 */	blr
+.endfn "initializeState__21sFStateID_c<7daIce_c>CFR7daIce_c"
+
+# .text:0x120 | 0x80123390 | size: 0x30
+# sFStateID_c<daIce_c>::executeState(daIce_c&) const
+.fn "executeState__21sFStateID_c<7daIce_c>CFR7daIce_c", global
+/* 80123390 00000160  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80123394 00000164  7C 08 02 A6 */	mflr r0
+/* 80123398 00000168  7C 65 1B 78 */	mr r5, r3
+/* 8012339C 0000016C  7C 83 23 78 */	mr r3, r4
+/* 801233A0 00000170  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801233A4 00000174  39 85 00 18 */	addi r12, r5, 0x18
+/* 801233A8 00000178  48 00 00 01 */	bl __ptmf_scall
+/* 801233AC 0000017C  60 00 00 00 */	nop
+/* 801233B0 00000180  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801233B4 00000184  7C 08 03 A6 */	mtlr r0
+/* 801233B8 00000188  38 21 00 10 */	addi r1, r1, 0x10
+/* 801233BC 0000018C  4E 80 00 20 */	blr
+.endfn "executeState__21sFStateID_c<7daIce_c>CFR7daIce_c"
+
+# .text:0x150 | 0x801233C0 | size: 0x30
+# sFStateID_c<daIce_c>::finalizeState(daIce_c&) const
+.fn "finalizeState__21sFStateID_c<7daIce_c>CFR7daIce_c", global
+/* 801233C0 00000190  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801233C4 00000194  7C 08 02 A6 */	mflr r0
+/* 801233C8 00000198  7C 65 1B 78 */	mr r5, r3
+/* 801233CC 0000019C  7C 83 23 78 */	mr r3, r4
+/* 801233D0 000001A0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801233D4 000001A4  39 85 00 24 */	addi r12, r5, 0x24
+/* 801233D8 000001A8  48 00 00 01 */	bl __ptmf_scall
+/* 801233DC 000001AC  60 00 00 00 */	nop
+/* 801233E0 000001B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801233E4 000001B4  7C 08 03 A6 */	mtlr r0
+/* 801233E8 000001B8  38 21 00 10 */	addi r1, r1, 0x10
+/* 801233EC 000001BC  4E 80 00 20 */	blr
+.endfn "finalizeState__21sFStateID_c<7daIce_c>CFR7daIce_c"

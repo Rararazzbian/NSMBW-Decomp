@@ -1,0 +1,16 @@
+.include "macros.inc"
+.file "auto_sinit__d_bc_cpp_text"
+
+# 0x80076BB0..0x80076BB4 | size: 0x4
+.text
+.balign 4
+
+# .text:0x0 | 0x80076BB0 | size: 0x4
+.fn "__sinit_\d_bc_cpp", global
+/* 80076BB0 00000040  4E 80 00 20 */	blr
+.endfn "__sinit_\d_bc_cpp"
+
+# 0x802EDD8C..0x802EDD90 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_bc_cpp"

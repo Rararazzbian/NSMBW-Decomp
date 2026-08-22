@@ -1,0 +1,618 @@
+.include "macros.inc"
+.file "d_dylink.cpp"
+
+# 0x8008F460..0x8008F920 | size: 0x4C0
+.text
+.balign 4
+
+# .text:0x0 | 0x8008F460 | size: 0x198
+# dDyl::Init(int, const sDynNameTableEntry*, int, EGG::Heap*)
+.fn Init__4dDylFiPC18sDynNameTableEntryiPQ23EGG4Heap, global
+/* 8008F460 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8008F464 00000044  7C 08 02 A6 */	mflr r0
+/* 8008F468 00000048  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8008F46C 0000004C  39 61 00 20 */	addi r11, r1, 0x20
+/* 8008F470 00000050  48 00 00 01 */	bl _savegpr_26
+/* 8008F474 00000054  1C 05 00 48 */	mulli r0, r5, 0x48
+/* 8008F478 00000058  7C 9B 23 78 */	mr r27, r4
+/* 8008F47C 0000005C  7C C4 33 78 */	mr r4, r6
+/* 8008F480 00000060  54 67 20 36 */	slwi r7, r3, 4
+/* 8008F484 00000064  7C 7C 1B 78 */	mr r28, r3
+/* 8008F488 00000068  3C C0 00 00 */	lis r6, "@3869"@ha
+/* 8008F48C 0000006C  7C BA 2B 78 */	mr r26, r5
+/* 8008F490 00000070  7C 67 02 14 */	add r3, r7, r0
+/* 8008F494 00000074  38 A6 00 00 */	addi r5, r6, "@3869"@l
+/* 8008F498 00000078  38 C0 00 20 */	li r6, 0x20
+/* 8008F49C 0000007C  38 E0 00 00 */	li r7, 0x0
+/* 8008F4A0 00000080  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 8008F4A4 00000084  90 60 00 00 */	stw r3, cCc_frmHeap__4dDyl@sda21(r0)
+/* 8008F4A8 00000088  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 8008F4AC 0000008C  93 80 00 00 */	stw r28, nDMC__4dDyl@sda21(r0)
+/* 8008F4B0 00000090  7C 7E 1B 78 */	mr r30, r3
+/* 8008F4B4 00000094  57 83 10 3A */	slwi r3, r28, 2
+/* 8008F4B8 00000098  48 00 00 01 */	bl __nwa__FUl
+/* 8008F4BC 0000009C  80 00 00 00 */	lwz r0, nDMC__4dDyl@sda21(r0)
+/* 8008F4C0 000000A0  38 80 00 00 */	li r4, 0x0
+/* 8008F4C4 000000A4  90 60 00 00 */	stw r3, pDMC__4dDyl@sda21(r0)
+/* 8008F4C8 000000A8  54 05 10 3A */	slwi r5, r0, 2
+/* 8008F4CC 000000AC  48 00 00 01 */	bl memset
+/* 8008F4D0 000000B0  93 60 00 00 */	stw r27, pDynamicNameTable@sda21(r0)
+/* 8008F4D4 000000B4  3B A0 00 00 */	li r29, 0x0
+/* 8008F4D8 000000B8  3B E0 00 00 */	li r31, 0x0
+/* 8008F4DC 000000BC  93 40 00 00 */	stw r26, nDynamicNameTable@sda21(r0)
+/* 8008F4E0 000000C0  48 00 00 D4 */	b .L_8008F5B4
+.L_8008F4E4:
+/* 8008F4E4 000000C4  80 00 00 00 */	lwz r0, pDynamicNameTable@sda21(r0)
+/* 8008F4E8 000000C8  7F 60 FA 14 */	add r27, r0, r31
+/* 8008F4EC 000000CC  80 1B 00 04 */	lwz r0, 0x4(r27)
+/* 8008F4F0 000000D0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8008F4F4 000000D4  41 82 00 B8 */	beq .L_8008F5AC
+/* 8008F4F8 000000D8  3B 40 00 00 */	li r26, 0x0
+/* 8008F4FC 000000DC  3B 80 00 00 */	li r28, 0x0
+/* 8008F500 000000E0  48 00 00 5C */	b .L_8008F55C
+.L_8008F504:
+/* 8008F504 000000E4  80 60 00 00 */	lwz r3, pDMC__4dDyl@sda21(r0)
+/* 8008F508 000000E8  7C 63 E0 2E */	lwzx r3, r3, r28
+/* 8008F50C 000000EC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F510 000000F0  41 82 00 44 */	beq .L_8008F554
+/* 8008F514 000000F4  81 83 00 0C */	lwz r12, 0xc(r3)
+/* 8008F518 000000F8  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8008F51C 000000FC  7D 89 03 A6 */	mtctr r12
+/* 8008F520 00000100  4E 80 04 21 */	bctrl
+/* 8008F524 00000104  7C 64 1B 78 */	mr r4, r3
+/* 8008F528 00000108  80 7B 00 04 */	lwz r3, 0x4(r27)
+/* 8008F52C 0000010C  48 00 00 01 */	bl strcmp
+/* 8008F530 00000110  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F534 00000114  40 82 00 20 */	bne .L_8008F554
+/* 8008F538 00000118  A0 1B 00 00 */	lhz r0, 0x0(r27)
+/* 8008F53C 0000011C  57 43 10 3A */	slwi r3, r26, 2
+/* 8008F540 00000120  80 80 00 00 */	lwz r4, pDMC__4dDyl@sda21(r0)
+/* 8008F544 00000124  54 00 10 3A */	slwi r0, r0, 2
+/* 8008F548 00000128  7C 64 18 2E */	lwzx r3, r4, r3
+/* 8008F54C 0000012C  7C 64 01 2E */	stwx r3, r4, r0
+/* 8008F550 00000130  48 00 00 18 */	b .L_8008F568
+.L_8008F554:
+/* 8008F554 00000134  3B 9C 00 04 */	addi r28, r28, 0x4
+/* 8008F558 00000138  3B 5A 00 01 */	addi r26, r26, 0x1
+.L_8008F55C:
+/* 8008F55C 0000013C  80 00 00 00 */	lwz r0, nDMC__4dDyl@sda21(r0)
+/* 8008F560 00000140  7C 1A 00 00 */	cmpw r26, r0
+/* 8008F564 00000144  41 80 FF A0 */	blt .L_8008F504
+.L_8008F568:
+/* 8008F568 00000148  A0 1B 00 00 */	lhz r0, 0x0(r27)
+/* 8008F56C 0000014C  80 60 00 00 */	lwz r3, pDMC__4dDyl@sda21(r0)
+/* 8008F570 00000150  54 00 10 3A */	slwi r0, r0, 2
+/* 8008F574 00000154  7C 03 00 2E */	lwzx r0, r3, r0
+/* 8008F578 00000158  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8008F57C 0000015C  40 82 00 30 */	bne .L_8008F5AC
+/* 8008F580 00000160  38 60 00 48 */	li r3, 0x48
+/* 8008F584 00000164  48 00 00 01 */	bl __nw__FUl
+/* 8008F588 00000168  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F58C 0000016C  41 82 00 10 */	beq .L_8008F59C
+/* 8008F590 00000170  80 9B 00 04 */	lwz r4, 0x4(r27)
+/* 8008F594 00000174  38 A0 00 00 */	li r5, 0x0
+/* 8008F598 00000178  48 00 00 01 */	bl __ct__20DynamicModuleControlFPCcPQ23EGG7ExpHeap
+.L_8008F59C:
+/* 8008F59C 0000017C  A0 1B 00 00 */	lhz r0, 0x0(r27)
+/* 8008F5A0 00000180  80 80 00 00 */	lwz r4, pDMC__4dDyl@sda21(r0)
+/* 8008F5A4 00000184  54 00 10 3A */	slwi r0, r0, 2
+/* 8008F5A8 00000188  7C 64 01 2E */	stwx r3, r4, r0
+.L_8008F5AC:
+/* 8008F5AC 0000018C  3B FF 00 08 */	addi r31, r31, 0x8
+/* 8008F5B0 00000190  3B BD 00 01 */	addi r29, r29, 0x1
+.L_8008F5B4:
+/* 8008F5B4 00000194  80 00 00 00 */	lwz r0, nDynamicNameTable@sda21(r0)
+/* 8008F5B8 00000198  7C 1D 00 00 */	cmpw r29, r0
+/* 8008F5BC 0000019C  41 80 FF 28 */	blt .L_8008F4E4
+/* 8008F5C0 000001A0  80 60 00 00 */	lwz r3, cCc_frmHeap__4dDyl@sda21(r0)
+/* 8008F5C4 000001A4  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8008F5C8 000001A8  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 8008F5CC 000001AC  7D 89 03 A6 */	mtctr r12
+/* 8008F5D0 000001B0  4E 80 04 21 */	bctrl
+/* 8008F5D4 000001B4  7F C3 F3 78 */	mr r3, r30
+/* 8008F5D8 000001B8  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 8008F5DC 000001BC  39 61 00 20 */	addi r11, r1, 0x20
+/* 8008F5E0 000001C0  38 60 00 01 */	li r3, 0x1
+/* 8008F5E4 000001C4  48 00 00 01 */	bl _restgpr_26
+/* 8008F5E8 000001C8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8008F5EC 000001CC  7C 08 03 A6 */	mtlr r0
+/* 8008F5F0 000001D0  38 21 00 20 */	addi r1, r1, 0x20
+/* 8008F5F4 000001D4  4E 80 00 20 */	blr
+.endfn Init__4dDylFiPC18sDynNameTableEntryiPQ23EGG4Heap
+
+# .text:0x198 | 0x8008F5F8 | size: 0x8
+.fn gap_03_8008F5F8_text, global
+.hidden gap_03_8008F5F8_text
+/* 8008F5F8 000001D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F5FC 000001DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F5F8_text
+
+# .text:0x1A0 | 0x8008F600 | size: 0x8
+# DynamicModuleControlBase::getModuleName() const
+.fn getModuleName__24DynamicModuleControlBaseCFv, weak
+/* 8008F600 000001E0  38 60 00 00 */	li r3, 0x0
+/* 8008F604 000001E4  4E 80 00 20 */	blr
+.endfn getModuleName__24DynamicModuleControlBaseCFv
+
+# .text:0x1A8 | 0x8008F608 | size: 0x8
+.fn gap_03_8008F608_text, global
+.hidden gap_03_8008F608_text
+/* 8008F608 000001E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F60C 000001EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F608_text
+
+# .text:0x1B0 | 0x8008F610 | size: 0x8
+# dDyl::Unlink(unsigned short)
+.fn Unlink__4dDylFUs, global
+/* 8008F610 000001F0  38 60 00 01 */	li r3, 0x1
+/* 8008F614 000001F4  4E 80 00 20 */	blr
+.endfn Unlink__4dDylFUs
+
+# .text:0x1B8 | 0x8008F618 | size: 0x8
+.fn gap_03_8008F618_text, global
+.hidden gap_03_8008F618_text
+/* 8008F618 000001F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F61C 000001FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F618_text
+
+# .text:0x1C0 | 0x8008F620 | size: 0x14
+# dDyl::LinkASync(unsigned short)
+.fn LinkASync__4dDylFUs, global
+/* 8008F620 00000200  80 60 00 00 */	lwz r3, Initialized__4dDyl@sda21(r0)
+/* 8008F624 00000204  7C 03 00 D0 */	neg r0, r3
+/* 8008F628 00000208  7C 00 1B 78 */	or r0, r0, r3
+/* 8008F62C 0000020C  54 03 0F FE */	srwi r3, r0, 31
+/* 8008F630 00000210  4E 80 00 20 */	blr
+.endfn LinkASync__4dDylFUs
+
+# .text:0x1D4 | 0x8008F634 | size: 0xC
+.fn gap_03_8008F634_text, global
+.hidden gap_03_8008F634_text
+/* 8008F634 00000214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F638 00000218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F63C 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F634_text
+
+# .text:0x1E0 | 0x8008F640 | size: 0x10C
+# DynamicModuleCallback::InitCallback(void*)
+.fn InitCallback__21DynamicModuleCallbackFPv, global
+/* 8008F640 00000220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8008F644 00000224  7C 08 02 A6 */	mflr r0
+/* 8008F648 00000228  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8008F64C 0000022C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8008F650 00000230  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8008F654 00000234  80 60 00 00 */	lwz r3, g_dylinkHeap__5mHeap@sda21(r0)
+/* 8008F658 00000238  48 00 00 01 */	bl initialize__20DynamicModuleControlFPQ23EGG7ExpHeap
+/* 8008F65C 0000023C  38 00 00 00 */	li r0, "@3888"@sda21
+/* 8008F660 00000240  90 00 00 00 */	stw r0, sModulesDir__20DynamicModuleControl@sda21(r0)
+/* 8008F664 00000244  80 60 00 00 */	lwz r3, sDvdFile__20DynamicModuleControl@sda21(r0)
+/* 8008F668 00000248  3C 80 00 00 */	lis r4, "@3889"@ha
+/* 8008F66C 0000024C  38 84 00 00 */	addi r4, r4, "@3889"@l
+/* 8008F670 00000250  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8008F674 00000254  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8008F678 00000258  7D 89 03 A6 */	mtctr r12
+/* 8008F67C 0000025C  4E 80 04 21 */	bctrl
+/* 8008F680 00000260  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F684 00000264  41 82 00 84 */	beq .L_8008F708
+/* 8008F688 00000268  80 60 00 00 */	lwz r3, sDvdFile__20DynamicModuleControl@sda21(r0)
+/* 8008F68C 0000026C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8008F690 00000270  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 8008F694 00000274  7D 89 03 A6 */	mtctr r12
+/* 8008F698 00000278  4E 80 04 21 */	bctrl
+/* 8008F69C 0000027C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F6A0 00000280  41 82 00 54 */	beq .L_8008F6F4
+/* 8008F6A4 00000284  38 03 00 1F */	addi r0, r3, 0x1f
+/* 8008F6A8 00000288  80 60 00 00 */	lwz r3, sDylinkHeap__20DynamicModuleControl@sda21(r0)
+/* 8008F6AC 0000028C  54 1F 00 34 */	clrrwi r31, r0, 5
+/* 8008F6B0 00000290  38 A0 00 20 */	li r5, 0x20
+/* 8008F6B4 00000294  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8008F6B8 00000298  7F E4 FB 78 */	mr r4, r31
+/* 8008F6BC 0000029C  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8008F6C0 000002A0  7D 89 03 A6 */	mtctr r12
+/* 8008F6C4 000002A4  4E 80 04 21 */	bctrl
+/* 8008F6C8 000002A8  7C 7E 1B 78 */	mr r30, r3
+/* 8008F6CC 000002AC  80 60 00 00 */	lwz r3, sDvdFile__20DynamicModuleControl@sda21(r0)
+/* 8008F6D0 000002B0  7F C4 F3 78 */	mr r4, r30
+/* 8008F6D4 000002B4  7F E5 FB 78 */	mr r5, r31
+/* 8008F6D8 000002B8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8008F6DC 000002BC  38 C0 00 00 */	li r6, 0x0
+/* 8008F6E0 000002C0  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8008F6E4 000002C4  7D 89 03 A6 */	mtctr r12
+/* 8008F6E8 000002C8  4E 80 04 21 */	bctrl
+/* 8008F6EC 000002CC  7F C3 F3 78 */	mr r3, r30
+/* 8008F6F0 000002D0  48 00 00 01 */	bl OSSetStringTable
+.L_8008F6F4:
+/* 8008F6F4 000002D4  80 60 00 00 */	lwz r3, sDvdFile__20DynamicModuleControl@sda21(r0)
+/* 8008F6F8 000002D8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8008F6FC 000002DC  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8008F700 000002E0  7D 89 03 A6 */	mtctr r12
+/* 8008F704 000002E4  4E 80 04 21 */	bctrl
+.L_8008F708:
+/* 8008F708 000002E8  3C 60 00 00 */	lis r3, s_ProfileDMC@ha
+/* 8008F70C 000002EC  38 63 00 00 */	addi r3, r3, s_ProfileDMC@l
+/* 8008F710 000002F0  48 00 00 01 */	bl link__24DynamicModuleControlBaseFv
+/* 8008F714 000002F4  7C 60 00 34 */	cntlzw r0, r3
+/* 8008F718 000002F8  54 00 D9 7E */	srwi r0, r0, 5
+/* 8008F71C 000002FC  60 00 00 00 */	nop
+.L_8008F720:
+/* 8008F720 00000300  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8008F724 00000304  40 82 FF FC */	bne .L_8008F720
+/* 8008F728 00000308  38 00 00 01 */	li r0, 0x1
+/* 8008F72C 0000030C  90 00 00 00 */	stw r0, Initialized__4dDyl@sda21(r0)
+/* 8008F730 00000310  38 60 00 01 */	li r3, 0x1
+/* 8008F734 00000314  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8008F738 00000318  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8008F73C 0000031C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8008F740 00000320  7C 08 03 A6 */	mtlr r0
+/* 8008F744 00000324  38 21 00 10 */	addi r1, r1, 0x10
+/* 8008F748 00000328  4E 80 00 20 */	blr
+.endfn InitCallback__21DynamicModuleCallbackFPv
+
+# .text:0x2EC | 0x8008F74C | size: 0x4
+.fn gap_03_8008F74C_text, global
+.hidden gap_03_8008F74C_text
+/* 8008F74C 0000032C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F74C_text
+
+# .text:0x2F0 | 0x8008F750 | size: 0x8
+# EGG::DvdFile::getFileSize() const
+.fn getFileSize__Q23EGG7DvdFileCFv, weak
+/* 8008F750 00000330  80 63 00 70 */	lwz r3, 0x70(r3)
+/* 8008F754 00000334  4E 80 00 20 */	blr
+.endfn getFileSize__Q23EGG7DvdFileCFv
+
+# .text:0x2F8 | 0x8008F758 | size: 0x8
+.fn gap_03_8008F758_text, global
+.hidden gap_03_8008F758_text
+/* 8008F758 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F75C 0000033C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F758_text
+
+# .text:0x300 | 0x8008F760 | size: 0x44
+# dDyl::InitAsync()
+.fn InitAsync__4dDylFv, global
+/* 8008F760 00000340  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8008F764 00000344  7C 08 02 A6 */	mflr r0
+/* 8008F768 00000348  38 60 02 EE */	li r3, 0x2ee
+/* 8008F76C 0000034C  38 80 00 00 */	li r4, DynamicNameTable@sda21
+/* 8008F770 00000350  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8008F774 00000354  38 A0 00 01 */	li r5, 0x1
+/* 8008F778 00000358  80 C0 00 00 */	lwz r6, g_dylinkHeap__5mHeap@sda21(r0)
+/* 8008F77C 0000035C  48 00 00 01 */	bl Init__4dDylFiPC18sDynNameTableEntryiPQ23EGG4Heap
+/* 8008F780 00000360  3C 60 00 00 */	lis r3, InitCallback__21DynamicModuleCallbackFPv@ha
+/* 8008F784 00000364  80 80 00 00 */	lwz r4, g_dylinkHeap__5mHeap@sda21(r0)
+/* 8008F788 00000368  38 63 00 00 */	addi r3, r3, InitCallback__21DynamicModuleCallbackFPv@l
+/* 8008F78C 0000036C  48 00 00 01 */	bl create__15mDvd_callback_cFPFPv_PvPv
+/* 8008F790 00000370  90 60 00 00 */	stw r3, DVD__4dDyl@sda21(r0)
+/* 8008F794 00000374  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8008F798 00000378  7C 08 03 A6 */	mtlr r0
+/* 8008F79C 0000037C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8008F7A0 00000380  4E 80 00 20 */	blr
+.endfn InitAsync__4dDylFv
+
+# .text:0x344 | 0x8008F7A4 | size: 0xC
+.fn gap_03_8008F7A4_text, global
+.hidden gap_03_8008F7A4_text
+/* 8008F7A4 00000384  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F7A8 00000388  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F7AC 0000038C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F7A4_text
+
+# .text:0x350 | 0x8008F7B0 | size: 0x54
+# dDyl::InitAsyncIsDone()
+.fn InitAsyncIsDone__4dDylFv, global
+/* 8008F7B0 00000390  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8008F7B4 00000394  7C 08 02 A6 */	mflr r0
+/* 8008F7B8 00000398  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8008F7BC 0000039C  80 60 00 00 */	lwz r3, DVD__4dDyl@sda21(r0)
+/* 8008F7C0 000003A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F7C4 000003A4  40 82 00 0C */	bne .L_8008F7D0
+/* 8008F7C8 000003A8  38 60 00 01 */	li r3, 0x1
+/* 8008F7CC 000003AC  48 00 00 28 */	b .L_8008F7F4
+.L_8008F7D0:
+/* 8008F7D0 000003B0  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 8008F7D4 000003B4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8008F7D8 000003B8  41 82 00 18 */	beq .L_8008F7F0
+/* 8008F7DC 000003BC  48 00 00 01 */	bl destroy__14mDvd_command_cFv
+/* 8008F7E0 000003C0  38 00 00 00 */	li r0, 0x0
+/* 8008F7E4 000003C4  90 00 00 00 */	stw r0, DVD__4dDyl@sda21(r0)
+/* 8008F7E8 000003C8  38 60 00 01 */	li r3, 0x1
+/* 8008F7EC 000003CC  48 00 00 08 */	b .L_8008F7F4
+.L_8008F7F0:
+/* 8008F7F0 000003D0  38 60 00 00 */	li r3, 0x0
+.L_8008F7F4:
+/* 8008F7F4 000003D4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8008F7F8 000003D8  7C 08 03 A6 */	mtlr r0
+/* 8008F7FC 000003DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8008F800 000003E0  4E 80 00 20 */	blr
+.endfn InitAsyncIsDone__4dDylFv
+
+# .text:0x3A4 | 0x8008F804 | size: 0xC
+.fn gap_03_8008F804_text, global
+.hidden gap_03_8008F804_text
+/* 8008F804 000003E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F808 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F80C 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F804_text
+
+# .text:0x3B0 | 0x8008F810 | size: 0x58
+# dDynamicModuleControl::~dDynamicModuleControl()
+.fn __dt__21dDynamicModuleControlFv, global
+/* 8008F810 000003F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8008F814 000003F4  7C 08 02 A6 */	mflr r0
+/* 8008F818 000003F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8008F81C 000003FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8008F820 00000400  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8008F824 00000404  7C 9F 23 78 */	mr r31, r4
+/* 8008F828 00000408  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8008F82C 0000040C  7C 7E 1B 78 */	mr r30, r3
+/* 8008F830 00000410  41 82 00 1C */	beq .L_8008F84C
+/* 8008F834 00000414  38 80 00 00 */	li r4, 0x0
+/* 8008F838 00000418  48 00 00 01 */	bl __dt__20DynamicModuleControlFv
+/* 8008F83C 0000041C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8008F840 00000420  40 81 00 0C */	ble .L_8008F84C
+/* 8008F844 00000424  7F C3 F3 78 */	mr r3, r30
+/* 8008F848 00000428  48 00 00 01 */	bl __dl__FPv
+.L_8008F84C:
+/* 8008F84C 0000042C  7F C3 F3 78 */	mr r3, r30
+/* 8008F850 00000430  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8008F854 00000434  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8008F858 00000438  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8008F85C 0000043C  7C 08 03 A6 */	mtlr r0
+/* 8008F860 00000440  38 21 00 10 */	addi r1, r1, 0x10
+/* 8008F864 00000444  4E 80 00 20 */	blr
+.endfn __dt__21dDynamicModuleControlFv
+
+# .text:0x408 | 0x8008F868 | size: 0x8
+.fn gap_03_8008F868_text, global
+.hidden gap_03_8008F868_text
+/* 8008F868 00000448  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F86C 0000044C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F868_text
+
+# .text:0x410 | 0x8008F870 | size: 0x3C
+# dDynamicModuleControl::dDynamicModuleControl(const char*, EGG::ExpHeap*)
+.fn __ct__21dDynamicModuleControlFPCcPQ23EGG7ExpHeap, global
+/* 8008F870 00000450  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8008F874 00000454  7C 08 02 A6 */	mflr r0
+/* 8008F878 00000458  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8008F87C 0000045C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8008F880 00000460  7C 7F 1B 78 */	mr r31, r3
+/* 8008F884 00000464  48 00 00 01 */	bl __ct__20DynamicModuleControlFPCcPQ23EGG7ExpHeap
+/* 8008F888 00000468  3C 80 00 00 */	lis r4, __vt__21dDynamicModuleControl@ha
+/* 8008F88C 0000046C  7F E3 FB 78 */	mr r3, r31
+/* 8008F890 00000470  38 84 00 00 */	addi r4, r4, __vt__21dDynamicModuleControl@l
+/* 8008F894 00000474  90 9F 00 0C */	stw r4, 0xc(r31)
+/* 8008F898 00000478  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8008F89C 0000047C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8008F8A0 00000480  7C 08 03 A6 */	mtlr r0
+/* 8008F8A4 00000484  38 21 00 10 */	addi r1, r1, 0x10
+/* 8008F8A8 00000488  4E 80 00 20 */	blr
+.endfn __ct__21dDynamicModuleControlFPCcPQ23EGG7ExpHeap
+
+# .text:0x44C | 0x8008F8AC | size: 0x4
+.fn gap_03_8008F8AC_text, global
+.hidden gap_03_8008F8AC_text
+/* 8008F8AC 0000048C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F8AC_text
+
+# .text:0x450 | 0x8008F8B0 | size: 0x4
+# dDynamicModuleControl::do_link()
+.fn do_link__21dDynamicModuleControlFv, global
+/* 8008F8B0 00000490  48 00 00 00 */	b do_link__20DynamicModuleControlFv
+.endfn do_link__21dDynamicModuleControlFv
+
+# .text:0x454 | 0x8008F8B4 | size: 0xC
+.fn gap_03_8008F8B4_text, global
+.hidden gap_03_8008F8B4_text
+/* 8008F8B4 00000494  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F8B8 00000498  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F8BC 0000049C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F8B4_text
+
+# .text:0x460 | 0x8008F8C0 | size: 0x54
+.fn "__sinit_\d_dylink_cpp", local
+/* 8008F8C0 000004A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8008F8C4 000004A4  7C 08 02 A6 */	mflr r0
+/* 8008F8C8 000004A8  3C 80 00 00 */	lis r4, "@3910"@ha
+/* 8008F8CC 000004AC  38 A0 00 00 */	li r5, 0x0
+/* 8008F8D0 000004B0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8008F8D4 000004B4  38 84 00 00 */	addi r4, r4, "@3910"@l
+/* 8008F8D8 000004B8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8008F8DC 000004BC  3F E0 00 00 */	lis r31, s_ProfileDMC@ha
+/* 8008F8E0 000004C0  38 7F 00 00 */	addi r3, r31, s_ProfileDMC@l
+/* 8008F8E4 000004C4  48 00 00 01 */	bl __ct__20DynamicModuleControlFPCcPQ23EGG7ExpHeap
+/* 8008F8E8 000004C8  3C 80 00 00 */	lis r4, __dt__20DynamicModuleControlFv@ha
+/* 8008F8EC 000004CC  3C A0 00 00 */	lis r5, "@3709"@ha
+/* 8008F8F0 000004D0  38 7F 00 00 */	addi r3, r31, s_ProfileDMC@l
+/* 8008F8F4 000004D4  38 84 00 00 */	addi r4, r4, __dt__20DynamicModuleControlFv@l
+/* 8008F8F8 000004D8  38 A5 00 00 */	addi r5, r5, "@3709"@l
+/* 8008F8FC 000004DC  48 00 00 01 */	bl __register_global_object
+/* 8008F900 000004E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8008F904 000004E4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8008F908 000004E8  7C 08 03 A6 */	mtlr r0
+/* 8008F90C 000004EC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8008F910 000004F0  4E 80 00 20 */	blr
+.endfn "__sinit_\d_dylink_cpp"
+
+# .text:0x4B4 | 0x8008F914 | size: 0xC
+.fn gap_03_8008F914_text, global
+.hidden gap_03_8008F914_text
+/* 8008F914 000004F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F918 000004F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8008F91C 000004FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8008F914_text
+
+# 0x802EDDAC..0x802EDDB0 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_dylink_cpp"
+
+# 0x80311150..0x803111D8 | size: 0x88
+.data
+.balign 8
+
+# .data:0x0 | 0x80311150 | size: 0x32
+.obj "@3869", local
+	.4byte 0x835F8343
+	.4byte 0x8369837E
+	.4byte 0x8362834E
+	.4byte 0x838A8393
+	.4byte 0x834E90A7
+	.4byte 0x8CE49770
+	.4byte 0x8371815B
+	.4byte 0x83762864
+	.4byte 0x44796C3A
+	.4byte 0x3A634363
+	.4byte 0x5F66726D
+	.4byte 0x48656170
+	.2byte 0x2900
+.endobj "@3869"
+
+# .data:0x32 | 0x80311182 | size: 0x2
+.obj gap_07_80311182_data, global
+.hidden gap_07_80311182_data
+	.2byte 0x0000
+.endobj gap_07_80311182_data
+
+# .data:0x34 | 0x80311184 | size: 0xF
+.obj "@3889", local
+	.4byte 0x2F574949
+	.4byte 0x4D4A3244
+	.4byte 0x4E502E73
+	.byte 0x74, 0x72, 0x00
+.endobj "@3889"
+
+# .data:0x43 | 0x80311193 | size: 0x5
+.obj gap_07_80311193_data, global
+.hidden gap_07_80311193_data
+	.4byte 0x00000000
+	.byte 0x00
+.endobj gap_07_80311193_data
+
+# .data:0x48 | 0x80311198 | size: 0x30
+# dDynamicModuleControl::__vtable
+.obj __vt__21dDynamicModuleControl, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__21dDynamicModuleControlFv
+	.4byte getModuleName__20DynamicModuleControlCFv
+	.4byte getModuleSize__20DynamicModuleControlCFv
+	.4byte getModuleTypeString__20DynamicModuleControlCFv
+	.4byte dump__20DynamicModuleControlFv
+	.4byte do_load__20DynamicModuleControlFv
+	.4byte do_load_async__20DynamicModuleControlFv
+	.4byte do_unload__20DynamicModuleControlFv
+	.4byte do_link__21dDynamicModuleControlFv
+	.4byte do_unlink__20DynamicModuleControlFv
+.endobj __vt__21dDynamicModuleControl
+
+# .data:0x78 | 0x803111C8 | size: 0xA
+.obj "@3910", local
+	.4byte 0x645F7072
+	.4byte 0x6F66696C
+	.2byte 0x6500
+.endobj "@3910"
+
+# .data:0x82 | 0x803111D2 | size: 0x6
+.obj gap_07_803111D2_data, global
+.hidden gap_07_803111D2_data
+	.4byte 0x00000000
+	.2byte 0x0000
+.endobj gap_07_803111D2_data
+
+# 0x803562A8..0x80356300 | size: 0x58
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | 0x803562A8 | size: 0xC
+.obj "@3709", local
+	.skip 0xC
+.endobj "@3709"
+
+# .bss:0xC | 0x803562B4 | size: 0x4
+.obj gap_08_803562B4_bss, global
+.hidden gap_08_803562B4_bss
+	.skip 0x4
+.endobj gap_08_803562B4_bss
+
+# .bss:0x10 | 0x803562B8 | size: 0x48
+.obj s_ProfileDMC, global
+	.skip 0x48
+.endobj s_ProfileDMC
+
+# 0x80427D08..0x80427D10 | size: 0x8
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80427D08 | size: 0x6
+.obj "@3888", local
+	.4byte 0x2F72656C
+	.2byte 0x7300
+.endobj "@3888"
+
+# .sdata:0x6 | 0x80427D0E | size: 0x2
+.obj gap_09_80427D0E_sdata, global
+.hidden gap_09_80427D0E_sdata
+	.2byte 0x0000
+.endobj gap_09_80427D0E_sdata
+
+# 0x8042A190..0x8042A1B0 | size: 0x20
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A190 | size: 0x4
+.obj pDynamicNameTable, global
+	.skip 0x4
+.endobj pDynamicNameTable
+
+# .sbss:0x4 | 0x8042A194 | size: 0x4
+.obj nDynamicNameTable, global
+	.skip 0x4
+.endobj nDynamicNameTable
+
+# .sbss:0x8 | 0x8042A198 | size: 0x4
+# dDyl::pDMC
+.obj pDMC__4dDyl, global
+	.skip 0x4
+.endobj pDMC__4dDyl
+
+# .sbss:0xC | 0x8042A19C | size: 0x4
+# dDyl::nDMC
+.obj nDMC__4dDyl, global
+	.skip 0x4
+.endobj nDMC__4dDyl
+
+# .sbss:0x10 | 0x8042A1A0 | size: 0x4
+# dDyl::cCc_frmHeap
+.obj cCc_frmHeap__4dDyl, global
+	.skip 0x4
+.endobj cCc_frmHeap__4dDyl
+
+# .sbss:0x14 | 0x8042A1A4 | size: 0x4
+# dDyl::Initialized
+.obj Initialized__4dDyl, global
+	.skip 0x4
+.endobj Initialized__4dDyl
+
+# .sbss:0x18 | 0x8042A1A8 | size: 0x4
+# dDyl::DVD
+.obj DVD__4dDyl, global
+	.skip 0x4
+.endobj DVD__4dDyl
+
+# .sbss:0x1C | 0x8042A1AC | size: 0x4
+.obj gap_10_8042A1AC_sbss, global
+.hidden gap_10_8042A1AC_sbss
+	.skip 0x4
+.endobj gap_10_8042A1AC_sbss
+
+# 0x8042C328..0x8042C330 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042C328 | size: 0x8
+.obj DynamicNameTable, local
+	.4byte 0x02EE0000
+	.4byte 0x00000000
+.endobj DynamicNameTable

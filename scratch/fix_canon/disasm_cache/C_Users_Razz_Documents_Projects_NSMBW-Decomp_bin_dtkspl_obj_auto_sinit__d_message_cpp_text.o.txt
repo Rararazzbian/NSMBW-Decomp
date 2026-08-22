@@ -1,0 +1,33 @@
+.include "macros.inc"
+.file "auto_sinit__d_message_cpp_text"
+
+# 0x800CDF60..0x800CDFA8 | size: 0x48
+.text
+.balign 4
+
+# .text:0x0 | 0x800CDF60 | size: 0x48
+.fn "__sinit_\d_message_cpp", global
+/* 800CDF60 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CDF64 00000044  7C 08 02 A6 */	mflr r0
+/* 800CDF68 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CDF6C 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CDF70 00000050  3F E0 00 00 */	lis r31, l_dMessage_obj@ha
+/* 800CDF74 00000054  38 7F 00 00 */	addi r3, r31, l_dMessage_obj@l
+/* 800CDF78 00000058  48 00 00 01 */	bl __ct__10dMessage_cFv
+/* 800CDF7C 0000005C  3C 80 00 00 */	lis r4, __dt__10dMessage_cFv@ha
+/* 800CDF80 00000060  3C A0 00 00 */	lis r5, "@51694_80359F90"@ha
+/* 800CDF84 00000064  38 7F 00 00 */	addi r3, r31, l_dMessage_obj@l
+/* 800CDF88 00000068  38 84 00 00 */	addi r4, r4, __dt__10dMessage_cFv@l
+/* 800CDF8C 0000006C  38 A5 00 00 */	addi r5, r5, "@51694_80359F90"@l
+/* 800CDF90 00000070  48 00 00 01 */	bl __register_global_object
+/* 800CDF94 00000074  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CDF98 00000078  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CDF9C 0000007C  7C 08 03 A6 */	mtlr r0
+/* 800CDFA0 00000080  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CDFA4 00000084  4E 80 00 20 */	blr
+.endfn "__sinit_\d_message_cpp"
+
+# 0x802EDE0C..0x802EDE10 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_message_cpp"

@@ -1,0 +1,33 @@
+bool dLineMng_c::line_cross_chk2(f32 p1, const mVec2_c &p3, mVec2_c p4, mVec2_c p5, f32 &out) {
+    p4.x -= p3.x;
+    p4.y -= p3.y;
+    p5.x -= p3.x;
+    p5.y -= p3.y;
+
+    if (p4.x != zero_ref(0.0f) && p5.x != zero_ref(0.0f)) {
+        if ((p4.x < 0.0f && p5.x < 0.0f) || (p4.x >= 0.0f && p5.x >= 0.0f)) {
+            return false;
+        }
+    }
+
+    f32 slope, intercept;
+    if (line_cross_slope_check(p4, p5, slope, intercept)) {
+        f32 v = intercept;
+        if (v >= -0.1f && v <= 0.1f + p1) {
+            if (line_cross_range_check(p4.y, p5.y, v)) {
+                out = v;
+                return true;
+            }
+        }
+    } else {
+        f32 x5 = p5.x;
+        if (zero_ref(0.0f) == x5) {
+            f32 y5 = p5.y;
+            if (y5 >= 0.0f && y5 < p1) {
+                out = y5;
+                return true;
+            }
+        }
+    }
+    return false;
+}

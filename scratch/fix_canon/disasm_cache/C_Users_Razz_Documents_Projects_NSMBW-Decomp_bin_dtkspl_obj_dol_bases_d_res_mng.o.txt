@@ -1,0 +1,223 @@
+.include "macros.inc"
+.file "d_res_mng.cpp"
+
+# 0x800DF770..0x800DF950 | size: 0x1E0
+.text
+.balign 4
+
+# .text:0x0 | 0x800DF770 | size: 0x60
+# dResMng_c::dResMng_c()
+.fn __ct__9dResMng_cFv, global
+/* 800DF770 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800DF774 00000044  7C 08 02 A6 */	mflr r0
+/* 800DF778 00000048  3C 80 00 00 */	lis r4, __vt__9dResMng_c@ha
+/* 800DF77C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800DF780 00000050  38 84 00 00 */	addi r4, r4, __vt__9dResMng_c@l
+/* 800DF784 00000054  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800DF788 00000058  7C 7F 1B 78 */	mr r31, r3
+/* 800DF78C 0000005C  90 83 00 00 */	stw r4, 0x0(r3)
+/* 800DF790 00000060  38 63 00 04 */	addi r3, r3, 0x4
+/* 800DF794 00000064  48 00 00 01 */	bl __ct__6dRes_cFv
+/* 800DF798 00000068  3C 80 00 00 */	lis r4, __vt__Q29dResMng_c13resCallback_c@ha
+/* 800DF79C 0000006C  38 7F 00 04 */	addi r3, r31, 0x4
+/* 800DF7A0 00000070  38 84 00 00 */	addi r4, r4, __vt__Q29dResMng_c13resCallback_c@l
+/* 800DF7A4 00000074  90 9F 00 10 */	stw r4, 0x10(r31)
+/* 800DF7A8 00000078  38 BF 00 10 */	addi r5, r31, 0x10
+/* 800DF7AC 0000007C  93 E0 00 00 */	stw r31, m_instance__9dResMng_c@sda21(r0)
+/* 800DF7B0 00000080  38 80 01 2C */	li r4, 0x12c
+/* 800DF7B4 00000084  48 00 00 01 */	bl init__6dRes_cFUsPQ26dRes_c10callback_c
+/* 800DF7B8 00000088  7F E3 FB 78 */	mr r3, r31
+/* 800DF7BC 0000008C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800DF7C0 00000090  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800DF7C4 00000094  7C 08 03 A6 */	mtlr r0
+/* 800DF7C8 00000098  38 21 00 10 */	addi r1, r1, 0x10
+/* 800DF7CC 0000009C  4E 80 00 20 */	blr
+.endfn __ct__9dResMng_cFv
+
+# .text:0x60 | 0x800DF7D0 | size: 0x64
+# dResMng_c::~dResMng_c()
+.fn __dt__9dResMng_cFv, global
+/* 800DF7D0 000000A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800DF7D4 000000A4  7C 08 02 A6 */	mflr r0
+/* 800DF7D8 000000A8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF7DC 000000AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800DF7E0 000000B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800DF7E4 000000B4  7C 9F 23 78 */	mr r31, r4
+/* 800DF7E8 000000B8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800DF7EC 000000BC  7C 7E 1B 78 */	mr r30, r3
+/* 800DF7F0 000000C0  41 82 00 28 */	beq .L_800DF818
+/* 800DF7F4 000000C4  38 00 00 00 */	li r0, 0x0
+/* 800DF7F8 000000C8  90 00 00 00 */	stw r0, m_instance__9dResMng_c@sda21(r0)
+/* 800DF7FC 000000CC  38 80 FF FF */	li r4, -0x1
+/* 800DF800 000000D0  38 63 00 04 */	addi r3, r3, 0x4
+/* 800DF804 000000D4  48 00 00 01 */	bl __dt__6dRes_cFv
+/* 800DF808 000000D8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800DF80C 000000DC  40 81 00 0C */	ble .L_800DF818
+/* 800DF810 000000E0  7F C3 F3 78 */	mr r3, r30
+/* 800DF814 000000E4  48 00 00 01 */	bl __dl__FPv
+.L_800DF818:
+/* 800DF818 000000E8  7F C3 F3 78 */	mr r3, r30
+/* 800DF81C 000000EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800DF820 000000F0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800DF824 000000F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800DF828 000000F8  7C 08 03 A6 */	mtlr r0
+/* 800DF82C 000000FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 800DF830 00000100  4E 80 00 20 */	blr
+.endfn __dt__9dResMng_cFv
+
+# .text:0xC4 | 0x800DF834 | size: 0xC
+.fn gap_03_800DF834_text, global
+.hidden gap_03_800DF834_text
+/* 800DF834 00000104  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF838 00000108  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF83C 0000010C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF834_text
+
+# .text:0xD0 | 0x800DF840 | size: 0x4
+# dResMng_c::resCallback_c::init(const char*)
+.fn init__Q29dResMng_c13resCallback_cFPCc, global
+/* 800DF840 00000110  4E 80 00 20 */	blr
+.endfn init__Q29dResMng_c13resCallback_cFPCc
+
+# .text:0xD4 | 0x800DF844 | size: 0xC
+.fn gap_03_800DF844_text, global
+.hidden gap_03_800DF844_text
+/* 800DF844 00000114  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF848 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF84C 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF844_text
+
+# .text:0xE0 | 0x800DF850 | size: 0x68
+# dResMng_c::resCallback_c::execute(void*, unsigned int, const char*)
+.fn execute__Q29dResMng_c13resCallback_cFPvUiPCc, global
+/* 800DF850 00000120  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF854 00000124  7C 08 02 A6 */	mflr r0
+/* 800DF858 00000128  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF85C 0000012C  3C 05 98 CD */	subis r0, r5, 0x6733
+/* 800DF860 00000130  28 00 64 20 */	cmplwi r0, 0x6420
+/* 800DF864 00000134  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800DF868 00000138  7C 9F 23 78 */	mr r31, r4
+/* 800DF86C 0000013C  40 82 00 34 */	bne .L_800DF8A0
+/* 800DF870 00000140  90 81 00 0C */	stw r4, 0xc(r1)
+/* 800DF874 00000144  38 61 00 0C */	addi r3, r1, 0xc
+/* 800DF878 00000148  48 00 00 01 */	bl CheckRevision__Q34nw4r3g3d7ResFileCFv
+/* 800DF87C 0000014C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800DF880 00000150  41 82 00 20 */	beq .L_800DF8A0
+/* 800DF884 00000154  38 61 00 0C */	addi r3, r1, 0xc
+/* 800DF888 00000158  48 00 00 01 */	bl Init__Q34nw4r3g3d7ResFileFv
+/* 800DF88C 0000015C  80 01 00 0C */	lwz r0, 0xc(r1)
+/* 800DF890 00000160  38 61 00 0C */	addi r3, r1, 0xc
+/* 800DF894 00000164  90 01 00 08 */	stw r0, 0x8(r1)
+/* 800DF898 00000168  38 81 00 08 */	addi r4, r1, 0x8
+/* 800DF89C 0000016C  48 00 00 01 */	bl Bind__Q34nw4r3g3d7ResFileFQ34nw4r3g3d7ResFile
+.L_800DF8A0:
+/* 800DF8A0 00000170  7F E3 FB 78 */	mr r3, r31
+/* 800DF8A4 00000174  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800DF8A8 00000178  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF8AC 0000017C  7C 08 03 A6 */	mtlr r0
+/* 800DF8B0 00000180  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF8B4 00000184  4E 80 00 20 */	blr
+.endfn execute__Q29dResMng_c13resCallback_cFPvUiPCc
+
+# .text:0x148 | 0x800DF8B8 | size: 0x8
+.fn gap_03_800DF8B8_text, global
+.hidden gap_03_800DF8B8_text
+/* 800DF8B8 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800DF8BC 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF8B8_text
+
+# .text:0x150 | 0x800DF8C0 | size: 0x70
+# dResMng_c::setRes(const char*, const char**, int, EGG::Heap*)
+.fn setRes__9dResMng_cFPCcPPCciPQ23EGG4Heap, global
+/* 800DF8C0 00000190  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800DF8C4 00000194  7C 08 02 A6 */	mflr r0
+/* 800DF8C8 00000198  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800DF8CC 0000019C  39 61 00 20 */	addi r11, r1, 0x20
+/* 800DF8D0 000001A0  48 00 00 01 */	bl _savegpr_26
+/* 800DF8D4 000001A4  7C 7A 1B 78 */	mr r26, r3
+/* 800DF8D8 000001A8  7C 9B 23 78 */	mr r27, r4
+/* 800DF8DC 000001AC  7C BF 2B 78 */	mr r31, r5
+/* 800DF8E0 000001B0  7C DC 33 78 */	mr r28, r6
+/* 800DF8E4 000001B4  7C FD 3B 78 */	mr r29, r7
+/* 800DF8E8 000001B8  3B C0 00 00 */	li r30, 0x0
+/* 800DF8EC 000001BC  48 00 00 24 */	b .L_800DF910
+.L_800DF8F0:
+/* 800DF8F0 000001C0  80 9F 00 00 */	lwz r4, 0x0(r31)
+/* 800DF8F4 000001C4  7F 65 DB 78 */	mr r5, r27
+/* 800DF8F8 000001C8  7F A7 EB 78 */	mr r7, r29
+/* 800DF8FC 000001CC  38 7A 00 04 */	addi r3, r26, 0x4
+/* 800DF900 000001D0  38 C0 00 00 */	li r6, 0x0
+/* 800DF904 000001D4  48 00 00 01 */	bl setRes__6dRes_cFPCcPCcUcPQ23EGG4Heap
+/* 800DF908 000001D8  3B FF 00 04 */	addi r31, r31, 0x4
+/* 800DF90C 000001DC  3B DE 00 01 */	addi r30, r30, 0x1
+.L_800DF910:
+/* 800DF910 000001E0  7C 1E E0 00 */	cmpw r30, r28
+/* 800DF914 000001E4  41 80 FF DC */	blt .L_800DF8F0
+/* 800DF918 000001E8  39 61 00 20 */	addi r11, r1, 0x20
+/* 800DF91C 000001EC  48 00 00 01 */	bl _restgpr_26
+/* 800DF920 000001F0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800DF924 000001F4  7C 08 03 A6 */	mtlr r0
+/* 800DF928 000001F8  38 21 00 20 */	addi r1, r1, 0x20
+/* 800DF92C 000001FC  4E 80 00 20 */	blr
+.endfn setRes__9dResMng_cFPCcPPCciPQ23EGG4Heap
+
+# .text:0x1C0 | 0x800DF930 | size: 0x1C
+# dResMng_c::setRes(const char*, const char*, EGG::Heap*)
+.fn setRes__9dResMng_cFPCcPCcPQ23EGG4Heap, global
+/* 800DF930 00000200  7C 80 23 78 */	mr r0, r4
+/* 800DF934 00000204  7C A4 2B 78 */	mr r4, r5
+/* 800DF938 00000208  7C C7 33 78 */	mr r7, r6
+/* 800DF93C 0000020C  38 C0 00 00 */	li r6, 0x0
+/* 800DF940 00000210  7C 05 03 78 */	mr r5, r0
+/* 800DF944 00000214  38 63 00 04 */	addi r3, r3, 0x4
+/* 800DF948 00000218  48 00 00 00 */	b setRes__6dRes_cFPCcPCcUcPQ23EGG4Heap
+.endfn setRes__9dResMng_cFPCcPCcPQ23EGG4Heap
+
+# .text:0x1DC | 0x800DF94C | size: 0x4
+.fn gap_03_800DF94C_text, global
+.hidden gap_03_800DF94C_text
+/* 800DF94C 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800DF94C_text
+
+# 0x80319868..0x80319888 | size: 0x20
+.data
+.balign 8
+
+# .data:0x0 | 0x80319868 | size: 0xC
+# dResMng_c::__vtable
+.obj __vt__9dResMng_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__9dResMng_cFv
+.endobj __vt__9dResMng_c
+
+# .data:0xC | 0x80319874 | size: 0x4
+.obj gap_07_80319874_data, global
+.hidden gap_07_80319874_data
+	.4byte 0x00000000
+.endobj gap_07_80319874_data
+
+# .data:0x10 | 0x80319878 | size: 0x10
+# dResMng_c::resCallback_c::__vtable
+.obj __vt__Q29dResMng_c13resCallback_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte init__Q29dResMng_c13resCallback_cFPCc
+	.4byte execute__Q29dResMng_c13resCallback_cFPvUiPCc
+.endobj __vt__Q29dResMng_c13resCallback_c
+
+# 0x8042A318..0x8042A320 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A318 | size: 0x4
+# dResMng_c::m_instance
+.obj m_instance__9dResMng_c, global
+	.skip 0x4
+.endobj m_instance__9dResMng_c
+
+# .sbss:0x4 | 0x8042A31C | size: 0x4
+.obj gap_10_8042A31C_sbss, global
+.hidden gap_10_8042A31C_sbss
+	.skip 0x4
+.endobj gap_10_8042A31C_sbss

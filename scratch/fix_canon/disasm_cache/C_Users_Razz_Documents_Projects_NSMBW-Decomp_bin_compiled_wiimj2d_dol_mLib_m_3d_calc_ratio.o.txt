@@ -1,0 +1,191 @@
+.include "macros.inc"
+.file "calc_ratio.cpp"
+
+# 0x00000000..0x000001D0 | size: 0x1D0
+.text
+.balign 16
+
+# .text:0x0 | size: 0x3C
+# m3d::calcRatio_c::calcRatio_c()
+.fn __ct__Q23m3d11calcRatio_cFv, global
+/* 00000000 00000040  C0 20 00 00 */	lfs f1, "@11051"@sda21(r0)
+/* 00000004 00000044  3C 80 00 00 */	lis r4, __vt__Q23m3d11calcRatio_c@ha
+/* 00000008 00000048  C0 00 00 00 */	lfs f0, "@11052"@sda21(r0)
+/* 0000000C 0000004C  38 00 00 00 */	li r0, 0x0
+/* 00000010 00000050  38 84 00 00 */	addi r4, r4, __vt__Q23m3d11calcRatio_c@l
+/* 00000014 00000054  90 83 00 00 */	stw r4, 0x0(r3)
+/* 00000018 00000058  D0 23 00 04 */	stfs f1, 0x4(r3)
+/* 0000001C 0000005C  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 00000020 00000060  D0 23 00 0C */	stfs f1, 0xc(r3)
+/* 00000024 00000064  D0 23 00 10 */	stfs f1, 0x10(r3)
+/* 00000028 00000068  D0 03 00 14 */	stfs f0, 0x14(r3)
+/* 0000002C 0000006C  D0 03 00 18 */	stfs f0, 0x18(r3)
+/* 00000030 00000070  98 03 00 1C */	stb r0, 0x1c(r3)
+/* 00000034 00000074  98 03 00 1D */	stb r0, 0x1d(r3)
+/* 00000038 00000078  4E 80 00 20 */	blr
+.endfn __ct__Q23m3d11calcRatio_cFv
+/* 0000003C 0000007C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x40 | size: 0xC
+# m3d::calcRatio_c::remove()
+.fn remove__Q23m3d11calcRatio_cFv, global
+/* 00000040 00000080  38 00 00 00 */	li r0, 0x0
+/* 00000044 00000084  98 03 00 1C */	stb r0, 0x1c(r3)
+/* 00000048 00000088  48 00 00 00 */	b reset__Q23m3d11calcRatio_cFv
+.endfn remove__Q23m3d11calcRatio_cFv
+/* 0000004C 0000008C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x50 | size: 0x20
+# m3d::calcRatio_c::reset()
+.fn reset__Q23m3d11calcRatio_cFv, global
+/* 00000050 00000090  C0 00 00 00 */	lfs f0, "@11052"@sda21(r0)
+/* 00000054 00000094  C0 20 00 00 */	lfs f1, "@11051"@sda21(r0)
+/* 00000058 00000098  D0 23 00 04 */	stfs f1, 0x4(r3)
+/* 0000005C 0000009C  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 00000060 000000A0  D0 23 00 10 */	stfs f1, 0x10(r3)
+/* 00000064 000000A4  D0 03 00 14 */	stfs f0, 0x14(r3)
+/* 00000068 000000A8  D0 03 00 18 */	stfs f0, 0x18(r3)
+/* 0000006C 000000AC  4E 80 00 20 */	blr
+.endfn reset__Q23m3d11calcRatio_cFv
+
+# .text:0x70 | size: 0x14
+# m3d::calcRatio_c::offUpdate()
+.fn offUpdate__Q23m3d11calcRatio_cFv, global
+/* 00000070 000000B0  38 80 00 01 */	li r4, 0x1
+/* 00000074 000000B4  38 00 00 00 */	li r0, 0x0
+/* 00000078 000000B8  98 83 00 1C */	stb r4, 0x1c(r3)
+/* 0000007C 000000BC  98 03 00 1D */	stb r0, 0x1d(r3)
+/* 00000080 000000C0  4E 80 00 20 */	blr
+.endfn offUpdate__Q23m3d11calcRatio_cFv
+/* 00000084 000000C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000088 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000008C 000000CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x90 | size: 0x3C
+# m3d::calcRatio_c::set(float)
+.fn set__Q23m3d11calcRatio_cFf, global
+/* 00000090 000000D0  C0 60 00 00 */	lfs f3, "@11051"@sda21(r0)
+/* 00000094 000000D4  FC 03 08 00 */	fcmpu cr0, f3, f1
+/* 00000098 000000D8  40 82 00 08 */	bne .L_000000A0
+/* 0000009C 000000DC  48 00 00 00 */	b reset__Q23m3d11calcRatio_cFv
+.L_000000A0:
+/* 000000A0 000000E0  C0 40 00 00 */	lfs f2, "@11052"@sda21(r0)
+/* 000000A4 000000E4  38 00 00 01 */	li r0, 0x1
+/* 000000A8 000000E8  D0 43 00 04 */	stfs f2, 0x4(r3)
+/* 000000AC 000000EC  EC 02 08 24 */	fdivs f0, f2, f1
+/* 000000B0 000000F0  D0 63 00 08 */	stfs f3, 0x8(r3)
+/* 000000B4 000000F4  D0 43 00 10 */	stfs f2, 0x10(r3)
+/* 000000B8 000000F8  D0 63 00 14 */	stfs f3, 0x14(r3)
+/* 000000BC 000000FC  D0 63 00 18 */	stfs f3, 0x18(r3)
+/* 000000C0 00000100  98 03 00 1D */	stb r0, 0x1d(r3)
+/* 000000C4 00000104  D0 03 00 0C */	stfs f0, 0xc(r3)
+/* 000000C8 00000108  4E 80 00 20 */	blr
+.endfn set__Q23m3d11calcRatio_cFf
+/* 000000CC 0000010C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xD0 | size: 0x94
+# m3d::calcRatio_c::calc()
+.fn calc__Q23m3d11calcRatio_cFv, global
+/* 000000D0 00000110  C0 00 00 00 */	lfs f0, "@11051"@sda21(r0)
+/* 000000D4 00000114  C0 63 00 04 */	lfs f3, 0x4(r3)
+/* 000000D8 00000118  FC 00 18 00 */	fcmpu cr0, f0, f3
+/* 000000DC 0000011C  4D 82 00 20 */	beqlr
+/* 000000E0 00000120  C0 43 00 08 */	lfs f2, 0x8(r3)
+/* 000000E4 00000124  C0 03 00 0C */	lfs f0, 0xc(r3)
+/* 000000E8 00000128  C0 20 00 00 */	lfs f1, "@11052"@sda21(r0)
+/* 000000EC 0000012C  EC 42 00 2A */	fadds f2, f2, f0
+/* 000000F0 00000130  D0 43 00 08 */	stfs f2, 0x8(r3)
+/* 000000F4 00000134  FC 02 08 40 */	fcmpo cr0, f2, f1
+/* 000000F8 00000138  4C 41 13 82 */	cror eq, gt, eq
+/* 000000FC 0000013C  40 82 00 08 */	bne .L_00000104
+/* 00000100 00000140  48 00 00 00 */	b reset__Q23m3d11calcRatio_cFv
+.L_00000104:
+/* 00000104 00000144  EC 03 00 B2 */	fmuls f0, f3, f2
+/* 00000108 00000148  38 00 00 01 */	li r0, 0x1
+/* 0000010C 0000014C  98 03 00 1D */	stb r0, 0x1d(r3)
+/* 00000110 00000150  EC 02 00 32 */	fmuls f0, f2, f0
+/* 00000114 00000154  EC 03 00 28 */	fsubs f0, f3, f0
+/* 00000118 00000158  D0 03 00 04 */	stfs f0, 0x4(r3)
+/* 0000011C 0000015C  EC A0 18 24 */	fdivs f5, f0, f3
+/* 00000120 00000160  EC C1 00 28 */	fsubs f6, f1, f0
+/* 00000124 00000164  EC 05 30 2A */	fadds f0, f5, f6
+/* 00000128 00000168  EC 20 00 30 */	fres f1, f0
+/* 0000012C 0000016C  EC 60 00 30 */	fres f3, f0
+/* 00000130 00000170  10 41 08 2A */	ps_add f2, f1, f1
+/* 00000134 00000174  10 21 00 72 */	ps_mul f1, f1, f1
+/* 00000138 00000178  10 83 18 2A */	ps_add f4, f3, f3
+/* 0000013C 0000017C  10 63 00 F2 */	ps_mul f3, f3, f3
+/* 00000140 00000180  10 20 10 7C */	ps_nmsub f1, f0, f1, f2
+/* 00000144 00000184  10 60 20 FC */	ps_nmsub f3, f0, f3, f4
+/* 00000148 00000188  EC 45 00 72 */	fmuls f2, f5, f1
+/* 0000014C 0000018C  EC 26 00 72 */	fmuls f1, f6, f1
+/* 00000150 00000190  EC 06 00 F2 */	fmuls f0, f6, f3
+/* 00000154 00000194  D0 43 00 10 */	stfs f2, 0x10(r3)
+/* 00000158 00000198  D0 23 00 14 */	stfs f1, 0x14(r3)
+/* 0000015C 0000019C  D0 03 00 18 */	stfs f0, 0x18(r3)
+/* 00000160 000001A0  4E 80 00 20 */	blr
+.endfn calc__Q23m3d11calcRatio_cFv
+/* 00000164 000001A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 00000168 000001A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000016C 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x170 | size: 0x18
+# m3d::calcRatio_c::isEnd() const
+.fn isEnd__Q23m3d11calcRatio_cCFv, global
+/* 00000170 000001B0  C0 20 00 00 */	lfs f1, "@11051"@sda21(r0)
+/* 00000174 000001B4  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 00000178 000001B8  FC 01 00 00 */	fcmpu cr0, f1, f0
+/* 0000017C 000001BC  7C 60 00 26 */	mfcr r3
+/* 00000180 000001C0  54 63 1F FE */	extrwi r3, r3, 1, 2
+/* 00000184 000001C4  4E 80 00 20 */	blr
+.endfn isEnd__Q23m3d11calcRatio_cCFv
+/* 00000188 000001C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0000018C 000001CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0x190 | size: 0x40
+# m3d::calcRatio_c::~calcRatio_c()
+.fn __dt__Q23m3d11calcRatio_cFv, weak
+/* 00000190 000001D0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000194 000001D4  7C 08 02 A6 */	mflr r0
+/* 00000198 000001D8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000019C 000001DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 000001A0 000001E0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 000001A4 000001E4  7C 7F 1B 78 */	mr r31, r3
+/* 000001A8 000001E8  41 82 00 10 */	beq .L_000001B8
+/* 000001AC 000001EC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 000001B0 000001F0  40 81 00 08 */	ble .L_000001B8
+/* 000001B4 000001F4  48 00 00 01 */	bl __dl__FPv
+.L_000001B8:
+/* 000001B8 000001F8  7F E3 FB 78 */	mr r3, r31
+/* 000001BC 000001FC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000001C0 00000200  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000001C4 00000204  7C 08 03 A6 */	mtlr r0
+/* 000001C8 00000208  38 21 00 10 */	addi r1, r1, 0x10
+/* 000001CC 0000020C  4E 80 00 20 */	blr
+.endfn __dt__Q23m3d11calcRatio_cFv
+
+# 0x00000000..0x0000000C | size: 0xC
+.data
+.balign 8
+
+# .data:0x0 | size: 0xC
+# m3d::calcRatio_c::__vtable
+.obj __vt__Q23m3d11calcRatio_c, weak
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__Q23m3d11calcRatio_cFv
+.endobj __vt__Q23m3d11calcRatio_c
+
+# 0x00000000..0x00000008 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | size: 0x4
+.obj "@11051", local
+	.4byte 0x00000000
+.endobj "@11051"
+
+# .sdata2:0x4 | size: 0x4
+.obj "@11052", local
+	.4byte 0x3F800000
+.endobj "@11052"

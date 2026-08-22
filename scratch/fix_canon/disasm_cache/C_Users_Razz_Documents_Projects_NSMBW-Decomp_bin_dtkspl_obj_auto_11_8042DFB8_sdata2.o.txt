@@ -1,0 +1,30 @@
+.include "macros.inc"
+.file "auto_11_8042DFB8_sdata2"
+
+# 0x8042DFB8..0x8042DFD0 | size: 0x18
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042DFB8 | size: 0x4
+# mAng::AngleToDegreeCoefficient
+.obj AngleToDegreeCoefficient__4mAng, global
+	.4byte 0x3BB40000
+.endobj AngleToDegreeCoefficient__4mAng
+
+# .sdata2:0x4 | 0x8042DFBC | size: 0x4
+# mAng::DegreeToAngleCoefficient
+.obj DegreeToAngleCoefficient__4mAng, global
+	.4byte 0x43360B61
+.endobj DegreeToAngleCoefficient__4mAng
+
+# .sdata2:0x8 | 0x8042DFC0 | size: 0x4
+.obj "@942_8042DFC0", global
+	.4byte 0x3F800000
+.endobj "@942_8042DFC0"
+	.4byte 0x00000000
+
+# .sdata2:0x10 | 0x8042DFC8 | size: 0x8
+.obj "@948_8042DFC8", global
+	.4byte 0x43300000
+	.4byte 0x00000000
+.endobj "@948_8042DFC8"

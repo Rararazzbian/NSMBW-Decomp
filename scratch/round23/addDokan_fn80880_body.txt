@@ -1,0 +1,45 @@
+// -------------------------------------------------------------------
+// dBg_ctr_c::addDokanMoveDiff(mVec3_c *out)
+// target: 0x80080290 (87w, frame 0x60)
+// -------------------------------------------------------------------
+void dBg_ctr_c::addDokanMoveDiff(mVec3_c *out) {
+    if (m_c4 == 0) return;
+
+    f32 dx = out->x - mPos.x;
+    f32 dy = out->y - mPos.y;
+
+    f32 len = EGG::Math<f>::sqrt(dx * dx + dy * dy);
+
+    s16 angle = static_cast<s16>(nw4r::math::Atan2Idx(dy, dx) + m_c4);
+
+    f32 cos = nw4r::math::CosFIdx(static_cast<f32>(angle) * (1.0f / 65536.0f));
+    f32 sin = nw4r::math::SinFIdx(static_cast<f32>(angle) * (1.0f / 65536.0f));
+
+    // corrected delta (dead stores — present in the target as-is)
+    f32 corrected_dx = len * cos - dx;
+    f32 corrected_dy = len * sin - dy;
+
+    out->x = dScStage_c::getLoopPosX(mPos.x + len * nw4r::math::CosFIdx(static_cast<f32>(angle) * (1.0f / 65536.0f)));
+    out->y = mPos.y + len * nw4r::math::SinFIdx(static_cast<f32>(angle) * (1.0f / 65536.0f));
+}
+
+// -------------------------------------------------------------------
+// dBg_ctr_c::fn_80080880(f32 f1, f32 f2, f32 f3) → bool
+// target: 0x80080880 (32w)
+// -------------------------------------------------------------------
+extern const u32 lbl_802EFBC0[];
+extern const u32 lbl_802EFBD0[];
+
+bool dBg_ctr_c::fn_80080880(f32 f1, f32 f2, f32 f3) {
+    if (f2 < f1) {
+        f32 tmp = f2;
+        f2 = f1;
+        f1 = tmp;
+    }
+
+    s16 rot = *mRotation;
+    int idx = (rot >> 14) & 3;
+
+    if (f3 + mScratch[lbl_802EFBC0[idx]].x < f1) return false;
+    return f3 + mScratch[lbl_802EFBD0[idx]].x <= f2;
+}

@@ -1,0 +1,1866 @@
+.include "macros.inc"
+.file "auto_00_0005B91C_text"
+
+# 0x0005B91C..0x0005CFB0 | size: 0x1694
+.text
+.balign 4
+
+# .text:0x0 | 0x5B91C | size: 0x4
+.fn pad_00_0005B91C_text, local
+/* 0005B91C 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_00_0005B91C_text
+
+# .text:0x4 | 0x5B920 | size: 0x58
+.fn fn_3_5B920, global
+/* 0005B920 00000044  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005B924 00000048  7C 08 02 A6 */	mflr r0
+/* 0005B928 0000004C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005B92C 00000050  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005B930 00000054  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005B934 00000058  7C 9F 23 78 */	mr r31, r4
+/* 0005B938 0000005C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0005B93C 00000060  7C 7E 1B 78 */	mr r30, r3
+/* 0005B940 00000064  41 82 00 1C */	beq .L_0005B95C
+/* 0005B944 00000068  38 80 00 00 */	li r4, 0x0
+/* 0005B948 0000006C  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 0005B94C 00000070  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005B950 00000074  40 81 00 0C */	ble .L_0005B95C
+/* 0005B954 00000078  7F C3 F3 78 */	mr r3, r30
+/* 0005B958 0000007C  48 00 00 01 */	bl __dl__FPv
+.L_0005B95C:
+/* 0005B95C 00000080  7F C3 F3 78 */	mr r3, r30
+/* 0005B960 00000084  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005B964 00000088  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0005B968 0000008C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005B96C 00000090  7C 08 03 A6 */	mtlr r0
+/* 0005B970 00000094  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005B974 00000098  4E 80 00 20 */	blr
+.endfn fn_3_5B920
+
+# .text:0x5C | 0x5B978 | size: 0x8
+.fn gap_00_0005B978_text, global
+.hidden gap_00_0005B978_text
+/* 0005B978 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005B97C 000000A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005B978_text
+
+# .text:0x64 | 0x5B980 | size: 0x88
+.fn fn_3_5B980, global
+/* 0005B980 000000A4  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005B984 000000A8  7C 08 02 A6 */	mflr r0
+/* 0005B988 000000AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005B98C 000000B0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005B990 000000B4  7C 9F 23 78 */	mr r31, r4
+/* 0005B994 000000B8  38 80 00 3A */	li r4, 0x3a
+/* 0005B998 000000BC  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0005B99C 000000C0  7C 7E 1B 78 */	mr r30, r3
+/* 0005B9A0 000000C4  7F E3 FB 78 */	mr r3, r31
+/* 0005B9A4 000000C8  48 00 00 01 */	bl strrchr
+/* 0005B9A8 000000CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005B9AC 000000D0  41 82 00 08 */	beq .L_0005B9B4
+/* 0005B9B0 000000D4  3B E3 00 01 */	addi r31, r3, 0x1
+.L_0005B9B4:
+/* 0005B9B4 000000D8  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 0005B9B8 000000DC  7F C3 F3 78 */	mr r3, r30
+/* 0005B9BC 000000E0  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 0005B9C0 000000E4  7D 89 03 A6 */	mtctr r12
+/* 0005B9C4 000000E8  4E 80 04 21 */	bctrl
+/* 0005B9C8 000000EC  38 80 00 3A */	li r4, 0x3a
+/* 0005B9CC 000000F0  48 00 00 01 */	bl strrchr
+/* 0005B9D0 000000F4  7F E4 FB 78 */	mr r4, r31
+/* 0005B9D4 000000F8  38 63 00 01 */	addi r3, r3, 0x1
+/* 0005B9D8 000000FC  48 00 00 01 */	bl strcmp
+/* 0005B9DC 00000100  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005B9E0 00000104  40 82 00 0C */	bne .L_0005B9EC
+/* 0005B9E4 00000108  38 60 00 01 */	li r3, 0x1
+/* 0005B9E8 0000010C  48 00 00 08 */	b .L_0005B9F0
+.L_0005B9EC:
+/* 0005B9EC 00000110  38 60 00 00 */	li r3, 0x0
+.L_0005B9F0:
+/* 0005B9F0 00000114  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005B9F4 00000118  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005B9F8 0000011C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0005B9FC 00000120  7C 08 03 A6 */	mtlr r0
+/* 0005BA00 00000124  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BA04 00000128  4E 80 00 20 */	blr
+.endfn fn_3_5B980
+
+# .text:0xEC | 0x5BA08 | size: 0x8
+.fn gap_00_0005BA08_text, global
+.hidden gap_00_0005BA08_text
+/* 0005BA08 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BA0C 00000130  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BA08_text
+
+# .text:0xF4 | 0x5BA10 | size: 0x30
+.fn fn_3_5BA10, global
+/* 0005BA10 00000134  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BA14 00000138  7C 08 02 A6 */	mflr r0
+/* 0005BA18 0000013C  7C 65 1B 78 */	mr r5, r3
+/* 0005BA1C 00000140  7C 83 23 78 */	mr r3, r4
+/* 0005BA20 00000144  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BA24 00000148  39 85 00 0C */	addi r12, r5, 0xc
+/* 0005BA28 0000014C  48 00 00 01 */	bl __ptmf_scall
+/* 0005BA2C 00000150  60 00 00 00 */	nop
+/* 0005BA30 00000154  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BA34 00000158  7C 08 03 A6 */	mtlr r0
+/* 0005BA38 0000015C  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BA3C 00000160  4E 80 00 20 */	blr
+.endfn fn_3_5BA10
+
+# .text:0x124 | 0x5BA40 | size: 0x30
+.fn fn_3_5BA40, global
+/* 0005BA40 00000164  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BA44 00000168  7C 08 02 A6 */	mflr r0
+/* 0005BA48 0000016C  7C 65 1B 78 */	mr r5, r3
+/* 0005BA4C 00000170  7C 83 23 78 */	mr r3, r4
+/* 0005BA50 00000174  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BA54 00000178  39 85 00 18 */	addi r12, r5, 0x18
+/* 0005BA58 0000017C  48 00 00 01 */	bl __ptmf_scall
+/* 0005BA5C 00000180  60 00 00 00 */	nop
+/* 0005BA60 00000184  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BA64 00000188  7C 08 03 A6 */	mtlr r0
+/* 0005BA68 0000018C  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BA6C 00000190  4E 80 00 20 */	blr
+.endfn fn_3_5BA40
+
+# .text:0x154 | 0x5BA70 | size: 0x30
+.fn fn_3_5BA70, global
+/* 0005BA70 00000194  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BA74 00000198  7C 08 02 A6 */	mflr r0
+/* 0005BA78 0000019C  7C 65 1B 78 */	mr r5, r3
+/* 0005BA7C 000001A0  7C 83 23 78 */	mr r3, r4
+/* 0005BA80 000001A4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BA84 000001A8  39 85 00 24 */	addi r12, r5, 0x24
+/* 0005BA88 000001AC  48 00 00 01 */	bl __ptmf_scall
+/* 0005BA8C 000001B0  60 00 00 00 */	nop
+/* 0005BA90 000001B4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BA94 000001B8  7C 08 03 A6 */	mtlr r0
+/* 0005BA98 000001BC  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BA9C 000001C0  4E 80 00 20 */	blr
+.endfn fn_3_5BA70
+
+# .text:0x184 | 0x5BAA0 | size: 0x128
+.fn fn_3_5BAA0, global
+/* 0005BAA0 000001C4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005BAA4 000001C8  7C 08 02 A6 */	mflr r0
+/* 0005BAA8 000001CC  38 60 06 80 */	li r3, 0x680
+/* 0005BAAC 000001D0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005BAB0 000001D4  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005BAB4 000001D8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005BAB8 000001DC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 0005BABC 000001E0  93 81 00 10 */	stw r28, 0x10(r1)
+/* 0005BAC0 000001E4  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 0005BAC4 000001E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005BAC8 000001EC  7C 7E 1B 78 */	mr r30, r3
+/* 0005BACC 000001F0  41 82 00 D8 */	beq .L_0005BBA4
+/* 0005BAD0 000001F4  48 00 00 01 */	bl __ct__5dEn_cFv
+/* 0005BAD4 000001F8  3C 80 00 00 */	lis r4, lbl_3_data_146E0@ha
+/* 0005BAD8 000001FC  38 7E 05 24 */	addi r3, r30, 0x524
+/* 0005BADC 00000200  38 84 00 00 */	addi r4, r4, lbl_3_data_146E0@l
+/* 0005BAE0 00000204  90 9E 00 60 */	stw r4, 0x60(r30)
+/* 0005BAE4 00000208  48 00 00 01 */	bl __ct__16dHeapAllocator_cFv
+/* 0005BAE8 0000020C  3B E0 00 00 */	li r31, 0x0
+/* 0005BAEC 00000210  93 FE 05 40 */	stw r31, 0x540(r30)
+/* 0005BAF0 00000214  38 7E 05 44 */	addi r3, r30, 0x544
+/* 0005BAF4 00000218  48 00 00 01 */	bl __ct__Q23m3d5mdl_cFv
+/* 0005BAF8 0000021C  3B 9E 05 84 */	addi r28, r30, 0x584
+/* 0005BAFC 00000220  7F 83 E3 78 */	mr r3, r28
+/* 0005BB00 00000224  48 00 00 01 */	bl __ct__Q23m3d6fanm_cFv
+/* 0005BB04 00000228  3C 60 00 00 */	lis r3, __vt__Q23m3d8anmChr_c@ha
+/* 0005BB08 0000022C  3B BE 05 BC */	addi r29, r30, 0x5bc
+/* 0005BB0C 00000230  38 63 00 00 */	addi r3, r3, __vt__Q23m3d8anmChr_c@l
+/* 0005BB10 00000234  90 7C 00 00 */	stw r3, 0x0(r28)
+/* 0005BB14 00000238  3C 60 00 00 */	lis r3, sInstance__11SndAudioMgr@ha
+/* 0005BB18 0000023C  38 80 00 00 */	li r4, 0x0
+/* 0005BB1C 00000240  80 A3 00 00 */	lwz r5, sInstance__11SndAudioMgr@l(r3)
+/* 0005BB20 00000244  7F A3 EB 78 */	mr r3, r29
+/* 0005BB24 00000248  80 A5 05 BC */	lwz r5, 0x5bc(r5)
+/* 0005BB28 0000024C  48 00 00 01 */	bl __ct__15NMSndObjectBaseFQ215NMSndObjectBase8OBJ_TYPERQ34nw4r3snd18SoundArchivePlayer
+/* 0005BB2C 00000250  3C 80 00 00 */	lis r4, lbl_3_data_149A0@ha
+/* 0005BB30 00000254  3C 60 00 00 */	lis r3, lbl_3_rodata_2914@ha
+/* 0005BB34 00000258  38 84 00 00 */	addi r4, r4, lbl_3_data_149A0@l
+/* 0005BB38 0000025C  90 9D 00 00 */	stw r4, 0x0(r29)
+/* 0005BB3C 00000260  C0 23 00 00 */	lfs f1, lbl_3_rodata_2914@l(r3)
+/* 0005BB40 00000264  3C 60 00 00 */	lis r3, lbl_3_rodata_2918@ha
+/* 0005BB44 00000268  D0 3D 00 64 */	stfs f1, 0x64(r29)
+/* 0005BB48 0000026C  3C 80 00 00 */	lis r4, fn_3_5BBD0@ha
+/* 0005BB4C 00000270  C0 03 00 00 */	lfs f0, lbl_3_rodata_2918@l(r3)
+/* 0005BB50 00000274  3C A0 00 00 */	lis r5, fn_3_5BBF0@ha
+/* 0005BB54 00000278  93 FD 00 68 */	stw r31, 0x68(r29)
+/* 0005BB58 0000027C  38 7D 00 74 */	addi r3, r29, 0x74
+/* 0005BB5C 00000280  38 84 00 00 */	addi r4, r4, fn_3_5BBD0@l
+/* 0005BB60 00000284  38 A5 00 00 */	addi r5, r5, fn_3_5BBF0@l
+/* 0005BB64 00000288  D0 3D 00 6C */	stfs f1, 0x6c(r29)
+/* 0005BB68 0000028C  38 C0 00 08 */	li r6, 0x8
+/* 0005BB6C 00000290  38 E0 00 06 */	li r7, 0x6
+/* 0005BB70 00000294  D0 1D 00 70 */	stfs f0, 0x70(r29)
+/* 0005BB74 00000298  48 00 00 01 */	bl __construct_array
+/* 0005BB78 0000029C  7F A3 EB 78 */	mr r3, r29
+/* 0005BB7C 000002A0  38 80 00 00 */	li r4, 0x0
+/* 0005BB80 000002A4  38 A0 00 04 */	li r5, 0x4
+/* 0005BB84 000002A8  48 00 00 01 */	bl SetPlayableSoundCount__Q34nw4r3snd10SoundActorFii
+/* 0005BB88 000002AC  38 00 00 06 */	li r0, 0x6
+/* 0005BB8C 000002B0  90 1D 00 54 */	stw r0, 0x54(r29)
+/* 0005BB90 000002B4  38 00 00 01 */	li r0, 0x1
+/* 0005BB94 000002B8  3C 60 00 00 */	lis r3, lbl_3_data_14960@ha
+/* 0005BB98 000002BC  90 1D 00 58 */	stw r0, 0x58(r29)
+/* 0005BB9C 000002C0  38 63 00 00 */	addi r3, r3, lbl_3_data_14960@l
+/* 0005BBA0 000002C4  90 7D 00 00 */	stw r3, 0x0(r29)
+.L_0005BBA4:
+/* 0005BBA4 000002C8  7F C3 F3 78 */	mr r3, r30
+/* 0005BBA8 000002CC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005BBAC 000002D0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005BBB0 000002D4  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 0005BBB4 000002D8  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 0005BBB8 000002DC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005BBBC 000002E0  7C 08 03 A6 */	mtlr r0
+/* 0005BBC0 000002E4  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005BBC4 000002E8  4E 80 00 20 */	blr
+.endfn fn_3_5BAA0
+
+# .text:0x2AC | 0x5BBC8 | size: 0x8
+.fn gap_00_0005BBC8_text, global
+.hidden gap_00_0005BBC8_text
+/* 0005BBC8 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BBCC 000002F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BBC8_text
+
+# .text:0x2B4 | 0x5BBD0 | size: 0x18
+.fn fn_3_5BBD0, global
+/* 0005BBD0 000002F4  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005BBD4 000002F8  38 00 00 00 */	li r0, 0x0
+/* 0005BBD8 000002FC  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005BBDC 00000300  90 03 00 00 */	stw r0, 0x0(r3)
+/* 0005BBE0 00000304  D0 03 00 04 */	stfs f0, 0x4(r3)
+/* 0005BBE4 00000308  4E 80 00 20 */	blr
+.endfn fn_3_5BBD0
+
+# .text:0x2CC | 0x5BBE8 | size: 0x8
+.fn gap_00_0005BBE8_text, global
+.hidden gap_00_0005BBE8_text
+/* 0005BBE8 0000030C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BBEC 00000310  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BBE8_text
+
+# .text:0x2D4 | 0x5BBF0 | size: 0x58
+.fn fn_3_5BBF0, global
+/* 0005BBF0 00000314  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BBF4 00000318  7C 08 02 A6 */	mflr r0
+/* 0005BBF8 0000031C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005BBFC 00000320  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BC00 00000324  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005BC04 00000328  7C 9F 23 78 */	mr r31, r4
+/* 0005BC08 0000032C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0005BC0C 00000330  7C 7E 1B 78 */	mr r30, r3
+/* 0005BC10 00000334  41 82 00 1C */	beq .L_0005BC2C
+/* 0005BC14 00000338  41 82 00 08 */	beq .L_0005BC1C
+/* 0005BC18 0000033C  48 00 00 01 */	bl DetachSound__Q34nw4r3snd11SoundHandleFv
+.L_0005BC1C:
+/* 0005BC1C 00000340  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005BC20 00000344  40 81 00 0C */	ble .L_0005BC2C
+/* 0005BC24 00000348  7F C3 F3 78 */	mr r3, r30
+/* 0005BC28 0000034C  48 00 00 01 */	bl __dl__FPv
+.L_0005BC2C:
+/* 0005BC2C 00000350  7F C3 F3 78 */	mr r3, r30
+/* 0005BC30 00000354  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005BC34 00000358  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0005BC38 0000035C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BC3C 00000360  7C 08 03 A6 */	mtlr r0
+/* 0005BC40 00000364  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BC44 00000368  4E 80 00 20 */	blr
+.endfn fn_3_5BBF0
+
+# .text:0x32C | 0x5BC48 | size: 0x8
+.fn gap_00_0005BC48_text, global
+.hidden gap_00_0005BC48_text
+/* 0005BC48 0000036C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BC4C 00000370  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BC48_text
+
+# .text:0x334 | 0x5BC50 | size: 0x74
+.fn fn_3_5BC50, global
+/* 0005BC50 00000374  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BC54 00000378  7C 08 02 A6 */	mflr r0
+/* 0005BC58 0000037C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005BC5C 00000380  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BC60 00000384  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005BC64 00000388  7C 9F 23 78 */	mr r31, r4
+/* 0005BC68 0000038C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0005BC6C 00000390  7C 7E 1B 78 */	mr r30, r3
+/* 0005BC70 00000394  41 82 00 38 */	beq .L_0005BCA8
+/* 0005BC74 00000398  3C 80 00 00 */	lis r4, fn_3_5BBF0@ha
+/* 0005BC78 0000039C  38 A0 00 08 */	li r5, 0x8
+/* 0005BC7C 000003A0  38 84 00 00 */	addi r4, r4, fn_3_5BBF0@l
+/* 0005BC80 000003A4  38 C0 00 06 */	li r6, 0x6
+/* 0005BC84 000003A8  38 63 00 74 */	addi r3, r3, 0x74
+/* 0005BC88 000003AC  48 00 00 01 */	bl __destroy_arr
+/* 0005BC8C 000003B0  7F C3 F3 78 */	mr r3, r30
+/* 0005BC90 000003B4  38 80 00 00 */	li r4, 0x0
+/* 0005BC94 000003B8  48 00 00 01 */	bl __dt__15NMSndObjectBaseFv
+/* 0005BC98 000003BC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005BC9C 000003C0  40 81 00 0C */	ble .L_0005BCA8
+/* 0005BCA0 000003C4  7F C3 F3 78 */	mr r3, r30
+/* 0005BCA4 000003C8  48 00 00 01 */	bl __dl__FPv
+.L_0005BCA8:
+/* 0005BCA8 000003CC  7F C3 F3 78 */	mr r3, r30
+/* 0005BCAC 000003D0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005BCB0 000003D4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0005BCB4 000003D8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BCB8 000003DC  7C 08 03 A6 */	mtlr r0
+/* 0005BCBC 000003E0  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BCC0 000003E4  4E 80 00 20 */	blr
+.endfn fn_3_5BC50
+
+# .text:0x3A8 | 0x5BCC4 | size: 0xC
+.fn gap_00_0005BCC4_text, global
+.hidden gap_00_0005BCC4_text
+/* 0005BCC4 000003E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BCC8 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BCCC 000003F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BCC4_text
+
+# .text:0x3B4 | 0x5BCD0 | size: 0x7C
+.fn fn_3_5BCD0, global
+/* 0005BCD0 000003F4  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BCD4 000003F8  7C 08 02 A6 */	mflr r0
+/* 0005BCD8 000003FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005BCDC 00000400  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BCE0 00000404  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005BCE4 00000408  7C 9F 23 78 */	mr r31, r4
+/* 0005BCE8 0000040C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0005BCEC 00000410  7C 7E 1B 78 */	mr r30, r3
+/* 0005BCF0 00000414  41 82 00 40 */	beq .L_0005BD30
+/* 0005BCF4 00000418  41 82 00 2C */	beq .L_0005BD20
+/* 0005BCF8 0000041C  41 82 00 28 */	beq .L_0005BD20
+/* 0005BCFC 00000420  3C 80 00 00 */	lis r4, fn_3_5BBF0@ha
+/* 0005BD00 00000424  38 A0 00 08 */	li r5, 0x8
+/* 0005BD04 00000428  38 84 00 00 */	addi r4, r4, fn_3_5BBF0@l
+/* 0005BD08 0000042C  38 C0 00 06 */	li r6, 0x6
+/* 0005BD0C 00000430  38 63 00 74 */	addi r3, r3, 0x74
+/* 0005BD10 00000434  48 00 00 01 */	bl __destroy_arr
+/* 0005BD14 00000438  7F C3 F3 78 */	mr r3, r30
+/* 0005BD18 0000043C  38 80 00 00 */	li r4, 0x0
+/* 0005BD1C 00000440  48 00 00 01 */	bl __dt__15NMSndObjectBaseFv
+.L_0005BD20:
+/* 0005BD20 00000444  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005BD24 00000448  40 81 00 0C */	ble .L_0005BD30
+/* 0005BD28 0000044C  7F C3 F3 78 */	mr r3, r30
+/* 0005BD2C 00000450  48 00 00 01 */	bl __dl__FPv
+.L_0005BD30:
+/* 0005BD30 00000454  7F C3 F3 78 */	mr r3, r30
+/* 0005BD34 00000458  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005BD38 0000045C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0005BD3C 00000460  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BD40 00000464  7C 08 03 A6 */	mtlr r0
+/* 0005BD44 00000468  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BD48 0000046C  4E 80 00 20 */	blr
+.endfn fn_3_5BCD0
+
+# .text:0x430 | 0x5BD4C | size: 0x4
+.fn gap_00_0005BD4C_text, global
+.hidden gap_00_0005BD4C_text
+/* 0005BD4C 00000470  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BD4C_text
+
+# .text:0x434 | 0x5BD50 | size: 0x118
+.fn fn_3_5BD50, global
+/* 0005BD50 00000474  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005BD54 00000478  7C 08 02 A6 */	mflr r0
+/* 0005BD58 0000047C  3C C0 00 00 */	lis r6, m_bg_p__5dBg_c@ha
+/* 0005BD5C 00000480  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005BD60 00000484  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005BD64 00000488  3F E0 00 00 */	lis r31, m_mbgchoice_keep__8dActor_c@ha
+/* 0005BD68 0000048C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005BD6C 00000490  7C 7E 1B 78 */	mr r30, r3
+/* 0005BD70 00000494  C0 63 00 B0 */	lfs f3, 0xb0(r3)
+/* 0005BD74 00000498  C0 83 00 AC */	lfs f4, 0xac(r3)
+/* 0005BD78 0000049C  FC 00 18 50 */	fneg f0, f3
+/* 0005BD7C 000004A0  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 0005BD80 000004A4  FC 20 20 1E */	fctiwz f1, f4
+/* 0005BD84 000004A8  C0 43 00 B4 */	lfs f2, 0xb4(r3)
+/* 0005BD88 000004AC  54 00 07 3E */	clrlwi r0, r0, 28
+/* 0005BD8C 000004B0  90 03 06 78 */	stw r0, 0x678(r3)
+/* 0005BD90 000004B4  FC 00 00 1E */	fctiwz f0, f0
+/* 0005BD94 000004B8  D8 21 00 08 */	stfd f1, 0x8(r1)
+/* 0005BD98 000004BC  D8 01 00 10 */	stfd f0, 0x10(r1)
+/* 0005BD9C 000004C0  80 81 00 0C */	lwz r4, 0xc(r1)
+/* 0005BDA0 000004C4  80 A1 00 14 */	lwz r5, 0x14(r1)
+/* 0005BDA4 000004C8  D0 83 06 68 */	stfs f4, 0x668(r3)
+/* 0005BDA8 000004CC  54 84 04 3E */	clrlwi r4, r4, 16
+/* 0005BDAC 000004D0  54 A5 04 3E */	clrlwi r5, r5, 16
+/* 0005BDB0 000004D4  D0 63 06 6C */	stfs f3, 0x66c(r3)
+/* 0005BDB4 000004D8  D0 43 06 70 */	stfs f2, 0x670(r3)
+/* 0005BDB8 000004DC  80 66 00 00 */	lwz r3, m_bg_p__5dBg_c@l(r6)
+/* 0005BDBC 000004E0  88 DF 00 00 */	lbz r6, m_mbgchoice_keep__8dActor_c@l(r31)
+/* 0005BDC0 000004E4  48 00 00 01 */	bl CoinGetBitCheck__5dBg_cFUsUsi
+/* 0005BDC4 000004E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005BDC8 000004EC  41 82 00 20 */	beq .L_0005BDE8
+/* 0005BDCC 000004F0  3C 80 00 00 */	lis r4, m_read_p_keep__8dActor_c@ha
+/* 0005BDD0 000004F4  38 60 00 02 */	li r3, 0x2
+/* 0005BDD4 000004F8  80 84 00 00 */	lwz r4, m_read_p_keep__8dActor_c@l(r4)
+/* 0005BDD8 000004FC  88 04 00 00 */	lbz r0, 0x0(r4)
+/* 0005BDDC 00000500  60 00 00 01 */	ori r0, r0, 0x1
+/* 0005BDE0 00000504  98 04 00 00 */	stb r0, 0x0(r4)
+/* 0005BDE4 00000508  48 00 00 6C */	b .L_0005BE50
+.L_0005BDE8:
+/* 0005BDE8 0000050C  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005BDEC 00000510  7F C3 F3 78 */	mr r3, r30
+/* 0005BDF0 00000514  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005BDF4 00000518  D0 1E 00 DC */	stfs f0, 0xdc(r30)
+/* 0005BDF8 0000051C  D0 1E 00 E0 */	stfs f0, 0xe0(r30)
+/* 0005BDFC 00000520  D0 1E 00 E4 */	stfs f0, 0xe4(r30)
+/* 0005BE00 00000524  48 00 00 01 */	bl fn_3_5BFD0
+/* 0005BE04 00000528  3C A0 00 00 */	lis r5, lbl_3_rodata_291C@ha
+/* 0005BE08 0000052C  7F C4 F3 78 */	mr r4, r30
+/* 0005BE0C 00000530  38 7E 01 48 */	addi r3, r30, 0x148
+/* 0005BE10 00000534  38 A5 00 00 */	addi r5, r5, lbl_3_rodata_291C@l
+/* 0005BE14 00000538  48 00 00 01 */	bl set__5dCc_cFP8dActor_cP10sCcDatNewF
+/* 0005BE18 0000053C  38 7E 01 48 */	addi r3, r30, 0x148
+/* 0005BE1C 00000540  48 00 00 01 */	bl entry__5dCc_cFv
+/* 0005BE20 00000544  88 7F 00 00 */	lbz r3, m_mbgchoice_keep__8dActor_c@l(r31)
+/* 0005BE24 00000548  38 00 00 03 */	li r0, 0x3
+/* 0005BE28 0000054C  98 7E 01 E8 */	stb r3, 0x1e8(r30)
+/* 0005BE2C 00000550  3C 80 00 00 */	lis r4, lbl_3_bss_35C8@ha
+/* 0005BE30 00000554  7F C3 F3 78 */	mr r3, r30
+/* 0005BE34 00000558  98 1E 03 6D */	stb r0, 0x36d(r30)
+/* 0005BE38 0000055C  38 84 00 00 */	addi r4, r4, lbl_3_bss_35C8@l
+/* 0005BE3C 00000560  81 9E 00 60 */	lwz r12, 0x60(r30)
+/* 0005BE40 00000564  81 8C 00 D4 */	lwz r12, 0xd4(r12)
+/* 0005BE44 00000568  7D 89 03 A6 */	mtctr r12
+/* 0005BE48 0000056C  4E 80 04 21 */	bctrl
+/* 0005BE4C 00000570  38 60 00 01 */	li r3, 0x1
+.L_0005BE50:
+/* 0005BE50 00000574  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005BE54 00000578  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005BE58 0000057C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005BE5C 00000580  7C 08 03 A6 */	mtlr r0
+/* 0005BE60 00000584  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005BE64 00000588  4E 80 00 20 */	blr
+.endfn fn_3_5BD50
+
+# .text:0x54C | 0x5BE68 | size: 0x8
+.fn gap_00_0005BE68_text, global
+.hidden gap_00_0005BE68_text
+/* 0005BE68 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BE6C 00000590  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BE68_text
+
+# .text:0x554 | 0x5BE70 | size: 0x4C
+.fn fn_3_5BE70, global
+/* 0005BE70 00000594  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005BE74 00000598  7C 08 02 A6 */	mflr r0
+/* 0005BE78 0000059C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005BE7C 000005A0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005BE80 000005A4  7C 7F 1B 78 */	mr r31, r3
+/* 0005BE84 000005A8  81 83 03 94 */	lwz r12, 0x394(r3)
+/* 0005BE88 000005AC  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 0005BE8C 000005B0  7D 89 03 A6 */	mtctr r12
+/* 0005BE90 000005B4  38 63 03 94 */	addi r3, r3, 0x394
+/* 0005BE94 000005B8  4E 80 04 21 */	bctrl
+/* 0005BE98 000005BC  7F E3 FB 78 */	mr r3, r31
+/* 0005BE9C 000005C0  38 80 00 00 */	li r4, 0x0
+/* 0005BEA0 000005C4  48 00 00 01 */	bl ActorScrOutCheck__8dActor_cFUs
+/* 0005BEA4 000005C8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005BEA8 000005CC  38 60 00 01 */	li r3, 0x1
+/* 0005BEAC 000005D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005BEB0 000005D4  7C 08 03 A6 */	mtlr r0
+/* 0005BEB4 000005D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005BEB8 000005DC  4E 80 00 20 */	blr
+.endfn fn_3_5BE70
+
+# .text:0x5A0 | 0x5BEBC | size: 0x4
+.fn gap_00_0005BEBC_text, global
+.hidden gap_00_0005BEBC_text
+/* 0005BEBC 000005E0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BEBC_text
+
+# .text:0x5A4 | 0x5BEC0 | size: 0x100
+.fn fn_3_5BEC0, global
+/* 0005BEC0 000005E4  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 0005BEC4 000005E8  7C 08 02 A6 */	mflr r0
+/* 0005BEC8 000005EC  38 A0 00 01 */	li r5, 0x1
+/* 0005BECC 000005F0  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0005BED0 000005F4  38 81 00 14 */	addi r4, r1, 0x14
+/* 0005BED4 000005F8  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 0005BED8 000005FC  7C 7F 1B 78 */	mr r31, r3
+/* 0005BEDC 00000600  C0 03 00 B4 */	lfs f0, 0xb4(r3)
+/* 0005BEE0 00000604  C0 23 00 B0 */	lfs f1, 0xb0(r3)
+/* 0005BEE4 00000608  C0 43 00 AC */	lfs f2, 0xac(r3)
+/* 0005BEE8 0000060C  D0 41 00 1C */	stfs f2, 0x1c(r1)
+/* 0005BEEC 00000610  D0 21 00 20 */	stfs f1, 0x20(r1)
+/* 0005BEF0 00000614  D0 01 00 24 */	stfs f0, 0x24(r1)
+/* 0005BEF4 00000618  C0 03 06 74 */	lfs f0, 0x674(r3)
+/* 0005BEF8 0000061C  EC 01 00 2A */	fadds f0, f1, f0
+/* 0005BEFC 00000620  D0 01 00 20 */	stfs f0, 0x20(r1)
+/* 0005BF00 00000624  A8 03 01 00 */	lha r0, 0x100(r3)
+/* 0005BF04 00000628  B0 01 00 14 */	sth r0, 0x14(r1)
+/* 0005BF08 0000062C  A8 03 01 02 */	lha r0, 0x102(r3)
+/* 0005BF0C 00000630  B0 01 00 16 */	sth r0, 0x16(r1)
+/* 0005BF10 00000634  A8 03 01 04 */	lha r0, 0x104(r3)
+/* 0005BF14 00000638  38 61 00 1C */	addi r3, r1, 0x1c
+/* 0005BF18 0000063C  B0 01 00 18 */	sth r0, 0x18(r1)
+/* 0005BF1C 00000640  48 00 00 01 */	bl changePosAngle__8dActor_cFP7mVec3_cP7mAng3_ci
+/* 0005BF20 00000644  C0 61 00 24 */	lfs f3, 0x24(r1)
+/* 0005BF24 00000648  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 0005BF28 0000064C  C0 41 00 20 */	lfs f2, 0x20(r1)
+/* 0005BF2C 00000650  C0 21 00 1C */	lfs f1, 0x1c(r1)
+/* 0005BF30 00000654  48 00 00 01 */	bl PSMTXTrans
+/* 0005BF34 00000658  A0 01 00 16 */	lhz r0, 0x16(r1)
+/* 0005BF38 0000065C  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 0005BF3C 00000660  B0 01 00 10 */	sth r0, 0x10(r1)
+/* 0005BF40 00000664  38 81 00 10 */	addi r4, r1, 0x10
+/* 0005BF44 00000668  48 00 00 01 */	bl YrotM__6mMtx_cF4mAng
+/* 0005BF48 0000066C  A0 01 00 14 */	lhz r0, 0x14(r1)
+/* 0005BF4C 00000670  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 0005BF50 00000674  B0 01 00 0C */	sth r0, 0xc(r1)
+/* 0005BF54 00000678  38 81 00 0C */	addi r4, r1, 0xc
+/* 0005BF58 0000067C  48 00 00 01 */	bl XrotM__6mMtx_cF4mAng
+/* 0005BF5C 00000680  A0 01 00 18 */	lhz r0, 0x18(r1)
+/* 0005BF60 00000684  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 0005BF64 00000688  B0 01 00 08 */	sth r0, 0x8(r1)
+/* 0005BF68 0000068C  38 81 00 08 */	addi r4, r1, 0x8
+/* 0005BF6C 00000690  48 00 00 01 */	bl ZrotM__6mMtx_cF4mAng
+/* 0005BF70 00000694  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0005BF74 00000698  38 9F 00 7C */	addi r4, r31, 0x7c
+/* 0005BF78 0000069C  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 0005BF7C 000006A0  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0005BF80 000006A4  38 9F 00 DC */	addi r4, r31, 0xdc
+/* 0005BF84 000006A8  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 0005BF88 000006AC  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0005BF8C 000006B0  38 80 00 00 */	li r4, 0x0
+/* 0005BF90 000006B4  48 00 00 01 */	bl calc__Q23m3d9scnLeaf_cFb
+/* 0005BF94 000006B8  81 9F 05 44 */	lwz r12, 0x544(r31)
+/* 0005BF98 000006BC  38 7F 05 44 */	addi r3, r31, 0x544
+/* 0005BF9C 000006C0  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 0005BFA0 000006C4  7D 89 03 A6 */	mtctr r12
+/* 0005BFA4 000006C8  4E 80 04 21 */	bctrl
+/* 0005BFA8 000006CC  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 0005BFAC 000006D0  38 60 00 01 */	li r3, 0x1
+/* 0005BFB0 000006D4  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0005BFB4 000006D8  7C 08 03 A6 */	mtlr r0
+/* 0005BFB8 000006DC  38 21 00 30 */	addi r1, r1, 0x30
+/* 0005BFBC 000006E0  4E 80 00 20 */	blr
+.endfn fn_3_5BEC0
+
+# .text:0x6A4 | 0x5BFC0 | size: 0x8
+.fn fn_3_5BFC0, global
+/* 0005BFC0 000006E4  38 60 00 01 */	li r3, 0x1
+/* 0005BFC4 000006E8  4E 80 00 20 */	blr
+.endfn fn_3_5BFC0
+
+# .text:0x6AC | 0x5BFC8 | size: 0x8
+.fn gap_00_0005BFC8_text, global
+.hidden gap_00_0005BFC8_text
+/* 0005BFC8 000006EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005BFCC 000006F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005BFC8_text
+
+# .text:0x6B4 | 0x5BFD0 | size: 0x144
+.fn fn_3_5BFD0, global
+/* 0005BFD0 000006F4  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 0005BFD4 000006F8  7C 08 02 A6 */	mflr r0
+/* 0005BFD8 000006FC  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 0005BFDC 00000700  38 C0 00 00 */	li r6, 0x0
+/* 0005BFE0 00000704  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0005BFE4 00000708  38 E0 00 20 */	li r7, 0x20
+/* 0005BFE8 0000070C  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 0005BFEC 00000710  3F E0 00 00 */	lis r31, g_profile_EN_FRUIT@ha
+/* 0005BFF0 00000714  3B FF 00 00 */	addi r31, r31, g_profile_EN_FRUIT@l
+/* 0005BFF4 00000718  93 C1 00 28 */	stw r30, 0x28(r1)
+/* 0005BFF8 0000071C  93 A1 00 24 */	stw r29, 0x24(r1)
+/* 0005BFFC 00000720  7C 7D 1B 78 */	mr r29, r3
+/* 0005C000 00000724  38 63 05 24 */	addi r3, r3, 0x524
+/* 0005C004 00000728  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 0005C008 0000072C  38 80 FF FF */	li r4, -0x1
+/* 0005C00C 00000730  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 0005C010 00000734  80 1D 06 78 */	lwz r0, 0x678(r29)
+/* 0005C014 00000738  3C 60 00 00 */	lis r3, m_instance__9dResMng_c@ha
+/* 0005C018 0000073C  80 C3 00 00 */	lwz r6, m_instance__9dResMng_c@l(r3)
+/* 0005C01C 00000740  38 7F 00 28 */	addi r3, r31, 0x28
+/* 0005C020 00000744  54 00 10 3A */	slwi r0, r0, 2
+/* 0005C024 00000748  38 BF 00 58 */	addi r5, r31, 0x58
+/* 0005C028 0000074C  7C 83 00 2E */	lwzx r4, r3, r0
+/* 0005C02C 00000750  38 66 00 04 */	addi r3, r6, 0x4
+/* 0005C030 00000754  7C A5 00 2E */	lwzx r5, r5, r0
+/* 0005C034 00000758  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 0005C038 0000075C  80 1D 06 78 */	lwz r0, 0x678(r29)
+/* 0005C03C 00000760  38 9F 00 60 */	addi r4, r31, 0x60
+/* 0005C040 00000764  90 7D 05 40 */	stw r3, 0x540(r29)
+/* 0005C044 00000768  38 7D 05 40 */	addi r3, r29, 0x540
+/* 0005C048 0000076C  54 00 10 3A */	slwi r0, r0, 2
+/* 0005C04C 00000770  7C 84 00 2E */	lwzx r4, r4, r0
+/* 0005C050 00000774  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 0005C054 00000778  90 61 00 10 */	stw r3, 0x10(r1)
+/* 0005C058 0000077C  7C 7E 1B 78 */	mr r30, r3
+/* 0005C05C 00000780  38 7D 05 44 */	addi r3, r29, 0x544
+/* 0005C060 00000784  38 81 00 10 */	addi r4, r1, 0x10
+/* 0005C064 00000788  38 BD 05 24 */	addi r5, r29, 0x524
+/* 0005C068 0000078C  38 C0 00 20 */	li r6, 0x20
+/* 0005C06C 00000790  38 E0 00 01 */	li r7, 0x1
+/* 0005C070 00000794  39 00 00 00 */	li r8, 0x0
+/* 0005C074 00000798  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 0005C078 0000079C  38 7D 05 44 */	addi r3, r29, 0x544
+/* 0005C07C 000007A0  48 00 00 01 */	bl setSoftLight_MapObj__8dActor_cFRQ23m3d6bmdl_c
+/* 0005C080 000007A4  80 1D 06 78 */	lwz r0, 0x678(r29)
+/* 0005C084 000007A8  38 9F 00 70 */	addi r4, r31, 0x70
+/* 0005C088 000007AC  38 7D 05 40 */	addi r3, r29, 0x540
+/* 0005C08C 000007B0  54 00 10 3A */	slwi r0, r0, 2
+/* 0005C090 000007B4  7C 84 00 2E */	lwzx r4, r4, r0
+/* 0005C094 000007B8  48 00 00 01 */	bl GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc
+/* 0005C098 000007BC  90 61 00 08 */	stw r3, 0x8(r1)
+/* 0005C09C 000007C0  7C 7F 1B 78 */	mr r31, r3
+/* 0005C0A0 000007C4  38 7D 05 84 */	addi r3, r29, 0x584
+/* 0005C0A4 000007C8  38 81 00 0C */	addi r4, r1, 0xc
+/* 0005C0A8 000007CC  93 C1 00 0C */	stw r30, 0xc(r1)
+/* 0005C0AC 000007D0  38 A1 00 08 */	addi r5, r1, 0x8
+/* 0005C0B0 000007D4  38 DD 05 24 */	addi r6, r29, 0x524
+/* 0005C0B4 000007D8  38 E0 00 00 */	li r7, 0x0
+/* 0005C0B8 000007DC  48 00 00 01 */	bl create__Q23m3d8anmChr_cFQ34nw4r3g3d6ResMdlQ34nw4r3g3d9ResAnmChrP12mAllocator_cPUl
+/* 0005C0BC 000007E0  93 E1 00 14 */	stw r31, 0x14(r1)
+/* 0005C0C0 000007E4  38 7D 05 84 */	addi r3, r29, 0x584
+/* 0005C0C4 000007E8  38 9D 05 44 */	addi r4, r29, 0x544
+/* 0005C0C8 000007EC  38 A1 00 14 */	addi r5, r1, 0x14
+/* 0005C0CC 000007F0  38 C0 00 00 */	li r6, 0x0
+/* 0005C0D0 000007F4  48 00 00 01 */	bl setAnm__Q23m3d8anmChr_cFRQ23m3d6bmdl_cQ34nw4r3g3d9ResAnmChrQ23m3d10playMode_e
+/* 0005C0D4 000007F8  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005C0D8 000007FC  38 7D 05 44 */	addi r3, r29, 0x544
+/* 0005C0DC 00000800  C0 24 00 00 */	lfs f1, lbl_3_rodata_2914@l(r4)
+/* 0005C0E0 00000804  38 9D 05 84 */	addi r4, r29, 0x584
+/* 0005C0E4 00000808  48 00 00 01 */	bl setAnm__Q23m3d5mdl_cFRQ23m3d6banm_cf
+/* 0005C0E8 0000080C  7F A3 EB 78 */	mr r3, r29
+/* 0005C0EC 00000810  48 00 00 01 */	bl fn_3_5C120
+/* 0005C0F0 00000814  38 7D 05 24 */	addi r3, r29, 0x524
+/* 0005C0F4 00000818  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 0005C0F8 0000081C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0005C0FC 00000820  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 0005C100 00000824  83 C1 00 28 */	lwz r30, 0x28(r1)
+/* 0005C104 00000828  83 A1 00 24 */	lwz r29, 0x24(r1)
+/* 0005C108 0000082C  7C 08 03 A6 */	mtlr r0
+/* 0005C10C 00000830  38 21 00 30 */	addi r1, r1, 0x30
+/* 0005C110 00000834  4E 80 00 20 */	blr
+.endfn fn_3_5BFD0
+
+# .text:0x7F8 | 0x5C114 | size: 0xC
+.fn gap_00_0005C114_text, global
+.hidden gap_00_0005C114_text
+/* 0005C114 00000838  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C118 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C11C 00000840  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C114_text
+
+# .text:0x804 | 0x5C120 | size: 0xA8
+.fn fn_3_5C120, global
+/* 0005C120 00000844  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 0005C124 00000848  7C 08 02 A6 */	mflr r0
+/* 0005C128 0000084C  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0005C12C 00000850  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 0005C130 00000854  93 C1 00 28 */	stw r30, 0x28(r1)
+/* 0005C134 00000858  93 A1 00 24 */	stw r29, 0x24(r1)
+/* 0005C138 0000085C  7C 7D 1B 78 */	mr r29, r3
+/* 0005C13C 00000860  C0 23 05 AC */	lfs f1, 0x5ac(r3)
+/* 0005C140 00000864  48 00 00 01 */	bl __cvt_fp2unsigned
+/* 0005C144 00000868  3C 80 00 00 */	lis r4, m_exeFrame__10dScStage_c@ha
+/* 0005C148 0000086C  3F E0 43 30 */	lis r31, 0x4330
+/* 0005C14C 00000870  80 84 00 00 */	lwz r4, m_exeFrame__10dScStage_c@l(r4)
+/* 0005C150 00000874  3F C0 00 00 */	lis r30, lbl_3_rodata_2948@ha
+/* 0005C154 00000878  93 E1 00 08 */	stw r31, 0x8(r1)
+/* 0005C158 0000087C  7C 04 1B 96 */	divwu r0, r4, r3
+/* 0005C15C 00000880  C8 3E 00 00 */	lfd f1, lbl_3_rodata_2948@l(r30)
+/* 0005C160 00000884  7C 00 19 D6 */	mullw r0, r0, r3
+/* 0005C164 00000888  38 7D 05 84 */	addi r3, r29, 0x584
+/* 0005C168 0000088C  7C 00 20 50 */	subf r0, r0, r4
+/* 0005C16C 00000890  90 01 00 0C */	stw r0, 0xc(r1)
+/* 0005C170 00000894  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 0005C174 00000898  EC 20 08 28 */	fsubs f1, f0, f1
+/* 0005C178 0000089C  48 00 00 01 */	bl setFrame__Q23m3d6fanm_cFf
+/* 0005C17C 000008A0  48 00 00 01 */	bl getBgmTempo__6dAudioFv
+/* 0005C180 000008A4  54 60 04 3E */	clrlwi r0, r3, 16
+/* 0005C184 000008A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005C188 000008AC  3C 60 00 00 */	lis r3, lbl_3_rodata_2940@ha
+/* 0005C18C 000008B0  C8 5E 00 00 */	lfd f2, lbl_3_rodata_2948@l(r30)
+/* 0005C190 000008B4  93 E1 00 10 */	stw r31, 0x10(r1)
+/* 0005C194 000008B8  C0 03 00 00 */	lfs f0, lbl_3_rodata_2940@l(r3)
+/* 0005C198 000008BC  38 7D 05 84 */	addi r3, r29, 0x584
+/* 0005C19C 000008C0  C8 21 00 10 */	lfd f1, 0x10(r1)
+/* 0005C1A0 000008C4  EC 21 10 28 */	fsubs f1, f1, f2
+/* 0005C1A4 000008C8  EC 21 00 24 */	fdivs f1, f1, f0
+/* 0005C1A8 000008CC  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
+/* 0005C1AC 000008D0  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0005C1B0 000008D4  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 0005C1B4 000008D8  83 C1 00 28 */	lwz r30, 0x28(r1)
+/* 0005C1B8 000008DC  83 A1 00 24 */	lwz r29, 0x24(r1)
+/* 0005C1BC 000008E0  7C 08 03 A6 */	mtlr r0
+/* 0005C1C0 000008E4  38 21 00 30 */	addi r1, r1, 0x30
+/* 0005C1C4 000008E8  4E 80 00 20 */	blr
+.endfn fn_3_5C120
+
+# .text:0x8AC | 0x5C1C8 | size: 0x8
+.fn gap_00_0005C1C8_text, global
+.hidden gap_00_0005C1C8_text
+/* 0005C1C8 000008EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C1CC 000008F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C1C8_text
+
+# .text:0x8B4 | 0x5C1D0 | size: 0x60
+.fn fn_3_5C1D0, global
+/* 0005C1D0 000008F4  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 0005C1D4 000008F8  7C 08 02 A6 */	mflr r0
+/* 0005C1D8 000008FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 0005C1DC 00000900  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 0005C1E0 00000904  7C 9F 23 78 */	mr r31, r4
+/* 0005C1E4 00000908  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 0005C1E8 0000090C  7C 7E 1B 78 */	mr r30, r3
+/* 0005C1EC 00000910  38 63 01 48 */	addi r3, r3, 0x148
+/* 0005C1F0 00000914  48 00 00 01 */	bl release__5dCc_cFv
+/* 0005C1F4 00000918  3C 60 00 00 */	lis r3, lbl_3_data_146D0@ha
+/* 0005C1F8 0000091C  38 BE 00 AC */	addi r5, r30, 0xac
+/* 0005C1FC 00000920  38 63 00 00 */	addi r3, r3, lbl_3_data_146D0@l
+/* 0005C200 00000924  38 80 00 00 */	li r4, 0x0
+/* 0005C204 00000928  38 C0 00 00 */	li r6, 0x0
+/* 0005C208 0000092C  38 E0 00 00 */	li r7, 0x0
+/* 0005C20C 00000930  48 00 00 01 */	bl createEffect__3mEfFPCcUlPC7mVec3_cPC7mAng3_cPC7mVec3_c
+/* 0005C210 00000934  7F E3 FB 78 */	mr r3, r31
+/* 0005C214 00000938  48 00 00 01 */	bl addFruitCount__9daYoshi_cFv
+/* 0005C218 0000093C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005C21C 00000940  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 0005C220 00000944  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 0005C224 00000948  7C 08 03 A6 */	mtlr r0
+/* 0005C228 0000094C  38 21 00 10 */	addi r1, r1, 0x10
+/* 0005C22C 00000950  4E 80 00 20 */	blr
+.endfn fn_3_5C1D0
+
+# .text:0x914 | 0x5C230 | size: 0x4
+.fn fn_3_5C230, global
+/* 0005C230 00000954  4E 80 00 20 */	blr
+.endfn fn_3_5C230
+
+# .text:0x918 | 0x5C234 | size: 0xC
+.fn gap_00_0005C234_text, global
+.hidden gap_00_0005C234_text
+/* 0005C234 00000958  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C238 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C23C 00000960  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C234_text
+
+# .text:0x924 | 0x5C240 | size: 0x148
+.fn fn_3_5C240, global
+/* 0005C240 00000964  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 0005C244 00000968  7C 08 02 A6 */	mflr r0
+/* 0005C248 0000096C  3C A0 00 00 */	lis r5, lbl_3_rodata_2970@ha
+/* 0005C24C 00000970  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0005C250 00000974  C0 05 00 00 */	lfs f0, lbl_3_rodata_2970@l(r5)
+/* 0005C254 00000978  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 0005C258 0000097C  7C 7F 1B 78 */	mr r31, r3
+/* 0005C25C 00000980  7C 83 23 78 */	mr r3, r4
+/* 0005C260 00000984  93 C1 00 28 */	stw r30, 0x28(r1)
+/* 0005C264 00000988  C0 44 00 B0 */	lfs f2, 0xb0(r4)
+/* 0005C268 0000098C  80 C4 15 64 */	lwz r6, 0x1564(r4)
+/* 0005C26C 00000990  C0 24 00 B4 */	lfs f1, 0xb4(r4)
+/* 0005C270 00000994  EC 02 00 2A */	fadds f0, f2, f0
+/* 0005C274 00000998  C0 64 00 AC */	lfs f3, 0xac(r4)
+/* 0005C278 0000099C  38 06 FF FF */	subi r0, r6, 0x1
+/* 0005C27C 000009A0  D0 61 00 08 */	stfs f3, 0x8(r1)
+/* 0005C280 000009A4  54 1E 10 3A */	slwi r30, r0, 2
+/* 0005C284 000009A8  D0 21 00 10 */	stfs f1, 0x10(r1)
+/* 0005C288 000009AC  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 0005C28C 000009B0  81 84 00 60 */	lwz r12, 0x60(r4)
+/* 0005C290 000009B4  81 8C 00 6C */	lwz r12, 0x6c(r12)
+/* 0005C294 000009B8  7D 89 03 A6 */	mtctr r12
+/* 0005C298 000009BC  4E 80 04 21 */	bctrl
+/* 0005C29C 000009C0  3C 80 00 00 */	lis r4, lbl_3_rodata_2950@ha
+/* 0005C2A0 000009C4  88 03 00 00 */	lbz r0, 0x0(r3)
+/* 0005C2A4 000009C8  38 84 00 00 */	addi r4, r4, lbl_3_rodata_2950@l
+/* 0005C2A8 000009CC  38 61 00 08 */	addi r3, r1, 0x8
+/* 0005C2AC 000009D0  7C 84 F0 2E */	lwzx r4, r4, r30
+/* 0005C2B0 000009D4  7C 05 07 74 */	extsb r5, r0
+/* 0005C2B4 000009D8  38 C0 00 00 */	li r6, 0x0
+/* 0005C2B8 000009DC  48 00 00 01 */	bl CreateSmallScore__8dGameComFRC7mVec3_ciib
+/* 0005C2BC 000009E0  3D 40 00 00 */	lis r10, lbl_3_bss_360C@ha
+/* 0005C2C0 000009E4  88 0A 00 00 */	lbz r0, lbl_3_bss_360C@l(r10)
+/* 0005C2C4 000009E8  7C 00 07 75 */	extsb. r0, r0
+/* 0005C2C8 000009EC  40 82 00 3C */	bne .L_0005C304
+/* 0005C2CC 000009F0  3D 00 00 00 */	lis r8, lbl_3_bss_35F8@ha
+/* 0005C2D0 000009F4  39 20 02 5F */	li r9, 0x25f
+/* 0005C2D4 000009F8  38 C8 00 00 */	addi r6, r8, lbl_3_bss_35F8@l
+/* 0005C2D8 000009FC  38 E0 02 60 */	li r7, 0x260
+/* 0005C2DC 00000A00  38 A0 02 61 */	li r5, 0x261
+/* 0005C2E0 00000A04  38 80 02 62 */	li r4, 0x262
+/* 0005C2E4 00000A08  38 60 02 63 */	li r3, 0x263
+/* 0005C2E8 00000A0C  38 00 00 01 */	li r0, 0x1
+/* 0005C2EC 00000A10  91 28 00 00 */	stw r9, lbl_3_bss_35F8@l(r8)
+/* 0005C2F0 00000A14  90 E6 00 04 */	stw r7, 0x4(r6)
+/* 0005C2F4 00000A18  90 A6 00 08 */	stw r5, 0x8(r6)
+/* 0005C2F8 00000A1C  90 86 00 0C */	stw r4, 0xc(r6)
+/* 0005C2FC 00000A20  90 66 00 10 */	stw r3, 0x10(r6)
+/* 0005C300 00000A24  98 0A 00 00 */	stb r0, lbl_3_bss_360C@l(r10)
+.L_0005C304:
+/* 0005C304 00000A28  C0 1F 06 6C */	lfs f0, 0x66c(r31)
+/* 0005C308 00000A2C  3C 60 00 00 */	lis r3, m_bg_p__5dBg_c@ha
+/* 0005C30C 00000A30  C0 3F 06 68 */	lfs f1, 0x668(r31)
+/* 0005C310 00000A34  FC 00 00 50 */	fneg f0, f0
+/* 0005C314 00000A38  80 63 00 00 */	lwz r3, m_bg_p__5dBg_c@l(r3)
+/* 0005C318 00000A3C  FC 20 08 1E */	fctiwz f1, f1
+/* 0005C31C 00000A40  88 DF 03 8F */	lbz r6, 0x38f(r31)
+/* 0005C320 00000A44  FC 00 00 1E */	fctiwz f0, f0
+/* 0005C324 00000A48  D8 21 00 18 */	stfd f1, 0x18(r1)
+/* 0005C328 00000A4C  D8 01 00 20 */	stfd f0, 0x20(r1)
+/* 0005C32C 00000A50  80 81 00 1C */	lwz r4, 0x1c(r1)
+/* 0005C330 00000A54  80 A1 00 24 */	lwz r5, 0x24(r1)
+/* 0005C334 00000A58  54 84 04 3E */	clrlwi r4, r4, 16
+/* 0005C338 00000A5C  54 A5 04 3E */	clrlwi r5, r5, 16
+/* 0005C33C 00000A60  48 00 00 01 */	bl CoinGetBitSet__5dBg_cFUsUsi
+/* 0005C340 00000A64  81 9F 05 BC */	lwz r12, 0x5bc(r31)
+/* 0005C344 00000A68  3C 80 00 00 */	lis r4, lbl_3_bss_35F8@ha
+/* 0005C348 00000A6C  38 84 00 00 */	addi r4, r4, lbl_3_bss_35F8@l
+/* 0005C34C 00000A70  38 7F 05 BC */	addi r3, r31, 0x5bc
+/* 0005C350 00000A74  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 0005C354 00000A78  38 A0 00 00 */	li r5, 0x0
+/* 0005C358 00000A7C  7C 84 F0 2E */	lwzx r4, r4, r30
+/* 0005C35C 00000A80  7D 89 03 A6 */	mtctr r12
+/* 0005C360 00000A84  4E 80 04 21 */	bctrl
+/* 0005C364 00000A88  7F E3 FB 78 */	mr r3, r31
+/* 0005C368 00000A8C  48 00 00 01 */	bl deleteRequest__7fBase_cFv
+/* 0005C36C 00000A90  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 0005C370 00000A94  38 60 00 01 */	li r3, 0x1
+/* 0005C374 00000A98  83 C1 00 28 */	lwz r30, 0x28(r1)
+/* 0005C378 00000A9C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0005C37C 00000AA0  7C 08 03 A6 */	mtlr r0
+/* 0005C380 00000AA4  38 21 00 30 */	addi r1, r1, 0x30
+/* 0005C384 00000AA8  4E 80 00 20 */	blr
+.endfn fn_3_5C240
+
+# .text:0xA6C | 0x5C388 | size: 0x8
+.fn gap_00_0005C388_text, global
+.hidden gap_00_0005C388_text
+/* 0005C388 00000AAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C38C 00000AB0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C388_text
+
+# .text:0xA74 | 0x5C390 | size: 0x4
+.fn fn_3_5C390, global
+/* 0005C390 00000AB4  48 00 00 00 */	b startSound__11SndObjctEmyFUlUl
+.endfn fn_3_5C390
+
+# .text:0xA78 | 0x5C394 | size: 0xC
+.fn gap_00_0005C394_text, global
+.hidden gap_00_0005C394_text
+/* 0005C394 00000AB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C398 00000ABC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C39C 00000AC0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C394_text
+
+# .text:0xA84 | 0x5C3A0 | size: 0x4
+.fn fn_3_5C3A0, global
+/* 0005C3A0 00000AC4  4E 80 00 20 */	blr
+.endfn fn_3_5C3A0
+
+# .text:0xA88 | 0x5C3A4 | size: 0xC
+.fn gap_00_0005C3A4_text, global
+.hidden gap_00_0005C3A4_text
+/* 0005C3A4 00000AC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C3A8 00000ACC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C3AC 00000AD0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C3A4_text
+
+# .text:0xA94 | 0x5C3B0 | size: 0x4
+.fn fn_3_5C3B0, global
+/* 0005C3B0 00000AD4  4E 80 00 20 */	blr
+.endfn fn_3_5C3B0
+
+# .text:0xA98 | 0x5C3B4 | size: 0xC
+.fn gap_00_0005C3B4_text, global
+.hidden gap_00_0005C3B4_text
+/* 0005C3B4 00000AD8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C3B8 00000ADC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C3BC 00000AE0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C3B4_text
+
+# .text:0xAA4 | 0x5C3C0 | size: 0xC0
+.fn fn_3_5C3C0, global
+/* 0005C3C0 00000AE4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005C3C4 00000AE8  7C 08 02 A6 */	mflr r0
+/* 0005C3C8 00000AEC  3C 80 00 00 */	lis r4, m_instance__8dQuake_c@ha
+/* 0005C3CC 00000AF0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005C3D0 00000AF4  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005C3D4 00000AF8  3F E0 00 00 */	lis r31, lbl_3_rodata_2910@ha
+/* 0005C3D8 00000AFC  3B FF 00 00 */	addi r31, r31, lbl_3_rodata_2910@l
+/* 0005C3DC 00000B00  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005C3E0 00000B04  7C 7E 1B 78 */	mr r30, r3
+/* 0005C3E4 00000B08  80 84 00 00 */	lwz r4, m_instance__8dQuake_c@l(r4)
+/* 0005C3E8 00000B0C  88 04 00 38 */	lbz r0, 0x38(r4)
+/* 0005C3EC 00000B10  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005C3F0 00000B14  41 82 00 24 */	beq .L_0005C414
+/* 0005C3F4 00000B18  88 A3 06 7C */	lbz r5, 0x67c(r3)
+/* 0005C3F8 00000B1C  38 9F 00 68 */	addi r4, r31, 0x68
+/* 0005C3FC 00000B20  38 05 00 01 */	addi r0, r5, 0x1
+/* 0005C400 00000B24  98 03 06 7C */	stb r0, 0x67c(r3)
+/* 0005C404 00000B28  54 00 17 3A */	clrlslwi r0, r0, 30, 2
+/* 0005C408 00000B2C  7C 04 04 2E */	lfsx f0, r4, r0
+/* 0005C40C 00000B30  D0 03 06 74 */	stfs f0, 0x674(r3)
+/* 0005C410 00000B34  48 00 00 14 */	b .L_0005C424
+.L_0005C414:
+/* 0005C414 00000B38  C0 1F 00 08 */	lfs f0, 0x8(r31)
+/* 0005C418 00000B3C  38 00 00 00 */	li r0, 0x0
+/* 0005C41C 00000B40  98 03 06 7C */	stb r0, 0x67c(r3)
+/* 0005C420 00000B44  D0 03 06 74 */	stfs f0, 0x674(r3)
+.L_0005C424:
+/* 0005C424 00000B48  48 00 00 01 */	bl getBgmTempo__6dAudioFv
+/* 0005C428 00000B4C  54 63 04 3E */	clrlwi r3, r3, 16
+/* 0005C42C 00000B50  3C 00 43 30 */	lis r0, 0x4330
+/* 0005C430 00000B54  90 61 00 0C */	stw r3, 0xc(r1)
+/* 0005C434 00000B58  38 7E 05 84 */	addi r3, r30, 0x584
+/* 0005C438 00000B5C  C8 5F 00 38 */	lfd f2, 0x38(r31)
+/* 0005C43C 00000B60  90 01 00 08 */	stw r0, 0x8(r1)
+/* 0005C440 00000B64  C0 1F 00 30 */	lfs f0, 0x30(r31)
+/* 0005C444 00000B68  C8 21 00 08 */	lfd f1, 0x8(r1)
+/* 0005C448 00000B6C  EC 21 10 28 */	fsubs f1, f1, f2
+/* 0005C44C 00000B70  EC 21 00 24 */	fdivs f1, f1, f0
+/* 0005C450 00000B74  48 00 00 01 */	bl setRate__Q23m3d6banm_cFf
+/* 0005C454 00000B78  81 9E 05 44 */	lwz r12, 0x544(r30)
+/* 0005C458 00000B7C  38 7E 05 44 */	addi r3, r30, 0x544
+/* 0005C45C 00000B80  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 0005C460 00000B84  7D 89 03 A6 */	mtctr r12
+/* 0005C464 00000B88  4E 80 04 21 */	bctrl
+/* 0005C468 00000B8C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005C46C 00000B90  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005C470 00000B94  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005C474 00000B98  7C 08 03 A6 */	mtlr r0
+/* 0005C478 00000B9C  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005C47C 00000BA0  4E 80 00 20 */	blr
+.endfn fn_3_5C3C0
+
+# .text:0xB64 | 0x5C480 | size: 0x8
+.fn fn_3_5C480, global
+/* 0005C480 00000BA4  38 60 00 00 */	li r3, 0x0
+/* 0005C484 00000BA8  4E 80 00 20 */	blr
+.endfn fn_3_5C480
+
+# .text:0xB6C | 0x5C488 | size: 0x8
+.fn gap_00_0005C488_text, global
+.hidden gap_00_0005C488_text
+/* 0005C488 00000BAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C48C 00000BB0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C488_text
+
+# .text:0xB74 | 0x5C490 | size: 0x4
+.fn fn_3_5C490, global
+/* 0005C490 00000BB4  4E 80 00 20 */	blr
+.endfn fn_3_5C490
+
+# .text:0xB78 | 0x5C494 | size: 0xC
+.fn gap_00_0005C494_text, global
+.hidden gap_00_0005C494_text
+/* 0005C494 00000BB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C498 00000BBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C49C 00000BC0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C494_text
+
+# .text:0xB84 | 0x5C4A0 | size: 0x4
+.fn fn_3_5C4A0, global
+/* 0005C4A0 00000BC4  4E 80 00 20 */	blr
+.endfn fn_3_5C4A0
+
+# .text:0xB88 | 0x5C4A4 | size: 0xC
+.fn gap_00_0005C4A4_text, global
+.hidden gap_00_0005C4A4_text
+/* 0005C4A4 00000BC8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C4A8 00000BCC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C4AC 00000BD0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C4A4_text
+
+# .text:0xB94 | 0x5C4B0 | size: 0xC0
+.fn fn_3_5C4B0, global
+/* 0005C4B0 00000BD4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005C4B4 00000BD8  7C 08 02 A6 */	mflr r0
+/* 0005C4B8 00000BDC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C4BC 00000BE0  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005C4C0 00000BE4  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005C4C4 00000BE8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005C4C8 00000BEC  7C 9E 23 78 */	mr r30, r4
+/* 0005C4CC 00000BF0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 0005C4D0 00000BF4  7C 7D 1B 78 */	mr r29, r3
+/* 0005C4D4 00000BF8  41 82 00 7C */	beq .L_0005C550
+/* 0005C4D8 00000BFC  37 E3 05 BC */	addic. r31, r3, 0x5bc
+/* 0005C4DC 00000C00  41 82 00 30 */	beq .L_0005C50C
+/* 0005C4E0 00000C04  41 82 00 2C */	beq .L_0005C50C
+/* 0005C4E4 00000C08  41 82 00 28 */	beq .L_0005C50C
+/* 0005C4E8 00000C0C  3C 80 00 00 */	lis r4, fn_3_5BBF0@ha
+/* 0005C4EC 00000C10  38 7F 00 74 */	addi r3, r31, 0x74
+/* 0005C4F0 00000C14  38 84 00 00 */	addi r4, r4, fn_3_5BBF0@l
+/* 0005C4F4 00000C18  38 A0 00 08 */	li r5, 0x8
+/* 0005C4F8 00000C1C  38 C0 00 06 */	li r6, 0x6
+/* 0005C4FC 00000C20  48 00 00 01 */	bl __destroy_arr
+/* 0005C500 00000C24  7F E3 FB 78 */	mr r3, r31
+/* 0005C504 00000C28  38 80 00 00 */	li r4, 0x0
+/* 0005C508 00000C2C  48 00 00 01 */	bl __dt__15NMSndObjectBaseFv
+.L_0005C50C:
+/* 0005C50C 00000C30  34 7D 05 84 */	addic. r3, r29, 0x584
+/* 0005C510 00000C34  41 82 00 0C */	beq .L_0005C51C
+/* 0005C514 00000C38  38 80 00 00 */	li r4, 0x0
+/* 0005C518 00000C3C  48 00 00 01 */	bl __dt__Q23m3d6fanm_cFv
+.L_0005C51C:
+/* 0005C51C 00000C40  38 7D 05 44 */	addi r3, r29, 0x544
+/* 0005C520 00000C44  38 80 FF FF */	li r4, -0x1
+/* 0005C524 00000C48  48 00 00 01 */	bl __dt__Q23m3d5mdl_cFv
+/* 0005C528 00000C4C  38 7D 05 24 */	addi r3, r29, 0x524
+/* 0005C52C 00000C50  38 80 FF FF */	li r4, -0x1
+/* 0005C530 00000C54  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
+/* 0005C534 00000C58  7F A3 EB 78 */	mr r3, r29
+/* 0005C538 00000C5C  38 80 00 00 */	li r4, 0x0
+/* 0005C53C 00000C60  48 00 00 01 */	bl __dt__5dEn_cFv
+/* 0005C540 00000C64  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 0005C544 00000C68  40 81 00 0C */	ble .L_0005C550
+/* 0005C548 00000C6C  7F A3 EB 78 */	mr r3, r29
+/* 0005C54C 00000C70  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_0005C550:
+/* 0005C550 00000C74  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005C554 00000C78  7F A3 EB 78 */	mr r3, r29
+/* 0005C558 00000C7C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005C55C 00000C80  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 0005C560 00000C84  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005C564 00000C88  7C 08 03 A6 */	mtlr r0
+/* 0005C568 00000C8C  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005C56C 00000C90  4E 80 00 20 */	blr
+.endfn fn_3_5C4B0
+
+# .text:0xC54 | 0x5C570 | size: 0x1B4
+.fn fn_3_5C570, global
+/* 0005C570 00000C94  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 0005C574 00000C98  7C 08 02 A6 */	mflr r0
+/* 0005C578 00000C9C  90 01 00 44 */	stw r0, 0x44(r1)
+/* 0005C57C 00000CA0  39 61 00 40 */	addi r11, r1, 0x40
+/* 0005C580 00000CA4  48 00 00 01 */	bl _savegpr_26
+/* 0005C584 00000CA8  C0 24 00 00 */	lfs f1, 0x0(r4)
+/* 0005C588 00000CAC  7C 7F 1B 78 */	mr r31, r3
+/* 0005C58C 00000CB0  C0 04 00 04 */	lfs f0, 0x4(r4)
+/* 0005C590 00000CB4  3B 80 00 00 */	li r28, 0x0
+/* 0005C594 00000CB8  D0 23 00 A4 */	stfs f1, 0xa4(r3)
+/* 0005C598 00000CBC  D0 03 00 A8 */	stfs f0, 0xa8(r3)
+.L_0005C59C:
+/* 0005C59C 00000CC0  7F E3 FB 78 */	mr r3, r31
+/* 0005C5A0 00000CC4  7F 84 E3 78 */	mr r4, r28
+/* 0005C5A4 00000CC8  48 00 00 01 */	bl GetPlayingSoundCount__Q34nw4r3snd10SoundActorCFi
+/* 0005C5A8 00000CCC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C5AC 00000CD0  40 81 01 54 */	ble .L_0005C700
+/* 0005C5B0 00000CD4  80 7F 00 5C */	lwz r3, 0x5c(r31)
+/* 0005C5B4 00000CD8  38 9F 00 64 */	addi r4, r31, 0x64
+/* 0005C5B8 00000CDC  38 BF 00 A4 */	addi r5, r31, 0xa4
+/* 0005C5BC 00000CE0  38 C0 00 00 */	li r6, 0x0
+/* 0005C5C0 00000CE4  48 00 00 01 */	bl fn_8019ee20__9Snd2DCalcFRfRQ34nw4r4math4VEC2Ul
+/* 0005C5C4 00000CE8  7F FB FB 78 */	mr r27, r31
+/* 0005C5C8 00000CEC  3B 80 00 00 */	li r28, 0x0
+/* 0005C5CC 00000CF0  3F A0 00 00 */	lis r29, sInstance__11SndAudioMgr@ha
+/* 0005C5D0 00000CF4  3F C0 00 00 */	lis r30, sInstance__11SndSceneMgr@ha
+/* 0005C5D4 00000CF8  48 00 01 1C */	b .L_0005C6F0
+.L_0005C5D8:
+/* 0005C5D8 00000CFC  80 9B 00 74 */	lwz r4, 0x74(r27)
+/* 0005C5DC 00000D00  2C 04 00 00 */	cmpwi r4, 0x0
+/* 0005C5E0 00000D04  41 82 01 08 */	beq .L_0005C6E8
+/* 0005C5E4 00000D08  80 7D 00 00 */	lwz r3, sInstance__11SndAudioMgr@l(r29)
+/* 0005C5E8 00000D0C  41 82 00 0C */	beq .L_0005C5F4
+/* 0005C5EC 00000D10  80 84 00 9C */	lwz r4, 0x9c(r4)
+/* 0005C5F0 00000D14  48 00 00 08 */	b .L_0005C5F8
+.L_0005C5F4:
+/* 0005C5F4 00000D18  38 80 FF FF */	li r4, -0x1
+.L_0005C5F8:
+/* 0005C5F8 00000D1C  48 00 00 01 */	bl get3DCtrlFlag__11SndAudioMgrFUl
+/* 0005C5FC 00000D20  7C 7A 18 F8 */	nor r26, r3, r3
+/* 0005C600 00000D24  57 40 07 FF */	clrlwi. r0, r26, 31
+/* 0005C604 00000D28  41 82 00 20 */	beq .L_0005C624
+/* 0005C608 00000D2C  80 7B 00 74 */	lwz r3, 0x74(r27)
+/* 0005C60C 00000D30  C0 3F 00 64 */	lfs f1, 0x64(r31)
+/* 0005C610 00000D34  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C614 00000D38  41 82 00 4C */	beq .L_0005C660
+/* 0005C618 00000D3C  38 80 00 00 */	li r4, 0x0
+/* 0005C61C 00000D40  48 00 00 01 */	bl SetVolume__Q44nw4r3snd6detail10BasicSoundFfi
+/* 0005C620 00000D44  48 00 00 40 */	b .L_0005C660
+.L_0005C624:
+/* 0005C624 00000D48  80 7E 00 00 */	lwz r3, sInstance__11SndSceneMgr@l(r30)
+/* 0005C628 00000D4C  80 03 00 14 */	lwz r0, 0x14(r3)
+/* 0005C62C 00000D50  2C 00 00 03 */	cmpwi r0, 0x3
+/* 0005C630 00000D54  41 82 00 18 */	beq .L_0005C648
+/* 0005C634 00000D58  2C 00 00 02 */	cmpwi r0, 0x2
+/* 0005C638 00000D5C  40 82 00 28 */	bne .L_0005C660
+/* 0005C63C 00000D60  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 0005C640 00000D64  2C 00 00 03 */	cmpwi r0, 0x3
+/* 0005C644 00000D68  40 82 00 1C */	bne .L_0005C660
+.L_0005C648:
+/* 0005C648 00000D6C  80 7B 00 74 */	lwz r3, 0x74(r27)
+/* 0005C64C 00000D70  C0 3F 00 64 */	lfs f1, 0x64(r31)
+/* 0005C650 00000D74  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C654 00000D78  41 82 00 0C */	beq .L_0005C660
+/* 0005C658 00000D7C  38 80 00 00 */	li r4, 0x0
+/* 0005C65C 00000D80  48 00 00 01 */	bl SetVolume__Q44nw4r3snd6detail10BasicSoundFfi
+.L_0005C660:
+/* 0005C660 00000D84  57 40 07 39 */	rlwinm. r0, r26, 0, 28, 28
+/* 0005C664 00000D88  41 82 00 68 */	beq .L_0005C6CC
+/* 0005C668 00000D8C  80 9B 00 74 */	lwz r4, 0x74(r27)
+/* 0005C66C 00000D90  80 7D 00 00 */	lwz r3, sInstance__11SndAudioMgr@l(r29)
+/* 0005C670 00000D94  2C 04 00 00 */	cmpwi r4, 0x0
+/* 0005C674 00000D98  80 63 01 00 */	lwz r3, 0x100(r3)
+/* 0005C678 00000D9C  41 82 00 0C */	beq .L_0005C684
+/* 0005C67C 00000DA0  80 84 00 9C */	lwz r4, 0x9c(r4)
+/* 0005C680 00000DA4  48 00 00 08 */	b .L_0005C688
+.L_0005C684:
+/* 0005C684 00000DA8  38 80 FF FF */	li r4, -0x1
+.L_0005C688:
+/* 0005C688 00000DAC  38 A1 00 08 */	addi r5, r1, 0x8
+/* 0005C68C 00000DB0  48 00 00 01 */	bl ReadSoundInfo__Q34nw4r3snd12SoundArchiveCFUlPQ44nw4r3snd12SoundArchive9SoundInfo
+/* 0005C690 00000DB4  80 9F 00 68 */	lwz r4, 0x68(r31)
+/* 0005C694 00000DB8  2C 04 00 00 */	cmpwi r4, 0x0
+/* 0005C698 00000DBC  40 80 00 20 */	bge .L_0005C6B8
+/* 0005C69C 00000DC0  80 7B 00 74 */	lwz r3, 0x74(r27)
+/* 0005C6A0 00000DC4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0005C6A4 00000DC8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C6A8 00000DCC  7C 80 22 14 */	add r4, r0, r4
+/* 0005C6AC 00000DD0  41 82 00 20 */	beq .L_0005C6CC
+/* 0005C6B0 00000DD4  48 00 00 01 */	bl SetPlayerPriority__Q44nw4r3snd6detail10BasicSoundFi
+/* 0005C6B4 00000DD8  48 00 00 18 */	b .L_0005C6CC
+.L_0005C6B8:
+/* 0005C6B8 00000DDC  80 7B 00 74 */	lwz r3, 0x74(r27)
+/* 0005C6BC 00000DE0  80 81 00 14 */	lwz r4, 0x14(r1)
+/* 0005C6C0 00000DE4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C6C4 00000DE8  41 82 00 08 */	beq .L_0005C6CC
+/* 0005C6C8 00000DEC  48 00 00 01 */	bl SetPlayerPriority__Q44nw4r3snd6detail10BasicSoundFi
+.L_0005C6CC:
+/* 0005C6CC 00000DF0  57 40 07 BD */	rlwinm. r0, r26, 0, 30, 30
+/* 0005C6D0 00000DF4  41 82 00 18 */	beq .L_0005C6E8
+/* 0005C6D4 00000DF8  80 7B 00 74 */	lwz r3, 0x74(r27)
+/* 0005C6D8 00000DFC  C0 3F 00 70 */	lfs f1, 0x70(r31)
+/* 0005C6DC 00000E00  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C6E0 00000E04  41 82 00 08 */	beq .L_0005C6E8
+/* 0005C6E4 00000E08  48 00 00 01 */	bl SetPan__Q44nw4r3snd6detail10BasicSoundFf
+.L_0005C6E8:
+/* 0005C6E8 00000E0C  3B 7B 00 08 */	addi r27, r27, 0x8
+/* 0005C6EC 00000E10  3B 9C 00 01 */	addi r28, r28, 0x1
+.L_0005C6F0:
+/* 0005C6F0 00000E14  80 1F 00 54 */	lwz r0, 0x54(r31)
+/* 0005C6F4 00000E18  7C 1C 00 40 */	cmplw r28, r0
+/* 0005C6F8 00000E1C  41 80 FE E0 */	blt .L_0005C5D8
+/* 0005C6FC 00000E20  48 00 00 10 */	b .L_0005C70C
+.L_0005C700:
+/* 0005C700 00000E24  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 0005C704 00000E28  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 0005C708 00000E2C  41 80 FE 94 */	blt .L_0005C59C
+.L_0005C70C:
+/* 0005C70C 00000E30  39 61 00 40 */	addi r11, r1, 0x40
+/* 0005C710 00000E34  48 00 00 01 */	bl _restgpr_26
+/* 0005C714 00000E38  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 0005C718 00000E3C  7C 08 03 A6 */	mtlr r0
+/* 0005C71C 00000E40  38 21 00 40 */	addi r1, r1, 0x40
+/* 0005C720 00000E44  4E 80 00 20 */	blr
+.endfn fn_3_5C570
+
+# .text:0xE08 | 0x5C724 | size: 0xC
+.fn gap_00_0005C724_text, global
+.hidden gap_00_0005C724_text
+/* 0005C724 00000E48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C728 00000E4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C72C 00000E50  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C724_text
+
+# .text:0xE14 | 0x5C730 | size: 0x4
+.fn fn_3_5C730, global
+/* 0005C730 00000E54  48 00 00 00 */	b holdSound__11SndObjctEmyFUlUl
+.endfn fn_3_5C730
+
+# .text:0xE18 | 0x5C734 | size: 0xC
+.fn gap_00_0005C734_text, global
+.hidden gap_00_0005C734_text
+/* 0005C734 00000E58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C738 00000E5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C73C 00000E60  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C734_text
+
+# .text:0xE24 | 0x5C740 | size: 0x8
+.fn fn_3_5C740, global
+/* 0005C740 00000E64  7C A5 07 34 */	extsh r5, r5
+/* 0005C744 00000E68  48 00 00 00 */	b holdSound__11SndObjctEmyFUlsUl
+.endfn fn_3_5C740
+
+# .text:0xE2C | 0x5C748 | size: 0x8
+.fn gap_00_0005C748_text, global
+.hidden gap_00_0005C748_text
+/* 0005C748 00000E6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C74C 00000E70  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C748_text
+
+# .text:0xE34 | 0x5C750 | size: 0x8
+.fn fn_3_5C750, global
+/* 0005C750 00000E74  7C A5 07 34 */	extsh r5, r5
+/* 0005C754 00000E78  48 00 00 00 */	b startSound__11SndObjctEmyFUlsUl
+.endfn fn_3_5C750
+
+# .text:0xE3C | 0x5C758 | size: 0x8
+.fn gap_00_0005C758_text, global
+.hidden gap_00_0005C758_text
+/* 0005C758 00000E7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C75C 00000E80  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C758_text
+
+# .text:0xE44 | 0x5C760 | size: 0xE8
+.fn fn_3_5C760, global
+/* 0005C760 00000E84  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005C764 00000E88  7C 08 02 A6 */	mflr r0
+/* 0005C768 00000E8C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005C76C 00000E90  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005C770 00000E94  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005C774 00000E98  7C BE 2B 78 */	mr r30, r5
+/* 0005C778 00000E9C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 0005C77C 00000EA0  7C 9D 23 78 */	mr r29, r4
+/* 0005C780 00000EA4  38 80 00 00 */	li r4, 0x0
+/* 0005C784 00000EA8  93 81 00 10 */	stw r28, 0x10(r1)
+/* 0005C788 00000EAC  7C 7C 1B 78 */	mr r28, r3
+/* 0005C78C 00000EB0  7F 85 E3 78 */	mr r5, r28
+/* 0005C790 00000EB4  80 03 00 54 */	lwz r0, 0x54(r3)
+/* 0005C794 00000EB8  7C 09 03 A6 */	mtctr r0
+/* 0005C798 00000EBC  28 00 00 00 */	cmplwi r0, 0x0
+/* 0005C79C 00000EC0  40 81 00 38 */	ble .L_0005C7D4
+.L_0005C7A0:
+/* 0005C7A0 00000EC4  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005C7A4 00000EC8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005C7A8 00000ECC  40 82 00 20 */	bne .L_0005C7C8
+/* 0005C7AC 00000ED0  54 80 18 38 */	slwi r0, r4, 3
+/* 0005C7B0 00000ED4  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005C7B4 00000ED8  7C 63 02 14 */	add r3, r3, r0
+/* 0005C7B8 00000EDC  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005C7BC 00000EE0  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005C7C0 00000EE4  3B E3 00 74 */	addi r31, r3, 0x74
+/* 0005C7C4 00000EE8  48 00 00 14 */	b .L_0005C7D8
+.L_0005C7C8:
+/* 0005C7C8 00000EEC  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005C7CC 00000EF0  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005C7D0 00000EF4  42 00 FF D0 */	bdnz .L_0005C7A0
+.L_0005C7D4:
+/* 0005C7D4 00000EF8  3B E0 00 00 */	li r31, 0x0
+.L_0005C7D8:
+/* 0005C7D8 00000EFC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005C7DC 00000F00  41 82 00 48 */	beq .L_0005C824
+/* 0005C7E0 00000F04  7F 83 E3 78 */	mr r3, r28
+/* 0005C7E4 00000F08  7F E4 FB 78 */	mr r4, r31
+/* 0005C7E8 00000F0C  7F A5 EB 78 */	mr r5, r29
+/* 0005C7EC 00000F10  38 C0 00 00 */	li r6, 0x0
+/* 0005C7F0 00000F14  48 00 00 01 */	bl detail_StartSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005C7F4 00000F18  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 0005C7F8 00000F1C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005C7FC 00000F20  40 82 00 0C */	bne .L_0005C808
+/* 0005C800 00000F24  38 60 00 00 */	li r3, 0x0
+/* 0005C804 00000F28  48 00 00 24 */	b .L_0005C828
+.L_0005C808:
+/* 0005C808 00000F2C  7F 83 E3 78 */	mr r3, r28
+/* 0005C80C 00000F30  7F E4 FB 78 */	mr r4, r31
+/* 0005C810 00000F34  7F A5 EB 78 */	mr r5, r29
+/* 0005C814 00000F38  7F C6 F3 78 */	mr r6, r30
+/* 0005C818 00000F3C  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005C81C 00000F40  7F E3 FB 78 */	mr r3, r31
+/* 0005C820 00000F44  48 00 00 08 */	b .L_0005C828
+.L_0005C824:
+/* 0005C824 00000F48  38 60 00 00 */	li r3, 0x0
+.L_0005C828:
+/* 0005C828 00000F4C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005C82C 00000F50  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005C830 00000F54  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005C834 00000F58  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 0005C838 00000F5C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 0005C83C 00000F60  7C 08 03 A6 */	mtlr r0
+/* 0005C840 00000F64  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005C844 00000F68  4E 80 00 20 */	blr
+.endfn fn_3_5C760
+
+# .text:0xF2C | 0x5C848 | size: 0x8
+.fn gap_00_0005C848_text, global
+.hidden gap_00_0005C848_text
+/* 0005C848 00000F6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C84C 00000F70  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C848_text
+
+# .text:0xF34 | 0x5C850 | size: 0x128
+.fn fn_3_5C850, global
+/* 0005C850 00000F74  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 0005C854 00000F78  7C 08 02 A6 */	mflr r0
+/* 0005C858 00000F7C  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0005C85C 00000F80  39 61 00 30 */	addi r11, r1, 0x30
+/* 0005C860 00000F84  48 00 00 01 */	bl _savegpr_27
+/* 0005C864 00000F88  80 03 00 54 */	lwz r0, 0x54(r3)
+/* 0005C868 00000F8C  7C 9C 23 78 */	mr r28, r4
+/* 0005C86C 00000F90  7C 7B 1B 78 */	mr r27, r3
+/* 0005C870 00000F94  7C BD 2B 78 */	mr r29, r5
+/* 0005C874 00000F98  7C DE 33 78 */	mr r30, r6
+/* 0005C878 00000F9C  38 80 00 00 */	li r4, 0x0
+/* 0005C87C 00000FA0  7F 65 DB 78 */	mr r5, r27
+/* 0005C880 00000FA4  7C 09 03 A6 */	mtctr r0
+/* 0005C884 00000FA8  28 00 00 00 */	cmplwi r0, 0x0
+/* 0005C888 00000FAC  40 81 00 3C */	ble .L_0005C8C4
+/* 0005C88C 00000FB0  60 00 00 00 */	nop
+.L_0005C890:
+/* 0005C890 00000FB4  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005C894 00000FB8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005C898 00000FBC  40 82 00 20 */	bne .L_0005C8B8
+/* 0005C89C 00000FC0  54 80 18 38 */	slwi r0, r4, 3
+/* 0005C8A0 00000FC4  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005C8A4 00000FC8  7C 63 02 14 */	add r3, r3, r0
+/* 0005C8A8 00000FCC  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005C8AC 00000FD0  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005C8B0 00000FD4  3B E3 00 74 */	addi r31, r3, 0x74
+/* 0005C8B4 00000FD8  48 00 00 14 */	b .L_0005C8C8
+.L_0005C8B8:
+/* 0005C8B8 00000FDC  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005C8BC 00000FE0  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005C8C0 00000FE4  42 00 FF D0 */	bdnz .L_0005C890
+.L_0005C8C4:
+/* 0005C8C4 00000FE8  3B E0 00 00 */	li r31, 0x0
+.L_0005C8C8:
+/* 0005C8C8 00000FEC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005C8CC 00000FF0  41 82 00 90 */	beq .L_0005C95C
+/* 0005C8D0 00000FF4  7F 63 DB 78 */	mr r3, r27
+/* 0005C8D4 00000FF8  7F E4 FB 78 */	mr r4, r31
+/* 0005C8D8 00000FFC  7F 85 E3 78 */	mr r5, r28
+/* 0005C8DC 00001000  38 C0 00 00 */	li r6, 0x0
+/* 0005C8E0 00001004  48 00 00 01 */	bl detail_StartSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005C8E4 00001008  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 0005C8E8 0000100C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005C8EC 00001010  40 82 00 0C */	bne .L_0005C8F8
+/* 0005C8F0 00001014  38 60 00 00 */	li r3, 0x0
+/* 0005C8F4 00001018  48 00 00 6C */	b .L_0005C960
+.L_0005C8F8:
+/* 0005C8F8 0000101C  7F 63 DB 78 */	mr r3, r27
+/* 0005C8FC 00001020  7F E4 FB 78 */	mr r4, r31
+/* 0005C900 00001024  7F 85 E3 78 */	mr r5, r28
+/* 0005C904 00001028  7F C6 F3 78 */	mr r6, r30
+/* 0005C908 0000102C  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005C90C 00001030  3C 60 00 00 */	lis r3, sInstance__11SndAudioMgr@ha
+/* 0005C910 00001034  7F 84 E3 78 */	mr r4, r28
+/* 0005C914 00001038  80 63 00 00 */	lwz r3, sInstance__11SndAudioMgr@l(r3)
+/* 0005C918 0000103C  80 63 01 00 */	lwz r3, 0x100(r3)
+/* 0005C91C 00001040  48 00 00 01 */	bl GetSoundType__Q34nw4r3snd12SoundArchiveCFUl
+/* 0005C920 00001044  2C 03 00 01 */	cmpwi r3, 0x1
+/* 0005C924 00001048  40 82 00 30 */	bne .L_0005C954
+/* 0005C928 0000104C  7F E4 FB 78 */	mr r4, r31
+/* 0005C92C 00001050  38 61 00 08 */	addi r3, r1, 0x8
+/* 0005C930 00001054  48 00 00 01 */	bl __ct__Q34nw4r3snd14SeqSoundHandleFPQ34nw4r3snd11SoundHandle
+/* 0005C934 00001058  80 61 00 08 */	lwz r3, 0x8(r1)
+/* 0005C938 0000105C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005C93C 00001060  41 82 00 10 */	beq .L_0005C94C
+/* 0005C940 00001064  7F A5 EB 78 */	mr r5, r29
+/* 0005C944 00001068  38 80 00 00 */	li r4, 0x0
+/* 0005C948 0000106C  48 00 00 01 */	bl WriteVariable__Q44nw4r3snd6detail8SeqSoundFis
+.L_0005C94C:
+/* 0005C94C 00001070  38 61 00 08 */	addi r3, r1, 0x8
+/* 0005C950 00001074  48 00 00 01 */	bl DetachSound__Q34nw4r3snd14SeqSoundHandleFv
+.L_0005C954:
+/* 0005C954 00001078  7F E3 FB 78 */	mr r3, r31
+/* 0005C958 0000107C  48 00 00 08 */	b .L_0005C960
+.L_0005C95C:
+/* 0005C95C 00001080  38 60 00 00 */	li r3, 0x0
+.L_0005C960:
+/* 0005C960 00001084  39 61 00 30 */	addi r11, r1, 0x30
+/* 0005C964 00001088  48 00 00 01 */	bl _restgpr_27
+/* 0005C968 0000108C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0005C96C 00001090  7C 08 03 A6 */	mtlr r0
+/* 0005C970 00001094  38 21 00 30 */	addi r1, r1, 0x30
+/* 0005C974 00001098  4E 80 00 20 */	blr
+.endfn fn_3_5C850
+
+# .text:0x105C | 0x5C978 | size: 0x8
+.fn gap_00_0005C978_text, global
+.hidden gap_00_0005C978_text
+/* 0005C978 0000109C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005C97C 000010A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005C978_text
+
+# .text:0x1064 | 0x5C980 | size: 0xF4
+.fn fn_3_5C980, global
+/* 0005C980 000010A4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005C984 000010A8  7C 08 02 A6 */	mflr r0
+/* 0005C988 000010AC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005C98C 000010B0  39 61 00 20 */	addi r11, r1, 0x20
+/* 0005C990 000010B4  48 00 00 01 */	bl _savegpr_27
+/* 0005C994 000010B8  80 03 00 54 */	lwz r0, 0x54(r3)
+/* 0005C998 000010BC  7C 9C 23 78 */	mr r28, r4
+/* 0005C99C 000010C0  7C 7B 1B 78 */	mr r27, r3
+/* 0005C9A0 000010C4  7C BD 2B 78 */	mr r29, r5
+/* 0005C9A4 000010C8  7C DE 33 78 */	mr r30, r6
+/* 0005C9A8 000010CC  38 80 00 00 */	li r4, 0x0
+/* 0005C9AC 000010D0  7F 65 DB 78 */	mr r5, r27
+/* 0005C9B0 000010D4  7C 09 03 A6 */	mtctr r0
+/* 0005C9B4 000010D8  28 00 00 00 */	cmplwi r0, 0x0
+/* 0005C9B8 000010DC  40 81 00 3C */	ble .L_0005C9F4
+/* 0005C9BC 000010E0  60 00 00 00 */	nop
+.L_0005C9C0:
+/* 0005C9C0 000010E4  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005C9C4 000010E8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005C9C8 000010EC  40 82 00 20 */	bne .L_0005C9E8
+/* 0005C9CC 000010F0  54 80 18 38 */	slwi r0, r4, 3
+/* 0005C9D0 000010F4  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005C9D4 000010F8  7C 63 02 14 */	add r3, r3, r0
+/* 0005C9D8 000010FC  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005C9DC 00001100  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005C9E0 00001104  3B E3 00 74 */	addi r31, r3, 0x74
+/* 0005C9E4 00001108  48 00 00 14 */	b .L_0005C9F8
+.L_0005C9E8:
+/* 0005C9E8 0000110C  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005C9EC 00001110  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005C9F0 00001114  42 00 FF D0 */	bdnz .L_0005C9C0
+.L_0005C9F4:
+/* 0005C9F4 00001118  3B E0 00 00 */	li r31, 0x0
+.L_0005C9F8:
+/* 0005C9F8 0000111C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005C9FC 00001120  41 82 00 5C */	beq .L_0005CA58
+/* 0005CA00 00001124  7F 63 DB 78 */	mr r3, r27
+/* 0005CA04 00001128  7F E4 FB 78 */	mr r4, r31
+/* 0005CA08 0000112C  7F 85 E3 78 */	mr r5, r28
+/* 0005CA0C 00001130  38 C0 00 00 */	li r6, 0x0
+/* 0005CA10 00001134  48 00 00 01 */	bl detail_StartSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005CA14 00001138  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 0005CA18 0000113C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CA1C 00001140  40 82 00 0C */	bne .L_0005CA28
+/* 0005CA20 00001144  38 60 00 00 */	li r3, 0x0
+/* 0005CA24 00001148  48 00 00 38 */	b .L_0005CA5C
+.L_0005CA28:
+/* 0005CA28 0000114C  3C 60 00 00 */	lis r3, sInstance__11SndAudioMgr@ha
+/* 0005CA2C 00001150  7F E4 FB 78 */	mr r4, r31
+/* 0005CA30 00001154  80 63 00 00 */	lwz r3, sInstance__11SndAudioMgr@l(r3)
+/* 0005CA34 00001158  7F A5 EB 78 */	mr r5, r29
+/* 0005CA38 0000115C  48 00 00 01 */	bl setSoundPosition__11SndAudioMgrFPQ34nw4r3snd11SoundHandleRCQ34nw4r4math4VEC2
+/* 0005CA3C 00001160  7F 63 DB 78 */	mr r3, r27
+/* 0005CA40 00001164  7F E4 FB 78 */	mr r4, r31
+/* 0005CA44 00001168  7F 85 E3 78 */	mr r5, r28
+/* 0005CA48 0000116C  7F C6 F3 78 */	mr r6, r30
+/* 0005CA4C 00001170  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005CA50 00001174  7F E3 FB 78 */	mr r3, r31
+/* 0005CA54 00001178  48 00 00 08 */	b .L_0005CA5C
+.L_0005CA58:
+/* 0005CA58 0000117C  38 60 00 00 */	li r3, 0x0
+.L_0005CA5C:
+/* 0005CA5C 00001180  39 61 00 20 */	addi r11, r1, 0x20
+/* 0005CA60 00001184  48 00 00 01 */	bl _restgpr_27
+/* 0005CA64 00001188  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005CA68 0000118C  7C 08 03 A6 */	mtlr r0
+/* 0005CA6C 00001190  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005CA70 00001194  4E 80 00 20 */	blr
+.endfn fn_3_5C980
+
+# .text:0x1158 | 0x5CA74 | size: 0xC
+.fn gap_00_0005CA74_text, global
+.hidden gap_00_0005CA74_text
+/* 0005CA74 00001198  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CA78 0000119C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CA7C 000011A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005CA74_text
+
+# .text:0x1164 | 0x5CA80 | size: 0x148
+.fn fn_3_5CA80, global
+/* 0005CA80 000011A4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005CA84 000011A8  7C 08 02 A6 */	mflr r0
+/* 0005CA88 000011AC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005CA8C 000011B0  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005CA90 000011B4  7C BF 2B 78 */	mr r31, r5
+/* 0005CA94 000011B8  38 A0 00 00 */	li r5, 0x0
+/* 0005CA98 000011BC  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005CA9C 000011C0  7C 9E 23 78 */	mr r30, r4
+/* 0005CAA0 000011C4  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 0005CAA4 000011C8  7C 7D 1B 78 */	mr r29, r3
+/* 0005CAA8 000011CC  7F A6 EB 78 */	mr r6, r29
+/* 0005CAAC 000011D0  93 81 00 10 */	stw r28, 0x10(r1)
+/* 0005CAB0 000011D4  81 03 00 54 */	lwz r8, 0x54(r3)
+/* 0005CAB4 000011D8  7D 09 03 A6 */	mtctr r8
+/* 0005CAB8 000011DC  28 08 00 00 */	cmplwi r8, 0x0
+/* 0005CABC 000011E0  40 81 00 44 */	ble .L_0005CB00
+.L_0005CAC0:
+/* 0005CAC0 000011E4  80 E6 00 74 */	lwz r7, 0x74(r6)
+/* 0005CAC4 000011E8  2C 07 00 00 */	cmpwi r7, 0x0
+/* 0005CAC8 000011EC  41 82 00 2C */	beq .L_0005CAF4
+/* 0005CACC 000011F0  41 82 00 0C */	beq .L_0005CAD8
+/* 0005CAD0 000011F4  80 07 00 9C */	lwz r0, 0x9c(r7)
+/* 0005CAD4 000011F8  48 00 00 08 */	b .L_0005CADC
+.L_0005CAD8:
+/* 0005CAD8 000011FC  38 00 FF FF */	li r0, -0x1
+.L_0005CADC:
+/* 0005CADC 00001200  7C 04 00 40 */	cmplw r4, r0
+/* 0005CAE0 00001204  40 82 00 14 */	bne .L_0005CAF4
+/* 0005CAE4 00001208  54 A0 18 38 */	slwi r0, r5, 3
+/* 0005CAE8 0000120C  7C 83 02 14 */	add r4, r3, r0
+/* 0005CAEC 00001210  3B 84 00 74 */	addi r28, r4, 0x74
+/* 0005CAF0 00001214  48 00 00 14 */	b .L_0005CB04
+.L_0005CAF4:
+/* 0005CAF4 00001218  38 C6 00 08 */	addi r6, r6, 0x8
+/* 0005CAF8 0000121C  38 A5 00 01 */	addi r5, r5, 0x1
+/* 0005CAFC 00001220  42 00 FF C4 */	bdnz .L_0005CAC0
+.L_0005CB00:
+/* 0005CB00 00001224  3B 80 00 00 */	li r28, 0x0
+.L_0005CB04:
+/* 0005CB04 00001228  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 0005CB08 0000122C  40 82 00 50 */	bne .L_0005CB58
+/* 0005CB0C 00001230  7F A5 EB 78 */	mr r5, r29
+/* 0005CB10 00001234  38 80 00 00 */	li r4, 0x0
+/* 0005CB14 00001238  7D 09 03 A6 */	mtctr r8
+/* 0005CB18 0000123C  28 08 00 00 */	cmplwi r8, 0x0
+/* 0005CB1C 00001240  40 81 00 38 */	ble .L_0005CB54
+.L_0005CB20:
+/* 0005CB20 00001244  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005CB24 00001248  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CB28 0000124C  40 82 00 20 */	bne .L_0005CB48
+/* 0005CB2C 00001250  54 80 18 38 */	slwi r0, r4, 3
+/* 0005CB30 00001254  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005CB34 00001258  7C 63 02 14 */	add r3, r3, r0
+/* 0005CB38 0000125C  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005CB3C 00001260  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005CB40 00001264  3B 83 00 74 */	addi r28, r3, 0x74
+/* 0005CB44 00001268  48 00 00 14 */	b .L_0005CB58
+.L_0005CB48:
+/* 0005CB48 0000126C  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005CB4C 00001270  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005CB50 00001274  42 00 FF D0 */	bdnz .L_0005CB20
+.L_0005CB54:
+/* 0005CB54 00001278  3B 80 00 00 */	li r28, 0x0
+.L_0005CB58:
+/* 0005CB58 0000127C  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 0005CB5C 00001280  41 82 00 48 */	beq .L_0005CBA4
+/* 0005CB60 00001284  7F A3 EB 78 */	mr r3, r29
+/* 0005CB64 00001288  7F 84 E3 78 */	mr r4, r28
+/* 0005CB68 0000128C  7F C5 F3 78 */	mr r5, r30
+/* 0005CB6C 00001290  38 C0 00 00 */	li r6, 0x0
+/* 0005CB70 00001294  48 00 00 01 */	bl detail_HoldSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005CB74 00001298  80 1C 00 00 */	lwz r0, 0x0(r28)
+/* 0005CB78 0000129C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CB7C 000012A0  40 82 00 0C */	bne .L_0005CB88
+/* 0005CB80 000012A4  38 60 00 00 */	li r3, 0x0
+/* 0005CB84 000012A8  48 00 00 24 */	b .L_0005CBA8
+.L_0005CB88:
+/* 0005CB88 000012AC  7F A3 EB 78 */	mr r3, r29
+/* 0005CB8C 000012B0  7F 84 E3 78 */	mr r4, r28
+/* 0005CB90 000012B4  7F C5 F3 78 */	mr r5, r30
+/* 0005CB94 000012B8  7F E6 FB 78 */	mr r6, r31
+/* 0005CB98 000012BC  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005CB9C 000012C0  7F 83 E3 78 */	mr r3, r28
+/* 0005CBA0 000012C4  48 00 00 08 */	b .L_0005CBA8
+.L_0005CBA4:
+/* 0005CBA4 000012C8  38 60 00 00 */	li r3, 0x0
+.L_0005CBA8:
+/* 0005CBA8 000012CC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005CBAC 000012D0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005CBB0 000012D4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005CBB4 000012D8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 0005CBB8 000012DC  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 0005CBBC 000012E0  7C 08 03 A6 */	mtlr r0
+/* 0005CBC0 000012E4  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005CBC4 000012E8  4E 80 00 20 */	blr
+.endfn fn_3_5CA80
+
+# .text:0x12AC | 0x5CBC8 | size: 0x8
+.fn gap_00_0005CBC8_text, global
+.hidden gap_00_0005CBC8_text
+/* 0005CBC8 000012EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CBCC 000012F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005CBC8_text
+
+# .text:0x12B4 | 0x5CBD0 | size: 0x188
+.fn fn_3_5CBD0, global
+/* 0005CBD0 000012F4  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 0005CBD4 000012F8  7C 08 02 A6 */	mflr r0
+/* 0005CBD8 000012FC  90 01 00 34 */	stw r0, 0x34(r1)
+/* 0005CBDC 00001300  39 61 00 30 */	addi r11, r1, 0x30
+/* 0005CBE0 00001304  48 00 00 01 */	bl _savegpr_27
+/* 0005CBE4 00001308  81 03 00 54 */	lwz r8, 0x54(r3)
+/* 0005CBE8 0000130C  7C BE 2B 78 */	mr r30, r5
+/* 0005CBEC 00001310  7C 7C 1B 78 */	mr r28, r3
+/* 0005CBF0 00001314  7C DF 33 78 */	mr r31, r6
+/* 0005CBF4 00001318  7C 9D 23 78 */	mr r29, r4
+/* 0005CBF8 0000131C  38 A0 00 00 */	li r5, 0x0
+/* 0005CBFC 00001320  7F 86 E3 78 */	mr r6, r28
+/* 0005CC00 00001324  7D 09 03 A6 */	mtctr r8
+/* 0005CC04 00001328  28 08 00 00 */	cmplwi r8, 0x0
+/* 0005CC08 0000132C  40 81 00 48 */	ble .L_0005CC50
+/* 0005CC0C 00001330  60 00 00 00 */	nop
+.L_0005CC10:
+/* 0005CC10 00001334  80 E6 00 74 */	lwz r7, 0x74(r6)
+/* 0005CC14 00001338  2C 07 00 00 */	cmpwi r7, 0x0
+/* 0005CC18 0000133C  41 82 00 2C */	beq .L_0005CC44
+/* 0005CC1C 00001340  41 82 00 0C */	beq .L_0005CC28
+/* 0005CC20 00001344  80 07 00 9C */	lwz r0, 0x9c(r7)
+/* 0005CC24 00001348  48 00 00 08 */	b .L_0005CC2C
+.L_0005CC28:
+/* 0005CC28 0000134C  38 00 FF FF */	li r0, -0x1
+.L_0005CC2C:
+/* 0005CC2C 00001350  7C 04 00 40 */	cmplw r4, r0
+/* 0005CC30 00001354  40 82 00 14 */	bne .L_0005CC44
+/* 0005CC34 00001358  54 A0 18 38 */	slwi r0, r5, 3
+/* 0005CC38 0000135C  7C 83 02 14 */	add r4, r3, r0
+/* 0005CC3C 00001360  3B 64 00 74 */	addi r27, r4, 0x74
+/* 0005CC40 00001364  48 00 00 14 */	b .L_0005CC54
+.L_0005CC44:
+/* 0005CC44 00001368  38 C6 00 08 */	addi r6, r6, 0x8
+/* 0005CC48 0000136C  38 A5 00 01 */	addi r5, r5, 0x1
+/* 0005CC4C 00001370  42 00 FF C4 */	bdnz .L_0005CC10
+.L_0005CC50:
+/* 0005CC50 00001374  3B 60 00 00 */	li r27, 0x0
+.L_0005CC54:
+/* 0005CC54 00001378  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 0005CC58 0000137C  40 82 00 50 */	bne .L_0005CCA8
+/* 0005CC5C 00001380  7F 85 E3 78 */	mr r5, r28
+/* 0005CC60 00001384  38 80 00 00 */	li r4, 0x0
+/* 0005CC64 00001388  7D 09 03 A6 */	mtctr r8
+/* 0005CC68 0000138C  28 08 00 00 */	cmplwi r8, 0x0
+/* 0005CC6C 00001390  40 81 00 38 */	ble .L_0005CCA4
+.L_0005CC70:
+/* 0005CC70 00001394  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005CC74 00001398  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CC78 0000139C  40 82 00 20 */	bne .L_0005CC98
+/* 0005CC7C 000013A0  54 80 18 38 */	slwi r0, r4, 3
+/* 0005CC80 000013A4  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005CC84 000013A8  7C 63 02 14 */	add r3, r3, r0
+/* 0005CC88 000013AC  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005CC8C 000013B0  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005CC90 000013B4  3B 63 00 74 */	addi r27, r3, 0x74
+/* 0005CC94 000013B8  48 00 00 14 */	b .L_0005CCA8
+.L_0005CC98:
+/* 0005CC98 000013BC  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005CC9C 000013C0  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005CCA0 000013C4  42 00 FF D0 */	bdnz .L_0005CC70
+.L_0005CCA4:
+/* 0005CCA4 000013C8  3B 60 00 00 */	li r27, 0x0
+.L_0005CCA8:
+/* 0005CCA8 000013CC  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 0005CCAC 000013D0  41 82 00 90 */	beq .L_0005CD3C
+/* 0005CCB0 000013D4  7F 83 E3 78 */	mr r3, r28
+/* 0005CCB4 000013D8  7F 64 DB 78 */	mr r4, r27
+/* 0005CCB8 000013DC  7F A5 EB 78 */	mr r5, r29
+/* 0005CCBC 000013E0  38 C0 00 00 */	li r6, 0x0
+/* 0005CCC0 000013E4  48 00 00 01 */	bl detail_HoldSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005CCC4 000013E8  80 1B 00 00 */	lwz r0, 0x0(r27)
+/* 0005CCC8 000013EC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CCCC 000013F0  40 82 00 0C */	bne .L_0005CCD8
+/* 0005CCD0 000013F4  38 60 00 00 */	li r3, 0x0
+/* 0005CCD4 000013F8  48 00 00 6C */	b .L_0005CD40
+.L_0005CCD8:
+/* 0005CCD8 000013FC  7F 83 E3 78 */	mr r3, r28
+/* 0005CCDC 00001400  7F 64 DB 78 */	mr r4, r27
+/* 0005CCE0 00001404  7F A5 EB 78 */	mr r5, r29
+/* 0005CCE4 00001408  7F E6 FB 78 */	mr r6, r31
+/* 0005CCE8 0000140C  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005CCEC 00001410  3C 60 00 00 */	lis r3, sInstance__11SndAudioMgr@ha
+/* 0005CCF0 00001414  7F A4 EB 78 */	mr r4, r29
+/* 0005CCF4 00001418  80 63 00 00 */	lwz r3, sInstance__11SndAudioMgr@l(r3)
+/* 0005CCF8 0000141C  80 63 01 00 */	lwz r3, 0x100(r3)
+/* 0005CCFC 00001420  48 00 00 01 */	bl GetSoundType__Q34nw4r3snd12SoundArchiveCFUl
+/* 0005CD00 00001424  2C 03 00 01 */	cmpwi r3, 0x1
+/* 0005CD04 00001428  40 82 00 30 */	bne .L_0005CD34
+/* 0005CD08 0000142C  7F 64 DB 78 */	mr r4, r27
+/* 0005CD0C 00001430  38 61 00 08 */	addi r3, r1, 0x8
+/* 0005CD10 00001434  48 00 00 01 */	bl __ct__Q34nw4r3snd14SeqSoundHandleFPQ34nw4r3snd11SoundHandle
+/* 0005CD14 00001438  80 61 00 08 */	lwz r3, 0x8(r1)
+/* 0005CD18 0000143C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0005CD1C 00001440  41 82 00 10 */	beq .L_0005CD2C
+/* 0005CD20 00001444  7F C5 F3 78 */	mr r5, r30
+/* 0005CD24 00001448  38 80 00 00 */	li r4, 0x0
+/* 0005CD28 0000144C  48 00 00 01 */	bl WriteVariable__Q44nw4r3snd6detail8SeqSoundFis
+.L_0005CD2C:
+/* 0005CD2C 00001450  38 61 00 08 */	addi r3, r1, 0x8
+/* 0005CD30 00001454  48 00 00 01 */	bl DetachSound__Q34nw4r3snd14SeqSoundHandleFv
+.L_0005CD34:
+/* 0005CD34 00001458  7F 63 DB 78 */	mr r3, r27
+/* 0005CD38 0000145C  48 00 00 08 */	b .L_0005CD40
+.L_0005CD3C:
+/* 0005CD3C 00001460  38 60 00 00 */	li r3, 0x0
+.L_0005CD40:
+/* 0005CD40 00001464  39 61 00 30 */	addi r11, r1, 0x30
+/* 0005CD44 00001468  48 00 00 01 */	bl _restgpr_27
+/* 0005CD48 0000146C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 0005CD4C 00001470  7C 08 03 A6 */	mtlr r0
+/* 0005CD50 00001474  38 21 00 30 */	addi r1, r1, 0x30
+/* 0005CD54 00001478  4E 80 00 20 */	blr
+.endfn fn_3_5CBD0
+
+# .text:0x143C | 0x5CD58 | size: 0x8
+.fn gap_00_0005CD58_text, global
+.hidden gap_00_0005CD58_text
+/* 0005CD58 0000147C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CD5C 00001480  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005CD58_text
+
+# .text:0x1444 | 0x5CD60 | size: 0x154
+.fn fn_3_5CD60, global
+/* 0005CD60 00001484  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005CD64 00001488  7C 08 02 A6 */	mflr r0
+/* 0005CD68 0000148C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005CD6C 00001490  39 61 00 20 */	addi r11, r1, 0x20
+/* 0005CD70 00001494  48 00 00 01 */	bl _savegpr_27
+/* 0005CD74 00001498  81 03 00 54 */	lwz r8, 0x54(r3)
+/* 0005CD78 0000149C  7C BE 2B 78 */	mr r30, r5
+/* 0005CD7C 000014A0  7C 7C 1B 78 */	mr r28, r3
+/* 0005CD80 000014A4  7C DF 33 78 */	mr r31, r6
+/* 0005CD84 000014A8  7C 9D 23 78 */	mr r29, r4
+/* 0005CD88 000014AC  38 A0 00 00 */	li r5, 0x0
+/* 0005CD8C 000014B0  7F 86 E3 78 */	mr r6, r28
+/* 0005CD90 000014B4  7D 09 03 A6 */	mtctr r8
+/* 0005CD94 000014B8  28 08 00 00 */	cmplwi r8, 0x0
+/* 0005CD98 000014BC  40 81 00 48 */	ble .L_0005CDE0
+/* 0005CD9C 000014C0  60 00 00 00 */	nop
+.L_0005CDA0:
+/* 0005CDA0 000014C4  80 E6 00 74 */	lwz r7, 0x74(r6)
+/* 0005CDA4 000014C8  2C 07 00 00 */	cmpwi r7, 0x0
+/* 0005CDA8 000014CC  41 82 00 2C */	beq .L_0005CDD4
+/* 0005CDAC 000014D0  41 82 00 0C */	beq .L_0005CDB8
+/* 0005CDB0 000014D4  80 07 00 9C */	lwz r0, 0x9c(r7)
+/* 0005CDB4 000014D8  48 00 00 08 */	b .L_0005CDBC
+.L_0005CDB8:
+/* 0005CDB8 000014DC  38 00 FF FF */	li r0, -0x1
+.L_0005CDBC:
+/* 0005CDBC 000014E0  7C 04 00 40 */	cmplw r4, r0
+/* 0005CDC0 000014E4  40 82 00 14 */	bne .L_0005CDD4
+/* 0005CDC4 000014E8  54 A0 18 38 */	slwi r0, r5, 3
+/* 0005CDC8 000014EC  7C 83 02 14 */	add r4, r3, r0
+/* 0005CDCC 000014F0  3B 64 00 74 */	addi r27, r4, 0x74
+/* 0005CDD0 000014F4  48 00 00 14 */	b .L_0005CDE4
+.L_0005CDD4:
+/* 0005CDD4 000014F8  38 C6 00 08 */	addi r6, r6, 0x8
+/* 0005CDD8 000014FC  38 A5 00 01 */	addi r5, r5, 0x1
+/* 0005CDDC 00001500  42 00 FF C4 */	bdnz .L_0005CDA0
+.L_0005CDE0:
+/* 0005CDE0 00001504  3B 60 00 00 */	li r27, 0x0
+.L_0005CDE4:
+/* 0005CDE4 00001508  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 0005CDE8 0000150C  40 82 00 50 */	bne .L_0005CE38
+/* 0005CDEC 00001510  7F 85 E3 78 */	mr r5, r28
+/* 0005CDF0 00001514  38 80 00 00 */	li r4, 0x0
+/* 0005CDF4 00001518  7D 09 03 A6 */	mtctr r8
+/* 0005CDF8 0000151C  28 08 00 00 */	cmplwi r8, 0x0
+/* 0005CDFC 00001520  40 81 00 38 */	ble .L_0005CE34
+.L_0005CE00:
+/* 0005CE00 00001524  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005CE04 00001528  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CE08 0000152C  40 82 00 20 */	bne .L_0005CE28
+/* 0005CE0C 00001530  54 80 18 38 */	slwi r0, r4, 3
+/* 0005CE10 00001534  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005CE14 00001538  7C 63 02 14 */	add r3, r3, r0
+/* 0005CE18 0000153C  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005CE1C 00001540  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005CE20 00001544  3B 63 00 74 */	addi r27, r3, 0x74
+/* 0005CE24 00001548  48 00 00 14 */	b .L_0005CE38
+.L_0005CE28:
+/* 0005CE28 0000154C  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005CE2C 00001550  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005CE30 00001554  42 00 FF D0 */	bdnz .L_0005CE00
+.L_0005CE34:
+/* 0005CE34 00001558  3B 60 00 00 */	li r27, 0x0
+.L_0005CE38:
+/* 0005CE38 0000155C  2C 1B 00 00 */	cmpwi r27, 0x0
+/* 0005CE3C 00001560  41 82 00 5C */	beq .L_0005CE98
+/* 0005CE40 00001564  7F 83 E3 78 */	mr r3, r28
+/* 0005CE44 00001568  7F 64 DB 78 */	mr r4, r27
+/* 0005CE48 0000156C  7F A5 EB 78 */	mr r5, r29
+/* 0005CE4C 00001570  38 C0 00 00 */	li r6, 0x0
+/* 0005CE50 00001574  48 00 00 01 */	bl detail_HoldSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005CE54 00001578  80 1B 00 00 */	lwz r0, 0x0(r27)
+/* 0005CE58 0000157C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CE5C 00001580  40 82 00 0C */	bne .L_0005CE68
+/* 0005CE60 00001584  38 60 00 00 */	li r3, 0x0
+/* 0005CE64 00001588  48 00 00 38 */	b .L_0005CE9C
+.L_0005CE68:
+/* 0005CE68 0000158C  3C 60 00 00 */	lis r3, sInstance__11SndAudioMgr@ha
+/* 0005CE6C 00001590  7F 64 DB 78 */	mr r4, r27
+/* 0005CE70 00001594  80 63 00 00 */	lwz r3, sInstance__11SndAudioMgr@l(r3)
+/* 0005CE74 00001598  7F C5 F3 78 */	mr r5, r30
+/* 0005CE78 0000159C  48 00 00 01 */	bl setSoundPosition__11SndAudioMgrFPQ34nw4r3snd11SoundHandleRCQ34nw4r4math4VEC2
+/* 0005CE7C 000015A0  7F 83 E3 78 */	mr r3, r28
+/* 0005CE80 000015A4  7F 64 DB 78 */	mr r4, r27
+/* 0005CE84 000015A8  7F A5 EB 78 */	mr r5, r29
+/* 0005CE88 000015AC  7F E6 FB 78 */	mr r6, r31
+/* 0005CE8C 000015B0  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005CE90 000015B4  7F 63 DB 78 */	mr r3, r27
+/* 0005CE94 000015B8  48 00 00 08 */	b .L_0005CE9C
+.L_0005CE98:
+/* 0005CE98 000015BC  38 60 00 00 */	li r3, 0x0
+.L_0005CE9C:
+/* 0005CE9C 000015C0  39 61 00 20 */	addi r11, r1, 0x20
+/* 0005CEA0 000015C4  48 00 00 01 */	bl _restgpr_27
+/* 0005CEA4 000015C8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005CEA8 000015CC  7C 08 03 A6 */	mtlr r0
+/* 0005CEAC 000015D0  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005CEB0 000015D4  4E 80 00 20 */	blr
+.endfn fn_3_5CD60
+
+# .text:0x1598 | 0x5CEB4 | size: 0xC
+.fn gap_00_0005CEB4_text, global
+.hidden gap_00_0005CEB4_text
+/* 0005CEB4 000015D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CEB8 000015DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CEBC 000015E0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005CEB4_text
+
+# .text:0x15A4 | 0x5CEC0 | size: 0xE8
+.fn fn_3_5CEC0, global
+/* 0005CEC0 000015E4  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 0005CEC4 000015E8  7C 08 02 A6 */	mflr r0
+/* 0005CEC8 000015EC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 0005CECC 000015F0  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 0005CED0 000015F4  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 0005CED4 000015F8  7C BE 2B 78 */	mr r30, r5
+/* 0005CED8 000015FC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 0005CEDC 00001600  7C 9D 23 78 */	mr r29, r4
+/* 0005CEE0 00001604  38 80 00 00 */	li r4, 0x0
+/* 0005CEE4 00001608  93 81 00 10 */	stw r28, 0x10(r1)
+/* 0005CEE8 0000160C  7C 7C 1B 78 */	mr r28, r3
+/* 0005CEEC 00001610  7F 85 E3 78 */	mr r5, r28
+/* 0005CEF0 00001614  80 03 00 54 */	lwz r0, 0x54(r3)
+/* 0005CEF4 00001618  7C 09 03 A6 */	mtctr r0
+/* 0005CEF8 0000161C  28 00 00 00 */	cmplwi r0, 0x0
+/* 0005CEFC 00001620  40 81 00 38 */	ble .L_0005CF34
+.L_0005CF00:
+/* 0005CF00 00001624  80 05 00 74 */	lwz r0, 0x74(r5)
+/* 0005CF04 00001628  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CF08 0000162C  40 82 00 20 */	bne .L_0005CF28
+/* 0005CF0C 00001630  54 80 18 38 */	slwi r0, r4, 3
+/* 0005CF10 00001634  3C 80 00 00 */	lis r4, lbl_3_rodata_2914@ha
+/* 0005CF14 00001638  7C 63 02 14 */	add r3, r3, r0
+/* 0005CF18 0000163C  C0 04 00 00 */	lfs f0, lbl_3_rodata_2914@l(r4)
+/* 0005CF1C 00001640  D0 03 00 78 */	stfs f0, 0x78(r3)
+/* 0005CF20 00001644  3B E3 00 74 */	addi r31, r3, 0x74
+/* 0005CF24 00001648  48 00 00 14 */	b .L_0005CF38
+.L_0005CF28:
+/* 0005CF28 0000164C  38 A5 00 08 */	addi r5, r5, 0x8
+/* 0005CF2C 00001650  38 84 00 01 */	addi r4, r4, 0x1
+/* 0005CF30 00001654  42 00 FF D0 */	bdnz .L_0005CF00
+.L_0005CF34:
+/* 0005CF34 00001658  3B E0 00 00 */	li r31, 0x0
+.L_0005CF38:
+/* 0005CF38 0000165C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 0005CF3C 00001660  41 82 00 48 */	beq .L_0005CF84
+/* 0005CF40 00001664  7F 83 E3 78 */	mr r3, r28
+/* 0005CF44 00001668  7F E4 FB 78 */	mr r4, r31
+/* 0005CF48 0000166C  7F A5 EB 78 */	mr r5, r29
+/* 0005CF4C 00001670  38 C0 00 00 */	li r6, 0x0
+/* 0005CF50 00001674  48 00 00 01 */	bl detail_PrepareSound__Q34nw4r3snd14SoundStartableFPQ34nw4r3snd11SoundHandleUlPCQ44nw4r3snd14SoundStartable9StartInfo
+/* 0005CF54 00001678  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 0005CF58 0000167C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 0005CF5C 00001680  40 82 00 0C */	bne .L_0005CF68
+/* 0005CF60 00001684  38 60 00 00 */	li r3, 0x0
+/* 0005CF64 00001688  48 00 00 24 */	b .L_0005CF88
+.L_0005CF68:
+/* 0005CF68 0000168C  7F 83 E3 78 */	mr r3, r28
+/* 0005CF6C 00001690  7F E4 FB 78 */	mr r4, r31
+/* 0005CF70 00001694  7F A5 EB 78 */	mr r5, r29
+/* 0005CF74 00001698  7F C6 F3 78 */	mr r6, r30
+/* 0005CF78 0000169C  48 00 00 01 */	bl sendRemote__15NMSndObjectBaseFPQ34nw4r3snd11SoundHandleUlUl
+/* 0005CF7C 000016A0  7F E3 FB 78 */	mr r3, r31
+/* 0005CF80 000016A4  48 00 00 08 */	b .L_0005CF88
+.L_0005CF84:
+/* 0005CF84 000016A8  38 60 00 00 */	li r3, 0x0
+.L_0005CF88:
+/* 0005CF88 000016AC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 0005CF8C 000016B0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 0005CF90 000016B4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 0005CF94 000016B8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 0005CF98 000016BC  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 0005CF9C 000016C0  7C 08 03 A6 */	mtlr r0
+/* 0005CFA0 000016C4  38 21 00 20 */	addi r1, r1, 0x20
+/* 0005CFA4 000016C8  4E 80 00 20 */	blr
+.endfn fn_3_5CEC0
+
+# .text:0x168C | 0x5CFA8 | size: 0x8
+.fn gap_00_0005CFA8_text, global
+.hidden gap_00_0005CFA8_text
+/* 0005CFA8 000016CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 0005CFAC 000016D0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_00_0005CFA8_text

@@ -1,0 +1,37 @@
+.include "macros.inc"
+.file "auto_sinit__d_a_en_bigpil_text"
+
+# 0x800207A0..0x800207F8 | size: 0x58
+.text
+.balign 4
+
+# .text:0x0 | 0x800207A0 | size: 0x58
+.fn "__sinit_\d_a_en_bigpile_cpp", global
+/* 800207A0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800207A4 00000044  7C 08 02 A6 */	mflr r0
+/* 800207A8 00000048  3C 60 00 00 */	lis r3, m_manager__13daEnBigPile_c@ha
+/* 800207AC 0000004C  3C 80 00 00 */	lis r4, __ct__12BigPileMng_cFv@ha
+/* 800207B0 00000050  3C A0 00 00 */	lis r5, __dt__12BigPileMng_cFv@ha
+/* 800207B4 00000054  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800207B8 00000058  38 C0 00 3C */	li r6, 0x3c
+/* 800207BC 0000005C  38 63 00 00 */	addi r3, r3, m_manager__13daEnBigPile_c@l
+/* 800207C0 00000060  38 84 00 00 */	addi r4, r4, __ct__12BigPileMng_cFv@l
+/* 800207C4 00000064  38 A5 00 00 */	addi r5, r5, __dt__12BigPileMng_cFv@l
+/* 800207C8 00000068  38 E0 00 03 */	li r7, 0x3
+/* 800207CC 0000006C  48 00 00 01 */	bl __construct_array
+/* 800207D0 00000070  3C 80 00 00 */	lis r4, __arraydtor$68208@ha
+/* 800207D4 00000074  3C A0 00 00 */	lis r5, "@68209_80352C68"@ha
+/* 800207D8 00000078  38 84 00 00 */	addi r4, r4, __arraydtor$68208@l
+/* 800207DC 0000007C  38 60 00 00 */	li r3, 0x0
+/* 800207E0 00000080  38 A5 00 00 */	addi r5, r5, "@68209_80352C68"@l
+/* 800207E4 00000084  48 00 00 01 */	bl __register_global_object
+/* 800207E8 00000088  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800207EC 0000008C  7C 08 03 A6 */	mtlr r0
+/* 800207F0 00000090  38 21 00 10 */	addi r1, r1, 0x10
+/* 800207F4 00000094  4E 80 00 20 */	blr
+.endfn "__sinit_\d_a_en_bigpile_cpp"
+
+# 0x802EDD08..0x802EDD0C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_a_en_bigpile_cpp"

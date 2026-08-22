@@ -1,0 +1,30 @@
+.include "macros.inc"
+.file "auto_09_80427B00_sdata"
+
+# 0x80427B00..0x80427B10 | size: 0x10
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | 0x80427B00 | size: 0x5
+.obj "@70928_80427B00", global
+	.4byte 0x46374330
+	.byte 0x00
+.endobj "@70928_80427B00"
+
+# .sdata:0x5 | 0x80427B05 | size: 0x3
+.obj gap_09_80427B05_sdata, global
+.hidden gap_09_80427B05_sdata
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_80427B05_sdata
+
+# .sdata:0x8 | 0x80427B08 | size: 0x5
+.obj "@70929_80427B08", global
+	.4byte 0x57374330
+	.byte 0x00
+.endobj "@70929_80427B08"
+
+# .sdata:0xD | 0x80427B0D | size: 0x3
+.obj gap_09_80427B0D_sdata, global
+.hidden gap_09_80427B0D_sdata
+	.byte 0x00, 0x00, 0x00
+.endobj gap_09_80427B0D_sdata

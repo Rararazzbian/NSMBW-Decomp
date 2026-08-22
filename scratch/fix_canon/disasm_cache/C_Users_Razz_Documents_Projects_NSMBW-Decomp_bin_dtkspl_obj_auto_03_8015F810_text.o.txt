@@ -1,0 +1,100 @@
+.include "macros.inc"
+.file "auto_03_8015F810_text"
+
+# 0x8015F810..0x8015F900 | size: 0xF0
+.text
+.balign 4
+
+# .text:0x0 | 0x8015F810 | size: 0x8
+# sPrintf::GetVPrintfFunc()
+.fn GetVPrintfFunc__7sPrintfFv, global
+/* 8015F810 00000040  80 60 00 00 */	lwz r3, lbl_80429700@sda21(r0)
+/* 8015F814 00000044  4E 80 00 20 */	blr
+.endfn GetVPrintfFunc__7sPrintfFv
+
+# .text:0x8 | 0x8015F818 | size: 0x8
+.fn gap_03_8015F818_text, global
+.hidden gap_03_8015F818_text
+/* 8015F818 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015F81C 0000004C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015F818_text
+
+# .text:0x10 | 0x8015F820 | size: 0x4C
+# sPrintf::vprintf(const char*, __va_list_struct*)
+.fn vprintf__7sPrintfFPCcP16__va_list_struct, global
+/* 8015F820 00000050  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8015F824 00000054  7C 08 02 A6 */	mflr r0
+/* 8015F828 00000058  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8015F82C 0000005C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8015F830 00000060  7C 9F 23 78 */	mr r31, r4
+/* 8015F834 00000064  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8015F838 00000068  7C 7E 1B 78 */	mr r30, r3
+/* 8015F83C 0000006C  48 00 00 01 */	bl GetVPrintfFunc__7sPrintfFv
+/* 8015F840 00000070  7C 6C 1B 78 */	mr r12, r3
+/* 8015F844 00000074  7F C3 F3 78 */	mr r3, r30
+/* 8015F848 00000078  7F E4 FB 78 */	mr r4, r31
+/* 8015F84C 0000007C  7D 89 03 A6 */	mtctr r12
+/* 8015F850 00000080  4E 80 04 21 */	bctrl
+/* 8015F854 00000084  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8015F858 00000088  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8015F85C 0000008C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8015F860 00000090  7C 08 03 A6 */	mtlr r0
+/* 8015F864 00000094  38 21 00 10 */	addi r1, r1, 0x10
+/* 8015F868 00000098  4E 80 00 20 */	blr
+.endfn vprintf__7sPrintfFPCcP16__va_list_struct
+
+# .text:0x5C | 0x8015F86C | size: 0x4
+.fn gap_03_8015F86C_text, global
+.hidden gap_03_8015F86C_text
+/* 8015F86C 0000009C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015F86C_text
+
+# .text:0x60 | 0x8015F870 | size: 0x80
+.fn OSReport, global
+/* 8015F870 000000A0  94 21 FF 80 */	stwu r1, -0x80(r1)
+/* 8015F874 000000A4  7C 08 02 A6 */	mflr r0
+/* 8015F878 000000A8  90 01 00 84 */	stw r0, 0x84(r1)
+/* 8015F87C 000000AC  40 86 00 24 */	bne cr1, .L_8015F8A0
+/* 8015F880 000000B0  D8 21 00 28 */	stfd f1, 0x28(r1)
+/* 8015F884 000000B4  D8 41 00 30 */	stfd f2, 0x30(r1)
+/* 8015F888 000000B8  D8 61 00 38 */	stfd f3, 0x38(r1)
+/* 8015F88C 000000BC  D8 81 00 40 */	stfd f4, 0x40(r1)
+/* 8015F890 000000C0  D8 A1 00 48 */	stfd f5, 0x48(r1)
+/* 8015F894 000000C4  D8 C1 00 50 */	stfd f6, 0x50(r1)
+/* 8015F898 000000C8  D8 E1 00 58 */	stfd f7, 0x58(r1)
+/* 8015F89C 000000CC  D9 01 00 60 */	stfd f8, 0x60(r1)
+.L_8015F8A0:
+/* 8015F8A0 000000D0  39 61 00 88 */	addi r11, r1, 0x88
+/* 8015F8A4 000000D4  38 01 00 08 */	addi r0, r1, 0x8
+/* 8015F8A8 000000D8  3D 80 01 00 */	lis r12, 0x100
+/* 8015F8AC 000000DC  90 81 00 0C */	stw r4, 0xc(r1)
+/* 8015F8B0 000000E0  38 81 00 68 */	addi r4, r1, 0x68
+/* 8015F8B4 000000E4  90 61 00 08 */	stw r3, 0x8(r1)
+/* 8015F8B8 000000E8  90 A1 00 10 */	stw r5, 0x10(r1)
+/* 8015F8BC 000000EC  90 C1 00 14 */	stw r6, 0x14(r1)
+/* 8015F8C0 000000F0  90 E1 00 18 */	stw r7, 0x18(r1)
+/* 8015F8C4 000000F4  91 01 00 1C */	stw r8, 0x1c(r1)
+/* 8015F8C8 000000F8  91 21 00 20 */	stw r9, 0x20(r1)
+/* 8015F8CC 000000FC  91 41 00 24 */	stw r10, 0x24(r1)
+/* 8015F8D0 00000100  91 81 00 68 */	stw r12, 0x68(r1)
+/* 8015F8D4 00000104  91 61 00 6C */	stw r11, 0x6c(r1)
+/* 8015F8D8 00000108  90 01 00 70 */	stw r0, 0x70(r1)
+/* 8015F8DC 0000010C  48 00 00 01 */	bl OSVReport
+/* 8015F8E0 00000110  80 01 00 84 */	lwz r0, 0x84(r1)
+/* 8015F8E4 00000114  7C 08 03 A6 */	mtlr r0
+/* 8015F8E8 00000118  38 21 00 80 */	addi r1, r1, 0x80
+/* 8015F8EC 0000011C  4E 80 00 20 */	blr
+.endfn OSReport
+
+# .text:0xE0 | 0x8015F8F0 | size: 0x4
+.fn OSVReport, global
+/* 8015F8F0 00000120  48 00 00 00 */	b vprintf__7sPrintfFPCcP16__va_list_struct
+.endfn OSVReport
+
+# .text:0xE4 | 0x8015F8F4 | size: 0xC
+.fn gap_03_8015F8F4_text, global
+.hidden gap_03_8015F8F4_text
+/* 8015F8F4 00000124  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015F8F8 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8015F8FC 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8015F8F4_text

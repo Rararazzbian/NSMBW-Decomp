@@ -1,0 +1,35 @@
+.include "macros.inc"
+.file "auto_sinit__ef_resource_c_text"
+
+# 0x802958C0..0x80295910 | size: 0x50
+.text
+.balign 4
+
+# .text:0x0 | 0x802958C0 | size: 0x50
+.fn "__sinit_\ef_resource_cpp", global
+/* 802958C0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802958C4 00000044  7C 08 02 A6 */	mflr r0
+/* 802958C8 00000048  38 80 00 04 */	li r4, 0x4
+/* 802958CC 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802958D0 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802958D4 00000054  3F E0 00 00 */	lis r31, mResource__Q34nw4r2ef8Resource@ha
+/* 802958D8 00000058  38 7F 00 00 */	addi r3, r31, mResource__Q34nw4r2ef8Resource@l
+/* 802958DC 0000005C  48 00 00 01 */	bl List_Init__Q24nw4r2utFPQ34nw4r2ut4ListUs
+/* 802958E0 00000060  3B FF 00 00 */	addi r31, r31, mResource__Q34nw4r2ef8Resource@l
+/* 802958E4 00000064  38 80 00 04 */	li r4, 0x4
+/* 802958E8 00000068  38 7F 00 10 */	addi r3, r31, 0x10
+/* 802958EC 0000006C  48 00 00 01 */	bl List_Init__Q24nw4r2utFPQ34nw4r2ut4ListUs
+/* 802958F0 00000070  38 00 00 00 */	li r0, 0x0
+/* 802958F4 00000074  90 1F 00 0C */	stw r0, 0xc(r31)
+/* 802958F8 00000078  90 1F 00 1C */	stw r0, 0x1c(r31)
+/* 802958FC 0000007C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80295900 00000080  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80295904 00000084  7C 08 03 A6 */	mtlr r0
+/* 80295908 00000088  38 21 00 10 */	addi r1, r1, 0x10
+/* 8029590C 0000008C  4E 80 00 20 */	blr
+.endfn "__sinit_\ef_resource_cpp"
+
+# 0x802EDF60..0x802EDF64 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\ef_resource_cpp"

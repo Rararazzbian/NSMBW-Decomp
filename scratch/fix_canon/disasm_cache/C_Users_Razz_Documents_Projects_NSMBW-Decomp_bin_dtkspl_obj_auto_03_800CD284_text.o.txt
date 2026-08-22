@@ -1,0 +1,505 @@
+.include "macros.inc"
+.file "auto_03_800CD284_text"
+
+# 0x800CD284..0x800CD7B0 | size: 0x52C
+.text
+.balign 4
+
+# .text:0x0 | 0x800CD284 | size: 0xC
+.fn pad_03_800CD284_text, local
+/* 800CD284 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD288 00000044  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD28C 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_800CD284_text
+
+# .text:0xC | 0x800CD290 | size: 0x7C
+# dMaskMng::CreatePlayerMask()
+.fn CreatePlayerMask__8dMaskMngFv, global
+/* 800CD290 0000004C  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 800CD294 00000050  7C 08 02 A6 */	mflr r0
+/* 800CD298 00000054  90 01 00 34 */	stw r0, 0x34(r1)
+/* 800CD29C 00000058  DB E1 00 20 */	stfd f31, 0x20(r1)
+/* 800CD2A0 0000005C  F3 E1 00 28 */	psq_st f31, 0x28(r1), 0, qr0
+/* 800CD2A4 00000060  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800CD2A8 00000064  80 60 00 00 */	lwz r3, m_bg_p__5dBg_c@sda21(r0)
+/* 800CD2AC 00000068  3C 83 00 09 */	addis r4, r3, 0x9
+/* 800CD2B0 0000006C  C3 E4 FE 6C */	lfs f31, -0x194(r4)
+/* 800CD2B4 00000070  48 00 00 01 */	bl getMaxLeftPos__5dBg_cFv
+/* 800CD2B8 00000074  C0 00 00 00 */	lfs f0, "@72806_8042CC70"@sda21(r0)
+/* 800CD2BC 00000078  3B E0 00 00 */	li r31, 0x0
+/* 800CD2C0 0000007C  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 800CD2C4 00000080  D3 E1 00 0C */	stfs f31, 0xc(r1)
+/* 800CD2C8 00000084  D0 01 00 10 */	stfs f0, 0x10(r1)
+.L_800CD2CC:
+/* 800CD2CC 00000088  57 E4 04 3E */	clrlwi r4, r31, 16
+/* 800CD2D0 0000008C  38 A1 00 08 */	addi r5, r1, 0x8
+/* 800CD2D4 00000090  38 60 02 5C */	li r3, 0x25c
+/* 800CD2D8 00000094  38 C0 00 00 */	li r6, 0x0
+/* 800CD2DC 00000098  38 E0 00 00 */	li r7, 0x0
+/* 800CD2E0 0000009C  48 00 00 01 */	bl construct__8dActor_cFUsUlPC7mVec3_cPC7mAng3_cUc
+/* 800CD2E4 000000A0  3B FF 00 01 */	addi r31, r31, 0x1
+/* 800CD2E8 000000A4  28 1F 00 08 */	cmplwi r31, 0x8
+/* 800CD2EC 000000A8  41 80 FF E0 */	blt .L_800CD2CC
+/* 800CD2F0 000000AC  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 800CD2F4 000000B0  E3 E1 00 28 */	psq_l f31, 0x28(r1), 0, qr0
+/* 800CD2F8 000000B4  CB E1 00 20 */	lfd f31, 0x20(r1)
+/* 800CD2FC 000000B8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800CD300 000000BC  7C 08 03 A6 */	mtlr r0
+/* 800CD304 000000C0  38 21 00 30 */	addi r1, r1, 0x30
+/* 800CD308 000000C4  4E 80 00 20 */	blr
+.endfn CreatePlayerMask__8dMaskMngFv
+
+# .text:0x88 | 0x800CD30C | size: 0x4
+.fn gap_03_800CD30C_text, global
+.hidden gap_03_800CD30C_text
+/* 800CD30C 000000C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD30C_text
+
+# .text:0x8C | 0x800CD310 | size: 0xC
+# dMaskMng::GetCaveRadius()
+.fn GetCaveRadius__8dMaskMngFv, global
+/* 800CD310 000000CC  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD314 000000D0  C0 23 00 00 */	lfs f1, lbl_80317BA8@l(r3)
+/* 800CD318 000000D4  4E 80 00 20 */	blr
+.endfn GetCaveRadius__8dMaskMngFv
+
+# .text:0x98 | 0x800CD31C | size: 0x4
+.fn gap_03_800CD31C_text, global
+.hidden gap_03_800CD31C_text
+/* 800CD31C 000000D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD31C_text
+
+# .text:0x9C | 0x800CD320 | size: 0x10
+# dMaskMng::GetDarkRadius()
+.fn GetDarkRadius__8dMaskMngFv, global
+/* 800CD320 000000DC  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD324 000000E0  38 63 00 00 */	addi r3, r3, lbl_80317BA8@l
+/* 800CD328 000000E4  C0 23 00 04 */	lfs f1, 0x4(r3)
+/* 800CD32C 000000E8  4E 80 00 20 */	blr
+.endfn GetDarkRadius__8dMaskMngFv
+
+# .text:0xAC | 0x800CD330 | size: 0x10
+# dMaskMng::GetMaskType()
+.fn GetMaskType__8dMaskMngFv, global
+/* 800CD330 000000EC  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD334 000000F0  38 63 00 00 */	addi r3, r3, lbl_80317BA8@l
+/* 800CD338 000000F4  88 63 00 20 */	lbz r3, 0x20(r3)
+/* 800CD33C 000000F8  4E 80 00 20 */	blr
+.endfn GetMaskType__8dMaskMngFv
+
+# .text:0xBC | 0x800CD340 | size: 0x6C
+# dMaskMng::isDarkMask()
+.fn isDarkMask__8dMaskMngFv, global
+/* 800CD340 000000FC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CD344 00000100  7C 08 02 A6 */	mflr r0
+/* 800CD348 00000104  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CD34C 00000108  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CD350 0000010C  83 E0 00 00 */	lwz r31, ms_instance__10dMaskMng_c@sda21(r0)
+/* 800CD354 00000110  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800CD358 00000114  41 82 00 3C */	beq .L_800CD394
+/* 800CD35C 00000118  48 00 00 01 */	bl GetMaskType__8dMaskMngFv
+/* 800CD360 0000011C  54 60 06 3F */	clrlwi. r0, r3, 24
+/* 800CD364 00000120  40 82 00 30 */	bne .L_800CD394
+/* 800CD368 00000124  88 1F 00 20 */	lbz r0, 0x20(r31)
+/* 800CD36C 00000128  28 00 00 20 */	cmplwi r0, 0x20
+/* 800CD370 0000012C  41 80 00 14 */	blt .L_800CD384
+/* 800CD374 00000130  28 00 00 2F */	cmplwi r0, 0x2f
+/* 800CD378 00000134  41 81 00 0C */	bgt .L_800CD384
+/* 800CD37C 00000138  38 60 00 01 */	li r3, 0x1
+/* 800CD380 0000013C  48 00 00 18 */	b .L_800CD398
+.L_800CD384:
+/* 800CD384 00000140  28 00 00 30 */	cmplwi r0, 0x30
+/* 800CD388 00000144  40 82 00 0C */	bne .L_800CD394
+/* 800CD38C 00000148  38 60 00 01 */	li r3, 0x1
+/* 800CD390 0000014C  48 00 00 08 */	b .L_800CD398
+.L_800CD394:
+/* 800CD394 00000150  38 60 00 00 */	li r3, 0x0
+.L_800CD398:
+/* 800CD398 00000154  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CD39C 00000158  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CD3A0 0000015C  7C 08 03 A6 */	mtlr r0
+/* 800CD3A4 00000160  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CD3A8 00000164  4E 80 00 20 */	blr
+.endfn isDarkMask__8dMaskMngFv
+
+# .text:0x128 | 0x800CD3AC | size: 0x4
+.fn gap_03_800CD3AC_text, global
+.hidden gap_03_800CD3AC_text
+/* 800CD3AC 00000168  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD3AC_text
+
+# .text:0x12C | 0x800CD3B0 | size: 0x6C
+# dMaskMng::isCaveMask()
+.fn isCaveMask__8dMaskMngFv, global
+/* 800CD3B0 0000016C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CD3B4 00000170  7C 08 02 A6 */	mflr r0
+/* 800CD3B8 00000174  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CD3BC 00000178  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CD3C0 0000017C  83 E0 00 00 */	lwz r31, ms_instance__10dMaskMng_c@sda21(r0)
+/* 800CD3C4 00000180  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800CD3C8 00000184  41 82 00 3C */	beq .L_800CD404
+/* 800CD3CC 00000188  48 00 00 01 */	bl GetMaskType__8dMaskMngFv
+/* 800CD3D0 0000018C  54 60 06 3F */	clrlwi. r0, r3, 24
+/* 800CD3D4 00000190  40 82 00 30 */	bne .L_800CD404
+/* 800CD3D8 00000194  88 1F 00 20 */	lbz r0, 0x20(r31)
+/* 800CD3DC 00000198  28 00 00 10 */	cmplwi r0, 0x10
+/* 800CD3E0 0000019C  41 80 00 14 */	blt .L_800CD3F4
+/* 800CD3E4 000001A0  28 00 00 1F */	cmplwi r0, 0x1f
+/* 800CD3E8 000001A4  41 81 00 0C */	bgt .L_800CD3F4
+/* 800CD3EC 000001A8  38 60 00 01 */	li r3, 0x1
+/* 800CD3F0 000001AC  48 00 00 18 */	b .L_800CD408
+.L_800CD3F4:
+/* 800CD3F4 000001B0  28 00 00 30 */	cmplwi r0, 0x30
+/* 800CD3F8 000001B4  40 82 00 0C */	bne .L_800CD404
+/* 800CD3FC 000001B8  38 60 00 01 */	li r3, 0x1
+/* 800CD400 000001BC  48 00 00 08 */	b .L_800CD408
+.L_800CD404:
+/* 800CD404 000001C0  38 60 00 00 */	li r3, 0x0
+.L_800CD408:
+/* 800CD408 000001C4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CD40C 000001C8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CD410 000001CC  7C 08 03 A6 */	mtlr r0
+/* 800CD414 000001D0  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CD418 000001D4  4E 80 00 20 */	blr
+.endfn isCaveMask__8dMaskMngFv
+
+# .text:0x198 | 0x800CD41C | size: 0x4
+.fn gap_03_800CD41C_text, global
+.hidden gap_03_800CD41C_text
+/* 800CD41C 000001D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD41C_text
+
+# .text:0x19C | 0x800CD420 | size: 0x14
+# dMaskMng::GetCaveMaskColor()
+.fn GetCaveMaskColor__8dMaskMngFv, global
+/* 800CD420 000001DC  3C 80 00 00 */	lis r4, lbl_80317BA8@ha
+/* 800CD424 000001E0  38 84 00 00 */	addi r4, r4, lbl_80317BA8@l
+/* 800CD428 000001E4  80 04 00 24 */	lwz r0, 0x24(r4)
+/* 800CD42C 000001E8  90 03 00 00 */	stw r0, 0x0(r3)
+/* 800CD430 000001EC  4E 80 00 20 */	blr
+.endfn GetCaveMaskColor__8dMaskMngFv
+
+# .text:0x1B0 | 0x800CD434 | size: 0xC
+.fn gap_03_800CD434_text, global
+.hidden gap_03_800CD434_text
+/* 800CD434 000001F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD438 000001F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD43C 000001F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD434_text
+
+# .text:0x1BC | 0x800CD440 | size: 0x10
+# dMaskMng::GetAlpha()
+.fn GetAlpha__8dMaskMngFv, global
+/* 800CD440 000001FC  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD444 00000200  38 63 00 00 */	addi r3, r3, lbl_80317BA8@l
+/* 800CD448 00000204  88 63 00 22 */	lbz r3, 0x22(r3)
+/* 800CD44C 00000208  4E 80 00 20 */	blr
+.endfn GetAlpha__8dMaskMngFv
+
+# .text:0x1CC | 0x800CD450 | size: 0x10
+# dMaskMng::GetWalkDarkMaskScale()
+.fn GetWalkDarkMaskScale__8dMaskMngFv, global
+/* 800CD450 0000020C  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD454 00000210  38 63 00 00 */	addi r3, r3, lbl_80317BA8@l
+/* 800CD458 00000214  C0 23 00 28 */	lfs f1, 0x28(r3)
+/* 800CD45C 00000218  4E 80 00 20 */	blr
+.endfn GetWalkDarkMaskScale__8dMaskMngFv
+
+# .text:0x1DC | 0x800CD460 | size: 0x10
+# dMaskMng::GetDashDarkMaskScale()
+.fn GetDashDarkMaskScale__8dMaskMngFv, global
+/* 800CD460 0000021C  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD464 00000220  38 63 00 00 */	addi r3, r3, lbl_80317BA8@l
+/* 800CD468 00000224  C0 23 00 2C */	lfs f1, 0x2c(r3)
+/* 800CD46C 00000228  4E 80 00 20 */	blr
+.endfn GetDashDarkMaskScale__8dMaskMngFv
+
+# .text:0x1EC | 0x800CD470 | size: 0x10
+# dMaskMng::GetDarkMaskScaleResetTime()
+.fn GetDarkMaskScaleResetTime__8dMaskMngFv, global
+/* 800CD470 0000022C  3C 60 00 00 */	lis r3, lbl_80317BA8@ha
+/* 800CD474 00000230  38 63 00 00 */	addi r3, r3, lbl_80317BA8@l
+/* 800CD478 00000234  A8 63 00 30 */	lha r3, 0x30(r3)
+/* 800CD47C 00000238  4E 80 00 20 */	blr
+.endfn GetDarkMaskScaleResetTime__8dMaskMngFv
+
+# .text:0x1FC | 0x800CD480 | size: 0x44
+# dMaskMng_c::dMaskMng_c()
+.fn __ct__10dMaskMng_cFv, global
+/* 800CD480 0000023C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CD484 00000240  7C 08 02 A6 */	mflr r0
+/* 800CD488 00000244  3C 80 00 00 */	lis r4, __vt__10dMaskMng_c@ha
+/* 800CD48C 00000248  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CD490 0000024C  38 84 00 00 */	addi r4, r4, __vt__10dMaskMng_c@l
+/* 800CD494 00000250  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CD498 00000254  7C 7F 1B 78 */	mr r31, r3
+/* 800CD49C 00000258  90 83 00 00 */	stw r4, 0x0(r3)
+/* 800CD4A0 0000025C  38 63 00 04 */	addi r3, r3, 0x4
+/* 800CD4A4 00000260  48 00 00 01 */	bl __ct__16dHeapAllocator_cFv
+/* 800CD4A8 00000264  93 E0 00 00 */	stw r31, ms_instance__10dMaskMng_c@sda21(r0)
+/* 800CD4AC 00000268  7F E3 FB 78 */	mr r3, r31
+/* 800CD4B0 0000026C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CD4B4 00000270  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CD4B8 00000274  7C 08 03 A6 */	mtlr r0
+/* 800CD4BC 00000278  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CD4C0 0000027C  4E 80 00 20 */	blr
+.endfn __ct__10dMaskMng_cFv
+
+# .text:0x240 | 0x800CD4C4 | size: 0xC
+.fn gap_03_800CD4C4_text, global
+.hidden gap_03_800CD4C4_text
+/* 800CD4C4 00000280  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD4C8 00000284  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD4CC 00000288  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD4C4_text
+
+# .text:0x24C | 0x800CD4D0 | size: 0x88
+# dMaskMng_c::~dMaskMng_c()
+.fn __dt__10dMaskMng_cFv, global
+/* 800CD4D0 0000028C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CD4D4 00000290  7C 08 02 A6 */	mflr r0
+/* 800CD4D8 00000294  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800CD4DC 00000298  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CD4E0 0000029C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CD4E4 000002A0  7C 9F 23 78 */	mr r31, r4
+/* 800CD4E8 000002A4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800CD4EC 000002A8  7C 7E 1B 78 */	mr r30, r3
+/* 800CD4F0 000002AC  41 82 00 4C */	beq .L_800CD53C
+/* 800CD4F4 000002B0  3C 80 00 00 */	lis r4, __vt__10dMaskMng_c@ha
+/* 800CD4F8 000002B4  38 84 00 00 */	addi r4, r4, __vt__10dMaskMng_c@l
+/* 800CD4FC 000002B8  90 83 00 00 */	stw r4, 0x0(r3)
+/* 800CD500 000002BC  48 00 00 01 */	bl getInstance__21mAllocatorDummyHeap_cFv
+/* 800CD504 000002C0  80 1E 00 18 */	lwz r0, 0x18(r30)
+/* 800CD508 000002C4  7C 00 18 40 */	cmplw r0, r3
+/* 800CD50C 000002C8  41 82 00 0C */	beq .L_800CD518
+/* 800CD510 000002CC  38 7E 00 04 */	addi r3, r30, 0x4
+/* 800CD514 000002D0  48 00 00 01 */	bl destroyHeap__16mHeapAllocator_cFv
+.L_800CD518:
+/* 800CD518 000002D4  38 00 00 00 */	li r0, 0x0
+/* 800CD51C 000002D8  90 00 00 00 */	stw r0, ms_instance__10dMaskMng_c@sda21(r0)
+/* 800CD520 000002DC  38 7E 00 04 */	addi r3, r30, 0x4
+/* 800CD524 000002E0  38 80 FF FF */	li r4, -0x1
+/* 800CD528 000002E4  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
+/* 800CD52C 000002E8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 800CD530 000002EC  40 81 00 0C */	ble .L_800CD53C
+/* 800CD534 000002F0  7F C3 F3 78 */	mr r3, r30
+/* 800CD538 000002F4  48 00 00 01 */	bl __dl__FPv
+.L_800CD53C:
+/* 800CD53C 000002F8  7F C3 F3 78 */	mr r3, r30
+/* 800CD540 000002FC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CD544 00000300  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800CD548 00000304  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CD54C 00000308  7C 08 03 A6 */	mtlr r0
+/* 800CD550 0000030C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CD554 00000310  4E 80 00 20 */	blr
+.endfn __dt__10dMaskMng_cFv
+
+# .text:0x2D4 | 0x800CD558 | size: 0x8
+.fn gap_03_800CD558_text, global
+.hidden gap_03_800CD558_text
+/* 800CD558 00000314  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD55C 00000318  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD558_text
+
+# .text:0x2DC | 0x800CD560 | size: 0xA8
+# dMaskMng_c::initialize()
+.fn initialize__10dMaskMng_cFv, global
+/* 800CD560 0000031C  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 800CD564 00000320  7C 08 02 A6 */	mflr r0
+/* 800CD568 00000324  90 01 00 34 */	stw r0, 0x34(r1)
+/* 800CD56C 00000328  DB E1 00 20 */	stfd f31, 0x20(r1)
+/* 800CD570 0000032C  F3 E1 00 28 */	psq_st f31, 0x28(r1), 0, qr0
+/* 800CD574 00000330  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800CD578 00000334  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800CD57C 00000338  7C 7E 1B 78 */	mr r30, r3
+/* 800CD580 0000033C  80 80 00 00 */	lwz r4, m_instance__10dScStage_c@sda21(r0)
+/* 800CD584 00000340  80 60 00 00 */	lwz r3, m_instance__5dCd_c@sda21(r0)
+/* 800CD588 00000344  88 04 12 0E */	lbz r0, 0x120e(r4)
+/* 800CD58C 00000348  1C 00 03 B0 */	mulli r0, r0, 0x3b0
+/* 800CD590 0000034C  7F E3 02 14 */	add r31, r3, r0
+/* 800CD594 00000350  80 1F 00 2C */	lwz r0, 0x2c(r31)
+/* 800CD598 00000354  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800CD59C 00000358  41 82 00 08 */	beq .L_800CD5A4
+/* 800CD5A0 0000035C  48 00 00 08 */	b .L_800CD5A8
+.L_800CD5A4:
+/* 800CD5A4 00000360  3B E0 00 00 */	li r31, 0x0
+.L_800CD5A8:
+/* 800CD5A8 00000364  80 60 00 00 */	lwz r3, m_bg_p__5dBg_c@sda21(r0)
+/* 800CD5AC 00000368  3C 83 00 09 */	addis r4, r3, 0x9
+/* 800CD5B0 0000036C  C3 E4 FE 6C */	lfs f31, -0x194(r4)
+/* 800CD5B4 00000370  48 00 00 01 */	bl getMaxLeftPos__5dBg_cFv
+/* 800CD5B8 00000374  C0 00 00 00 */	lfs f0, "@72806_8042CC70"@sda21(r0)
+/* 800CD5BC 00000378  7F E3 FB 78 */	mr r3, r31
+/* 800CD5C0 0000037C  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 800CD5C4 00000380  38 81 00 08 */	addi r4, r1, 0x8
+/* 800CD5C8 00000384  D3 E1 00 0C */	stfs f31, 0xc(r1)
+/* 800CD5CC 00000388  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 800CD5D0 0000038C  48 00 00 01 */	bl getAreaNo__9dCdFile_cFP7mVec3_c
+/* 800CD5D4 00000390  7C 60 1B 78 */	mr r0, r3
+/* 800CD5D8 00000394  7F E3 FB 78 */	mr r3, r31
+/* 800CD5DC 00000398  54 04 06 3E */	clrlwi r4, r0, 24
+/* 800CD5E0 0000039C  48 00 00 01 */	bl getAreaMaskNo__9dCdFile_cFUc
+/* 800CD5E4 000003A0  98 7E 00 20 */	stb r3, 0x20(r30)
+/* 800CD5E8 000003A4  E3 E1 00 28 */	psq_l f31, 0x28(r1), 0, qr0
+/* 800CD5EC 000003A8  CB E1 00 20 */	lfd f31, 0x20(r1)
+/* 800CD5F0 000003AC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800CD5F4 000003B0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800CD5F8 000003B4  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 800CD5FC 000003B8  7C 08 03 A6 */	mtlr r0
+/* 800CD600 000003BC  38 21 00 30 */	addi r1, r1, 0x30
+/* 800CD604 000003C0  4E 80 00 20 */	blr
+.endfn initialize__10dMaskMng_cFv
+
+# .text:0x384 | 0x800CD608 | size: 0x8
+.fn gap_03_800CD608_text, global
+.hidden gap_03_800CD608_text
+/* 800CD608 000003C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD60C 000003C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD608_text
+
+# .text:0x38C | 0x800CD610 | size: 0x58
+# dMaskMng_c::create()
+.fn create__10dMaskMng_cFv, global
+/* 800CD610 000003CC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CD614 000003D0  7C 08 02 A6 */	mflr r0
+/* 800CD618 000003D4  3C C0 00 00 */	lis r6, "@72908_80317BE0"@ha
+/* 800CD61C 000003D8  38 80 40 00 */	li r4, 0x4000
+/* 800CD620 000003DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CD624 000003E0  38 C6 00 00 */	addi r6, r6, "@72908_80317BE0"@l
+/* 800CD628 000003E4  38 E0 00 20 */	li r7, 0x20
+/* 800CD62C 000003E8  39 00 00 00 */	li r8, 0x0
+/* 800CD630 000003EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CD634 000003F0  7C 7F 1B 78 */	mr r31, r3
+/* 800CD638 000003F4  38 63 00 04 */	addi r3, r3, 0x4
+/* 800CD63C 000003F8  80 A0 00 00 */	lwz r5, sCurrentHeap__Q23EGG4Heap@sda21(r0)
+/* 800CD640 000003FC  48 00 00 01 */	bl createFrmHeapToCurrent__16mHeapAllocator_cFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 800CD644 00000400  7F E3 FB 78 */	mr r3, r31
+/* 800CD648 00000404  48 00 00 01 */	bl CreateHeap__10dMaskMng_cFv
+/* 800CD64C 00000408  38 7F 00 04 */	addi r3, r31, 0x4
+/* 800CD650 0000040C  48 00 00 01 */	bl adjustFrmHeapRestoreCurrent__16mHeapAllocator_cFv
+/* 800CD654 00000410  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CD658 00000414  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CD65C 00000418  7C 08 03 A6 */	mtlr r0
+/* 800CD660 0000041C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CD664 00000420  4E 80 00 20 */	blr
+.endfn create__10dMaskMng_cFv
+
+# .text:0x3E4 | 0x800CD668 | size: 0x8
+.fn gap_03_800CD668_text, global
+.hidden gap_03_800CD668_text
+/* 800CD668 00000424  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD66C 00000428  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD668_text
+
+# .text:0x3EC | 0x800CD670 | size: 0x7C
+# dMaskMng_c::CreateHeap()
+.fn CreateHeap__10dMaskMng_cFv, global
+/* 800CD670 0000042C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800CD674 00000430  7C 08 02 A6 */	mflr r0
+/* 800CD678 00000434  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800CD67C 00000438  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800CD680 0000043C  7C 7F 1B 78 */	mr r31, r3
+/* 800CD684 00000440  38 60 00 14 */	li r3, 0x14
+/* 800CD688 00000444  48 00 00 01 */	bl __nw__FUl
+/* 800CD68C 00000448  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800CD690 0000044C  41 82 00 08 */	beq .L_800CD698
+/* 800CD694 00000450  48 00 00 01 */	bl __ct__11dDarkMask_cFv
+.L_800CD698:
+/* 800CD698 00000454  90 7F 00 24 */	stw r3, 0x24(r31)
+/* 800CD69C 00000458  38 9F 00 04 */	addi r4, r31, 0x4
+/* 800CD6A0 0000045C  38 A0 FF FF */	li r5, -0x1
+/* 800CD6A4 00000460  38 C0 00 8A */	li r6, 0x8a
+/* 800CD6A8 00000464  48 00 00 01 */	bl create__11dDarkMask_cFP12mAllocator_cii
+/* 800CD6AC 00000468  38 60 00 18 */	li r3, 0x18
+/* 800CD6B0 0000046C  48 00 00 01 */	bl __nw__FUl
+/* 800CD6B4 00000470  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800CD6B8 00000474  41 82 00 08 */	beq .L_800CD6C0
+/* 800CD6BC 00000478  48 00 00 01 */	bl __ct__18dDarkSettingMask_cFv
+.L_800CD6C0:
+/* 800CD6C0 0000047C  90 7F 00 28 */	stw r3, 0x28(r31)
+/* 800CD6C4 00000480  38 9F 00 04 */	addi r4, r31, 0x4
+/* 800CD6C8 00000484  38 A0 FF FF */	li r5, -0x1
+/* 800CD6CC 00000488  38 C0 00 87 */	li r6, 0x87
+/* 800CD6D0 0000048C  48 00 00 01 */	bl create__18dDarkSettingMask_cFP12mAllocator_cii
+/* 800CD6D4 00000490  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800CD6D8 00000494  38 60 00 01 */	li r3, 0x1
+/* 800CD6DC 00000498  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800CD6E0 0000049C  7C 08 03 A6 */	mtlr r0
+/* 800CD6E4 000004A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 800CD6E8 000004A4  4E 80 00 20 */	blr
+.endfn CreateHeap__10dMaskMng_cFv
+
+# .text:0x468 | 0x800CD6EC | size: 0x4
+.fn gap_03_800CD6EC_text, global
+.hidden gap_03_800CD6EC_text
+/* 800CD6EC 000004A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD6EC_text
+
+# .text:0x46C | 0x800CD6F0 | size: 0x4
+# dMaskMng_c::execute()
+.fn execute__10dMaskMng_cFv, global
+/* 800CD6F0 000004AC  4E 80 00 20 */	blr
+.endfn execute__10dMaskMng_cFv
+
+# .text:0x470 | 0x800CD6F4 | size: 0xC
+.fn gap_03_800CD6F4_text, global
+.hidden gap_03_800CD6F4_text
+/* 800CD6F4 000004B0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD6F8 000004B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD6FC 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD6F4_text
+
+# .text:0x47C | 0x800CD700 | size: 0xA8
+# dMaskMng_c::draw()
+.fn draw__10dMaskMng_cFv, global
+/* 800CD700 000004BC  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800CD704 000004C0  7C 08 02 A6 */	mflr r0
+/* 800CD708 000004C4  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800CD70C 000004C8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800CD710 000004CC  7C 7F 1B 78 */	mr r31, r3
+/* 800CD714 000004D0  48 00 00 01 */	bl isDarkMask__8dMaskMngFv
+/* 800CD718 000004D4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800CD71C 000004D8  41 82 00 78 */	beq .L_800CD794
+/* 800CD720 000004DC  80 7F 00 24 */	lwz r3, 0x24(r31)
+/* 800CD724 000004E0  C0 20 00 00 */	lfs f1, "@72806_8042CC70"@sda21(r0)
+/* 800CD728 000004E4  D0 23 00 08 */	stfs f1, 0x8(r3)
+/* 800CD72C 000004E8  C0 00 00 00 */	lfs f0, "@72929_8042CC74"@sda21(r0)
+/* 800CD730 000004EC  D0 23 00 0C */	stfs f1, 0xc(r3)
+/* 800CD734 000004F0  D0 03 00 10 */	stfs f0, 0x10(r3)
+/* 800CD738 000004F4  80 7F 00 24 */	lwz r3, 0x24(r31)
+/* 800CD73C 000004F8  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 800CD740 000004FC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800CD744 00000500  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 800CD748 00000504  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 800CD74C 00000508  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 800CD750 0000050C  7D 89 03 A6 */	mtctr r12
+/* 800CD754 00000510  4E 80 04 21 */	bctrl
+/* 800CD758 00000514  48 00 00 01 */	bl GetAlpha__8dMaskMngFv
+/* 800CD75C 00000518  80 9F 00 28 */	lwz r4, 0x28(r31)
+/* 800CD760 0000051C  C0 41 00 08 */	lfs f2, 0x8(r1)
+/* 800CD764 00000520  98 64 00 14 */	stb r3, 0x14(r4)
+/* 800CD768 00000524  C0 21 00 0C */	lfs f1, 0xc(r1)
+/* 800CD76C 00000528  80 7F 00 28 */	lwz r3, 0x28(r31)
+/* 800CD770 0000052C  C0 01 00 10 */	lfs f0, 0x10(r1)
+/* 800CD774 00000530  D0 43 00 08 */	stfs f2, 0x8(r3)
+/* 800CD778 00000534  D0 23 00 0C */	stfs f1, 0xc(r3)
+/* 800CD77C 00000538  D0 03 00 10 */	stfs f0, 0x10(r3)
+/* 800CD780 0000053C  80 7F 00 28 */	lwz r3, 0x28(r31)
+/* 800CD784 00000540  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800CD788 00000544  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 800CD78C 00000548  7D 89 03 A6 */	mtctr r12
+/* 800CD790 0000054C  4E 80 04 21 */	bctrl
+.L_800CD794:
+/* 800CD794 00000550  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800CD798 00000554  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800CD79C 00000558  7C 08 03 A6 */	mtlr r0
+/* 800CD7A0 0000055C  38 21 00 20 */	addi r1, r1, 0x20
+/* 800CD7A4 00000560  4E 80 00 20 */	blr
+.endfn draw__10dMaskMng_cFv
+
+# .text:0x524 | 0x800CD7A8 | size: 0x8
+.fn gap_03_800CD7A8_text, global
+.hidden gap_03_800CD7A8_text
+/* 800CD7A8 00000564  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800CD7AC 00000568  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800CD7A8_text

@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__snd_Sound3DMa_text"
+
+# 0x802754F0..0x802754FC | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x802754F0 | size: 0xC
+.fn "__sinit_\snd_Sound3DManager_cpp", global
+/* 802754F0 00000040  3C 60 00 00 */	lis r3, "sSound3DEngine__Q34nw4r3snd32@unnamed@snd_Sound3DManager_cpp@"@ha
+/* 802754F4 00000044  38 63 00 00 */	addi r3, r3, "sSound3DEngine__Q34nw4r3snd32@unnamed@snd_Sound3DManager_cpp@"@l
+/* 802754F8 00000048  48 00 00 00 */	b __ct__Q34nw4r3snd13Sound3DEngineFv
+.endfn "__sinit_\snd_Sound3DManager_cpp"
+
+# 0x802EDF48..0x802EDF4C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\snd_Sound3DManager_cpp"

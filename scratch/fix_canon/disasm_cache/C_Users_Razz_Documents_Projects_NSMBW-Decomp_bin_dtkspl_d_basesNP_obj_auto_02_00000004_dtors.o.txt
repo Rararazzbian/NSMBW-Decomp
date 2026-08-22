@@ -1,0 +1,11 @@
+.include "macros.inc"
+.file "auto_02_00000004_dtors"
+
+# 0x00000004..0x00000008 | size: 0x4
+.section .dtors, "a"
+.balign 4
+
+# .dtors:0x0 | 0x4 | size: 0x4
+.obj __destroy_global_chain_reference, global
+	.4byte __destroy_global_chain
+.endobj __destroy_global_chain_reference

@@ -1,0 +1,37 @@
+.include "macros.inc"
+.file "auto_sinit__eggMatrix_cpp_text"
+
+# 0x802BE8D0..0x802BE928 | size: 0x58
+.text
+.balign 4
+
+# .text:0x0 | 0x802BE8D0 | size: 0x58
+.fn "__sinit_\eggMatrix_cpp", global
+/* 802BE8D0 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 802BE8D4 00000044  7C 08 02 A6 */	mflr r0
+/* 802BE8D8 00000048  C0 40 00 00 */	lfs f2, "@11272_8042F478"@sda21(r0)
+/* 802BE8DC 0000004C  3C 60 00 00 */	lis r3, ident__Q23EGG9Matrix34f@ha
+/* 802BE8E0 00000050  90 01 00 24 */	stw r0, 0x24(r1)
+/* 802BE8E4 00000054  38 63 00 00 */	addi r3, r3, ident__Q23EGG9Matrix34f@l
+/* 802BE8E8 00000058  C0 20 00 00 */	lfs f1, "@11317_8042F47C"@sda21(r0)
+/* 802BE8EC 0000005C  FC 60 10 90 */	fmr f3, f2
+/* 802BE8F0 00000060  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 802BE8F4 00000064  FC 80 10 90 */	fmr f4, f2
+/* 802BE8F8 00000068  FC A0 10 90 */	fmr f5, f2
+/* 802BE8FC 0000006C  D0 41 00 0C */	stfs f2, 0xc(r1)
+/* 802BE900 00000070  FC C0 08 90 */	fmr f6, f1
+/* 802BE904 00000074  FC E0 10 90 */	fmr f7, f2
+/* 802BE908 00000078  D0 21 00 10 */	stfs f1, 0x10(r1)
+/* 802BE90C 0000007C  FD 00 10 90 */	fmr f8, f2
+/* 802BE910 00000080  D0 41 00 14 */	stfs f2, 0x14(r1)
+/* 802BE914 00000084  48 00 00 01 */	bl __ct__Q23EGG9Matrix34fFffffffffffff
+/* 802BE918 00000088  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 802BE91C 0000008C  7C 08 03 A6 */	mtlr r0
+/* 802BE920 00000090  38 21 00 20 */	addi r1, r1, 0x20
+/* 802BE924 00000094  4E 80 00 20 */	blr
+.endfn "__sinit_\eggMatrix_cpp"
+
+# 0x802EDF88..0x802EDF8C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\eggMatrix_cpp"

@@ -1,0 +1,1795 @@
+.include "macros.inc"
+.file "m_2d.cpp"
+
+# 0x801632B0..0x80164630 | size: 0x1380
+.text
+.balign 4
+
+# .text:0x0 | 0x801632B0 | size: 0x10
+# m2d::reset()
+.fn reset__3m2dFv, global
+/* 801632B0 00000040  3C 60 00 00 */	lis r3, l_list__3m2d@ha
+/* 801632B4 00000044  38 80 00 00 */	li r4, 0x0
+/* 801632B8 00000048  38 63 00 00 */	addi r3, r3, l_list__3m2d@l
+/* 801632BC 0000004C  48 00 00 00 */	b List_Init__Q24nw4r2utFPQ34nw4r2ut4ListUs
+.endfn reset__3m2dFv
+
+# .text:0x10 | 0x801632C0 | size: 0x94
+# m2d::create(EGG::Heap*, unsigned long)
+.fn create__3m2dFPQ23EGG4HeapUl, global
+/* 801632C0 00000050  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801632C4 00000054  7C 08 02 A6 */	mflr r0
+/* 801632C8 00000058  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801632CC 0000005C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801632D0 00000060  7C 9F 23 78 */	mr r31, r4
+/* 801632D4 00000064  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 801632D8 00000068  7C 7E 1B 78 */	mr r30, r3
+/* 801632DC 0000006C  48 00 00 01 */	bl LytInit__Q24nw4r3lytFv
+/* 801632E0 00000070  7F E3 FB 78 */	mr r3, r31
+/* 801632E4 00000074  7F C4 F3 78 */	mr r4, r30
+/* 801632E8 00000078  38 A0 00 04 */	li r5, 0x4
+/* 801632EC 0000007C  48 00 00 01 */	bl create__Q23EGG7ExpHeapFUlPQ23EGG4HeapUs
+/* 801632F0 00000080  3C 80 00 00 */	lis r4, "@15526"@ha
+/* 801632F4 00000084  7C 7F 1B 78 */	mr r31, r3
+/* 801632F8 00000088  38 84 00 00 */	addi r4, r4, "@15526"@l
+/* 801632FC 0000008C  90 83 00 34 */	stw r4, 0x34(r3)
+/* 80163300 00000090  7F E4 FB 78 */	mr r4, r31
+/* 80163304 00000094  38 60 00 1C */	li r3, 0x1c
+/* 80163308 00000098  38 A0 00 04 */	li r5, 0x4
+/* 8016330C 0000009C  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 80163310 000000A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80163314 000000A4  41 82 00 08 */	beq .L_8016331C
+/* 80163318 000000A8  48 00 00 01 */	bl __ct__12mAllocator_cFv
+.L_8016331C:
+/* 8016331C 000000AC  90 60 00 00 */	stw r3, l_allocator__3m2d@sda21(r0)
+/* 80163320 000000B0  7F E4 FB 78 */	mr r4, r31
+/* 80163324 000000B4  38 A0 00 04 */	li r5, 0x4
+/* 80163328 000000B8  48 00 00 01 */	bl attach__12mAllocator_cFPQ23EGG4Heapi
+/* 8016332C 000000BC  80 00 00 00 */	lwz r0, l_allocator__3m2d@sda21(r0)
+/* 80163330 000000C0  90 00 00 00 */	stw r0, mspAllocator__Q34nw4r3lyt6Layout@sda21(r0)
+/* 80163334 000000C4  48 00 00 01 */	bl reset__3m2dFv
+/* 80163338 000000C8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016333C 000000CC  38 60 00 01 */	li r3, 0x1
+/* 80163340 000000D0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80163344 000000D4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80163348 000000D8  7C 08 03 A6 */	mtlr r0
+/* 8016334C 000000DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80163350 000000E0  4E 80 00 20 */	blr
+.endfn create__3m2dFPQ23EGG4HeapUl
+
+# .text:0xA4 | 0x80163354 | size: 0xC
+.fn gap_03_80163354_text, global
+.hidden gap_03_80163354_text
+/* 80163354 000000E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163358 000000E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016335C 000000EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163354_text
+
+# .text:0xB0 | 0x80163360 | size: 0x58
+# m2d::defaultSet()
+.fn defaultSet__3m2dFv, global
+/* 80163360 000000F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80163364 000000F4  7C 08 02 A6 */	mflr r0
+/* 80163368 000000F8  38 60 00 00 */	li r3, 0x0
+/* 8016336C 000000FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80163370 00000100  48 00 00 01 */	bl GXSetCullMode
+/* 80163374 00000104  38 60 00 00 */	li r3, 0x0
+/* 80163378 00000108  38 80 00 07 */	li r4, 0x7
+/* 8016337C 0000010C  38 A0 00 00 */	li r5, 0x0
+/* 80163380 00000110  48 00 00 01 */	bl GXSetZMode
+/* 80163384 00000114  C0 20 00 00 */	lfs f1, "@15531"@sda21(r0)
+/* 80163388 00000118  38 81 00 08 */	addi r4, r1, 0x8
+/* 8016338C 0000011C  80 00 00 00 */	lwz r0, "@LOCAL@defaultSet__3m2dFv@l_clearColor"@sda21(r0)
+/* 80163390 00000120  38 60 00 00 */	li r3, 0x0
+/* 80163394 00000124  FC 40 08 90 */	fmr f2, f1
+/* 80163398 00000128  90 01 00 08 */	stw r0, 0x8(r1)
+/* 8016339C 0000012C  FC 60 08 90 */	fmr f3, f1
+/* 801633A0 00000130  FC 80 08 90 */	fmr f4, f1
+/* 801633A4 00000134  48 00 00 01 */	bl GXSetFog
+/* 801633A8 00000138  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801633AC 0000013C  7C 08 03 A6 */	mtlr r0
+/* 801633B0 00000140  38 21 00 10 */	addi r1, r1, 0x10
+/* 801633B4 00000144  4E 80 00 20 */	blr
+.endfn defaultSet__3m2dFv
+
+# .text:0x108 | 0x801633B8 | size: 0x8
+.fn gap_03_801633B8_text, global
+.hidden gap_03_801633B8_text
+/* 801633B8 00000148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801633BC 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801633B8_text
+
+# .text:0x110 | 0x801633C0 | size: 0x78
+# m2d::draw()
+.fn draw__3m2dFv, global
+/* 801633C0 00000150  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801633C4 00000154  7C 08 02 A6 */	mflr r0
+/* 801633C8 00000158  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801633CC 0000015C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801633D0 00000160  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 801633D4 00000164  48 00 00 01 */	bl defaultSet__3m2dFv
+/* 801633D8 00000168  3F E0 00 00 */	lis r31, l_list__3m2d@ha
+/* 801633DC 0000016C  38 80 00 00 */	li r4, 0x0
+/* 801633E0 00000170  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 801633E4 00000174  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 801633E8 00000178  7C 7E 1B 78 */	mr r30, r3
+/* 801633EC 0000017C  48 00 00 28 */	b .L_80163414
+.L_801633F0:
+/* 801633F0 00000180  81 9E 00 08 */	lwz r12, 0x8(r30)
+/* 801633F4 00000184  7F C3 F3 78 */	mr r3, r30
+/* 801633F8 00000188  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 801633FC 0000018C  7D 89 03 A6 */	mtctr r12
+/* 80163400 00000190  4E 80 04 21 */	bctrl
+/* 80163404 00000194  7F C4 F3 78 */	mr r4, r30
+/* 80163408 00000198  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 8016340C 0000019C  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 80163410 000001A0  7C 7E 1B 78 */	mr r30, r3
+.L_80163414:
+/* 80163414 000001A4  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 80163418 000001A8  40 82 FF D8 */	bne .L_801633F0
+/* 8016341C 000001AC  48 00 00 01 */	bl reset__3m2dFv
+/* 80163420 000001B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80163424 000001B4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80163428 000001B8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8016342C 000001BC  7C 08 03 A6 */	mtlr r0
+/* 80163430 000001C0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80163434 000001C4  4E 80 00 20 */	blr
+.endfn draw__3m2dFv
+
+# .text:0x188 | 0x80163438 | size: 0x8
+.fn gap_03_80163438_text, global
+.hidden gap_03_80163438_text
+/* 80163438 000001C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016343C 000001CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163438_text
+
+# .text:0x190 | 0x80163440 | size: 0x88
+# m2d::drawBefore(unsigned char)
+.fn drawBefore__3m2dFUc, global
+/* 80163440 000001D0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80163444 000001D4  7C 08 02 A6 */	mflr r0
+/* 80163448 000001D8  38 80 00 00 */	li r4, 0x0
+/* 8016344C 000001DC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80163450 000001E0  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80163454 000001E4  3F E0 00 00 */	lis r31, l_list__3m2d@ha
+/* 80163458 000001E8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8016345C 000001EC  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80163460 000001F0  7C 7D 1B 78 */	mr r29, r3
+/* 80163464 000001F4  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 80163468 000001F8  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 8016346C 000001FC  7C 7E 1B 78 */	mr r30, r3
+/* 80163470 00000200  48 00 00 34 */	b .L_801634A4
+.L_80163474:
+/* 80163474 00000204  88 1E 00 0C */	lbz r0, 0xc(r30)
+/* 80163478 00000208  7C 00 E8 40 */	cmplw r0, r29
+/* 8016347C 0000020C  40 80 00 30 */	bge .L_801634AC
+/* 80163480 00000210  81 9E 00 08 */	lwz r12, 0x8(r30)
+/* 80163484 00000214  7F C3 F3 78 */	mr r3, r30
+/* 80163488 00000218  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8016348C 0000021C  7D 89 03 A6 */	mtctr r12
+/* 80163490 00000220  4E 80 04 21 */	bctrl
+/* 80163494 00000224  7F C4 F3 78 */	mr r4, r30
+/* 80163498 00000228  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 8016349C 0000022C  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 801634A0 00000230  7C 7E 1B 78 */	mr r30, r3
+.L_801634A4:
+/* 801634A4 00000234  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 801634A8 00000238  40 82 FF CC */	bne .L_80163474
+.L_801634AC:
+/* 801634AC 0000023C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801634B0 00000240  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 801634B4 00000244  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 801634B8 00000248  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 801634BC 0000024C  7C 08 03 A6 */	mtlr r0
+/* 801634C0 00000250  38 21 00 20 */	addi r1, r1, 0x20
+/* 801634C4 00000254  4E 80 00 20 */	blr
+.endfn drawBefore__3m2dFUc
+
+# .text:0x218 | 0x801634C8 | size: 0x8
+.fn gap_03_801634C8_text, global
+.hidden gap_03_801634C8_text
+/* 801634C8 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801634CC 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801634C8_text
+
+# .text:0x220 | 0x801634D0 | size: 0x88
+# m2d::drawAfter(unsigned char)
+.fn drawAfter__3m2dFUc, global
+/* 801634D0 00000260  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801634D4 00000264  7C 08 02 A6 */	mflr r0
+/* 801634D8 00000268  38 80 00 00 */	li r4, 0x0
+/* 801634DC 0000026C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801634E0 00000270  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 801634E4 00000274  3F E0 00 00 */	lis r31, l_list__3m2d@ha
+/* 801634E8 00000278  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 801634EC 0000027C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 801634F0 00000280  7C 7D 1B 78 */	mr r29, r3
+/* 801634F4 00000284  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 801634F8 00000288  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 801634FC 0000028C  7C 7E 1B 78 */	mr r30, r3
+/* 80163500 00000290  48 00 00 34 */	b .L_80163534
+.L_80163504:
+/* 80163504 00000294  88 1E 00 0C */	lbz r0, 0xc(r30)
+/* 80163508 00000298  7C 00 E8 40 */	cmplw r0, r29
+/* 8016350C 0000029C  40 81 00 18 */	ble .L_80163524
+/* 80163510 000002A0  81 9E 00 08 */	lwz r12, 0x8(r30)
+/* 80163514 000002A4  7F C3 F3 78 */	mr r3, r30
+/* 80163518 000002A8  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8016351C 000002AC  7D 89 03 A6 */	mtctr r12
+/* 80163520 000002B0  4E 80 04 21 */	bctrl
+.L_80163524:
+/* 80163524 000002B4  7F C4 F3 78 */	mr r4, r30
+/* 80163528 000002B8  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 8016352C 000002BC  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 80163530 000002C0  7C 7E 1B 78 */	mr r30, r3
+.L_80163534:
+/* 80163534 000002C4  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 80163538 000002C8  40 82 FF CC */	bne .L_80163504
+/* 8016353C 000002CC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80163540 000002D0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80163544 000002D4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80163548 000002D8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8016354C 000002DC  7C 08 03 A6 */	mtlr r0
+/* 80163550 000002E0  38 21 00 20 */	addi r1, r1, 0x20
+/* 80163554 000002E4  4E 80 00 20 */	blr
+.endfn drawAfter__3m2dFUc
+
+# .text:0x2A8 | 0x80163558 | size: 0x8
+.fn gap_03_80163558_text, global
+.hidden gap_03_80163558_text
+/* 80163558 000002E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016355C 000002EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163558_text
+
+# .text:0x2B0 | 0x80163560 | size: 0x9C
+# m2d::drawBtween(unsigned char, unsigned char)
+.fn drawBtween__3m2dFUcUc, global
+/* 80163560 000002F0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80163564 000002F4  7C 08 02 A6 */	mflr r0
+/* 80163568 000002F8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8016356C 000002FC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80163570 00000300  3F E0 00 00 */	lis r31, l_list__3m2d@ha
+/* 80163574 00000304  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80163578 00000308  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8016357C 0000030C  7C 9D 23 78 */	mr r29, r4
+/* 80163580 00000310  38 80 00 00 */	li r4, 0x0
+/* 80163584 00000314  93 81 00 10 */	stw r28, 0x10(r1)
+/* 80163588 00000318  7C 7C 1B 78 */	mr r28, r3
+/* 8016358C 0000031C  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 80163590 00000320  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 80163594 00000324  7C 7E 1B 78 */	mr r30, r3
+/* 80163598 00000328  48 00 00 3C */	b .L_801635D4
+.L_8016359C:
+/* 8016359C 0000032C  88 1E 00 0C */	lbz r0, 0xc(r30)
+/* 801635A0 00000330  7C 00 E8 40 */	cmplw r0, r29
+/* 801635A4 00000334  41 81 00 38 */	bgt .L_801635DC
+/* 801635A8 00000338  7C 00 E0 40 */	cmplw r0, r28
+/* 801635AC 0000033C  41 80 00 18 */	blt .L_801635C4
+/* 801635B0 00000340  81 9E 00 08 */	lwz r12, 0x8(r30)
+/* 801635B4 00000344  7F C3 F3 78 */	mr r3, r30
+/* 801635B8 00000348  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 801635BC 0000034C  7D 89 03 A6 */	mtctr r12
+/* 801635C0 00000350  4E 80 04 21 */	bctrl
+.L_801635C4:
+/* 801635C4 00000354  7F C4 F3 78 */	mr r4, r30
+/* 801635C8 00000358  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 801635CC 0000035C  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 801635D0 00000360  7C 7E 1B 78 */	mr r30, r3
+.L_801635D4:
+/* 801635D4 00000364  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 801635D8 00000368  40 82 FF C4 */	bne .L_8016359C
+.L_801635DC:
+/* 801635DC 0000036C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801635E0 00000370  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 801635E4 00000374  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 801635E8 00000378  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 801635EC 0000037C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 801635F0 00000380  7C 08 03 A6 */	mtlr r0
+/* 801635F4 00000384  38 21 00 20 */	addi r1, r1, 0x20
+/* 801635F8 00000388  4E 80 00 20 */	blr
+.endfn drawBtween__3m2dFUcUc
+
+# .text:0x34C | 0x801635FC | size: 0x4
+.fn gap_03_801635FC_text, global
+.hidden gap_03_801635FC_text
+/* 801635FC 0000038C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801635FC_text
+
+# .text:0x350 | 0x80163600 | size: 0x8
+# m2d::getAllocator()
+.fn getAllocator__3m2dFv, global
+/* 80163600 00000390  80 60 00 00 */	lwz r3, l_allocator__3m2d@sda21(r0)
+/* 80163604 00000394  4E 80 00 20 */	blr
+.endfn getAllocator__3m2dFv
+
+# .text:0x358 | 0x80163608 | size: 0x8
+.fn gap_03_80163608_text, global
+.hidden gap_03_80163608_text
+/* 80163608 00000398  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016360C 0000039C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163608_text
+
+# .text:0x360 | 0x80163610 | size: 0x50
+# m2d::Layout_c::CreateAnimTransform(const void*, nw4r::lyt::ResourceAccessor*)
+.fn CreateAnimTransform__Q23m2d8Layout_cFPCvPQ34nw4r3lyt16ResourceAccessor, global
+/* 80163610 000003A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80163614 000003A4  7C 08 02 A6 */	mflr r0
+/* 80163618 000003A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016361C 000003AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80163620 000003B0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80163624 000003B4  7C 7E 1B 78 */	mr r30, r3
+/* 80163628 000003B8  48 00 00 01 */	bl CreateAnimTransform__Q34nw4r3lyt6LayoutFPCvPQ34nw4r3lyt16ResourceAccessor
+/* 8016362C 000003BC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80163630 000003C0  7C 7F 1B 78 */	mr r31, r3
+/* 80163634 000003C4  41 82 00 10 */	beq .L_80163644
+/* 80163638 000003C8  38 7E 00 04 */	addi r3, r30, 0x4
+/* 8016363C 000003CC  38 9F 00 04 */	addi r4, r31, 0x4
+/* 80163640 000003D0  48 00 00 01 */	bl Erase__Q44nw4r2ut6detail12LinkListImplFPQ34nw4r2ut12LinkListNode
+.L_80163644:
+/* 80163644 000003D4  7F E3 FB 78 */	mr r3, r31
+/* 80163648 000003D8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016364C 000003DC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80163650 000003E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80163654 000003E4  7C 08 03 A6 */	mtlr r0
+/* 80163658 000003E8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016365C 000003EC  4E 80 00 20 */	blr
+.endfn CreateAnimTransform__Q23m2d8Layout_cFPCvPQ34nw4r3lyt16ResourceAccessor
+
+# .text:0x3B0 | 0x80163660 | size: 0x140
+# m2d::Layout_c::bindAnimationAuto(const nw4r::lyt::AnimResource&, nw4r::lyt::ResourceAccessor*)
+.fn bindAnimationAuto__Q23m2d8Layout_cFRCQ34nw4r3lyt12AnimResourcePQ34nw4r3lyt16ResourceAccessor, global
+/* 80163660 000003F0  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80163664 000003F4  7C 08 02 A6 */	mflr r0
+/* 80163668 000003F8  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8016366C 000003FC  39 61 00 30 */	addi r11, r1, 0x30
+/* 80163670 00000400  48 00 00 01 */	bl _savegpr_23
+/* 80163674 00000404  7C 98 23 78 */	mr r24, r4
+/* 80163678 00000408  7C 77 1B 78 */	mr r23, r3
+/* 8016367C 0000040C  7C B9 2B 78 */	mr r25, r5
+/* 80163680 00000410  7F 03 C3 78 */	mr r3, r24
+/* 80163684 00000414  48 00 00 01 */	bl GetGroupNum__Q34nw4r3lyt12AnimResourceCFv
+/* 80163688 00000418  7C 7E 1B 78 */	mr r30, r3
+/* 8016368C 0000041C  7F 03 C3 78 */	mr r3, r24
+/* 80163690 00000420  48 00 00 01 */	bl GetAnimationShareInfoNum__Q34nw4r3lyt12AnimResourceCFv
+/* 80163694 00000424  57 C0 04 3F */	clrlwi. r0, r30, 16
+/* 80163698 00000428  41 82 00 0C */	beq .L_801636A4
+/* 8016369C 0000042C  54 60 04 3F */	clrlwi. r0, r3, 16
+/* 801636A0 00000430  41 82 00 24 */	beq .L_801636C4
+.L_801636A4:
+/* 801636A4 00000434  81 97 00 00 */	lwz r12, 0x0(r23)
+/* 801636A8 00000438  7E E3 BB 78 */	mr r3, r23
+/* 801636AC 0000043C  7F 04 C3 78 */	mr r4, r24
+/* 801636B0 00000440  7F 25 CB 78 */	mr r5, r25
+/* 801636B4 00000444  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 801636B8 00000448  7D 89 03 A6 */	mtctr r12
+/* 801636BC 0000044C  4E 80 04 21 */	bctrl
+/* 801636C0 00000450  48 00 00 C8 */	b .L_80163788
+.L_801636C4:
+/* 801636C4 00000454  80 17 00 10 */	lwz r0, 0x10(r23)
+/* 801636C8 00000458  2C 00 00 00 */	cmpwi r0, 0x0
+/* 801636CC 0000045C  40 82 00 0C */	bne .L_801636D8
+/* 801636D0 00000460  38 60 00 00 */	li r3, 0x0
+/* 801636D4 00000464  48 00 00 B4 */	b .L_80163788
+.L_801636D8:
+/* 801636D8 00000468  80 18 00 04 */	lwz r0, 0x4(r24)
+/* 801636DC 0000046C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 801636E0 00000470  40 82 00 0C */	bne .L_801636EC
+/* 801636E4 00000474  38 60 00 00 */	li r3, 0x0
+/* 801636E8 00000478  48 00 00 A0 */	b .L_80163788
+.L_801636EC:
+/* 801636EC 0000047C  7F 03 C3 78 */	mr r3, r24
+/* 801636F0 00000480  48 00 00 01 */	bl GetGroupArray__Q34nw4r3lyt12AnimResourceCFv
+/* 801636F4 00000484  7C 7D 1B 78 */	mr r29, r3
+/* 801636F8 00000488  57 DF 04 3E */	clrlwi r31, r30, 16
+/* 801636FC 0000048C  3B 80 00 00 */	li r28, 0x0
+/* 80163700 00000490  48 00 00 7C */	b .L_8016377C
+.L_80163704:
+/* 80163704 00000494  80 77 00 14 */	lwz r3, 0x14(r23)
+/* 80163708 00000498  7F A4 EB 78 */	mr r4, r29
+/* 8016370C 0000049C  48 00 00 01 */	bl FindGroupByName__Q34nw4r3lyt14GroupContainerFPCc
+/* 80163710 000004A0  7C 7B 1B 78 */	mr r27, r3
+/* 80163714 000004A4  7F 03 C3 78 */	mr r3, r24
+/* 80163718 000004A8  48 00 00 01 */	bl IsDescendingBind__Q34nw4r3lyt12AnimResourceCFv
+/* 8016371C 000004AC  7C 65 1B 78 */	mr r5, r3
+/* 80163720 000004B0  7F 03 C3 78 */	mr r3, r24
+/* 80163724 000004B4  7F 64 DB 78 */	mr r4, r27
+/* 80163728 000004B8  48 00 00 01 */	bl CalcAnimationNum__Q34nw4r3lyt12AnimResourceCFPQ34nw4r3lyt5Groupb
+/* 8016372C 000004BC  7C 7E 1B 78 */	mr r30, r3
+/* 80163730 000004C0  7E E3 BB 78 */	mr r3, r23
+/* 80163734 000004C4  48 00 00 01 */	bl CreateAnimTransform__Q34nw4r3lyt6LayoutFv
+/* 80163738 000004C8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8016373C 000004CC  7C 7A 1B 78 */	mr r26, r3
+/* 80163740 000004D0  7F 25 CB 78 */	mr r5, r25
+/* 80163744 000004D4  57 C6 04 3E */	clrlwi r6, r30, 16
+/* 80163748 000004D8  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8016374C 000004DC  80 98 00 04 */	lwz r4, 0x4(r24)
+/* 80163750 000004E0  7D 89 03 A6 */	mtctr r12
+/* 80163754 000004E4  4E 80 04 21 */	bctrl
+/* 80163758 000004E8  7F 03 C3 78 */	mr r3, r24
+/* 8016375C 000004EC  48 00 00 01 */	bl IsDescendingBind__Q34nw4r3lyt12AnimResourceCFv
+/* 80163760 000004F0  7C 65 1B 78 */	mr r5, r3
+/* 80163764 000004F4  7F 63 DB 78 */	mr r3, r27
+/* 80163768 000004F8  7F 44 D3 78 */	mr r4, r26
+/* 8016376C 000004FC  38 C0 00 01 */	li r6, 0x1
+/* 80163770 00000500  48 00 00 01 */	bl BindAnimation__Q24nw4r3lytFPQ34nw4r3lyt5GroupPQ34nw4r3lyt13AnimTransformbb
+/* 80163774 00000504  3B BD 00 14 */	addi r29, r29, 0x14
+/* 80163778 00000508  3B 9C 00 01 */	addi r28, r28, 0x1
+.L_8016377C:
+/* 8016377C 0000050C  7C 1C F8 00 */	cmpw r28, r31
+/* 80163780 00000510  41 80 FF 84 */	blt .L_80163704
+/* 80163784 00000514  38 60 00 01 */	li r3, 0x1
+.L_80163788:
+/* 80163788 00000518  39 61 00 30 */	addi r11, r1, 0x30
+/* 8016378C 0000051C  48 00 00 01 */	bl _restgpr_23
+/* 80163790 00000520  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80163794 00000524  7C 08 03 A6 */	mtlr r0
+/* 80163798 00000528  38 21 00 30 */	addi r1, r1, 0x30
+/* 8016379C 0000052C  4E 80 00 20 */	blr
+.endfn bindAnimationAuto__Q23m2d8Layout_cFRCQ34nw4r3lyt12AnimResourcePQ34nw4r3lyt16ResourceAccessor
+
+# .text:0x4F0 | 0x801637A0 | size: 0x24
+# m2d::ResAccIf_c::attach(void*, const char*)
+.fn attach__Q23m2d10ResAccIf_cFPvPCc, global
+/* 801637A0 00000530  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 801637A4 00000534  2C 00 00 00 */	cmpwi r0, 0x0
+/* 801637A8 00000538  41 82 00 0C */	beq .L_801637B4
+/* 801637AC 0000053C  38 60 00 00 */	li r3, 0x0
+/* 801637B0 00000540  4E 80 00 20 */	blr
+.L_801637B4:
+/* 801637B4 00000544  90 83 00 08 */	stw r4, 0x8(r3)
+/* 801637B8 00000548  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 801637BC 0000054C  48 00 00 00 */	b Attach__Q34nw4r3lyt19ArcResourceAccessorFPvPCc
+/* 801637C0 00000550  4E 80 00 20 */	blr
+.endfn attach__Q23m2d10ResAccIf_cFPvPCc
+
+# .text:0x514 | 0x801637C4 | size: 0xC
+.fn gap_03_801637C4_text, global
+.hidden gap_03_801637C4_text
+/* 801637C4 00000554  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801637C8 00000558  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801637CC 0000055C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801637C4_text
+
+# .text:0x520 | 0x801637D0 | size: 0x10
+# m2d::ResAccIf_c::detach()
+.fn detach__Q23m2d10ResAccIf_cFv, global
+/* 801637D0 00000560  38 00 00 00 */	li r0, 0x0
+/* 801637D4 00000564  90 03 00 08 */	stw r0, 0x8(r3)
+/* 801637D8 00000568  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 801637DC 0000056C  48 00 00 00 */	b Detach__Q34nw4r3lyt19ArcResourceAccessorFv
+.endfn detach__Q23m2d10ResAccIf_cFv
+
+# .text:0x530 | 0x801637E0 | size: 0x18
+# m2d::ResAccIf_c::getResource(unsigned long, const char*)
+.fn getResource__Q23m2d10ResAccIf_cFUlPCc, global
+/* 801637E0 00000570  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 801637E4 00000574  38 C0 00 00 */	li r6, 0x0
+/* 801637E8 00000578  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 801637EC 0000057C  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 801637F0 00000580  7D 89 03 A6 */	mtctr r12
+/* 801637F4 00000584  4E 80 04 20 */	bctr
+.endfn getResource__Q23m2d10ResAccIf_cFUlPCc
+
+# .text:0x548 | 0x801637F8 | size: 0x8
+.fn gap_03_801637F8_text, global
+.hidden gap_03_801637F8_text
+/* 801637F8 00000588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801637FC 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801637F8_text
+
+# .text:0x550 | 0x80163800 | size: 0x94
+# m2d::FrameCtrl_c::play()
+.fn play__Q23m2d11FrameCtrl_cFv, global
+/* 80163800 00000590  88 83 00 14 */	lbz r4, 0x14(r3)
+/* 80163804 00000594  C0 43 00 08 */	lfs f2, 0x8(r3)
+/* 80163808 00000598  54 80 07 BD */	rlwinm. r0, r4, 0, 30, 30
+/* 8016380C 0000059C  D0 43 00 0C */	stfs f2, 0xc(r3)
+/* 80163810 000005A0  41 82 00 3C */	beq .L_8016384C
+/* 80163814 000005A4  C0 23 00 10 */	lfs f1, 0x10(r3)
+/* 80163818 000005A8  FC 02 08 40 */	fcmpo cr0, f2, f1
+/* 8016381C 000005AC  4C 41 13 82 */	cror eq, gt, eq
+/* 80163820 000005B0  40 82 00 0C */	bne .L_8016382C
+/* 80163824 000005B4  EC 42 08 28 */	fsubs f2, f2, f1
+/* 80163828 000005B8  48 00 00 64 */	b .L_8016388C
+.L_8016382C:
+/* 8016382C 000005BC  54 80 07 FF */	clrlwi. r0, r4, 31
+/* 80163830 000005C0  41 82 00 0C */	beq .L_8016383C
+/* 80163834 000005C4  C0 40 00 00 */	lfs f2, "@15531"@sda21(r0)
+/* 80163838 000005C8  48 00 00 54 */	b .L_8016388C
+.L_8016383C:
+/* 8016383C 000005CC  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 80163840 000005D0  EC 00 08 28 */	fsubs f0, f0, f1
+/* 80163844 000005D4  EC 42 00 2A */	fadds f2, f2, f0
+/* 80163848 000005D8  48 00 00 44 */	b .L_8016388C
+.L_8016384C:
+/* 8016384C 000005DC  C0 03 00 10 */	lfs f0, 0x10(r3)
+/* 80163850 000005E0  54 80 07 FF */	clrlwi. r0, r4, 31
+/* 80163854 000005E4  EC 42 00 2A */	fadds f2, f2, f0
+/* 80163858 000005E8  41 82 00 20 */	beq .L_80163878
+/* 8016385C 000005EC  C0 23 00 04 */	lfs f1, 0x4(r3)
+/* 80163860 000005F0  C0 00 00 00 */	lfs f0, "@15552"@sda21(r0)
+/* 80163864 000005F4  EC 01 00 28 */	fsubs f0, f1, f0
+/* 80163868 000005F8  FC 02 00 40 */	fcmpo cr0, f2, f0
+/* 8016386C 000005FC  40 81 00 20 */	ble .L_8016388C
+/* 80163870 00000600  FC 40 00 90 */	fmr f2, f0
+/* 80163874 00000604  48 00 00 18 */	b .L_8016388C
+.L_80163878:
+/* 80163878 00000608  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 8016387C 0000060C  FC 02 00 40 */	fcmpo cr0, f2, f0
+/* 80163880 00000610  4C 41 13 82 */	cror eq, gt, eq
+/* 80163884 00000614  40 82 00 08 */	bne .L_8016388C
+/* 80163888 00000618  EC 42 00 28 */	fsubs f2, f2, f0
+.L_8016388C:
+/* 8016388C 0000061C  D0 43 00 08 */	stfs f2, 0x8(r3)
+/* 80163890 00000620  4E 80 00 20 */	blr
+.endfn play__Q23m2d11FrameCtrl_cFv
+
+# .text:0x5E4 | 0x80163894 | size: 0xC
+.fn gap_03_80163894_text, global
+.hidden gap_03_80163894_text
+/* 80163894 00000624  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163898 00000628  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016389C 0000062C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163894_text
+
+# .text:0x5F0 | 0x801638A0 | size: 0x64
+# m2d::FrameCtrl_c::set(float, unsigned char, float, float)
+.fn set__Q23m2d11FrameCtrl_cFfUcff, global
+/* 801638A0 00000630  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801638A4 00000634  7C 08 02 A6 */	mflr r0
+/* 801638A8 00000638  C0 00 00 00 */	lfs f0, "@15531"@sda21(r0)
+/* 801638AC 0000063C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801638B0 00000640  FC 03 00 40 */	fcmpo cr0, f3, f0
+/* 801638B4 00000644  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801638B8 00000648  7C 9F 23 78 */	mr r31, r4
+/* 801638BC 0000064C  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 801638C0 00000650  7C 7E 1B 78 */	mr r30, r3
+/* 801638C4 00000654  40 80 00 08 */	bge .L_801638CC
+/* 801638C8 00000658  FC 60 00 90 */	fmr f3, f0
+.L_801638CC:
+/* 801638CC 0000065C  D0 23 00 04 */	stfs f1, 0x4(r3)
+/* 801638D0 00000660  FC 20 10 90 */	fmr f1, f2
+/* 801638D4 00000664  D0 63 00 08 */	stfs f3, 0x8(r3)
+/* 801638D8 00000668  7F C3 F3 78 */	mr r3, r30
+/* 801638DC 0000066C  48 00 00 01 */	bl setRate__Q23m2d11FrameCtrl_cFf
+/* 801638E0 00000670  C0 1E 00 08 */	lfs f0, 0x8(r30)
+/* 801638E4 00000674  9B FE 00 14 */	stb r31, 0x14(r30)
+/* 801638E8 00000678  D0 1E 00 0C */	stfs f0, 0xc(r30)
+/* 801638EC 0000067C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801638F0 00000680  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 801638F4 00000684  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801638F8 00000688  7C 08 03 A6 */	mtlr r0
+/* 801638FC 0000068C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80163900 00000690  4E 80 00 20 */	blr
+.endfn set__Q23m2d11FrameCtrl_cFfUcff
+
+# .text:0x654 | 0x80163904 | size: 0xC
+.fn gap_03_80163904_text, global
+.hidden gap_03_80163904_text
+/* 80163904 00000694  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163908 00000698  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016390C 0000069C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163904_text
+
+# .text:0x660 | 0x80163910 | size: 0xC
+# m2d::FrameCtrl_c::setFrame(float)
+.fn setFrame__Q23m2d11FrameCtrl_cFf, global
+/* 80163910 000006A0  D0 23 00 08 */	stfs f1, 0x8(r3)
+/* 80163914 000006A4  D0 23 00 0C */	stfs f1, 0xc(r3)
+/* 80163918 000006A8  4E 80 00 20 */	blr
+.endfn setFrame__Q23m2d11FrameCtrl_cFf
+
+# .text:0x66C | 0x8016391C | size: 0x4
+.fn gap_03_8016391C_text, global
+.hidden gap_03_8016391C_text
+/* 8016391C 000006AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016391C_text
+
+# .text:0x670 | 0x80163920 | size: 0x8
+# m2d::FrameCtrl_c::setRate(float)
+.fn setRate__Q23m2d11FrameCtrl_cFf, global
+/* 80163920 000006B0  D0 23 00 10 */	stfs f1, 0x10(r3)
+/* 80163924 000006B4  4E 80 00 20 */	blr
+.endfn setRate__Q23m2d11FrameCtrl_cFf
+
+# .text:0x678 | 0x80163928 | size: 0x8
+.fn gap_03_80163928_text, global
+.hidden gap_03_80163928_text
+/* 80163928 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016392C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163928_text
+
+# .text:0x680 | 0x80163930 | size: 0x60
+# m2d::FrameCtrl_c::isStop() const
+.fn isStop__Q23m2d11FrameCtrl_cCFv, global
+/* 80163930 000006C0  88 03 00 14 */	lbz r0, 0x14(r3)
+/* 80163934 000006C4  2C 00 00 01 */	cmpwi r0, 0x1
+/* 80163938 000006C8  41 82 00 10 */	beq .L_80163948
+/* 8016393C 000006CC  2C 00 00 03 */	cmpwi r0, 0x3
+/* 80163940 000006D0  41 82 00 2C */	beq .L_8016396C
+/* 80163944 000006D4  48 00 00 44 */	b .L_80163988
+.L_80163948:
+/* 80163948 000006D8  C0 43 00 04 */	lfs f2, 0x4(r3)
+/* 8016394C 000006DC  C0 20 00 00 */	lfs f1, "@15552"@sda21(r0)
+/* 80163950 000006E0  C0 03 00 08 */	lfs f0, 0x8(r3)
+/* 80163954 000006E4  EC 22 08 28 */	fsubs f1, f2, f1
+/* 80163958 000006E8  FC 00 08 40 */	fcmpo cr0, f0, f1
+/* 8016395C 000006EC  4C 41 13 82 */	cror eq, gt, eq
+/* 80163960 000006F0  7C 60 00 26 */	mfcr r3
+/* 80163964 000006F4  54 63 1F FE */	extrwi r3, r3, 1, 2
+/* 80163968 000006F8  4E 80 00 20 */	blr
+.L_8016396C:
+/* 8016396C 000006FC  C0 23 00 08 */	lfs f1, 0x8(r3)
+/* 80163970 00000700  C0 00 00 00 */	lfs f0, "@15531"@sda21(r0)
+/* 80163974 00000704  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 80163978 00000708  4C 40 13 82 */	cror eq, lt, eq
+/* 8016397C 0000070C  7C 60 00 26 */	mfcr r3
+/* 80163980 00000710  54 63 1F FE */	extrwi r3, r3, 1, 2
+/* 80163984 00000714  4E 80 00 20 */	blr
+.L_80163988:
+/* 80163988 00000718  38 60 00 00 */	li r3, 0x0
+/* 8016398C 0000071C  4E 80 00 20 */	blr
+.endfn isStop__Q23m2d11FrameCtrl_cCFv
+
+# .text:0x6E0 | 0x80163990 | size: 0x90
+# m2d::Base_c::entry()
+.fn entry__Q23m2d6Base_cFv, global
+/* 80163990 00000720  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80163994 00000724  7C 08 02 A6 */	mflr r0
+/* 80163998 00000728  38 80 00 00 */	li r4, 0x0
+/* 8016399C 0000072C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801639A0 00000730  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801639A4 00000734  3F E0 00 00 */	lis r31, l_list__3m2d@ha
+/* 801639A8 00000738  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 801639AC 0000073C  7C 7E 1B 78 */	mr r30, r3
+/* 801639B0 00000740  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 801639B4 00000744  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 801639B8 00000748  7C 64 1B 78 */	mr r4, r3
+/* 801639BC 0000074C  48 00 00 34 */	b .L_801639F0
+.L_801639C0:
+/* 801639C0 00000750  88 64 00 0C */	lbz r3, 0xc(r4)
+/* 801639C4 00000754  88 1E 00 0C */	lbz r0, 0xc(r30)
+/* 801639C8 00000758  7C 03 00 40 */	cmplw r3, r0
+/* 801639CC 0000075C  40 81 00 18 */	ble .L_801639E4
+/* 801639D0 00000760  3C 60 00 00 */	lis r3, l_list__3m2d@ha
+/* 801639D4 00000764  7F C5 F3 78 */	mr r5, r30
+/* 801639D8 00000768  38 63 00 00 */	addi r3, r3, l_list__3m2d@l
+/* 801639DC 0000076C  48 00 00 01 */	bl List_Insert__Q24nw4r2utFPQ34nw4r2ut4ListPvPv
+/* 801639E0 00000770  48 00 00 28 */	b .L_80163A08
+.L_801639E4:
+/* 801639E4 00000774  38 7F 00 00 */	addi r3, r31, l_list__3m2d@l
+/* 801639E8 00000778  48 00 00 01 */	bl List_GetNext__Q24nw4r2utFPCQ34nw4r2ut4ListPCv
+/* 801639EC 0000077C  7C 64 1B 78 */	mr r4, r3
+.L_801639F0:
+/* 801639F0 00000780  2C 04 00 00 */	cmpwi r4, 0x0
+/* 801639F4 00000784  40 82 FF CC */	bne .L_801639C0
+/* 801639F8 00000788  3C 60 00 00 */	lis r3, l_list__3m2d@ha
+/* 801639FC 0000078C  7F C4 F3 78 */	mr r4, r30
+/* 80163A00 00000790  38 63 00 00 */	addi r3, r3, l_list__3m2d@l
+/* 80163A04 00000794  48 00 00 01 */	bl List_Append__Q24nw4r2utFPQ34nw4r2ut4ListPv
+.L_80163A08:
+/* 80163A08 00000798  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80163A0C 0000079C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80163A10 000007A0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80163A14 000007A4  7C 08 03 A6 */	mtlr r0
+/* 80163A18 000007A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 80163A1C 000007AC  4E 80 00 20 */	blr
+.endfn entry__Q23m2d6Base_cFv
+
+# .text:0x770 | 0x80163A20 | size: 0xB8
+# m2d::Simple_c::Simple_c()
+.fn __ct__Q23m2d8Simple_cFv, global
+/* 80163A20 000007B0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80163A24 000007B4  7C 08 02 A6 */	mflr r0
+/* 80163A28 000007B8  3C 80 00 00 */	lis r4, __vt__Q23m2d8Simple_c@ha
+/* 80163A2C 000007BC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80163A30 000007C0  38 00 00 80 */	li r0, 0x80
+/* 80163A34 000007C4  38 84 00 00 */	addi r4, r4, __vt__Q23m2d8Simple_c@l
+/* 80163A38 000007C8  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80163A3C 000007CC  3B E3 00 10 */	addi r31, r3, 0x10
+/* 80163A40 000007D0  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80163A44 000007D4  7C 7E 1B 78 */	mr r30, r3
+/* 80163A48 000007D8  98 03 00 0C */	stb r0, 0xc(r3)
+/* 80163A4C 000007DC  90 83 00 08 */	stw r4, 0x8(r3)
+/* 80163A50 000007E0  7F E3 FB 78 */	mr r3, r31
+/* 80163A54 000007E4  48 00 00 01 */	bl __ct__Q34nw4r3lyt6LayoutFv
+/* 80163A58 000007E8  3C 80 00 00 */	lis r4, __vt__Q23m2d8Layout_c@ha
+/* 80163A5C 000007EC  38 7E 00 30 */	addi r3, r30, 0x30
+/* 80163A60 000007F0  38 84 00 00 */	addi r4, r4, __vt__Q23m2d8Layout_c@l
+/* 80163A64 000007F4  90 9F 00 00 */	stw r4, 0x0(r31)
+/* 80163A68 000007F8  48 00 00 01 */	bl __ct__Q34nw4r3lyt8DrawInfoFv
+/* 80163A6C 000007FC  C0 00 00 00 */	lfs f0, "@15531"@sda21(r0)
+/* 80163A70 00000800  38 00 00 00 */	li r0, 0x0
+/* 80163A74 00000804  90 1E 00 84 */	stw r0, 0x84(r30)
+/* 80163A78 00000808  D0 1E 00 88 */	stfs f0, 0x88(r30)
+/* 80163A7C 0000080C  D0 1E 00 8C */	stfs f0, 0x8c(r30)
+/* 80163A80 00000810  D0 1E 00 90 */	stfs f0, 0x90(r30)
+/* 80163A84 00000814  90 1E 00 94 */	stw r0, 0x94(r30)
+/* 80163A88 00000818  48 00 00 01 */	bl SCGetAspectRatio
+/* 80163A8C 0000081C  54 60 06 3E */	clrlwi r0, r3, 24
+/* 80163A90 00000820  28 00 00 01 */	cmplwi r0, 0x1
+/* 80163A94 00000824  40 82 00 28 */	bne .L_80163ABC
+/* 80163A98 00000828  88 1E 00 80 */	lbz r0, 0x80(r30)
+/* 80163A9C 0000082C  C0 20 00 00 */	lfs f1, "@15649"@sda21(r0)
+/* 80163AA0 00000830  C0 00 00 00 */	lfs f0, "@15552"@sda21(r0)
+/* 80163AA4 00000834  60 00 00 20 */	ori r0, r0, 0x20
+/* 80163AA8 00000838  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 80163AAC 0000083C  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 80163AB0 00000840  D0 3E 00 74 */	stfs f1, 0x74(r30)
+/* 80163AB4 00000844  D0 1E 00 78 */	stfs f0, 0x78(r30)
+/* 80163AB8 00000848  98 1E 00 80 */	stb r0, 0x80(r30)
+.L_80163ABC:
+/* 80163ABC 0000084C  7F C3 F3 78 */	mr r3, r30
+/* 80163AC0 00000850  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80163AC4 00000854  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80163AC8 00000858  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80163ACC 0000085C  7C 08 03 A6 */	mtlr r0
+/* 80163AD0 00000860  38 21 00 20 */	addi r1, r1, 0x20
+/* 80163AD4 00000864  4E 80 00 20 */	blr
+.endfn __ct__Q23m2d8Simple_cFv
+
+# .text:0x828 | 0x80163AD8 | size: 0x8
+.fn gap_03_80163AD8_text, global
+.hidden gap_03_80163AD8_text
+/* 80163AD8 00000868  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163ADC 0000086C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163AD8_text
+
+# .text:0x830 | 0x80163AE0 | size: 0xC0
+# m2d::Simple_c::calc()
+.fn calc__Q23m2d8Simple_cFv, global
+/* 80163AE0 00000870  94 21 FF B0 */	stwu r1, -0x50(r1)
+/* 80163AE4 00000874  7C 08 02 A6 */	mflr r0
+/* 80163AE8 00000878  90 01 00 54 */	stw r0, 0x54(r1)
+/* 80163AEC 0000087C  93 E1 00 4C */	stw r31, 0x4c(r1)
+/* 80163AF0 00000880  7C 7F 1B 78 */	mr r31, r3
+/* 80163AF4 00000884  48 00 00 01 */	bl calcBefore__Q23m2d8Simple_cFv
+/* 80163AF8 00000888  38 61 00 18 */	addi r3, r1, 0x18
+/* 80163AFC 0000088C  48 00 00 01 */	bl PSMTXIdentity
+/* 80163B00 00000890  C0 7F 00 90 */	lfs f3, 0x90(r31)
+/* 80163B04 00000894  38 61 00 18 */	addi r3, r1, 0x18
+/* 80163B08 00000898  C0 5F 00 8C */	lfs f2, 0x8c(r31)
+/* 80163B0C 0000089C  7C 64 1B 78 */	mr r4, r3
+/* 80163B10 000008A0  C0 3F 00 88 */	lfs f1, 0x88(r31)
+/* 80163B14 000008A4  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 80163B18 000008A8  D0 41 00 0C */	stfs f2, 0xc(r1)
+/* 80163B1C 000008AC  D0 61 00 10 */	stfs f3, 0x10(r1)
+/* 80163B20 000008B0  48 00 00 01 */	bl PSMTXTransApply
+/* 80163B24 000008B4  80 81 00 18 */	lwz r4, 0x18(r1)
+/* 80163B28 000008B8  7F E3 FB 78 */	mr r3, r31
+/* 80163B2C 000008BC  80 01 00 1C */	lwz r0, 0x1c(r1)
+/* 80163B30 000008C0  90 1F 00 38 */	stw r0, 0x38(r31)
+/* 80163B34 000008C4  90 9F 00 34 */	stw r4, 0x34(r31)
+/* 80163B38 000008C8  80 81 00 20 */	lwz r4, 0x20(r1)
+/* 80163B3C 000008CC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80163B40 000008D0  90 1F 00 40 */	stw r0, 0x40(r31)
+/* 80163B44 000008D4  90 9F 00 3C */	stw r4, 0x3c(r31)
+/* 80163B48 000008D8  80 81 00 28 */	lwz r4, 0x28(r1)
+/* 80163B4C 000008DC  80 01 00 2C */	lwz r0, 0x2c(r1)
+/* 80163B50 000008E0  90 1F 00 48 */	stw r0, 0x48(r31)
+/* 80163B54 000008E4  90 9F 00 44 */	stw r4, 0x44(r31)
+/* 80163B58 000008E8  80 81 00 30 */	lwz r4, 0x30(r1)
+/* 80163B5C 000008EC  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80163B60 000008F0  90 1F 00 50 */	stw r0, 0x50(r31)
+/* 80163B64 000008F4  90 9F 00 4C */	stw r4, 0x4c(r31)
+/* 80163B68 000008F8  80 81 00 38 */	lwz r4, 0x38(r1)
+/* 80163B6C 000008FC  80 01 00 3C */	lwz r0, 0x3c(r1)
+/* 80163B70 00000900  90 1F 00 58 */	stw r0, 0x58(r31)
+/* 80163B74 00000904  90 9F 00 54 */	stw r4, 0x54(r31)
+/* 80163B78 00000908  80 81 00 40 */	lwz r4, 0x40(r1)
+/* 80163B7C 0000090C  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 80163B80 00000910  90 1F 00 60 */	stw r0, 0x60(r31)
+/* 80163B84 00000914  90 9F 00 5C */	stw r4, 0x5c(r31)
+/* 80163B88 00000918  48 00 00 01 */	bl calcAfter__Q23m2d8Simple_cFv
+/* 80163B8C 0000091C  80 01 00 54 */	lwz r0, 0x54(r1)
+/* 80163B90 00000920  83 E1 00 4C */	lwz r31, 0x4c(r1)
+/* 80163B94 00000924  7C 08 03 A6 */	mtlr r0
+/* 80163B98 00000928  38 21 00 50 */	addi r1, r1, 0x50
+/* 80163B9C 0000092C  4E 80 00 20 */	blr
+.endfn calc__Q23m2d8Simple_cFv
+
+# .text:0x8F0 | 0x80163BA0 | size: 0x24
+# m2d::Simple_c::calcBefore()
+.fn calcBefore__Q23m2d8Simple_cFv, global
+/* 80163BA0 00000930  80 03 00 94 */	lwz r0, 0x94(r3)
+/* 80163BA4 00000934  38 80 00 00 */	li r4, 0x0
+/* 80163BA8 00000938  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 80163BAC 0000093C  41 82 00 08 */	beq .L_80163BB4
+/* 80163BB0 00000940  38 80 00 01 */	li r4, 0x1
+.L_80163BB4:
+/* 80163BB4 00000944  85 83 00 10 */	lwzu r12, 0x10(r3)
+/* 80163BB8 00000948  81 8C 00 38 */	lwz r12, 0x38(r12)
+/* 80163BBC 0000094C  7D 89 03 A6 */	mtctr r12
+/* 80163BC0 00000950  4E 80 04 20 */	bctr
+.endfn calcBefore__Q23m2d8Simple_cFv
+
+# .text:0x914 | 0x80163BC4 | size: 0xC
+.fn gap_03_80163BC4_text, global
+.hidden gap_03_80163BC4_text
+/* 80163BC4 00000954  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163BC8 00000958  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163BCC 0000095C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163BC4_text
+
+# .text:0x920 | 0x80163BD0 | size: 0x6C
+# m2d::Simple_c::calcAfter()
+.fn calcAfter__Q23m2d8Simple_cFv, global
+/* 80163BD0 00000960  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80163BD4 00000964  7C 08 02 A6 */	mflr r0
+/* 80163BD8 00000968  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80163BDC 0000096C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80163BE0 00000970  7C 7F 1B 78 */	mr r31, r3
+/* 80163BE4 00000974  38 61 00 08 */	addi r3, r1, 0x8
+/* 80163BE8 00000978  38 9F 00 10 */	addi r4, r31, 0x10
+/* 80163BEC 0000097C  48 00 00 01 */	bl GetLayoutRect__Q34nw4r3lyt6LayoutCFv
+/* 80163BF0 00000980  C0 01 00 08 */	lfs f0, 0x8(r1)
+/* 80163BF4 00000984  38 7F 00 10 */	addi r3, r31, 0x10
+/* 80163BF8 00000988  D0 1F 00 64 */	stfs f0, 0x64(r31)
+/* 80163BFC 0000098C  38 9F 00 30 */	addi r4, r31, 0x30
+/* 80163C00 00000990  C0 01 00 0C */	lfs f0, 0xc(r1)
+/* 80163C04 00000994  D0 1F 00 68 */	stfs f0, 0x68(r31)
+/* 80163C08 00000998  C0 01 00 10 */	lfs f0, 0x10(r1)
+/* 80163C0C 0000099C  D0 1F 00 6C */	stfs f0, 0x6c(r31)
+/* 80163C10 000009A0  C0 01 00 14 */	lfs f0, 0x14(r1)
+/* 80163C14 000009A4  D0 1F 00 70 */	stfs f0, 0x70(r31)
+/* 80163C18 000009A8  81 9F 00 10 */	lwz r12, 0x10(r31)
+/* 80163C1C 000009AC  81 8C 00 30 */	lwz r12, 0x30(r12)
+/* 80163C20 000009B0  7D 89 03 A6 */	mtctr r12
+/* 80163C24 000009B4  4E 80 04 21 */	bctrl
+/* 80163C28 000009B8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80163C2C 000009BC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80163C30 000009C0  7C 08 03 A6 */	mtlr r0
+/* 80163C34 000009C4  38 21 00 20 */	addi r1, r1, 0x20
+/* 80163C38 000009C8  4E 80 00 20 */	blr
+.endfn calcAfter__Q23m2d8Simple_cFv
+
+# .text:0x98C | 0x80163C3C | size: 0x4
+.fn gap_03_80163C3C_text, global
+.hidden gap_03_80163C3C_text
+/* 80163C3C 000009CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163C3C_text
+
+# .text:0x990 | 0x80163C40 | size: 0x170
+# m2d::Simple_c::draw()
+.fn draw__Q23m2d8Simple_cFv, global
+/* 80163C40 000009D0  94 21 FE F0 */	stwu r1, -0x110(r1)
+/* 80163C44 000009D4  7C 08 02 A6 */	mflr r0
+/* 80163C48 000009D8  90 01 01 14 */	stw r0, 0x114(r1)
+/* 80163C4C 000009DC  DB E1 01 00 */	stfd f31, 0x100(r1)
+/* 80163C50 000009E0  F3 E1 01 08 */	psq_st f31, 0x108(r1), 0, qr0
+/* 80163C54 000009E4  DB C1 00 F0 */	stfd f30, 0xf0(r1)
+/* 80163C58 000009E8  F3 C1 00 F8 */	psq_st f30, 0xf8(r1), 0, qr0
+/* 80163C5C 000009EC  DB A1 00 E0 */	stfd f29, 0xe0(r1)
+/* 80163C60 000009F0  F3 A1 00 E8 */	psq_st f29, 0xe8(r1), 0, qr0
+/* 80163C64 000009F4  DB 81 00 D0 */	stfd f28, 0xd0(r1)
+/* 80163C68 000009F8  F3 81 00 D8 */	psq_st f28, 0xd8(r1), 0, qr0
+/* 80163C6C 000009FC  93 E1 00 CC */	stw r31, 0xcc(r1)
+/* 80163C70 00000A00  93 C1 00 C8 */	stw r30, 0xc8(r1)
+/* 80163C74 00000A04  7C 7E 1B 78 */	mr r30, r3
+/* 80163C78 00000A08  38 61 00 18 */	addi r3, r1, 0x18
+/* 80163C7C 00000A0C  38 9E 00 10 */	addi r4, r30, 0x10
+/* 80163C80 00000A10  48 00 00 01 */	bl GetLayoutRect__Q34nw4r3lyt6LayoutCFv
+/* 80163C84 00000A14  C3 E0 00 00 */	lfs f31, "@15531"@sda21(r0)
+/* 80163C88 00000A18  38 61 00 28 */	addi r3, r1, 0x28
+/* 80163C8C 00000A1C  C3 C0 00 00 */	lfs f30, "@15697"@sda21(r0)
+/* 80163C90 00000A20  48 00 00 01 */	bl __ct__Q23EGG6ScreenFv
+/* 80163C94 00000A24  3C A0 00 00 */	lis r5, sTVModeInfo__Q23EGG6Screen@ha
+/* 80163C98 00000A28  3C 60 43 30 */	lis r3, 0x4330
+/* 80163C9C 00000A2C  38 85 00 00 */	addi r4, r5, sTVModeInfo__Q23EGG6Screen@l
+/* 80163CA0 00000A30  A0 05 00 00 */	lhz r0, sTVModeInfo__Q23EGG6Screen@l(r5)
+/* 80163CA4 00000A34  A0 84 00 0C */	lhz r4, 0xc(r4)
+/* 80163CA8 00000A38  90 81 00 B4 */	stw r4, 0xb4(r1)
+/* 80163CAC 00000A3C  80 C0 00 00 */	lwz r6, sTVMode__Q23EGG6Screen@sda21(r0)
+/* 80163CB0 00000A40  90 61 00 B0 */	stw r3, 0xb0(r1)
+/* 80163CB4 00000A44  C8 20 00 00 */	lfd f1, "@15555"@sda21(r0)
+/* 80163CB8 00000A48  38 A6 FF FF */	subi r5, r6, 0x1
+/* 80163CBC 00000A4C  C8 01 00 B0 */	lfd f0, 0xb0(r1)
+/* 80163CC0 00000A50  7C A4 00 34 */	cntlzw r4, r5
+/* 80163CC4 00000A54  90 01 00 BC */	stw r0, 0xbc(r1)
+/* 80163CC8 00000A58  54 9F D9 7F */	srwi. r31, r4, 5
+/* 80163CCC 00000A5C  EF A0 08 28 */	fsubs f29, f0, f1
+/* 80163CD0 00000A60  90 61 00 B8 */	stw r3, 0xb8(r1)
+/* 80163CD4 00000A64  C8 01 00 B8 */	lfd f0, 0xb8(r1)
+/* 80163CD8 00000A68  EF 80 08 28 */	fsubs f28, f0, f1
+/* 80163CDC 00000A6C  41 82 00 14 */	beq .L_80163CF0
+/* 80163CE0 00000A70  C0 01 00 18 */	lfs f0, 0x18(r1)
+/* 80163CE4 00000A74  EC 1D 00 32 */	fmuls f0, f29, f0
+/* 80163CE8 00000A78  EC 60 E0 24 */	fdivs f3, f0, f28
+/* 80163CEC 00000A7C  48 00 00 08 */	b .L_80163CF4
+.L_80163CF0:
+/* 80163CF0 00000A80  C0 61 00 18 */	lfs f3, 0x18(r1)
+.L_80163CF4:
+/* 80163CF4 00000A84  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80163CF8 00000A88  41 82 00 14 */	beq .L_80163D0C
+/* 80163CFC 00000A8C  C0 01 00 20 */	lfs f0, 0x20(r1)
+/* 80163D00 00000A90  EC 1D 00 32 */	fmuls f0, f29, f0
+/* 80163D04 00000A94  EC 80 E0 24 */	fdivs f4, f0, f28
+/* 80163D08 00000A98  48 00 00 08 */	b .L_80163D10
+.L_80163D0C:
+/* 80163D0C 00000A9C  C0 81 00 20 */	lfs f4, 0x20(r1)
+.L_80163D10:
+/* 80163D10 00000AA0  FC A0 F8 90 */	fmr f5, f31
+/* 80163D14 00000AA4  38 00 00 00 */	li r0, 0x0
+/* 80163D18 00000AA8  FC C0 F0 90 */	fmr f6, f30
+/* 80163D1C 00000AAC  90 01 00 28 */	stw r0, 0x28(r1)
+/* 80163D20 00000AB0  C0 21 00 1C */	lfs f1, 0x1c(r1)
+/* 80163D24 00000AB4  38 61 00 28 */	addi r3, r1, 0x28
+/* 80163D28 00000AB8  C0 41 00 24 */	lfs f2, 0x24(r1)
+/* 80163D2C 00000ABC  48 00 00 01 */	bl ResetOrthographic__Q23EGG7FrustumFffffff
+/* 80163D30 00000AC0  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80163D34 00000AC4  41 82 00 24 */	beq .L_80163D58
+/* 80163D38 00000AC8  EC 3C E8 24 */	fdivs f1, f28, f29
+/* 80163D3C 00000ACC  C0 00 00 00 */	lfs f0, "@15552"@sda21(r0)
+/* 80163D40 00000AD0  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 80163D44 00000AD4  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 80163D48 00000AD8  D0 01 00 54 */	stfs f0, 0x54(r1)
+/* 80163D4C 00000ADC  D0 01 00 58 */	stfs f0, 0x58(r1)
+/* 80163D50 00000AE0  D0 21 00 08 */	stfs f1, 0x8(r1)
+/* 80163D54 00000AE4  D0 21 00 50 */	stfs f1, 0x50(r1)
+.L_80163D58:
+/* 80163D58 00000AE8  38 61 00 28 */	addi r3, r1, 0x28
+/* 80163D5C 00000AEC  48 00 00 01 */	bl SetProjectionGX__Q23EGG6ScreenCFv
+/* 80163D60 00000AF0  81 9E 00 10 */	lwz r12, 0x10(r30)
+/* 80163D64 00000AF4  38 7E 00 10 */	addi r3, r30, 0x10
+/* 80163D68 00000AF8  38 9E 00 30 */	addi r4, r30, 0x30
+/* 80163D6C 00000AFC  81 8C 00 34 */	lwz r12, 0x34(r12)
+/* 80163D70 00000B00  7D 89 03 A6 */	mtctr r12
+/* 80163D74 00000B04  4E 80 04 21 */	bctrl
+/* 80163D78 00000B08  80 01 01 14 */	lwz r0, 0x114(r1)
+/* 80163D7C 00000B0C  E3 E1 01 08 */	psq_l f31, 0x108(r1), 0, qr0
+/* 80163D80 00000B10  CB E1 01 00 */	lfd f31, 0x100(r1)
+/* 80163D84 00000B14  E3 C1 00 F8 */	psq_l f30, 0xf8(r1), 0, qr0
+/* 80163D88 00000B18  CB C1 00 F0 */	lfd f30, 0xf0(r1)
+/* 80163D8C 00000B1C  E3 A1 00 E8 */	psq_l f29, 0xe8(r1), 0, qr0
+/* 80163D90 00000B20  CB A1 00 E0 */	lfd f29, 0xe0(r1)
+/* 80163D94 00000B24  E3 81 00 D8 */	psq_l f28, 0xd8(r1), 0, qr0
+/* 80163D98 00000B28  CB 81 00 D0 */	lfd f28, 0xd0(r1)
+/* 80163D9C 00000B2C  83 E1 00 CC */	lwz r31, 0xcc(r1)
+/* 80163DA0 00000B30  83 C1 00 C8 */	lwz r30, 0xc8(r1)
+/* 80163DA4 00000B34  7C 08 03 A6 */	mtlr r0
+/* 80163DA8 00000B38  38 21 01 10 */	addi r1, r1, 0x110
+/* 80163DAC 00000B3C  4E 80 00 20 */	blr
+.endfn draw__Q23m2d8Simple_cFv
+
+# .text:0xB00 | 0x80163DB0 | size: 0xC4
+# m2d::Simple_c::build(const char*, m2d::ResAccIf_c*)
+.fn build__Q23m2d8Simple_cFPCcPQ23m2d10ResAccIf_c, global
+/* 80163DB0 00000B40  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80163DB4 00000B44  7C 08 02 A6 */	mflr r0
+/* 80163DB8 00000B48  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80163DBC 00000B4C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80163DC0 00000B50  7C BF 2B 78 */	mr r31, r5
+/* 80163DC4 00000B54  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80163DC8 00000B58  7C 7E 1B 78 */	mr r30, r3
+/* 80163DCC 00000B5C  80 03 00 20 */	lwz r0, 0x20(r3)
+/* 80163DD0 00000B60  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80163DD4 00000B64  41 82 00 0C */	beq .L_80163DE0
+/* 80163DD8 00000B68  38 60 00 01 */	li r3, 0x1
+/* 80163DDC 00000B6C  48 00 00 80 */	b .L_80163E5C
+.L_80163DE0:
+/* 80163DE0 00000B70  2C 05 00 00 */	cmpwi r5, 0x0
+/* 80163DE4 00000B74  40 82 00 18 */	bne .L_80163DFC
+/* 80163DE8 00000B78  83 E3 00 84 */	lwz r31, 0x84(r3)
+/* 80163DEC 00000B7C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80163DF0 00000B80  40 82 00 0C */	bne .L_80163DFC
+/* 80163DF4 00000B84  38 60 00 00 */	li r3, 0x0
+/* 80163DF8 00000B88  48 00 00 64 */	b .L_80163E5C
+.L_80163DFC:
+/* 80163DFC 00000B8C  7C 85 23 78 */	mr r5, r4
+/* 80163E00 00000B90  7F E3 FB 78 */	mr r3, r31
+/* 80163E04 00000B94  38 80 00 00 */	li r4, 0x0
+/* 80163E08 00000B98  48 00 00 01 */	bl getResource__Q23m2d10ResAccIf_cFUlPCc
+/* 80163E0C 00000B9C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80163E10 00000BA0  7C 64 1B 78 */	mr r4, r3
+/* 80163E14 00000BA4  40 82 00 0C */	bne .L_80163E20
+/* 80163E18 00000BA8  38 60 00 00 */	li r3, 0x0
+/* 80163E1C 00000BAC  48 00 00 40 */	b .L_80163E5C
+.L_80163E20:
+/* 80163E20 00000BB0  81 9E 00 10 */	lwz r12, 0x10(r30)
+/* 80163E24 00000BB4  38 7E 00 10 */	addi r3, r30, 0x10
+/* 80163E28 00000BB8  80 BF 00 04 */	lwz r5, 0x4(r31)
+/* 80163E2C 00000BBC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80163E30 00000BC0  7D 89 03 A6 */	mtctr r12
+/* 80163E34 00000BC4  4E 80 04 21 */	bctrl
+/* 80163E38 00000BC8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80163E3C 00000BCC  7C 7F 1B 78 */	mr r31, r3
+/* 80163E40 00000BD0  41 82 00 18 */	beq .L_80163E58
+/* 80163E44 00000BD4  81 9E 00 08 */	lwz r12, 0x8(r30)
+/* 80163E48 00000BD8  7F C3 F3 78 */	mr r3, r30
+/* 80163E4C 00000BDC  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 80163E50 00000BE0  7D 89 03 A6 */	mtctr r12
+/* 80163E54 00000BE4  4E 80 04 21 */	bctrl
+.L_80163E58:
+/* 80163E58 00000BE8  7F E3 FB 78 */	mr r3, r31
+.L_80163E5C:
+/* 80163E5C 00000BEC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80163E60 00000BF0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80163E64 00000BF4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80163E68 00000BF8  7C 08 03 A6 */	mtlr r0
+/* 80163E6C 00000BFC  38 21 00 10 */	addi r1, r1, 0x10
+/* 80163E70 00000C00  4E 80 00 20 */	blr
+.endfn build__Q23m2d8Simple_cFPCcPQ23m2d10ResAccIf_c
+
+# .text:0xBC4 | 0x80163E74 | size: 0xC
+.fn gap_03_80163E74_text, global
+.hidden gap_03_80163E74_text
+/* 80163E74 00000C04  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163E78 00000C08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163E7C 00000C0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163E74_text
+
+# .text:0xBD0 | 0x80163E80 | size: 0xD0
+# m2d::Simple_c::patrolPane_local(nw4r::lyt::Pane*, int (*)(nw4r::lyt::Pane*, void*), bool (*)(nw4r::lyt::Pane*), void*)
+.fn patrolPane_local__Q23m2d8Simple_cFPQ34nw4r3lyt4PanePFPQ34nw4r3lyt4PanePv_iPFPQ34nw4r3lyt4Pane_bPv, global
+/* 80163E80 00000C10  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80163E84 00000C14  7C 08 02 A6 */	mflr r0
+/* 80163E88 00000C18  90 01 00 34 */	stw r0, 0x34(r1)
+/* 80163E8C 00000C1C  39 61 00 30 */	addi r11, r1, 0x30
+/* 80163E90 00000C20  48 00 00 01 */	bl _savegpr_25
+/* 80163E94 00000C24  2C 06 00 00 */	cmpwi r6, 0x0
+/* 80163E98 00000C28  7C 79 1B 78 */	mr r25, r3
+/* 80163E9C 00000C2C  7C 9A 23 78 */	mr r26, r4
+/* 80163EA0 00000C30  7C BB 2B 78 */	mr r27, r5
+/* 80163EA4 00000C34  7C DC 33 78 */	mr r28, r6
+/* 80163EA8 00000C38  7C FD 3B 78 */	mr r29, r7
+/* 80163EAC 00000C3C  3B C0 00 00 */	li r30, 0x0
+/* 80163EB0 00000C40  41 82 00 1C */	beq .L_80163ECC
+/* 80163EB4 00000C44  7F 8C E3 78 */	mr r12, r28
+/* 80163EB8 00000C48  7F 43 D3 78 */	mr r3, r26
+/* 80163EBC 00000C4C  7D 89 03 A6 */	mtctr r12
+/* 80163EC0 00000C50  4E 80 04 21 */	bctrl
+/* 80163EC4 00000C54  28 03 00 01 */	cmplwi r3, 0x1
+/* 80163EC8 00000C58  40 82 00 28 */	bne .L_80163EF0
+.L_80163ECC:
+/* 80163ECC 00000C5C  7F 6C DB 78 */	mr r12, r27
+/* 80163ED0 00000C60  7F 43 D3 78 */	mr r3, r26
+/* 80163ED4 00000C64  7F A4 EB 78 */	mr r4, r29
+/* 80163ED8 00000C68  7D 89 03 A6 */	mtctr r12
+/* 80163EDC 00000C6C  4E 80 04 21 */	bctrl
+/* 80163EE0 00000C70  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80163EE4 00000C74  7C 7E 1B 78 */	mr r30, r3
+/* 80163EE8 00000C78  41 82 00 08 */	beq .L_80163EF0
+/* 80163EEC 00000C7C  48 00 00 4C */	b .L_80163F38
+.L_80163EF0:
+/* 80163EF0 00000C80  3B FA 00 14 */	addi r31, r26, 0x14
+/* 80163EF4 00000C84  48 00 00 34 */	b .L_80163F28
+.L_80163EF8:
+/* 80163EF8 00000C88  80 9F 00 04 */	lwz r4, 0x4(r31)
+/* 80163EFC 00000C8C  7F 23 CB 78 */	mr r3, r25
+/* 80163F00 00000C90  7F 65 DB 78 */	mr r5, r27
+/* 80163F04 00000C94  7F 86 E3 78 */	mr r6, r28
+/* 80163F08 00000C98  7F A7 EB 78 */	mr r7, r29
+/* 80163F0C 00000C9C  38 84 FF FC */	subi r4, r4, 0x4
+/* 80163F10 00000CA0  48 00 00 01 */	bl patrolPane_local__Q23m2d8Simple_cFPQ34nw4r3lyt4PanePFPQ34nw4r3lyt4PanePv_iPFPQ34nw4r3lyt4Pane_bPv
+/* 80163F14 00000CA4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80163F18 00000CA8  7C 7E 1B 78 */	mr r30, r3
+/* 80163F1C 00000CAC  41 82 00 08 */	beq .L_80163F24
+/* 80163F20 00000CB0  48 00 00 18 */	b .L_80163F38
+.L_80163F24:
+/* 80163F24 00000CB4  83 FF 00 04 */	lwz r31, 0x4(r31)
+.L_80163F28:
+/* 80163F28 00000CB8  80 1A 00 14 */	lwz r0, 0x14(r26)
+/* 80163F2C 00000CBC  7C 1F 00 40 */	cmplw r31, r0
+/* 80163F30 00000CC0  40 82 FF C8 */	bne .L_80163EF8
+/* 80163F34 00000CC4  7F C3 F3 78 */	mr r3, r30
+.L_80163F38:
+/* 80163F38 00000CC8  39 61 00 30 */	addi r11, r1, 0x30
+/* 80163F3C 00000CCC  48 00 00 01 */	bl _restgpr_25
+/* 80163F40 00000CD0  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80163F44 00000CD4  7C 08 03 A6 */	mtlr r0
+/* 80163F48 00000CD8  38 21 00 30 */	addi r1, r1, 0x30
+/* 80163F4C 00000CDC  4E 80 00 20 */	blr
+.endfn patrolPane_local__Q23m2d8Simple_cFPQ34nw4r3lyt4PanePFPQ34nw4r3lyt4PanePv_iPFPQ34nw4r3lyt4Pane_bPv
+
+# .text:0xCA0 | 0x80163F50 | size: 0x48
+# m2d::Simple_c::patrolPane(int (*)(nw4r::lyt::Pane*, void*), bool (*)(nw4r::lyt::Pane*), void*)
+.fn patrolPane__Q23m2d8Simple_cFPFPQ34nw4r3lyt4PanePv_iPFPQ34nw4r3lyt4Pane_bPv, global
+/* 80163F50 00000CE0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80163F54 00000CE4  7C 08 02 A6 */	mflr r0
+/* 80163F58 00000CE8  7C 88 23 78 */	mr r8, r4
+/* 80163F5C 00000CEC  7C C7 33 78 */	mr r7, r6
+/* 80163F60 00000CF0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80163F64 00000CF4  7C A0 2B 78 */	mr r0, r5
+/* 80163F68 00000CF8  7D 05 43 78 */	mr r5, r8
+/* 80163F6C 00000CFC  80 83 00 20 */	lwz r4, 0x20(r3)
+/* 80163F70 00000D00  7C 06 03 78 */	mr r6, r0
+/* 80163F74 00000D04  48 00 00 01 */	bl patrolPane_local__Q23m2d8Simple_cFPQ34nw4r3lyt4PanePFPQ34nw4r3lyt4PanePv_iPFPQ34nw4r3lyt4Pane_bPv
+/* 80163F78 00000D08  20 83 00 02 */	subfic r4, r3, 0x2
+/* 80163F7C 00000D0C  38 03 FF FE */	subi r0, r3, 0x2
+/* 80163F80 00000D10  7C 80 03 78 */	or r0, r4, r0
+/* 80163F84 00000D14  54 03 0F FE */	srwi r3, r0, 31
+/* 80163F88 00000D18  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80163F8C 00000D1C  7C 08 03 A6 */	mtlr r0
+/* 80163F90 00000D20  38 21 00 10 */	addi r1, r1, 0x10
+/* 80163F94 00000D24  4E 80 00 20 */	blr
+.endfn patrolPane__Q23m2d8Simple_cFPFPQ34nw4r3lyt4PanePv_iPFPQ34nw4r3lyt4Pane_bPv
+
+# .text:0xCE8 | 0x80163F98 | size: 0x8
+.fn gap_03_80163F98_text, global
+.hidden gap_03_80163F98_text
+/* 80163F98 00000D28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80163F9C 00000D2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80163F98_text
+
+# .text:0xCF0 | 0x80163FA0 | size: 0x14C
+# m2d::AnmResV2_c::create(const char*, m2d::ResAccIf_c*, m2d::Layout_c*, bool)
+.fn create__Q23m2d10AnmResV2_cFPCcPQ23m2d10ResAccIf_cPQ23m2d8Layout_cb, global
+/* 80163FA0 00000D30  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80163FA4 00000D34  7C 08 02 A6 */	mflr r0
+/* 80163FA8 00000D38  90 01 00 34 */	stw r0, 0x34(r1)
+/* 80163FAC 00000D3C  39 61 00 30 */	addi r11, r1, 0x30
+/* 80163FB0 00000D40  48 00 00 01 */	bl _savegpr_24
+/* 80163FB4 00000D44  7C BB 2B 78 */	mr r27, r5
+/* 80163FB8 00000D48  7C 78 1B 78 */	mr r24, r3
+/* 80163FBC 00000D4C  7C 85 23 78 */	mr r5, r4
+/* 80163FC0 00000D50  7C D9 33 78 */	mr r25, r6
+/* 80163FC4 00000D54  7C FA 3B 78 */	mr r26, r7
+/* 80163FC8 00000D58  7F 63 DB 78 */	mr r3, r27
+/* 80163FCC 00000D5C  38 80 00 00 */	li r4, 0x0
+/* 80163FD0 00000D60  48 00 00 01 */	bl getResource__Q23m2d10ResAccIf_cFUlPCc
+/* 80163FD4 00000D64  7C 64 1B 78 */	mr r4, r3
+/* 80163FD8 00000D68  38 78 00 04 */	addi r3, r24, 0x4
+/* 80163FDC 00000D6C  48 00 00 01 */	bl Set__Q34nw4r3lyt12AnimResourceFPCv
+/* 80163FE0 00000D70  2C 1A 00 00 */	cmpwi r26, 0x0
+/* 80163FE4 00000D74  41 82 00 18 */	beq .L_80163FFC
+/* 80163FE8 00000D78  80 BB 00 04 */	lwz r5, 0x4(r27)
+/* 80163FEC 00000D7C  7F 23 CB 78 */	mr r3, r25
+/* 80163FF0 00000D80  38 98 00 04 */	addi r4, r24, 0x4
+/* 80163FF4 00000D84  48 00 00 01 */	bl bindAnimationAuto__Q23m2d8Layout_cFRCQ34nw4r3lyt12AnimResourcePQ34nw4r3lyt16ResourceAccessor
+/* 80163FF8 00000D88  48 00 00 20 */	b .L_80164018
+.L_80163FFC:
+/* 80163FFC 00000D8C  81 99 00 00 */	lwz r12, 0x0(r25)
+/* 80164000 00000D90  7F 23 CB 78 */	mr r3, r25
+/* 80164004 00000D94  38 98 00 04 */	addi r4, r24, 0x4
+/* 80164008 00000D98  80 BB 00 04 */	lwz r5, 0x4(r27)
+/* 8016400C 00000D9C  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 80164010 00000DA0  7D 89 03 A6 */	mtctr r12
+/* 80164014 00000DA4  4E 80 04 21 */	bctrl
+.L_80164018:
+/* 80164018 00000DA8  38 78 00 04 */	addi r3, r24, 0x4
+/* 8016401C 00000DAC  48 00 00 01 */	bl GetGroupNum__Q34nw4r3lyt12AnimResourceCFv
+/* 80164020 00000DB0  54 60 04 3E */	clrlwi r0, r3, 16
+/* 80164024 00000DB4  90 18 00 18 */	stw r0, 0x18(r24)
+/* 80164028 00000DB8  48 00 00 01 */	bl getAllocator__3m2dFv
+/* 8016402C 00000DBC  80 18 00 18 */	lwz r0, 0x18(r24)
+/* 80164030 00000DC0  38 A0 00 04 */	li r5, 0x4
+/* 80164034 00000DC4  80 83 00 14 */	lwz r4, 0x14(r3)
+/* 80164038 00000DC8  54 03 18 38 */	slwi r3, r0, 3
+/* 8016403C 00000DCC  48 00 00 01 */	bl __nwa__FUlPQ23EGG4Heapi
+/* 80164040 00000DD0  90 78 00 14 */	stw r3, 0x14(r24)
+/* 80164044 00000DD4  38 78 00 04 */	addi r3, r24, 0x4
+/* 80164048 00000DD8  48 00 00 01 */	bl GetGroupArray__Q34nw4r3lyt12AnimResourceCFv
+/* 8016404C 00000DDC  7C 7C 1B 78 */	mr r28, r3
+/* 80164050 00000DE0  3B 60 00 00 */	li r27, 0x0
+/* 80164054 00000DE4  3B A0 00 00 */	li r29, 0x0
+/* 80164058 00000DE8  48 00 00 6C */	b .L_801640C4
+.L_8016405C:
+/* 8016405C 00000DEC  80 79 00 14 */	lwz r3, 0x14(r25)
+/* 80164060 00000DF0  7F 84 E3 78 */	mr r4, r28
+/* 80164064 00000DF4  3B 40 00 00 */	li r26, 0x0
+/* 80164068 00000DF8  48 00 00 01 */	bl FindGroupByName__Q34nw4r3lyt14GroupContainerFPCc
+/* 8016406C 00000DFC  80 98 00 14 */	lwz r4, 0x14(r24)
+/* 80164070 00000E00  3B C3 00 10 */	addi r30, r3, 0x10
+/* 80164074 00000E04  7C 64 E9 2E */	stwx r3, r4, r29
+/* 80164078 00000E08  83 E3 00 10 */	lwz r31, 0x10(r3)
+/* 8016407C 00000E0C  48 00 00 28 */	b .L_801640A4
+.L_80164080:
+/* 80164080 00000E10  80 9F 00 08 */	lwz r4, 0x8(r31)
+/* 80164084 00000E14  7F 03 C3 78 */	mr r3, r24
+/* 80164088 00000E18  38 A0 00 00 */	li r5, 0x0
+/* 8016408C 00000E1C  48 00 00 01 */	bl findAnmLink__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Paneb
+/* 80164090 00000E20  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164094 00000E24  41 82 00 0C */	beq .L_801640A0
+/* 80164098 00000E28  83 43 00 08 */	lwz r26, 0x8(r3)
+/* 8016409C 00000E2C  48 00 00 10 */	b .L_801640AC
+.L_801640A0:
+/* 801640A0 00000E30  83 FF 00 00 */	lwz r31, 0x0(r31)
+.L_801640A4:
+/* 801640A4 00000E34  7C 1F F0 40 */	cmplw r31, r30
+/* 801640A8 00000E38  40 82 FF D8 */	bne .L_80164080
+.L_801640AC:
+/* 801640AC 00000E3C  80 18 00 14 */	lwz r0, 0x14(r24)
+/* 801640B0 00000E40  3B 9C 00 14 */	addi r28, r28, 0x14
+/* 801640B4 00000E44  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 801640B8 00000E48  7C 60 EA 14 */	add r3, r0, r29
+/* 801640BC 00000E4C  3B BD 00 08 */	addi r29, r29, 0x8
+/* 801640C0 00000E50  93 43 00 04 */	stw r26, 0x4(r3)
+.L_801640C4:
+/* 801640C4 00000E54  80 18 00 18 */	lwz r0, 0x18(r24)
+/* 801640C8 00000E58  7C 1B 00 00 */	cmpw r27, r0
+/* 801640CC 00000E5C  41 80 FF 90 */	blt .L_8016405C
+/* 801640D0 00000E60  39 61 00 30 */	addi r11, r1, 0x30
+/* 801640D4 00000E64  38 60 00 01 */	li r3, 0x1
+/* 801640D8 00000E68  48 00 00 01 */	bl _restgpr_24
+/* 801640DC 00000E6C  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 801640E0 00000E70  7C 08 03 A6 */	mtlr r0
+/* 801640E4 00000E74  38 21 00 30 */	addi r1, r1, 0x30
+/* 801640E8 00000E78  4E 80 00 20 */	blr
+.endfn create__Q23m2d10AnmResV2_cFPCcPQ23m2d10ResAccIf_cPQ23m2d8Layout_cb
+
+# .text:0xE3C | 0x801640EC | size: 0x4
+.fn gap_03_801640EC_text, global
+.hidden gap_03_801640EC_text
+/* 801640EC 00000E7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801640EC_text
+
+# .text:0xE40 | 0x801640F0 | size: 0x3C
+# m2d::AnmResV2_c::remove()
+.fn remove__Q23m2d10AnmResV2_cFv, global
+/* 801640F0 00000E80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801640F4 00000E84  7C 08 02 A6 */	mflr r0
+/* 801640F8 00000E88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801640FC 00000E8C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80164100 00000E90  7C 7F 1B 78 */	mr r31, r3
+/* 80164104 00000E94  80 63 00 14 */	lwz r3, 0x14(r3)
+/* 80164108 00000E98  48 00 00 01 */	bl __dla__FPv
+/* 8016410C 00000E9C  38 00 00 00 */	li r0, 0x0
+/* 80164110 00000EA0  90 1F 00 14 */	stw r0, 0x14(r31)
+/* 80164114 00000EA4  38 60 00 01 */	li r3, 0x1
+/* 80164118 00000EA8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016411C 00000EAC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80164120 00000EB0  7C 08 03 A6 */	mtlr r0
+/* 80164124 00000EB4  38 21 00 10 */	addi r1, r1, 0x10
+/* 80164128 00000EB8  4E 80 00 20 */	blr
+.endfn remove__Q23m2d10AnmResV2_cFv
+
+# .text:0xE7C | 0x8016412C | size: 0x4
+.fn gap_03_8016412C_text, global
+.hidden gap_03_8016412C_text
+/* 8016412C 00000EBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016412C_text
+
+# .text:0xE80 | 0x80164130 | size: 0x84
+# m2d::AnmResV2_c::getGroupAnimTransform(const char*)
+.fn getGroupAnimTransform__Q23m2d10AnmResV2_cFPCc, global
+/* 80164130 00000EC0  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80164134 00000EC4  7C 08 02 A6 */	mflr r0
+/* 80164138 00000EC8  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8016413C 00000ECC  39 61 00 30 */	addi r11, r1, 0x30
+/* 80164140 00000ED0  48 00 00 01 */	bl _savegpr_25
+/* 80164144 00000ED4  83 C3 00 18 */	lwz r30, 0x18(r3)
+/* 80164148 00000ED8  7C 79 1B 78 */	mr r25, r3
+/* 8016414C 00000EDC  7C 9A 23 78 */	mr r26, r4
+/* 80164150 00000EE0  3B 80 00 00 */	li r28, 0x0
+/* 80164154 00000EE4  3B 60 00 00 */	li r27, 0x0
+/* 80164158 00000EE8  3B E0 00 00 */	li r31, 0x0
+/* 8016415C 00000EEC  48 00 00 34 */	b .L_80164190
+.L_80164160:
+/* 80164160 00000EF0  83 B9 00 14 */	lwz r29, 0x14(r25)
+/* 80164164 00000EF4  7F 43 D3 78 */	mr r3, r26
+/* 80164168 00000EF8  7C 9D F8 2E */	lwzx r4, r29, r31
+/* 8016416C 00000EFC  38 84 00 18 */	addi r4, r4, 0x18
+/* 80164170 00000F00  48 00 00 01 */	bl strcmp
+/* 80164174 00000F04  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164178 00000F08  40 82 00 10 */	bne .L_80164188
+/* 8016417C 00000F0C  57 60 18 38 */	slwi r0, r27, 3
+/* 80164180 00000F10  7F 9D 02 14 */	add r28, r29, r0
+/* 80164184 00000F14  48 00 00 14 */	b .L_80164198
+.L_80164188:
+/* 80164188 00000F18  3B FF 00 08 */	addi r31, r31, 0x8
+/* 8016418C 00000F1C  3B 7B 00 01 */	addi r27, r27, 0x1
+.L_80164190:
+/* 80164190 00000F20  7C 1B F0 00 */	cmpw r27, r30
+/* 80164194 00000F24  41 80 FF CC */	blt .L_80164160
+.L_80164198:
+/* 80164198 00000F28  39 61 00 30 */	addi r11, r1, 0x30
+/* 8016419C 00000F2C  7F 83 E3 78 */	mr r3, r28
+/* 801641A0 00000F30  48 00 00 01 */	bl _restgpr_25
+/* 801641A4 00000F34  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 801641A8 00000F38  7C 08 03 A6 */	mtlr r0
+/* 801641AC 00000F3C  38 21 00 30 */	addi r1, r1, 0x30
+/* 801641B0 00000F40  4E 80 00 20 */	blr
+.endfn getGroupAnimTransform__Q23m2d10AnmResV2_cFPCc
+
+# .text:0xF04 | 0x801641B4 | size: 0xC
+.fn gap_03_801641B4_text, global
+.hidden gap_03_801641B4_text
+/* 801641B4 00000F44  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801641B8 00000F48  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801641BC 00000F4C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801641B4_text
+
+# .text:0xF10 | 0x801641C0 | size: 0x98
+# m2d::AnmResV2_c::setAnmEnable(nw4r::lyt::Group*, bool)
+.fn setAnmEnable__Q23m2d10AnmResV2_cFPQ34nw4r3lyt5Groupb, global
+/* 801641C0 00000F50  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801641C4 00000F54  7C 08 02 A6 */	mflr r0
+/* 801641C8 00000F58  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801641CC 00000F5C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 801641D0 00000F60  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 801641D4 00000F64  3B C4 00 10 */	addi r30, r4, 0x10
+/* 801641D8 00000F68  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 801641DC 00000F6C  7C BD 2B 78 */	mr r29, r5
+/* 801641E0 00000F70  93 81 00 10 */	stw r28, 0x10(r1)
+/* 801641E4 00000F74  7C 7C 1B 78 */	mr r28, r3
+/* 801641E8 00000F78  83 E4 00 10 */	lwz r31, 0x10(r4)
+/* 801641EC 00000F7C  48 00 00 44 */	b .L_80164230
+.L_801641F0:
+/* 801641F0 00000F80  80 9F 00 08 */	lwz r4, 0x8(r31)
+/* 801641F4 00000F84  7F 83 E3 78 */	mr r3, r28
+/* 801641F8 00000F88  38 A0 00 00 */	li r5, 0x0
+/* 801641FC 00000F8C  48 00 00 01 */	bl findAnmLink__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Paneb
+/* 80164200 00000F90  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164204 00000F94  7C 64 1B 78 */	mr r4, r3
+/* 80164208 00000F98  41 82 00 24 */	beq .L_8016422C
+/* 8016420C 00000F9C  80 7F 00 08 */	lwz r3, 0x8(r31)
+/* 80164210 00000FA0  7F A5 EB 78 */	mr r5, r29
+/* 80164214 00000FA4  80 84 00 08 */	lwz r4, 0x8(r4)
+/* 80164218 00000FA8  38 C0 00 00 */	li r6, 0x0
+/* 8016421C 00000FAC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80164220 00000FB0  81 8C 00 5C */	lwz r12, 0x5c(r12)
+/* 80164224 00000FB4  7D 89 03 A6 */	mtctr r12
+/* 80164228 00000FB8  4E 80 04 21 */	bctrl
+.L_8016422C:
+/* 8016422C 00000FBC  83 FF 00 00 */	lwz r31, 0x0(r31)
+.L_80164230:
+/* 80164230 00000FC0  7C 1F F0 40 */	cmplw r31, r30
+/* 80164234 00000FC4  40 82 FF BC */	bne .L_801641F0
+/* 80164238 00000FC8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8016423C 00000FCC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80164240 00000FD0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80164244 00000FD4  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80164248 00000FD8  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 8016424C 00000FDC  7C 08 03 A6 */	mtlr r0
+/* 80164250 00000FE0  38 21 00 20 */	addi r1, r1, 0x20
+/* 80164254 00000FE4  4E 80 00 20 */	blr
+.endfn setAnmEnable__Q23m2d10AnmResV2_cFPQ34nw4r3lyt5Groupb
+
+# .text:0xFA8 | 0x80164258 | size: 0x8
+.fn gap_03_80164258_text, global
+.hidden gap_03_80164258_text
+/* 80164258 00000FE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016425C 00000FEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80164258_text
+
+# .text:0xFB0 | 0x80164260 | size: 0x90
+# m2d::AnmResV2_c::updateFrame(nw4r::lyt::Group*, float)
+.fn updateFrame__Q23m2d10AnmResV2_cFPQ34nw4r3lyt5Groupf, global
+/* 80164260 00000FF0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80164264 00000FF4  7C 08 02 A6 */	mflr r0
+/* 80164268 00000FF8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8016426C 00000FFC  DB E1 00 18 */	stfd f31, 0x18(r1)
+/* 80164270 00001000  FF E0 08 90 */	fmr f31, f1
+/* 80164274 00001004  93 E1 00 14 */	stw r31, 0x14(r1)
+/* 80164278 00001008  93 C1 00 10 */	stw r30, 0x10(r1)
+/* 8016427C 0000100C  3B C4 00 10 */	addi r30, r4, 0x10
+/* 80164280 00001010  93 A1 00 0C */	stw r29, 0xc(r1)
+/* 80164284 00001014  93 81 00 08 */	stw r28, 0x8(r1)
+/* 80164288 00001018  7C 7C 1B 78 */	mr r28, r3
+/* 8016428C 0000101C  83 E4 00 10 */	lwz r31, 0x10(r4)
+/* 80164290 00001020  48 00 00 34 */	b .L_801642C4
+.L_80164294:
+/* 80164294 00001024  83 BF 00 08 */	lwz r29, 0x8(r31)
+/* 80164298 00001028  7F 83 E3 78 */	mr r3, r28
+/* 8016429C 0000102C  38 A0 00 00 */	li r5, 0x0
+/* 801642A0 00001030  7F A4 EB 78 */	mr r4, r29
+/* 801642A4 00001034  48 00 00 01 */	bl findAnmLink__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Paneb
+/* 801642A8 00001038  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801642AC 0000103C  41 82 00 14 */	beq .L_801642C0
+/* 801642B0 00001040  FC 20 F8 90 */	fmr f1, f31
+/* 801642B4 00001044  7F 83 E3 78 */	mr r3, r28
+/* 801642B8 00001048  7F A4 EB 78 */	mr r4, r29
+/* 801642BC 0000104C  48 00 00 01 */	bl setAnmFrame__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Panef
+.L_801642C0:
+/* 801642C0 00001050  83 FF 00 00 */	lwz r31, 0x0(r31)
+.L_801642C4:
+/* 801642C4 00001054  7C 1F F0 40 */	cmplw r31, r30
+/* 801642C8 00001058  40 82 FF CC */	bne .L_80164294
+/* 801642CC 0000105C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801642D0 00001060  CB E1 00 18 */	lfd f31, 0x18(r1)
+/* 801642D4 00001064  83 E1 00 14 */	lwz r31, 0x14(r1)
+/* 801642D8 00001068  83 C1 00 10 */	lwz r30, 0x10(r1)
+/* 801642DC 0000106C  83 A1 00 0C */	lwz r29, 0xc(r1)
+/* 801642E0 00001070  83 81 00 08 */	lwz r28, 0x8(r1)
+/* 801642E4 00001074  7C 08 03 A6 */	mtlr r0
+/* 801642E8 00001078  38 21 00 20 */	addi r1, r1, 0x20
+/* 801642EC 0000107C  4E 80 00 20 */	blr
+.endfn updateFrame__Q23m2d10AnmResV2_cFPQ34nw4r3lyt5Groupf
+
+# .text:0x1040 | 0x801642F0 | size: 0x104
+# m2d::AnmResV2_c::findAnmLink(nw4r::lyt::Pane*, bool)
+.fn findAnmLink__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Paneb, global
+/* 801642F0 00001080  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801642F4 00001084  7C 08 02 A6 */	mflr r0
+/* 801642F8 00001088  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801642FC 0000108C  39 61 00 20 */	addi r11, r1, 0x20
+/* 80164300 00001090  48 00 00 01 */	bl _savegpr_27
+/* 80164304 00001094  7C 9C 23 78 */	mr r28, r4
+/* 80164308 00001098  7C 7B 1B 78 */	mr r27, r3
+/* 8016430C 0000109C  81 9C 00 00 */	lwz r12, 0x0(r28)
+/* 80164310 000010A0  7F 83 E3 78 */	mr r3, r28
+/* 80164314 000010A4  7C BD 2B 78 */	mr r29, r5
+/* 80164318 000010A8  38 9B 00 04 */	addi r4, r27, 0x4
+/* 8016431C 000010AC  81 8C 00 58 */	lwz r12, 0x58(r12)
+/* 80164320 000010B0  7D 89 03 A6 */	mtctr r12
+/* 80164324 000010B4  4E 80 04 21 */	bctrl
+/* 80164328 000010B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016432C 000010BC  41 82 00 08 */	beq .L_80164334
+/* 80164330 000010C0  48 00 00 AC */	b .L_801643DC
+.L_80164334:
+/* 80164334 000010C4  81 9C 00 00 */	lwz r12, 0x0(r28)
+/* 80164338 000010C8  7F 83 E3 78 */	mr r3, r28
+/* 8016433C 000010CC  81 8C 00 64 */	lwz r12, 0x64(r12)
+/* 80164340 000010D0  7D 89 03 A6 */	mtctr r12
+/* 80164344 000010D4  4E 80 04 21 */	bctrl
+/* 80164348 000010D8  54 7E 06 3E */	clrlwi r30, r3, 24
+/* 8016434C 000010DC  3B E0 00 00 */	li r31, 0x0
+/* 80164350 000010E0  48 00 00 40 */	b .L_80164390
+.L_80164354:
+/* 80164354 000010E4  81 9C 00 00 */	lwz r12, 0x0(r28)
+/* 80164358 000010E8  7F 83 E3 78 */	mr r3, r28
+/* 8016435C 000010EC  57 E4 06 3E */	clrlwi r4, r31, 24
+/* 80164360 000010F0  81 8C 00 6C */	lwz r12, 0x6c(r12)
+/* 80164364 000010F4  7D 89 03 A6 */	mtctr r12
+/* 80164368 000010F8  4E 80 04 21 */	bctrl
+/* 8016436C 000010FC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80164370 00001100  38 9B 00 04 */	addi r4, r27, 0x4
+/* 80164374 00001104  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 80164378 00001108  7D 89 03 A6 */	mtctr r12
+/* 8016437C 0000110C  4E 80 04 21 */	bctrl
+/* 80164380 00001110  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164384 00001114  41 82 00 08 */	beq .L_8016438C
+/* 80164388 00001118  48 00 00 54 */	b .L_801643DC
+.L_8016438C:
+/* 8016438C 0000111C  3B FF 00 01 */	addi r31, r31, 0x1
+.L_80164390:
+/* 80164390 00001120  57 E0 06 3E */	clrlwi r0, r31, 24
+/* 80164394 00001124  7C 00 F0 40 */	cmplw r0, r30
+/* 80164398 00001128  41 80 FF BC */	blt .L_80164354
+/* 8016439C 0000112C  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 801643A0 00001130  41 82 00 38 */	beq .L_801643D8
+/* 801643A4 00001134  83 FC 00 14 */	lwz r31, 0x14(r28)
+/* 801643A8 00001138  3B DC 00 14 */	addi r30, r28, 0x14
+/* 801643AC 0000113C  48 00 00 24 */	b .L_801643D0
+.L_801643B0:
+/* 801643B0 00001140  7F 63 DB 78 */	mr r3, r27
+/* 801643B4 00001144  38 9F FF FC */	subi r4, r31, 0x4
+/* 801643B8 00001148  38 A0 00 01 */	li r5, 0x1
+/* 801643BC 0000114C  48 00 00 01 */	bl findAnmLink__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Paneb
+/* 801643C0 00001150  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801643C4 00001154  41 82 00 08 */	beq .L_801643CC
+/* 801643C8 00001158  48 00 00 14 */	b .L_801643DC
+.L_801643CC:
+/* 801643CC 0000115C  83 FF 00 00 */	lwz r31, 0x0(r31)
+.L_801643D0:
+/* 801643D0 00001160  7C 1F F0 40 */	cmplw r31, r30
+/* 801643D4 00001164  40 82 FF DC */	bne .L_801643B0
+.L_801643D8:
+/* 801643D8 00001168  38 60 00 00 */	li r3, 0x0
+.L_801643DC:
+/* 801643DC 0000116C  39 61 00 20 */	addi r11, r1, 0x20
+/* 801643E0 00001170  48 00 00 01 */	bl _restgpr_27
+/* 801643E4 00001174  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801643E8 00001178  7C 08 03 A6 */	mtlr r0
+/* 801643EC 0000117C  38 21 00 20 */	addi r1, r1, 0x20
+/* 801643F0 00001180  4E 80 00 20 */	blr
+.endfn findAnmLink__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Paneb
+
+# .text:0x1144 | 0x801643F4 | size: 0xC
+.fn gap_03_801643F4_text, global
+.hidden gap_03_801643F4_text
+/* 801643F4 00001184  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801643F8 00001188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801643FC 0000118C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801643F4_text
+
+# .text:0x1150 | 0x80164400 | size: 0xE4
+# m2d::AnmResV2_c::setAnmFrame(nw4r::lyt::Pane*, float)
+.fn setAnmFrame__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Panef, global
+/* 80164400 00001190  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80164404 00001194  7C 08 02 A6 */	mflr r0
+/* 80164408 00001198  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8016440C 0000119C  DB E1 00 18 */	stfd f31, 0x18(r1)
+/* 80164410 000011A0  FF E0 08 90 */	fmr f31, f1
+/* 80164414 000011A4  93 E1 00 14 */	stw r31, 0x14(r1)
+/* 80164418 000011A8  93 C1 00 10 */	stw r30, 0x10(r1)
+/* 8016441C 000011AC  93 A1 00 0C */	stw r29, 0xc(r1)
+/* 80164420 000011B0  7C 9D 23 78 */	mr r29, r4
+/* 80164424 000011B4  93 81 00 08 */	stw r28, 0x8(r1)
+/* 80164428 000011B8  7C 7C 1B 78 */	mr r28, r3
+/* 8016442C 000011BC  7F A3 EB 78 */	mr r3, r29
+/* 80164430 000011C0  81 9D 00 00 */	lwz r12, 0x0(r29)
+/* 80164434 000011C4  38 9C 00 04 */	addi r4, r28, 0x4
+/* 80164438 000011C8  81 8C 00 58 */	lwz r12, 0x58(r12)
+/* 8016443C 000011CC  7D 89 03 A6 */	mtctr r12
+/* 80164440 000011D0  4E 80 04 21 */	bctrl
+/* 80164444 000011D4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164448 000011D8  41 82 00 0C */	beq .L_80164454
+/* 8016444C 000011DC  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 80164450 000011E0  D3 E3 00 10 */	stfs f31, 0x10(r3)
+.L_80164454:
+/* 80164454 000011E4  81 9D 00 00 */	lwz r12, 0x0(r29)
+/* 80164458 000011E8  7F A3 EB 78 */	mr r3, r29
+/* 8016445C 000011EC  81 8C 00 64 */	lwz r12, 0x64(r12)
+/* 80164460 000011F0  7D 89 03 A6 */	mtctr r12
+/* 80164464 000011F4  4E 80 04 21 */	bctrl
+/* 80164468 000011F8  54 7F 06 3E */	clrlwi r31, r3, 24
+/* 8016446C 000011FC  3B C0 00 00 */	li r30, 0x0
+/* 80164470 00001200  48 00 00 44 */	b .L_801644B4
+.L_80164474:
+/* 80164474 00001204  81 9D 00 00 */	lwz r12, 0x0(r29)
+/* 80164478 00001208  7F A3 EB 78 */	mr r3, r29
+/* 8016447C 0000120C  57 C4 06 3E */	clrlwi r4, r30, 24
+/* 80164480 00001210  81 8C 00 6C */	lwz r12, 0x6c(r12)
+/* 80164484 00001214  7D 89 03 A6 */	mtctr r12
+/* 80164488 00001218  4E 80 04 21 */	bctrl
+/* 8016448C 0000121C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80164490 00001220  38 9C 00 04 */	addi r4, r28, 0x4
+/* 80164494 00001224  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 80164498 00001228  7D 89 03 A6 */	mtctr r12
+/* 8016449C 0000122C  4E 80 04 21 */	bctrl
+/* 801644A0 00001230  2C 03 00 00 */	cmpwi r3, 0x0
+/* 801644A4 00001234  41 82 00 0C */	beq .L_801644B0
+/* 801644A8 00001238  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 801644AC 0000123C  D3 E3 00 10 */	stfs f31, 0x10(r3)
+.L_801644B0:
+/* 801644B0 00001240  3B DE 00 01 */	addi r30, r30, 0x1
+.L_801644B4:
+/* 801644B4 00001244  57 C0 06 3E */	clrlwi r0, r30, 24
+/* 801644B8 00001248  7C 00 F8 40 */	cmplw r0, r31
+/* 801644BC 0000124C  41 80 FF B8 */	blt .L_80164474
+/* 801644C0 00001250  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 801644C4 00001254  CB E1 00 18 */	lfd f31, 0x18(r1)
+/* 801644C8 00001258  83 E1 00 14 */	lwz r31, 0x14(r1)
+/* 801644CC 0000125C  83 C1 00 10 */	lwz r30, 0x10(r1)
+/* 801644D0 00001260  83 A1 00 0C */	lwz r29, 0xc(r1)
+/* 801644D4 00001264  83 81 00 08 */	lwz r28, 0x8(r1)
+/* 801644D8 00001268  7C 08 03 A6 */	mtlr r0
+/* 801644DC 0000126C  38 21 00 20 */	addi r1, r1, 0x20
+/* 801644E0 00001270  4E 80 00 20 */	blr
+.endfn setAnmFrame__Q23m2d10AnmResV2_cFPQ34nw4r3lyt4Panef
+
+# .text:0x1234 | 0x801644E4 | size: 0xC
+.fn gap_03_801644E4_text, global
+.hidden gap_03_801644E4_text
+/* 801644E4 00001274  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801644E8 00001278  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 801644EC 0000127C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_801644E4_text
+
+# .text:0x1240 | 0x801644F0 | size: 0xB0
+# m2d::AnmGroupBase_c::create(m2d::AnmResV2_c*, const char*)
+.fn create__Q23m2d14AnmGroupBase_cFPQ23m2d10AnmResV2_cPCc, global
+/* 801644F0 00001280  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801644F4 00001284  7C 08 02 A6 */	mflr r0
+/* 801644F8 00001288  90 01 00 24 */	stw r0, 0x24(r1)
+/* 801644FC 0000128C  7C 80 23 78 */	mr r0, r4
+/* 80164500 00001290  7C A4 2B 78 */	mr r4, r5
+/* 80164504 00001294  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80164508 00001298  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8016450C 0000129C  7C 7E 1B 78 */	mr r30, r3
+/* 80164510 000012A0  90 03 00 04 */	stw r0, 0x4(r3)
+/* 80164514 000012A4  7C 03 03 78 */	mr r3, r0
+/* 80164518 000012A8  48 00 00 01 */	bl getGroupAnimTransform__Q23m2d10AnmResV2_cFPCc
+/* 8016451C 000012AC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164520 000012B0  90 7E 00 08 */	stw r3, 0x8(r30)
+/* 80164524 000012B4  41 82 00 60 */	beq .L_80164584
+/* 80164528 000012B8  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8016452C 000012BC  3B E0 00 01 */	li r31, 0x1
+/* 80164530 000012C0  48 00 00 01 */	bl IsLoopData__Q34nw4r3lyt13AnimTransformCFv
+/* 80164534 000012C4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80164538 000012C8  41 82 00 08 */	beq .L_80164540
+/* 8016453C 000012CC  3B E0 00 00 */	li r31, 0x0
+.L_80164540:
+/* 80164540 000012D0  80 7E 00 08 */	lwz r3, 0x8(r30)
+/* 80164544 000012D4  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 80164548 000012D8  48 00 00 01 */	bl GetFrameSize__Q34nw4r3lyt13AnimTransformCFv
+/* 8016454C 000012DC  54 63 04 3E */	clrlwi r3, r3, 16
+/* 80164550 000012E0  3C 00 43 30 */	lis r0, 0x4330
+/* 80164554 000012E4  90 61 00 0C */	stw r3, 0xc(r1)
+/* 80164558 000012E8  7F E4 FB 78 */	mr r4, r31
+/* 8016455C 000012EC  C8 20 00 00 */	lfd f1, "@15555"@sda21(r0)
+/* 80164560 000012F0  90 01 00 08 */	stw r0, 0x8(r1)
+/* 80164564 000012F4  80 7E 00 00 */	lwz r3, 0x0(r30)
+/* 80164568 000012F8  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 8016456C 000012FC  C0 40 00 00 */	lfs f2, "@15552"@sda21(r0)
+/* 80164570 00001300  EC 20 08 28 */	fsubs f1, f0, f1
+/* 80164574 00001304  C0 60 00 00 */	lfs f3, "@15553"@sda21(r0)
+/* 80164578 00001308  48 00 00 01 */	bl set__Q23m2d11FrameCtrl_cFfUcff
+/* 8016457C 0000130C  7F C3 F3 78 */	mr r3, r30
+/* 80164580 00001310  48 00 00 01 */	bl updateFrame__Q23m2d14AnmGroupBase_cFv
+.L_80164584:
+/* 80164584 00001314  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80164588 00001318  38 60 00 01 */	li r3, 0x1
+/* 8016458C 0000131C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80164590 00001320  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80164594 00001324  7C 08 03 A6 */	mtlr r0
+/* 80164598 00001328  38 21 00 20 */	addi r1, r1, 0x20
+/* 8016459C 0000132C  4E 80 00 20 */	blr
+.endfn create__Q23m2d14AnmGroupBase_cFPQ23m2d10AnmResV2_cPCc
+
+# .text:0x12F0 | 0x801645A0 | size: 0x6C
+# m2d::AnmGroupBase_c::setAnmEnable(bool)
+.fn setAnmEnable__Q23m2d14AnmGroupBase_cFb, global
+/* 801645A0 00001330  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 801645A4 00001334  7C 08 02 A6 */	mflr r0
+/* 801645A8 00001338  90 01 00 14 */	stw r0, 0x14(r1)
+/* 801645AC 0000133C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 801645B0 00001340  7C 9F 23 78 */	mr r31, r4
+/* 801645B4 00001344  7F E5 FB 78 */	mr r5, r31
+/* 801645B8 00001348  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 801645BC 0000134C  7C 7E 1B 78 */	mr r30, r3
+/* 801645C0 00001350  80 83 00 08 */	lwz r4, 0x8(r3)
+/* 801645C4 00001354  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 801645C8 00001358  80 84 00 00 */	lwz r4, 0x0(r4)
+/* 801645CC 0000135C  48 00 00 01 */	bl setAnmEnable__Q23m2d10AnmResV2_cFPQ34nw4r3lyt5Groupb
+/* 801645D0 00001360  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 801645D4 00001364  41 82 00 14 */	beq .L_801645E8
+/* 801645D8 00001368  88 1E 00 0C */	lbz r0, 0xc(r30)
+/* 801645DC 0000136C  60 00 00 01 */	ori r0, r0, 0x1
+/* 801645E0 00001370  98 1E 00 0C */	stb r0, 0xc(r30)
+/* 801645E4 00001374  48 00 00 10 */	b .L_801645F4
+.L_801645E8:
+/* 801645E8 00001378  88 1E 00 0C */	lbz r0, 0xc(r30)
+/* 801645EC 0000137C  54 00 06 3C */	rlwinm r0, r0, 0, 24, 30
+/* 801645F0 00001380  98 1E 00 0C */	stb r0, 0xc(r30)
+.L_801645F4:
+/* 801645F4 00001384  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 801645F8 00001388  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 801645FC 0000138C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80164600 00001390  7C 08 03 A6 */	mtlr r0
+/* 80164604 00001394  38 21 00 10 */	addi r1, r1, 0x10
+/* 80164608 00001398  4E 80 00 20 */	blr
+.endfn setAnmEnable__Q23m2d14AnmGroupBase_cFb
+
+# .text:0x135C | 0x8016460C | size: 0x4
+.fn gap_03_8016460C_text, global
+.hidden gap_03_8016460C_text
+/* 8016460C 0000139C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016460C_text
+
+# .text:0x1360 | 0x80164610 | size: 0x18
+# m2d::AnmGroupBase_c::updateFrame()
+.fn updateFrame__Q23m2d14AnmGroupBase_cFv, global
+/* 80164610 000013A0  80 A3 00 00 */	lwz r5, 0x0(r3)
+/* 80164614 000013A4  80 83 00 08 */	lwz r4, 0x8(r3)
+/* 80164618 000013A8  C0 25 00 08 */	lfs f1, 0x8(r5)
+/* 8016461C 000013AC  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 80164620 000013B0  80 84 00 00 */	lwz r4, 0x0(r4)
+/* 80164624 000013B4  48 00 00 00 */	b updateFrame__Q23m2d10AnmResV2_cFPQ34nw4r3lyt5Groupf
+.endfn updateFrame__Q23m2d14AnmGroupBase_cFv
+
+# .text:0x1378 | 0x80164628 | size: 0x8
+.fn gap_03_80164628_text, global
+.hidden gap_03_80164628_text
+/* 80164628 000013B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016462C 000013BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80164628_text
+
+# 0x803297E8..0x80329860 | size: 0x78
+.data
+.balign 8
+
+# .data:0x0 | 0x803297E8 | size: 0x1E
+.obj "@15526", local
+	.4byte 0x82518263
+	.4byte 0x955C8EA6
+	.4byte 0x97708371
+	.4byte 0x815B8376
+	.4byte 0x286D3264
+	.4byte 0x3A3A6372
+	.4byte 0x65617465
+	.2byte 0x2900
+.endobj "@15526"
+
+# .data:0x1E | 0x80329806 | size: 0x2
+.obj gap_07_80329806_data, global
+.hidden gap_07_80329806_data
+	.2byte 0x0000
+.endobj gap_07_80329806_data
+
+# .data:0x20 | 0x80329808 | size: 0x18
+# m2d::Simple_c::__vtable
+.obj __vt__Q23m2d8Simple_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__Q23m2d8Simple_cFv
+	.4byte draw__Q23m2d8Simple_cFv
+	.4byte calc__Q23m2d8Simple_cFv
+	.4byte build__Q23m2d8Simple_cFPCcPQ23m2d10ResAccIf_c
+.endobj __vt__Q23m2d8Simple_c
+
+# .data:0x38 | 0x80329820 | size: 0x40
+# m2d::Layout_c::__vtable
+.obj __vt__Q23m2d8Layout_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__Q23m2d8Layout_cFv
+	.4byte Build__Q34nw4r3lyt6LayoutFPCvPQ34nw4r3lyt16ResourceAccessor
+	.4byte CreateAnimTransform__Q34nw4r3lyt6LayoutFv
+	.4byte CreateAnimTransform__Q23m2d8Layout_cFPCvPQ34nw4r3lyt16ResourceAccessor
+	.4byte CreateAnimTransform__Q34nw4r3lyt6LayoutFRCQ34nw4r3lyt12AnimResourcePQ34nw4r3lyt16ResourceAccessor
+	.4byte BindAnimation__Q34nw4r3lyt6LayoutFPQ34nw4r3lyt13AnimTransform
+	.4byte UnbindAnimation__Q34nw4r3lyt6LayoutFPQ34nw4r3lyt13AnimTransform
+	.4byte UnbindAllAnimation__Q34nw4r3lyt6LayoutFv
+	.4byte BindAnimationAuto__Q34nw4r3lyt6LayoutFRCQ34nw4r3lyt12AnimResourcePQ34nw4r3lyt16ResourceAccessor
+	.4byte SetAnimationEnable__Q34nw4r3lyt6LayoutFPQ34nw4r3lyt13AnimTransformb
+	.4byte CalculateMtx__Q34nw4r3lyt6LayoutFRCQ34nw4r3lyt8DrawInfo
+	.4byte Draw__Q34nw4r3lyt6LayoutFRCQ34nw4r3lyt8DrawInfo
+	.4byte Animate__Q34nw4r3lyt6LayoutFUl
+	.4byte "SetTagProcessor__Q34nw4r3lyt6LayoutFPQ34nw4r2ut19TagProcessorBase<w>"
+.endobj __vt__Q23m2d8Layout_c
+
+# 0x80377DB0..0x80377DC0 | size: 0x10
+.section .bss, "wa", @nobits
+.balign 8
+
+# .bss:0x0 | 0x80377DB0 | size: 0xC
+# m2d::l_list
+.obj l_list__3m2d, global
+	.skip 0xC
+.endobj l_list__3m2d
+
+# .bss:0xC | 0x80377DBC | size: 0x4
+.obj gap_08_80377DBC_bss, global
+.hidden gap_08_80377DBC_bss
+	.skip 0x4
+.endobj gap_08_80377DBC_bss
+
+# 0x8042A6A0..0x8042A6A8 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A6A0 | size: 0x4
+# m2d::l_allocator
+.obj l_allocator__3m2d, global
+	.skip 0x4
+.endobj l_allocator__3m2d
+
+# .sbss:0x4 | 0x8042A6A4 | size: 0x4
+.obj gap_10_8042A6A4_sbss, global
+.hidden gap_10_8042A6A4_sbss
+	.skip 0x4
+.endobj gap_10_8042A6A4_sbss
+
+# 0x8042DF10..0x8042DF30 | size: 0x20
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042DF10 | size: 0x4
+.obj "@15531", local
+	.4byte 0x00000000
+.endobj "@15531"
+
+# .sdata2:0x4 | 0x8042DF14 | size: 0x4
+.obj "@15552", local
+	.4byte 0x3F800000
+.endobj "@15552"
+
+# .sdata2:0x8 | 0x8042DF18 | size: 0x4
+.obj "@15553", local
+	.4byte 0xBF800000
+.endobj "@15553"
+	.4byte 0x00000000
+
+# .sdata2:0x10 | 0x8042DF20 | size: 0x8
+.obj "@15555", local
+	.4byte 0x43300000
+	.4byte 0x00000000
+.endobj "@15555"
+
+# .sdata2:0x18 | 0x8042DF28 | size: 0x4
+.obj "@15649", local
+	.4byte 0x3F3B13B1
+.endobj "@15649"
+
+# .sdata2:0x1C | 0x8042DF2C | size: 0x4
+.obj "@15697", local
+	.4byte 0x43FA0000
+.endobj "@15697"
+
+# 0x8042FEF0..0x8042FEF8 | size: 0x8
+.section .sbss2, "a", @nobits
+.balign 8
+
+# .sbss2:0x0 | 0x8042FEF0 | size: 0x4
+# m2d::defaultSet()::l_clearColor
+.obj "@LOCAL@defaultSet__3m2dFv@l_clearColor", local
+	.skip 0x4
+.endobj "@LOCAL@defaultSet__3m2dFv@l_clearColor"
+
+# .sbss2:0x4 | 0x8042FEF4 | size: 0x4
+.obj gap_12_8042FEF4_sbss2, global
+.hidden gap_12_8042FEF4_sbss2
+	.skip 0x4
+.endobj gap_12_8042FEF4_sbss2

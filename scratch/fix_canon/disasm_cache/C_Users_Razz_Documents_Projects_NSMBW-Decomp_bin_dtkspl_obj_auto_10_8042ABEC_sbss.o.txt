@@ -1,0 +1,237 @@
+.include "macros.inc"
+.file "auto_10_8042ABEC_sbss"
+
+# 0x8042ABEC..0x8042ACB8 | size: 0xCC
+.section .sbss, "wa", @nobits
+.balign 4
+
+# .sbss:0x0 | 0x8042ABEC | size: 0x4
+.obj BootInfo_8042ABEC, global
+	.skip 0x4
+.endobj BootInfo_8042ABEC
+
+# .sbss:0x4 | 0x8042ABF0 | size: 0x10
+.obj gap_10_8042ABF0_sbss, global
+.hidden gap_10_8042ABF0_sbss
+	.skip 0x10
+.endobj gap_10_8042ABF0_sbss
+
+# .sbss:0x14 | 0x8042AC00 | size: 0x4
+.obj CommandInfoCounter, global
+	.skip 0x4
+.endobj CommandInfoCounter
+
+# .sbss:0x18 | 0x8042AC04 | size: 0x4
+.obj PauseFlag, global
+	.skip 0x4
+.endobj PauseFlag
+
+# .sbss:0x1C | 0x8042AC08 | size: 0x4
+.obj PausingFlag, global
+	.skip 0x4
+.endobj PausingFlag
+
+# .sbss:0x20 | 0x8042AC0C | size: 0x4
+.obj FatalErrorFlag, global
+	.skip 0x4
+.endobj FatalErrorFlag
+
+# .sbss:0x24 | 0x8042AC10 | size: 0x4
+.obj Canceling, global
+	.skip 0x4
+.endobj Canceling
+
+# .sbss:0x28 | 0x8042AC14 | size: 0x4
+.obj ResumeFromHere, global
+	.skip 0x4
+.endobj ResumeFromHere
+
+# .sbss:0x2C | 0x8042AC18 | size: 0x4
+.obj NumInternalRetry, global
+	.skip 0x4
+.endobj NumInternalRetry
+
+# .sbss:0x30 | 0x8042AC1C | size: 0x4
+.obj FirstTimeInBootrom, global
+	.skip 0x4
+.endobj FirstTimeInBootrom
+
+# .sbss:0x34 | 0x8042AC20 | size: 0x4
+.obj Breaking, global
+	.skip 0x4
+.endobj Breaking
+
+# .sbss:0x38 | 0x8042AC24 | size: 0x4
+.obj WaitingForCoverOpen, global
+	.skip 0x4
+.endobj WaitingForCoverOpen
+
+# .sbss:0x3C | 0x8042AC28 | size: 0x4
+.obj WaitingForCoverClose, global
+	.skip 0x4
+.endobj WaitingForCoverClose
+
+# .sbss:0x40 | 0x8042AC2C | size: 0x4
+.obj MotorStopped, global
+	.skip 0x4
+.endobj MotorStopped
+
+# .sbss:0x44 | 0x8042AC30 | size: 0x4
+.obj ChangedDisc, global
+	.skip 0x4
+.endobj ChangedDisc
+
+# .sbss:0x48 | 0x8042AC34 | size: 0x4
+.obj PreparingCover, global
+	.skip 0x4
+.endobj PreparingCover
+
+# .sbss:0x4C | 0x8042AC38 | size: 0x4
+.obj __DVDLayoutFormat, global
+	.skip 0x4
+.endobj __DVDLayoutFormat
+
+# .sbss:0x50 | 0x8042AC3C | size: 0x4
+.obj DVDInitialized, global
+	.skip 0x4
+.endobj DVDInitialized
+
+# .sbss:0x54 | 0x8042AC40 | size: 0x4
+.obj __BS2DVDLowIntType, global
+	.skip 0x4
+.endobj __BS2DVDLowIntType
+
+# .sbss:0x58 | 0x8042AC44 | size: 0x4
+.obj Prepared_8042AC44, global
+	.skip 0x4
+.endobj Prepared_8042AC44
+
+# .sbss:0x5C | 0x8042AC48 | size: 0x4
+.obj BootGameInfo, global
+	.skip 0x4
+.endobj BootGameInfo
+
+# .sbss:0x60 | 0x8042AC4C | size: 0x4
+.obj PartInfo, global
+	.skip 0x4
+.endobj PartInfo
+
+# .sbss:0x64 | 0x8042AC50 | size: 0x4
+.obj GameToc, global
+	.skip 0x4
+.endobj GameToc
+
+# .sbss:0x68 | 0x8042AC54 | size: 0xC
+.obj gap_10_8042AC54_sbss, global
+.hidden gap_10_8042AC54_sbss
+	.skip 0xC
+.endobj gap_10_8042AC54_sbss
+
+# .sbss:0x74 | 0x8042AC60 | size: 0x4
+.obj __DVDNumTmdBytes, global
+	.skip 0x4
+.endobj __DVDNumTmdBytes
+
+# .sbss:0x78 | 0x8042AC64 | size: 0x4
+.obj gap_10_8042AC64_sbss, global
+.hidden gap_10_8042AC64_sbss
+	.skip 0x4
+.endobj gap_10_8042AC64_sbss
+
+# .sbss:0x7C | 0x8042AC68 | size: 0x8
+.obj LastResetEnd, global
+	.skip 0x8
+.endobj LastResetEnd
+
+# .sbss:0x84 | 0x8042AC70 | size: 0x4
+.obj MotorState, global
+	.skip 0x4
+.endobj MotorState
+
+# .sbss:0x88 | 0x8042AC74 | size: 0x4
+.obj ResetRequired, global
+	.skip 0x4
+.endobj ResetRequired
+
+# .sbss:0x8C | 0x8042AC78 | size: 0x4
+.obj LastError, global
+	.skip 0x4
+.endobj LastError
+
+# .sbss:0x90 | 0x8042AC7C | size: 0x4
+.obj CancelLastError, global
+	.skip 0x4
+.endobj CancelLastError
+
+# .sbss:0x94 | 0x8042AC80 | size: 0x4
+.obj CancelCallback, global
+	.skip 0x4
+.endobj CancelCallback
+
+# .sbss:0x98 | 0x8042AC84 | size: 0x4
+.obj CurrCommand, global
+	.skip 0x4
+.endobj CurrCommand
+
+# .sbss:0x9C | 0x8042AC88 | size: 0x4
+.obj bootInfo, global
+	.skip 0x4
+.endobj bootInfo
+
+# .sbss:0xA0 | 0x8042AC8C | size: 0x4
+.obj IDShouldBe, global
+	.skip 0x4
+.endobj IDShouldBe
+
+# .sbss:0xA4 | 0x8042AC90 | size: 0x4
+.obj executing, global
+	.skip 0x4
+.endobj executing
+
+# .sbss:0xA8 | 0x8042AC94 | size: 0x4
+.obj LastState, global
+	.skip 0x4
+.endobj LastState
+
+# .sbss:0xAC | 0x8042AC98 | size: 0x4
+.obj ExistFlag, global
+	.skip 0x4
+.endobj ExistFlag
+
+# .sbss:0xB0 | 0x8042AC9C | size: 0x4
+.obj NextOffset, global
+	.skip 0x4
+.endobj NextOffset
+
+# .sbss:0xB4 | 0x8042ACA0 | size: 0x4
+.obj Callback_8042ACA0, global
+	.skip 0x4
+.endobj Callback_8042ACA0
+
+# .sbss:0xB8 | 0x8042ACA4 | size: 0x4
+.obj gap_10_8042ACA4_sbss, global
+.hidden gap_10_8042ACA4_sbss
+	.skip 0x4
+.endobj gap_10_8042ACA4_sbss
+
+# .sbss:0xBC | 0x8042ACA8 | size: 0x4
+.obj FatalFunc, global
+	.skip 0x4
+.endobj FatalFunc
+
+# .sbss:0xC0 | 0x8042ACAC | size: 0x4
+.obj gap_10_8042ACAC_sbss, global
+.hidden gap_10_8042ACAC_sbss
+	.skip 0x4
+.endobj gap_10_8042ACAC_sbss
+
+# .sbss:0xC4 | 0x8042ACB0 | size: 0x4
+.obj lowIntType_8042ACB0, global
+	.skip 0x4
+.endobj lowIntType_8042ACB0
+
+# .sbss:0xC8 | 0x8042ACB4 | size: 0x4
+.obj gap_10_8042ACB4_sbss, global
+.hidden gap_10_8042ACB4_sbss
+	.skip 0x4
+.endobj gap_10_8042ACB4_sbss

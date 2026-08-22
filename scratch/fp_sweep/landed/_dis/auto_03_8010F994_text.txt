@@ -1,0 +1,378 @@
+.include "macros.inc"
+.file "auto_03_8010F994_text"
+
+# 0x8010F994..0x8010FDD0 | size: 0x43C
+.text
+.balign 4
+
+# .text:0x0 | 0x8010F994 | size: 0xC
+.fn pad_03_8010F994_text, local
+/* 8010F994 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010F998 00000044  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010F99C 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_8010F994_text
+
+# .text:0xC | 0x8010F9A0 | size: 0x64
+# daEnEatCoin_c_classInit()
+.fn daEnEatCoin_c_classInit__Fv, global
+/* 8010F9A0 0000004C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010F9A4 00000050  7C 08 02 A6 */	mflr r0
+/* 8010F9A8 00000054  38 60 05 B8 */	li r3, 0x5b8
+/* 8010F9AC 00000058  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010F9B0 0000005C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010F9B4 00000060  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 8010F9B8 00000064  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010F9BC 00000068  7C 7F 1B 78 */	mr r31, r3
+/* 8010F9C0 0000006C  41 82 00 2C */	beq .L_8010F9EC
+/* 8010F9C4 00000070  48 00 00 01 */	bl __ct__5dEn_cFv
+/* 8010F9C8 00000074  3C 80 00 00 */	lis r4, __vt__13daEnEatCoin_c@ha
+/* 8010F9CC 00000078  38 7F 05 24 */	addi r3, r31, 0x524
+/* 8010F9D0 0000007C  38 84 00 00 */	addi r4, r4, __vt__13daEnEatCoin_c@l
+/* 8010F9D4 00000080  90 9F 00 60 */	stw r4, 0x60(r31)
+/* 8010F9D8 00000084  48 00 00 01 */	bl __ct__16dHeapAllocator_cFv
+/* 8010F9DC 00000088  38 00 00 00 */	li r0, 0x0
+/* 8010F9E0 0000008C  90 1F 05 40 */	stw r0, 0x540(r31)
+/* 8010F9E4 00000090  38 7F 05 44 */	addi r3, r31, 0x544
+/* 8010F9E8 00000094  48 00 00 01 */	bl __ct__Q23m3d5mdl_cFv
+.L_8010F9EC:
+/* 8010F9EC 00000098  7F E3 FB 78 */	mr r3, r31
+/* 8010F9F0 0000009C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010F9F4 000000A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010F9F8 000000A4  7C 08 03 A6 */	mtlr r0
+/* 8010F9FC 000000A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010FA00 000000AC  4E 80 00 20 */	blr
+.endfn daEnEatCoin_c_classInit__Fv
+
+# .text:0x70 | 0x8010FA04 | size: 0xC
+.fn gap_03_8010FA04_text, global
+.hidden gap_03_8010FA04_text
+/* 8010FA04 000000B0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FA08 000000B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FA0C 000000B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FA04_text
+
+# .text:0x7C | 0x8010FA10 | size: 0x7C
+# daEnEatCoin_c::create()
+.fn create__13daEnEatCoin_cFv, global
+/* 8010FA10 000000BC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010FA14 000000C0  7C 08 02 A6 */	mflr r0
+/* 8010FA18 000000C4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010FA1C 000000C8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010FA20 000000CC  7C 7F 1B 78 */	mr r31, r3
+/* 8010FA24 000000D0  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8010FA28 000000D4  54 00 07 3E */	clrlwi r0, r0, 28
+/* 8010FA2C 000000D8  90 03 05 B4 */	stw r0, 0x5b4(r3)
+/* 8010FA30 000000DC  48 00 00 01 */	bl model_set__13daEnEatCoin_cFv
+/* 8010FA34 000000E0  C0 00 00 00 */	lfs f0, "@70046_8042D648"@sda21(r0)
+/* 8010FA38 000000E4  38 00 00 02 */	li r0, 0x2
+/* 8010FA3C 000000E8  98 1F 03 6D */	stb r0, 0x36d(r31)
+/* 8010FA40 000000EC  3C 80 00 00 */	lis r4, StateID_EatIn__5dEn_c@ha
+/* 8010FA44 000000F0  38 A0 00 00 */	li r5, m_shapeAngle__7dCoin_c@sda21
+/* 8010FA48 000000F4  7F E3 FB 78 */	mr r3, r31
+/* 8010FA4C 000000F8  D0 1F 00 DC */	stfs f0, 0xdc(r31)
+/* 8010FA50 000000FC  38 84 00 00 */	addi r4, r4, StateID_EatIn__5dEn_c@l
+/* 8010FA54 00000100  D0 1F 00 E0 */	stfs f0, 0xe0(r31)
+/* 8010FA58 00000104  D0 1F 00 E4 */	stfs f0, 0xe4(r31)
+/* 8010FA5C 00000108  A8 05 00 02 */	lha r0, 0x2(r5)
+/* 8010FA60 0000010C  B0 1F 01 02 */	sth r0, 0x102(r31)
+/* 8010FA64 00000110  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8010FA68 00000114  81 8C 00 D4 */	lwz r12, 0xd4(r12)
+/* 8010FA6C 00000118  7D 89 03 A6 */	mtctr r12
+/* 8010FA70 0000011C  4E 80 04 21 */	bctrl
+/* 8010FA74 00000120  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010FA78 00000124  38 60 00 01 */	li r3, 0x1
+/* 8010FA7C 00000128  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010FA80 0000012C  7C 08 03 A6 */	mtlr r0
+/* 8010FA84 00000130  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010FA88 00000134  4E 80 00 20 */	blr
+.endfn create__13daEnEatCoin_cFv
+
+# .text:0xF8 | 0x8010FA8C | size: 0x4
+.fn gap_03_8010FA8C_text, global
+.hidden gap_03_8010FA8C_text
+/* 8010FA8C 00000138  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FA8C_text
+
+# .text:0xFC | 0x8010FA90 | size: 0x30
+# daEnEatCoin_c::execute()
+.fn execute__13daEnEatCoin_cFv, global
+/* 8010FA90 0000013C  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010FA94 00000140  7C 08 02 A6 */	mflr r0
+/* 8010FA98 00000144  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010FA9C 00000148  85 83 03 94 */	lwzu r12, 0x394(r3)
+/* 8010FAA0 0000014C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010FAA4 00000150  7D 89 03 A6 */	mtctr r12
+/* 8010FAA8 00000154  4E 80 04 21 */	bctrl
+/* 8010FAAC 00000158  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010FAB0 0000015C  38 60 00 01 */	li r3, 0x1
+/* 8010FAB4 00000160  7C 08 03 A6 */	mtlr r0
+/* 8010FAB8 00000164  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010FABC 00000168  4E 80 00 20 */	blr
+.endfn execute__13daEnEatCoin_cFv
+
+# .text:0x12C | 0x8010FAC0 | size: 0xF0
+# daEnEatCoin_c::draw()
+.fn draw__13daEnEatCoin_cFv, global
+/* 8010FAC0 0000016C  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 8010FAC4 00000170  7C 08 02 A6 */	mflr r0
+/* 8010FAC8 00000174  90 01 00 44 */	stw r0, 0x44(r1)
+/* 8010FACC 00000178  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 8010FAD0 0000017C  7C 7F 1B 78 */	mr r31, r3
+/* 8010FAD4 00000180  C0 63 00 B4 */	lfs f3, 0xb4(r3)
+/* 8010FAD8 00000184  C0 43 00 B0 */	lfs f2, 0xb0(r3)
+/* 8010FADC 00000188  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 8010FAE0 0000018C  C0 03 00 E4 */	lfs f0, 0xe4(r3)
+/* 8010FAE4 00000190  C0 83 00 E0 */	lfs f4, 0xe0(r3)
+/* 8010FAE8 00000194  C0 A3 00 DC */	lfs f5, 0xdc(r3)
+/* 8010FAEC 00000198  D0 A1 00 1C */	stfs f5, 0x1c(r1)
+/* 8010FAF0 0000019C  D0 81 00 20 */	stfs f4, 0x20(r1)
+/* 8010FAF4 000001A0  D0 01 00 24 */	stfs f0, 0x24(r1)
+/* 8010FAF8 000001A4  A8 A3 01 00 */	lha r5, 0x100(r3)
+/* 8010FAFC 000001A8  A8 83 01 02 */	lha r4, 0x102(r3)
+/* 8010FB00 000001AC  A8 03 01 04 */	lha r0, 0x104(r3)
+/* 8010FB04 000001B0  38 63 05 84 */	addi r3, r3, 0x584
+/* 8010FB08 000001B4  D0 21 00 28 */	stfs f1, 0x28(r1)
+/* 8010FB0C 000001B8  D0 41 00 2C */	stfs f2, 0x2c(r1)
+/* 8010FB10 000001BC  D0 61 00 30 */	stfs f3, 0x30(r1)
+/* 8010FB14 000001C0  B0 A1 00 14 */	sth r5, 0x14(r1)
+/* 8010FB18 000001C4  B0 81 00 16 */	sth r4, 0x16(r1)
+/* 8010FB1C 000001C8  B0 01 00 18 */	sth r0, 0x18(r1)
+/* 8010FB20 000001CC  48 00 00 01 */	bl PSMTXTrans
+/* 8010FB24 000001D0  A0 01 00 16 */	lhz r0, 0x16(r1)
+/* 8010FB28 000001D4  38 7F 05 84 */	addi r3, r31, 0x584
+/* 8010FB2C 000001D8  B0 01 00 10 */	sth r0, 0x10(r1)
+/* 8010FB30 000001DC  38 81 00 10 */	addi r4, r1, 0x10
+/* 8010FB34 000001E0  48 00 00 01 */	bl YrotM__6mMtx_cF4mAng
+/* 8010FB38 000001E4  A0 01 00 14 */	lhz r0, 0x14(r1)
+/* 8010FB3C 000001E8  38 7F 05 84 */	addi r3, r31, 0x584
+/* 8010FB40 000001EC  B0 01 00 0C */	sth r0, 0xc(r1)
+/* 8010FB44 000001F0  38 81 00 0C */	addi r4, r1, 0xc
+/* 8010FB48 000001F4  48 00 00 01 */	bl XrotM__6mMtx_cF4mAng
+/* 8010FB4C 000001F8  A0 01 00 18 */	lhz r0, 0x18(r1)
+/* 8010FB50 000001FC  38 7F 05 84 */	addi r3, r31, 0x584
+/* 8010FB54 00000200  B0 01 00 08 */	sth r0, 0x8(r1)
+/* 8010FB58 00000204  38 81 00 08 */	addi r4, r1, 0x8
+/* 8010FB5C 00000208  48 00 00 01 */	bl ZrotM__6mMtx_cF4mAng
+/* 8010FB60 0000020C  38 7F 05 44 */	addi r3, r31, 0x544
+/* 8010FB64 00000210  38 9F 05 84 */	addi r4, r31, 0x584
+/* 8010FB68 00000214  48 00 00 01 */	bl setLocalMtx__Q23m3d9scnLeaf_cFPCQ34nw4r4math5MTX34
+/* 8010FB6C 00000218  38 7F 05 44 */	addi r3, r31, 0x544
+/* 8010FB70 0000021C  38 81 00 1C */	addi r4, r1, 0x1c
+/* 8010FB74 00000220  48 00 00 01 */	bl setScale__Q23m3d9scnLeaf_cFRCQ34nw4r4math4VEC3
+/* 8010FB78 00000224  38 7F 05 44 */	addi r3, r31, 0x544
+/* 8010FB7C 00000228  38 80 00 00 */	li r4, 0x0
+/* 8010FB80 0000022C  48 00 00 01 */	bl calc__Q23m3d9scnLeaf_cFb
+/* 8010FB84 00000230  81 9F 05 44 */	lwz r12, 0x544(r31)
+/* 8010FB88 00000234  38 7F 05 44 */	addi r3, r31, 0x544
+/* 8010FB8C 00000238  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8010FB90 0000023C  7D 89 03 A6 */	mtctr r12
+/* 8010FB94 00000240  4E 80 04 21 */	bctrl
+/* 8010FB98 00000244  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 8010FB9C 00000248  38 60 00 01 */	li r3, 0x1
+/* 8010FBA0 0000024C  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 8010FBA4 00000250  7C 08 03 A6 */	mtlr r0
+/* 8010FBA8 00000254  38 21 00 40 */	addi r1, r1, 0x40
+/* 8010FBAC 00000258  4E 80 00 20 */	blr
+.endfn draw__13daEnEatCoin_cFv
+
+# .text:0x21C | 0x8010FBB0 | size: 0x8
+# daEnEatCoin_c::doDelete()
+.fn doDelete__13daEnEatCoin_cFv, global
+/* 8010FBB0 0000025C  38 60 00 01 */	li r3, 0x1
+/* 8010FBB4 00000260  4E 80 00 20 */	blr
+.endfn doDelete__13daEnEatCoin_cFv
+
+# .text:0x224 | 0x8010FBB8 | size: 0x8
+.fn gap_03_8010FBB8_text, global
+.hidden gap_03_8010FBB8_text
+/* 8010FBB8 00000264  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FBBC 00000268  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FBB8_text
+
+# .text:0x22C | 0x8010FBC0 | size: 0xA0
+# daEnEatCoin_c::setEatGlupDown(dActor_c*)
+.fn setEatGlupDown__13daEnEatCoin_cFP8dActor_c, global
+/* 8010FBC0 0000026C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8010FBC4 00000270  7C 08 02 A6 */	mflr r0
+/* 8010FBC8 00000274  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8010FBCC 00000278  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8010FBD0 0000027C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8010FBD4 00000280  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8010FBD8 00000284  7C 7D 1B 78 */	mr r29, r3
+/* 8010FBDC 00000288  7C 83 23 78 */	mr r3, r4
+/* 8010FBE0 0000028C  81 84 00 60 */	lwz r12, 0x60(r4)
+/* 8010FBE4 00000290  81 8C 00 6C */	lwz r12, 0x6c(r12)
+/* 8010FBE8 00000294  7D 89 03 A6 */	mtctr r12
+/* 8010FBEC 00000298  4E 80 04 21 */	bctrl
+/* 8010FBF0 0000029C  8B C3 00 00 */	lbz r30, 0x0(r3)
+/* 8010FBF4 000002A0  7F C3 07 74 */	extsb r3, r30
+/* 8010FBF8 000002A4  48 00 00 01 */	bl incCoin__9daPyMng_cFi
+/* 8010FBFC 000002A8  7F C4 07 74 */	extsb r4, r30
+/* 8010FC00 000002AC  38 60 00 64 */	li r3, 0x64
+/* 8010FC04 000002B0  48 00 00 01 */	bl addScore__9daPyMng_cFii
+/* 8010FC08 000002B4  7F C3 07 74 */	extsb r3, r30
+/* 8010FC0C 000002B8  48 00 00 01 */	bl getRemotePlayer__6dAudioFi
+/* 8010FC10 000002BC  83 C0 00 00 */	lwz r30, g_pSndObjMap__6dAudio@sda21(r0)
+/* 8010FC14 000002C0  7C 7F 1B 78 */	mr r31, r3
+/* 8010FC18 000002C4  38 61 00 08 */	addi r3, r1, 0x8
+/* 8010FC1C 000002C8  38 9D 00 AC */	addi r4, r29, 0xac
+/* 8010FC20 000002CC  48 00 00 01 */	bl cvtSndObjctPos__6dAudioFRC7mVec3_c
+/* 8010FC24 000002D0  7F C3 F3 78 */	mr r3, r30
+/* 8010FC28 000002D4  7F E6 FB 78 */	mr r6, r31
+/* 8010FC2C 000002D8  38 A1 00 08 */	addi r5, r1, 0x8
+/* 8010FC30 000002DC  38 80 02 37 */	li r4, 0x237
+/* 8010FC34 000002E0  48 00 00 01 */	bl startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul
+/* 8010FC38 000002E4  7F A3 EB 78 */	mr r3, r29
+/* 8010FC3C 000002E8  48 00 00 01 */	bl deleteRequest__7fBase_cFv
+/* 8010FC40 000002EC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8010FC44 000002F0  38 60 00 01 */	li r3, 0x1
+/* 8010FC48 000002F4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8010FC4C 000002F8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8010FC50 000002FC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8010FC54 00000300  7C 08 03 A6 */	mtlr r0
+/* 8010FC58 00000304  38 21 00 20 */	addi r1, r1, 0x20
+/* 8010FC5C 00000308  4E 80 00 20 */	blr
+.endfn setEatGlupDown__13daEnEatCoin_cFP8dActor_c
+
+# .text:0x2CC | 0x8010FC60 | size: 0x4
+# daEnEatCoin_c::initializeState_EatOut()
+.fn initializeState_EatOut__13daEnEatCoin_cFv, global
+/* 8010FC60 0000030C  48 00 00 00 */	b deleteRequest__7fBase_cFv
+.endfn initializeState_EatOut__13daEnEatCoin_cFv
+
+# .text:0x2D0 | 0x8010FC64 | size: 0xC
+.fn gap_03_8010FC64_text, global
+.hidden gap_03_8010FC64_text
+/* 8010FC64 00000310  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FC68 00000314  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FC6C 00000318  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FC64_text
+
+# .text:0x2DC | 0x8010FC70 | size: 0x4
+# daEnEatCoin_c::finalizeState_EatOut()
+.fn finalizeState_EatOut__13daEnEatCoin_cFv, global
+/* 8010FC70 0000031C  4E 80 00 20 */	blr
+.endfn finalizeState_EatOut__13daEnEatCoin_cFv
+
+# .text:0x2E0 | 0x8010FC74 | size: 0xC
+.fn gap_03_8010FC74_text, global
+.hidden gap_03_8010FC74_text
+/* 8010FC74 00000320  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FC78 00000324  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FC7C 00000328  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FC74_text
+
+# .text:0x2EC | 0x8010FC80 | size: 0x4
+# daEnEatCoin_c::executeState_EatOut()
+.fn executeState_EatOut__13daEnEatCoin_cFv, global
+/* 8010FC80 0000032C  4E 80 00 20 */	blr
+.endfn executeState_EatOut__13daEnEatCoin_cFv
+
+# .text:0x2F0 | 0x8010FC84 | size: 0xC
+.fn gap_03_8010FC84_text, global
+.hidden gap_03_8010FC84_text
+/* 8010FC84 00000330  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FC88 00000334  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FC8C 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FC84_text
+
+# .text:0x2FC | 0x8010FC90 | size: 0xB4
+# daEnEatCoin_c::model_set()
+.fn model_set__13daEnEatCoin_cFv, global
+/* 8010FC90 0000033C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8010FC94 00000340  7C 08 02 A6 */	mflr r0
+/* 8010FC98 00000344  3C 80 00 00 */	lis r4, g_gameHeaps__5mHeap@ha
+/* 8010FC9C 00000348  38 C0 00 00 */	li r6, 0x0
+/* 8010FCA0 0000034C  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8010FCA4 00000350  38 E0 00 20 */	li r7, 0x20
+/* 8010FCA8 00000354  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8010FCAC 00000358  3F E0 00 00 */	lis r31, g_profile_EN_EATCOIN@ha
+/* 8010FCB0 0000035C  3B FF 00 00 */	addi r31, r31, g_profile_EN_EATCOIN@l
+/* 8010FCB4 00000360  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8010FCB8 00000364  7C 7E 1B 78 */	mr r30, r3
+/* 8010FCBC 00000368  38 63 05 24 */	addi r3, r3, 0x524
+/* 8010FCC0 0000036C  80 A4 00 00 */	lwz r5, g_gameHeaps__5mHeap@l(r4)
+/* 8010FCC4 00000370  38 80 FF FF */	li r4, -0x1
+/* 8010FCC8 00000374  48 00 00 01 */	bl createFrmHeap__16dHeapAllocator_cFUlPQ23EGG4HeapPCcUl
+/* 8010FCCC 00000378  80 60 00 00 */	lwz r3, m_instance__9dResMng_c@sda21(r0)
+/* 8010FCD0 0000037C  38 BF 00 44 */	addi r5, r31, 0x44
+/* 8010FCD4 00000380  38 9F 00 58 */	addi r4, r31, 0x58
+/* 8010FCD8 00000384  38 63 00 04 */	addi r3, r3, 0x4
+/* 8010FCDC 00000388  48 00 00 01 */	bl getRes__6dRes_cCFPCcPCc
+/* 8010FCE0 0000038C  80 1E 05 B4 */	lwz r0, 0x5b4(r30)
+/* 8010FCE4 00000390  38 9F 00 38 */	addi r4, r31, 0x38
+/* 8010FCE8 00000394  90 7E 05 40 */	stw r3, 0x540(r30)
+/* 8010FCEC 00000398  38 7E 05 40 */	addi r3, r30, 0x540
+/* 8010FCF0 0000039C  54 00 10 3A */	slwi r0, r0, 2
+/* 8010FCF4 000003A0  7C 84 00 2E */	lwzx r4, r4, r0
+/* 8010FCF8 000003A4  48 00 00 01 */	bl GetResMdl__Q34nw4r3g3d7ResFileCFPCc
+/* 8010FCFC 000003A8  90 61 00 08 */	stw r3, 0x8(r1)
+/* 8010FD00 000003AC  38 7E 05 44 */	addi r3, r30, 0x544
+/* 8010FD04 000003B0  38 81 00 08 */	addi r4, r1, 0x8
+/* 8010FD08 000003B4  38 BE 05 24 */	addi r5, r30, 0x524
+/* 8010FD0C 000003B8  38 C0 00 20 */	li r6, 0x20
+/* 8010FD10 000003BC  38 E0 00 01 */	li r7, 0x1
+/* 8010FD14 000003C0  39 00 00 00 */	li r8, 0x0
+/* 8010FD18 000003C4  48 00 00 01 */	bl create__Q23m3d5mdl_cFQ34nw4r3g3d6ResMdlP12mAllocator_cUliPUl
+/* 8010FD1C 000003C8  38 7E 05 44 */	addi r3, r30, 0x544
+/* 8010FD20 000003CC  48 00 00 01 */	bl setSoftLight_MapObj__8dActor_cFRQ23m3d6bmdl_c
+/* 8010FD24 000003D0  38 7E 05 24 */	addi r3, r30, 0x524
+/* 8010FD28 000003D4  48 00 00 01 */	bl adjustFrmHeap__16dHeapAllocator_cFv
+/* 8010FD2C 000003D8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8010FD30 000003DC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8010FD34 000003E0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8010FD38 000003E4  7C 08 03 A6 */	mtlr r0
+/* 8010FD3C 000003E8  38 21 00 20 */	addi r1, r1, 0x20
+/* 8010FD40 000003EC  4E 80 00 20 */	blr
+.endfn model_set__13daEnEatCoin_cFv
+
+# .text:0x3B0 | 0x8010FD44 | size: 0xC
+.fn gap_03_8010FD44_text, global
+.hidden gap_03_8010FD44_text
+/* 8010FD44 000003F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FD48 000003F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FD4C 000003F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FD44_text
+
+# .text:0x3BC | 0x8010FD50 | size: 0x74
+# daEnEatCoin_c::~daEnEatCoin_c()
+.fn __dt__13daEnEatCoin_cFv, global
+/* 8010FD50 000003FC  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010FD54 00000400  7C 08 02 A6 */	mflr r0
+/* 8010FD58 00000404  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010FD5C 00000408  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010FD60 0000040C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010FD64 00000410  7C 9F 23 78 */	mr r31, r4
+/* 8010FD68 00000414  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010FD6C 00000418  7C 7E 1B 78 */	mr r30, r3
+/* 8010FD70 0000041C  41 82 00 38 */	beq .L_8010FDA8
+/* 8010FD74 00000420  38 80 FF FF */	li r4, -0x1
+/* 8010FD78 00000424  38 63 05 44 */	addi r3, r3, 0x544
+/* 8010FD7C 00000428  48 00 00 01 */	bl __dt__Q23m3d5mdl_cFv
+/* 8010FD80 0000042C  38 7E 05 24 */	addi r3, r30, 0x524
+/* 8010FD84 00000430  38 80 FF FF */	li r4, -0x1
+/* 8010FD88 00000434  48 00 00 01 */	bl __dt__16dHeapAllocator_cFv
+/* 8010FD8C 00000438  7F C3 F3 78 */	mr r3, r30
+/* 8010FD90 0000043C  38 80 00 00 */	li r4, 0x0
+/* 8010FD94 00000440  48 00 00 01 */	bl __dt__5dEn_cFv
+/* 8010FD98 00000444  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8010FD9C 00000448  40 81 00 0C */	ble .L_8010FDA8
+/* 8010FDA0 0000044C  7F C3 F3 78 */	mr r3, r30
+/* 8010FDA4 00000450  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_8010FDA8:
+/* 8010FDA8 00000454  7F C3 F3 78 */	mr r3, r30
+/* 8010FDAC 00000458  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010FDB0 0000045C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010FDB4 00000460  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010FDB8 00000464  7C 08 03 A6 */	mtlr r0
+/* 8010FDBC 00000468  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010FDC0 0000046C  4E 80 00 20 */	blr
+.endfn __dt__13daEnEatCoin_cFv
+
+# .text:0x430 | 0x8010FDC4 | size: 0xC
+.fn gap_03_8010FDC4_text, global
+.hidden gap_03_8010FDC4_text
+/* 8010FDC4 00000470  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FDC8 00000474  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010FDCC 00000478  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010FDC4_text

@@ -1,0 +1,718 @@
+.include "macros.inc"
+.file "m_allocator.cpp"
+
+# 0x8016A5A0..0x8016AB60 | size: 0x5C0
+.text
+.balign 4
+
+# .text:0x0 | 0x8016A5A0 | size: 0x8
+# mAllocatorDummyHeap_c::AllocatorAllocForDummyHeap(MEMAllocator*, unsigned long)
+.fn AllocatorAllocForDummyHeap__21mAllocatorDummyHeap_cFP12MEMAllocatorUl, global
+/* 8016A5A0 00000040  38 60 00 00 */	li r3, 0x0
+/* 8016A5A4 00000044  4E 80 00 20 */	blr
+.endfn AllocatorAllocForDummyHeap__21mAllocatorDummyHeap_cFP12MEMAllocatorUl
+
+# .text:0x8 | 0x8016A5A8 | size: 0x8
+.fn gap_03_8016A5A8_text, global
+.hidden gap_03_8016A5A8_text
+/* 8016A5A8 00000048  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A5AC 0000004C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A5A8_text
+
+# .text:0x10 | 0x8016A5B0 | size: 0x4
+# mAllocatorDummyHeap_c::AllocatorFreeForDummyHeap(MEMAllocator*, void*)
+.fn AllocatorFreeForDummyHeap__21mAllocatorDummyHeap_cFP12MEMAllocatorPv, global
+/* 8016A5B0 00000050  4E 80 00 20 */	blr
+.endfn AllocatorFreeForDummyHeap__21mAllocatorDummyHeap_cFP12MEMAllocatorPv
+
+# .text:0x14 | 0x8016A5B4 | size: 0xC
+.fn gap_03_8016A5B4_text, global
+.hidden gap_03_8016A5B4_text
+/* 8016A5B4 00000054  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A5B8 00000058  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A5BC 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A5B4_text
+
+# .text:0x20 | 0x8016A5C0 | size: 0x48
+# mAllocatorDummyHeap_c::mAllocatorDummyHeap_c()
+.fn __ct__21mAllocatorDummyHeap_cFv, global
+/* 8016A5C0 00000060  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A5C4 00000064  7C 08 02 A6 */	mflr r0
+/* 8016A5C8 00000068  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A5CC 0000006C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A5D0 00000070  7C 7F 1B 78 */	mr r31, r3
+/* 8016A5D4 00000074  48 00 00 01 */	bl __ct__Q23EGG8DisposerFv
+/* 8016A5D8 00000078  3C 80 00 00 */	lis r4, __vt__21mAllocatorDummyHeap_c@ha
+/* 8016A5DC 0000007C  38 00 00 00 */	li r0, 0x0
+/* 8016A5E0 00000080  38 84 00 00 */	addi r4, r4, __vt__21mAllocatorDummyHeap_c@l
+/* 8016A5E4 00000084  B0 1F 00 1C */	sth r0, 0x1c(r31)
+/* 8016A5E8 00000088  7F E3 FB 78 */	mr r3, r31
+/* 8016A5EC 0000008C  90 9F 00 00 */	stw r4, 0x0(r31)
+/* 8016A5F0 00000090  93 E0 00 00 */	stw r31, m_instance__21mAllocatorDummyHeap_c@sda21(r0)
+/* 8016A5F4 00000094  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016A5F8 00000098  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A5FC 0000009C  7C 08 03 A6 */	mtlr r0
+/* 8016A600 000000A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A604 000000A4  4E 80 00 20 */	blr
+.endfn __ct__21mAllocatorDummyHeap_cFv
+
+# .text:0x68 | 0x8016A608 | size: 0x8
+.fn gap_03_8016A608_text, global
+.hidden gap_03_8016A608_text
+/* 8016A608 000000A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A60C 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A608_text
+
+# .text:0x70 | 0x8016A610 | size: 0x58
+# mAllocatorDummyHeap_c::~mAllocatorDummyHeap_c()
+.fn __dt__21mAllocatorDummyHeap_cFv, global
+/* 8016A610 000000B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A614 000000B4  7C 08 02 A6 */	mflr r0
+/* 8016A618 000000B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016A61C 000000BC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A620 000000C0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A624 000000C4  7C 9F 23 78 */	mr r31, r4
+/* 8016A628 000000C8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8016A62C 000000CC  7C 7E 1B 78 */	mr r30, r3
+/* 8016A630 000000D0  41 82 00 1C */	beq .L_8016A64C
+/* 8016A634 000000D4  38 80 00 00 */	li r4, 0x0
+/* 8016A638 000000D8  48 00 00 01 */	bl __dt__Q23EGG4HeapFv
+/* 8016A63C 000000DC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8016A640 000000E0  40 81 00 0C */	ble .L_8016A64C
+/* 8016A644 000000E4  7F C3 F3 78 */	mr r3, r30
+/* 8016A648 000000E8  48 00 00 01 */	bl __dl__FPv
+.L_8016A64C:
+/* 8016A64C 000000EC  7F C3 F3 78 */	mr r3, r30
+/* 8016A650 000000F0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016A654 000000F4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8016A658 000000F8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A65C 000000FC  7C 08 03 A6 */	mtlr r0
+/* 8016A660 00000100  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A664 00000104  4E 80 00 20 */	blr
+.endfn __dt__21mAllocatorDummyHeap_cFv
+
+# .text:0xC8 | 0x8016A668 | size: 0x8
+.fn gap_03_8016A668_text, global
+.hidden gap_03_8016A668_text
+/* 8016A668 00000108  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A66C 0000010C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A668_text
+
+# .text:0xD0 | 0x8016A670 | size: 0x8
+# mAllocatorDummyHeap_c::getHeapKind() const
+.fn getHeapKind__21mAllocatorDummyHeap_cCFv, global
+/* 8016A670 00000110  38 60 00 00 */	li r3, 0x0
+/* 8016A674 00000114  4E 80 00 20 */	blr
+.endfn getHeapKind__21mAllocatorDummyHeap_cCFv
+
+# .text:0xD8 | 0x8016A678 | size: 0x8
+.fn gap_03_8016A678_text, global
+.hidden gap_03_8016A678_text
+/* 8016A678 00000118  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A67C 0000011C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A678_text
+
+# .text:0xE0 | 0x8016A680 | size: 0x20
+# mAllocatorDummyHeap_c::initAllocator(EGG::Allocator*, long)
+.fn initAllocator__21mAllocatorDummyHeap_cFPQ23EGG9Allocatorl, global
+/* 8016A680 00000120  38 00 00 00 */	li r0, "@LOCAL@initAllocator__21mAllocatorDummyHeap_cFPQ23EGG9Allocatorl@sAllocatorFunc"@sda21
+/* 8016A684 00000124  90 04 00 00 */	stw r0, 0x0(r4)
+/* 8016A688 00000128  38 00 00 00 */	li r0, 0x0
+/* 8016A68C 0000012C  80 63 00 10 */	lwz r3, 0x10(r3)
+/* 8016A690 00000130  90 64 00 04 */	stw r3, 0x4(r4)
+/* 8016A694 00000134  90 A4 00 08 */	stw r5, 0x8(r4)
+/* 8016A698 00000138  90 04 00 0C */	stw r0, 0xc(r4)
+/* 8016A69C 0000013C  4E 80 00 20 */	blr
+.endfn initAllocator__21mAllocatorDummyHeap_cFPQ23EGG9Allocatorl
+
+# .text:0x100 | 0x8016A6A0 | size: 0x8
+# mAllocatorDummyHeap_c::alloc(unsigned long, long)
+.fn alloc__21mAllocatorDummyHeap_cFUll, global
+/* 8016A6A0 00000140  38 60 00 00 */	li r3, 0x0
+/* 8016A6A4 00000144  4E 80 00 20 */	blr
+.endfn alloc__21mAllocatorDummyHeap_cFUll
+
+# .text:0x108 | 0x8016A6A8 | size: 0x8
+.fn gap_03_8016A6A8_text, global
+.hidden gap_03_8016A6A8_text
+/* 8016A6A8 00000148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6AC 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A6A8_text
+
+# .text:0x110 | 0x8016A6B0 | size: 0x4
+# mAllocatorDummyHeap_c::free(void*)
+.fn free__21mAllocatorDummyHeap_cFPv, global
+/* 8016A6B0 00000150  4E 80 00 20 */	blr
+.endfn free__21mAllocatorDummyHeap_cFPv
+
+# .text:0x114 | 0x8016A6B4 | size: 0xC
+.fn gap_03_8016A6B4_text, global
+.hidden gap_03_8016A6B4_text
+/* 8016A6B4 00000154  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6B8 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6BC 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A6B4_text
+
+# .text:0x120 | 0x8016A6C0 | size: 0x4
+# mAllocatorDummyHeap_c::destroy()
+.fn destroy__21mAllocatorDummyHeap_cFv, global
+/* 8016A6C0 00000160  4E 80 00 20 */	blr
+.endfn destroy__21mAllocatorDummyHeap_cFv
+
+# .text:0x124 | 0x8016A6C4 | size: 0xC
+.fn gap_03_8016A6C4_text, global
+.hidden gap_03_8016A6C4_text
+/* 8016A6C4 00000164  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6C8 00000168  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6CC 0000016C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A6C4_text
+
+# .text:0x130 | 0x8016A6D0 | size: 0x8
+# mAllocatorDummyHeap_c::resizeForMBlock(void*, unsigned long)
+.fn resizeForMBlock__21mAllocatorDummyHeap_cFPvUl, global
+/* 8016A6D0 00000170  38 60 00 00 */	li r3, 0x0
+/* 8016A6D4 00000174  4E 80 00 20 */	blr
+.endfn resizeForMBlock__21mAllocatorDummyHeap_cFPvUl
+
+# .text:0x138 | 0x8016A6D8 | size: 0x8
+.fn gap_03_8016A6D8_text, global
+.hidden gap_03_8016A6D8_text
+/* 8016A6D8 00000178  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6DC 0000017C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A6D8_text
+
+# .text:0x140 | 0x8016A6E0 | size: 0x8
+# mAllocatorDummyHeap_c::getTotalFreeSize()
+.fn getTotalFreeSize__21mAllocatorDummyHeap_cFv, global
+/* 8016A6E0 00000180  38 60 00 00 */	li r3, 0x0
+/* 8016A6E4 00000184  4E 80 00 20 */	blr
+.endfn getTotalFreeSize__21mAllocatorDummyHeap_cFv
+
+# .text:0x148 | 0x8016A6E8 | size: 0x8
+.fn gap_03_8016A6E8_text, global
+.hidden gap_03_8016A6E8_text
+/* 8016A6E8 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6EC 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A6E8_text
+
+# .text:0x150 | 0x8016A6F0 | size: 0x8
+# mAllocatorDummyHeap_c::getAllocatableSize(long)
+.fn getAllocatableSize__21mAllocatorDummyHeap_cFl, global
+/* 8016A6F0 00000190  38 60 00 00 */	li r3, 0x0
+/* 8016A6F4 00000194  4E 80 00 20 */	blr
+.endfn getAllocatableSize__21mAllocatorDummyHeap_cFl
+
+# .text:0x158 | 0x8016A6F8 | size: 0x8
+.fn gap_03_8016A6F8_text, global
+.hidden gap_03_8016A6F8_text
+/* 8016A6F8 00000198  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A6FC 0000019C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A6F8_text
+
+# .text:0x160 | 0x8016A700 | size: 0x8
+# mAllocatorDummyHeap_c::adjust()
+.fn adjust__21mAllocatorDummyHeap_cFv, global
+/* 8016A700 000001A0  38 60 00 00 */	li r3, 0x0
+/* 8016A704 000001A4  4E 80 00 20 */	blr
+.endfn adjust__21mAllocatorDummyHeap_cFv
+
+# .text:0x168 | 0x8016A708 | size: 0x8
+.fn gap_03_8016A708_text, global
+.hidden gap_03_8016A708_text
+/* 8016A708 000001A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A70C 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A708_text
+
+# .text:0x170 | 0x8016A710 | size: 0x8
+# mAllocatorDummyHeap_c::getInstance()
+.fn getInstance__21mAllocatorDummyHeap_cFv, global
+/* 8016A710 000001B0  80 60 00 00 */	lwz r3, m_instance__21mAllocatorDummyHeap_c@sda21(r0)
+/* 8016A714 000001B4  4E 80 00 20 */	blr
+.endfn getInstance__21mAllocatorDummyHeap_cFv
+
+# .text:0x178 | 0x8016A718 | size: 0x8
+.fn gap_03_8016A718_text, global
+.hidden gap_03_8016A718_text
+/* 8016A718 000001B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A71C 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A718_text
+
+# .text:0x180 | 0x8016A720 | size: 0x4C
+# mAllocator_c::mAllocator_c()
+.fn __ct__12mAllocator_cFv, global
+/* 8016A720 000001C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A724 000001C4  7C 08 02 A6 */	mflr r0
+/* 8016A728 000001C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A72C 000001CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A730 000001D0  7C 7F 1B 78 */	mr r31, r3
+/* 8016A734 000001D4  48 00 00 01 */	bl getInstance__21mAllocatorDummyHeap_cFv
+/* 8016A738 000001D8  7C 64 1B 78 */	mr r4, r3
+/* 8016A73C 000001DC  7F E3 FB 78 */	mr r3, r31
+/* 8016A740 000001E0  38 A0 00 04 */	li r5, 0x4
+/* 8016A744 000001E4  48 00 00 01 */	bl __ct__Q23EGG9AllocatorFPQ23EGG4Heapl
+/* 8016A748 000001E8  3C 80 00 00 */	lis r4, __vt__12mAllocator_c@ha
+/* 8016A74C 000001EC  7F E3 FB 78 */	mr r3, r31
+/* 8016A750 000001F0  38 84 00 00 */	addi r4, r4, __vt__12mAllocator_c@l
+/* 8016A754 000001F4  90 9F 00 10 */	stw r4, 0x10(r31)
+/* 8016A758 000001F8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016A75C 000001FC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A760 00000200  7C 08 03 A6 */	mtlr r0
+/* 8016A764 00000204  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A768 00000208  4E 80 00 20 */	blr
+.endfn __ct__12mAllocator_cFv
+
+# .text:0x1CC | 0x8016A76C | size: 0x4
+.fn gap_03_8016A76C_text, global
+.hidden gap_03_8016A76C_text
+/* 8016A76C 0000020C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A76C_text
+
+# .text:0x1D0 | 0x8016A770 | size: 0x58
+# mAllocator_c::~mAllocator_c()
+.fn __dt__12mAllocator_cFv, global
+/* 8016A770 00000210  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A774 00000214  7C 08 02 A6 */	mflr r0
+/* 8016A778 00000218  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016A77C 0000021C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A780 00000220  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A784 00000224  7C 9F 23 78 */	mr r31, r4
+/* 8016A788 00000228  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8016A78C 0000022C  7C 7E 1B 78 */	mr r30, r3
+/* 8016A790 00000230  41 82 00 1C */	beq .L_8016A7AC
+/* 8016A794 00000234  38 80 00 00 */	li r4, 0x0
+/* 8016A798 00000238  48 00 00 01 */	bl __dt__Q23EGG9AllocatorFv
+/* 8016A79C 0000023C  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8016A7A0 00000240  40 81 00 0C */	ble .L_8016A7AC
+/* 8016A7A4 00000244  7F C3 F3 78 */	mr r3, r30
+/* 8016A7A8 00000248  48 00 00 01 */	bl __dl__FPv
+.L_8016A7AC:
+/* 8016A7AC 0000024C  7F C3 F3 78 */	mr r3, r30
+/* 8016A7B0 00000250  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016A7B4 00000254  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8016A7B8 00000258  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A7BC 0000025C  7C 08 03 A6 */	mtlr r0
+/* 8016A7C0 00000260  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A7C4 00000264  4E 80 00 20 */	blr
+.endfn __dt__12mAllocator_cFv
+
+# .text:0x228 | 0x8016A7C8 | size: 0x8
+.fn gap_03_8016A7C8_text, global
+.hidden gap_03_8016A7C8_text
+/* 8016A7C8 00000268  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A7CC 0000026C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A7C8_text
+
+# .text:0x230 | 0x8016A7D0 | size: 0x50
+# mAllocator_c::attach(EGG::Heap*, int)
+.fn attach__12mAllocator_cFPQ23EGG4Heapi, global
+/* 8016A7D0 00000270  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A7D4 00000274  7C 08 02 A6 */	mflr r0
+/* 8016A7D8 00000278  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8016A7DC 0000027C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A7E0 00000280  7C 80 23 78 */	mr r0, r4
+/* 8016A7E4 00000284  40 82 00 08 */	bne .L_8016A7EC
+/* 8016A7E8 00000288  80 00 00 00 */	lwz r0, sCurrentHeap__Q23EGG4Heap@sda21(r0)
+.L_8016A7EC:
+/* 8016A7EC 0000028C  90 A3 00 18 */	stw r5, 0x18(r3)
+/* 8016A7F0 00000290  7C 64 1B 78 */	mr r4, r3
+/* 8016A7F4 00000294  90 03 00 14 */	stw r0, 0x14(r3)
+/* 8016A7F8 00000298  7C 03 03 78 */	mr r3, r0
+/* 8016A7FC 0000029C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8016A800 000002A0  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8016A804 000002A4  7D 89 03 A6 */	mtctr r12
+/* 8016A808 000002A8  4E 80 04 21 */	bctrl
+/* 8016A80C 000002AC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A810 000002B0  38 60 00 01 */	li r3, 0x1
+/* 8016A814 000002B4  7C 08 03 A6 */	mtlr r0
+/* 8016A818 000002B8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A81C 000002BC  4E 80 00 20 */	blr
+.endfn attach__12mAllocator_cFPQ23EGG4Heapi
+
+# .text:0x280 | 0x8016A820 | size: 0x4
+# mAllocator_c::alloc(unsigned long)
+.fn alloc__12mAllocator_cFUl, global
+/* 8016A820 000002C0  48 00 00 00 */	b alloc__Q23EGG9AllocatorFUl
+.endfn alloc__12mAllocator_cFUl
+
+# .text:0x284 | 0x8016A824 | size: 0xC
+.fn gap_03_8016A824_text, global
+.hidden gap_03_8016A824_text
+/* 8016A824 000002C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A828 000002C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A82C 000002CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A824_text
+
+# .text:0x290 | 0x8016A830 | size: 0x4
+# mAllocator_c::free(void*)
+.fn free__12mAllocator_cFPv, global
+/* 8016A830 000002D0  48 00 00 00 */	b free__Q23EGG9AllocatorFPv
+.endfn free__12mAllocator_cFPv
+
+# .text:0x294 | 0x8016A834 | size: 0xC
+.fn gap_03_8016A834_text, global
+.hidden gap_03_8016A834_text
+/* 8016A834 000002D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A838 000002D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A83C 000002DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A834_text
+
+# .text:0x2A0 | 0x8016A840 | size: 0x38
+# mAllocator_c::init(EGG::Heap*)
+.fn init__12mAllocator_cFPQ23EGG4Heap, global
+/* 8016A840 000002E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A844 000002E4  7C 08 02 A6 */	mflr r0
+/* 8016A848 000002E8  7C 64 1B 78 */	mr r4, r3
+/* 8016A84C 000002EC  38 60 00 38 */	li r3, 0x38
+/* 8016A850 000002F0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A854 000002F4  38 A0 00 04 */	li r5, 0x4
+/* 8016A858 000002F8  48 00 00 01 */	bl __nw__FUlPQ23EGG4Heapi
+/* 8016A85C 000002FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016A860 00000300  41 82 00 08 */	beq .L_8016A868
+/* 8016A864 00000304  48 00 00 01 */	bl __ct__21mAllocatorDummyHeap_cFv
+.L_8016A868:
+/* 8016A868 00000308  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A86C 0000030C  7C 08 03 A6 */	mtlr r0
+/* 8016A870 00000310  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A874 00000314  4E 80 00 20 */	blr
+.endfn init__12mAllocator_cFPQ23EGG4Heap
+
+# .text:0x2D8 | 0x8016A878 | size: 0x8
+.fn gap_03_8016A878_text, global
+.hidden gap_03_8016A878_text
+/* 8016A878 00000318  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A87C 0000031C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A878_text
+
+# .text:0x2E0 | 0x8016A880 | size: 0x3C
+# mHeapAllocator_c::mHeapAllocator_c()
+.fn __ct__16mHeapAllocator_cFv, global
+/* 8016A880 00000320  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A884 00000324  7C 08 02 A6 */	mflr r0
+/* 8016A888 00000328  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A88C 0000032C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A890 00000330  7C 7F 1B 78 */	mr r31, r3
+/* 8016A894 00000334  48 00 00 01 */	bl __ct__12mAllocator_cFv
+/* 8016A898 00000338  3C 80 00 00 */	lis r4, __vt__16mHeapAllocator_c@ha
+/* 8016A89C 0000033C  7F E3 FB 78 */	mr r3, r31
+/* 8016A8A0 00000340  38 84 00 00 */	addi r4, r4, __vt__16mHeapAllocator_c@l
+/* 8016A8A4 00000344  90 9F 00 10 */	stw r4, 0x10(r31)
+/* 8016A8A8 00000348  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016A8AC 0000034C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A8B0 00000350  7C 08 03 A6 */	mtlr r0
+/* 8016A8B4 00000354  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A8B8 00000358  4E 80 00 20 */	blr
+.endfn __ct__16mHeapAllocator_cFv
+
+# .text:0x31C | 0x8016A8BC | size: 0x4
+.fn gap_03_8016A8BC_text, global
+.hidden gap_03_8016A8BC_text
+/* 8016A8BC 0000035C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A8BC_text
+
+# .text:0x320 | 0x8016A8C0 | size: 0x6C
+# mHeapAllocator_c::~mHeapAllocator_c()
+.fn __dt__16mHeapAllocator_cFv, global
+/* 8016A8C0 00000360  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A8C4 00000364  7C 08 02 A6 */	mflr r0
+/* 8016A8C8 00000368  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016A8CC 0000036C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A8D0 00000370  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A8D4 00000374  7C 9F 23 78 */	mr r31, r4
+/* 8016A8D8 00000378  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8016A8DC 0000037C  7C 7E 1B 78 */	mr r30, r3
+/* 8016A8E0 00000380  41 82 00 30 */	beq .L_8016A910
+/* 8016A8E4 00000384  3C 80 00 00 */	lis r4, __vt__16mHeapAllocator_c@ha
+/* 8016A8E8 00000388  38 84 00 00 */	addi r4, r4, __vt__16mHeapAllocator_c@l
+/* 8016A8EC 0000038C  90 83 00 10 */	stw r4, 0x10(r3)
+/* 8016A8F0 00000390  48 00 00 01 */	bl destroyHeap__16mHeapAllocator_cFv
+/* 8016A8F4 00000394  7F C3 F3 78 */	mr r3, r30
+/* 8016A8F8 00000398  38 80 00 00 */	li r4, 0x0
+/* 8016A8FC 0000039C  48 00 00 01 */	bl __dt__12mAllocator_cFv
+/* 8016A900 000003A0  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8016A904 000003A4  40 81 00 0C */	ble .L_8016A910
+/* 8016A908 000003A8  7F C3 F3 78 */	mr r3, r30
+/* 8016A90C 000003AC  48 00 00 01 */	bl __dl__FPv
+.L_8016A910:
+/* 8016A910 000003B0  7F C3 F3 78 */	mr r3, r30
+/* 8016A914 000003B4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016A918 000003B8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8016A91C 000003BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016A920 000003C0  7C 08 03 A6 */	mtlr r0
+/* 8016A924 000003C4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016A928 000003C8  4E 80 00 20 */	blr
+.endfn __dt__16mHeapAllocator_cFv
+
+# .text:0x38C | 0x8016A92C | size: 0x4
+.fn gap_03_8016A92C_text, global
+.hidden gap_03_8016A92C_text
+/* 8016A92C 000003CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A92C_text
+
+# .text:0x390 | 0x8016A930 | size: 0x84
+# mHeapAllocator_c::createFrmHeap(unsigned long, EGG::Heap*, const char*, unsigned long, mHeap::AllocOptBit_t)
+.fn createFrmHeap__16mHeapAllocator_cFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t, global
+/* 8016A930 000003D0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8016A934 000003D4  7C 08 02 A6 */	mflr r0
+/* 8016A938 000003D8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8016A93C 000003DC  39 61 00 20 */	addi r11, r1, 0x20
+/* 8016A940 000003E0  48 00 00 01 */	bl _savegpr_26
+/* 8016A944 000003E4  7C 7A 1B 78 */	mr r26, r3
+/* 8016A948 000003E8  7C 9B 23 78 */	mr r27, r4
+/* 8016A94C 000003EC  7C BC 2B 78 */	mr r28, r5
+/* 8016A950 000003F0  7C DD 33 78 */	mr r29, r6
+/* 8016A954 000003F4  7C FE 3B 78 */	mr r30, r7
+/* 8016A958 000003F8  7D 1F 43 78 */	mr r31, r8
+/* 8016A95C 000003FC  48 00 00 01 */	bl destroyHeap__16mHeapAllocator_cFv
+/* 8016A960 00000400  7F 63 DB 78 */	mr r3, r27
+/* 8016A964 00000404  7F 84 E3 78 */	mr r4, r28
+/* 8016A968 00000408  7F A5 EB 78 */	mr r5, r29
+/* 8016A96C 0000040C  7F C6 F3 78 */	mr r6, r30
+/* 8016A970 00000410  7F E7 FB 78 */	mr r7, r31
+/* 8016A974 00000414  48 00 00 01 */	bl createFrmHeap__5mHeapFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 8016A978 00000418  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016A97C 0000041C  7C 64 1B 78 */	mr r4, r3
+/* 8016A980 00000420  40 82 00 0C */	bne .L_8016A98C
+/* 8016A984 00000424  38 60 00 00 */	li r3, 0x0
+/* 8016A988 00000428  48 00 00 14 */	b .L_8016A99C
+.L_8016A98C:
+/* 8016A98C 0000042C  7F 43 D3 78 */	mr r3, r26
+/* 8016A990 00000430  7F C5 F3 78 */	mr r5, r30
+/* 8016A994 00000434  48 00 00 01 */	bl attach__12mAllocator_cFPQ23EGG4Heapi
+/* 8016A998 00000438  38 60 00 01 */	li r3, 0x1
+.L_8016A99C:
+/* 8016A99C 0000043C  39 61 00 20 */	addi r11, r1, 0x20
+/* 8016A9A0 00000440  48 00 00 01 */	bl _restgpr_26
+/* 8016A9A4 00000444  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8016A9A8 00000448  7C 08 03 A6 */	mtlr r0
+/* 8016A9AC 0000044C  38 21 00 20 */	addi r1, r1, 0x20
+/* 8016A9B0 00000450  4E 80 00 20 */	blr
+.endfn createFrmHeap__16mHeapAllocator_cFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+
+# .text:0x414 | 0x8016A9B4 | size: 0xC
+.fn gap_03_8016A9B4_text, global
+.hidden gap_03_8016A9B4_text
+/* 8016A9B4 00000454  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A9B8 00000458  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016A9BC 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016A9B4_text
+
+# .text:0x420 | 0x8016A9C0 | size: 0x5C
+# mHeapAllocator_c::destroyHeap()
+.fn destroyHeap__16mHeapAllocator_cFv, global
+/* 8016A9C0 00000460  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016A9C4 00000464  7C 08 02 A6 */	mflr r0
+/* 8016A9C8 00000468  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016A9CC 0000046C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016A9D0 00000470  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8016A9D4 00000474  7C 7E 1B 78 */	mr r30, r3
+/* 8016A9D8 00000478  48 00 00 01 */	bl getInstance__21mAllocatorDummyHeap_cFv
+/* 8016A9DC 0000047C  80 1E 00 14 */	lwz r0, 0x14(r30)
+/* 8016A9E0 00000480  7C 7F 1B 78 */	mr r31, r3
+/* 8016A9E4 00000484  7C 00 18 40 */	cmplw r0, r3
+/* 8016A9E8 00000488  41 82 00 1C */	beq .L_8016AA04
+/* 8016A9EC 0000048C  7C 03 03 78 */	mr r3, r0
+/* 8016A9F0 00000490  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8016A9F4 00000494  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 8016A9F8 00000498  7D 89 03 A6 */	mtctr r12
+/* 8016A9FC 0000049C  4E 80 04 21 */	bctrl
+/* 8016AA00 000004A0  93 FE 00 14 */	stw r31, 0x14(r30)
+.L_8016AA04:
+/* 8016AA04 000004A4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016AA08 000004A8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016AA0C 000004AC  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8016AA10 000004B0  7C 08 03 A6 */	mtlr r0
+/* 8016AA14 000004B4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016AA18 000004B8  4E 80 00 20 */	blr
+.endfn destroyHeap__16mHeapAllocator_cFv
+
+# .text:0x47C | 0x8016AA1C | size: 0x4
+.fn gap_03_8016AA1C_text, global
+.hidden gap_03_8016AA1C_text
+/* 8016AA1C 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016AA1C_text
+
+# .text:0x480 | 0x8016AA20 | size: 0x74
+# mHeapAllocator_c::adjustFrmHeap()
+.fn adjustFrmHeap__16mHeapAllocator_cFv, global
+/* 8016AA20 000004C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016AA24 000004C4  7C 08 02 A6 */	mflr r0
+/* 8016AA28 000004C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016AA2C 000004CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016AA30 000004D0  7C 7F 1B 78 */	mr r31, r3
+/* 8016AA34 000004D4  48 00 00 01 */	bl getInstance__21mAllocatorDummyHeap_cFv
+/* 8016AA38 000004D8  83 FF 00 14 */	lwz r31, 0x14(r31)
+/* 8016AA3C 000004DC  7C 1F 18 40 */	cmplw r31, r3
+/* 8016AA40 000004E0  40 82 00 0C */	bne .L_8016AA4C
+/* 8016AA44 000004E4  38 60 00 00 */	li r3, 0x0
+/* 8016AA48 000004E8  48 00 00 38 */	b .L_8016AA80
+.L_8016AA4C:
+/* 8016AA4C 000004EC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8016AA50 000004F0  41 82 00 24 */	beq .L_8016AA74
+/* 8016AA54 000004F4  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 8016AA58 000004F8  7F E3 FB 78 */	mr r3, r31
+/* 8016AA5C 000004FC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8016AA60 00000500  7D 89 03 A6 */	mtctr r12
+/* 8016AA64 00000504  4E 80 04 21 */	bctrl
+/* 8016AA68 00000508  2C 03 00 02 */	cmpwi r3, 0x2
+/* 8016AA6C 0000050C  40 82 00 08 */	bne .L_8016AA74
+/* 8016AA70 00000510  48 00 00 08 */	b .L_8016AA78
+.L_8016AA74:
+/* 8016AA74 00000514  3B E0 00 00 */	li r31, 0x0
+.L_8016AA78:
+/* 8016AA78 00000518  7F E3 FB 78 */	mr r3, r31
+/* 8016AA7C 0000051C  48 00 00 01 */	bl adjustFrmHeap__5mHeapFPQ23EGG7FrmHeap
+.L_8016AA80:
+/* 8016AA80 00000520  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016AA84 00000524  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016AA88 00000528  7C 08 03 A6 */	mtlr r0
+/* 8016AA8C 0000052C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016AA90 00000530  4E 80 00 20 */	blr
+.endfn adjustFrmHeap__16mHeapAllocator_cFv
+
+# .text:0x4F4 | 0x8016AA94 | size: 0xC
+.fn gap_03_8016AA94_text, global
+.hidden gap_03_8016AA94_text
+/* 8016AA94 00000534  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016AA98 00000538  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016AA9C 0000053C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016AA94_text
+
+# .text:0x500 | 0x8016AAA0 | size: 0x4C
+# mHeapAllocator_c::createFrmHeapToCurrent(unsigned long, EGG::Heap*, const char*, unsigned long, mHeap::AllocOptBit_t)
+.fn createFrmHeapToCurrent__16mHeapAllocator_cFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t, global
+/* 8016AAA0 00000540  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016AAA4 00000544  7C 08 02 A6 */	mflr r0
+/* 8016AAA8 00000548  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016AAAC 0000054C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016AAB0 00000550  7C 7F 1B 78 */	mr r31, r3
+/* 8016AAB4 00000554  48 00 00 01 */	bl createFrmHeap__16mHeapAllocator_cFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+/* 8016AAB8 00000558  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016AABC 0000055C  40 82 00 0C */	bne .L_8016AAC8
+/* 8016AAC0 00000560  38 60 00 00 */	li r3, 0x0
+/* 8016AAC4 00000564  48 00 00 14 */	b .L_8016AAD8
+.L_8016AAC8:
+/* 8016AAC8 00000568  48 00 00 01 */	bl saveCurrentHeap__5mHeapFv
+/* 8016AACC 0000056C  80 7F 00 14 */	lwz r3, 0x14(r31)
+/* 8016AAD0 00000570  48 00 00 01 */	bl setCurrentHeap__5mHeapFPQ23EGG4Heap
+/* 8016AAD4 00000574  38 60 00 01 */	li r3, 0x1
+.L_8016AAD8:
+/* 8016AAD8 00000578  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016AADC 0000057C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016AAE0 00000580  7C 08 03 A6 */	mtlr r0
+/* 8016AAE4 00000584  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016AAE8 00000588  4E 80 00 20 */	blr
+.endfn createFrmHeapToCurrent__16mHeapAllocator_cFUlPQ23EGG4HeapPCcUlQ25mHeap13AllocOptBit_t
+
+# .text:0x54C | 0x8016AAEC | size: 0x4
+.fn gap_03_8016AAEC_text, global
+.hidden gap_03_8016AAEC_text
+/* 8016AAEC 0000058C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016AAEC_text
+
+# .text:0x550 | 0x8016AAF0 | size: 0x64
+# mHeapAllocator_c::adjustFrmHeapRestoreCurrent()
+.fn adjustFrmHeapRestoreCurrent__16mHeapAllocator_cFv, global
+/* 8016AAF0 00000590  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016AAF4 00000594  7C 08 02 A6 */	mflr r0
+/* 8016AAF8 00000598  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016AAFC 0000059C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016AB00 000005A0  7C 7F 1B 78 */	mr r31, r3
+/* 8016AB04 000005A4  48 00 00 01 */	bl restoreCurrentHeap__5mHeapFv
+/* 8016AB08 000005A8  83 FF 00 14 */	lwz r31, 0x14(r31)
+/* 8016AB0C 000005AC  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8016AB10 000005B0  41 82 00 24 */	beq .L_8016AB34
+/* 8016AB14 000005B4  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 8016AB18 000005B8  7F E3 FB 78 */	mr r3, r31
+/* 8016AB1C 000005BC  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8016AB20 000005C0  7D 89 03 A6 */	mtctr r12
+/* 8016AB24 000005C4  4E 80 04 21 */	bctrl
+/* 8016AB28 000005C8  2C 03 00 02 */	cmpwi r3, 0x2
+/* 8016AB2C 000005CC  40 82 00 08 */	bne .L_8016AB34
+/* 8016AB30 000005D0  48 00 00 08 */	b .L_8016AB38
+.L_8016AB34:
+/* 8016AB34 000005D4  3B E0 00 00 */	li r31, 0x0
+.L_8016AB38:
+/* 8016AB38 000005D8  7F E3 FB 78 */	mr r3, r31
+/* 8016AB3C 000005DC  48 00 00 01 */	bl adjustFrmHeap__5mHeapFPQ23EGG7FrmHeap
+/* 8016AB40 000005E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016AB44 000005E4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016AB48 000005E8  7C 08 03 A6 */	mtlr r0
+/* 8016AB4C 000005EC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016AB50 000005F0  4E 80 00 20 */	blr
+.endfn adjustFrmHeapRestoreCurrent__16mHeapAllocator_cFv
+
+# .text:0x5B4 | 0x8016AB54 | size: 0xC
+.fn gap_03_8016AB54_text, global
+.hidden gap_03_8016AB54_text
+/* 8016AB54 000005F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016AB58 000005F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016AB5C 000005FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016AB54_text
+
+# 0x803299F0..0x80329A48 | size: 0x58
+.data
+.balign 8
+
+# .data:0x0 | 0x803299F0 | size: 0x14
+# mHeapAllocator_c::__vtable
+.obj __vt__16mHeapAllocator_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__16mHeapAllocator_cFv
+	.4byte alloc__12mAllocator_cFUl
+	.4byte free__12mAllocator_cFPv
+.endobj __vt__16mHeapAllocator_c
+
+# .data:0x14 | 0x80329A04 | size: 0x14
+# mAllocator_c::__vtable
+.obj __vt__12mAllocator_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__12mAllocator_cFv
+	.4byte alloc__12mAllocator_cFUl
+	.4byte free__12mAllocator_cFPv
+.endobj __vt__12mAllocator_c
+
+# .data:0x28 | 0x80329A18 | size: 0x30
+# mAllocatorDummyHeap_c::__vtable
+.obj __vt__21mAllocatorDummyHeap_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__21mAllocatorDummyHeap_cFv
+	.4byte getHeapKind__21mAllocatorDummyHeap_cCFv
+	.4byte initAllocator__21mAllocatorDummyHeap_cFPQ23EGG9Allocatorl
+	.4byte alloc__21mAllocatorDummyHeap_cFUll
+	.4byte free__21mAllocatorDummyHeap_cFPv
+	.4byte destroy__21mAllocatorDummyHeap_cFv
+	.4byte resizeForMBlock__21mAllocatorDummyHeap_cFPvUl
+	.4byte getTotalFreeSize__21mAllocatorDummyHeap_cFv
+	.4byte getAllocatableSize__21mAllocatorDummyHeap_cFl
+	.4byte adjust__21mAllocatorDummyHeap_cFv
+.endobj __vt__21mAllocatorDummyHeap_c
+
+# 0x8042A6C8..0x8042A6D0 | size: 0x8
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A6C8 | size: 0x4
+# mAllocatorDummyHeap_c::m_instance
+.obj m_instance__21mAllocatorDummyHeap_c, global
+	.skip 0x4
+.endobj m_instance__21mAllocatorDummyHeap_c
+
+# .sbss:0x4 | 0x8042A6CC | size: 0x4
+.obj gap_10_8042A6CC_sbss, global
+.hidden gap_10_8042A6CC_sbss
+	.skip 0x4
+.endobj gap_10_8042A6CC_sbss
+
+# 0x8042DFB0..0x8042DFB8 | size: 0x8
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042DFB0 | size: 0x8
+# mAllocatorDummyHeap_c::initAllocator(EGG::Allocator*, long)::sAllocatorFunc
+.obj "@LOCAL@initAllocator__21mAllocatorDummyHeap_cFPQ23EGG9Allocatorl@sAllocatorFunc", local
+	.4byte AllocatorAllocForDummyHeap__21mAllocatorDummyHeap_cFP12MEMAllocatorUl
+	.4byte AllocatorFreeForDummyHeap__21mAllocatorDummyHeap_cFP12MEMAllocatorPv
+.endobj "@LOCAL@initAllocator__21mAllocatorDummyHeap_cFPQ23EGG9Allocatorl@sAllocatorFunc"

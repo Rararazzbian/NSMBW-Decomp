@@ -1,0 +1,622 @@
+.include "macros.inc"
+.file "auto_03_8005D7C0_text"
+
+# 0x8005D7C0..0x8005DF00 | size: 0x740
+.text
+.balign 4
+
+# .text:0x0 | 0x8005D7C0 | size: 0x1C
+.fn __arraydtor$72504, global
+/* 8005D7C0 00000040  3C 60 00 00 */	lis r3, sc_ForceList__6dWmLib_80309908@ha
+/* 8005D7C4 00000044  3C 80 00 00 */	lis r4, __dt__Q26dWmLib19ForceInCourseList_tFv@ha
+/* 8005D7C8 00000048  38 63 00 00 */	addi r3, r3, sc_ForceList__6dWmLib_80309908@l
+/* 8005D7CC 0000004C  38 A0 00 24 */	li r5, 0x24
+/* 8005D7D0 00000050  38 84 00 00 */	addi r4, r4, __dt__Q26dWmLib19ForceInCourseList_tFv@l
+/* 8005D7D4 00000054  38 C0 00 01 */	li r6, 0x1
+/* 8005D7D8 00000058  48 00 00 00 */	b __destroy_arr
+.endfn __arraydtor$72504
+
+# .text:0x1C | 0x8005D7DC | size: 0x4
+.fn gap_03_8005D7DC_text, global
+.hidden gap_03_8005D7DC_text
+/* 8005D7DC 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005D7DC_text
+
+# .text:0x20 | 0x8005D7E0 | size: 0x48
+# dAcPy_HIO_Speed_c::dAcPy_HIO_Speed_c()
+.fn __ct__17dAcPy_HIO_Speed_cFv, global
+/* 8005D7E0 00000060  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005D7E4 00000064  7C 08 02 A6 */	mflr r0
+/* 8005D7E8 00000068  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005D7EC 0000006C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005D7F0 00000070  7C 7F 1B 78 */	mr r31, r3
+/* 8005D7F4 00000074  80 80 00 00 */	lwz r4, ms_num_of_instance__17dAcPy_HIO_Speed_c@sda21(r0)
+/* 8005D7F8 00000078  2C 04 00 02 */	cmpwi r4, 0x2
+/* 8005D7FC 0000007C  40 80 00 08 */	bge .L_8005D804
+/* 8005D800 00000080  48 00 00 01 */	bl init__17dAcPy_HIO_Speed_cFi
+.L_8005D804:
+/* 8005D804 00000084  80 80 00 00 */	lwz r4, ms_num_of_instance__17dAcPy_HIO_Speed_c@sda21(r0)
+/* 8005D808 00000088  7F E3 FB 78 */	mr r3, r31
+/* 8005D80C 0000008C  38 04 00 01 */	addi r0, r4, 0x1
+/* 8005D810 00000090  90 00 00 00 */	stw r0, ms_num_of_instance__17dAcPy_HIO_Speed_c@sda21(r0)
+/* 8005D814 00000094  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005D818 00000098  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005D81C 0000009C  7C 08 03 A6 */	mtlr r0
+/* 8005D820 000000A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005D824 000000A4  4E 80 00 20 */	blr
+.endfn __ct__17dAcPy_HIO_Speed_cFv
+
+# .text:0x68 | 0x8005D828 | size: 0x8
+.fn gap_03_8005D828_text, global
+.hidden gap_03_8005D828_text
+/* 8005D828 000000A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005D82C 000000AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005D828_text
+
+# .text:0x70 | 0x8005D830 | size: 0x4C
+# dAcPy_HIO_Speed_c::~dAcPy_HIO_Speed_c()
+.fn __dt__17dAcPy_HIO_Speed_cFv, global
+/* 8005D830 000000B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005D834 000000B4  7C 08 02 A6 */	mflr r0
+/* 8005D838 000000B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005D83C 000000BC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005D840 000000C0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005D844 000000C4  7C 7F 1B 78 */	mr r31, r3
+/* 8005D848 000000C8  41 82 00 1C */	beq .L_8005D864
+/* 8005D84C 000000CC  80 A0 00 00 */	lwz r5, ms_num_of_instance__17dAcPy_HIO_Speed_c@sda21(r0)
+/* 8005D850 000000D0  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8005D854 000000D4  38 05 FF FF */	subi r0, r5, 0x1
+/* 8005D858 000000D8  90 00 00 00 */	stw r0, ms_num_of_instance__17dAcPy_HIO_Speed_c@sda21(r0)
+/* 8005D85C 000000DC  40 81 00 08 */	ble .L_8005D864
+/* 8005D860 000000E0  48 00 00 01 */	bl __dl__FPv
+.L_8005D864:
+/* 8005D864 000000E4  7F E3 FB 78 */	mr r3, r31
+/* 8005D868 000000E8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005D86C 000000EC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005D870 000000F0  7C 08 03 A6 */	mtlr r0
+/* 8005D874 000000F4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005D878 000000F8  4E 80 00 20 */	blr
+.endfn __dt__17dAcPy_HIO_Speed_cFv
+
+# .text:0xBC | 0x8005D87C | size: 0x4
+.fn gap_03_8005D87C_text, global
+.hidden gap_03_8005D87C_text
+/* 8005D87C 000000FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005D87C_text
+
+# .text:0xC0 | 0x8005D880 | size: 0x274
+# dAcPy_HIO_Speed_c::init(int)
+.fn init__17dAcPy_HIO_Speed_cFi, global
+/* 8005D880 00000100  94 21 FF 80 */	stwu r1, -0x80(r1)
+/* 8005D884 00000104  7C 08 02 A6 */	mflr r0
+/* 8005D888 00000108  90 01 00 84 */	stw r0, 0x84(r1)
+/* 8005D88C 0000010C  39 61 00 80 */	addi r11, r1, 0x80
+/* 8005D890 00000110  48 00 00 01 */	bl _savegpr_14
+/* 8005D894 00000114  2C 04 00 02 */	cmpwi r4, 0x2
+/* 8005D898 00000118  40 80 02 44 */	bge .L_8005DADC
+/* 8005D89C 0000011C  1C 04 00 F0 */	mulli r0, r4, 0xf0
+/* 8005D8A0 00000120  3C 80 00 00 */	lis r4, sc_playerSpeedDt__17dAcPy_HIO_Speed_c@ha
+/* 8005D8A4 00000124  38 84 00 00 */	addi r4, r4, sc_playerSpeedDt__17dAcPy_HIO_Speed_c@l
+/* 8005D8A8 00000128  7E 04 02 14 */	add r16, r4, r0
+/* 8005D8AC 0000012C  7C A4 04 2E */	lfsx f5, r4, r0
+/* 8005D8B0 00000130  81 F0 00 74 */	lwz r15, 0x74(r16)
+/* 8005D8B4 00000134  91 E1 00 2C */	stw r15, 0x2c(r1)
+/* 8005D8B8 00000138  81 F0 00 84 */	lwz r15, 0x84(r16)
+/* 8005D8BC 0000013C  80 10 00 6C */	lwz r0, 0x6c(r16)
+/* 8005D8C0 00000140  91 E1 00 08 */	stw r15, 0x8(r1)
+/* 8005D8C4 00000144  81 F0 00 88 */	lwz r15, 0x88(r16)
+/* 8005D8C8 00000148  91 E1 00 0C */	stw r15, 0xc(r1)
+/* 8005D8CC 0000014C  81 F0 00 8C */	lwz r15, 0x8c(r16)
+/* 8005D8D0 00000150  90 03 00 6C */	stw r0, 0x6c(r3)
+/* 8005D8D4 00000154  80 01 00 2C */	lwz r0, 0x2c(r1)
+/* 8005D8D8 00000158  91 E1 00 10 */	stw r15, 0x10(r1)
+/* 8005D8DC 0000015C  81 F0 00 90 */	lwz r15, 0x90(r16)
+/* 8005D8E0 00000160  90 03 00 74 */	stw r0, 0x74(r3)
+/* 8005D8E4 00000164  80 01 00 08 */	lwz r0, 0x8(r1)
+/* 8005D8E8 00000168  91 E1 00 14 */	stw r15, 0x14(r1)
+/* 8005D8EC 0000016C  81 F0 00 94 */	lwz r15, 0x94(r16)
+/* 8005D8F0 00000170  90 03 00 84 */	stw r0, 0x84(r3)
+/* 8005D8F4 00000174  80 01 00 0C */	lwz r0, 0xc(r1)
+/* 8005D8F8 00000178  91 E1 00 18 */	stw r15, 0x18(r1)
+/* 8005D8FC 0000017C  81 F0 00 98 */	lwz r15, 0x98(r16)
+/* 8005D900 00000180  90 03 00 88 */	stw r0, 0x88(r3)
+/* 8005D904 00000184  80 01 00 10 */	lwz r0, 0x10(r1)
+/* 8005D908 00000188  91 E1 00 1C */	stw r15, 0x1c(r1)
+/* 8005D90C 0000018C  81 F0 00 9C */	lwz r15, 0x9c(r16)
+/* 8005D910 00000190  90 03 00 8C */	stw r0, 0x8c(r3)
+/* 8005D914 00000194  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005D918 00000198  91 E1 00 20 */	stw r15, 0x20(r1)
+/* 8005D91C 0000019C  81 F0 00 A0 */	lwz r15, 0xa0(r16)
+/* 8005D920 000001A0  90 03 00 90 */	stw r0, 0x90(r3)
+/* 8005D924 000001A4  80 01 00 18 */	lwz r0, 0x18(r1)
+/* 8005D928 000001A8  91 E1 00 24 */	stw r15, 0x24(r1)
+/* 8005D92C 000001AC  81 F0 00 A4 */	lwz r15, 0xa4(r16)
+/* 8005D930 000001B0  90 03 00 94 */	stw r0, 0x94(r3)
+/* 8005D934 000001B4  80 01 00 1C */	lwz r0, 0x1c(r1)
+/* 8005D938 000001B8  90 03 00 98 */	stw r0, 0x98(r3)
+/* 8005D93C 000001BC  80 01 00 20 */	lwz r0, 0x20(r1)
+/* 8005D940 000001C0  C0 90 00 04 */	lfs f4, 0x4(r16)
+/* 8005D944 000001C4  C0 70 00 08 */	lfs f3, 0x8(r16)
+/* 8005D948 000001C8  82 30 00 0C */	lwz r17, 0xc(r16)
+/* 8005D94C 000001CC  82 50 00 10 */	lwz r18, 0x10(r16)
+/* 8005D950 000001D0  82 70 00 14 */	lwz r19, 0x14(r16)
+/* 8005D954 000001D4  82 90 00 18 */	lwz r20, 0x18(r16)
+/* 8005D958 000001D8  82 B0 00 1C */	lwz r21, 0x1c(r16)
+/* 8005D95C 000001DC  82 D0 00 20 */	lwz r22, 0x20(r16)
+/* 8005D960 000001E0  82 F0 00 24 */	lwz r23, 0x24(r16)
+/* 8005D964 000001E4  83 10 00 28 */	lwz r24, 0x28(r16)
+/* 8005D968 000001E8  83 30 00 2C */	lwz r25, 0x2c(r16)
+/* 8005D96C 000001EC  83 50 00 30 */	lwz r26, 0x30(r16)
+/* 8005D970 000001F0  83 70 00 34 */	lwz r27, 0x34(r16)
+/* 8005D974 000001F4  83 90 00 38 */	lwz r28, 0x38(r16)
+/* 8005D978 000001F8  83 B0 00 3C */	lwz r29, 0x3c(r16)
+/* 8005D97C 000001FC  83 D0 00 40 */	lwz r30, 0x40(r16)
+/* 8005D980 00000200  83 F0 00 44 */	lwz r31, 0x44(r16)
+/* 8005D984 00000204  81 90 00 48 */	lwz r12, 0x48(r16)
+/* 8005D988 00000208  81 70 00 4C */	lwz r11, 0x4c(r16)
+/* 8005D98C 0000020C  81 50 00 50 */	lwz r10, 0x50(r16)
+/* 8005D990 00000210  81 30 00 54 */	lwz r9, 0x54(r16)
+/* 8005D994 00000214  81 10 00 58 */	lwz r8, 0x58(r16)
+/* 8005D998 00000218  80 F0 00 5C */	lwz r7, 0x5c(r16)
+/* 8005D99C 0000021C  80 D0 00 60 */	lwz r6, 0x60(r16)
+/* 8005D9A0 00000220  80 B0 00 64 */	lwz r5, 0x64(r16)
+/* 8005D9A4 00000224  80 90 00 68 */	lwz r4, 0x68(r16)
+/* 8005D9A8 00000228  81 D0 00 70 */	lwz r14, 0x70(r16)
+/* 8005D9AC 0000022C  C0 50 00 78 */	lfs f2, 0x78(r16)
+/* 8005D9B0 00000230  C0 30 00 7C */	lfs f1, 0x7c(r16)
+/* 8005D9B4 00000234  C0 10 00 80 */	lfs f0, 0x80(r16)
+/* 8005D9B8 00000238  90 03 00 9C */	stw r0, 0x9c(r3)
+/* 8005D9BC 0000023C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005D9C0 00000240  90 03 00 A0 */	stw r0, 0xa0(r3)
+/* 8005D9C4 00000244  7D E0 7B 78 */	mr r0, r15
+/* 8005D9C8 00000248  91 E1 00 28 */	stw r15, 0x28(r1)
+/* 8005D9CC 0000024C  D0 A3 00 00 */	stfs f5, 0x0(r3)
+/* 8005D9D0 00000250  D0 83 00 04 */	stfs f4, 0x4(r3)
+/* 8005D9D4 00000254  D0 63 00 08 */	stfs f3, 0x8(r3)
+/* 8005D9D8 00000258  92 23 00 0C */	stw r17, 0xc(r3)
+/* 8005D9DC 0000025C  92 43 00 10 */	stw r18, 0x10(r3)
+/* 8005D9E0 00000260  92 63 00 14 */	stw r19, 0x14(r3)
+/* 8005D9E4 00000264  92 83 00 18 */	stw r20, 0x18(r3)
+/* 8005D9E8 00000268  92 A3 00 1C */	stw r21, 0x1c(r3)
+/* 8005D9EC 0000026C  92 C3 00 20 */	stw r22, 0x20(r3)
+/* 8005D9F0 00000270  92 E3 00 24 */	stw r23, 0x24(r3)
+/* 8005D9F4 00000274  93 03 00 28 */	stw r24, 0x28(r3)
+/* 8005D9F8 00000278  93 23 00 2C */	stw r25, 0x2c(r3)
+/* 8005D9FC 0000027C  93 43 00 30 */	stw r26, 0x30(r3)
+/* 8005DA00 00000280  93 63 00 34 */	stw r27, 0x34(r3)
+/* 8005DA04 00000284  93 83 00 38 */	stw r28, 0x38(r3)
+/* 8005DA08 00000288  93 A3 00 3C */	stw r29, 0x3c(r3)
+/* 8005DA0C 0000028C  93 C3 00 40 */	stw r30, 0x40(r3)
+/* 8005DA10 00000290  93 E3 00 44 */	stw r31, 0x44(r3)
+/* 8005DA14 00000294  91 83 00 48 */	stw r12, 0x48(r3)
+/* 8005DA18 00000298  91 63 00 4C */	stw r11, 0x4c(r3)
+/* 8005DA1C 0000029C  91 43 00 50 */	stw r10, 0x50(r3)
+/* 8005DA20 000002A0  91 23 00 54 */	stw r9, 0x54(r3)
+/* 8005DA24 000002A4  91 03 00 58 */	stw r8, 0x58(r3)
+/* 8005DA28 000002A8  90 E3 00 5C */	stw r7, 0x5c(r3)
+/* 8005DA2C 000002AC  90 C3 00 60 */	stw r6, 0x60(r3)
+/* 8005DA30 000002B0  90 A3 00 64 */	stw r5, 0x64(r3)
+/* 8005DA34 000002B4  90 83 00 68 */	stw r4, 0x68(r3)
+/* 8005DA38 000002B8  91 C3 00 70 */	stw r14, 0x70(r3)
+/* 8005DA3C 000002BC  D0 43 00 78 */	stfs f2, 0x78(r3)
+/* 8005DA40 000002C0  D0 23 00 7C */	stfs f1, 0x7c(r3)
+/* 8005DA44 000002C4  D0 03 00 80 */	stfs f0, 0x80(r3)
+/* 8005DA48 000002C8  90 03 00 A4 */	stw r0, 0xa4(r3)
+/* 8005DA4C 000002CC  82 D0 00 A8 */	lwz r22, 0xa8(r16)
+/* 8005DA50 000002D0  82 B0 00 AC */	lwz r21, 0xac(r16)
+/* 8005DA54 000002D4  82 90 00 B0 */	lwz r20, 0xb0(r16)
+/* 8005DA58 000002D8  82 70 00 B4 */	lwz r19, 0xb4(r16)
+/* 8005DA5C 000002DC  82 50 00 B8 */	lwz r18, 0xb8(r16)
+/* 8005DA60 000002E0  82 30 00 BC */	lwz r17, 0xbc(r16)
+/* 8005DA64 000002E4  81 F0 00 C0 */	lwz r15, 0xc0(r16)
+/* 8005DA68 000002E8  81 D0 00 C4 */	lwz r14, 0xc4(r16)
+/* 8005DA6C 000002EC  81 90 00 C8 */	lwz r12, 0xc8(r16)
+/* 8005DA70 000002F0  81 70 00 CC */	lwz r11, 0xcc(r16)
+/* 8005DA74 000002F4  81 50 00 D0 */	lwz r10, 0xd0(r16)
+/* 8005DA78 000002F8  81 30 00 D4 */	lwz r9, 0xd4(r16)
+/* 8005DA7C 000002FC  81 10 00 D8 */	lwz r8, 0xd8(r16)
+/* 8005DA80 00000300  80 F0 00 DC */	lwz r7, 0xdc(r16)
+/* 8005DA84 00000304  80 D0 00 E0 */	lwz r6, 0xe0(r16)
+/* 8005DA88 00000308  80 B0 00 E4 */	lwz r5, 0xe4(r16)
+/* 8005DA8C 0000030C  80 90 00 E8 */	lwz r4, 0xe8(r16)
+/* 8005DA90 00000310  80 10 00 EC */	lwz r0, 0xec(r16)
+/* 8005DA94 00000314  92 C3 00 A8 */	stw r22, 0xa8(r3)
+/* 8005DA98 00000318  92 A3 00 AC */	stw r21, 0xac(r3)
+/* 8005DA9C 0000031C  92 83 00 B0 */	stw r20, 0xb0(r3)
+/* 8005DAA0 00000320  92 63 00 B4 */	stw r19, 0xb4(r3)
+/* 8005DAA4 00000324  92 43 00 B8 */	stw r18, 0xb8(r3)
+/* 8005DAA8 00000328  92 23 00 BC */	stw r17, 0xbc(r3)
+/* 8005DAAC 0000032C  91 E3 00 C0 */	stw r15, 0xc0(r3)
+/* 8005DAB0 00000330  91 C3 00 C4 */	stw r14, 0xc4(r3)
+/* 8005DAB4 00000334  91 83 00 C8 */	stw r12, 0xc8(r3)
+/* 8005DAB8 00000338  91 63 00 CC */	stw r11, 0xcc(r3)
+/* 8005DABC 0000033C  91 43 00 D0 */	stw r10, 0xd0(r3)
+/* 8005DAC0 00000340  91 23 00 D4 */	stw r9, 0xd4(r3)
+/* 8005DAC4 00000344  91 03 00 D8 */	stw r8, 0xd8(r3)
+/* 8005DAC8 00000348  90 E3 00 DC */	stw r7, 0xdc(r3)
+/* 8005DACC 0000034C  90 C3 00 E0 */	stw r6, 0xe0(r3)
+/* 8005DAD0 00000350  90 A3 00 E4 */	stw r5, 0xe4(r3)
+/* 8005DAD4 00000354  90 83 00 E8 */	stw r4, 0xe8(r3)
+/* 8005DAD8 00000358  90 03 00 EC */	stw r0, 0xec(r3)
+.L_8005DADC:
+/* 8005DADC 0000035C  39 61 00 80 */	addi r11, r1, 0x80
+/* 8005DAE0 00000360  48 00 00 01 */	bl _restgpr_14
+/* 8005DAE4 00000364  80 01 00 84 */	lwz r0, 0x84(r1)
+/* 8005DAE8 00000368  7C 08 03 A6 */	mtlr r0
+/* 8005DAEC 0000036C  38 21 00 80 */	addi r1, r1, 0x80
+/* 8005DAF0 00000370  4E 80 00 20 */	blr
+.endfn init__17dAcPy_HIO_Speed_cFi
+
+# .text:0x334 | 0x8005DAF4 | size: 0xC
+.fn gap_03_8005DAF4_text, global
+.hidden gap_03_8005DAF4_text
+/* 8005DAF4 00000374  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DAF8 00000378  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DAFC 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DAF4_text
+
+# .text:0x340 | 0x8005DB00 | size: 0xDC
+# dPyMdlBase_HIO_c::dPyMdlBase_HIO_c()
+.fn __ct__16dPyMdlBase_HIO_cFv, global
+/* 8005DB00 00000380  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005DB04 00000384  7C 08 02 A6 */	mflr r0
+/* 8005DB08 00000388  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005DB0C 0000038C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005DB10 00000390  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005DB14 00000394  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005DB18 00000398  7C 7D 1B 78 */	mr r29, r3
+/* 8005DB1C 0000039C  38 63 00 28 */	addi r3, r3, 0x28
+/* 8005DB20 000003A0  48 00 00 01 */	bl __ct__16dPyAnmMain_HIO_cFv
+/* 8005DB24 000003A4  3B DD 08 74 */	addi r30, r29, 0x874
+/* 8005DB28 000003A8  3B FD 09 40 */	addi r31, r29, 0x940
+.L_8005DB2C:
+/* 8005DB2C 000003AC  7F C3 F3 78 */	mr r3, r30
+/* 8005DB30 000003B0  48 00 00 01 */	bl __ct__14dPyModel_HIO_cFv
+/* 8005DB34 000003B4  3B DE 00 44 */	addi r30, r30, 0x44
+/* 8005DB38 000003B8  7C 1E F8 40 */	cmplw r30, r31
+/* 8005DB3C 000003BC  41 80 FF F0 */	blt .L_8005DB2C
+/* 8005DB40 000003C0  7F E3 FB 78 */	mr r3, r31
+/* 8005DB44 000003C4  48 00 00 01 */	bl __ct__17dYoshiModel_HIO_cFv
+/* 8005DB48 000003C8  C0 20 00 00 */	lfs f1, "@67884_8042BD2C"@sda21(r0)
+/* 8005DB4C 000003CC  38 80 00 01 */	li r4, 0x1
+/* 8005DB50 000003D0  C0 40 00 00 */	lfs f2, "@67883_8042BD28"@sda21(r0)
+/* 8005DB54 000003D4  38 00 00 FF */	li r0, 0xff
+/* 8005DB58 000003D8  C0 00 00 00 */	lfs f0, "@67885_8042BD30"@sda21(r0)
+/* 8005DB5C 000003DC  38 7D 00 28 */	addi r3, r29, 0x28
+/* 8005DB60 000003E0  98 9D 00 00 */	stb r4, 0x0(r29)
+/* 8005DB64 000003E4  98 9D 00 01 */	stb r4, 0x1(r29)
+/* 8005DB68 000003E8  D0 5D 00 04 */	stfs f2, 0x4(r29)
+/* 8005DB6C 000003EC  D0 3D 00 08 */	stfs f1, 0x8(r29)
+/* 8005DB70 000003F0  D0 3D 00 0C */	stfs f1, 0xc(r29)
+/* 8005DB74 000003F4  D0 3D 00 10 */	stfs f1, 0x10(r29)
+/* 8005DB78 000003F8  D0 1D 00 14 */	stfs f0, 0x14(r29)
+/* 8005DB7C 000003FC  D0 3D 00 18 */	stfs f1, 0x18(r29)
+/* 8005DB80 00000400  D0 3D 00 1C */	stfs f1, 0x1c(r29)
+/* 8005DB84 00000404  D0 3D 00 20 */	stfs f1, 0x20(r29)
+/* 8005DB88 00000408  98 1D 00 24 */	stb r0, 0x24(r29)
+/* 8005DB8C 0000040C  48 00 00 01 */	bl resetParam__16dPyAnmMain_HIO_cFv
+/* 8005DB90 00000410  3B DD 08 74 */	addi r30, r29, 0x874
+/* 8005DB94 00000414  3B E0 00 00 */	li r31, 0x0
+.L_8005DB98:
+/* 8005DB98 00000418  7F C3 F3 78 */	mr r3, r30
+/* 8005DB9C 0000041C  7F E4 FB 78 */	mr r4, r31
+/* 8005DBA0 00000420  48 00 00 01 */	bl resetParam__14dPyModel_HIO_cFi
+/* 8005DBA4 00000424  3B FF 00 01 */	addi r31, r31, 0x1
+/* 8005DBA8 00000428  3B DE 00 44 */	addi r30, r30, 0x44
+/* 8005DBAC 0000042C  2C 1F 00 03 */	cmpwi r31, 0x3
+/* 8005DBB0 00000430  41 80 FF E8 */	blt .L_8005DB98
+/* 8005DBB4 00000434  38 7D 09 40 */	addi r3, r29, 0x940
+/* 8005DBB8 00000438  48 00 00 01 */	bl resetParam__17dYoshiModel_HIO_cFv
+/* 8005DBBC 0000043C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005DBC0 00000440  7F A3 EB 78 */	mr r3, r29
+/* 8005DBC4 00000444  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005DBC8 00000448  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005DBCC 0000044C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005DBD0 00000450  7C 08 03 A6 */	mtlr r0
+/* 8005DBD4 00000454  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005DBD8 00000458  4E 80 00 20 */	blr
+.endfn __ct__16dPyMdlBase_HIO_cFv
+
+# .text:0x41C | 0x8005DBDC | size: 0x4
+.fn gap_03_8005DBDC_text, global
+.hidden gap_03_8005DBDC_text
+/* 8005DBDC 0000045C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DBDC_text
+
+# .text:0x420 | 0x8005DBE0 | size: 0x40
+# dPyMdlBase_HIO_c::~dPyMdlBase_HIO_c()
+.fn __dt__16dPyMdlBase_HIO_cFv, global
+/* 8005DBE0 00000460  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005DBE4 00000464  7C 08 02 A6 */	mflr r0
+/* 8005DBE8 00000468  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005DBEC 0000046C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005DBF0 00000470  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005DBF4 00000474  7C 7F 1B 78 */	mr r31, r3
+/* 8005DBF8 00000478  41 82 00 10 */	beq .L_8005DC08
+/* 8005DBFC 0000047C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8005DC00 00000480  40 81 00 08 */	ble .L_8005DC08
+/* 8005DC04 00000484  48 00 00 01 */	bl __dl__FPv
+.L_8005DC08:
+/* 8005DC08 00000488  7F E3 FB 78 */	mr r3, r31
+/* 8005DC0C 0000048C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005DC10 00000490  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005DC14 00000494  7C 08 03 A6 */	mtlr r0
+/* 8005DC18 00000498  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005DC1C 0000049C  4E 80 00 20 */	blr
+.endfn __dt__16dPyMdlBase_HIO_cFv
+
+# .text:0x460 | 0x8005DC20 | size: 0x14
+# dPyMdlBase_HIO_c::changeHioType(unsigned char)
+.fn changeHioType__16dPyMdlBase_HIO_cFUc, global
+/* 8005DC20 000004A0  28 04 00 03 */	cmplwi r4, 0x3
+/* 8005DC24 000004A4  41 80 00 08 */	blt .L_8005DC2C
+/* 8005DC28 000004A8  38 80 00 02 */	li r4, 0x2
+.L_8005DC2C:
+/* 8005DC2C 000004AC  7C 83 23 78 */	mr r3, r4
+/* 8005DC30 000004B0  4E 80 00 20 */	blr
+.endfn changeHioType__16dPyMdlBase_HIO_cFUc
+
+# .text:0x474 | 0x8005DC34 | size: 0xC
+.fn gap_03_8005DC34_text, global
+.hidden gap_03_8005DC34_text
+/* 8005DC34 000004B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DC38 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DC3C 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DC34_text
+
+# .text:0x480 | 0x8005DC40 | size: 0x3C
+# dPyMdlBase_HIO_c::getValue(dPyModelData_s, unsigned char)
+.fn getValue__16dPyMdlBase_HIO_cF14dPyModelData_sUc, global
+/* 8005DC40 000004C0  2C 05 00 03 */	cmpwi r5, 0x3
+/* 8005DC44 000004C4  41 82 00 18 */	beq .L_8005DC5C
+/* 8005DC48 000004C8  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8005DC4C 000004CC  41 82 00 18 */	beq .L_8005DC64
+/* 8005DC50 000004D0  2C 05 00 05 */	cmpwi r5, 0x5
+/* 8005DC54 000004D4  41 82 00 18 */	beq .L_8005DC6C
+/* 8005DC58 000004D8  48 00 00 1C */	b .L_8005DC74
+.L_8005DC5C:
+/* 8005DC5C 000004DC  C0 24 00 08 */	lfs f1, 0x8(r4)
+/* 8005DC60 000004E0  4E 80 00 20 */	blr
+.L_8005DC64:
+/* 8005DC64 000004E4  C0 24 00 04 */	lfs f1, 0x4(r4)
+/* 8005DC68 000004E8  4E 80 00 20 */	blr
+.L_8005DC6C:
+/* 8005DC6C 000004EC  C0 24 00 0C */	lfs f1, 0xc(r4)
+/* 8005DC70 000004F0  4E 80 00 20 */	blr
+.L_8005DC74:
+/* 8005DC74 000004F4  C0 24 00 00 */	lfs f1, 0x0(r4)
+/* 8005DC78 000004F8  4E 80 00 20 */	blr
+.endfn getValue__16dPyMdlBase_HIO_cF14dPyModelData_sUc
+
+# .text:0x4BC | 0x8005DC7C | size: 0x4
+.fn gap_03_8005DC7C_text, global
+.hidden gap_03_8005DC7C_text
+/* 8005DC7C 000004FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DC7C_text
+
+# .text:0x4C0 | 0x8005DC80 | size: 0x18
+# dPyAnm_HIO_c::dPyAnm_HIO_c()
+.fn __ct__12dPyAnm_HIO_cFv, global
+/* 8005DC80 00000500  C0 00 00 00 */	lfs f0, "@67899_8042BD34"@sda21(r0)
+/* 8005DC84 00000504  38 00 00 00 */	li r0, 0x0
+/* 8005DC88 00000508  98 03 00 00 */	stb r0, 0x0(r3)
+/* 8005DC8C 0000050C  D0 03 00 04 */	stfs f0, 0x4(r3)
+/* 8005DC90 00000510  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 8005DC94 00000514  4E 80 00 20 */	blr
+.endfn __ct__12dPyAnm_HIO_cFv
+
+# .text:0x4D8 | 0x8005DC98 | size: 0x8
+.fn gap_03_8005DC98_text, global
+.hidden gap_03_8005DC98_text
+/* 8005DC98 00000518  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DC9C 0000051C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DC98_text
+
+# .text:0x4E0 | 0x8005DCA0 | size: 0x28
+# dPyAnm_HIO_c::resetParam(int)
+.fn resetParam__12dPyAnm_HIO_cFi, global
+/* 8005DCA0 00000520  1C 04 00 24 */	mulli r0, r4, 0x24
+/* 8005DCA4 00000524  3C A0 00 00 */	lis r5, scPyAnmData__12dPyMdlBase_c@ha
+/* 8005DCA8 00000528  98 83 00 00 */	stb r4, 0x0(r3)
+/* 8005DCAC 0000052C  38 A5 00 00 */	addi r5, r5, scPyAnmData__12dPyMdlBase_c@l
+/* 8005DCB0 00000530  7C 85 02 14 */	add r4, r5, r0
+/* 8005DCB4 00000534  C0 24 00 14 */	lfs f1, 0x14(r4)
+/* 8005DCB8 00000538  C0 04 00 18 */	lfs f0, 0x18(r4)
+/* 8005DCBC 0000053C  D0 23 00 04 */	stfs f1, 0x4(r3)
+/* 8005DCC0 00000540  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 8005DCC4 00000544  4E 80 00 20 */	blr
+.endfn resetParam__12dPyAnm_HIO_cFi
+
+# .text:0x508 | 0x8005DCC8 | size: 0x8
+.fn gap_03_8005DCC8_text, global
+.hidden gap_03_8005DCC8_text
+/* 8005DCC8 00000548  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DCCC 0000054C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DCC8_text
+
+# .text:0x510 | 0x8005DCD0 | size: 0x60
+# dPyAnmMain_HIO_c::dPyAnmMain_HIO_c()
+.fn __ct__16dPyAnmMain_HIO_cFv, global
+/* 8005DCD0 00000550  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005DCD4 00000554  7C 08 02 A6 */	mflr r0
+/* 8005DCD8 00000558  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005DCDC 0000055C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005DCE0 00000560  3B E3 08 4C */	addi r31, r3, 0x84c
+/* 8005DCE4 00000564  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005DCE8 00000568  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005DCEC 0000056C  7C 7D 1B 78 */	mr r29, r3
+/* 8005DCF0 00000570  7F BE EB 78 */	mr r30, r29
+.L_8005DCF4:
+/* 8005DCF4 00000574  7F C3 F3 78 */	mr r3, r30
+/* 8005DCF8 00000578  48 00 00 01 */	bl __ct__12dPyAnm_HIO_cFv
+/* 8005DCFC 0000057C  3B DE 00 0C */	addi r30, r30, 0xc
+/* 8005DD00 00000580  7C 1E F8 40 */	cmplw r30, r31
+/* 8005DD04 00000584  41 80 FF F0 */	blt .L_8005DCF4
+/* 8005DD08 00000588  7F A3 EB 78 */	mr r3, r29
+/* 8005DD0C 0000058C  48 00 00 01 */	bl resetParam__16dPyAnmMain_HIO_cFv
+/* 8005DD10 00000590  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005DD14 00000594  7F A3 EB 78 */	mr r3, r29
+/* 8005DD18 00000598  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005DD1C 0000059C  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005DD20 000005A0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005DD24 000005A4  7C 08 03 A6 */	mtlr r0
+/* 8005DD28 000005A8  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005DD2C 000005AC  4E 80 00 20 */	blr
+.endfn __ct__16dPyAnmMain_HIO_cFv
+
+# .text:0x570 | 0x8005DD30 | size: 0x50
+# dPyAnmMain_HIO_c::resetParam()
+.fn resetParam__16dPyAnmMain_HIO_cFv, global
+/* 8005DD30 000005B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005DD34 000005B4  7C 08 02 A6 */	mflr r0
+/* 8005DD38 000005B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005DD3C 000005BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005DD40 000005C0  7C 7F 1B 78 */	mr r31, r3
+/* 8005DD44 000005C4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8005DD48 000005C8  3B C0 00 00 */	li r30, 0x0
+.L_8005DD4C:
+/* 8005DD4C 000005CC  7F E3 FB 78 */	mr r3, r31
+/* 8005DD50 000005D0  7F C4 F3 78 */	mr r4, r30
+/* 8005DD54 000005D4  48 00 00 01 */	bl resetParam__12dPyAnm_HIO_cFi
+/* 8005DD58 000005D8  3B DE 00 01 */	addi r30, r30, 0x1
+/* 8005DD5C 000005DC  3B FF 00 0C */	addi r31, r31, 0xc
+/* 8005DD60 000005E0  2C 1E 00 B1 */	cmpwi r30, 0xb1
+/* 8005DD64 000005E4  41 80 FF E8 */	blt .L_8005DD4C
+/* 8005DD68 000005E8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005DD6C 000005EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005DD70 000005F0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8005DD74 000005F4  7C 08 03 A6 */	mtlr r0
+/* 8005DD78 000005F8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005DD7C 000005FC  4E 80 00 20 */	blr
+.endfn resetParam__16dPyAnmMain_HIO_cFv
+
+# .text:0x5C0 | 0x8005DD80 | size: 0x34
+# dPyModel_HIO_c::dPyModel_HIO_c()
+.fn __ct__14dPyModel_HIO_cFv, global
+/* 8005DD80 00000600  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005DD84 00000604  7C 08 02 A6 */	mflr r0
+/* 8005DD88 00000608  38 80 00 00 */	li r4, 0x0
+/* 8005DD8C 0000060C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005DD90 00000610  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005DD94 00000614  7C 7F 1B 78 */	mr r31, r3
+/* 8005DD98 00000618  48 00 00 01 */	bl resetParam__14dPyModel_HIO_cFi
+/* 8005DD9C 0000061C  7F E3 FB 78 */	mr r3, r31
+/* 8005DDA0 00000620  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005DDA4 00000624  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005DDA8 00000628  7C 08 03 A6 */	mtlr r0
+/* 8005DDAC 0000062C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005DDB0 00000630  4E 80 00 20 */	blr
+.endfn __ct__14dPyModel_HIO_cFv
+
+# .text:0x5F4 | 0x8005DDB4 | size: 0xC
+.fn gap_03_8005DDB4_text, global
+.hidden gap_03_8005DDB4_text
+/* 8005DDB4 00000634  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DDB8 00000638  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DDBC 0000063C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DDB4_text
+
+# .text:0x600 | 0x8005DDC0 | size: 0xD4
+# dPyModel_HIO_c::resetParam(int)
+.fn resetParam__14dPyModel_HIO_cFi, global
+/* 8005DDC0 00000640  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 8005DDC4 00000644  DB E1 00 20 */	stfd f31, 0x20(r1)
+/* 8005DDC8 00000648  F3 E1 00 28 */	psq_st f31, 0x28(r1), 0, qr0
+/* 8005DDCC 0000064C  DB C1 00 10 */	stfd f30, 0x10(r1)
+/* 8005DDD0 00000650  F3 C1 00 18 */	psq_st f30, 0x18(r1), 0, qr0
+/* 8005DDD4 00000654  3D 00 00 00 */	lis r8, sc_player_mame__17dAcPy_HIO_Speed_c@ha
+/* 8005DDD8 00000658  54 87 20 36 */	slwi r7, r4, 4
+/* 8005DDDC 0000065C  39 08 00 00 */	addi r8, r8, sc_player_mame__17dAcPy_HIO_Speed_c@l
+/* 8005DDE0 00000660  54 85 28 34 */	slwi r5, r4, 5
+/* 8005DDE4 00000664  38 08 03 48 */	addi r0, r8, 0x348
+/* 8005DDE8 00000668  90 83 00 00 */	stw r4, 0x0(r3)
+/* 8005DDEC 0000066C  7D 20 3A 14 */	add r9, r0, r7
+/* 8005DDF0 00000670  38 C8 02 B8 */	addi r6, r8, 0x2b8
+/* 8005DDF4 00000674  38 08 02 E8 */	addi r0, r8, 0x2e8
+/* 8005DDF8 00000678  7F C6 3C 2E */	lfsx f30, r6, r7
+/* 8005DDFC 0000067C  7C E5 04 6E */	lfsux f7, r5, r0
+/* 8005DE00 00000680  7C 86 3A 14 */	add r4, r6, r7
+/* 8005DE04 00000684  C3 E4 00 04 */	lfs f31, 0x4(r4)
+/* 8005DE08 00000688  C1 A4 00 08 */	lfs f13, 0x8(r4)
+/* 8005DE0C 0000068C  C1 84 00 0C */	lfs f12, 0xc(r4)
+/* 8005DE10 00000690  C1 69 00 00 */	lfs f11, 0x0(r9)
+/* 8005DE14 00000694  C1 49 00 04 */	lfs f10, 0x4(r9)
+/* 8005DE18 00000698  C1 29 00 08 */	lfs f9, 0x8(r9)
+/* 8005DE1C 0000069C  C1 09 00 0C */	lfs f8, 0xc(r9)
+/* 8005DE20 000006A0  C0 C5 00 04 */	lfs f6, 0x4(r5)
+/* 8005DE24 000006A4  C0 A5 00 08 */	lfs f5, 0x8(r5)
+/* 8005DE28 000006A8  C0 85 00 0C */	lfs f4, 0xc(r5)
+/* 8005DE2C 000006AC  C0 65 00 10 */	lfs f3, 0x10(r5)
+/* 8005DE30 000006B0  C0 45 00 14 */	lfs f2, 0x14(r5)
+/* 8005DE34 000006B4  C0 25 00 18 */	lfs f1, 0x18(r5)
+/* 8005DE38 000006B8  C0 05 00 1C */	lfs f0, 0x1c(r5)
+/* 8005DE3C 000006BC  D3 C3 00 04 */	stfs f30, 0x4(r3)
+/* 8005DE40 000006C0  D3 E3 00 08 */	stfs f31, 0x8(r3)
+/* 8005DE44 000006C4  D1 A3 00 0C */	stfs f13, 0xc(r3)
+/* 8005DE48 000006C8  D1 83 00 10 */	stfs f12, 0x10(r3)
+/* 8005DE4C 000006CC  D1 63 00 34 */	stfs f11, 0x34(r3)
+/* 8005DE50 000006D0  D1 43 00 38 */	stfs f10, 0x38(r3)
+/* 8005DE54 000006D4  D1 23 00 3C */	stfs f9, 0x3c(r3)
+/* 8005DE58 000006D8  D1 03 00 40 */	stfs f8, 0x40(r3)
+/* 8005DE5C 000006DC  D0 E3 00 14 */	stfs f7, 0x14(r3)
+/* 8005DE60 000006E0  D0 C3 00 18 */	stfs f6, 0x18(r3)
+/* 8005DE64 000006E4  D0 A3 00 1C */	stfs f5, 0x1c(r3)
+/* 8005DE68 000006E8  D0 83 00 20 */	stfs f4, 0x20(r3)
+/* 8005DE6C 000006EC  D0 63 00 24 */	stfs f3, 0x24(r3)
+/* 8005DE70 000006F0  D0 43 00 28 */	stfs f2, 0x28(r3)
+/* 8005DE74 000006F4  D0 23 00 2C */	stfs f1, 0x2c(r3)
+/* 8005DE78 000006F8  D0 03 00 30 */	stfs f0, 0x30(r3)
+/* 8005DE7C 000006FC  E3 E1 00 28 */	psq_l f31, 0x28(r1), 0, qr0
+/* 8005DE80 00000700  CB E1 00 20 */	lfd f31, 0x20(r1)
+/* 8005DE84 00000704  E3 C1 00 18 */	psq_l f30, 0x18(r1), 0, qr0
+/* 8005DE88 00000708  CB C1 00 10 */	lfd f30, 0x10(r1)
+/* 8005DE8C 0000070C  38 21 00 30 */	addi r1, r1, 0x30
+/* 8005DE90 00000710  4E 80 00 20 */	blr
+.endfn resetParam__14dPyModel_HIO_cFi
+
+# .text:0x6D4 | 0x8005DE94 | size: 0xC
+.fn gap_03_8005DE94_text, global
+.hidden gap_03_8005DE94_text
+/* 8005DE94 00000714  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DE98 00000718  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DE9C 0000071C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DE94_text
+
+# .text:0x6E0 | 0x8005DEA0 | size: 0x30
+# dYoshiModel_HIO_c::dYoshiModel_HIO_c()
+.fn __ct__17dYoshiModel_HIO_cFv, global
+/* 8005DEA0 00000720  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005DEA4 00000724  7C 08 02 A6 */	mflr r0
+/* 8005DEA8 00000728  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005DEAC 0000072C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005DEB0 00000730  7C 7F 1B 78 */	mr r31, r3
+/* 8005DEB4 00000734  48 00 00 01 */	bl resetParam__17dYoshiModel_HIO_cFv
+/* 8005DEB8 00000738  7F E3 FB 78 */	mr r3, r31
+/* 8005DEBC 0000073C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005DEC0 00000740  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005DEC4 00000744  7C 08 03 A6 */	mtlr r0
+/* 8005DEC8 00000748  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005DECC 0000074C  4E 80 00 20 */	blr
+.endfn __ct__17dYoshiModel_HIO_cFv
+
+# .text:0x710 | 0x8005DED0 | size: 0x24
+# dYoshiModel_HIO_c::resetParam()
+.fn resetParam__17dYoshiModel_HIO_cFv, global
+/* 8005DED0 00000750  C0 60 00 00 */	lfs f3, "@67942_8042BD38"@sda21(r0)
+/* 8005DED4 00000754  C0 40 00 00 */	lfs f2, "@67943_8042BD3C"@sda21(r0)
+/* 8005DED8 00000758  C0 20 00 00 */	lfs f1, "@67944_8042BD40"@sda21(r0)
+/* 8005DEDC 0000075C  C0 00 00 00 */	lfs f0, "@67945_8042BD44"@sda21(r0)
+/* 8005DEE0 00000760  D0 63 00 00 */	stfs f3, 0x0(r3)
+/* 8005DEE4 00000764  D0 43 00 04 */	stfs f2, 0x4(r3)
+/* 8005DEE8 00000768  D0 23 00 08 */	stfs f1, 0x8(r3)
+/* 8005DEEC 0000076C  D0 03 00 0C */	stfs f0, 0xc(r3)
+/* 8005DEF0 00000770  4E 80 00 20 */	blr
+.endfn resetParam__17dYoshiModel_HIO_cFv
+
+# .text:0x734 | 0x8005DEF4 | size: 0xC
+.fn gap_03_8005DEF4_text, global
+.hidden gap_03_8005DEF4_text
+/* 8005DEF4 00000774  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DEF8 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005DEFC 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005DEF4_text

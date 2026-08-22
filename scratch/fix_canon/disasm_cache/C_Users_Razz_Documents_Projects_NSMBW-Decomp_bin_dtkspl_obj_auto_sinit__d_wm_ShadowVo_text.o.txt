@@ -1,0 +1,43 @@
+.include "macros.inc"
+.file "auto_sinit__d_wm_ShadowVo_text"
+
+# 0x800F2790..0x800F2800 | size: 0x70
+.text
+.balign 4
+
+# .text:0x0 | 0x800F2790 | size: 0x70
+.fn "__sinit_\d_wm_ShadowVolume_cpp", global
+/* 800F2790 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800F2794 00000044  7C 08 02 A6 */	mflr r0
+/* 800F2798 00000048  3C C0 00 00 */	lis r6, sc_ForceList__6dWmLib_8031BF08@ha
+/* 800F279C 0000004C  C0 40 00 00 */	lfs f2, "@60371_8042D204"@sda21(r0)
+/* 800F27A0 00000050  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800F27A4 00000054  38 C6 00 00 */	addi r6, r6, sc_ForceList__6dWmLib_8031BF08@l
+/* 800F27A8 00000058  C0 20 00 00 */	lfs f1, "@60372_8042D208"@sda21(r0)
+/* 800F27AC 0000005C  3C 80 00 00 */	lis r4, __arraydtor$57873_800F2800@ha
+/* 800F27B0 00000060  C0 00 00 00 */	lfs f0, "@60373_8042D20C"@sda21(r0)
+/* 800F27B4 00000064  3C A0 00 00 */	lis r5, "@57874_80373FA0"@ha
+/* 800F27B8 00000068  80 00 00 00 */	lwz r0, c_CASTLE_ID__10dCsvData_c@sda21(r0)
+/* 800F27BC 0000006C  38 84 00 00 */	addi r4, r4, __arraydtor$57873_800F2800@l
+/* 800F27C0 00000070  90 06 00 0C */	stw r0, 0xc(r6)
+/* 800F27C4 00000074  38 A5 00 00 */	addi r5, r5, "@57874_80373FA0"@l
+/* 800F27C8 00000078  38 60 00 00 */	li r3, 0x0
+/* 800F27CC 0000007C  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 800F27D0 00000080  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 800F27D4 00000084  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 800F27D8 00000088  D0 46 00 18 */	stfs f2, 0x18(r6)
+/* 800F27DC 0000008C  D0 26 00 1C */	stfs f1, 0x1c(r6)
+/* 800F27E0 00000090  D0 06 00 20 */	stfs f0, 0x20(r6)
+/* 800F27E4 00000094  48 00 00 01 */	bl __register_global_object
+/* 800F27E8 00000098  80 00 00 00 */	lwz r0, c_START_ID__10dCsvData_c@sda21(r0)
+/* 800F27EC 0000009C  90 00 00 00 */	stw r0, c_StartPointKinokoHouseID__6dWmLib_8042A400@sda21(r0)
+/* 800F27F0 000000A0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800F27F4 000000A4  7C 08 03 A6 */	mtlr r0
+/* 800F27F8 000000A8  38 21 00 20 */	addi r1, r1, 0x20
+/* 800F27FC 000000AC  4E 80 00 20 */	blr
+.endfn "__sinit_\d_wm_ShadowVolume_cpp"
+
+# 0x802EDE44..0x802EDE48 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_wm_ShadowVolume_cpp"

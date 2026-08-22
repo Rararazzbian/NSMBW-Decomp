@@ -1,0 +1,121 @@
+// ---------------------------------------------------------------------------
+// fn_8007FFA0 -- static helper called by revisePos
+//
+// Parameters: r3=ctr, r4=actor, r5=vec, r6=mode
+// Frame: 0x50, saves r27-r31 + f31
+//
+// Stack layout:
+//   0x08: short temp (SinFIdx path)
+//   0x0A: short temp (CosFIdx path)
+//   0x18: stack_x (f32)
+//   0x1C: stack_y (f32)
+//
+// Atan2Idx is not declared in the nw4r header; it returns a signed 16-bit
+// angle index (s16) from two float args (y, x).
+namespace nw4r { namespace math {
+extern s16 Atan2Idx(f32 y, f32 x);
+}}
+
+static void fn_8007FFA0(dBg_ctr_c *ctr, dActor_c *actor, mVec3_c *vec, int mode) {
+    f32 stack_x = 0.0f;
+    f32 stack_y = 0.0f;
+
+    // position pointer at actor+0x14
+    mVec3_c *pos = *(mVec3_c **)((u8 *)actor + 0x14);
+
+    // Bit 30 of mFlags: when set, skip the mode==0 block entirely
+    if (!(ctr->mFlags & 0x40000000)) {
+        f32 f2 = vec->x;
+        if (mode == 0) {
+            f2 *= rawF32(actor, 0xD8);
+        }
+        stack_x += f2;
+        *(f32 *)((u8 *)actor + 0xDC) = vec->x;
+    }
+
+    stack_y += vec->y;
+
+    if (ctr->m_c2 != 0) {
+        mVec3_c *src;
+        if (mode == 2) {
+            src = (mVec3_c *)((u8 *)actor + 0x3C);
+        } else {
+            src = (mVec3_c *)((u8 *)actor + 0x34);
+        }
+
+        f32 sqrtVal = EGG::Mathf::sqrt(src->x * src->x + src->y * src->y);
+        s16 angle = (s16)((s32)nw4r::math::Atan2Idx(src->y, src->x) + ctr->m_c2);
+
+        f32 cosVal = nw4r::math::CosFIdx(NW4R_MATH_IDX_TO_FIDX(angle));
+        stack_x += sqrtVal * cosVal - src->x;
+
+        f32 sinVal = nw4r::math::SinFIdx(NW4R_MATH_IDX_TO_FIDX(angle));
+        stack_y += sqrtVal * sinVal - src->y;
+    }
+
+    if (mode == 2 && stack_x == 0.0f) {
+        stack_y = 0.0f;
+    }
+
+    pos->x = dScStage_c::getLoopPosX(pos->x + stack_x);
+    pos->y += stack_y;
+
+    if (mode == 0) {
+        // parent pointer at actor+0x04
+        dBase_c *parent = *(dBase_c **)((u8 *)actor + 0x04);
+        if (parent != nullptr) {
+            *(f32 *)((u8 *)parent + 0x310) += stack_x;
+            *(f32 *)((u8 *)parent + 0x314) += stack_y;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// dBg_ctr_c::revisePos()
+//
+// Frame: 0x30, saves r29-r31
+// Stack layout:
+//   0x08: delta.x (f32)
+//   0x0C: delta.y (f32)
+//   0x10: delta.z (f32)
+void dBg_ctr_c::revisePos() {
+    dActor_c *actor = mpActor;
+
+    // delta = actor->mPos - ctr->{m_94, m_98, m_9C}
+    // Stored contiguously on stack as an mVec3_c (x, y, z) so the
+    // helper receives a valid pointer.
+    mVec3_c delta;
+    delta.x = rawF32(actor, 0xAC) - rawF32(this, 0x94);
+    delta.y = rawF32(actor, 0xB0) - rawF32(this, 0x98);
+    delta.z = rawF32(actor, 0xB4) - rawF32(this, 0x9C);
+
+    // Add m_ac (2D offset) to the delta
+    delta.x += m_ac.x;
+    delta.y += m_ac.y;
+
+    // Iterate linked list starting at m_0c (list of dActor_c*)
+    // Each node has a "next" pointer at offset 0x6C
+    for (u8 *node = (u8 *)m_0c; node != nullptr; node = *(u8 **)(node + 0x6C)) {
+        fn_8007FFA0(this, (dActor_c *)node, &delta, 0);
+    }
+
+    // Iterate mLinkNetPlayer[4] (array of dBc_c*)
+    for (int i = 0; i < 4; i++) {
+        dBc_c *player = mLinkNetPlayer[i];
+        if (player != nullptr) {
+            fn_8007FFA0(this, (dActor_c *)player, &delta, 1);
+        }
+    }
+
+    // Iterate mWallSlidPlayer[4] (array of dBc_c*)
+    for (int i = 0; i < 4; i++) {
+        dBc_c *player = mWallSlidPlayer[i];
+        if (player != nullptr) {
+            fn_8007FFA0(this, (dActor_c *)player, &delta, 2);
+        }
+    }
+
+    // Clear m_ac
+    m_ac.x = 0.0f;
+    m_ac.y = 0.0f;
+}

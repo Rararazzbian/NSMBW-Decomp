@@ -249,8 +249,10 @@ int dBgActorManager_c::createObjList(bool add) {
     u32 y0 = (u32)(-(bg->m_8fe6c) * 0.0625f);
     int x1 = (int)(bg->m_8fe68 - bg->m_8fe64);
     int y1 = (int)(bg->m_8fe6c - bg->m_8fe70);
-    u16 x1u = (u16)((x1 & 0xF) ? ((x1 >> 4) & 0xFFF) + 1 : ((x1 >> 4) & 0xFFF));
-    u16 y1u = (u16)((y1 & 0xF) ? ((y1 >> 4) & 0xFFF) + 1 : ((y1 >> 4) & 0xFFF));
+    u16 x1u = (u16)x1;
+    u16 y1u = (u16)y1;
+    x1u = (x1u & 0xF) ? (x1u >> 4) + 1 : (x1u >> 4);
+    y1u = (y1u & 0xF) ? (y1u >> 4) + 1 : (y1u >> 4);
     int count = 0;
     for (u16 j = 0; j < y1u; j++) {
         u16 gridY = (u16)((j + y0) << 4);

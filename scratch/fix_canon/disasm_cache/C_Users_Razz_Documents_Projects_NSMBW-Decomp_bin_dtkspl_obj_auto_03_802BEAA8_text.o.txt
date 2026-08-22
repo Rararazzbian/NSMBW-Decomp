@@ -1,0 +1,726 @@
+.include "macros.inc"
+.file "auto_03_802BEAA8_text"
+
+# 0x802BEAA8..0x802BF340 | size: 0x898
+.text
+.balign 4
+
+# .text:0x0 | 0x802BEAA8 | size: 0x8
+.fn pad_03_802BEAA8_text, local
+/* 802BEAA8 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEAAC 00000044  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_802BEAA8_text
+
+# .text:0x8 | 0x802BEAB0 | size: 0x40
+# EGG::ListNode::~ListNode()
+.fn __dt__Q23EGG8ListNodeFv, global
+/* 802BEAB0 00000048  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BEAB4 0000004C  7C 08 02 A6 */	mflr r0
+/* 802BEAB8 00000050  2C 03 00 00 */	cmpwi r3, 0x0
+/* 802BEABC 00000054  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BEAC0 00000058  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BEAC4 0000005C  7C 7F 1B 78 */	mr r31, r3
+/* 802BEAC8 00000060  41 82 00 10 */	beq .L_802BEAD8
+/* 802BEACC 00000064  2C 04 00 00 */	cmpwi r4, 0x0
+/* 802BEAD0 00000068  40 81 00 08 */	ble .L_802BEAD8
+/* 802BEAD4 0000006C  48 00 00 01 */	bl __dl__FPv
+.L_802BEAD8:
+/* 802BEAD8 00000070  7F E3 FB 78 */	mr r3, r31
+/* 802BEADC 00000074  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BEAE0 00000078  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BEAE4 0000007C  7C 08 03 A6 */	mtlr r0
+/* 802BEAE8 00000080  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BEAEC 00000084  4E 80 00 20 */	blr
+.endfn __dt__Q23EGG8ListNodeFv
+
+# .text:0x48 | 0x802BEAF0 | size: 0x18
+# EGG::ListNode::insertBefore(EGG::ListNode*)
+.fn insertBefore__Q23EGG8ListNodeFPQ23EGG8ListNode, global
+/* 802BEAF0 00000088  80 A3 00 04 */	lwz r5, 0x4(r3)
+/* 802BEAF4 0000008C  90 83 00 04 */	stw r4, 0x4(r3)
+/* 802BEAF8 00000090  90 64 00 08 */	stw r3, 0x8(r4)
+/* 802BEAFC 00000094  90 A4 00 04 */	stw r5, 0x4(r4)
+/* 802BEB00 00000098  90 85 00 08 */	stw r4, 0x8(r5)
+/* 802BEB04 0000009C  4E 80 00 20 */	blr
+.endfn insertBefore__Q23EGG8ListNodeFPQ23EGG8ListNode
+
+# .text:0x60 | 0x802BEB08 | size: 0x8
+.fn gap_03_802BEB08_text, global
+.hidden gap_03_802BEB08_text
+/* 802BEB08 000000A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEB0C 000000A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEB08_text
+
+# .text:0x68 | 0x802BEB10 | size: 0x10
+# EGG::BaseCamera::updateMatrix()
+.fn updateMatrix__Q23EGG10BaseCameraFv, global
+/* 802BEB10 000000A8  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 802BEB14 000000AC  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 802BEB18 000000B0  7D 89 03 A6 */	mtctr r12
+/* 802BEB1C 000000B4  4E 80 04 20 */	bctr
+.endfn updateMatrix__Q23EGG10BaseCameraFv
+
+# .text:0x78 | 0x802BEB20 | size: 0x50
+# EGG::BaseCamera::draw(EGG::BaseCamera*)
+.fn draw__Q23EGG10BaseCameraFPQ23EGG10BaseCamera, global
+/* 802BEB20 000000B8  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BEB24 000000BC  7C 08 02 A6 */	mflr r0
+/* 802BEB28 000000C0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BEB2C 000000C4  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BEB30 000000C8  7C 7F 1B 78 */	mr r31, r3
+/* 802BEB34 000000CC  7C 83 23 78 */	mr r3, r4
+/* 802BEB38 000000D0  81 84 00 00 */	lwz r12, 0x0(r4)
+/* 802BEB3C 000000D4  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 802BEB40 000000D8  7D 89 03 A6 */	mtctr r12
+/* 802BEB44 000000DC  4E 80 04 21 */	bctrl
+/* 802BEB48 000000E0  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 802BEB4C 000000E4  7F E3 FB 78 */	mr r3, r31
+/* 802BEB50 000000E8  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 802BEB54 000000EC  7D 89 03 A6 */	mtctr r12
+/* 802BEB58 000000F0  4E 80 04 21 */	bctrl
+/* 802BEB5C 000000F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BEB60 000000F8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BEB64 000000FC  7C 08 03 A6 */	mtlr r0
+/* 802BEB68 00000100  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BEB6C 00000104  4E 80 00 20 */	blr
+.endfn draw__Q23EGG10BaseCameraFPQ23EGG10BaseCamera
+
+# .text:0xC8 | 0x802BEB70 | size: 0x44
+# EGG::BaseCamera::setG3DCamera(nw4r::g3d::Camera&)
+.fn setG3DCamera__Q23EGG10BaseCameraFRQ34nw4r3g3d6Camera, global
+/* 802BEB70 00000108  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BEB74 0000010C  7C 08 02 A6 */	mflr r0
+/* 802BEB78 00000110  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BEB7C 00000114  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BEB80 00000118  7C 9F 23 78 */	mr r31, r4
+/* 802BEB84 0000011C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 802BEB88 00000120  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 802BEB8C 00000124  7D 89 03 A6 */	mtctr r12
+/* 802BEB90 00000128  4E 80 04 21 */	bctrl
+/* 802BEB94 0000012C  7C 64 1B 78 */	mr r4, r3
+/* 802BEB98 00000130  7F E3 FB 78 */	mr r3, r31
+/* 802BEB9C 00000134  48 00 00 01 */	bl SetCameraMtxDirectly__Q34nw4r3g3d6CameraFRCQ34nw4r4math5MTX34
+/* 802BEBA0 00000138  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BEBA4 0000013C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BEBA8 00000140  7C 08 03 A6 */	mtlr r0
+/* 802BEBAC 00000144  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BEBB0 00000148  4E 80 00 20 */	blr
+.endfn setG3DCamera__Q23EGG10BaseCameraFRQ34nw4r3g3d6Camera
+
+# .text:0x10C | 0x802BEBB4 | size: 0xC
+.fn gap_03_802BEBB4_text, global
+.hidden gap_03_802BEBB4_text
+/* 802BEBB4 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEBB8 00000150  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEBBC 00000154  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEBB4_text
+
+# .text:0x118 | 0x802BEBC0 | size: 0x54
+# EGG::BaseCamera::getLookVector()
+.fn getLookVector__Q23EGG10BaseCameraFv, global
+/* 802BEBC0 00000158  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BEBC4 0000015C  7C 08 02 A6 */	mflr r0
+/* 802BEBC8 00000160  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BEBCC 00000164  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BEBD0 00000168  7C 7F 1B 78 */	mr r31, r3
+/* 802BEBD4 0000016C  7C 83 23 78 */	mr r3, r4
+/* 802BEBD8 00000170  81 84 00 00 */	lwz r12, 0x0(r4)
+/* 802BEBDC 00000174  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 802BEBE0 00000178  7D 89 03 A6 */	mtctr r12
+/* 802BEBE4 0000017C  4E 80 04 21 */	bctrl
+/* 802BEBE8 00000180  C0 43 00 28 */	lfs f2, 0x28(r3)
+/* 802BEBEC 00000184  C0 23 00 24 */	lfs f1, 0x24(r3)
+/* 802BEBF0 00000188  C0 03 00 20 */	lfs f0, 0x20(r3)
+/* 802BEBF4 0000018C  D0 1F 00 00 */	stfs f0, 0x0(r31)
+/* 802BEBF8 00000190  D0 3F 00 04 */	stfs f1, 0x4(r31)
+/* 802BEBFC 00000194  D0 5F 00 08 */	stfs f2, 0x8(r31)
+/* 802BEC00 00000198  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BEC04 0000019C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BEC08 000001A0  7C 08 03 A6 */	mtlr r0
+/* 802BEC0C 000001A4  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BEC10 000001A8  4E 80 00 20 */	blr
+.endfn getLookVector__Q23EGG10BaseCameraFv
+
+# .text:0x16C | 0x802BEC14 | size: 0xC
+.fn gap_03_802BEC14_text, global
+.hidden gap_03_802BEC14_text
+/* 802BEC14 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEC18 000001B0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEC1C 000001B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEC14_text
+
+# .text:0x178 | 0x802BEC20 | size: 0x54
+# EGG::BaseCamera::getRightVector()
+.fn getRightVector__Q23EGG10BaseCameraFv, global
+/* 802BEC20 000001B8  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BEC24 000001BC  7C 08 02 A6 */	mflr r0
+/* 802BEC28 000001C0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BEC2C 000001C4  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BEC30 000001C8  7C 7F 1B 78 */	mr r31, r3
+/* 802BEC34 000001CC  7C 83 23 78 */	mr r3, r4
+/* 802BEC38 000001D0  81 84 00 00 */	lwz r12, 0x0(r4)
+/* 802BEC3C 000001D4  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 802BEC40 000001D8  7D 89 03 A6 */	mtctr r12
+/* 802BEC44 000001DC  4E 80 04 21 */	bctrl
+/* 802BEC48 000001E0  C0 43 00 08 */	lfs f2, 0x8(r3)
+/* 802BEC4C 000001E4  C0 23 00 04 */	lfs f1, 0x4(r3)
+/* 802BEC50 000001E8  C0 03 00 00 */	lfs f0, 0x0(r3)
+/* 802BEC54 000001EC  D0 1F 00 00 */	stfs f0, 0x0(r31)
+/* 802BEC58 000001F0  D0 3F 00 04 */	stfs f1, 0x4(r31)
+/* 802BEC5C 000001F4  D0 5F 00 08 */	stfs f2, 0x8(r31)
+/* 802BEC60 000001F8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BEC64 000001FC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BEC68 00000200  7C 08 03 A6 */	mtlr r0
+/* 802BEC6C 00000204  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BEC70 00000208  4E 80 00 20 */	blr
+.endfn getRightVector__Q23EGG10BaseCameraFv
+
+# .text:0x1CC | 0x802BEC74 | size: 0xC
+.fn gap_03_802BEC74_text, global
+.hidden gap_03_802BEC74_text
+/* 802BEC74 0000020C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEC78 00000210  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEC7C 00000214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEC74_text
+
+# .text:0x1D8 | 0x802BEC80 | size: 0x54
+# EGG::BaseCamera::getUpVector()
+.fn getUpVector__Q23EGG10BaseCameraFv, global
+/* 802BEC80 00000218  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BEC84 0000021C  7C 08 02 A6 */	mflr r0
+/* 802BEC88 00000220  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BEC8C 00000224  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 802BEC90 00000228  7C 7F 1B 78 */	mr r31, r3
+/* 802BEC94 0000022C  7C 83 23 78 */	mr r3, r4
+/* 802BEC98 00000230  81 84 00 00 */	lwz r12, 0x0(r4)
+/* 802BEC9C 00000234  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 802BECA0 00000238  7D 89 03 A6 */	mtctr r12
+/* 802BECA4 0000023C  4E 80 04 21 */	bctrl
+/* 802BECA8 00000240  C0 43 00 18 */	lfs f2, 0x18(r3)
+/* 802BECAC 00000244  C0 23 00 14 */	lfs f1, 0x14(r3)
+/* 802BECB0 00000248  C0 03 00 10 */	lfs f0, 0x10(r3)
+/* 802BECB4 0000024C  D0 1F 00 00 */	stfs f0, 0x0(r31)
+/* 802BECB8 00000250  D0 3F 00 04 */	stfs f1, 0x4(r31)
+/* 802BECBC 00000254  D0 5F 00 08 */	stfs f2, 0x8(r31)
+/* 802BECC0 00000258  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 802BECC4 0000025C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BECC8 00000260  7C 08 03 A6 */	mtlr r0
+/* 802BECCC 00000264  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BECD0 00000268  4E 80 00 20 */	blr
+.endfn getUpVector__Q23EGG10BaseCameraFv
+
+# .text:0x22C | 0x802BECD4 | size: 0xC
+.fn gap_03_802BECD4_text, global
+.hidden gap_03_802BECD4_text
+/* 802BECD4 0000026C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BECD8 00000270  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BECDC 00000274  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BECD4_text
+
+# .text:0x238 | 0x802BECE0 | size: 0x8
+# EGG::LookAtCamera::getViewMatrixOld()
+.fn getViewMatrixOld__Q23EGG12LookAtCameraFv, global
+/* 802BECE0 00000278  38 63 00 34 */	addi r3, r3, 0x34
+/* 802BECE4 0000027C  4E 80 00 20 */	blr
+.endfn getViewMatrixOld__Q23EGG12LookAtCameraFv
+
+# .text:0x240 | 0x802BECE8 | size: 0x8
+.fn gap_03_802BECE8_text, global
+.hidden gap_03_802BECE8_text
+/* 802BECE8 00000280  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BECEC 00000284  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BECE8_text
+
+# .text:0x248 | 0x802BECF0 | size: 0x25C
+# EGG::LookAtCamera::doUpdateMatrix()
+.fn doUpdateMatrix__Q23EGG12LookAtCameraFv, global
+/* 802BECF0 00000288  94 21 FF 90 */	stwu r1, -0x70(r1)
+/* 802BECF4 0000028C  7C 08 02 A6 */	mflr r0
+/* 802BECF8 00000290  90 01 00 74 */	stw r0, 0x74(r1)
+/* 802BECFC 00000294  93 E1 00 6C */	stw r31, 0x6c(r1)
+/* 802BED00 00000298  7C 7F 1B 78 */	mr r31, r3
+/* 802BED04 0000029C  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 802BED08 000002A0  D0 03 00 34 */	stfs f0, 0x34(r3)
+/* 802BED0C 000002A4  C0 03 00 08 */	lfs f0, 0x8(r3)
+/* 802BED10 000002A8  D0 03 00 38 */	stfs f0, 0x38(r3)
+/* 802BED14 000002AC  C0 03 00 0C */	lfs f0, 0xc(r3)
+/* 802BED18 000002B0  D0 03 00 3C */	stfs f0, 0x3c(r3)
+/* 802BED1C 000002B4  C0 03 00 10 */	lfs f0, 0x10(r3)
+/* 802BED20 000002B8  D0 03 00 40 */	stfs f0, 0x40(r3)
+/* 802BED24 000002BC  C0 03 00 14 */	lfs f0, 0x14(r3)
+/* 802BED28 000002C0  D0 03 00 44 */	stfs f0, 0x44(r3)
+/* 802BED2C 000002C4  C0 03 00 18 */	lfs f0, 0x18(r3)
+/* 802BED30 000002C8  D0 03 00 48 */	stfs f0, 0x48(r3)
+/* 802BED34 000002CC  C0 03 00 1C */	lfs f0, 0x1c(r3)
+/* 802BED38 000002D0  D0 03 00 4C */	stfs f0, 0x4c(r3)
+/* 802BED3C 000002D4  C0 03 00 20 */	lfs f0, 0x20(r3)
+/* 802BED40 000002D8  D0 03 00 50 */	stfs f0, 0x50(r3)
+/* 802BED44 000002DC  C0 03 00 24 */	lfs f0, 0x24(r3)
+/* 802BED48 000002E0  D0 03 00 54 */	stfs f0, 0x54(r3)
+/* 802BED4C 000002E4  C0 03 00 28 */	lfs f0, 0x28(r3)
+/* 802BED50 000002E8  D0 03 00 58 */	stfs f0, 0x58(r3)
+/* 802BED54 000002EC  C0 03 00 2C */	lfs f0, 0x2c(r3)
+/* 802BED58 000002F0  D0 03 00 5C */	stfs f0, 0x5c(r3)
+/* 802BED5C 000002F4  C0 03 00 30 */	lfs f0, 0x30(r3)
+/* 802BED60 000002F8  D0 03 00 60 */	stfs f0, 0x60(r3)
+/* 802BED64 000002FC  80 83 00 64 */	lwz r4, 0x64(r3)
+/* 802BED68 00000300  80 03 00 68 */	lwz r0, 0x68(r3)
+/* 802BED6C 00000304  90 01 00 54 */	stw r0, 0x54(r1)
+/* 802BED70 00000308  90 81 00 50 */	stw r4, 0x50(r1)
+/* 802BED74 0000030C  C0 41 00 54 */	lfs f2, 0x54(r1)
+/* 802BED78 00000310  80 03 00 6C */	lwz r0, 0x6c(r3)
+/* 802BED7C 00000314  90 01 00 58 */	stw r0, 0x58(r1)
+/* 802BED80 00000318  C0 61 00 50 */	lfs f3, 0x50(r1)
+/* 802BED84 0000031C  C0 03 00 70 */	lfs f0, 0x70(r3)
+/* 802BED88 00000320  C0 21 00 58 */	lfs f1, 0x58(r1)
+/* 802BED8C 00000324  EC 03 00 28 */	fsubs f0, f3, f0
+/* 802BED90 00000328  D0 01 00 50 */	stfs f0, 0x50(r1)
+/* 802BED94 0000032C  C0 03 00 74 */	lfs f0, 0x74(r3)
+/* 802BED98 00000330  EC 02 00 28 */	fsubs f0, f2, f0
+/* 802BED9C 00000334  D0 01 00 54 */	stfs f0, 0x54(r1)
+/* 802BEDA0 00000338  C0 03 00 78 */	lfs f0, 0x78(r3)
+/* 802BEDA4 0000033C  38 61 00 50 */	addi r3, r1, 0x50
+/* 802BEDA8 00000340  EC 01 00 28 */	fsubs f0, f1, f0
+/* 802BEDAC 00000344  D0 01 00 58 */	stfs f0, 0x58(r1)
+/* 802BEDB0 00000348  48 00 00 01 */	bl normalise__Q23EGG8Vector3fFv
+/* 802BEDB4 0000034C  C0 1F 00 80 */	lfs f0, 0x80(r31)
+/* 802BEDB8 00000350  38 61 00 44 */	addi r3, r1, 0x44
+/* 802BEDBC 00000354  C0 E1 00 58 */	lfs f7, 0x58(r1)
+/* 802BEDC0 00000358  C0 41 00 50 */	lfs f2, 0x50(r1)
+/* 802BEDC4 0000035C  C0 9F 00 84 */	lfs f4, 0x84(r31)
+/* 802BEDC8 00000360  EC C0 01 F2 */	fmuls f6, f0, f7
+/* 802BEDCC 00000364  C0 A1 00 54 */	lfs f5, 0x54(r1)
+/* 802BEDD0 00000368  EC 00 00 B2 */	fmuls f0, f0, f2
+/* 802BEDD4 0000036C  EC 64 00 B2 */	fmuls f3, f4, f2
+/* 802BEDD8 00000370  C0 3F 00 7C */	lfs f1, 0x7c(r31)
+/* 802BEDDC 00000374  EC 84 01 72 */	fmuls f4, f4, f5
+/* 802BEDE0 00000378  EC 41 01 F2 */	fmuls f2, f1, f7
+/* 802BEDE4 0000037C  EC 21 01 72 */	fmuls f1, f1, f5
+/* 802BEDE8 00000380  EC 86 20 28 */	fsubs f4, f6, f4
+/* 802BEDEC 00000384  EC 43 10 28 */	fsubs f2, f3, f2
+/* 802BEDF0 00000388  EC 01 00 28 */	fsubs f0, f1, f0
+/* 802BEDF4 0000038C  D0 81 00 20 */	stfs f4, 0x20(r1)
+/* 802BEDF8 00000390  D0 41 00 24 */	stfs f2, 0x24(r1)
+/* 802BEDFC 00000394  D0 01 00 28 */	stfs f0, 0x28(r1)
+/* 802BEE00 00000398  D0 81 00 44 */	stfs f4, 0x44(r1)
+/* 802BEE04 0000039C  D0 41 00 48 */	stfs f2, 0x48(r1)
+/* 802BEE08 000003A0  D0 01 00 4C */	stfs f0, 0x4c(r1)
+/* 802BEE0C 000003A4  48 00 00 01 */	bl normalise__Q23EGG8Vector3fFv
+/* 802BEE10 000003A8  C0 01 00 54 */	lfs f0, 0x54(r1)
+/* 802BEE14 000003AC  38 61 00 38 */	addi r3, r1, 0x38
+/* 802BEE18 000003B0  C0 E1 00 4C */	lfs f7, 0x4c(r1)
+/* 802BEE1C 000003B4  C0 41 00 44 */	lfs f2, 0x44(r1)
+/* 802BEE20 000003B8  C0 81 00 58 */	lfs f4, 0x58(r1)
+/* 802BEE24 000003BC  EC C0 01 F2 */	fmuls f6, f0, f7
+/* 802BEE28 000003C0  C0 A1 00 48 */	lfs f5, 0x48(r1)
+/* 802BEE2C 000003C4  EC 00 00 B2 */	fmuls f0, f0, f2
+/* 802BEE30 000003C8  EC 64 00 B2 */	fmuls f3, f4, f2
+/* 802BEE34 000003CC  C0 21 00 50 */	lfs f1, 0x50(r1)
+/* 802BEE38 000003D0  EC 84 01 72 */	fmuls f4, f4, f5
+/* 802BEE3C 000003D4  EC 41 01 F2 */	fmuls f2, f1, f7
+/* 802BEE40 000003D8  EC 21 01 72 */	fmuls f1, f1, f5
+/* 802BEE44 000003DC  EC 86 20 28 */	fsubs f4, f6, f4
+/* 802BEE48 000003E0  EC 43 10 28 */	fsubs f2, f3, f2
+/* 802BEE4C 000003E4  EC 01 00 28 */	fsubs f0, f1, f0
+/* 802BEE50 000003E8  D0 81 00 38 */	stfs f4, 0x38(r1)
+/* 802BEE54 000003EC  D0 41 00 3C */	stfs f2, 0x3c(r1)
+/* 802BEE58 000003F0  D0 01 00 40 */	stfs f0, 0x40(r1)
+/* 802BEE5C 000003F4  48 00 00 01 */	bl normalise__Q23EGG8Vector3fFv
+/* 802BEE60 000003F8  C0 21 00 44 */	lfs f1, 0x44(r1)
+/* 802BEE64 000003FC  C1 1F 00 64 */	lfs f8, 0x64(r31)
+/* 802BEE68 00000400  C0 01 00 48 */	lfs f0, 0x48(r1)
+/* 802BEE6C 00000404  C0 FF 00 68 */	lfs f7, 0x68(r31)
+/* 802BEE70 00000408  EC A1 02 32 */	fmuls f5, f1, f8
+/* 802BEE74 0000040C  C0 21 00 38 */	lfs f1, 0x38(r1)
+/* 802BEE78 00000410  EC 80 01 F2 */	fmuls f4, f0, f7
+/* 802BEE7C 00000414  C0 41 00 3C */	lfs f2, 0x3c(r1)
+/* 802BEE80 00000418  EC 61 02 32 */	fmuls f3, f1, f8
+/* 802BEE84 0000041C  C0 01 00 50 */	lfs f0, 0x50(r1)
+/* 802BEE88 00000420  C0 21 00 54 */	lfs f1, 0x54(r1)
+/* 802BEE8C 00000424  EC 42 01 F2 */	fmuls f2, f2, f7
+/* 802BEE90 00000428  EC C5 20 2A */	fadds f6, f5, f4
+/* 802BEE94 0000042C  C1 41 00 4C */	lfs f10, 0x4c(r1)
+/* 802BEE98 00000430  EC 83 10 2A */	fadds f4, f3, f2
+/* 802BEE9C 00000434  C1 3F 00 6C */	lfs f9, 0x6c(r31)
+/* 802BEEA0 00000438  EC 40 02 32 */	fmuls f2, f0, f8
+/* 802BEEA4 0000043C  C0 A1 00 40 */	lfs f5, 0x40(r1)
+/* 802BEEA8 00000440  C0 61 00 58 */	lfs f3, 0x58(r1)
+/* 802BEEAC 00000444  ED 0A 02 72 */	fmuls f8, f10, f9
+/* 802BEEB0 00000448  C0 01 00 44 */	lfs f0, 0x44(r1)
+/* 802BEEB4 0000044C  EC A5 02 72 */	fmuls f5, f5, f9
+/* 802BEEB8 00000450  D0 1F 00 04 */	stfs f0, 0x4(r31)
+/* 802BEEBC 00000454  EC 21 01 F2 */	fmuls f1, f1, f7
+/* 802BEEC0 00000458  EC C8 30 2A */	fadds f6, f8, f6
+/* 802BEEC4 0000045C  EC 85 20 2A */	fadds f4, f5, f4
+/* 802BEEC8 00000460  C0 01 00 48 */	lfs f0, 0x48(r1)
+/* 802BEECC 00000464  D0 1F 00 08 */	stfs f0, 0x8(r31)
+/* 802BEED0 00000468  EC 63 02 72 */	fmuls f3, f3, f9
+/* 802BEED4 0000046C  FC A0 30 50 */	fneg f5, f6
+/* 802BEED8 00000470  C0 01 00 4C */	lfs f0, 0x4c(r1)
+/* 802BEEDC 00000474  D0 1F 00 0C */	stfs f0, 0xc(r31)
+/* 802BEEE0 00000478  EC 02 08 2A */	fadds f0, f2, f1
+/* 802BEEE4 0000047C  FC 80 20 50 */	fneg f4, f4
+/* 802BEEE8 00000480  D0 BF 00 10 */	stfs f5, 0x10(r31)
+/* 802BEEEC 00000484  EC 23 00 2A */	fadds f1, f3, f0
+/* 802BEEF0 00000488  C0 01 00 38 */	lfs f0, 0x38(r1)
+/* 802BEEF4 0000048C  D0 1F 00 14 */	stfs f0, 0x14(r31)
+/* 802BEEF8 00000490  FC 20 08 50 */	fneg f1, f1
+/* 802BEEFC 00000494  C0 01 00 3C */	lfs f0, 0x3c(r1)
+/* 802BEF00 00000498  D0 1F 00 18 */	stfs f0, 0x18(r31)
+/* 802BEF04 0000049C  C0 01 00 40 */	lfs f0, 0x40(r1)
+/* 802BEF08 000004A0  D0 1F 00 1C */	stfs f0, 0x1c(r31)
+/* 802BEF0C 000004A4  D0 9F 00 20 */	stfs f4, 0x20(r31)
+/* 802BEF10 000004A8  C0 01 00 50 */	lfs f0, 0x50(r1)
+/* 802BEF14 000004AC  D0 1F 00 24 */	stfs f0, 0x24(r31)
+/* 802BEF18 000004B0  C0 01 00 54 */	lfs f0, 0x54(r1)
+/* 802BEF1C 000004B4  D0 1F 00 28 */	stfs f0, 0x28(r31)
+/* 802BEF20 000004B8  C0 01 00 58 */	lfs f0, 0x58(r1)
+/* 802BEF24 000004BC  D0 1F 00 2C */	stfs f0, 0x2c(r31)
+/* 802BEF28 000004C0  D0 3F 00 30 */	stfs f1, 0x30(r31)
+/* 802BEF2C 000004C4  83 E1 00 6C */	lwz r31, 0x6c(r1)
+/* 802BEF30 000004C8  80 01 00 74 */	lwz r0, 0x74(r1)
+/* 802BEF34 000004CC  D0 A1 00 2C */	stfs f5, 0x2c(r1)
+/* 802BEF38 000004D0  D0 81 00 0C */	stfs f4, 0xc(r1)
+/* 802BEF3C 000004D4  D0 21 00 1C */	stfs f1, 0x1c(r1)
+/* 802BEF40 000004D8  7C 08 03 A6 */	mtlr r0
+/* 802BEF44 000004DC  38 21 00 70 */	addi r1, r1, 0x70
+/* 802BEF48 000004E0  4E 80 00 20 */	blr
+.endfn doUpdateMatrix__Q23EGG12LookAtCameraFv
+
+# .text:0x4A4 | 0x802BEF4C | size: 0x4
+.fn gap_03_802BEF4C_text, global
+.hidden gap_03_802BEF4C_text
+/* 802BEF4C 000004E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEF4C_text
+
+# .text:0x4A8 | 0x802BEF50 | size: 0x4
+# EGG::LookAtCamera::doDraw()
+.fn doDraw__Q23EGG12LookAtCameraFv, global
+/* 802BEF50 000004E8  4E 80 00 20 */	blr
+.endfn doDraw__Q23EGG12LookAtCameraFv
+
+# .text:0x4AC | 0x802BEF54 | size: 0xC
+.fn gap_03_802BEF54_text, global
+.hidden gap_03_802BEF54_text
+/* 802BEF54 000004EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEF58 000004F0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEF5C 000004F4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEF54_text
+
+# .text:0x4B8 | 0x802BEF60 | size: 0x4C
+# EGG::LookAtCamera::loadMatrix()
+.fn loadMatrix__Q23EGG12LookAtCameraFv, global
+/* 802BEF60 000004F8  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 802BEF64 000004FC  7C 08 02 A6 */	mflr r0
+/* 802BEF68 00000500  38 80 00 00 */	li r4, 0x0
+/* 802BEF6C 00000504  90 01 00 44 */	stw r0, 0x44(r1)
+/* 802BEF70 00000508  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 802BEF74 0000050C  7C 7F 1B 78 */	mr r31, r3
+/* 802BEF78 00000510  38 63 00 04 */	addi r3, r3, 0x4
+/* 802BEF7C 00000514  48 00 00 01 */	bl GXLoadPosMtxImm
+/* 802BEF80 00000518  38 7F 00 04 */	addi r3, r31, 0x4
+/* 802BEF84 0000051C  38 81 00 08 */	addi r4, r1, 0x8
+/* 802BEF88 00000520  48 00 00 01 */	bl inverseTransposeTo__Q23EGG9Matrix34fCFRQ23EGG9Matrix34f
+/* 802BEF8C 00000524  38 61 00 08 */	addi r3, r1, 0x8
+/* 802BEF90 00000528  38 80 00 00 */	li r4, 0x0
+/* 802BEF94 0000052C  48 00 00 01 */	bl GXLoadNrmMtxImm
+/* 802BEF98 00000530  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 802BEF9C 00000534  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 802BEFA0 00000538  7C 08 03 A6 */	mtlr r0
+/* 802BEFA4 0000053C  38 21 00 40 */	addi r1, r1, 0x40
+/* 802BEFA8 00000540  4E 80 00 20 */	blr
+.endfn loadMatrix__Q23EGG12LookAtCameraFv
+
+# .text:0x504 | 0x802BEFAC | size: 0x4
+.fn gap_03_802BEFAC_text, global
+.hidden gap_03_802BEFAC_text
+/* 802BEFAC 00000544  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEFAC_text
+
+# .text:0x508 | 0x802BEFB0 | size: 0x4
+# EGG::LookAtCamera::loadOldMatrix()
+.fn loadOldMatrix__Q23EGG12LookAtCameraFv, global
+/* 802BEFB0 00000548  4E 80 00 20 */	blr
+.endfn loadOldMatrix__Q23EGG12LookAtCameraFv
+
+# .text:0x50C | 0x802BEFB4 | size: 0xC
+.fn gap_03_802BEFB4_text, global
+.hidden gap_03_802BEFB4_text
+/* 802BEFB4 0000054C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEFB8 00000550  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEFBC 00000554  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEFB4_text
+
+# .text:0x518 | 0x802BEFC0 | size: 0x1C
+# EGG::LookAtCamera::getPosition()
+.fn getPosition__Q23EGG12LookAtCameraFv, global
+/* 802BEFC0 00000558  80 A4 00 64 */	lwz r5, 0x64(r4)
+/* 802BEFC4 0000055C  80 04 00 68 */	lwz r0, 0x68(r4)
+/* 802BEFC8 00000560  90 03 00 04 */	stw r0, 0x4(r3)
+/* 802BEFCC 00000564  90 A3 00 00 */	stw r5, 0x0(r3)
+/* 802BEFD0 00000568  80 04 00 6C */	lwz r0, 0x6c(r4)
+/* 802BEFD4 0000056C  90 03 00 08 */	stw r0, 0x8(r3)
+/* 802BEFD8 00000570  4E 80 00 20 */	blr
+.endfn getPosition__Q23EGG12LookAtCameraFv
+
+# .text:0x534 | 0x802BEFDC | size: 0x4
+.fn gap_03_802BEFDC_text, global
+.hidden gap_03_802BEFDC_text
+/* 802BEFDC 00000574  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEFDC_text
+
+# .text:0x538 | 0x802BEFE0 | size: 0x8
+# EGG::LookAtCamera::getViewMatrix()
+.fn getViewMatrix__Q23EGG12LookAtCameraFv, global
+/* 802BEFE0 00000578  38 63 00 04 */	addi r3, r3, 0x4
+/* 802BEFE4 0000057C  4E 80 00 20 */	blr
+.endfn getViewMatrix__Q23EGG12LookAtCameraFv
+
+# .text:0x540 | 0x802BEFE8 | size: 0x8
+.fn gap_03_802BEFE8_text, global
+.hidden gap_03_802BEFE8_text
+/* 802BEFE8 00000580  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEFEC 00000584  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEFE8_text
+
+# .text:0x548 | 0x802BEFF0 | size: 0x8
+# EGG::LookAtCamera::getViewMatrix() const
+.fn getViewMatrix__Q23EGG12LookAtCameraCFv, global
+/* 802BEFF0 00000588  38 63 00 04 */	addi r3, r3, 0x4
+/* 802BEFF4 0000058C  4E 80 00 20 */	blr
+.endfn getViewMatrix__Q23EGG12LookAtCameraCFv
+
+# .text:0x550 | 0x802BEFF8 | size: 0x8
+.fn gap_03_802BEFF8_text, global
+.hidden gap_03_802BEFF8_text
+/* 802BEFF8 00000590  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BEFFC 00000594  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BEFF8_text
+
+# .text:0x558 | 0x802BF000 | size: 0x1E8
+# EGG::Graphics::setupGX()
+.fn setupGX__Q23EGG8GraphicsFv, global
+/* 802BF000 00000598  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 802BF004 0000059C  7C 08 02 A6 */	mflr r0
+/* 802BF008 000005A0  38 60 00 04 */	li r3, 0x4
+/* 802BF00C 000005A4  38 80 00 00 */	li r4, 0x0
+/* 802BF010 000005A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 802BF014 000005AC  38 A0 00 00 */	li r5, 0x0
+/* 802BF018 000005B0  38 C0 00 01 */	li r6, 0x1
+/* 802BF01C 000005B4  38 E0 00 00 */	li r7, 0x0
+/* 802BF020 000005B8  39 00 00 00 */	li r8, 0x0
+/* 802BF024 000005BC  39 20 00 02 */	li r9, 0x2
+/* 802BF028 000005C0  48 00 00 01 */	bl GXSetChanCtrl
+/* 802BF02C 000005C4  80 00 00 00 */	lwz r0, "@23920_8042F48C"@sda21(r0)
+/* 802BF030 000005C8  38 81 00 0C */	addi r4, r1, 0xc
+/* 802BF034 000005CC  90 01 00 0C */	stw r0, 0xc(r1)
+/* 802BF038 000005D0  38 60 00 04 */	li r3, 0x4
+/* 802BF03C 000005D4  48 00 00 01 */	bl GXSetChanAmbColor
+/* 802BF040 000005D8  80 00 00 00 */	lwz r0, "@23918_8042F488"@sda21(r0)
+/* 802BF044 000005DC  38 81 00 08 */	addi r4, r1, 0x8
+/* 802BF048 000005E0  90 01 00 08 */	stw r0, 0x8(r1)
+/* 802BF04C 000005E4  38 60 00 04 */	li r3, 0x4
+/* 802BF050 000005E8  48 00 00 01 */	bl GXSetChanMatColor
+/* 802BF054 000005EC  38 60 00 01 */	li r3, 0x1
+/* 802BF058 000005F0  38 80 00 04 */	li r4, 0x4
+/* 802BF05C 000005F4  38 A0 00 05 */	li r5, 0x5
+/* 802BF060 000005F8  38 C0 00 00 */	li r6, 0x0
+/* 802BF064 000005FC  48 00 00 01 */	bl GXSetBlendMode
+/* 802BF068 00000600  38 60 00 01 */	li r3, 0x1
+/* 802BF06C 00000604  38 80 00 03 */	li r4, 0x3
+/* 802BF070 00000608  38 A0 00 01 */	li r5, 0x1
+/* 802BF074 0000060C  48 00 00 01 */	bl GXSetZMode
+/* 802BF078 00000610  38 60 00 01 */	li r3, 0x1
+/* 802BF07C 00000614  48 00 00 01 */	bl GXSetZCompLoc
+/* 802BF080 00000618  38 60 00 00 */	li r3, 0x0
+/* 802BF084 0000061C  48 00 00 01 */	bl GXSetNumTexGens
+/* 802BF088 00000620  38 60 00 01 */	li r3, 0x1
+/* 802BF08C 00000624  48 00 00 01 */	bl GXSetNumChans
+/* 802BF090 00000628  38 60 00 00 */	li r3, 0x0
+/* 802BF094 0000062C  48 00 00 01 */	bl GXSetCoPlanar
+/* 802BF098 00000630  38 60 00 00 */	li r3, 0x0
+/* 802BF09C 00000634  38 80 00 00 */	li r4, 0x0
+/* 802BF0A0 00000638  38 A0 00 00 */	li r5, 0x0
+/* 802BF0A4 0000063C  38 C0 00 04 */	li r6, 0x4
+/* 802BF0A8 00000640  48 00 00 01 */	bl GXSetTevOrder
+/* 802BF0AC 00000644  38 60 00 00 */	li r3, 0x0
+/* 802BF0B0 00000648  38 80 00 04 */	li r4, 0x4
+/* 802BF0B4 0000064C  48 00 00 01 */	bl GXSetTevOp
+/* 802BF0B8 00000650  38 60 00 01 */	li r3, 0x1
+/* 802BF0BC 00000654  48 00 00 01 */	bl GXSetNumTevStages
+/* 802BF0C0 00000658  38 60 00 01 */	li r3, 0x1
+/* 802BF0C4 0000065C  48 00 00 01 */	bl GXSetColorUpdate
+/* 802BF0C8 00000660  38 60 00 01 */	li r3, 0x1
+/* 802BF0CC 00000664  48 00 00 01 */	bl GXSetAlphaUpdate
+/* 802BF0D0 00000668  38 60 00 07 */	li r3, 0x7
+/* 802BF0D4 0000066C  38 80 00 00 */	li r4, 0x0
+/* 802BF0D8 00000670  38 A0 00 00 */	li r5, 0x0
+/* 802BF0DC 00000674  38 C0 00 07 */	li r6, 0x7
+/* 802BF0E0 00000678  38 E0 00 00 */	li r7, 0x0
+/* 802BF0E4 0000067C  48 00 00 01 */	bl GXSetAlphaCompare
+/* 802BF0E8 00000680  38 60 00 02 */	li r3, 0x2
+/* 802BF0EC 00000684  48 00 00 01 */	bl GXSetCullMode
+/* 802BF0F0 00000688  38 60 00 00 */	li r3, 0x0
+/* 802BF0F4 0000068C  38 80 00 00 */	li r4, 0x0
+/* 802BF0F8 00000690  48 00 00 01 */	bl GXSetDstAlpha
+/* 802BF0FC 00000694  38 60 00 00 */	li r3, 0x0
+/* 802BF100 00000698  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF104 0000069C  38 60 00 01 */	li r3, 0x1
+/* 802BF108 000006A0  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF10C 000006A4  38 60 00 02 */	li r3, 0x2
+/* 802BF110 000006A8  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF114 000006AC  38 60 00 03 */	li r3, 0x3
+/* 802BF118 000006B0  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF11C 000006B4  38 60 00 04 */	li r3, 0x4
+/* 802BF120 000006B8  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF124 000006BC  38 60 00 05 */	li r3, 0x5
+/* 802BF128 000006C0  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF12C 000006C4  38 60 00 06 */	li r3, 0x6
+/* 802BF130 000006C8  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF134 000006CC  38 60 00 07 */	li r3, 0x7
+/* 802BF138 000006D0  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF13C 000006D4  38 60 00 08 */	li r3, 0x8
+/* 802BF140 000006D8  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF144 000006DC  38 60 00 09 */	li r3, 0x9
+/* 802BF148 000006E0  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF14C 000006E4  38 60 00 0A */	li r3, 0xa
+/* 802BF150 000006E8  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF154 000006EC  38 60 00 0B */	li r3, 0xb
+/* 802BF158 000006F0  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF15C 000006F4  38 60 00 0C */	li r3, 0xc
+/* 802BF160 000006F8  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF164 000006FC  38 60 00 0D */	li r3, 0xd
+/* 802BF168 00000700  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF16C 00000704  38 60 00 0E */	li r3, 0xe
+/* 802BF170 00000708  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF174 0000070C  38 60 00 0F */	li r3, 0xf
+/* 802BF178 00000710  48 00 00 01 */	bl GXSetTevDirect
+/* 802BF17C 00000714  38 60 00 00 */	li r3, 0x0
+/* 802BF180 00000718  48 00 00 01 */	bl GXSetNumIndStages
+/* 802BF184 0000071C  38 60 00 00 */	li r3, 0x0
+/* 802BF188 00000720  48 00 00 01 */	bl GXSetCurrentMtx
+/* 802BF18C 00000724  48 00 00 01 */	bl GXClearVtxDesc
+/* 802BF190 00000728  38 60 00 09 */	li r3, 0x9
+/* 802BF194 0000072C  38 80 00 01 */	li r4, 0x1
+/* 802BF198 00000730  48 00 00 01 */	bl GXSetVtxDesc
+/* 802BF19C 00000734  38 60 00 0B */	li r3, 0xb
+/* 802BF1A0 00000738  38 80 00 01 */	li r4, 0x1
+/* 802BF1A4 0000073C  48 00 00 01 */	bl GXSetVtxDesc
+/* 802BF1A8 00000740  38 60 00 00 */	li r3, 0x0
+/* 802BF1AC 00000744  38 80 00 09 */	li r4, 0x9
+/* 802BF1B0 00000748  38 A0 00 01 */	li r5, 0x1
+/* 802BF1B4 0000074C  38 C0 00 04 */	li r6, 0x4
+/* 802BF1B8 00000750  38 E0 00 00 */	li r7, 0x0
+/* 802BF1BC 00000754  48 00 00 01 */	bl GXSetVtxAttrFmt
+/* 802BF1C0 00000758  38 60 00 00 */	li r3, 0x0
+/* 802BF1C4 0000075C  38 80 00 0B */	li r4, 0xb
+/* 802BF1C8 00000760  38 A0 00 01 */	li r5, 0x1
+/* 802BF1CC 00000764  38 C0 00 05 */	li r6, 0x5
+/* 802BF1D0 00000768  38 E0 00 00 */	li r7, 0x0
+/* 802BF1D4 0000076C  48 00 00 01 */	bl GXSetVtxAttrFmt
+/* 802BF1D8 00000770  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 802BF1DC 00000774  7C 08 03 A6 */	mtlr r0
+/* 802BF1E0 00000778  38 21 00 10 */	addi r1, r1, 0x10
+/* 802BF1E4 0000077C  4E 80 00 20 */	blr
+.endfn setupGX__Q23EGG8GraphicsFv
+
+# .text:0x740 | 0x802BF1E8 | size: 0x8
+.fn gap_03_802BF1E8_text, global
+.hidden gap_03_802BF1E8_text
+/* 802BF1E8 00000780  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 802BF1EC 00000784  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BF1E8_text
+
+# .text:0x748 | 0x802BF1F0 | size: 0x14C
+# EGG::Graphics::drawFillBox2(EGG::BoundBox2f&, EGG::Color&)
+.fn drawFillBox2__Q23EGG8GraphicsFRQ23EGG10BoundBox2fRQ23EGG5Color, global
+/* 802BF1F0 00000788  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 802BF1F4 0000078C  7C 08 02 A6 */	mflr r0
+/* 802BF1F8 00000790  38 A0 00 04 */	li r5, 0x4
+/* 802BF1FC 00000794  90 01 00 34 */	stw r0, 0x34(r1)
+/* 802BF200 00000798  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 802BF204 0000079C  7C 9F 23 78 */	mr r31, r4
+/* 802BF208 000007A0  38 80 00 00 */	li r4, 0x0
+/* 802BF20C 000007A4  C0 03 00 00 */	lfs f0, 0x0(r3)
+/* 802BF210 000007A8  C0 23 00 04 */	lfs f1, 0x4(r3)
+/* 802BF214 000007AC  C0 43 00 08 */	lfs f2, 0x8(r3)
+/* 802BF218 000007B0  C0 63 00 0C */	lfs f3, 0xc(r3)
+/* 802BF21C 000007B4  38 60 00 80 */	li r3, 0x80
+/* 802BF220 000007B8  D0 01 00 08 */	stfs f0, 0x8(r1)
+/* 802BF224 000007BC  D0 21 00 0C */	stfs f1, 0xc(r1)
+/* 802BF228 000007C0  D0 41 00 10 */	stfs f2, 0x10(r1)
+/* 802BF22C 000007C4  D0 21 00 14 */	stfs f1, 0x14(r1)
+/* 802BF230 000007C8  D0 41 00 18 */	stfs f2, 0x18(r1)
+/* 802BF234 000007CC  D0 61 00 1C */	stfs f3, 0x1c(r1)
+/* 802BF238 000007D0  D0 01 00 20 */	stfs f0, 0x20(r1)
+/* 802BF23C 000007D4  D0 61 00 24 */	stfs f3, 0x24(r1)
+/* 802BF240 000007D8  48 00 00 01 */	bl GXBegin
+/* 802BF244 000007DC  3C C0 CC 01 */	lis r6, 0xcc01
+/* 802BF248 000007E0  C0 01 00 08 */	lfs f0, 0x8(r1)
+/* 802BF24C 000007E4  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF250 000007E8  C0 01 00 0C */	lfs f0, 0xc(r1)
+/* 802BF254 000007EC  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF258 000007F0  C0 00 00 00 */	lfs f0, "@26591_8042F490"@sda21(r0)
+/* 802BF25C 000007F4  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF260 000007F8  C0 21 00 10 */	lfs f1, 0x10(r1)
+/* 802BF264 000007FC  88 7F 00 03 */	lbz r3, 0x3(r31)
+/* 802BF268 00000800  88 9F 00 02 */	lbz r4, 0x2(r31)
+/* 802BF26C 00000804  88 BF 00 01 */	lbz r5, 0x1(r31)
+/* 802BF270 00000808  88 1F 00 00 */	lbz r0, 0x0(r31)
+/* 802BF274 0000080C  98 06 80 00 */	stb r0, -0x8000(r6)
+/* 802BF278 00000810  C0 01 00 14 */	lfs f0, 0x14(r1)
+/* 802BF27C 00000814  98 A6 80 00 */	stb r5, -0x8000(r6)
+/* 802BF280 00000818  C0 61 00 18 */	lfs f3, 0x18(r1)
+/* 802BF284 0000081C  98 86 80 00 */	stb r4, -0x8000(r6)
+/* 802BF288 00000820  C0 41 00 1C */	lfs f2, 0x1c(r1)
+/* 802BF28C 00000824  98 66 80 00 */	stb r3, -0x8000(r6)
+/* 802BF290 00000828  C0 81 00 20 */	lfs f4, 0x20(r1)
+/* 802BF294 0000082C  D0 26 80 00 */	stfs f1, -0x8000(r6)
+/* 802BF298 00000830  C0 21 00 24 */	lfs f1, 0x24(r1)
+/* 802BF29C 00000834  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF2A0 00000838  C0 00 00 00 */	lfs f0, "@26591_8042F490"@sda21(r0)
+/* 802BF2A4 0000083C  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF2A8 00000840  88 7F 00 03 */	lbz r3, 0x3(r31)
+/* 802BF2AC 00000844  88 9F 00 02 */	lbz r4, 0x2(r31)
+/* 802BF2B0 00000848  88 BF 00 01 */	lbz r5, 0x1(r31)
+/* 802BF2B4 0000084C  88 1F 00 00 */	lbz r0, 0x0(r31)
+/* 802BF2B8 00000850  98 06 80 00 */	stb r0, -0x8000(r6)
+/* 802BF2BC 00000854  98 A6 80 00 */	stb r5, -0x8000(r6)
+/* 802BF2C0 00000858  98 86 80 00 */	stb r4, -0x8000(r6)
+/* 802BF2C4 0000085C  98 66 80 00 */	stb r3, -0x8000(r6)
+/* 802BF2C8 00000860  D0 66 80 00 */	stfs f3, -0x8000(r6)
+/* 802BF2CC 00000864  D0 46 80 00 */	stfs f2, -0x8000(r6)
+/* 802BF2D0 00000868  C0 00 00 00 */	lfs f0, "@26591_8042F490"@sda21(r0)
+/* 802BF2D4 0000086C  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF2D8 00000870  88 7F 00 03 */	lbz r3, 0x3(r31)
+/* 802BF2DC 00000874  88 9F 00 02 */	lbz r4, 0x2(r31)
+/* 802BF2E0 00000878  88 BF 00 01 */	lbz r5, 0x1(r31)
+/* 802BF2E4 0000087C  88 1F 00 00 */	lbz r0, 0x0(r31)
+/* 802BF2E8 00000880  98 06 80 00 */	stb r0, -0x8000(r6)
+/* 802BF2EC 00000884  98 A6 80 00 */	stb r5, -0x8000(r6)
+/* 802BF2F0 00000888  98 86 80 00 */	stb r4, -0x8000(r6)
+/* 802BF2F4 0000088C  98 66 80 00 */	stb r3, -0x8000(r6)
+/* 802BF2F8 00000890  D0 86 80 00 */	stfs f4, -0x8000(r6)
+/* 802BF2FC 00000894  D0 26 80 00 */	stfs f1, -0x8000(r6)
+/* 802BF300 00000898  C0 00 00 00 */	lfs f0, "@26591_8042F490"@sda21(r0)
+/* 802BF304 0000089C  D0 06 80 00 */	stfs f0, -0x8000(r6)
+/* 802BF308 000008A0  88 BF 00 03 */	lbz r5, 0x3(r31)
+/* 802BF30C 000008A4  88 9F 00 02 */	lbz r4, 0x2(r31)
+/* 802BF310 000008A8  88 7F 00 01 */	lbz r3, 0x1(r31)
+/* 802BF314 000008AC  88 1F 00 00 */	lbz r0, 0x0(r31)
+/* 802BF318 000008B0  98 06 80 00 */	stb r0, -0x8000(r6)
+/* 802BF31C 000008B4  98 66 80 00 */	stb r3, -0x8000(r6)
+/* 802BF320 000008B8  98 86 80 00 */	stb r4, -0x8000(r6)
+/* 802BF324 000008BC  98 A6 80 00 */	stb r5, -0x8000(r6)
+/* 802BF328 000008C0  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 802BF32C 000008C4  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 802BF330 000008C8  7C 08 03 A6 */	mtlr r0
+/* 802BF334 000008CC  38 21 00 30 */	addi r1, r1, 0x30
+/* 802BF338 000008D0  4E 80 00 20 */	blr
+.endfn drawFillBox2__Q23EGG8GraphicsFRQ23EGG10BoundBox2fRQ23EGG5Color
+
+# .text:0x894 | 0x802BF33C | size: 0x4
+.fn gap_03_802BF33C_text, global
+.hidden gap_03_802BF33C_text
+/* 802BF33C 000008D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_802BF33C_text

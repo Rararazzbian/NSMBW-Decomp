@@ -1,0 +1,144 @@
+.include "macros.inc"
+.file "list.cpp"
+
+# 0x8018A700..0x8018A870 | size: 0x170
+.text
+.balign 4
+
+# .text:0x0 | 0x8018A700 | size: 0x18
+# nw4hbm::ut::List_Init(nw4hbm::ut::List*, unsigned short)
+.fn List_Init__Q26nw4hbm2utFPQ36nw4hbm2ut4ListUs, global
+/* 8018A700 00000040  38 00 00 00 */	li r0, 0x0
+/* 8018A704 00000044  90 03 00 00 */	stw r0, 0x0(r3)
+/* 8018A708 00000048  90 03 00 04 */	stw r0, 0x4(r3)
+/* 8018A70C 0000004C  B0 03 00 08 */	sth r0, 0x8(r3)
+/* 8018A710 00000050  B0 83 00 0A */	sth r4, 0xa(r3)
+/* 8018A714 00000054  4E 80 00 20 */	blr
+.endfn List_Init__Q26nw4hbm2utFPQ36nw4hbm2ut4ListUs
+
+# .text:0x18 | 0x8018A718 | size: 0x8
+.fn gap_03_8018A718_text, global
+.hidden gap_03_8018A718_text
+/* 8018A718 00000058  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8018A71C 0000005C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8018A718_text
+
+# .text:0x20 | 0x8018A720 | size: 0x70
+# nw4hbm::ut::List_Append(nw4hbm::ut::List*, void*)
+.fn List_Append__Q26nw4hbm2utFPQ36nw4hbm2ut4ListPv, global
+/* 8018A720 00000060  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8018A724 00000064  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8018A728 00000068  40 82 00 30 */	bne .L_8018A758
+/* 8018A72C 0000006C  A0 A3 00 0A */	lhz r5, 0xa(r3)
+/* 8018A730 00000070  38 00 00 00 */	li r0, 0x0
+/* 8018A734 00000074  7C A4 2A 14 */	add r5, r4, r5
+/* 8018A738 00000078  90 05 00 04 */	stw r0, 0x4(r5)
+/* 8018A73C 0000007C  90 05 00 00 */	stw r0, 0x0(r5)
+/* 8018A740 00000080  A0 A3 00 08 */	lhz r5, 0x8(r3)
+/* 8018A744 00000084  90 83 00 00 */	stw r4, 0x0(r3)
+/* 8018A748 00000088  38 05 00 01 */	addi r0, r5, 0x1
+/* 8018A74C 0000008C  90 83 00 04 */	stw r4, 0x4(r3)
+/* 8018A750 00000090  B0 03 00 08 */	sth r0, 0x8(r3)
+/* 8018A754 00000094  4E 80 00 20 */	blr
+.L_8018A758:
+/* 8018A758 00000098  A0 C3 00 0A */	lhz r6, 0xa(r3)
+/* 8018A75C 0000009C  38 00 00 00 */	li r0, 0x0
+/* 8018A760 000000A0  80 A3 00 04 */	lwz r5, 0x4(r3)
+/* 8018A764 000000A4  7C A6 21 6E */	stwux r5, r6, r4
+/* 8018A768 000000A8  90 06 00 04 */	stw r0, 0x4(r6)
+/* 8018A76C 000000AC  80 A3 00 04 */	lwz r5, 0x4(r3)
+/* 8018A770 000000B0  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 8018A774 000000B4  7C A5 02 14 */	add r5, r5, r0
+/* 8018A778 000000B8  90 85 00 04 */	stw r4, 0x4(r5)
+/* 8018A77C 000000BC  A0 A3 00 08 */	lhz r5, 0x8(r3)
+/* 8018A780 000000C0  90 83 00 04 */	stw r4, 0x4(r3)
+/* 8018A784 000000C4  38 05 00 01 */	addi r0, r5, 0x1
+/* 8018A788 000000C8  B0 03 00 08 */	sth r0, 0x8(r3)
+/* 8018A78C 000000CC  4E 80 00 20 */	blr
+.endfn List_Append__Q26nw4hbm2utFPQ36nw4hbm2ut4ListPv
+
+# .text:0x90 | 0x8018A790 | size: 0x6C
+# nw4hbm::ut::List_Remove(nw4hbm::ut::List*, void*)
+.fn List_Remove__Q26nw4hbm2utFPQ36nw4hbm2ut4ListPv, global
+/* 8018A790 000000D0  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 8018A794 000000D4  7C C4 02 14 */	add r6, r4, r0
+/* 8018A798 000000D8  7C 84 00 2E */	lwzx r4, r4, r0
+/* 8018A79C 000000DC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8018A7A0 000000E0  40 82 00 10 */	bne .L_8018A7B0
+/* 8018A7A4 000000E4  80 06 00 04 */	lwz r0, 0x4(r6)
+/* 8018A7A8 000000E8  90 03 00 00 */	stw r0, 0x0(r3)
+/* 8018A7AC 000000EC  48 00 00 10 */	b .L_8018A7BC
+.L_8018A7B0:
+/* 8018A7B0 000000F0  7C 84 02 14 */	add r4, r4, r0
+/* 8018A7B4 000000F4  80 06 00 04 */	lwz r0, 0x4(r6)
+/* 8018A7B8 000000F8  90 04 00 04 */	stw r0, 0x4(r4)
+.L_8018A7BC:
+/* 8018A7BC 000000FC  80 A6 00 04 */	lwz r5, 0x4(r6)
+/* 8018A7C0 00000100  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8018A7C4 00000104  40 82 00 10 */	bne .L_8018A7D4
+/* 8018A7C8 00000108  80 06 00 00 */	lwz r0, 0x0(r6)
+/* 8018A7CC 0000010C  90 03 00 04 */	stw r0, 0x4(r3)
+/* 8018A7D0 00000110  48 00 00 10 */	b .L_8018A7E0
+.L_8018A7D4:
+/* 8018A7D4 00000114  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 8018A7D8 00000118  80 86 00 00 */	lwz r4, 0x0(r6)
+/* 8018A7DC 0000011C  7C 85 01 2E */	stwx r4, r5, r0
+.L_8018A7E0:
+/* 8018A7E0 00000120  38 00 00 00 */	li r0, 0x0
+/* 8018A7E4 00000124  90 06 00 00 */	stw r0, 0x0(r6)
+/* 8018A7E8 00000128  90 06 00 04 */	stw r0, 0x4(r6)
+/* 8018A7EC 0000012C  A0 83 00 08 */	lhz r4, 0x8(r3)
+/* 8018A7F0 00000130  38 04 FF FF */	subi r0, r4, 0x1
+/* 8018A7F4 00000134  B0 03 00 08 */	sth r0, 0x8(r3)
+/* 8018A7F8 00000138  4E 80 00 20 */	blr
+.endfn List_Remove__Q26nw4hbm2utFPQ36nw4hbm2ut4ListPv
+
+# .text:0xFC | 0x8018A7FC | size: 0x4
+.fn gap_03_8018A7FC_text, global
+.hidden gap_03_8018A7FC_text
+/* 8018A7FC 0000013C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8018A7FC_text
+
+# .text:0x100 | 0x8018A800 | size: 0x20
+# nw4hbm::ut::List_GetNext(const nw4hbm::ut::List*, const void*)
+.fn List_GetNext__Q26nw4hbm2utFPCQ36nw4hbm2ut4ListPCv, global
+/* 8018A800 00000140  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8018A804 00000144  40 82 00 0C */	bne .L_8018A810
+/* 8018A808 00000148  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 8018A80C 0000014C  4E 80 00 20 */	blr
+.L_8018A810:
+/* 8018A810 00000150  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 8018A814 00000154  7C 64 02 14 */	add r3, r4, r0
+/* 8018A818 00000158  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8018A81C 0000015C  4E 80 00 20 */	blr
+.endfn List_GetNext__Q26nw4hbm2utFPCQ36nw4hbm2ut4ListPCv
+
+# .text:0x120 | 0x8018A820 | size: 0x50
+# nw4hbm::ut::List_GetNth(const nw4hbm::ut::List*, unsigned short)
+.fn List_GetNth__Q26nw4hbm2utFPCQ36nw4hbm2ut4ListUs, global
+/* 8018A820 00000160  38 C0 00 00 */	li r6, 0x0
+/* 8018A824 00000164  38 A0 00 00 */	li r5, 0x0
+/* 8018A828 00000168  48 00 00 1C */	b .L_8018A844
+/* 8018A82C 0000016C  60 00 00 00 */	nop
+.L_8018A830:
+/* 8018A830 00000170  7C 04 30 00 */	cmpw r4, r6
+/* 8018A834 00000174  40 82 00 0C */	bne .L_8018A840
+/* 8018A838 00000178  7C A3 2B 78 */	mr r3, r5
+/* 8018A83C 0000017C  4E 80 00 20 */	blr
+.L_8018A840:
+/* 8018A840 00000180  38 C6 00 01 */	addi r6, r6, 0x1
+.L_8018A844:
+/* 8018A844 00000184  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8018A848 00000188  41 82 00 14 */	beq .L_8018A85C
+/* 8018A84C 0000018C  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 8018A850 00000190  7C A5 02 14 */	add r5, r5, r0
+/* 8018A854 00000194  80 A5 00 04 */	lwz r5, 0x4(r5)
+/* 8018A858 00000198  48 00 00 08 */	b .L_8018A860
+.L_8018A85C:
+/* 8018A85C 0000019C  80 A3 00 00 */	lwz r5, 0x0(r3)
+.L_8018A860:
+/* 8018A860 000001A0  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8018A864 000001A4  40 82 FF CC */	bne .L_8018A830
+/* 8018A868 000001A8  38 60 00 00 */	li r3, 0x0
+/* 8018A86C 000001AC  4E 80 00 20 */	blr
+.endfn List_GetNth__Q26nw4hbm2utFPCQ36nw4hbm2ut4ListUs

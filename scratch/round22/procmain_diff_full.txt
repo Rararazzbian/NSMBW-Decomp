@@ -1,0 +1,42 @@
+size: target 179, draft 179
+   15 | want: lwz r5, m_bg_p__5dBg_c@sda21(r0)             got: lfs f0, 0x28(r3)
+   17 | want: lwz r4, 0x20(r3)                             got: lfs f1, 0x24(r3)
+   19 | want: addis r5, r5, 0x9                            got: lfs f2, 0x20(r3)
+   20 | want: lwz r0, 0x24(r3)                             got: lis r31, 0x4330
+   21 | want: lfs f1, -0x19c(r5)                           got: stfs f2, 0x64(r1)
+   22 | want: lis r31, 0x4330                              got: lwz r4, m_bg_p__5dBg_c@sda21(r0)
+   23 | want: lfs f2, -0x194(r5)                           got: stfs f1, 0x68(r1)
+   24 | want: lfs f0, SYM0@sda21(r0)                       got: addis r4, r4, 0x9
+   25 | want: stw r4, 0x64(r1)                             got: lfs f2, SYM0@sda21(r0)
+   26 | want: fmuls f1, f1, f0                             got: stfs f0, 0x6c(r1)
+   28 | want: stw r0, 0x68(r1)                             got: lfs f0, 0x34(r3)
+   29 | want: fmuls f0, f2, f0                             got: lfs f1, 0x30(r3)
+   30 | want: lfs f30, SYM2@sda21(r0)                      got: lfs f3, 0x2c(r3)
+   31 | want: lwz r0, 0x28(r3)                             got: stfs f3, 0x58(r1)
+   32 | want: stw r0, 0x6c(r1)                             got: lfs f30, SYM2@sda21(r0)
+   33 | want: fctiwz f1, f1                                got: stfs f1, 0x5c(r1)
+   34 | want: fctiwz f0, f0                                got: lfs f31, SYM3@sda21(r0)
+   35 | want: lfs f31, SYM3@sda21(r0)                      got: stfs f0, 0x60(r1)
+   36 | want: stfd f1, 0x80(r1)                            got: lfs f1, -0x19c(r4)
+   37 | want: lwz r4, 0x2c(r3)                             got: lfs f0, -0x194(r4)
+   38 | want: lwz r0, 0x30(r3)                             got: fmuls f1, f2, f1
+   39 | want: stfd f0, 0x88(r1)                            got: fmuls f0, f2, f0
+   40 | want: lwz r29, 0x84(r1)                            got: fctiwz f1, f1
+   41 | want: stw r4, 0x58(r1)                             got: fctiwz f0, f0
+   42 | want: lwz r28, 0x8c(r1)                            got: stfd f1, 0x80(r1)
+   43 | want: stw r0, 0x5c(r1)                             got: stfd f0, 0x88(r1)
+   44 | want: lwz r0, 0x34(r3)                             got: lwz r29, 0x84(r1)
+   45 | want: stw r0, 0x60(r1)                             got: lwz r28, 0x8c(r1)
+   64 | want: neg r0, r0                                   got: subf r0, r0, r28
+   65 | want: add r0, r28, r0                              got: stfs f30, 0x78(r1)
+   81 | want: lfs f2, 0x74(r1)                             got: lfs f1, 0x74(r1)
+   83 | want: lfs f1, 0x2c(r1)                             got: lfs f0, 0x2c(r1)
+   84 | want: lfs f0, 0x70(r1)                             got: lfs f2, 0x78(r1)
+   85 | want: fadds f1, f2, f1                             got: fadds f0, f1, f0
+   86 | want: stfs f30, 0x78(r1)                           got: lfs f1, 0x70(r1)
+   87 | want: stfs f1, 0x74(r1)                            got: stfs f1, 0x4c(r1)
+   88 | want: stfs f0, 0x4c(r1)                            got: stfs f0, 0x74(r1)
+   89 | want: stfs f1, 0x50(r1)                            got: stfs f0, 0x50(r1)
+   90 | want: stfs f30, 0x54(r1)                           got: stfs f2, 0x54(r1)
+  105 | want: lfs f2, 0x70(r1)                             got: lfs f2, 0x78(r1)
+  ... truncated

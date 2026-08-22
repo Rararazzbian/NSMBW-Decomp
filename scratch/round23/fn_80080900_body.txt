@@ -1,0 +1,181 @@
+// Forward declarations for nw4r geometry types not in the available headers.
+namespace nw4r {
+namespace math {
+struct SEGMENT3 {
+    VEC3 start;
+    VEC3 end;
+};
+struct SPHERE {
+    VEC3 center;
+    f32 radius;
+};
+}  // namespace math
+}  // namespace nw4r
+
+// fn_80080900 — dBg_ctr_c member function.
+//
+// Tests a 3D segment against this collision controller's shape (circle or
+// rect).  On hit, updates segment[1] (the end point) to the hit position
+// and optionally writes an angle into *angleOut.
+//
+// @param[in,out] segment    Two mVec3_c values at [0]=start, [1]=end.
+//                            End is overwritten on success.
+// @param[out]    angleOut   If non-NULL, receives a GX-angle s16.
+// @param[in]     flags      Rect-mode behaviour: 1 = rotation-based corner
+//                            filtering; 0 = test all four edges. Forced to
+//                            0 when the segment is not X-axis-aligned.
+// @return true if an intersection was found.
+bool dBg_ctr_c::fn_80080900(mVec3_c *segment, short *angleOut, int flags) {
+    // Bail if the owning actor is gone.
+    if (!mpActor) {
+        return false;
+    }
+
+    // ---- mode-dispatch ----------------------------------------------------
+    if (mMode == 1) {
+        // ======================== CIRCLE MODE ============================
+
+        // Build a sphere whose centre lies at (mPos.xy, segment[0].z).
+        // This makes the query effectively 2D in X/Y at the segment's Z.
+        nw4r::math::SPHERE sphere;
+        sphere.center.x = mPos.x;
+        sphere.center.y = mPos.y;
+        sphere.center.z = segment[0].z;
+        sphere.radius = mRadius;
+
+        f32 t;       // parameter along segment, output from sphere test
+        f32 unused;  // second output (discarded)
+
+        if (!IntersectionSegment3Sphere(
+                reinterpret_cast<const nw4r::math::SEGMENT3 *>(segment),
+                &sphere, &t, &unused)) {
+            return false;
+        }
+
+        // Direction = end - start.
+        mVec3_c dir(
+            segment[1].x - segment[0].x,
+            segment[1].y - segment[0].y,
+            segment[1].z - segment[0].z);
+
+        // New end = start + dir * t
+        segment[1].x = segment[0].x + dir.x * t;
+        segment[1].y = segment[0].y + dir.y * t;
+        segment[1].z = segment[0].z + dir.z * t;
+
+        if (angleOut) {
+            // Direction from sphere centre toward the hit point on the sphere.
+            mVec3_c toHit(
+                segment[1].x - sphere.center.x,
+                segment[1].y - sphere.center.y,
+                segment[1].z - sphere.center.z);
+
+            *angleOut = cM::atan2s(toHit.x, -toHit.y) + 0x8000;
+        }
+
+        return true;
+    }
+
+    // ========================== RECT MODE ===============================
+
+    f32 segStartX = segment[0].x;
+    f32 segEndX   = segment[1].x;
+    f32 segZ      = segment[0].z;
+
+    // Build four corner vertices on the stack.  Each corner XY comes from
+    // mScratch[i]; Z is pinned to the segment's start Z.
+    mVec3_c corners[4];
+    for (int i = 0; i < 4; i++) {
+        corners[i].x = mScratch[i].x;
+        corners[i].y = mScratch[i].y;
+        corners[i].z = segZ;
+    }
+
+    // When the segment is not vertical in X, ignore the caller's flags.
+    if (segStartX != segEndX) {
+        flags = 0;
+    }
+
+    // Rotation-based corner selection (flags == 1).
+    int cornerA = 0;
+    int cornerB = 0;
+    if (flags == 1) {
+        // Extract 2 bits at PowerPC bit-position 16 (MSB-0) from the
+        // negated rotation angle.  Equivalent to:
+        //   extrwi r26, r0, 2, 16          // (r0 >> 14) & 3
+        s16 rot = *mRotation;
+        int base = (static_cast<u32>(-rot) >> 14) & 3;
+
+        // When the segment points downward (start.y < end.y) add 2.
+        if (segment[0].y < segment[1].y) {
+            base = (base + 2) & 3;
+        }
+
+        cornerA = base;
+        cornerB = (base - 1) & 3;
+    }
+
+    static const f32 kEpsilon = 0.0f;  // "@69526_8042C16C"
+
+    // A local segment representing one rectangle edge.  Must be a single
+    // contiguous structure so reinterpret_cast<SEGMENT3> is valid.
+    struct {
+        f32 startX, startY, startZ;
+        f32 endX, endY, endZ;
+    } edgeSeg;
+
+    f32 t;       // parameter along the input segment
+    int found = 0;
+
+    for (int i = 0; i < 4; i++) {
+        // Corner filtering: when flags != 0, only test the two selected edges.
+        if (flags != 0) {
+            u8 fi = static_cast<u8>(i);
+            if (fi != static_cast<u8>(cornerA) && fi != static_cast<u8>(cornerB)) {
+                continue;
+            }
+        }
+
+        // Build an edge segment from corner[i] to corner[(i+1)&3].
+        int next = (i + 1) & 3;
+        edgeSeg.startX = corners[i].x;
+        edgeSeg.startY = corners[i].y;
+        edgeSeg.startZ = corners[i].z;
+        edgeSeg.endX   = corners[next].x;
+        edgeSeg.endY   = corners[next].y;
+        edgeSeg.endZ   = corners[next].z;
+
+        // Query the closest-point distance between the input segment and
+        // this rectangle edge.  The first float output receives the
+        // parameter t along the input segment.
+        if (DistSqSegment3ToSegment3(
+                reinterpret_cast<const nw4r::math::SEGMENT3 *>(segment),
+                reinterpret_cast<const nw4r::math::SEGMENT3 *>(&edgeSeg),
+                &t, NULL) >= kEpsilon) {
+            continue;
+        }
+
+        // Direction of the input segment.
+        mVec3_c dir(
+            segment[1].x - segment[0].x,
+            segment[1].y - segment[0].y,
+            segment[1].z - segment[0].z);
+
+        // New end = start + dir * t
+        segment[1].x = segment[0].x + dir.x * t;
+        segment[1].y = segment[0].y + dir.y * t;
+        segment[1].z = segment[0].z + dir.z * t;
+
+        if (angleOut) {
+            // Direction of the rectangle edge.
+            f32 edgeDirX = edgeSeg.endX - edgeSeg.startX;
+            f32 edgeDirY = edgeSeg.endY - edgeSeg.startY;
+
+            *angleOut = cM::atan2s(edgeDirX, -edgeDirY) + 0x4000;
+        }
+
+        found = 1;
+    }
+
+    return found != 0;
+}

@@ -1,0 +1,43 @@
+.include "macros.inc"
+.file "auto_11_8042E010_sdata2"
+
+# 0x8042E010..0x8042E030 | size: 0x20
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042E010 | size: 0x4
+.obj "@14502_8042E010", global
+	.4byte 0x00000000
+.endobj "@14502_8042E010"
+
+# .sdata2:0x4 | 0x8042E014 | size: 0x4
+.obj gap_11_8042E014_sdata2, global
+.hidden gap_11_8042E014_sdata2
+	.4byte 0x00000000
+.endobj gap_11_8042E014_sdata2
+
+# .sdata2:0x8 | 0x8042E018 | size: 0x4
+.obj "@6616_8042E018", global
+	.4byte 0x3F4CCCCD
+.endobj "@6616_8042E018"
+
+# .sdata2:0xC | 0x8042E01C | size: 0x4
+.obj "@6617_8042E01C", global
+	.4byte 0x3DCCCCCD
+.endobj "@6617_8042E01C"
+
+# .sdata2:0x10 | 0x8042E020 | size: 0x8
+.obj "@6621_8042E020", global
+	.4byte 0x43300000
+	.4byte 0x80000000
+.endobj "@6621_8042E020"
+
+# .sdata2:0x18 | 0x8042E028 | size: 0x4
+.obj "@6626_8042E028", global
+	.4byte 0x00000000
+.endobj "@6626_8042E028"
+
+# .sdata2:0x1C | 0x8042E02C | size: 0x4
+.obj "@6627_8042E02C", global
+	.4byte 0x3F800000
+.endobj "@6627_8042E02C"

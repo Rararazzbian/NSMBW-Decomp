@@ -1,0 +1,921 @@
+.include "macros.inc"
+.file "d_base_actor.cpp"
+
+# 0x8006C6D0..0x8006CF40 | size: 0x870
+.text
+.balign 4
+
+# .text:0x0 | 0x8006C6D0 | size: 0x118
+# dBaseActor_c::dBaseActor_c()
+.fn __ct__12dBaseActor_cFv, global
+/* 8006C6D0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006C6D4 00000044  7C 08 02 A6 */	mflr r0
+/* 8006C6D8 00000048  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006C6DC 0000004C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006C6E0 00000050  7C 7F 1B 78 */	mr r31, r3
+/* 8006C6E4 00000054  48 00 00 01 */	bl __ct__7dBase_cFv
+/* 8006C6E8 00000058  3C 60 00 00 */	lis r3, __vt__12dBaseActor_c@ha
+/* 8006C6EC 0000005C  38 00 00 00 */	li r0, 0x0
+/* 8006C6F0 00000060  38 63 00 00 */	addi r3, r3, __vt__12dBaseActor_c@l
+/* 8006C6F4 00000064  90 7F 00 60 */	stw r3, 0x60(r31)
+/* 8006C6F8 00000068  38 9F 00 70 */	addi r4, r31, 0x70
+/* 8006C6FC 0000006C  90 1F 00 70 */	stw r0, 0x70(r31)
+/* 8006C700 00000070  38 60 00 00 */	li r3, m_actorManage__12dBaseActor_c@sda21
+/* 8006C704 00000074  90 1F 00 74 */	stw r0, 0x74(r31)
+/* 8006C708 00000078  93 FF 00 78 */	stw r31, 0x78(r31)
+/* 8006C70C 0000007C  48 00 00 01 */	bl append__9cListMg_cFP9cListNd_c
+/* 8006C710 00000080  80 60 00 00 */	lwz r3, m_tmpCtPosP__12dBaseActor_c@sda21(r0)
+/* 8006C714 00000084  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006C718 00000088  41 82 00 38 */	beq .L_8006C750
+/* 8006C71C 0000008C  C0 03 00 00 */	lfs f0, 0x0(r3)
+/* 8006C720 00000090  D0 1F 00 AC */	stfs f0, 0xac(r31)
+/* 8006C724 00000094  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 8006C728 00000098  D0 1F 00 B0 */	stfs f0, 0xb0(r31)
+/* 8006C72C 0000009C  C0 03 00 08 */	lfs f0, 0x8(r3)
+/* 8006C730 000000A0  D0 1F 00 B4 */	stfs f0, 0xb4(r31)
+/* 8006C734 000000A4  80 60 00 00 */	lwz r3, m_tmpCtPosP__12dBaseActor_c@sda21(r0)
+/* 8006C738 000000A8  C0 03 00 00 */	lfs f0, 0x0(r3)
+/* 8006C73C 000000AC  D0 1F 00 B8 */	stfs f0, 0xb8(r31)
+/* 8006C740 000000B0  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 8006C744 000000B4  D0 1F 00 BC */	stfs f0, 0xbc(r31)
+/* 8006C748 000000B8  C0 03 00 08 */	lfs f0, 0x8(r3)
+/* 8006C74C 000000BC  D0 1F 00 C0 */	stfs f0, 0xc0(r31)
+.L_8006C750:
+/* 8006C750 000000C0  80 60 00 00 */	lwz r3, m_tmpCtAngleP__12dBaseActor_c@sda21(r0)
+/* 8006C754 000000C4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006C758 000000C8  41 82 00 38 */	beq .L_8006C790
+/* 8006C75C 000000CC  A8 03 00 00 */	lha r0, 0x0(r3)
+/* 8006C760 000000D0  B0 1F 01 00 */	sth r0, 0x100(r31)
+/* 8006C764 000000D4  A8 03 00 02 */	lha r0, 0x2(r3)
+/* 8006C768 000000D8  B0 1F 01 02 */	sth r0, 0x102(r31)
+/* 8006C76C 000000DC  A8 03 00 04 */	lha r0, 0x4(r3)
+/* 8006C770 000000E0  B0 1F 01 04 */	sth r0, 0x104(r31)
+/* 8006C774 000000E4  80 60 00 00 */	lwz r3, m_tmpCtAngleP__12dBaseActor_c@sda21(r0)
+/* 8006C778 000000E8  A8 03 00 00 */	lha r0, 0x0(r3)
+/* 8006C77C 000000EC  B0 1F 01 06 */	sth r0, 0x106(r31)
+/* 8006C780 000000F0  A8 03 00 02 */	lha r0, 0x2(r3)
+/* 8006C784 000000F4  B0 1F 01 08 */	sth r0, 0x108(r31)
+/* 8006C788 000000F8  A8 03 00 04 */	lha r0, 0x4(r3)
+/* 8006C78C 000000FC  B0 1F 01 0A */	sth r0, 0x10a(r31)
+.L_8006C790:
+/* 8006C790 00000100  C0 20 00 00 */	lfs f1, "@5310"@sda21(r0)
+/* 8006C794 00000104  38 80 00 01 */	li r4, 0x1
+/* 8006C798 00000108  C0 00 00 00 */	lfs f0, "@5311"@sda21(r0)
+/* 8006C79C 0000010C  7F E3 FB 78 */	mr r3, r31
+/* 8006C7A0 00000110  A0 1F 00 08 */	lhz r0, 0x8(r31)
+/* 8006C7A4 00000114  98 9F 01 24 */	stb r4, 0x124(r31)
+/* 8006C7A8 00000118  54 00 10 3A */	slwi r0, r0, 2
+/* 8006C7AC 0000011C  D0 3F 00 D0 */	stfs f1, 0xd0(r31)
+/* 8006C7B0 00000120  D0 3F 00 D4 */	stfs f1, 0xd4(r31)
+/* 8006C7B4 00000124  D0 3F 00 D8 */	stfs f1, 0xd8(r31)
+/* 8006C7B8 00000128  D0 1F 00 DC */	stfs f0, 0xdc(r31)
+/* 8006C7BC 0000012C  D0 1F 00 E0 */	stfs f0, 0xe0(r31)
+/* 8006C7C0 00000130  D0 1F 00 E4 */	stfs f0, 0xe4(r31)
+/* 8006C7C4 00000134  80 80 00 00 */	lwz r4, sProfileList__8fProfile@sda21(r0)
+/* 8006C7C8 00000138  7C 84 00 2E */	lwzx r4, r4, r0
+/* 8006C7CC 0000013C  80 04 00 08 */	lwz r0, 0x8(r4)
+/* 8006C7D0 00000140  90 1F 01 20 */	stw r0, 0x120(r31)
+/* 8006C7D4 00000144  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006C7D8 00000148  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006C7DC 0000014C  7C 08 03 A6 */	mtlr r0
+/* 8006C7E0 00000150  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006C7E4 00000154  4E 80 00 20 */	blr
+.endfn __ct__12dBaseActor_cFv
+
+# .text:0x118 | 0x8006C7E8 | size: 0x8
+.fn gap_03_8006C7E8_text, global
+.hidden gap_03_8006C7E8_text
+/* 8006C7E8 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C7EC 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006C7E8_text
+
+# .text:0x120 | 0x8006C7F0 | size: 0x74
+# dBaseActor_c::~dBaseActor_c()
+.fn __dt__12dBaseActor_cFv, global
+/* 8006C7F0 00000160  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006C7F4 00000164  7C 08 02 A6 */	mflr r0
+/* 8006C7F8 00000168  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006C7FC 0000016C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006C800 00000170  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006C804 00000174  7C 9F 23 78 */	mr r31, r4
+/* 8006C808 00000178  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8006C80C 0000017C  7C 7E 1B 78 */	mr r30, r3
+/* 8006C810 00000180  41 82 00 38 */	beq .L_8006C848
+/* 8006C814 00000184  3C A0 00 00 */	lis r5, __vt__12dBaseActor_c@ha
+/* 8006C818 00000188  38 9E 00 70 */	addi r4, r30, 0x70
+/* 8006C81C 0000018C  38 A5 00 00 */	addi r5, r5, __vt__12dBaseActor_c@l
+/* 8006C820 00000190  90 A3 00 60 */	stw r5, 0x60(r3)
+/* 8006C824 00000194  38 60 00 00 */	li r3, m_actorManage__12dBaseActor_c@sda21
+/* 8006C828 00000198  48 00 00 01 */	bl remove__9cListMg_cFP9cListNd_c
+/* 8006C82C 0000019C  7F C3 F3 78 */	mr r3, r30
+/* 8006C830 000001A0  38 80 00 00 */	li r4, 0x0
+/* 8006C834 000001A4  48 00 00 01 */	bl __dt__7dBase_cFv
+/* 8006C838 000001A8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8006C83C 000001AC  40 81 00 0C */	ble .L_8006C848
+/* 8006C840 000001B0  7F C3 F3 78 */	mr r3, r30
+/* 8006C844 000001B4  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_8006C848:
+/* 8006C848 000001B8  7F C3 F3 78 */	mr r3, r30
+/* 8006C84C 000001BC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006C850 000001C0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8006C854 000001C4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006C858 000001C8  7C 08 03 A6 */	mtlr r0
+/* 8006C85C 000001CC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006C860 000001D0  4E 80 00 20 */	blr
+.endfn __dt__12dBaseActor_cFv
+
+# .text:0x194 | 0x8006C864 | size: 0xC
+.fn gap_03_8006C864_text, global
+.hidden gap_03_8006C864_text
+/* 8006C864 000001D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C868 000001D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C86C 000001DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006C864_text
+
+# .text:0x1A0 | 0x8006C870 | size: 0x2C
+# dBaseActor_c::preCreate()
+.fn preCreate__12dBaseActor_cFv, global
+/* 8006C870 000001E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006C874 000001E4  7C 08 02 A6 */	mflr r0
+/* 8006C878 000001E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006C87C 000001EC  48 00 00 01 */	bl preCreate__7dBase_cFv
+/* 8006C880 000001F0  7C 03 00 D0 */	neg r0, r3
+/* 8006C884 000001F4  7C 00 1B 78 */	or r0, r0, r3
+/* 8006C888 000001F8  54 03 0F FE */	srwi r3, r0, 31
+/* 8006C88C 000001FC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006C890 00000200  7C 08 03 A6 */	mtlr r0
+/* 8006C894 00000204  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006C898 00000208  4E 80 00 20 */	blr
+.endfn preCreate__12dBaseActor_cFv
+
+# .text:0x1CC | 0x8006C89C | size: 0x4
+.fn gap_03_8006C89C_text, global
+.hidden gap_03_8006C89C_text
+/* 8006C89C 0000020C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006C89C_text
+
+# .text:0x1D0 | 0x8006C8A0 | size: 0x4
+# dBaseActor_c::postCreate(fBase_c::MAIN_STATE_e)
+.fn postCreate__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e, global
+/* 8006C8A0 00000210  48 00 00 00 */	b postCreate__7dBase_cFQ27fBase_c12MAIN_STATE_e
+.endfn postCreate__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+
+# .text:0x1D4 | 0x8006C8A4 | size: 0xC
+.fn gap_03_8006C8A4_text, global
+.hidden gap_03_8006C8A4_text
+/* 8006C8A4 00000214  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C8A8 00000218  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C8AC 0000021C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006C8A4_text
+
+# .text:0x1E0 | 0x8006C8B0 | size: 0x2C
+# dBaseActor_c::preDelete()
+.fn preDelete__12dBaseActor_cFv, global
+/* 8006C8B0 00000220  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006C8B4 00000224  7C 08 02 A6 */	mflr r0
+/* 8006C8B8 00000228  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006C8BC 0000022C  48 00 00 01 */	bl preDelete__7dBase_cFv
+/* 8006C8C0 00000230  7C 03 00 D0 */	neg r0, r3
+/* 8006C8C4 00000234  7C 00 1B 78 */	or r0, r0, r3
+/* 8006C8C8 00000238  54 03 0F FE */	srwi r3, r0, 31
+/* 8006C8CC 0000023C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006C8D0 00000240  7C 08 03 A6 */	mtlr r0
+/* 8006C8D4 00000244  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006C8D8 00000248  4E 80 00 20 */	blr
+.endfn preDelete__12dBaseActor_cFv
+
+# .text:0x20C | 0x8006C8DC | size: 0x4
+.fn gap_03_8006C8DC_text, global
+.hidden gap_03_8006C8DC_text
+/* 8006C8DC 0000024C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006C8DC_text
+
+# .text:0x210 | 0x8006C8E0 | size: 0x4
+# dBaseActor_c::postDelete(fBase_c::MAIN_STATE_e)
+.fn postDelete__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e, global
+/* 8006C8E0 00000250  48 00 00 00 */	b postDelete__7dBase_cFQ27fBase_c12MAIN_STATE_e
+.endfn postDelete__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+
+# .text:0x214 | 0x8006C8E4 | size: 0xC
+.fn gap_03_8006C8E4_text, global
+.hidden gap_03_8006C8E4_text
+/* 8006C8E4 00000254  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C8E8 00000258  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006C8EC 0000025C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006C8E4_text
+
+# .text:0x220 | 0x8006C8F0 | size: 0x90
+# dBaseActor_c::preExecute()
+.fn preExecute__12dBaseActor_cFv, global
+/* 8006C8F0 00000260  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006C8F4 00000264  7C 08 02 A6 */	mflr r0
+/* 8006C8F8 00000268  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006C8FC 0000026C  48 00 00 01 */	bl preExecute__7dBase_cFv
+/* 8006C900 00000270  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006C904 00000274  40 82 00 0C */	bne .L_8006C910
+/* 8006C908 00000278  38 60 00 00 */	li r3, 0x0
+/* 8006C90C 0000027C  48 00 00 64 */	b .L_8006C970
+.L_8006C910:
+/* 8006C910 00000280  48 00 00 01 */	bl GetInstance__Q26dReset8Manage_cFv
+/* 8006C914 00000284  80 C3 00 0C */	lwz r6, 0xc(r3)
+/* 8006C918 00000288  38 A0 00 01 */	li r5, 0x1
+/* 8006C91C 0000028C  38 80 00 01 */	li r4, 0x1
+/* 8006C920 00000290  2C 06 00 01 */	cmpwi r6, 0x1
+/* 8006C924 00000294  41 82 00 14 */	beq .L_8006C938
+/* 8006C928 00000298  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 8006C92C 0000029C  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8006C930 000002A0  41 82 00 08 */	beq .L_8006C938
+/* 8006C934 000002A4  38 80 00 00 */	li r4, 0x0
+.L_8006C938:
+/* 8006C938 000002A8  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8006C93C 000002AC  40 82 00 2C */	bne .L_8006C968
+/* 8006C940 000002B0  2C 06 00 05 */	cmpwi r6, 0x5
+/* 8006C944 000002B4  38 80 00 00 */	li r4, 0x0
+/* 8006C948 000002B8  41 82 00 10 */	beq .L_8006C958
+/* 8006C94C 000002BC  80 03 00 08 */	lwz r0, 0x8(r3)
+/* 8006C950 000002C0  2C 00 00 05 */	cmpwi r0, 0x5
+/* 8006C954 000002C4  40 82 00 08 */	bne .L_8006C95C
+.L_8006C958:
+/* 8006C958 000002C8  38 80 00 01 */	li r4, 0x1
+.L_8006C95C:
+/* 8006C95C 000002CC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8006C960 000002D0  40 82 00 08 */	bne .L_8006C968
+/* 8006C964 000002D4  38 A0 00 00 */	li r5, 0x0
+.L_8006C968:
+/* 8006C968 000002D8  7C A0 00 34 */	cntlzw r0, r5
+/* 8006C96C 000002DC  54 03 D9 7E */	srwi r3, r0, 5
+.L_8006C970:
+/* 8006C970 000002E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006C974 000002E4  7C 08 03 A6 */	mtlr r0
+/* 8006C978 000002E8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006C97C 000002EC  4E 80 00 20 */	blr
+.endfn preExecute__12dBaseActor_cFv
+
+# .text:0x2B0 | 0x8006C980 | size: 0x70
+# dBaseActor_c::postExecute(fBase_c::MAIN_STATE_e)
+.fn postExecute__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e, global
+/* 8006C980 000002F0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8006C984 000002F4  7C 08 02 A6 */	mflr r0
+/* 8006C988 000002F8  2C 04 00 02 */	cmpwi r4, 0x2
+/* 8006C98C 000002FC  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8006C990 00000300  40 82 00 4C */	bne .L_8006C9DC
+/* 8006C994 00000304  C0 83 00 B4 */	lfs f4, 0xb4(r3)
+/* 8006C998 00000308  C0 03 00 C0 */	lfs f0, 0xc0(r3)
+/* 8006C99C 0000030C  C0 63 00 B0 */	lfs f3, 0xb0(r3)
+/* 8006C9A0 00000310  EC A4 00 28 */	fsubs f5, f4, f0
+/* 8006C9A4 00000314  C0 43 00 BC */	lfs f2, 0xbc(r3)
+/* 8006C9A8 00000318  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 8006C9AC 0000031C  C0 03 00 B8 */	lfs f0, 0xb8(r3)
+/* 8006C9B0 00000320  EC 43 10 28 */	fsubs f2, f3, f2
+/* 8006C9B4 00000324  D0 A1 00 10 */	stfs f5, 0x10(r1)
+/* 8006C9B8 00000328  EC 01 00 28 */	fsubs f0, f1, f0
+/* 8006C9BC 0000032C  D0 41 00 0C */	stfs f2, 0xc(r1)
+/* 8006C9C0 00000330  D0 01 00 08 */	stfs f0, 0x8(r1)
+/* 8006C9C4 00000334  D0 03 00 C4 */	stfs f0, 0xc4(r3)
+/* 8006C9C8 00000338  D0 43 00 C8 */	stfs f2, 0xc8(r3)
+/* 8006C9CC 0000033C  D0 A3 00 CC */	stfs f5, 0xcc(r3)
+/* 8006C9D0 00000340  D0 23 00 B8 */	stfs f1, 0xb8(r3)
+/* 8006C9D4 00000344  D0 63 00 BC */	stfs f3, 0xbc(r3)
+/* 8006C9D8 00000348  D0 83 00 C0 */	stfs f4, 0xc0(r3)
+.L_8006C9DC:
+/* 8006C9DC 0000034C  48 00 00 01 */	bl postExecute__7dBase_cFQ27fBase_c12MAIN_STATE_e
+/* 8006C9E0 00000350  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8006C9E4 00000354  7C 08 03 A6 */	mtlr r0
+/* 8006C9E8 00000358  38 21 00 20 */	addi r1, r1, 0x20
+/* 8006C9EC 0000035C  4E 80 00 20 */	blr
+.endfn postExecute__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+
+# .text:0x320 | 0x8006C9F0 | size: 0x4C
+# dBaseActor_c::preDraw()
+.fn preDraw__12dBaseActor_cFv, global
+/* 8006C9F0 00000360  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006C9F4 00000364  7C 08 02 A6 */	mflr r0
+/* 8006C9F8 00000368  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006C9FC 0000036C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006CA00 00000370  7C 7F 1B 78 */	mr r31, r3
+/* 8006CA04 00000374  48 00 00 01 */	bl preDraw__7dBase_cFv
+/* 8006CA08 00000378  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006CA0C 0000037C  40 82 00 0C */	bne .L_8006CA18
+/* 8006CA10 00000380  38 60 00 00 */	li r3, 0x0
+/* 8006CA14 00000384  48 00 00 14 */	b .L_8006CA28
+.L_8006CA18:
+/* 8006CA18 00000388  88 7F 01 24 */	lbz r3, 0x124(r31)
+/* 8006CA1C 0000038C  7C 03 00 D0 */	neg r0, r3
+/* 8006CA20 00000390  7C 00 1B 78 */	or r0, r0, r3
+/* 8006CA24 00000394  54 03 0F FE */	srwi r3, r0, 31
+.L_8006CA28:
+/* 8006CA28 00000398  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006CA2C 0000039C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006CA30 000003A0  7C 08 03 A6 */	mtlr r0
+/* 8006CA34 000003A4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006CA38 000003A8  4E 80 00 20 */	blr
+.endfn preDraw__12dBaseActor_cFv
+
+# .text:0x36C | 0x8006CA3C | size: 0x4
+.fn gap_03_8006CA3C_text, global
+.hidden gap_03_8006CA3C_text
+/* 8006CA3C 000003AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CA3C_text
+
+# .text:0x370 | 0x8006CA40 | size: 0x4
+# dBaseActor_c::postDraw(fBase_c::MAIN_STATE_e)
+.fn postDraw__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e, global
+/* 8006CA40 000003B0  48 00 00 00 */	b postDraw__7dBase_cFQ27fBase_c12MAIN_STATE_e
+.endfn postDraw__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+
+# .text:0x374 | 0x8006CA44 | size: 0xC
+.fn gap_03_8006CA44_text, global
+.hidden gap_03_8006CA44_text
+/* 8006CA44 000003B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CA48 000003B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CA4C 000003BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CA44_text
+
+# .text:0x380 | 0x8006CA50 | size: 0x4
+# dBaseActor_c::draw2D()
+.fn draw2D__12dBaseActor_cFv, global
+/* 8006CA50 000003C0  4E 80 00 20 */	blr
+.endfn draw2D__12dBaseActor_cFv
+
+# .text:0x384 | 0x8006CA54 | size: 0xC
+.fn gap_03_8006CA54_text, global
+.hidden gap_03_8006CA54_text
+/* 8006CA54 000003C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CA58 000003C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CA5C 000003CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CA54_text
+
+# .text:0x390 | 0x8006CA60 | size: 0x4
+# dBaseActor_c::draw2D_lyt2()
+.fn draw2D_lyt2__12dBaseActor_cFv, global
+/* 8006CA60 000003D0  4E 80 00 20 */	blr
+.endfn draw2D_lyt2__12dBaseActor_cFv
+
+# .text:0x394 | 0x8006CA64 | size: 0xC
+.fn gap_03_8006CA64_text, global
+.hidden gap_03_8006CA64_text
+/* 8006CA64 000003D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CA68 000003D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CA6C 000003DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CA64_text
+
+# .text:0x3A0 | 0x8006CA70 | size: 0xC
+# dBaseActor_c::setTmpCtData(const mVec3_c*, const mAng3_c*)
+.fn setTmpCtData__12dBaseActor_cFPC7mVec3_cPC7mAng3_c, global
+/* 8006CA70 000003E0  90 60 00 00 */	stw r3, m_tmpCtPosP__12dBaseActor_c@sda21(r0)
+/* 8006CA74 000003E4  90 80 00 00 */	stw r4, m_tmpCtAngleP__12dBaseActor_c@sda21(r0)
+/* 8006CA78 000003E8  4E 80 00 20 */	blr
+.endfn setTmpCtData__12dBaseActor_cFPC7mVec3_cPC7mAng3_c
+
+# .text:0x3AC | 0x8006CA7C | size: 0x4
+.fn gap_03_8006CA7C_text, global
+.hidden gap_03_8006CA7C_text
+/* 8006CA7C 000003EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CA7C_text
+
+# .text:0x3B0 | 0x8006CA80 | size: 0x60
+# dBaseActor_c::construct(unsigned short, unsigned long, const mVec3_c*, const mAng3_c*)
+.fn construct__12dBaseActor_cFUsUlPC7mVec3_cPC7mAng3_c, global
+/* 8006CA80 000003F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006CA84 000003F4  7C 08 02 A6 */	mflr r0
+/* 8006CA88 000003F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006CA8C 000003FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006CA90 00000400  7C 9F 23 78 */	mr r31, r4
+/* 8006CA94 00000404  7C C4 33 78 */	mr r4, r6
+/* 8006CA98 00000408  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8006CA9C 0000040C  7C 7E 1B 78 */	mr r30, r3
+/* 8006CAA0 00000410  7C A3 2B 78 */	mr r3, r5
+/* 8006CAA4 00000414  48 00 00 01 */	bl setTmpCtData__12dBaseActor_cFPC7mVec3_cPC7mAng3_c
+/* 8006CAA8 00000418  A0 60 00 00 */	lhz r3, m_nowScene__8dScene_c@sda21(r0)
+/* 8006CAAC 0000041C  38 80 00 00 */	li r4, 0x0
+/* 8006CAB0 00000420  48 00 00 01 */	bl searchBaseByProfName__7dBase_cFUsPC7dBase_c
+/* 8006CAB4 00000424  7C 64 1B 78 */	mr r4, r3
+/* 8006CAB8 00000428  7F C3 F3 78 */	mr r3, r30
+/* 8006CABC 0000042C  7F E5 FB 78 */	mr r5, r31
+/* 8006CAC0 00000430  38 C0 00 02 */	li r6, 0x2
+/* 8006CAC4 00000434  48 00 00 01 */	bl createBase__7dBase_cFUsP7dBase_cUlUc
+/* 8006CAC8 00000438  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006CACC 0000043C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006CAD0 00000440  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8006CAD4 00000444  7C 08 03 A6 */	mtlr r0
+/* 8006CAD8 00000448  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006CADC 0000044C  4E 80 00 20 */	blr
+.endfn construct__12dBaseActor_cFUsUlPC7mVec3_cPC7mAng3_c
+
+# .text:0x410 | 0x8006CAE0 | size: 0x58
+# dBaseActor_c::draw2DActorOnLyt1()
+.fn draw2DActorOnLyt1__12dBaseActor_cFv, global
+/* 8006CAE0 00000450  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006CAE4 00000454  7C 08 02 A6 */	mflr r0
+/* 8006CAE8 00000458  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006CAEC 0000045C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006CAF0 00000460  3B E0 00 00 */	li r31, 0x0
+/* 8006CAF4 00000464  48 00 00 18 */	b .L_8006CB0C
+.L_8006CAF8:
+/* 8006CAF8 00000468  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8006CAFC 0000046C  7F E3 FB 78 */	mr r3, r31
+/* 8006CB00 00000470  81 8C 00 50 */	lwz r12, 0x50(r12)
+/* 8006CB04 00000474  7D 89 03 A6 */	mtctr r12
+/* 8006CB08 00000478  4E 80 04 21 */	bctrl
+.L_8006CB0C:
+/* 8006CB0C 0000047C  7F E4 FB 78 */	mr r4, r31
+/* 8006CB10 00000480  38 60 00 02 */	li r3, 0x2
+/* 8006CB14 00000484  48 00 00 01 */	bl searchBaseByGroupType__10fManager_cFUcPC7fBase_c
+/* 8006CB18 00000488  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006CB1C 0000048C  7C 7F 1B 78 */	mr r31, r3
+/* 8006CB20 00000490  40 82 FF D8 */	bne .L_8006CAF8
+/* 8006CB24 00000494  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006CB28 00000498  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006CB2C 0000049C  7C 08 03 A6 */	mtlr r0
+/* 8006CB30 000004A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006CB34 000004A4  4E 80 00 20 */	blr
+.endfn draw2DActorOnLyt1__12dBaseActor_cFv
+
+# .text:0x468 | 0x8006CB38 | size: 0x8
+.fn gap_03_8006CB38_text, global
+.hidden gap_03_8006CB38_text
+/* 8006CB38 000004A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CB3C 000004AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CB38_text
+
+# .text:0x470 | 0x8006CB40 | size: 0x58
+# dBaseActor_c::draw2DActorOnLyt2()
+.fn draw2DActorOnLyt2__12dBaseActor_cFv, global
+/* 8006CB40 000004B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006CB44 000004B4  7C 08 02 A6 */	mflr r0
+/* 8006CB48 000004B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006CB4C 000004BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006CB50 000004C0  3B E0 00 00 */	li r31, 0x0
+/* 8006CB54 000004C4  48 00 00 18 */	b .L_8006CB6C
+.L_8006CB58:
+/* 8006CB58 000004C8  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8006CB5C 000004CC  7F E3 FB 78 */	mr r3, r31
+/* 8006CB60 000004D0  81 8C 00 54 */	lwz r12, 0x54(r12)
+/* 8006CB64 000004D4  7D 89 03 A6 */	mtctr r12
+/* 8006CB68 000004D8  4E 80 04 21 */	bctrl
+.L_8006CB6C:
+/* 8006CB6C 000004DC  7F E4 FB 78 */	mr r4, r31
+/* 8006CB70 000004E0  38 60 00 02 */	li r3, 0x2
+/* 8006CB74 000004E4  48 00 00 01 */	bl searchBaseByGroupType__10fManager_cFUcPC7fBase_c
+/* 8006CB78 000004E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006CB7C 000004EC  7C 7F 1B 78 */	mr r31, r3
+/* 8006CB80 000004F0  40 82 FF D8 */	bne .L_8006CB58
+/* 8006CB84 000004F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006CB88 000004F8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006CB8C 000004FC  7C 08 03 A6 */	mtlr r0
+/* 8006CB90 00000500  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006CB94 00000504  4E 80 00 20 */	blr
+.endfn draw2DActorOnLyt2__12dBaseActor_cFv
+
+# .text:0x4C8 | 0x8006CB98 | size: 0x8
+.fn gap_03_8006CB98_text, global
+.hidden gap_03_8006CB98_text
+/* 8006CB98 00000508  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CB9C 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CB98_text
+
+# .text:0x4D0 | 0x8006CBA0 | size: 0x60
+# dBaseActor_c::construct(unsigned short, dBase_c*, unsigned long, const mVec3_c*, const mAng3_c*)
+.fn construct__12dBaseActor_cFUsP7dBase_cUlPC7mVec3_cPC7mAng3_c, global
+/* 8006CBA0 00000510  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8006CBA4 00000514  7C 08 02 A6 */	mflr r0
+/* 8006CBA8 00000518  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8006CBAC 0000051C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8006CBB0 00000520  7C BF 2B 78 */	mr r31, r5
+/* 8006CBB4 00000524  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8006CBB8 00000528  7C 9E 23 78 */	mr r30, r4
+/* 8006CBBC 0000052C  7C E4 3B 78 */	mr r4, r7
+/* 8006CBC0 00000530  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8006CBC4 00000534  7C 7D 1B 78 */	mr r29, r3
+/* 8006CBC8 00000538  7C C3 33 78 */	mr r3, r6
+/* 8006CBCC 0000053C  48 00 00 01 */	bl setTmpCtData__12dBaseActor_cFPC7mVec3_cPC7mAng3_c
+/* 8006CBD0 00000540  7F A3 EB 78 */	mr r3, r29
+/* 8006CBD4 00000544  7F C4 F3 78 */	mr r4, r30
+/* 8006CBD8 00000548  7F E5 FB 78 */	mr r5, r31
+/* 8006CBDC 0000054C  38 C0 00 02 */	li r6, 0x2
+/* 8006CBE0 00000550  48 00 00 01 */	bl createBase__7dBase_cFUsP7dBase_cUlUc
+/* 8006CBE4 00000554  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8006CBE8 00000558  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8006CBEC 0000055C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8006CBF0 00000560  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8006CBF4 00000564  7C 08 03 A6 */	mtlr r0
+/* 8006CBF8 00000568  38 21 00 20 */	addi r1, r1, 0x20
+/* 8006CBFC 0000056C  4E 80 00 20 */	blr
+.endfn construct__12dBaseActor_cFUsP7dBase_cUlPC7mVec3_cPC7mAng3_c
+
+# .text:0x530 | 0x8006CC00 | size: 0xB0
+# dBaseActor_c::calcSpeed()
+.fn calcSpeed__12dBaseActor_cFv, global
+/* 8006CC00 00000570  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 8006CC04 00000574  7C 08 02 A6 */	mflr r0
+/* 8006CC08 00000578  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8006CC0C 0000057C  38 81 00 0A */	addi r4, r1, 0xa
+/* 8006CC10 00000580  DB E1 00 20 */	stfd f31, 0x20(r1)
+/* 8006CC14 00000584  F3 E1 00 28 */	psq_st f31, 0x28(r1), 0, qr0
+/* 8006CC18 00000588  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8006CC1C 0000058C  7C 7F 1B 78 */	mr r31, r3
+/* 8006CC20 00000590  A8 03 01 08 */	lha r0, 0x108(r3)
+/* 8006CC24 00000594  B0 01 00 0A */	sth r0, 0xa(r1)
+/* 8006CC28 00000598  E0 24 B0 00 */	psq_l f1, 0x0(r4), 1, qr3
+/* 8006CC2C 0000059C  C0 00 00 00 */	lfs f0, "@5405"@sda21(r0)
+/* 8006CC30 000005A0  EC 20 00 72 */	fmuls f1, f0, f1
+/* 8006CC34 000005A4  48 00 00 01 */	bl SinFIdx__Q24nw4r4mathFf
+/* 8006CC38 000005A8  A8 1F 01 08 */	lha r0, 0x108(r31)
+/* 8006CC3C 000005AC  38 61 00 08 */	addi r3, r1, 0x8
+/* 8006CC40 000005B0  B0 01 00 08 */	sth r0, 0x8(r1)
+/* 8006CC44 000005B4  FF E0 08 90 */	fmr f31, f1
+/* 8006CC48 000005B8  E0 23 B0 00 */	psq_l f1, 0x0(r3), 1, qr3
+/* 8006CC4C 000005BC  C0 00 00 00 */	lfs f0, "@5405"@sda21(r0)
+/* 8006CC50 000005C0  EC 20 00 72 */	fmuls f1, f0, f1
+/* 8006CC54 000005C4  48 00 00 01 */	bl CosFIdx__Q24nw4r4mathFf
+/* 8006CC58 000005C8  C0 5F 00 EC */	lfs f2, 0xec(r31)
+/* 8006CC5C 000005CC  C0 1F 01 14 */	lfs f0, 0x114(r31)
+/* 8006CC60 000005D0  C0 7F 01 0C */	lfs f3, 0x10c(r31)
+/* 8006CC64 000005D4  EC 02 00 2A */	fadds f0, f2, f0
+/* 8006CC68 000005D8  C0 5F 01 18 */	lfs f2, 0x118(r31)
+/* 8006CC6C 000005DC  EC 23 00 72 */	fmuls f1, f3, f1
+/* 8006CC70 000005E0  FC 00 10 40 */	fcmpo cr0, f0, f2
+/* 8006CC74 000005E4  40 80 00 08 */	bge .L_8006CC7C
+/* 8006CC78 000005E8  48 00 00 08 */	b .L_8006CC80
+.L_8006CC7C:
+/* 8006CC7C 000005EC  FC 40 00 90 */	fmr f2, f0
+.L_8006CC80:
+/* 8006CC80 000005F0  C0 1F 01 0C */	lfs f0, 0x10c(r31)
+/* 8006CC84 000005F4  D0 5F 00 EC */	stfs f2, 0xec(r31)
+/* 8006CC88 000005F8  EC 00 07 F2 */	fmuls f0, f0, f31
+/* 8006CC8C 000005FC  D0 3F 00 F0 */	stfs f1, 0xf0(r31)
+/* 8006CC90 00000600  D0 1F 00 E8 */	stfs f0, 0xe8(r31)
+/* 8006CC94 00000604  E3 E1 00 28 */	psq_l f31, 0x28(r1), 0, qr0
+/* 8006CC98 00000608  CB E1 00 20 */	lfd f31, 0x20(r1)
+/* 8006CC9C 0000060C  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8006CCA0 00000610  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 8006CCA4 00000614  7C 08 03 A6 */	mtlr r0
+/* 8006CCA8 00000618  38 21 00 30 */	addi r1, r1, 0x30
+/* 8006CCAC 0000061C  4E 80 00 20 */	blr
+.endfn calcSpeed__12dBaseActor_cFv
+
+# .text:0x5E0 | 0x8006CCB0 | size: 0x50
+# dBaseActor_c::makeMtx()
+.fn makeMtx__12dBaseActor_cFv, global
+/* 8006CCB0 00000620  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8006CCB4 00000624  7C 08 02 A6 */	mflr r0
+/* 8006CCB8 00000628  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8006CCBC 0000062C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8006CCC0 00000630  7C 7F 1B 78 */	mr r31, r3
+/* 8006CCC4 00000634  C0 63 00 B4 */	lfs f3, 0xb4(r3)
+/* 8006CCC8 00000638  C0 43 00 B0 */	lfs f2, 0xb0(r3)
+/* 8006CCCC 0000063C  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 8006CCD0 00000640  38 63 00 7C */	addi r3, r3, 0x7c
+/* 8006CCD4 00000644  48 00 00 01 */	bl PSMTXTrans
+/* 8006CCD8 00000648  A0 1F 01 02 */	lhz r0, 0x102(r31)
+/* 8006CCDC 0000064C  38 7F 00 7C */	addi r3, r31, 0x7c
+/* 8006CCE0 00000650  B0 01 00 08 */	sth r0, 0x8(r1)
+/* 8006CCE4 00000654  38 81 00 08 */	addi r4, r1, 0x8
+/* 8006CCE8 00000658  48 00 00 01 */	bl YrotM__6mMtx_cF4mAng
+/* 8006CCEC 0000065C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8006CCF0 00000660  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8006CCF4 00000664  7C 08 03 A6 */	mtlr r0
+/* 8006CCF8 00000668  38 21 00 20 */	addi r1, r1, 0x20
+/* 8006CCFC 0000066C  4E 80 00 20 */	blr
+.endfn makeMtx__12dBaseActor_cFv
+
+# .text:0x630 | 0x8006CD00 | size: 0x34
+# dBaseActor_c::posMove(mVec3_c&)
+.fn posMove__12dBaseActor_cFR7mVec3_c, global
+/* 8006CD00 00000670  C0 23 00 AC */	lfs f1, 0xac(r3)
+/* 8006CD04 00000674  C0 04 00 00 */	lfs f0, 0x0(r4)
+/* 8006CD08 00000678  C0 43 00 B0 */	lfs f2, 0xb0(r3)
+/* 8006CD0C 0000067C  EC 01 00 2A */	fadds f0, f1, f0
+/* 8006CD10 00000680  C0 23 00 B4 */	lfs f1, 0xb4(r3)
+/* 8006CD14 00000684  D0 03 00 AC */	stfs f0, 0xac(r3)
+/* 8006CD18 00000688  C0 04 00 04 */	lfs f0, 0x4(r4)
+/* 8006CD1C 0000068C  EC 02 00 2A */	fadds f0, f2, f0
+/* 8006CD20 00000690  D0 03 00 B0 */	stfs f0, 0xb0(r3)
+/* 8006CD24 00000694  C0 04 00 08 */	lfs f0, 0x8(r4)
+/* 8006CD28 00000698  EC 01 00 2A */	fadds f0, f1, f0
+/* 8006CD2C 0000069C  D0 03 00 B4 */	stfs f0, 0xb4(r3)
+/* 8006CD30 000006A0  4E 80 00 20 */	blr
+.endfn posMove__12dBaseActor_cFR7mVec3_c
+
+# .text:0x664 | 0x8006CD34 | size: 0xC
+.fn gap_03_8006CD34_text, global
+.hidden gap_03_8006CD34_text
+/* 8006CD34 000006A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CD38 000006A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CD3C 000006AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CD34_text
+
+# .text:0x670 | 0x8006CD40 | size: 0x8
+# dBaseActor_c::posMove()
+.fn posMove__12dBaseActor_cFv, global
+/* 8006CD40 000006B0  38 83 00 E8 */	addi r4, r3, 0xe8
+/* 8006CD44 000006B4  48 00 00 00 */	b posMove__12dBaseActor_cFR7mVec3_c
+.endfn posMove__12dBaseActor_cFv
+
+# .text:0x678 | 0x8006CD48 | size: 0x8
+.fn gap_03_8006CD48_text, global
+.hidden gap_03_8006CD48_text
+/* 8006CD48 000006B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CD4C 000006BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CD48_text
+
+# .text:0x680 | 0x8006CD50 | size: 0x3C
+# dBaseActor_c::calcSpeedXY()
+.fn calcSpeedXY__12dBaseActor_cFv, global
+/* 8006CD50 000006C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8006CD54 000006C4  7C 08 02 A6 */	mflr r0
+/* 8006CD58 000006C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006CD5C 000006CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8006CD60 000006D0  7C 7F 1B 78 */	mr r31, r3
+/* 8006CD64 000006D4  48 00 00 01 */	bl calcSpeedF__12dBaseActor_cFv
+/* 8006CD68 000006D8  C0 1F 01 0C */	lfs f0, 0x10c(r31)
+/* 8006CD6C 000006DC  7F E3 FB 78 */	mr r3, r31
+/* 8006CD70 000006E0  D0 1F 00 E8 */	stfs f0, 0xe8(r31)
+/* 8006CD74 000006E4  48 00 00 01 */	bl calcFallSpeed__12dBaseActor_cFv
+/* 8006CD78 000006E8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006CD7C 000006EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8006CD80 000006F0  7C 08 03 A6 */	mtlr r0
+/* 8006CD84 000006F4  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006CD88 000006F8  4E 80 00 20 */	blr
+.endfn calcSpeedXY__12dBaseActor_cFv
+
+# .text:0x6BC | 0x8006CD8C | size: 0x4
+.fn gap_03_8006CD8C_text, global
+.hidden gap_03_8006CD8C_text
+/* 8006CD8C 000006FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CD8C_text
+
+# .text:0x6C0 | 0x8006CD90 | size: 0x48
+# dBaseActor_c::calcSpeedX()
+.fn calcSpeedX__12dBaseActor_cFv, global
+/* 8006CD90 00000700  C0 43 00 E8 */	lfs f2, 0xe8(r3)
+/* 8006CD94 00000704  C0 23 00 F4 */	lfs f1, 0xf4(r3)
+/* 8006CD98 00000708  FC 02 08 40 */	fcmpo cr0, f2, f1
+/* 8006CD9C 0000070C  40 80 00 1C */	bge .L_8006CDB8
+/* 8006CDA0 00000710  C0 03 01 1C */	lfs f0, 0x11c(r3)
+/* 8006CDA4 00000714  EC 42 00 2A */	fadds f2, f2, f0
+/* 8006CDA8 00000718  FC 02 08 40 */	fcmpo cr0, f2, f1
+/* 8006CDAC 0000071C  40 81 00 24 */	ble .L_8006CDD0
+/* 8006CDB0 00000720  FC 40 08 90 */	fmr f2, f1
+/* 8006CDB4 00000724  48 00 00 1C */	b .L_8006CDD0
+.L_8006CDB8:
+/* 8006CDB8 00000728  40 81 00 18 */	ble .L_8006CDD0
+/* 8006CDBC 0000072C  C0 03 01 1C */	lfs f0, 0x11c(r3)
+/* 8006CDC0 00000730  EC 42 00 28 */	fsubs f2, f2, f0
+/* 8006CDC4 00000734  FC 02 08 40 */	fcmpo cr0, f2, f1
+/* 8006CDC8 00000738  40 80 00 08 */	bge .L_8006CDD0
+/* 8006CDCC 0000073C  FC 40 08 90 */	fmr f2, f1
+.L_8006CDD0:
+/* 8006CDD0 00000740  D0 43 00 E8 */	stfs f2, 0xe8(r3)
+/* 8006CDD4 00000744  4E 80 00 20 */	blr
+.endfn calcSpeedX__12dBaseActor_cFv
+
+# .text:0x708 | 0x8006CDD8 | size: 0x8
+.fn gap_03_8006CDD8_text, global
+.hidden gap_03_8006CDD8_text
+/* 8006CDD8 00000748  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CDDC 0000074C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CDD8_text
+
+# .text:0x710 | 0x8006CDE0 | size: 0x24
+# dBaseActor_c::calcSpeedY()
+.fn calcSpeedY__12dBaseActor_cFv, global
+/* 8006CDE0 00000750  C0 43 00 EC */	lfs f2, 0xec(r3)
+/* 8006CDE4 00000754  C0 23 01 14 */	lfs f1, 0x114(r3)
+/* 8006CDE8 00000758  C0 03 00 F8 */	lfs f0, 0xf8(r3)
+/* 8006CDEC 0000075C  EC 22 08 2A */	fadds f1, f2, f1
+/* 8006CDF0 00000760  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8006CDF4 00000764  40 80 00 08 */	bge .L_8006CDFC
+/* 8006CDF8 00000768  FC 20 00 90 */	fmr f1, f0
+.L_8006CDFC:
+/* 8006CDFC 0000076C  D0 23 00 EC */	stfs f1, 0xec(r3)
+/* 8006CE00 00000770  4E 80 00 20 */	blr
+.endfn calcSpeedY__12dBaseActor_cFv
+
+# .text:0x734 | 0x8006CE04 | size: 0xC
+.fn gap_03_8006CE04_text, global
+.hidden gap_03_8006CE04_text
+/* 8006CE04 00000774  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CE08 00000778  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CE0C 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CE04_text
+
+# .text:0x740 | 0x8006CE10 | size: 0x54
+# dBaseActor_c::calcSpeedF()
+.fn calcSpeedF__12dBaseActor_cFv, global
+/* 8006CE10 00000780  C0 23 01 0C */	lfs f1, 0x10c(r3)
+/* 8006CE14 00000784  C0 43 01 10 */	lfs f2, 0x110(r3)
+/* 8006CE18 00000788  FC 01 10 40 */	fcmpo cr0, f1, f2
+/* 8006CE1C 0000078C  40 80 00 24 */	bge .L_8006CE40
+/* 8006CE20 00000790  C0 03 01 1C */	lfs f0, 0x11c(r3)
+/* 8006CE24 00000794  EC 01 00 2A */	fadds f0, f1, f0
+/* 8006CE28 00000798  FC 00 10 40 */	fcmpo cr0, f0, f2
+/* 8006CE2C 0000079C  40 81 00 08 */	ble .L_8006CE34
+/* 8006CE30 000007A0  48 00 00 08 */	b .L_8006CE38
+.L_8006CE34:
+/* 8006CE34 000007A4  FC 40 00 90 */	fmr f2, f0
+.L_8006CE38:
+/* 8006CE38 000007A8  D0 43 01 0C */	stfs f2, 0x10c(r3)
+/* 8006CE3C 000007AC  4E 80 00 20 */	blr
+.L_8006CE40:
+/* 8006CE40 000007B0  4C 81 00 20 */	blelr
+/* 8006CE44 000007B4  C0 03 01 1C */	lfs f0, 0x11c(r3)
+/* 8006CE48 000007B8  EC 01 00 28 */	fsubs f0, f1, f0
+/* 8006CE4C 000007BC  FC 00 10 40 */	fcmpo cr0, f0, f2
+/* 8006CE50 000007C0  40 80 00 08 */	bge .L_8006CE58
+/* 8006CE54 000007C4  48 00 00 08 */	b .L_8006CE5C
+.L_8006CE58:
+/* 8006CE58 000007C8  FC 40 00 90 */	fmr f2, f0
+.L_8006CE5C:
+/* 8006CE5C 000007CC  D0 43 01 0C */	stfs f2, 0x10c(r3)
+/* 8006CE60 000007D0  4E 80 00 20 */	blr
+.endfn calcSpeedF__12dBaseActor_cFv
+
+# .text:0x794 | 0x8006CE64 | size: 0xC
+.fn gap_03_8006CE64_text, global
+.hidden gap_03_8006CE64_text
+/* 8006CE64 000007D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CE68 000007D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CE6C 000007DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CE64_text
+
+# .text:0x7A0 | 0x8006CE70 | size: 0x54
+# dBaseActor_c::calcFallSpeed()
+.fn calcFallSpeed__12dBaseActor_cFv, global
+/* 8006CE70 000007E0  C0 23 00 EC */	lfs f1, 0xec(r3)
+/* 8006CE74 000007E4  C0 43 01 18 */	lfs f2, 0x118(r3)
+/* 8006CE78 000007E8  FC 01 10 40 */	fcmpo cr0, f1, f2
+/* 8006CE7C 000007EC  40 80 00 24 */	bge .L_8006CEA0
+/* 8006CE80 000007F0  C0 03 01 14 */	lfs f0, 0x114(r3)
+/* 8006CE84 000007F4  EC 01 00 28 */	fsubs f0, f1, f0
+/* 8006CE88 000007F8  FC 00 10 40 */	fcmpo cr0, f0, f2
+/* 8006CE8C 000007FC  40 81 00 08 */	ble .L_8006CE94
+/* 8006CE90 00000800  48 00 00 08 */	b .L_8006CE98
+.L_8006CE94:
+/* 8006CE94 00000804  FC 40 00 90 */	fmr f2, f0
+.L_8006CE98:
+/* 8006CE98 00000808  D0 43 00 EC */	stfs f2, 0xec(r3)
+/* 8006CE9C 0000080C  4E 80 00 20 */	blr
+.L_8006CEA0:
+/* 8006CEA0 00000810  4C 81 00 20 */	blelr
+/* 8006CEA4 00000814  C0 03 01 14 */	lfs f0, 0x114(r3)
+/* 8006CEA8 00000818  EC 01 00 2A */	fadds f0, f1, f0
+/* 8006CEAC 0000081C  FC 00 10 40 */	fcmpo cr0, f0, f2
+/* 8006CEB0 00000820  40 80 00 08 */	bge .L_8006CEB8
+/* 8006CEB4 00000824  48 00 00 08 */	b .L_8006CEBC
+.L_8006CEB8:
+/* 8006CEB8 00000828  FC 40 00 90 */	fmr f2, f0
+.L_8006CEBC:
+/* 8006CEBC 0000082C  D0 43 00 EC */	stfs f2, 0xec(r3)
+/* 8006CEC0 00000830  4E 80 00 20 */	blr
+.endfn calcFallSpeed__12dBaseActor_cFv
+
+# .text:0x7F4 | 0x8006CEC4 | size: 0xC
+.fn gap_03_8006CEC4_text, global
+.hidden gap_03_8006CEC4_text
+/* 8006CEC4 00000834  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CEC8 00000838  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CECC 0000083C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CEC4_text
+
+# .text:0x800 | 0x8006CED0 | size: 0x34
+# dBaseActor_c::getCenterPos() const
+.fn getCenterPos__12dBaseActor_cCFv, global
+/* 8006CED0 00000840  C0 24 00 B4 */	lfs f1, 0xb4(r4)
+/* 8006CED4 00000844  C0 04 00 D8 */	lfs f0, 0xd8(r4)
+/* 8006CED8 00000848  C0 64 00 B0 */	lfs f3, 0xb0(r4)
+/* 8006CEDC 0000084C  EC 81 00 2A */	fadds f4, f1, f0
+/* 8006CEE0 00000850  C0 44 00 D4 */	lfs f2, 0xd4(r4)
+/* 8006CEE4 00000854  C0 24 00 AC */	lfs f1, 0xac(r4)
+/* 8006CEE8 00000858  C0 04 00 D0 */	lfs f0, 0xd0(r4)
+/* 8006CEEC 0000085C  EC 43 10 2A */	fadds f2, f3, f2
+/* 8006CEF0 00000860  D0 83 00 08 */	stfs f4, 0x8(r3)
+/* 8006CEF4 00000864  EC 01 00 2A */	fadds f0, f1, f0
+/* 8006CEF8 00000868  D0 43 00 04 */	stfs f2, 0x4(r3)
+/* 8006CEFC 0000086C  D0 03 00 00 */	stfs f0, 0x0(r3)
+/* 8006CF00 00000870  4E 80 00 20 */	blr
+.endfn getCenterPos__12dBaseActor_cCFv
+
+# .text:0x834 | 0x8006CF04 | size: 0xC
+.fn gap_03_8006CF04_text, global
+.hidden gap_03_8006CF04_text
+/* 8006CF04 00000874  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CF08 00000878  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CF0C 0000087C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CF04_text
+
+# .text:0x840 | 0x8006CF10 | size: 0x8
+# dBaseActor_c::GetProfNameActorNum(unsigned short)
+.fn GetProfNameActorNum__12dBaseActor_cFUs, global
+/* 8006CF10 00000880  38 60 00 00 */	li r3, m_actorManage__12dBaseActor_c@sda21
+/* 8006CF14 00000884  48 00 00 00 */	b countNodeByProfName__9fLiMgBa_cCFUs
+.endfn GetProfNameActorNum__12dBaseActor_cFUs
+
+# .text:0x848 | 0x8006CF18 | size: 0x8
+.fn gap_03_8006CF18_text, global
+.hidden gap_03_8006CF18_text
+/* 8006CF18 00000888  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CF1C 0000088C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CF18_text
+
+# .text:0x850 | 0x8006CF20 | size: 0x14
+.fn "__sinit_\d_base_actor_cpp", local
+/* 8006CF20 00000890  38 60 00 00 */	li r3, m_actorManage__12dBaseActor_c@sda21
+/* 8006CF24 00000894  38 00 00 00 */	li r0, 0x0
+/* 8006CF28 00000898  90 00 00 00 */	stw r0, m_actorManage__12dBaseActor_c@sda21(r0)
+/* 8006CF2C 0000089C  90 03 00 04 */	stw r0, 0x4(r3)
+/* 8006CF30 000008A0  4E 80 00 20 */	blr
+.endfn "__sinit_\d_base_actor_cpp"
+
+# .text:0x864 | 0x8006CF34 | size: 0xC
+.fn gap_03_8006CF34_text, global
+.hidden gap_03_8006CF34_text
+/* 8006CF34 000008A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CF38 000008A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006CF3C 000008AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006CF34_text
+
+# 0x802EDD88..0x802EDD8C | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_base_actor_cpp"
+
+# 0x8030F528..0x8030F588 | size: 0x60
+.data
+.balign 8
+
+# .data:0x0 | 0x8030F528 | size: 0x60
+# dBaseActor_c::__vtable
+.obj __vt__12dBaseActor_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte create__7fBase_cFv
+	.4byte preCreate__12dBaseActor_cFv
+	.4byte postCreate__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte doDelete__7fBase_cFv
+	.4byte preDelete__12dBaseActor_cFv
+	.4byte postDelete__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte execute__7fBase_cFv
+	.4byte preExecute__12dBaseActor_cFv
+	.4byte postExecute__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte draw__7fBase_cFv
+	.4byte preDraw__12dBaseActor_cFv
+	.4byte postDraw__12dBaseActor_cFQ27fBase_c12MAIN_STATE_e
+	.4byte deleteReady__7fBase_cFv
+	.4byte entryFrmHeap__7fBase_cFUlPQ23EGG4Heap
+	.4byte entryFrmHeapNonAdjust__7fBase_cFUlPQ23EGG4Heap
+	.4byte createHeap__7fBase_cFv
+	.4byte __dt__12dBaseActor_cFv
+	.4byte getKindString__7dBase_cCFv
+	.4byte draw2D__12dBaseActor_cFv
+	.4byte draw2D_lyt2__12dBaseActor_cFv
+	.4byte GetActorType__12dBaseActor_cFv
+	.4byte finalUpdate__12dBaseActor_cFv
+.endobj __vt__12dBaseActor_c
+
+# 0x8042A078..0x8042A088 | size: 0x10
+.section .sbss, "wa", @nobits
+.balign 8
+
+# .sbss:0x0 | 0x8042A078 | size: 0x4
+# dBaseActor_c::m_tmpCtPosP
+.obj m_tmpCtPosP__12dBaseActor_c, global
+	.skip 0x4
+.endobj m_tmpCtPosP__12dBaseActor_c
+
+# .sbss:0x4 | 0x8042A07C | size: 0x4
+# dBaseActor_c::m_tmpCtAngleP
+.obj m_tmpCtAngleP__12dBaseActor_c, global
+	.skip 0x4
+.endobj m_tmpCtAngleP__12dBaseActor_c
+
+# .sbss:0x8 | 0x8042A080 | size: 0x8
+# dBaseActor_c::m_actorManage
+.obj m_actorManage__12dBaseActor_c, global
+	.skip 0x8
+.endobj m_actorManage__12dBaseActor_c
+
+# 0x8042BF10..0x8042BF20 | size: 0x10
+.section .sdata2, "a"
+.balign 8
+
+# .sdata2:0x0 | 0x8042BF10 | size: 0x4
+.obj "@5310", local
+	.4byte 0x00000000
+.endobj "@5310"
+
+# .sdata2:0x4 | 0x8042BF14 | size: 0x4
+.obj "@5311", local
+	.4byte 0x3F800000
+.endobj "@5311"
+
+# .sdata2:0x8 | 0x8042BF18 | size: 0x4
+.obj "@5405", local
+	.4byte 0x3B800000
+.endobj "@5405"
+
+# .sdata2:0xC | 0x8042BF1C | size: 0x4
+.obj gap_11_8042BF1C_sdata2, global
+.hidden gap_11_8042BF1C_sdata2
+	.4byte 0x00000000
+.endobj gap_11_8042BF1C_sdata2

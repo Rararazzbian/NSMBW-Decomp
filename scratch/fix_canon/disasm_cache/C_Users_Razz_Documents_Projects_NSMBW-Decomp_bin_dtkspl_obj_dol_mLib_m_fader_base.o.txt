@@ -1,0 +1,241 @@
+.include "macros.inc"
+.file "m_fader_base.cpp"
+
+# 0x8016DD40..0x8016DF40 | size: 0x200
+.text
+.balign 4
+
+# .text:0x0 | 0x8016DD40 | size: 0x9C
+# mFaderBase_c::mFaderBase_c(const mColor&, mFaderBase_c::EStatus)
+.fn __ct__12mFaderBase_cFRC6mColorQ212mFaderBase_c7EStatus, global
+/* 8016DD40 00000040  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8016DD44 00000044  7C 08 02 A6 */	mflr r0
+/* 8016DD48 00000048  3C E0 00 00 */	lis r7, __vt__12mFaderBase_c@ha
+/* 8016DD4C 0000004C  38 C0 00 14 */	li r6, 0x14
+/* 8016DD50 00000050  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8016DD54 00000054  38 E7 00 00 */	addi r7, r7, __vt__12mFaderBase_c@l
+/* 8016DD58 00000058  38 00 FF FF */	li r0, -0x1
+/* 8016DD5C 0000005C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8016DD60 00000060  3B E0 00 00 */	li r31, 0x0
+/* 8016DD64 00000064  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8016DD68 00000068  7C BE 2B 78 */	mr r30, r5
+/* 8016DD6C 0000006C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8016DD70 00000070  7C 7D 1B 78 */	mr r29, r3
+/* 8016DD74 00000074  90 E3 00 00 */	stw r7, 0x0(r3)
+/* 8016DD78 00000078  9B E3 00 08 */	stb r31, 0x8(r3)
+/* 8016DD7C 0000007C  B0 C3 00 0A */	sth r6, 0xa(r3)
+/* 8016DD80 00000080  B3 E3 00 0C */	sth r31, 0xc(r3)
+/* 8016DD84 00000084  90 03 00 10 */	stw r0, 0x10(r3)
+/* 8016DD88 00000088  48 00 00 01 */	bl setColor__12mFaderBase_cFRC6mColor
+/* 8016DD8C 0000008C  88 1D 00 08 */	lbz r0, 0x8(r29)
+/* 8016DD90 00000090  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 8016DD94 00000094  60 00 00 02 */	ori r0, r0, 0x2
+/* 8016DD98 00000098  98 1D 00 08 */	stb r0, 0x8(r29)
+/* 8016DD9C 0000009C  41 82 00 10 */	beq .L_8016DDAC
+/* 8016DDA0 000000A0  2C 1E 00 01 */	cmpwi r30, 0x1
+/* 8016DDA4 000000A4  41 82 00 10 */	beq .L_8016DDB4
+/* 8016DDA8 000000A8  48 00 00 14 */	b .L_8016DDBC
+.L_8016DDAC:
+/* 8016DDAC 000000AC  93 FD 00 04 */	stw r31, 0x4(r29)
+/* 8016DDB0 000000B0  48 00 00 0C */	b .L_8016DDBC
+.L_8016DDB4:
+/* 8016DDB4 000000B4  38 00 00 01 */	li r0, 0x1
+/* 8016DDB8 000000B8  90 1D 00 04 */	stw r0, 0x4(r29)
+.L_8016DDBC:
+/* 8016DDBC 000000BC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8016DDC0 000000C0  7F A3 EB 78 */	mr r3, r29
+/* 8016DDC4 000000C4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8016DDC8 000000C8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8016DDCC 000000CC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8016DDD0 000000D0  7C 08 03 A6 */	mtlr r0
+/* 8016DDD4 000000D4  38 21 00 20 */	addi r1, r1, 0x20
+/* 8016DDD8 000000D8  4E 80 00 20 */	blr
+.endfn __ct__12mFaderBase_cFRC6mColorQ212mFaderBase_c7EStatus
+
+# .text:0x9C | 0x8016DDDC | size: 0x4
+.fn gap_03_8016DDDC_text, global
+.hidden gap_03_8016DDDC_text
+/* 8016DDDC 000000DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DDDC_text
+
+# .text:0xA0 | 0x8016DDE0 | size: 0x40
+# mFaderBase_c::~mFaderBase_c()
+.fn __dt__12mFaderBase_cFv, global
+/* 8016DDE0 000000E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8016DDE4 000000E4  7C 08 02 A6 */	mflr r0
+/* 8016DDE8 000000E8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8016DDEC 000000EC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8016DDF0 000000F0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8016DDF4 000000F4  7C 7F 1B 78 */	mr r31, r3
+/* 8016DDF8 000000F8  41 82 00 10 */	beq .L_8016DE08
+/* 8016DDFC 000000FC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8016DE00 00000100  40 81 00 08 */	ble .L_8016DE08
+/* 8016DE04 00000104  48 00 00 01 */	bl __dl__FPv
+.L_8016DE08:
+/* 8016DE08 00000108  7F E3 FB 78 */	mr r3, r31
+/* 8016DE0C 0000010C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8016DE10 00000110  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8016DE14 00000114  7C 08 03 A6 */	mtlr r0
+/* 8016DE18 00000118  38 21 00 10 */	addi r1, r1, 0x10
+/* 8016DE1C 0000011C  4E 80 00 20 */	blr
+.endfn __dt__12mFaderBase_cFv
+
+# .text:0xE0 | 0x8016DE20 | size: 0x8
+# mFaderBase_c::setFrame(unsigned short)
+.fn setFrame__12mFaderBase_cFUs, global
+/* 8016DE20 00000120  B0 83 00 0A */	sth r4, 0xa(r3)
+/* 8016DE24 00000124  4E 80 00 20 */	blr
+.endfn setFrame__12mFaderBase_cFUs
+
+# .text:0xE8 | 0x8016DE28 | size: 0x8
+.fn gap_03_8016DE28_text, global
+.hidden gap_03_8016DE28_text
+/* 8016DE28 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016DE2C 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DE28_text
+
+# .text:0xF0 | 0x8016DE30 | size: 0x1C
+# mFaderBase_c::setColor(const mColor&)
+.fn setColor__12mFaderBase_cFRC6mColor, global
+/* 8016DE30 00000130  88 C4 00 00 */	lbz r6, 0x0(r4)
+/* 8016DE34 00000134  88 A4 00 01 */	lbz r5, 0x1(r4)
+/* 8016DE38 00000138  88 04 00 02 */	lbz r0, 0x2(r4)
+/* 8016DE3C 0000013C  98 C3 00 10 */	stb r6, 0x10(r3)
+/* 8016DE40 00000140  98 A3 00 11 */	stb r5, 0x11(r3)
+/* 8016DE44 00000144  98 03 00 12 */	stb r0, 0x12(r3)
+/* 8016DE48 00000148  4E 80 00 20 */	blr
+.endfn setColor__12mFaderBase_cFRC6mColor
+
+# .text:0x10C | 0x8016DE4C | size: 0x4
+.fn gap_03_8016DE4C_text, global
+.hidden gap_03_8016DE4C_text
+/* 8016DE4C 0000014C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DE4C_text
+
+# .text:0x110 | 0x8016DE50 | size: 0x8
+# mFaderBase_c::getStatus() const
+.fn getStatus__12mFaderBase_cCFv, global
+/* 8016DE50 00000150  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8016DE54 00000154  4E 80 00 20 */	blr
+.endfn getStatus__12mFaderBase_cCFv
+
+# .text:0x118 | 0x8016DE58 | size: 0x8
+.fn gap_03_8016DE58_text, global
+.hidden gap_03_8016DE58_text
+/* 8016DE58 00000158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016DE5C 0000015C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DE58_text
+
+# .text:0x120 | 0x8016DE60 | size: 0x28
+# mFaderBase_c::fadeIn()
+.fn fadeIn__12mFaderBase_cFv, global
+/* 8016DE60 00000160  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8016DE64 00000164  7C 00 00 34 */	cntlzw r0, r0
+/* 8016DE68 00000168  54 05 D9 7F */	srwi. r5, r0, 5
+/* 8016DE6C 0000016C  41 82 00 14 */	beq .L_8016DE80
+/* 8016DE70 00000170  38 80 00 02 */	li r4, 0x2
+/* 8016DE74 00000174  38 00 00 00 */	li r0, 0x0
+/* 8016DE78 00000178  90 83 00 04 */	stw r4, 0x4(r3)
+/* 8016DE7C 0000017C  B0 03 00 0C */	sth r0, 0xc(r3)
+.L_8016DE80:
+/* 8016DE80 00000180  7C A3 2B 78 */	mr r3, r5
+/* 8016DE84 00000184  4E 80 00 20 */	blr
+.endfn fadeIn__12mFaderBase_cFv
+
+# .text:0x148 | 0x8016DE88 | size: 0x8
+.fn gap_03_8016DE88_text, global
+.hidden gap_03_8016DE88_text
+/* 8016DE88 00000188  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8016DE8C 0000018C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DE88_text
+
+# .text:0x150 | 0x8016DE90 | size: 0x2C
+# mFaderBase_c::fadeOut()
+.fn fadeOut__12mFaderBase_cFv, global
+/* 8016DE90 00000190  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 8016DE94 00000194  38 04 FF FF */	subi r0, r4, 0x1
+/* 8016DE98 00000198  7C 00 00 34 */	cntlzw r0, r0
+/* 8016DE9C 0000019C  54 05 D9 7F */	srwi. r5, r0, 5
+/* 8016DEA0 000001A0  41 82 00 14 */	beq .L_8016DEB4
+/* 8016DEA4 000001A4  38 80 00 03 */	li r4, 0x3
+/* 8016DEA8 000001A8  38 00 00 00 */	li r0, 0x0
+/* 8016DEAC 000001AC  90 83 00 04 */	stw r4, 0x4(r3)
+/* 8016DEB0 000001B0  B0 03 00 0C */	sth r0, 0xc(r3)
+.L_8016DEB4:
+/* 8016DEB4 000001B4  7C A3 2B 78 */	mr r3, r5
+/* 8016DEB8 000001B8  4E 80 00 20 */	blr
+.endfn fadeOut__12mFaderBase_cFv
+
+# .text:0x17C | 0x8016DEBC | size: 0x4
+.fn gap_03_8016DEBC_text, global
+.hidden gap_03_8016DEBC_text
+/* 8016DEBC 000001BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DEBC_text
+
+# .text:0x180 | 0x8016DEC0 | size: 0x7C
+# mFaderBase_c::calc()
+.fn calc__12mFaderBase_cFv, global
+/* 8016DEC0 000001C0  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8016DEC4 000001C4  38 C0 00 00 */	li r6, 0x0
+/* 8016DEC8 000001C8  2C 00 00 02 */	cmpwi r0, 0x2
+/* 8016DECC 000001CC  40 82 00 30 */	bne .L_8016DEFC
+/* 8016DED0 000001D0  A0 A3 00 0C */	lhz r5, 0xc(r3)
+/* 8016DED4 000001D4  A0 03 00 0A */	lhz r0, 0xa(r3)
+/* 8016DED8 000001D8  38 85 00 01 */	addi r4, r5, 0x1
+/* 8016DEDC 000001DC  B0 83 00 0C */	sth r4, 0xc(r3)
+/* 8016DEE0 000001E0  7C 05 00 40 */	cmplw r5, r0
+/* 8016DEE4 000001E4  40 81 00 50 */	ble .L_8016DF34
+/* 8016DEE8 000001E8  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 8016DEEC 000001EC  38 80 00 01 */	li r4, 0x1
+/* 8016DEF0 000001F0  90 83 00 04 */	stw r4, 0x4(r3)
+/* 8016DEF4 000001F4  54 06 07 FE */	clrlwi r6, r0, 31
+/* 8016DEF8 000001F8  48 00 00 3C */	b .L_8016DF34
+.L_8016DEFC:
+/* 8016DEFC 000001FC  2C 00 00 03 */	cmpwi r0, 0x3
+/* 8016DF00 00000200  40 82 00 34 */	bne .L_8016DF34
+/* 8016DF04 00000204  A0 A3 00 0C */	lhz r5, 0xc(r3)
+/* 8016DF08 00000208  A0 83 00 0A */	lhz r4, 0xa(r3)
+/* 8016DF0C 0000020C  38 05 00 01 */	addi r0, r5, 0x1
+/* 8016DF10 00000210  B0 03 00 0C */	sth r0, 0xc(r3)
+/* 8016DF14 00000214  54 05 04 3E */	clrlwi r5, r0, 16
+/* 8016DF18 00000218  38 04 00 01 */	addi r0, r4, 0x1
+/* 8016DF1C 0000021C  7C 05 00 00 */	cmpw r5, r0
+/* 8016DF20 00000220  40 81 00 14 */	ble .L_8016DF34
+/* 8016DF24 00000224  88 03 00 08 */	lbz r0, 0x8(r3)
+/* 8016DF28 00000228  38 80 00 00 */	li r4, 0x0
+/* 8016DF2C 0000022C  90 83 00 04 */	stw r4, 0x4(r3)
+/* 8016DF30 00000230  54 06 FF FE */	extrwi r6, r0, 1, 30
+.L_8016DF34:
+/* 8016DF34 00000234  7C C3 33 78 */	mr r3, r6
+/* 8016DF38 00000238  4E 80 00 20 */	blr
+.endfn calc__12mFaderBase_cFv
+
+# .text:0x1FC | 0x8016DF3C | size: 0x4
+.fn gap_03_8016DF3C_text, global
+.hidden gap_03_8016DF3C_text
+/* 8016DF3C 0000023C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8016DF3C_text
+
+# 0x80329E20..0x80329E48 | size: 0x28
+.data
+.balign 8
+
+# .data:0x0 | 0x80329E20 | size: 0x24
+# mFaderBase_c::__vtable
+.obj __vt__12mFaderBase_c, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte __dt__12mFaderBase_cFv
+	.4byte 0x00000000
+	.4byte getStatus__12mFaderBase_cCFv
+	.4byte fadeIn__12mFaderBase_cFv
+	.4byte fadeOut__12mFaderBase_cFv
+	.4byte calc__12mFaderBase_cFv
+	.4byte 0x00000000
+.endobj __vt__12mFaderBase_c
+
+# .data:0x24 | 0x80329E44 | size: 0x4
+.obj gap_07_80329E44_data, global
+.hidden gap_07_80329E44_data
+	.4byte 0x00000000
+.endobj gap_07_80329E44_data

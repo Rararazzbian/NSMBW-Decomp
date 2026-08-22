@@ -1,0 +1,3462 @@
+.include "macros.inc"
+.file "auto_03_8005E9A0_text"
+
+# 0x8005E9A0..0x80061310 | size: 0x2970
+.text
+.balign 4
+
+# .text:0x0 | 0x8005E9A0 | size: 0xB8
+# daPyMng_c::createYoshi(mVec3_c&, int, dAcPy_c*)
+.fn createYoshi__9daPyMng_cFR7mVec3_ciP7dAcPy_c, global
+/* 8005E9A0 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005E9A4 00000044  7C 08 02 A6 */	mflr r0
+/* 8005E9A8 00000048  2C 05 00 00 */	cmpwi r5, 0x0
+/* 8005E9AC 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005E9B0 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005E9B4 00000054  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8005E9B8 00000058  7C BE 2B 78 */	mr r30, r5
+/* 8005E9BC 0000005C  40 82 00 24 */	bne .L_8005E9E0
+/* 8005E9C0 00000060  54 80 07 3E */	clrlwi r0, r4, 28
+/* 8005E9C4 00000064  7C 65 1B 78 */	mr r5, r3
+/* 8005E9C8 00000068  64 04 00 01 */	oris r4, r0, 0x1
+/* 8005E9CC 0000006C  38 60 00 0E */	li r3, 0xe
+/* 8005E9D0 00000070  38 C0 00 00 */	li r6, 0x0
+/* 8005E9D4 00000074  38 E0 00 00 */	li r7, 0x0
+/* 8005E9D8 00000078  48 00 00 01 */	bl construct__8dActor_cFUsUlPC7mVec3_cPC7mAng3_cUc
+/* 8005E9DC 0000007C  48 00 00 64 */	b .L_8005EA40
+.L_8005E9E0:
+/* 8005E9E0 00000080  80 05 00 04 */	lwz r0, 0x4(r5)
+/* 8005E9E4 00000084  54 84 07 3E */	clrlwi r4, r4, 28
+/* 8005E9E8 00000088  7C 65 1B 78 */	mr r5, r3
+/* 8005E9EC 0000008C  38 60 00 0E */	li r3, 0xe
+/* 8005E9F0 00000090  50 04 01 CE */	rlwimi r4, r0, 0, 7, 7
+/* 8005E9F4 00000094  38 C0 00 00 */	li r6, 0x0
+/* 8005E9F8 00000098  38 E0 00 00 */	li r7, 0x0
+/* 8005E9FC 0000009C  48 00 00 01 */	bl construct__8dActor_cFUsUlPC7mVec3_cPC7mAng3_cUc
+/* 8005EA00 000000A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005EA04 000000A4  7C 7F 1B 78 */	mr r31, r3
+/* 8005EA08 000000A8  41 82 00 34 */	beq .L_8005EA3C
+/* 8005EA0C 000000AC  7F C4 F3 78 */	mr r4, r30
+/* 8005EA10 000000B0  38 A0 00 01 */	li r5, 0x1
+/* 8005EA14 000000B4  48 00 00 01 */	bl fn_8014eb70__9daYoshi_cFP7dAcPy_ci
+/* 8005EA18 000000B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005EA1C 000000BC  41 82 00 20 */	beq .L_8005EA3C
+/* 8005EA20 000000C0  81 9F 00 60 */	lwz r12, 0x60(r31)
+/* 8005EA24 000000C4  7F E3 FB 78 */	mr r3, r31
+/* 8005EA28 000000C8  80 1E 00 04 */	lwz r0, 0x4(r30)
+/* 8005EA2C 000000CC  81 8C 02 70 */	lwz r12, 0x270(r12)
+/* 8005EA30 000000D0  54 04 86 3E */	extrwi r4, r0, 8, 8
+/* 8005EA34 000000D4  7D 89 03 A6 */	mtctr r12
+/* 8005EA38 000000D8  4E 80 04 21 */	bctrl
+.L_8005EA3C:
+/* 8005EA3C 000000DC  7F E3 FB 78 */	mr r3, r31
+.L_8005EA40:
+/* 8005EA40 000000E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005EA44 000000E4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005EA48 000000E8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8005EA4C 000000EC  7C 08 03 A6 */	mtlr r0
+/* 8005EA50 000000F0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005EA54 000000F4  4E 80 00 20 */	blr
+.endfn createYoshi__9daPyMng_cFR7mVec3_ciP7dAcPy_c
+
+# .text:0xB8 | 0x8005EA58 | size: 0x8
+.fn gap_03_8005EA58_text, global
+.hidden gap_03_8005EA58_text
+/* 8005EA58 000000F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005EA5C 000000FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005EA58_text
+
+# .text:0xC0 | 0x8005EA60 | size: 0xA4
+# daPyMng_c::initGame()
+.fn initGame__9daPyMng_cFv, global
+/* 8005EA60 00000100  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005EA64 00000104  7C 08 02 A6 */	mflr r0
+/* 8005EA68 00000108  3D 40 00 00 */	lis r10, m_playerID__9daPyMng_c@ha
+/* 8005EA6C 0000010C  38 A0 00 01 */	li r5, 0x1
+/* 8005EA70 00000110  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005EA74 00000114  39 4A 00 00 */	addi r10, r10, m_playerID__9daPyMng_c@l
+/* 8005EA78 00000118  39 2A 00 60 */	addi r9, r10, 0x60
+/* 8005EA7C 0000011C  38 80 00 03 */	li r4, 0x3
+/* 8005EA80 00000120  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005EA84 00000124  39 0A 00 70 */	addi r8, r10, 0x70
+/* 8005EA88 00000128  3B E0 00 00 */	li r31, 0x0
+/* 8005EA8C 0000012C  38 EA 00 40 */	addi r7, r10, 0x40
+/* 8005EA90 00000130  93 E9 00 00 */	stw r31, 0x0(r9)
+/* 8005EA94 00000134  38 CA 00 50 */	addi r6, r10, 0x50
+/* 8005EA98 00000138  88 00 00 00 */	lbz r0, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005EA9C 0000013C  38 60 00 02 */	li r3, 0x2
+/* 8005EAA0 00000140  93 E8 00 00 */	stw r31, 0x0(r8)
+/* 8005EAA4 00000144  60 00 00 01 */	ori r0, r0, 0x1
+/* 8005EAA8 00000148  93 E9 00 04 */	stw r31, 0x4(r9)
+/* 8005EAAC 0000014C  93 E8 00 04 */	stw r31, 0x4(r8)
+/* 8005EAB0 00000150  93 E9 00 0C */	stw r31, 0xc(r9)
+/* 8005EAB4 00000154  93 E8 00 0C */	stw r31, 0xc(r8)
+/* 8005EAB8 00000158  93 EA 00 40 */	stw r31, 0x40(r10)
+/* 8005EABC 0000015C  93 EA 00 50 */	stw r31, 0x50(r10)
+/* 8005EAC0 00000160  93 E7 00 04 */	stw r31, 0x4(r7)
+/* 8005EAC4 00000164  90 A6 00 04 */	stw r5, 0x4(r6)
+/* 8005EAC8 00000168  93 E7 00 08 */	stw r31, 0x8(r7)
+/* 8005EACC 0000016C  90 86 00 08 */	stw r4, 0x8(r6)
+/* 8005EAD0 00000170  93 E7 00 0C */	stw r31, 0xc(r7)
+/* 8005EAD4 00000174  90 66 00 0C */	stw r3, 0xc(r6)
+/* 8005EAD8 00000178  93 E9 00 08 */	stw r31, 0x8(r9)
+/* 8005EADC 0000017C  93 E8 00 08 */	stw r31, 0x8(r8)
+/* 8005EAE0 00000180  98 00 00 00 */	stb r0, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005EAE4 00000184  48 00 00 01 */	bl setDefaultParam__9daPyMng_cFv
+/* 8005EAE8 00000188  93 E0 00 00 */	stw r31, mBonusNoCap__9daPyMng_c@sda21(r0)
+/* 8005EAEC 0000018C  93 E0 00 00 */	stw r31, mKinopioCarryCount__9daPyMng_c@sda21(r0)
+/* 8005EAF0 00000190  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005EAF4 00000194  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005EAF8 00000198  7C 08 03 A6 */	mtlr r0
+/* 8005EAFC 0000019C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005EB00 000001A0  4E 80 00 20 */	blr
+.endfn initGame__9daPyMng_cFv
+
+# .text:0x164 | 0x8005EB04 | size: 0xC
+.fn gap_03_8005EB04_text, global
+.hidden gap_03_8005EB04_text
+/* 8005EB04 000001A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005EB08 000001A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005EB0C 000001AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005EB04_text
+
+# .text:0x170 | 0x8005EB10 | size: 0x180
+# daPyMng_c::initStage()
+.fn initStage__9daPyMng_cFv, global
+/* 8005EB10 000001B0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005EB14 000001B4  7C 08 02 A6 */	mflr r0
+/* 8005EB18 000001B8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005EB1C 000001BC  39 61 00 20 */	addi r11, r1, 0x20
+/* 8005EB20 000001C0  48 00 00 01 */	bl _savegpr_27
+/* 8005EB24 000001C4  3F C0 00 00 */	lis r30, m_playerID__9daPyMng_c@ha
+/* 8005EB28 000001C8  3B DE 00 00 */	addi r30, r30, m_playerID__9daPyMng_c@l
+/* 8005EB2C 000001CC  48 00 00 01 */	bl checkCorrectCreateInfo__9daPyMng_cFv
+/* 8005EB30 000001D0  3B E0 00 00 */	li r31, 0x0
+/* 8005EB34 000001D4  93 E0 00 00 */	stw r31, mNum__9daPyMng_c@sda21(r0)
+/* 8005EB38 000001D8  3B 60 00 00 */	li r27, 0x0
+/* 8005EB3C 000001DC  3B A0 00 00 */	li r29, m_star_time__9daPyMng_c@sda21
+/* 8005EB40 000001E0  93 E0 00 00 */	stw r31, mCtrlPlrNo__9daPyMng_c@sda21(r0)
+/* 8005EB44 000001E4  3B 80 00 00 */	li r28, m_star_count__9daPyMng_c@sda21
+/* 8005EB48 000001E8  9B E0 00 00 */	stb r31, mActPlayerInfo__9daPyMng_c@sda21(r0)
+.L_8005EB4C:
+/* 8005EB4C 000001EC  7F 63 DB 78 */	mr r3, r27
+/* 8005EB50 000001F0  38 80 00 00 */	li r4, 0x0
+/* 8005EB54 000001F4  48 00 00 01 */	bl setPlayer__9daPyMng_cFiP7dAcPy_c
+/* 8005EB58 000001F8  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 8005EB5C 000001FC  B3 FD 00 00 */	sth r31, 0x0(r29)
+/* 8005EB60 00000200  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 8005EB64 00000204  3B BD 00 02 */	addi r29, r29, 0x2
+/* 8005EB68 00000208  B3 FC 00 00 */	sth r31, 0x0(r28)
+/* 8005EB6C 0000020C  3B 9C 00 02 */	addi r28, r28, 0x2
+/* 8005EB70 00000210  41 80 FF DC */	blt .L_8005EB4C
+/* 8005EB74 00000214  3B FE 00 40 */	addi r31, r30, 0x40
+/* 8005EB78 00000218  3B 60 00 00 */	li r27, 0x0
+.L_8005EB7C:
+/* 8005EB7C 0000021C  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 8005EB80 00000220  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EB84 00000224  41 82 00 0C */	beq .L_8005EB90
+/* 8005EB88 00000228  7F 63 DB 78 */	mr r3, r27
+/* 8005EB8C 0000022C  48 00 00 01 */	bl addNum__9daPyMng_cFi
+.L_8005EB90:
+/* 8005EB90 00000230  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 8005EB94 00000234  3B FF 00 04 */	addi r31, r31, 0x4
+/* 8005EB98 00000238  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 8005EB9C 0000023C  41 80 FF E0 */	blt .L_8005EB7C
+/* 8005EBA0 00000240  48 00 00 01 */	bl getCourseIn__10dScStage_cFv
+/* 8005EBA4 00000244  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005EBA8 00000248  41 82 00 6C */	beq .L_8005EC14
+/* 8005EBAC 0000024C  80 60 00 00 */	lwz r3, m_instance__7dInfo_c@sda21(r0)
+/* 8005EBB0 00000250  80 03 0A F4 */	lwz r0, 0xaf4(r3)
+/* 8005EBB4 00000254  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EBB8 00000258  41 80 00 5C */	blt .L_8005EC14
+/* 8005EBBC 0000025C  48 00 00 01 */	bl getEntryNum__9daPyMng_cFv
+/* 8005EBC0 00000260  38 03 FF FF */	subi r0, r3, 0x1
+/* 8005EBC4 00000264  7C 00 00 34 */	cntlzw r0, r0
+/* 8005EBC8 00000268  54 00 D9 7F */	srwi. r0, r0, 5
+/* 8005EBCC 0000026C  41 82 00 48 */	beq .L_8005EC14
+/* 8005EBD0 00000270  80 60 00 00 */	lwz r3, m_instance__7dInfo_c@sda21(r0)
+/* 8005EBD4 00000274  88 03 00 24 */	lbz r0, 0x24(r3)
+/* 8005EBD8 00000278  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EBDC 0000027C  41 82 00 38 */	beq .L_8005EC14
+/* 8005EBE0 00000280  38 00 00 04 */	li r0, 0x4
+/* 8005EBE4 00000284  38 7E 00 40 */	addi r3, r30, 0x40
+/* 8005EBE8 00000288  38 80 00 00 */	li r4, 0x0
+/* 8005EBEC 0000028C  7C 09 03 A6 */	mtctr r0
+.L_8005EBF0:
+/* 8005EBF0 00000290  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8005EBF4 00000294  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EBF8 00000298  40 82 00 10 */	bne .L_8005EC08
+/* 8005EBFC 0000029C  38 60 00 00 */	li r3, 0x0
+/* 8005EC00 000002A0  48 00 00 01 */	bl fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei
+/* 8005EC04 000002A4  48 00 00 10 */	b .L_8005EC14
+.L_8005EC08:
+/* 8005EC08 000002A8  38 63 00 04 */	addi r3, r3, 0x4
+/* 8005EC0C 000002AC  38 84 00 01 */	addi r4, r4, 0x1
+/* 8005EC10 000002B0  42 00 FF E0 */	bdnz .L_8005EBF0
+.L_8005EC14:
+/* 8005EC14 000002B4  38 9E 00 A0 */	addi r4, r30, 0xa0
+/* 8005EC18 000002B8  38 7E 00 B0 */	addi r3, r30, 0xb0
+/* 8005EC1C 000002BC  3B E0 00 00 */	li r31, 0x0
+/* 8005EC20 000002C0  93 E0 00 00 */	stw r31, mTimeUpPlayerNum__9daPyMng_c@sda21(r0)
+/* 8005EC24 000002C4  93 E0 00 00 */	stw r31, mAllBalloon__9daPyMng_c@sda21(r0)
+/* 8005EC28 000002C8  93 E0 00 00 */	stw r31, mPauseEnableInfo__9daPyMng_c@sda21(r0)
+/* 8005EC2C 000002CC  93 E0 00 00 */	stw r31, mPauseDisable__9daPyMng_c@sda21(r0)
+/* 8005EC30 000002D0  93 E0 00 00 */	stw r31, mStopTimerInfo__9daPyMng_c@sda21(r0)
+/* 8005EC34 000002D4  93 E0 00 00 */	stw r31, mStopTimerInfoOld__9daPyMng_c@sda21(r0)
+/* 8005EC38 000002D8  93 E0 00 00 */	stw r31, mQuakeTrigger__9daPyMng_c@sda21(r0)
+/* 8005EC3C 000002DC  93 FE 00 A0 */	stw r31, 0xa0(r30)
+/* 8005EC40 000002E0  93 FE 00 B0 */	stw r31, 0xb0(r30)
+/* 8005EC44 000002E4  93 E4 00 04 */	stw r31, 0x4(r4)
+/* 8005EC48 000002E8  93 E3 00 04 */	stw r31, 0x4(r3)
+/* 8005EC4C 000002EC  93 E4 00 08 */	stw r31, 0x8(r4)
+/* 8005EC50 000002F0  93 E3 00 08 */	stw r31, 0x8(r3)
+/* 8005EC54 000002F4  93 E4 00 0C */	stw r31, 0xc(r4)
+/* 8005EC58 000002F8  93 E3 00 0C */	stw r31, 0xc(r3)
+/* 8005EC5C 000002FC  93 E0 00 00 */	stw r31, mBgmState__9daPyMng_c@sda21(r0)
+/* 8005EC60 00000300  48 00 00 01 */	bl checkBonusNoCap__9daPyMng_cFv
+/* 8005EC64 00000304  93 E0 00 00 */	stw r31, mKinopioCarryCount__9daPyMng_c@sda21(r0)
+/* 8005EC68 00000308  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8005EC6C 0000030C  48 00 00 01 */	bl initStage__13daPyDemoMng_cFv
+/* 8005EC70 00000310  80 60 00 00 */	lwz r3, mspInstance__11dMultiMng_c@sda21(r0)
+/* 8005EC74 00000314  48 00 00 01 */	bl initStage__11dMultiMng_cFv
+/* 8005EC78 00000318  39 61 00 20 */	addi r11, r1, 0x20
+/* 8005EC7C 0000031C  48 00 00 01 */	bl _restgpr_27
+/* 8005EC80 00000320  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005EC84 00000324  7C 08 03 A6 */	mtlr r0
+/* 8005EC88 00000328  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005EC8C 0000032C  4E 80 00 20 */	blr
+.endfn initStage__9daPyMng_cFv
+
+# .text:0x2F0 | 0x8005EC90 | size: 0x8
+# dScStage_c::getCourseIn()
+.fn getCourseIn__10dScStage_cFv, global
+/* 8005EC90 00000330  88 60 00 00 */	lbz r3, m_isCourseIn__10dScStage_c@sda21(r0)
+/* 8005EC94 00000334  4E 80 00 20 */	blr
+.endfn getCourseIn__10dScStage_cFv
+
+# .text:0x2F8 | 0x8005EC98 | size: 0x8
+.fn gap_03_8005EC98_text, global
+.hidden gap_03_8005EC98_text
+/* 8005EC98 00000338  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005EC9C 0000033C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005EC98_text
+
+# .text:0x300 | 0x8005ECA0 | size: 0x4
+# daPyMng_c::exitStage()
+.fn exitStage__9daPyMng_cFv, global
+/* 8005ECA0 00000340  4E 80 00 20 */	blr
+.endfn exitStage__9daPyMng_cFv
+
+# .text:0x304 | 0x8005ECA4 | size: 0xC
+.fn gap_03_8005ECA4_text, global
+.hidden gap_03_8005ECA4_text
+/* 8005ECA4 00000344  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005ECA8 00000348  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005ECAC 0000034C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005ECA4_text
+
+# .text:0x310 | 0x8005ECB0 | size: 0x30
+# daPyMng_c::courseIn()
+.fn courseIn__9daPyMng_cFv, global
+/* 8005ECB0 00000350  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005ECB4 00000354  7C 08 02 A6 */	mflr r0
+/* 8005ECB8 00000358  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005ECBC 0000035C  48 00 00 01 */	bl createCourseInit__9daPyMng_cFv
+/* 8005ECC0 00000360  38 00 00 00 */	li r0, 0x0
+/* 8005ECC4 00000364  90 00 00 00 */	stw r0, mPauseDisable__9daPyMng_c@sda21(r0)
+/* 8005ECC8 00000368  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8005ECCC 0000036C  48 00 00 01 */	bl initCourseIn__13daPyDemoMng_cFv
+/* 8005ECD0 00000370  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005ECD4 00000374  7C 08 03 A6 */	mtlr r0
+/* 8005ECD8 00000378  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005ECDC 0000037C  4E 80 00 20 */	blr
+.endfn courseIn__9daPyMng_cFv
+
+# .text:0x340 | 0x8005ECE0 | size: 0xA4
+# daPyMng_c::setDefaultParam()
+.fn setDefaultParam__9daPyMng_cFv, global
+/* 8005ECE0 00000380  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005ECE4 00000384  3D 80 00 00 */	lis r12, m_playerID__9daPyMng_c@ha
+/* 8005ECE8 00000388  39 8C 00 00 */	addi r12, r12, m_playerID__9daPyMng_c@l
+/* 8005ECEC 0000038C  39 60 00 00 */	li r11, 0x0
+/* 8005ECF0 00000390  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005ECF4 00000394  38 6C 00 50 */	addi r3, r12, 0x50
+/* 8005ECF8 00000398  38 CC 00 80 */	addi r6, r12, 0x80
+/* 8005ECFC 0000039C  38 AC 00 90 */	addi r5, r12, 0x90
+/* 8005ED00 000003A0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8005ED04 000003A4  39 4C 00 00 */	addi r10, r12, 0x0
+/* 8005ED08 000003A8  39 2C 00 10 */	addi r9, r12, 0x10
+/* 8005ED0C 000003AC  39 00 00 05 */	li r8, 0x5
+/* 8005ED10 000003B0  80 8C 00 50 */	lwz r4, 0x50(r12)
+/* 8005ED14 000003B4  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8005ED18 000003B8  54 87 10 3A */	slwi r7, r4, 2
+/* 8005ED1C 000003BC  83 E3 00 08 */	lwz r31, 0x8(r3)
+/* 8005ED20 000003C0  83 C3 00 0C */	lwz r30, 0xc(r3)
+/* 8005ED24 000003C4  54 04 10 3A */	slwi r4, r0, 2
+/* 8005ED28 000003C8  7D 06 39 2E */	stwx r8, r6, r7
+/* 8005ED2C 000003CC  57 E3 10 3A */	slwi r3, r31, 2
+/* 8005ED30 000003D0  57 C0 10 3A */	slwi r0, r30, 2
+/* 8005ED34 000003D4  7D 65 39 2E */	stwx r11, r5, r7
+/* 8005ED38 000003D8  7D 06 21 2E */	stwx r8, r6, r4
+/* 8005ED3C 000003DC  7D 65 21 2E */	stwx r11, r5, r4
+/* 8005ED40 000003E0  7D 06 19 2E */	stwx r8, r6, r3
+/* 8005ED44 000003E4  7D 65 19 2E */	stwx r11, r5, r3
+/* 8005ED48 000003E8  91 6C 00 00 */	stw r11, 0x0(r12)
+/* 8005ED4C 000003EC  91 6A 00 04 */	stw r11, 0x4(r10)
+/* 8005ED50 000003F0  91 6A 00 08 */	stw r11, 0x8(r10)
+/* 8005ED54 000003F4  91 6A 00 0C */	stw r11, 0xc(r10)
+/* 8005ED58 000003F8  91 6C 00 10 */	stw r11, 0x10(r12)
+/* 8005ED5C 000003FC  91 69 00 04 */	stw r11, 0x4(r9)
+/* 8005ED60 00000400  91 69 00 08 */	stw r11, 0x8(r9)
+/* 8005ED64 00000404  91 69 00 0C */	stw r11, 0xc(r9)
+/* 8005ED68 00000408  7D 06 01 2E */	stwx r8, r6, r0
+/* 8005ED6C 0000040C  7D 65 01 2E */	stwx r11, r5, r0
+/* 8005ED70 00000410  91 60 00 00 */	stw r11, mScore__9daPyMng_c@sda21(r0)
+/* 8005ED74 00000414  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005ED78 00000418  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8005ED7C 0000041C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005ED80 00000420  4E 80 00 20 */	blr
+.endfn setDefaultParam__9daPyMng_cFv
+
+# .text:0x3E4 | 0x8005ED84 | size: 0xC
+.fn gap_03_8005ED84_text, global
+.hidden gap_03_8005ED84_text
+/* 8005ED84 00000424  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005ED88 00000428  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005ED8C 0000042C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005ED84_text
+
+# .text:0x3F0 | 0x8005ED90 | size: 0xDC
+# daPyMng_c::getPlayerSetPos(unsigned char, unsigned char)
+.fn getPlayerSetPos__9daPyMng_cFUcUc, global
+/* 8005ED90 00000430  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005ED94 00000434  7C 08 02 A6 */	mflr r0
+/* 8005ED98 00000438  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005ED9C 0000043C  1C 04 03 B0 */	mulli r0, r4, 0x3b0
+/* 8005EDA0 00000440  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005EDA4 00000444  7C 7F 1B 78 */	mr r31, r3
+/* 8005EDA8 00000448  80 80 00 00 */	lwz r4, m_instance__5dCd_c@sda21(r0)
+/* 8005EDAC 0000044C  7C 64 02 14 */	add r3, r4, r0
+/* 8005EDB0 00000450  80 03 00 2C */	lwz r0, 0x2c(r3)
+/* 8005EDB4 00000454  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EDB8 00000458  41 82 00 08 */	beq .L_8005EDC0
+/* 8005EDBC 0000045C  48 00 00 08 */	b .L_8005EDC4
+.L_8005EDC0:
+/* 8005EDC0 00000460  38 60 00 00 */	li r3, 0x0
+.L_8005EDC4:
+/* 8005EDC4 00000464  7C A4 2B 78 */	mr r4, r5
+/* 8005EDC8 00000468  48 00 00 01 */	bl getNextGotoP__9dCdFile_cFUc
+/* 8005EDCC 0000046C  A0 03 00 02 */	lhz r0, 0x2(r3)
+/* 8005EDD0 00000470  3C A0 43 30 */	lis r5, 0x4330
+/* 8005EDD4 00000474  90 01 00 0C */	stw r0, 0xc(r1)
+/* 8005EDD8 00000478  3C 80 00 00 */	lis r4, l_start_pos_ofs@ha
+/* 8005EDDC 0000047C  A0 03 00 00 */	lhz r0, 0x0(r3)
+/* 8005EDE0 00000480  38 84 00 00 */	addi r4, r4, l_start_pos_ofs@l
+/* 8005EDE4 00000484  90 A1 00 08 */	stw r5, 0x8(r1)
+/* 8005EDE8 00000488  C8 40 00 00 */	lfd f2, "@80189_8042BD50"@sda21(r0)
+/* 8005EDEC 0000048C  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 8005EDF0 00000490  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005EDF4 00000494  EC 20 10 28 */	fsubs f1, f0, f2
+/* 8005EDF8 00000498  C0 00 00 00 */	lfs f0, "@80186_8042BD48"@sda21(r0)
+/* 8005EDFC 0000049C  90 A1 00 10 */	stw r5, 0x10(r1)
+/* 8005EE00 000004A0  FC 80 08 50 */	fneg f4, f1
+/* 8005EE04 000004A4  C8 21 00 10 */	lfd f1, 0x10(r1)
+/* 8005EE08 000004A8  D0 1F 00 08 */	stfs f0, 0x8(r31)
+/* 8005EE0C 000004AC  EC 61 10 28 */	fsubs f3, f1, f2
+/* 8005EE10 000004B0  D0 9F 00 04 */	stfs f4, 0x4(r31)
+/* 8005EE14 000004B4  FC 20 20 18 */	frsp f1, f4
+/* 8005EE18 000004B8  D0 7F 00 00 */	stfs f3, 0x0(r31)
+/* 8005EE1C 000004BC  88 03 00 0B */	lbz r0, 0xb(r3)
+/* 8005EE20 000004C0  A0 63 00 10 */	lhz r3, 0x10(r3)
+/* 8005EE24 000004C4  1C A0 00 0C */	mulli r5, r0, 0xc
+/* 8005EE28 000004C8  54 60 06 73 */	rlwinm. r0, r3, 0, 25, 25
+/* 8005EE2C 000004CC  7C 64 2A 14 */	add r3, r4, r5
+/* 8005EE30 000004D0  7C 44 2C 2E */	lfsx f2, r4, r5
+/* 8005EE34 000004D4  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 8005EE38 000004D8  EC 43 10 2A */	fadds f2, f3, f2
+/* 8005EE3C 000004DC  EC 01 00 2A */	fadds f0, f1, f0
+/* 8005EE40 000004E0  D0 5F 00 00 */	stfs f2, 0x0(r31)
+/* 8005EE44 000004E4  D0 1F 00 04 */	stfs f0, 0x4(r31)
+/* 8005EE48 000004E8  40 82 00 10 */	bne .L_8005EE58
+/* 8005EE4C 000004EC  C0 03 00 08 */	lfs f0, 0x8(r3)
+/* 8005EE50 000004F0  EC 02 00 2A */	fadds f0, f2, f0
+/* 8005EE54 000004F4  D0 1F 00 00 */	stfs f0, 0x0(r31)
+.L_8005EE58:
+/* 8005EE58 000004F8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005EE5C 000004FC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005EE60 00000500  7C 08 03 A6 */	mtlr r0
+/* 8005EE64 00000504  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005EE68 00000508  4E 80 00 20 */	blr
+.endfn getPlayerSetPos__9daPyMng_cFUcUc
+
+# .text:0x4CC | 0x8005EE6C | size: 0x4
+.fn gap_03_8005EE6C_text, global
+.hidden gap_03_8005EE6C_text
+/* 8005EE6C 0000050C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005EE6C_text
+
+# .text:0x4D0 | 0x8005EE70 | size: 0x20
+# dCd_c::getFileP(int)
+.fn getFileP__5dCd_cFi, global
+/* 8005EE70 00000510  1C 03 03 B0 */	mulli r0, r3, 0x3b0
+/* 8005EE74 00000514  80 60 00 00 */	lwz r3, m_instance__5dCd_c@sda21(r0)
+/* 8005EE78 00000518  7C 63 02 14 */	add r3, r3, r0
+/* 8005EE7C 0000051C  80 03 00 2C */	lwz r0, 0x2c(r3)
+/* 8005EE80 00000520  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EE84 00000524  4C 82 00 20 */	bnelr
+/* 8005EE88 00000528  38 60 00 00 */	li r3, 0x0
+/* 8005EE8C 0000052C  4E 80 00 20 */	blr
+.endfn getFileP__5dCd_cFi
+
+# .text:0x4F0 | 0x8005EE90 | size: 0x50
+# daPyMng_c::getPlayerCreateAction()
+.fn getPlayerCreateAction__9daPyMng_cFv, global
+/* 8005EE90 00000530  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005EE94 00000534  7C 08 02 A6 */	mflr r0
+/* 8005EE98 00000538  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005EE9C 0000053C  80 80 00 00 */	lwz r4, m_instance__10dScStage_c@sda21(r0)
+/* 8005EEA0 00000540  80 60 00 00 */	lwz r3, m_instance__5dCd_c@sda21(r0)
+/* 8005EEA4 00000544  88 04 12 0E */	lbz r0, 0x120e(r4)
+/* 8005EEA8 00000548  1C 00 03 B0 */	mulli r0, r0, 0x3b0
+/* 8005EEAC 0000054C  7C 63 02 14 */	add r3, r3, r0
+/* 8005EEB0 00000550  80 03 00 2C */	lwz r0, 0x2c(r3)
+/* 8005EEB4 00000554  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EEB8 00000558  41 82 00 08 */	beq .L_8005EEC0
+/* 8005EEBC 0000055C  48 00 00 08 */	b .L_8005EEC4
+.L_8005EEC0:
+/* 8005EEC0 00000560  38 60 00 00 */	li r3, 0x0
+.L_8005EEC4:
+/* 8005EEC4 00000564  88 84 12 11 */	lbz r4, 0x1211(r4)
+/* 8005EEC8 00000568  48 00 00 01 */	bl getNextGotoP__9dCdFile_cFUc
+/* 8005EECC 0000056C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005EED0 00000570  88 63 00 0B */	lbz r3, 0xb(r3)
+/* 8005EED4 00000574  7C 08 03 A6 */	mtlr r0
+/* 8005EED8 00000578  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005EEDC 0000057C  4E 80 00 20 */	blr
+.endfn getPlayerCreateAction__9daPyMng_cFv
+
+# .text:0x540 | 0x8005EEE0 | size: 0x64
+# daPyMng_c::create(int, mVec3_c*, int, unsigned char)
+.fn create__9daPyMng_cFiP7mVec3_ciUc, global
+/* 8005EEE0 00000580  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005EEE4 00000584  7C 08 02 A6 */	mflr r0
+/* 8005EEE8 00000588  3C E0 00 00 */	lis r7, mPlayerEntry__9daPyMng_c@ha
+/* 8005EEEC 0000058C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005EEF0 00000590  54 60 10 3A */	slwi r0, r3, 2
+/* 8005EEF4 00000594  38 E7 00 00 */	addi r7, r7, mPlayerEntry__9daPyMng_c@l
+/* 8005EEF8 00000598  7C 07 00 2E */	lwzx r0, r7, r0
+/* 8005EEFC 0000059C  7C 87 23 78 */	mr r7, r4
+/* 8005EF00 000005A0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005EF04 000005A4  41 82 00 2C */	beq .L_8005EF30
+/* 8005EF08 000005A8  54 64 07 3E */	clrlwi r4, r3, 28
+/* 8005EF0C 000005AC  38 60 00 0D */	li r3, 0xd
+/* 8005EF10 000005B0  50 A4 82 1E */	rlwimi r4, r5, 16, 8, 15
+/* 8005EF14 000005B4  7C E5 3B 78 */	mr r5, r7
+/* 8005EF18 000005B8  50 C4 C1 CE */	rlwimi r4, r6, 24, 7, 7
+/* 8005EF1C 000005BC  38 C0 00 00 */	li r6, 0x0
+/* 8005EF20 000005C0  38 E0 00 00 */	li r7, 0x0
+/* 8005EF24 000005C4  48 00 00 01 */	bl construct__8dActor_cFUsUlPC7mVec3_cPC7mAng3_cUc
+/* 8005EF28 000005C8  38 60 00 01 */	li r3, 0x1
+/* 8005EF2C 000005CC  48 00 00 08 */	b .L_8005EF34
+.L_8005EF30:
+/* 8005EF30 000005D0  38 60 00 00 */	li r3, 0x0
+.L_8005EF34:
+/* 8005EF34 000005D4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005EF38 000005D8  7C 08 03 A6 */	mtlr r0
+/* 8005EF3C 000005DC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005EF40 000005E0  4E 80 00 20 */	blr
+.endfn create__9daPyMng_cFiP7mVec3_ciUc
+
+# .text:0x5A4 | 0x8005EF44 | size: 0xC
+.fn gap_03_8005EF44_text, global
+.hidden gap_03_8005EF44_text
+/* 8005EF44 000005E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005EF48 000005E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005EF4C 000005EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005EF44_text
+
+# .text:0x5B0 | 0x8005EF50 | size: 0x580
+# daPyMng_c::createCourseInit()
+.fn createCourseInit__9daPyMng_cFv, global
+/* 8005EF50 000005F0  94 21 FF 60 */	stwu r1, -0xa0(r1)
+/* 8005EF54 000005F4  7C 08 02 A6 */	mflr r0
+/* 8005EF58 000005F8  90 01 00 A4 */	stw r0, 0xa4(r1)
+/* 8005EF5C 000005FC  39 61 00 90 */	addi r11, r1, 0x90
+/* 8005EF60 00000600  DB E1 00 90 */	stfd f31, 0x90(r1)
+/* 8005EF64 00000604  F3 E1 00 98 */	psq_st f31, 0x98(r1), 0, qr0
+/* 8005EF68 00000608  48 00 00 01 */	bl _savegpr_27
+/* 8005EF6C 0000060C  3F A0 00 00 */	lis r29, lbl_802EF478@ha
+/* 8005EF70 00000610  83 C0 00 00 */	lwz r30, m_instance__10dScStage_c@sda21(r0)
+/* 8005EF74 00000614  3B BD 00 00 */	addi r29, r29, lbl_802EF478@l
+/* 8005EF78 00000618  48 00 00 01 */	bl getPlayerCreateAction__9daPyMng_cFv
+/* 8005EF7C 0000061C  54 7F 06 3F */	clrlwi. r31, r3, 24
+/* 8005EF80 00000620  41 82 00 74 */	beq .L_8005EFF4
+/* 8005EF84 00000624  2C 1F 00 01 */	cmpwi r31, 0x1
+/* 8005EF88 00000628  41 82 00 6C */	beq .L_8005EFF4
+/* 8005EF8C 0000062C  2C 1F 00 17 */	cmpwi r31, 0x17
+/* 8005EF90 00000630  41 82 00 64 */	beq .L_8005EFF4
+/* 8005EF94 00000634  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8005EF98 00000638  48 00 00 01 */	bl fn_8005D280
+/* 8005EF9C 0000063C  88 9E 12 0E */	lbz r4, 0x120e(r30)
+/* 8005EFA0 00000640  38 61 00 5C */	addi r3, r1, 0x5c
+/* 8005EFA4 00000644  88 BE 12 11 */	lbz r5, 0x1211(r30)
+/* 8005EFA8 00000648  48 00 00 01 */	bl getPlayerSetPos__9daPyMng_cFUcUc
+/* 8005EFAC 0000064C  48 00 00 01 */	bl getDispCenterX__8dGameComFv
+/* 8005EFB0 00000650  C0 01 00 5C */	lfs f0, 0x5c(r1)
+/* 8005EFB4 00000654  FC 00 08 40 */	fcmpo cr0, f0, f1
+/* 8005EFB8 00000658  4C 40 13 82 */	cror eq, lt, eq
+/* 8005EFBC 0000065C  40 82 00 0C */	bne .L_8005EFC8
+/* 8005EFC0 00000660  3B A0 00 00 */	li r29, 0x0
+/* 8005EFC4 00000664  48 00 00 08 */	b .L_8005EFCC
+.L_8005EFC8:
+/* 8005EFC8 00000668  3B A0 00 01 */	li r29, 0x1
+.L_8005EFCC:
+/* 8005EFCC 0000066C  3B 80 00 00 */	li r28, 0x0
+.L_8005EFD0:
+/* 8005EFD0 00000670  7F 83 E3 78 */	mr r3, r28
+/* 8005EFD4 00000674  7F E5 FB 78 */	mr r5, r31
+/* 8005EFD8 00000678  7F A6 EB 78 */	mr r6, r29
+/* 8005EFDC 0000067C  38 81 00 5C */	addi r4, r1, 0x5c
+/* 8005EFE0 00000680  48 00 00 01 */	bl create__9daPyMng_cFiP7mVec3_ciUc
+/* 8005EFE4 00000684  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 8005EFE8 00000688  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 8005EFEC 0000068C  41 80 FF E4 */	blt .L_8005EFD0
+/* 8005EFF0 00000690  48 00 04 C0 */	b .L_8005F4B0
+.L_8005EFF4:
+/* 8005EFF4 00000694  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8005EFF8 00000698  48 00 00 01 */	bl init__13daPyDemoMng_cFv
+/* 8005EFFC 0000069C  48 00 00 01 */	bl decideCtrlPlrNo__9daPyMng_cFv
+/* 8005F000 000006A0  88 00 00 00 */	lbz r0, m_isStaffCredit__10dScStage_c@sda21(r0)
+/* 8005F004 000006A4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F008 000006A8  41 82 00 90 */	beq .L_8005F098
+/* 8005F00C 000006AC  88 9E 12 0E */	lbz r4, 0x120e(r30)
+/* 8005F010 000006B0  38 61 00 50 */	addi r3, r1, 0x50
+/* 8005F014 000006B4  88 BE 12 11 */	lbz r5, 0x1211(r30)
+/* 8005F018 000006B8  48 00 00 01 */	bl getPlayerSetPos__9daPyMng_cFUcUc
+/* 8005F01C 000006BC  C0 00 00 00 */	lfs f0, lbl_8042BD58@sda21(r0)
+/* 8005F020 000006C0  3B DD 01 60 */	addi r30, r29, 0x160
+/* 8005F024 000006C4  D0 01 00 50 */	stfs f0, 0x50(r1)
+/* 8005F028 000006C8  3B BD 01 70 */	addi r29, r29, 0x170
+/* 8005F02C 000006CC  C3 E0 00 00 */	lfs f31, "@80186_8042BD48"@sda21(r0)
+/* 8005F030 000006D0  3B 80 00 00 */	li r28, 0x0
+.L_8005F034:
+/* 8005F034 000006D4  C0 7E 00 00 */	lfs f3, 0x0(r30)
+/* 8005F038 000006D8  7F 83 E3 78 */	mr r3, r28
+/* 8005F03C 000006DC  C0 01 00 50 */	lfs f0, 0x50(r1)
+/* 8005F040 000006E0  7F E5 FB 78 */	mr r5, r31
+/* 8005F044 000006E4  C0 41 00 54 */	lfs f2, 0x54(r1)
+/* 8005F048 000006E8  FC 03 F8 40 */	fcmpo cr0, f3, f31
+/* 8005F04C 000006EC  EC 00 18 2A */	fadds f0, f0, f3
+/* 8005F050 000006F0  C0 3D 00 00 */	lfs f1, 0x0(r29)
+/* 8005F054 000006F4  C0 61 00 58 */	lfs f3, 0x58(r1)
+/* 8005F058 000006F8  38 81 00 44 */	addi r4, r1, 0x44
+/* 8005F05C 000006FC  EC 22 08 2A */	fadds f1, f2, f1
+/* 8005F060 00000700  D0 01 00 44 */	stfs f0, 0x44(r1)
+/* 8005F064 00000704  D0 21 00 48 */	stfs f1, 0x48(r1)
+/* 8005F068 00000708  D0 61 00 4C */	stfs f3, 0x4c(r1)
+/* 8005F06C 0000070C  7C 00 00 26 */	mfcr r0
+/* 8005F070 00000710  54 00 0F FE */	srwi r0, r0, 31
+/* 8005F074 00000714  7C 00 00 34 */	cntlzw r0, r0
+/* 8005F078 00000718  54 06 DE 3E */	extrwi r6, r0, 8, 19
+/* 8005F07C 0000071C  48 00 00 01 */	bl create__9daPyMng_cFiP7mVec3_ciUc
+/* 8005F080 00000720  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 8005F084 00000724  3B BD 00 04 */	addi r29, r29, 0x4
+/* 8005F088 00000728  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 8005F08C 0000072C  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8005F090 00000730  41 80 FF A4 */	blt .L_8005F034
+/* 8005F094 00000734  48 00 04 1C */	b .L_8005F4B0
+.L_8005F098:
+/* 8005F098 00000738  88 9E 12 0E */	lbz r4, 0x120e(r30)
+/* 8005F09C 0000073C  38 61 00 38 */	addi r3, r1, 0x38
+/* 8005F0A0 00000740  88 BE 12 11 */	lbz r5, 0x1211(r30)
+/* 8005F0A4 00000744  48 00 00 01 */	bl getPlayerSetPos__9daPyMng_cFUcUc
+/* 8005F0A8 00000748  88 7E 12 0E */	lbz r3, 0x120e(r30)
+/* 8005F0AC 0000074C  48 00 00 01 */	bl getFileP__5dCd_cFi
+/* 8005F0B0 00000750  88 00 00 00 */	lbz r0, m_isCourseIn__10dScStage_c@sda21(r0)
+/* 8005F0B4 00000754  80 63 00 0C */	lwz r3, 0xc(r3)
+/* 8005F0B8 00000758  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F0BC 0000075C  8B C3 00 11 */	lbz r30, 0x11(r3)
+/* 8005F0C0 00000760  41 82 00 4C */	beq .L_8005F10C
+/* 8005F0C4 00000764  80 A0 00 00 */	lwz r5, m_instance__7dInfo_c@sda21(r0)
+/* 8005F0C8 00000768  80 05 0A F4 */	lwz r0, 0xaf4(r5)
+/* 8005F0CC 0000076C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F0D0 00000770  41 80 00 3C */	blt .L_8005F10C
+/* 8005F0D4 00000774  80 85 00 10 */	lwz r4, 0x10(r5)
+/* 8005F0D8 00000778  80 65 00 14 */	lwz r3, 0x14(r5)
+/* 8005F0DC 0000077C  80 05 00 18 */	lwz r0, 0x18(r5)
+/* 8005F0E0 00000780  90 81 00 08 */	stw r4, 0x8(r1)
+/* 8005F0E4 00000784  90 61 00 0C */	stw r3, 0xc(r1)
+/* 8005F0E8 00000788  C0 41 00 08 */	lfs f2, 0x8(r1)
+/* 8005F0EC 0000078C  90 01 00 10 */	stw r0, 0x10(r1)
+/* 8005F0F0 00000790  C0 21 00 0C */	lfs f1, 0xc(r1)
+/* 8005F0F4 00000794  C0 01 00 10 */	lfs f0, 0x10(r1)
+/* 8005F0F8 00000798  D0 41 00 38 */	stfs f2, 0x38(r1)
+/* 8005F0FC 0000079C  D0 21 00 3C */	stfs f1, 0x3c(r1)
+/* 8005F100 000007A0  D0 01 00 40 */	stfs f0, 0x40(r1)
+/* 8005F104 000007A4  80 05 00 1C */	lwz r0, 0x1c(r5)
+/* 8005F108 000007A8  54 1E 07 FE */	clrlwi r30, r0, 31
+.L_8005F10C:
+/* 8005F10C 000007AC  80 00 00 00 */	lwz r0, m_gameMode__10dScStage_c@sda21(r0)
+/* 8005F110 000007B0  38 9D 01 80 */	addi r4, r29, 0x180
+/* 8005F114 000007B4  80 DD 01 80 */	lwz r6, 0x180(r29)
+/* 8005F118 000007B8  80 A4 00 04 */	lwz r5, 0x4(r4)
+/* 8005F11C 000007BC  2C 00 00 02 */	cmpwi r0, 0x2
+/* 8005F120 000007C0  80 64 00 08 */	lwz r3, 0x8(r4)
+/* 8005F124 000007C4  80 04 00 0C */	lwz r0, 0xc(r4)
+/* 8005F128 000007C8  90 C1 00 28 */	stw r6, 0x28(r1)
+/* 8005F12C 000007CC  90 A1 00 2C */	stw r5, 0x2c(r1)
+/* 8005F130 000007D0  90 61 00 30 */	stw r3, 0x30(r1)
+/* 8005F134 000007D4  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8005F138 000007D8  40 82 00 28 */	bne .L_8005F160
+/* 8005F13C 000007DC  38 A0 00 00 */	li r5, 0x0
+/* 8005F140 000007E0  38 80 00 01 */	li r4, 0x1
+/* 8005F144 000007E4  38 60 00 02 */	li r3, 0x2
+/* 8005F148 000007E8  38 00 00 03 */	li r0, 0x3
+/* 8005F14C 000007EC  90 A1 00 28 */	stw r5, 0x28(r1)
+/* 8005F150 000007F0  90 81 00 2C */	stw r4, 0x2c(r1)
+/* 8005F154 000007F4  90 61 00 30 */	stw r3, 0x30(r1)
+/* 8005F158 000007F8  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8005F15C 000007FC  48 00 02 2C */	b .L_8005F388
+.L_8005F160:
+/* 8005F160 00000800  C3 E0 00 00 */	lfs f31, "@80386_8042BD5C"@sda21(r0)
+/* 8005F164 00000804  3B A1 00 18 */	addi r29, r1, 0x18
+/* 8005F168 00000808  3B 80 00 00 */	li r28, 0x0
+.L_8005F16C:
+/* 8005F16C 0000080C  48 00 00 01 */	bl rnd__8dGameComFv
+/* 8005F170 00000810  EC 1F 08 2A */	fadds f0, f31, f1
+/* 8005F174 00000814  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 8005F178 00000818  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 8005F17C 0000081C  D0 1D 00 00 */	stfs f0, 0x0(r29)
+/* 8005F180 00000820  3B BD 00 04 */	addi r29, r29, 0x4
+/* 8005F184 00000824  41 80 FF E8 */	blt .L_8005F16C
+/* 8005F188 00000828  38 61 00 18 */	addi r3, r1, 0x18
+/* 8005F18C 0000082C  38 E1 00 28 */	addi r7, r1, 0x28
+/* 8005F190 00000830  7C 6A 1B 78 */	mr r10, r3
+/* 8005F194 00000834  38 80 00 00 */	li r4, 0x0
+/* 8005F198 00000838  38 A0 00 00 */	li r5, 0x0
+/* 8005F19C 0000083C  3D 20 80 00 */	lis r9, 0x8000
+.L_8005F1A0:
+/* 8005F1A0 00000840  80 01 00 28 */	lwz r0, 0x28(r1)
+/* 8005F1A4 00000844  C0 23 00 00 */	lfs f1, 0x0(r3)
+/* 8005F1A8 00000848  2C 00 FF FF */	cmpwi r0, -0x1
+/* 8005F1AC 0000084C  40 82 00 0C */	bne .L_8005F1B8
+/* 8005F1B0 00000850  38 80 00 00 */	li r4, 0x0
+/* 8005F1B4 00000854  48 00 00 9C */	b .L_8005F250
+.L_8005F1B8:
+/* 8005F1B8 00000858  54 00 10 3A */	slwi r0, r0, 2
+/* 8005F1BC 0000085C  7C 0A 04 2E */	lfsx f0, r10, r0
+/* 8005F1C0 00000860  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8005F1C4 00000864  40 80 00 0C */	bge .L_8005F1D0
+/* 8005F1C8 00000868  38 80 00 00 */	li r4, 0x0
+/* 8005F1CC 0000086C  48 00 00 84 */	b .L_8005F250
+.L_8005F1D0:
+/* 8005F1D0 00000870  80 01 00 2C */	lwz r0, 0x2c(r1)
+/* 8005F1D4 00000874  2C 00 FF FF */	cmpwi r0, -0x1
+/* 8005F1D8 00000878  40 82 00 0C */	bne .L_8005F1E4
+/* 8005F1DC 0000087C  38 80 00 01 */	li r4, 0x1
+/* 8005F1E0 00000880  48 00 00 70 */	b .L_8005F250
+.L_8005F1E4:
+/* 8005F1E4 00000884  54 00 10 3A */	slwi r0, r0, 2
+/* 8005F1E8 00000888  7C 0A 04 2E */	lfsx f0, r10, r0
+/* 8005F1EC 0000088C  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8005F1F0 00000890  40 80 00 0C */	bge .L_8005F1FC
+/* 8005F1F4 00000894  38 80 00 01 */	li r4, 0x1
+/* 8005F1F8 00000898  48 00 00 58 */	b .L_8005F250
+.L_8005F1FC:
+/* 8005F1FC 0000089C  80 01 00 30 */	lwz r0, 0x30(r1)
+/* 8005F200 000008A0  2C 00 FF FF */	cmpwi r0, -0x1
+/* 8005F204 000008A4  40 82 00 0C */	bne .L_8005F210
+/* 8005F208 000008A8  38 80 00 02 */	li r4, 0x2
+/* 8005F20C 000008AC  48 00 00 44 */	b .L_8005F250
+.L_8005F210:
+/* 8005F210 000008B0  54 00 10 3A */	slwi r0, r0, 2
+/* 8005F214 000008B4  7C 0A 04 2E */	lfsx f0, r10, r0
+/* 8005F218 000008B8  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8005F21C 000008BC  40 80 00 0C */	bge .L_8005F228
+/* 8005F220 000008C0  38 80 00 02 */	li r4, 0x2
+/* 8005F224 000008C4  48 00 00 2C */	b .L_8005F250
+.L_8005F228:
+/* 8005F228 000008C8  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 8005F22C 000008CC  2C 00 FF FF */	cmpwi r0, -0x1
+/* 8005F230 000008D0  40 82 00 0C */	bne .L_8005F23C
+/* 8005F234 000008D4  38 80 00 03 */	li r4, 0x3
+/* 8005F238 000008D8  48 00 00 18 */	b .L_8005F250
+.L_8005F23C:
+/* 8005F23C 000008DC  54 00 10 3A */	slwi r0, r0, 2
+/* 8005F240 000008E0  7C 0A 04 2E */	lfsx f0, r10, r0
+/* 8005F244 000008E4  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 8005F248 000008E8  40 80 00 08 */	bge .L_8005F250
+/* 8005F24C 000008EC  38 80 00 03 */	li r4, 0x3
+.L_8005F250:
+/* 8005F250 000008F0  2C 84 00 03 */	cmpwi cr1, r4, 0x3
+/* 8005F254 000008F4  38 C0 00 03 */	li r6, 0x3
+/* 8005F258 000008F8  40 84 01 18 */	bge cr1, .L_8005F370
+/* 8005F25C 000008FC  23 84 00 03 */	subfic r28, r4, 0x3
+/* 8005F260 00000900  39 04 00 08 */	addi r8, r4, 0x8
+/* 8005F264 00000904  2C 1C 00 08 */	cmpwi r28, 0x8
+/* 8005F268 00000908  40 81 00 D8 */	ble .L_8005F340
+/* 8005F26C 0000090C  39 60 00 00 */	li r11, 0x0
+/* 8005F270 00000910  39 80 00 00 */	li r12, 0x0
+/* 8005F274 00000914  3B A0 00 00 */	li r29, 0x0
+/* 8005F278 00000918  41 85 00 14 */	bgt cr1, .L_8005F28C
+/* 8005F27C 0000091C  38 09 00 01 */	addi r0, r9, 0x1
+/* 8005F280 00000920  7C 04 00 00 */	cmpw r4, r0
+/* 8005F284 00000924  41 80 00 08 */	blt .L_8005F28C
+/* 8005F288 00000928  3B A0 00 01 */	li r29, 0x1
+.L_8005F28C:
+/* 8005F28C 0000092C  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 8005F290 00000930  41 82 00 14 */	beq .L_8005F2A4
+/* 8005F294 00000934  3C 04 80 00 */	addis r0, r4, 0x8000
+/* 8005F298 00000938  28 00 00 00 */	cmplwi r0, 0x0
+/* 8005F29C 0000093C  41 82 00 08 */	beq .L_8005F2A4
+/* 8005F2A0 00000940  39 80 00 01 */	li r12, 0x1
+.L_8005F2A4:
+/* 8005F2A4 00000944  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 8005F2A8 00000948  41 82 00 2C */	beq .L_8005F2D4
+/* 8005F2AC 0000094C  7C 04 00 D0 */	neg r0, r4
+/* 8005F2B0 00000950  39 80 00 01 */	li r12, 0x1
+/* 8005F2B4 00000954  54 00 00 01 */	clrrwi. r0, r0, 31
+/* 8005F2B8 00000958  40 82 00 10 */	bne .L_8005F2C8
+/* 8005F2BC 0000095C  57 80 00 01 */	clrrwi. r0, r28, 31
+/* 8005F2C0 00000960  41 82 00 08 */	beq .L_8005F2C8
+/* 8005F2C4 00000964  39 80 00 00 */	li r12, 0x0
+.L_8005F2C8:
+/* 8005F2C8 00000968  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 8005F2CC 0000096C  41 82 00 08 */	beq .L_8005F2D4
+/* 8005F2D0 00000970  39 60 00 01 */	li r11, 0x1
+.L_8005F2D4:
+/* 8005F2D4 00000974  2C 0B 00 00 */	cmpwi r11, 0x0
+/* 8005F2D8 00000978  41 82 00 68 */	beq .L_8005F340
+/* 8005F2DC 0000097C  20 08 00 0A */	subfic r0, r8, 0xa
+/* 8005F2E0 00000980  39 61 00 34 */	addi r11, r1, 0x34
+/* 8005F2E4 00000984  54 00 E8 FE */	srwi r0, r0, 3
+/* 8005F2E8 00000988  7C 09 03 A6 */	mtctr r0
+/* 8005F2EC 0000098C  2C 08 00 03 */	cmpwi r8, 0x3
+/* 8005F2F0 00000990  40 80 00 50 */	bge .L_8005F340
+.L_8005F2F4:
+/* 8005F2F4 00000994  80 0B FF FC */	lwz r0, -0x4(r11)
+/* 8005F2F8 00000998  38 C6 FF F8 */	subi r6, r6, 0x8
+/* 8005F2FC 0000099C  90 0B 00 00 */	stw r0, 0x0(r11)
+/* 8005F300 000009A0  80 0B FF F8 */	lwz r0, -0x8(r11)
+/* 8005F304 000009A4  90 0B FF FC */	stw r0, -0x4(r11)
+/* 8005F308 000009A8  80 0B FF F4 */	lwz r0, -0xc(r11)
+/* 8005F30C 000009AC  90 0B FF F8 */	stw r0, -0x8(r11)
+/* 8005F310 000009B0  80 0B FF F0 */	lwz r0, -0x10(r11)
+/* 8005F314 000009B4  90 0B FF F4 */	stw r0, -0xc(r11)
+/* 8005F318 000009B8  80 0B FF EC */	lwz r0, -0x14(r11)
+/* 8005F31C 000009BC  90 0B FF F0 */	stw r0, -0x10(r11)
+/* 8005F320 000009C0  80 0B FF E8 */	lwz r0, -0x18(r11)
+/* 8005F324 000009C4  90 0B FF EC */	stw r0, -0x14(r11)
+/* 8005F328 000009C8  80 0B FF E4 */	lwz r0, -0x1c(r11)
+/* 8005F32C 000009CC  90 0B FF E8 */	stw r0, -0x18(r11)
+/* 8005F330 000009D0  80 0B FF E0 */	lwz r0, -0x20(r11)
+/* 8005F334 000009D4  90 0B FF E4 */	stw r0, -0x1c(r11)
+/* 8005F338 000009D8  39 6B FF E0 */	subi r11, r11, 0x20
+/* 8005F33C 000009DC  42 00 FF B8 */	bdnz .L_8005F2F4
+.L_8005F340:
+/* 8005F340 000009E0  54 C8 10 3A */	slwi r8, r6, 2
+/* 8005F344 000009E4  39 61 00 28 */	addi r11, r1, 0x28
+/* 8005F348 000009E8  7C 04 30 50 */	subf r0, r4, r6
+/* 8005F34C 000009EC  7D 6B 42 14 */	add r11, r11, r8
+/* 8005F350 000009F0  7C 09 03 A6 */	mtctr r0
+/* 8005F354 000009F4  7C 06 20 00 */	cmpw r6, r4
+/* 8005F358 000009F8  40 81 00 18 */	ble .L_8005F370
+.L_8005F35C:
+/* 8005F35C 000009FC  80 0B FF FC */	lwz r0, -0x4(r11)
+/* 8005F360 00000A00  38 C6 FF FF */	subi r6, r6, 0x1
+/* 8005F364 00000A04  90 0B 00 00 */	stw r0, 0x0(r11)
+/* 8005F368 00000A08  39 6B FF FC */	subi r11, r11, 0x4
+/* 8005F36C 00000A0C  42 00 FF F0 */	bdnz .L_8005F35C
+.L_8005F370:
+/* 8005F370 00000A10  54 80 10 3A */	slwi r0, r4, 2
+/* 8005F374 00000A14  38 63 00 04 */	addi r3, r3, 0x4
+/* 8005F378 00000A18  7C A7 01 2E */	stwx r5, r7, r0
+/* 8005F37C 00000A1C  38 A5 00 01 */	addi r5, r5, 0x1
+/* 8005F380 00000A20  2C 05 00 04 */	cmpwi r5, 0x4
+/* 8005F384 00000A24  41 80 FE 1C */	blt .L_8005F1A0
+.L_8005F388:
+/* 8005F388 00000A28  3F A0 00 00 */	lis r29, mPlayerEntry__9daPyMng_c@ha
+/* 8005F38C 00000A2C  3B 80 00 00 */	li r28, 0x0
+/* 8005F390 00000A30  3B BD 00 00 */	addi r29, r29, mPlayerEntry__9daPyMng_c@l
+/* 8005F394 00000A34  3B 60 00 00 */	li r27, 0x0
+.L_8005F398:
+/* 8005F398 00000A38  80 1D 00 00 */	lwz r0, 0x0(r29)
+/* 8005F39C 00000A3C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F3A0 00000A40  41 82 00 18 */	beq .L_8005F3B8
+/* 8005F3A4 00000A44  7F 63 DB 78 */	mr r3, r27
+/* 8005F3A8 00000A48  48 00 00 01 */	bl isCreateBalloon__9daPyMng_cFi
+/* 8005F3AC 00000A4C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F3B0 00000A50  40 82 00 08 */	bne .L_8005F3B8
+/* 8005F3B4 00000A54  3B 9C 00 01 */	addi r28, r28, 0x1
+.L_8005F3B8:
+/* 8005F3B8 00000A58  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 8005F3BC 00000A5C  3B BD 00 04 */	addi r29, r29, 0x4
+/* 8005F3C0 00000A60  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 8005F3C4 00000A64  41 80 FF D4 */	blt .L_8005F398
+/* 8005F3C8 00000A68  57 C0 06 3F */	clrlwi. r0, r30, 24
+/* 8005F3CC 00000A6C  40 82 00 3C */	bne .L_8005F408
+/* 8005F3D0 00000A70  38 7C FF FF */	subi r3, r28, 0x1
+/* 8005F3D4 00000A74  3C 00 43 30 */	lis r0, 0x4330
+/* 8005F3D8 00000A78  6C 63 80 00 */	xoris r3, r3, 0x8000
+/* 8005F3DC 00000A7C  90 61 00 6C */	stw r3, 0x6c(r1)
+/* 8005F3E0 00000A80  C8 60 00 00 */	lfd f3, "@80390_8042BD68"@sda21(r0)
+/* 8005F3E4 00000A84  90 01 00 68 */	stw r0, 0x68(r1)
+/* 8005F3E8 00000A88  C0 20 00 00 */	lfs f1, "@80387_8042BD60"@sda21(r0)
+/* 8005F3EC 00000A8C  C8 41 00 68 */	lfd f2, 0x68(r1)
+/* 8005F3F0 00000A90  C0 01 00 38 */	lfs f0, 0x38(r1)
+/* 8005F3F4 00000A94  EC 42 18 28 */	fsubs f2, f2, f3
+/* 8005F3F8 00000A98  EC 21 00 B2 */	fmuls f1, f1, f2
+/* 8005F3FC 00000A9C  EC 00 08 2A */	fadds f0, f0, f1
+/* 8005F400 00000AA0  D0 01 00 38 */	stfs f0, 0x38(r1)
+/* 8005F404 00000AA4  48 00 00 38 */	b .L_8005F43C
+.L_8005F408:
+/* 8005F408 00000AA8  38 7C FF FF */	subi r3, r28, 0x1
+/* 8005F40C 00000AAC  3C 00 43 30 */	lis r0, 0x4330
+/* 8005F410 00000AB0  6C 63 80 00 */	xoris r3, r3, 0x8000
+/* 8005F414 00000AB4  90 61 00 6C */	stw r3, 0x6c(r1)
+/* 8005F418 00000AB8  C8 60 00 00 */	lfd f3, "@80390_8042BD68"@sda21(r0)
+/* 8005F41C 00000ABC  90 01 00 68 */	stw r0, 0x68(r1)
+/* 8005F420 00000AC0  C0 20 00 00 */	lfs f1, "@80387_8042BD60"@sda21(r0)
+/* 8005F424 00000AC4  C8 41 00 68 */	lfd f2, 0x68(r1)
+/* 8005F428 00000AC8  C0 01 00 38 */	lfs f0, 0x38(r1)
+/* 8005F42C 00000ACC  EC 42 18 28 */	fsubs f2, f2, f3
+/* 8005F430 00000AD0  EC 21 00 B2 */	fmuls f1, f1, f2
+/* 8005F434 00000AD4  EC 00 08 28 */	fsubs f0, f0, f1
+/* 8005F438 00000AD8  D0 01 00 38 */	stfs f0, 0x38(r1)
+.L_8005F43C:
+/* 8005F43C 00000ADC  C3 E0 00 00 */	lfs f31, "@80388_8042BD64"@sda21(r0)
+/* 8005F440 00000AE0  3B A1 00 28 */	addi r29, r1, 0x28
+/* 8005F444 00000AE4  3B 60 00 00 */	li r27, 0x0
+.L_8005F448:
+/* 8005F448 00000AE8  80 7D 00 00 */	lwz r3, 0x0(r29)
+/* 8005F44C 00000AEC  2C 03 FF FF */	cmpwi r3, -0x1
+/* 8005F450 00000AF0  41 82 00 50 */	beq .L_8005F4A0
+/* 8005F454 00000AF4  7F E5 FB 78 */	mr r5, r31
+/* 8005F458 00000AF8  38 81 00 38 */	addi r4, r1, 0x38
+/* 8005F45C 00000AFC  57 C6 06 3E */	clrlwi r6, r30, 24
+/* 8005F460 00000B00  48 00 00 01 */	bl create__9daPyMng_cFiP7mVec3_ciUc
+/* 8005F464 00000B04  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F468 00000B08  41 82 00 38 */	beq .L_8005F4A0
+/* 8005F46C 00000B0C  80 7D 00 00 */	lwz r3, 0x0(r29)
+/* 8005F470 00000B10  48 00 00 01 */	bl isCreateBalloon__9daPyMng_cFi
+/* 8005F474 00000B14  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F478 00000B18  40 82 00 28 */	bne .L_8005F4A0
+/* 8005F47C 00000B1C  57 C0 06 3F */	clrlwi. r0, r30, 24
+/* 8005F480 00000B20  40 82 00 14 */	bne .L_8005F494
+/* 8005F484 00000B24  C0 01 00 38 */	lfs f0, 0x38(r1)
+/* 8005F488 00000B28  EC 00 F8 28 */	fsubs f0, f0, f31
+/* 8005F48C 00000B2C  D0 01 00 38 */	stfs f0, 0x38(r1)
+/* 8005F490 00000B30  48 00 00 10 */	b .L_8005F4A0
+.L_8005F494:
+/* 8005F494 00000B34  C0 01 00 38 */	lfs f0, 0x38(r1)
+/* 8005F498 00000B38  EC 00 F8 2A */	fadds f0, f0, f31
+/* 8005F49C 00000B3C  D0 01 00 38 */	stfs f0, 0x38(r1)
+.L_8005F4A0:
+/* 8005F4A0 00000B40  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 8005F4A4 00000B44  3B BD 00 04 */	addi r29, r29, 0x4
+/* 8005F4A8 00000B48  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 8005F4AC 00000B4C  41 80 FF 9C */	blt .L_8005F448
+.L_8005F4B0:
+/* 8005F4B0 00000B50  39 61 00 90 */	addi r11, r1, 0x90
+/* 8005F4B4 00000B54  E3 E1 00 98 */	psq_l f31, 0x98(r1), 0, qr0
+/* 8005F4B8 00000B58  CB E1 00 90 */	lfd f31, 0x90(r1)
+/* 8005F4BC 00000B5C  48 00 00 01 */	bl _restgpr_27
+/* 8005F4C0 00000B60  80 01 00 A4 */	lwz r0, 0xa4(r1)
+/* 8005F4C4 00000B64  7C 08 03 A6 */	mtlr r0
+/* 8005F4C8 00000B68  38 21 00 A0 */	addi r1, r1, 0xa0
+/* 8005F4CC 00000B6C  4E 80 00 20 */	blr
+.endfn createCourseInit__9daPyMng_cFv
+
+# .text:0xB30 | 0x8005F4D0 | size: 0x9C
+.fn fn_8005F4D0, global
+/* 8005F4D0 00000B70  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005F4D4 00000B74  7C 08 02 A6 */	mflr r0
+/* 8005F4D8 00000B78  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005F4DC 00000B7C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005F4E0 00000B80  3B E0 00 00 */	li r31, 0x0
+/* 8005F4E4 00000B84  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005F4E8 00000B88  7C BE 2B 78 */	mr r30, r5
+/* 8005F4EC 00000B8C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005F4F0 00000B90  7C 9D 23 78 */	mr r29, r4
+/* 8005F4F4 00000B94  93 81 00 10 */	stw r28, 0x10(r1)
+/* 8005F4F8 00000B98  7C 7C 1B 78 */	mr r28, r3
+.L_8005F4FC:
+/* 8005F4FC 00000B9C  7F E3 FB 78 */	mr r3, r31
+/* 8005F500 00000BA0  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8005F504 00000BA4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F508 00000BA8  40 82 00 34 */	bne .L_8005F53C
+/* 8005F50C 00000BAC  7F A3 EB 78 */	mr r3, r29
+/* 8005F510 00000BB0  7F E4 FB 78 */	mr r4, r31
+/* 8005F514 00000BB4  48 00 00 01 */	bl fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei
+/* 8005F518 00000BB8  57 C0 10 3A */	slwi r0, r30, 2
+/* 8005F51C 00000BBC  38 60 00 00 */	li r3, lbl_8042BD70@sda21
+/* 8005F520 00000BC0  7C A3 00 2E */	lwzx r5, r3, r0
+/* 8005F524 00000BC4  7F E3 FB 78 */	mr r3, r31
+/* 8005F528 00000BC8  7F 84 E3 78 */	mr r4, r28
+/* 8005F52C 00000BCC  38 C0 00 00 */	li r6, 0x0
+/* 8005F530 00000BD0  48 00 00 01 */	bl create__9daPyMng_cFiP7mVec3_ciUc
+/* 8005F534 00000BD4  38 60 00 01 */	li r3, 0x1
+/* 8005F538 00000BD8  48 00 00 14 */	b .L_8005F54C
+.L_8005F53C:
+/* 8005F53C 00000BDC  3B FF 00 01 */	addi r31, r31, 0x1
+/* 8005F540 00000BE0  2C 1F 00 04 */	cmpwi r31, 0x4
+/* 8005F544 00000BE4  41 80 FF B8 */	blt .L_8005F4FC
+/* 8005F548 00000BE8  38 60 00 00 */	li r3, 0x0
+.L_8005F54C:
+/* 8005F54C 00000BEC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005F550 00000BF0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005F554 00000BF4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005F558 00000BF8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005F55C 00000BFC  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 8005F560 00000C00  7C 08 03 A6 */	mtlr r0
+/* 8005F564 00000C04  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005F568 00000C08  4E 80 00 20 */	blr
+.endfn fn_8005F4D0
+
+# .text:0xBCC | 0x8005F56C | size: 0x4
+.fn gap_03_8005F56C_text, global
+.hidden gap_03_8005F56C_text
+/* 8005F56C 00000C0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F56C_text
+
+# .text:0xBD0 | 0x8005F570 | size: 0x50
+# daPyMng_c::fn_8005f570(PLAYER_POWERUP_e, int)
+.fn fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei, global
+/* 8005F570 00000C10  3D 20 00 00 */	lis r9, m_playerID__9daPyMng_c@ha
+/* 8005F574 00000C14  54 8A 10 3A */	slwi r10, r4, 2
+/* 8005F578 00000C18  39 29 00 00 */	addi r9, r9, m_playerID__9daPyMng_c@l
+/* 8005F57C 00000C1C  54 80 06 3E */	clrlwi r0, r4, 24
+/* 8005F580 00000C20  38 89 00 50 */	addi r4, r9, 0x50
+/* 8005F584 00000C24  39 00 00 01 */	li r8, 0x1
+/* 8005F588 00000C28  7C E4 50 2E */	lwzx r7, r4, r10
+/* 8005F58C 00000C2C  7D 00 00 30 */	slw r0, r8, r0
+/* 8005F590 00000C30  54 04 06 3E */	clrlwi r4, r0, 24
+/* 8005F594 00000C34  88 A0 00 00 */	lbz r5, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005F598 00000C38  38 C9 00 40 */	addi r6, r9, 0x40
+/* 8005F59C 00000C3C  54 E0 10 3A */	slwi r0, r7, 2
+/* 8005F5A0 00000C40  7C A7 23 78 */	or r7, r5, r4
+/* 8005F5A4 00000C44  38 89 00 70 */	addi r4, r9, 0x70
+/* 8005F5A8 00000C48  38 A0 00 08 */	li r5, 0x8
+/* 8005F5AC 00000C4C  98 E0 00 00 */	stb r7, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005F5B0 00000C50  7D 06 51 2E */	stwx r8, r6, r10
+/* 8005F5B4 00000C54  7C A4 01 2E */	stwx r5, r4, r0
+/* 8005F5B8 00000C58  90 60 00 00 */	stw r3, mKinopioMode__9daPyMng_c@sda21(r0)
+/* 8005F5BC 00000C5C  4E 80 00 20 */	blr
+.endfn fn_8005f570__9daPyMng_cF16PLAYER_POWERUP_ei
+
+# .text:0xC20 | 0x8005F5C0 | size: 0x2B8
+# daPyMng_c::update()
+.fn update__9daPyMng_cFv, global
+/* 8005F5C0 00000C60  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 8005F5C4 00000C64  7C 08 02 A6 */	mflr r0
+/* 8005F5C8 00000C68  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8005F5CC 00000C6C  39 61 00 30 */	addi r11, r1, 0x30
+/* 8005F5D0 00000C70  48 00 00 01 */	bl _savegpr_27
+/* 8005F5D4 00000C74  3F E0 00 00 */	lis r31, m_playerID__9daPyMng_c@ha
+/* 8005F5D8 00000C78  3B FF 00 00 */	addi r31, r31, m_playerID__9daPyMng_c@l
+/* 8005F5DC 00000C7C  48 00 00 01 */	bl checkLastAlivePlayer__9daPyMng_cFv
+/* 8005F5E0 00000C80  48 00 00 01 */	bl getGameDisplay__10dScStage_cFv
+/* 8005F5E4 00000C84  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F5E8 00000C88  7C 7E 1B 78 */	mr r30, r3
+/* 8005F5EC 00000C8C  41 82 00 54 */	beq .L_8005F640
+/* 8005F5F0 00000C90  38 FF 00 80 */	addi r7, r31, 0x80
+/* 8005F5F4 00000C94  81 1F 00 80 */	lwz r8, 0x80(r31)
+/* 8005F5F8 00000C98  80 C7 00 04 */	lwz r6, 0x4(r7)
+/* 8005F5FC 00000C9C  38 81 00 08 */	addi r4, r1, 0x8
+/* 8005F600 00000CA0  80 A7 00 08 */	lwz r5, 0x8(r7)
+/* 8005F604 00000CA4  80 07 00 0C */	lwz r0, 0xc(r7)
+/* 8005F608 00000CA8  91 01 00 08 */	stw r8, 0x8(r1)
+/* 8005F60C 00000CAC  90 C1 00 0C */	stw r6, 0xc(r1)
+/* 8005F610 00000CB0  90 A1 00 10 */	stw r5, 0x10(r1)
+/* 8005F614 00000CB4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005F618 00000CB8  48 00 00 01 */	bl setPlayNum__14dGameDisplay_cFPi
+/* 8005F61C 00000CBC  48 00 00 01 */	bl getCoinAll__9daPyMng_cFv
+/* 8005F620 00000CC0  7C 64 1B 78 */	mr r4, r3
+/* 8005F624 00000CC4  7F C3 F3 78 */	mr r3, r30
+/* 8005F628 00000CC8  48 00 00 01 */	bl setCoinNum__14dGameDisplay_cFi
+/* 8005F62C 00000CCC  80 80 00 00 */	lwz r4, mScore__9daPyMng_c@sda21(r0)
+/* 8005F630 00000CD0  7F C3 F3 78 */	mr r3, r30
+/* 8005F634 00000CD4  48 00 00 01 */	bl setScore__14dGameDisplay_cFi
+/* 8005F638 00000CD8  7F C3 F3 78 */	mr r3, r30
+/* 8005F63C 00000CDC  48 00 00 01 */	bl setCollect__14dGameDisplay_cFv
+.L_8005F640:
+/* 8005F640 00000CE0  38 9F 00 A0 */	addi r4, r31, 0xa0
+/* 8005F644 00000CE4  38 BF 00 B0 */	addi r5, r31, 0xb0
+/* 8005F648 00000CE8  80 64 00 00 */	lwz r3, 0x0(r4)
+/* 8005F64C 00000CEC  38 00 00 00 */	li r0, 0x0
+/* 8005F650 00000CF0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F654 00000CF4  41 82 00 14 */	beq .L_8005F668
+/* 8005F658 00000CF8  34 63 FF FF */	subic. r3, r3, 0x1
+/* 8005F65C 00000CFC  90 64 00 00 */	stw r3, 0x0(r4)
+/* 8005F660 00000D00  40 82 00 08 */	bne .L_8005F668
+/* 8005F664 00000D04  90 05 00 00 */	stw r0, 0x0(r5)
+.L_8005F668:
+/* 8005F668 00000D08  80 64 00 04 */	lwz r3, 0x4(r4)
+/* 8005F66C 00000D0C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F670 00000D10  41 82 00 14 */	beq .L_8005F684
+/* 8005F674 00000D14  34 63 FF FF */	subic. r3, r3, 0x1
+/* 8005F678 00000D18  90 64 00 04 */	stw r3, 0x4(r4)
+/* 8005F67C 00000D1C  40 82 00 08 */	bne .L_8005F684
+/* 8005F680 00000D20  90 05 00 04 */	stw r0, 0x4(r5)
+.L_8005F684:
+/* 8005F684 00000D24  80 64 00 08 */	lwz r3, 0x8(r4)
+/* 8005F688 00000D28  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F68C 00000D2C  41 82 00 14 */	beq .L_8005F6A0
+/* 8005F690 00000D30  34 63 FF FF */	subic. r3, r3, 0x1
+/* 8005F694 00000D34  90 64 00 08 */	stw r3, 0x8(r4)
+/* 8005F698 00000D38  40 82 00 08 */	bne .L_8005F6A0
+/* 8005F69C 00000D3C  90 05 00 08 */	stw r0, 0x8(r5)
+.L_8005F6A0:
+/* 8005F6A0 00000D40  80 64 00 0C */	lwz r3, 0xc(r4)
+/* 8005F6A4 00000D44  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F6A8 00000D48  41 82 00 14 */	beq .L_8005F6BC
+/* 8005F6AC 00000D4C  34 63 FF FF */	subic. r3, r3, 0x1
+/* 8005F6B0 00000D50  90 64 00 0C */	stw r3, 0xc(r4)
+/* 8005F6B4 00000D54  40 82 00 08 */	bne .L_8005F6BC
+/* 8005F6B8 00000D58  90 05 00 0C */	stw r0, 0xc(r5)
+.L_8005F6BC:
+/* 8005F6BC 00000D5C  80 60 00 00 */	lwz r3, m_instance__7dNext_c@sda21(r0)
+/* 8005F6C0 00000D60  88 03 00 18 */	lbz r0, 0x18(r3)
+/* 8005F6C4 00000D64  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F6C8 00000D68  41 82 00 88 */	beq .L_8005F750
+/* 8005F6CC 00000D6C  3B 80 00 00 */	li r28, 0x0
+/* 8005F6D0 00000D70  3B 60 00 00 */	li r27, 0x0
+/* 8005F6D4 00000D74  3B C0 00 01 */	li r30, 0x1
+.L_8005F6D8:
+/* 8005F6D8 00000D78  57 60 06 3E */	clrlwi r0, r27, 24
+/* 8005F6DC 00000D7C  88 60 00 00 */	lbz r3, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005F6E0 00000D80  7F C0 00 30 */	slw r0, r30, r0
+/* 8005F6E4 00000D84  7C 60 00 39 */	and. r0, r3, r0
+/* 8005F6E8 00000D88  41 82 00 48 */	beq .L_8005F730
+/* 8005F6EC 00000D8C  7F 63 DB 78 */	mr r3, r27
+/* 8005F6F0 00000D90  48 00 00 01 */	bl getCtrlPlayer__9daPyMng_cFi
+/* 8005F6F4 00000D94  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F6F8 00000D98  7C 7D 1B 78 */	mr r29, r3
+/* 8005F6FC 00000D9C  41 82 00 34 */	beq .L_8005F730
+/* 8005F700 00000DA0  38 80 00 64 */	li r4, 0x64
+/* 8005F704 00000DA4  48 00 00 01 */	bl isStatus__10daPlBase_cFi
+/* 8005F708 00000DA8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F70C 00000DAC  40 82 00 24 */	bne .L_8005F730
+/* 8005F710 00000DB0  81 9D 00 60 */	lwz r12, 0x60(r29)
+/* 8005F714 00000DB4  7F A3 EB 78 */	mr r3, r29
+/* 8005F718 00000DB8  81 8C 03 70 */	lwz r12, 0x370(r12)
+/* 8005F71C 00000DBC  7D 89 03 A6 */	mtctr r12
+/* 8005F720 00000DC0  4E 80 04 21 */	bctrl
+/* 8005F724 00000DC4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F728 00000DC8  40 82 00 08 */	bne .L_8005F730
+/* 8005F72C 00000DCC  3B 80 00 01 */	li r28, 0x1
+.L_8005F730:
+/* 8005F730 00000DD0  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 8005F734 00000DD4  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 8005F738 00000DD8  41 80 FF A0 */	blt .L_8005F6D8
+/* 8005F73C 00000DDC  2C 1C 00 00 */	cmpwi r28, 0x0
+/* 8005F740 00000DE0  40 82 00 10 */	bne .L_8005F750
+/* 8005F744 00000DE4  80 60 00 00 */	lwz r3, m_instance__7dNext_c@sda21(r0)
+/* 8005F748 00000DE8  38 00 00 00 */	li r0, 0x0
+/* 8005F74C 00000DEC  B0 03 00 1C */	sth r0, 0x1c(r3)
+.L_8005F750:
+/* 8005F750 00000DF0  80 60 00 00 */	lwz r3, m_instance__8dQuake_c@sda21(r0)
+/* 8005F754 00000DF4  80 03 00 30 */	lwz r0, 0x30(r3)
+/* 8005F758 00000DF8  54 00 06 B9 */	rlwinm. r0, r0, 0, 26, 28
+/* 8005F75C 00000DFC  41 82 00 88 */	beq .L_8005F7E4
+/* 8005F760 00000E00  80 00 00 00 */	lwz r0, mQuakeTrigger__9daPyMng_c@sda21(r0)
+/* 8005F764 00000E04  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F768 00000E08  40 82 00 70 */	bne .L_8005F7D8
+/* 8005F76C 00000E0C  3B DF 00 B0 */	addi r30, r31, 0xb0
+/* 8005F770 00000E10  3B 60 00 00 */	li r27, 0x0
+.L_8005F774:
+/* 8005F774 00000E14  7F 63 DB 78 */	mr r3, r27
+/* 8005F778 00000E18  48 00 00 01 */	bl getCtrlPlayer__9daPyMng_cFi
+/* 8005F77C 00000E1C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F780 00000E20  41 82 00 48 */	beq .L_8005F7C8
+/* 8005F784 00000E24  80 80 00 00 */	lwz r4, m_instance__8dQuake_c@sda21(r0)
+/* 8005F788 00000E28  80 84 00 30 */	lwz r4, 0x30(r4)
+/* 8005F78C 00000E2C  54 80 06 B5 */	rlwinm. r0, r4, 0, 26, 26
+/* 8005F790 00000E30  41 82 00 10 */	beq .L_8005F7A0
+/* 8005F794 00000E34  38 80 00 8B */	li r4, 0x8b
+/* 8005F798 00000E38  48 00 00 01 */	bl onStatus__10daPlBase_cFi
+/* 8005F79C 00000E3C  48 00 00 2C */	b .L_8005F7C8
+.L_8005F7A0:
+/* 8005F7A0 00000E40  54 80 07 39 */	rlwinm. r0, r4, 0, 28, 28
+/* 8005F7A4 00000E44  41 82 00 10 */	beq .L_8005F7B4
+/* 8005F7A8 00000E48  38 80 00 8C */	li r4, 0x8c
+/* 8005F7AC 00000E4C  48 00 00 01 */	bl onStatus__10daPlBase_cFi
+/* 8005F7B0 00000E50  48 00 00 18 */	b .L_8005F7C8
+.L_8005F7B4:
+/* 8005F7B4 00000E54  80 1E 00 00 */	lwz r0, 0x0(r30)
+/* 8005F7B8 00000E58  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F7BC 00000E5C  40 82 00 0C */	bne .L_8005F7C8
+/* 8005F7C0 00000E60  38 80 00 8C */	li r4, 0x8c
+/* 8005F7C4 00000E64  48 00 00 01 */	bl onStatus__10daPlBase_cFi
+.L_8005F7C8:
+/* 8005F7C8 00000E68  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 8005F7CC 00000E6C  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8005F7D0 00000E70  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 8005F7D4 00000E74  41 80 FF A0 */	blt .L_8005F774
+.L_8005F7D8:
+/* 8005F7D8 00000E78  38 00 00 01 */	li r0, 0x1
+/* 8005F7DC 00000E7C  90 00 00 00 */	stw r0, mQuakeTrigger__9daPyMng_c@sda21(r0)
+/* 8005F7E0 00000E80  48 00 00 0C */	b .L_8005F7EC
+.L_8005F7E4:
+/* 8005F7E4 00000E84  38 00 00 00 */	li r0, 0x0
+/* 8005F7E8 00000E88  90 00 00 00 */	stw r0, mQuakeTrigger__9daPyMng_c@sda21(r0)
+.L_8005F7EC:
+/* 8005F7EC 00000E8C  80 00 00 00 */	lwz r0, mPauseDisable__9daPyMng_c@sda21(r0)
+/* 8005F7F0 00000E90  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F7F4 00000E94  40 82 00 14 */	bne .L_8005F808
+/* 8005F7F8 00000E98  80 60 00 00 */	lwz r3, m_instance__14PauseManager_c@sda21(r0)
+/* 8005F7FC 00000E9C  38 80 00 01 */	li r4, 0x1
+/* 8005F800 00000EA0  48 00 00 01 */	bl setPauseEnable__14PauseManager_cFb
+/* 8005F804 00000EA4  48 00 00 10 */	b .L_8005F814
+.L_8005F808:
+/* 8005F808 00000EA8  80 60 00 00 */	lwz r3, m_instance__14PauseManager_c@sda21(r0)
+/* 8005F80C 00000EAC  38 80 00 00 */	li r4, 0x0
+/* 8005F810 00000EB0  48 00 00 01 */	bl setPauseEnable__14PauseManager_cFb
+.L_8005F814:
+/* 8005F814 00000EB4  80 60 00 00 */	lwz r3, mStopTimerInfo__9daPyMng_c@sda21(r0)
+/* 8005F818 00000EB8  80 00 00 00 */	lwz r0, mStopTimerInfoOld__9daPyMng_c@sda21(r0)
+/* 8005F81C 00000EBC  7C 03 00 00 */	cmpw r3, r0
+/* 8005F820 00000EC0  41 82 00 30 */	beq .L_8005F850
+/* 8005F824 00000EC4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F828 00000EC8  41 82 00 14 */	beq .L_8005F83C
+/* 8005F82C 00000ECC  80 60 00 00 */	lwz r3, m_instance__13dStageTimer_c@sda21(r0)
+/* 8005F830 00000ED0  38 00 00 01 */	li r0, 0x1
+/* 8005F834 00000ED4  98 03 00 0C */	stb r0, 0xc(r3)
+/* 8005F838 00000ED8  48 00 00 10 */	b .L_8005F848
+.L_8005F83C:
+/* 8005F83C 00000EDC  80 60 00 00 */	lwz r3, m_instance__13dStageTimer_c@sda21(r0)
+/* 8005F840 00000EE0  38 00 00 00 */	li r0, 0x0
+/* 8005F844 00000EE4  98 03 00 0C */	stb r0, 0xc(r3)
+.L_8005F848:
+/* 8005F848 00000EE8  80 00 00 00 */	lwz r0, mStopTimerInfo__9daPyMng_c@sda21(r0)
+/* 8005F84C 00000EEC  90 00 00 00 */	stw r0, mStopTimerInfoOld__9daPyMng_c@sda21(r0)
+.L_8005F850:
+/* 8005F850 00000EF0  80 60 00 00 */	lwz r3, mspInstance__13daPyDemoMng_c@sda21(r0)
+/* 8005F854 00000EF4  48 00 00 01 */	bl update__13daPyDemoMng_cFv
+/* 8005F858 00000EF8  80 60 00 00 */	lwz r3, mspInstance__14dPyEffectMng_c@sda21(r0)
+/* 8005F85C 00000EFC  48 00 00 01 */	bl update__14dPyEffectMng_cFv
+/* 8005F860 00000F00  39 61 00 30 */	addi r11, r1, 0x30
+/* 8005F864 00000F04  48 00 00 01 */	bl _restgpr_27
+/* 8005F868 00000F08  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 8005F86C 00000F0C  7C 08 03 A6 */	mtlr r0
+/* 8005F870 00000F10  38 21 00 30 */	addi r1, r1, 0x30
+/* 8005F874 00000F14  4E 80 00 20 */	blr
+.endfn update__9daPyMng_cFv
+
+# .text:0xED8 | 0x8005F878 | size: 0x8
+.fn gap_03_8005F878_text, global
+.hidden gap_03_8005F878_text
+/* 8005F878 00000F18  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F87C 00000F1C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F878_text
+
+# .text:0xEE0 | 0x8005F880 | size: 0x3C
+# daPyMng_c::isPlayerPauseEnable(signed char)
+.fn isPlayerPauseEnable__9daPyMng_cFSc, global
+/* 8005F880 00000F20  54 60 06 3E */	clrlwi r0, r3, 24
+/* 8005F884 00000F24  38 80 00 01 */	li r4, 0x1
+/* 8005F888 00000F28  88 A0 00 00 */	lbz r5, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005F88C 00000F2C  7C 80 00 30 */	slw r0, r4, r0
+/* 8005F890 00000F30  7C A0 00 39 */	and. r0, r5, r0
+/* 8005F894 00000F34  41 82 00 20 */	beq .L_8005F8B4
+/* 8005F898 00000F38  7C 60 07 74 */	extsb r0, r3
+/* 8005F89C 00000F3C  80 60 00 00 */	lwz r3, mPauseEnableInfo__9daPyMng_c@sda21(r0)
+/* 8005F8A0 00000F40  7C 80 00 30 */	slw r0, r4, r0
+/* 8005F8A4 00000F44  7C 60 00 39 */	and. r0, r3, r0
+/* 8005F8A8 00000F48  41 82 00 0C */	beq .L_8005F8B4
+/* 8005F8AC 00000F4C  38 60 00 01 */	li r3, 0x1
+/* 8005F8B0 00000F50  4E 80 00 20 */	blr
+.L_8005F8B4:
+/* 8005F8B4 00000F54  38 60 00 00 */	li r3, 0x0
+/* 8005F8B8 00000F58  4E 80 00 20 */	blr
+.endfn isPlayerPauseEnable__9daPyMng_cFSc
+
+# .text:0xF1C | 0x8005F8BC | size: 0x4
+.fn gap_03_8005F8BC_text, global
+.hidden gap_03_8005F8BC_text
+/* 8005F8BC 00000F5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F8BC_text
+
+# .text:0xF20 | 0x8005F8C0 | size: 0x38
+# daPyMng_c::setPlayer(int, dAcPy_c*)
+.fn setPlayer__9daPyMng_cFiP7dAcPy_c, global
+/* 8005F8C0 00000F60  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8005F8C4 00000F64  40 82 00 1C */	bne .L_8005F8E0
+/* 8005F8C8 00000F68  3C 80 00 00 */	lis r4, m_playerID__9daPyMng_c@ha
+/* 8005F8CC 00000F6C  54 60 10 3A */	slwi r0, r3, 2
+/* 8005F8D0 00000F70  38 84 00 00 */	addi r4, r4, m_playerID__9daPyMng_c@l
+/* 8005F8D4 00000F74  38 60 00 00 */	li r3, 0x0
+/* 8005F8D8 00000F78  7C 64 01 2E */	stwx r3, r4, r0
+/* 8005F8DC 00000F7C  4E 80 00 20 */	blr
+.L_8005F8E0:
+/* 8005F8E0 00000F80  3C A0 00 00 */	lis r5, m_playerID__9daPyMng_c@ha
+/* 8005F8E4 00000F84  54 60 10 3A */	slwi r0, r3, 2
+/* 8005F8E8 00000F88  38 A5 00 00 */	addi r5, r5, m_playerID__9daPyMng_c@l
+/* 8005F8EC 00000F8C  80 64 00 00 */	lwz r3, 0x0(r4)
+/* 8005F8F0 00000F90  7C 65 01 2E */	stwx r3, r5, r0
+/* 8005F8F4 00000F94  4E 80 00 20 */	blr
+.endfn setPlayer__9daPyMng_cFiP7dAcPy_c
+
+# .text:0xF58 | 0x8005F8F8 | size: 0x8
+.fn gap_03_8005F8F8_text, global
+.hidden gap_03_8005F8F8_text
+/* 8005F8F8 00000F98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F8FC 00000F9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F8F8_text
+
+# .text:0xF60 | 0x8005F900 | size: 0x14
+# daPyMng_c::getPlayer(int)
+.fn getPlayer__9daPyMng_cFi, global
+/* 8005F900 00000FA0  3C 80 00 00 */	lis r4, m_playerID__9daPyMng_c@ha
+/* 8005F904 00000FA4  54 60 10 3A */	slwi r0, r3, 2
+/* 8005F908 00000FA8  38 84 00 00 */	addi r4, r4, m_playerID__9daPyMng_c@l
+/* 8005F90C 00000FAC  7C 64 00 2E */	lwzx r3, r4, r0
+/* 8005F910 00000FB0  48 00 00 00 */	b searchBaseByID__10fManager_cF9fBaseID_e
+.endfn getPlayer__9daPyMng_cFi
+
+# .text:0xF74 | 0x8005F914 | size: 0xC
+.fn gap_03_8005F914_text, global
+.hidden gap_03_8005F914_text
+/* 8005F914 00000FB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F918 00000FB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F91C 00000FBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F914_text
+
+# .text:0xF80 | 0x8005F920 | size: 0x64
+# daPyMng_c::decideCtrlPlrNo()
+.fn decideCtrlPlrNo__9daPyMng_cFv, global
+/* 8005F920 00000FC0  88 A0 00 00 */	lbz r5, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005F924 00000FC4  38 80 00 01 */	li r4, 0x1
+/* 8005F928 00000FC8  38 60 00 00 */	li r3, 0x0
+/* 8005F92C 00000FCC  7C 80 18 30 */	slw r0, r4, r3
+/* 8005F930 00000FD0  7C A0 00 39 */	and. r0, r5, r0
+/* 8005F934 00000FD4  41 82 00 0C */	beq .L_8005F940
+/* 8005F938 00000FD8  90 60 00 00 */	stw r3, mCtrlPlrNo__9daPyMng_c@sda21(r0)
+/* 8005F93C 00000FDC  4E 80 00 20 */	blr
+.L_8005F940:
+/* 8005F940 00000FE0  7C 80 20 30 */	slw r0, r4, r4
+/* 8005F944 00000FE4  7C A0 00 39 */	and. r0, r5, r0
+/* 8005F948 00000FE8  41 82 00 0C */	beq .L_8005F954
+/* 8005F94C 00000FEC  90 80 00 00 */	stw r4, mCtrlPlrNo__9daPyMng_c@sda21(r0)
+/* 8005F950 00000FF0  4E 80 00 20 */	blr
+.L_8005F954:
+/* 8005F954 00000FF4  38 60 00 02 */	li r3, 0x2
+/* 8005F958 00000FF8  7C 80 18 30 */	slw r0, r4, r3
+/* 8005F95C 00000FFC  7C A0 00 39 */	and. r0, r5, r0
+/* 8005F960 00001000  41 82 00 0C */	beq .L_8005F96C
+/* 8005F964 00001004  90 60 00 00 */	stw r3, mCtrlPlrNo__9daPyMng_c@sda21(r0)
+/* 8005F968 00001008  4E 80 00 20 */	blr
+.L_8005F96C:
+/* 8005F96C 0000100C  38 60 00 03 */	li r3, 0x3
+/* 8005F970 00001010  7C 80 18 30 */	slw r0, r4, r3
+/* 8005F974 00001014  7C A0 00 39 */	and. r0, r5, r0
+/* 8005F978 00001018  4D 82 00 20 */	beqlr
+/* 8005F97C 0000101C  90 60 00 00 */	stw r3, mCtrlPlrNo__9daPyMng_c@sda21(r0)
+/* 8005F980 00001020  4E 80 00 20 */	blr
+.endfn decideCtrlPlrNo__9daPyMng_cFv
+
+# .text:0xFE4 | 0x8005F984 | size: 0xC
+.fn gap_03_8005F984_text, global
+.hidden gap_03_8005F984_text
+/* 8005F984 00001024  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F988 00001028  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F98C 0000102C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F984_text
+
+# .text:0xFF0 | 0x8005F990 | size: 0x64
+# daPyMng_c::setYoshi(daPlBase_c*)
+.fn setYoshi__9daPyMng_cFP10daPlBase_c, global
+/* 8005F990 00001030  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005F994 00001034  40 82 00 0C */	bne .L_8005F9A0
+/* 8005F998 00001038  38 60 00 00 */	li r3, 0x0
+/* 8005F99C 0000103C  4E 80 00 20 */	blr
+.L_8005F9A0:
+/* 8005F9A0 00001040  3C 80 00 00 */	lis r4, m_yoshiID__9daPyMng_c@ha
+/* 8005F9A4 00001044  38 00 00 04 */	li r0, 0x4
+/* 8005F9A8 00001048  38 84 00 00 */	addi r4, r4, m_yoshiID__9daPyMng_c@l
+/* 8005F9AC 0000104C  38 C0 00 00 */	li r6, 0x0
+/* 8005F9B0 00001050  7C 09 03 A6 */	mtctr r0
+/* 8005F9B4 00001054  60 00 00 00 */	nop
+.L_8005F9B8:
+/* 8005F9B8 00001058  80 04 00 00 */	lwz r0, 0x0(r4)
+/* 8005F9BC 0000105C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005F9C0 00001060  40 82 00 20 */	bne .L_8005F9E0
+/* 8005F9C4 00001064  3C 80 00 00 */	lis r4, m_yoshiID__9daPyMng_c@ha
+/* 8005F9C8 00001068  80 A3 00 00 */	lwz r5, 0x0(r3)
+/* 8005F9CC 0000106C  54 C0 10 3A */	slwi r0, r6, 2
+/* 8005F9D0 00001070  38 60 00 01 */	li r3, 0x1
+/* 8005F9D4 00001074  38 84 00 00 */	addi r4, r4, m_yoshiID__9daPyMng_c@l
+/* 8005F9D8 00001078  7C A4 01 2E */	stwx r5, r4, r0
+/* 8005F9DC 0000107C  4E 80 00 20 */	blr
+.L_8005F9E0:
+/* 8005F9E0 00001080  38 84 00 04 */	addi r4, r4, 0x4
+/* 8005F9E4 00001084  38 C6 00 01 */	addi r6, r6, 0x1
+/* 8005F9E8 00001088  42 00 FF D0 */	bdnz .L_8005F9B8
+/* 8005F9EC 0000108C  38 60 00 00 */	li r3, 0x0
+/* 8005F9F0 00001090  4E 80 00 20 */	blr
+.endfn setYoshi__9daPyMng_cFP10daPlBase_c
+
+# .text:0x1054 | 0x8005F9F4 | size: 0xC
+.fn gap_03_8005F9F4_text, global
+.hidden gap_03_8005F9F4_text
+/* 8005F9F4 00001094  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F9F8 00001098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005F9FC 0000109C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005F9F4_text
+
+# .text:0x1060 | 0x8005FA00 | size: 0x58
+# daPyMng_c::releaseYoshi(daPlBase_c*)
+.fn releaseYoshi__9daPyMng_cFP10daPlBase_c, global
+/* 8005FA00 000010A0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FA04 000010A4  4D 82 00 20 */	beqlr
+/* 8005FA08 000010A8  3C A0 00 00 */	lis r5, m_yoshiID__9daPyMng_c@ha
+/* 8005FA0C 000010AC  38 00 00 04 */	li r0, 0x4
+/* 8005FA10 000010B0  38 A5 00 00 */	addi r5, r5, m_yoshiID__9daPyMng_c@l
+/* 8005FA14 000010B4  38 C0 00 00 */	li r6, 0x0
+/* 8005FA18 000010B8  7C 09 03 A6 */	mtctr r0
+/* 8005FA1C 000010BC  60 00 00 00 */	nop
+.L_8005FA20:
+/* 8005FA20 000010C0  80 85 00 00 */	lwz r4, 0x0(r5)
+/* 8005FA24 000010C4  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 8005FA28 000010C8  7C 04 00 00 */	cmpw r4, r0
+/* 8005FA2C 000010CC  40 82 00 1C */	bne .L_8005FA48
+/* 8005FA30 000010D0  3C 60 00 00 */	lis r3, m_yoshiID__9daPyMng_c@ha
+/* 8005FA34 000010D4  54 C0 10 3A */	slwi r0, r6, 2
+/* 8005FA38 000010D8  38 63 00 00 */	addi r3, r3, m_yoshiID__9daPyMng_c@l
+/* 8005FA3C 000010DC  38 80 00 00 */	li r4, 0x0
+/* 8005FA40 000010E0  7C 83 01 2E */	stwx r4, r3, r0
+/* 8005FA44 000010E4  4E 80 00 20 */	blr
+.L_8005FA48:
+/* 8005FA48 000010E8  38 A5 00 04 */	addi r5, r5, 0x4
+/* 8005FA4C 000010EC  38 C6 00 01 */	addi r6, r6, 0x1
+/* 8005FA50 000010F0  42 00 FF D0 */	bdnz .L_8005FA20
+/* 8005FA54 000010F4  4E 80 00 20 */	blr
+.endfn releaseYoshi__9daPyMng_cFP10daPlBase_c
+
+# .text:0x10B8 | 0x8005FA58 | size: 0x8
+.fn gap_03_8005FA58_text, global
+.hidden gap_03_8005FA58_text
+/* 8005FA58 000010F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FA5C 000010FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FA58_text
+
+# .text:0x10C0 | 0x8005FA60 | size: 0x9C
+# daPyMng_c::getYoshi(int)
+.fn getYoshi__9daPyMng_cFi, global
+/* 8005FA60 00001100  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005FA64 00001104  7C 08 02 A6 */	mflr r0
+/* 8005FA68 00001108  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005FA6C 0000110C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005FA70 00001110  3F E0 00 00 */	lis r31, m_yoshiID__9daPyMng_c@ha
+/* 8005FA74 00001114  3B FF 00 00 */	addi r31, r31, m_yoshiID__9daPyMng_c@l
+/* 8005FA78 00001118  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005FA7C 0000111C  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005FA80 00001120  3B A0 00 00 */	li r29, 0x0
+/* 8005FA84 00001124  93 81 00 10 */	stw r28, 0x10(r1)
+/* 8005FA88 00001128  7C 7C 1B 78 */	mr r28, r3
+.L_8005FA8C:
+/* 8005FA8C 0000112C  80 7F 00 00 */	lwz r3, 0x0(r31)
+/* 8005FA90 00001130  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 8005FA94 00001134  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FA98 00001138  7C 7E 1B 78 */	mr r30, r3
+/* 8005FA9C 0000113C  41 82 00 2C */	beq .L_8005FAC8
+/* 8005FAA0 00001140  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8005FAA4 00001144  81 8C 00 6C */	lwz r12, 0x6c(r12)
+/* 8005FAA8 00001148  7D 89 03 A6 */	mtctr r12
+/* 8005FAAC 0000114C  4E 80 04 21 */	bctrl
+/* 8005FAB0 00001150  88 03 00 00 */	lbz r0, 0x0(r3)
+/* 8005FAB4 00001154  7C 00 07 74 */	extsb r0, r0
+/* 8005FAB8 00001158  7C 1C 00 00 */	cmpw r28, r0
+/* 8005FABC 0000115C  40 82 00 0C */	bne .L_8005FAC8
+/* 8005FAC0 00001160  7F C3 F3 78 */	mr r3, r30
+/* 8005FAC4 00001164  48 00 00 18 */	b .L_8005FADC
+.L_8005FAC8:
+/* 8005FAC8 00001168  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8005FACC 0000116C  3B FF 00 04 */	addi r31, r31, 0x4
+/* 8005FAD0 00001170  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8005FAD4 00001174  41 80 FF B8 */	blt .L_8005FA8C
+/* 8005FAD8 00001178  38 60 00 00 */	li r3, 0x0
+.L_8005FADC:
+/* 8005FADC 0000117C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005FAE0 00001180  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005FAE4 00001184  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005FAE8 00001188  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005FAEC 0000118C  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 8005FAF0 00001190  7C 08 03 A6 */	mtlr r0
+/* 8005FAF4 00001194  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005FAF8 00001198  4E 80 00 20 */	blr
+.endfn getYoshi__9daPyMng_cFi
+
+# .text:0x115C | 0x8005FAFC | size: 0x4
+.fn gap_03_8005FAFC_text, global
+.hidden gap_03_8005FAFC_text
+/* 8005FAFC 0000119C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FAFC_text
+
+# .text:0x1160 | 0x8005FB00 | size: 0x6C
+# daPyMng_c::getYoshiNum()
+.fn getYoshiNum__9daPyMng_cFv, global
+/* 8005FB00 000011A0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005FB04 000011A4  7C 08 02 A6 */	mflr r0
+/* 8005FB08 000011A8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005FB0C 000011AC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005FB10 000011B0  3F E0 00 00 */	lis r31, m_yoshiID__9daPyMng_c@ha
+/* 8005FB14 000011B4  3B FF 00 00 */	addi r31, r31, m_yoshiID__9daPyMng_c@l
+/* 8005FB18 000011B8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005FB1C 000011BC  3B C0 00 00 */	li r30, 0x0
+/* 8005FB20 000011C0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005FB24 000011C4  3B A0 00 00 */	li r29, 0x0
+.L_8005FB28:
+/* 8005FB28 000011C8  80 7F 00 00 */	lwz r3, 0x0(r31)
+/* 8005FB2C 000011CC  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 8005FB30 000011D0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FB34 000011D4  41 82 00 08 */	beq .L_8005FB3C
+/* 8005FB38 000011D8  3B DE 00 01 */	addi r30, r30, 0x1
+.L_8005FB3C:
+/* 8005FB3C 000011DC  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8005FB40 000011E0  3B FF 00 04 */	addi r31, r31, 0x4
+/* 8005FB44 000011E4  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8005FB48 000011E8  41 80 FF E0 */	blt .L_8005FB28
+/* 8005FB4C 000011EC  7F C3 F3 78 */	mr r3, r30
+/* 8005FB50 000011F0  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005FB54 000011F4  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005FB58 000011F8  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005FB5C 000011FC  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005FB60 00001200  7C 08 03 A6 */	mtlr r0
+/* 8005FB64 00001204  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005FB68 00001208  4E 80 00 20 */	blr
+.endfn getYoshiNum__9daPyMng_cFv
+
+# .text:0x11CC | 0x8005FB6C | size: 0x4
+.fn gap_03_8005FB6C_text, global
+.hidden gap_03_8005FB6C_text
+/* 8005FB6C 0000120C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FB6C_text
+
+# .text:0x11D0 | 0x8005FB70 | size: 0x14
+# daPyMng_c::getYoshiDirectP(int)
+.fn getYoshiDirectP__9daPyMng_cFi, global
+/* 8005FB70 00001210  3C 80 00 00 */	lis r4, m_yoshiID__9daPyMng_c@ha
+/* 8005FB74 00001214  54 60 10 3A */	slwi r0, r3, 2
+/* 8005FB78 00001218  38 84 00 00 */	addi r4, r4, m_yoshiID__9daPyMng_c@l
+/* 8005FB7C 0000121C  7C 64 00 2E */	lwzx r3, r4, r0
+/* 8005FB80 00001220  48 00 00 00 */	b searchBaseByID__10fManager_cF9fBaseID_e
+.endfn getYoshiDirectP__9daPyMng_cFi
+
+# .text:0x11E4 | 0x8005FB84 | size: 0xC
+.fn gap_03_8005FB84_text, global
+.hidden gap_03_8005FB84_text
+/* 8005FB84 00001224  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FB88 00001228  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FB8C 0000122C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FB84_text
+
+# .text:0x11F0 | 0x8005FB90 | size: 0x50
+# daPyMng_c::getCtrlPlayer(int)
+.fn getCtrlPlayer__9daPyMng_cFi, global
+/* 8005FB90 00001230  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005FB94 00001234  7C 08 02 A6 */	mflr r0
+/* 8005FB98 00001238  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005FB9C 0000123C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8005FBA0 00001240  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8005FBA4 00001244  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FBA8 00001248  7C 7F 1B 78 */	mr r31, r3
+/* 8005FBAC 0000124C  40 82 00 0C */	bne .L_8005FBB8
+/* 8005FBB0 00001250  38 60 00 00 */	li r3, 0x0
+/* 8005FBB4 00001254  48 00 00 18 */	b .L_8005FBCC
+.L_8005FBB8:
+/* 8005FBB8 00001258  48 00 00 01 */	bl getRideYoshi__7dAcPy_cFv
+/* 8005FBBC 0000125C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FBC0 00001260  41 82 00 08 */	beq .L_8005FBC8
+/* 8005FBC4 00001264  48 00 00 08 */	b .L_8005FBCC
+.L_8005FBC8:
+/* 8005FBC8 00001268  7F E3 FB 78 */	mr r3, r31
+.L_8005FBCC:
+/* 8005FBCC 0000126C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005FBD0 00001270  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8005FBD4 00001274  7C 08 03 A6 */	mtlr r0
+/* 8005FBD8 00001278  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005FBDC 0000127C  4E 80 00 20 */	blr
+.endfn getCtrlPlayer__9daPyMng_cFi
+
+# .text:0x1240 | 0x8005FBE0 | size: 0x40
+# daPyMng_c::getCourseInPlayerModelType(unsigned char)
+.fn getCourseInPlayerModelType__9daPyMng_cFUc, global
+/* 8005FBE0 00001280  3C A0 00 00 */	lis r5, mPlayerType__9daPyMng_c@ha
+/* 8005FBE4 00001284  3C 80 00 00 */	lis r4, mCreateItem__9daPyMng_c@ha
+/* 8005FBE8 00001288  54 60 15 BA */	clrlslwi r0, r3, 24, 2
+/* 8005FBEC 0000128C  38 A5 00 00 */	addi r5, r5, mPlayerType__9daPyMng_c@l
+/* 8005FBF0 00001290  38 84 00 00 */	addi r4, r4, mCreateItem__9daPyMng_c@l
+/* 8005FBF4 00001294  7C 05 00 2E */	lwzx r0, r5, r0
+/* 8005FBF8 00001298  54 05 10 3A */	slwi r5, r0, 2
+/* 8005FBFC 0000129C  7C 04 28 2E */	lwzx r0, r4, r5
+/* 8005FC00 000012A0  54 00 07 39 */	rlwinm. r0, r0, 0, 28, 28
+/* 8005FC04 000012A4  41 82 00 0C */	beq .L_8005FC10
+/* 8005FC08 000012A8  38 60 00 04 */	li r3, 0x4
+/* 8005FC0C 000012AC  4E 80 00 20 */	blr
+.L_8005FC10:
+/* 8005FC10 000012B0  3C 60 00 00 */	lis r3, "@LOCAL@getCourseInPlayerModelType__9daPyMng_cFUc@scModelTypeDt"@ha
+/* 8005FC14 000012B4  38 63 00 00 */	addi r3, r3, "@LOCAL@getCourseInPlayerModelType__9daPyMng_cFUc@scModelTypeDt"@l
+/* 8005FC18 000012B8  7C 63 28 2E */	lwzx r3, r3, r5
+/* 8005FC1C 000012BC  4E 80 00 20 */	blr
+.endfn getCourseInPlayerModelType__9daPyMng_cFUc
+
+# .text:0x1280 | 0x8005FC20 | size: 0x1C
+# daPyMng_c::setCarryOverYoshiInfo(unsigned char, unsigned char, int)
+.fn setCarryOverYoshiInfo__9daPyMng_cFUcUci, global
+/* 8005FC20 000012C0  3C C0 00 00 */	lis r6, m_yoshiFruit__9daPyMng_c@ha
+/* 8005FC24 000012C4  38 E0 00 00 */	li r7, m_yoshiColor__9daPyMng_c@sda21
+/* 8005FC28 000012C8  54 60 15 BA */	clrlslwi r0, r3, 24, 2
+/* 8005FC2C 000012CC  7C 87 19 AE */	stbx r4, r7, r3
+/* 8005FC30 000012D0  38 C6 00 00 */	addi r6, r6, m_yoshiFruit__9daPyMng_c@l
+/* 8005FC34 000012D4  7C A6 01 2E */	stwx r5, r6, r0
+/* 8005FC38 000012D8  4E 80 00 20 */	blr
+.endfn setCarryOverYoshiInfo__9daPyMng_cFUcUci
+
+# .text:0x129C | 0x8005FC3C | size: 0x4
+.fn gap_03_8005FC3C_text, global
+.hidden gap_03_8005FC3C_text
+/* 8005FC3C 000012DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FC3C_text
+
+# .text:0x12A0 | 0x8005FC40 | size: 0xC
+# daPyMng_c::getYoshiColor(unsigned char)
+.fn getYoshiColor__9daPyMng_cFUc, global
+/* 8005FC40 000012E0  38 80 00 00 */	li r4, m_yoshiColor__9daPyMng_c@sda21
+/* 8005FC44 000012E4  7C 64 18 AE */	lbzx r3, r4, r3
+/* 8005FC48 000012E8  4E 80 00 20 */	blr
+.endfn getYoshiColor__9daPyMng_cFUc
+
+# .text:0x12AC | 0x8005FC4C | size: 0x4
+.fn gap_03_8005FC4C_text, global
+.hidden gap_03_8005FC4C_text
+/* 8005FC4C 000012EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FC4C_text
+
+# .text:0x12B0 | 0x8005FC50 | size: 0x14
+# daPyMng_c::getYoshiFruit(unsigned char)
+.fn getYoshiFruit__9daPyMng_cFUc, global
+/* 8005FC50 000012F0  3C 80 00 00 */	lis r4, m_yoshiFruit__9daPyMng_c@ha
+/* 8005FC54 000012F4  54 60 15 BA */	clrlslwi r0, r3, 24, 2
+/* 8005FC58 000012F8  38 84 00 00 */	addi r4, r4, m_yoshiFruit__9daPyMng_c@l
+/* 8005FC5C 000012FC  7C 64 00 2E */	lwzx r3, r4, r0
+/* 8005FC60 00001300  4E 80 00 20 */	blr
+.endfn getYoshiFruit__9daPyMng_cFUc
+
+# .text:0x12C4 | 0x8005FC64 | size: 0xC
+.fn gap_03_8005FC64_text, global
+.hidden gap_03_8005FC64_text
+/* 8005FC64 00001304  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FC68 00001308  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FC6C 0000130C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FC64_text
+
+# .text:0x12D0 | 0x8005FC70 | size: 0xA8
+# daPyMng_c::getActScrollInfo()
+.fn getActScrollInfo__9daPyMng_cFv, global
+/* 8005FC70 00001310  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005FC74 00001314  7C 08 02 A6 */	mflr r0
+/* 8005FC78 00001318  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005FC7C 0000131C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005FC80 00001320  3B E0 00 01 */	li r31, 0x1
+/* 8005FC84 00001324  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005FC88 00001328  3F C0 00 00 */	lis r30, mPlayerEntry__9daPyMng_c@ha
+/* 8005FC8C 0000132C  3B DE 00 00 */	addi r30, r30, mPlayerEntry__9daPyMng_c@l
+/* 8005FC90 00001330  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005FC94 00001334  3B A0 00 00 */	li r29, 0x0
+/* 8005FC98 00001338  93 81 00 10 */	stw r28, 0x10(r1)
+/* 8005FC9C 0000133C  3B 80 00 00 */	li r28, 0x0
+.L_8005FCA0:
+/* 8005FCA0 00001340  80 1E 00 00 */	lwz r0, 0x0(r30)
+/* 8005FCA4 00001344  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FCA8 00001348  41 82 00 3C */	beq .L_8005FCE4
+/* 8005FCAC 0000134C  7F 83 E3 78 */	mr r3, r28
+/* 8005FCB0 00001350  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8005FCB4 00001354  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FCB8 00001358  41 82 00 20 */	beq .L_8005FCD8
+/* 8005FCBC 0000135C  88 03 15 3C */	lbz r0, 0x153c(r3)
+/* 8005FCC0 00001360  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8005FCC4 00001364  41 82 00 20 */	beq .L_8005FCE4
+/* 8005FCC8 00001368  7F E0 E0 30 */	slw r0, r31, r28
+/* 8005FCCC 0000136C  54 00 06 3E */	clrlwi r0, r0, 24
+/* 8005FCD0 00001370  7F BD 03 78 */	or r29, r29, r0
+/* 8005FCD4 00001374  48 00 00 10 */	b .L_8005FCE4
+.L_8005FCD8:
+/* 8005FCD8 00001378  7F E0 E0 30 */	slw r0, r31, r28
+/* 8005FCDC 0000137C  54 00 06 3E */	clrlwi r0, r0, 24
+/* 8005FCE0 00001380  7F BD 03 78 */	or r29, r29, r0
+.L_8005FCE4:
+/* 8005FCE4 00001384  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 8005FCE8 00001388  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8005FCEC 0000138C  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 8005FCF0 00001390  41 80 FF B0 */	blt .L_8005FCA0
+/* 8005FCF4 00001394  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005FCF8 00001398  7F A3 EB 78 */	mr r3, r29
+/* 8005FCFC 0000139C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005FD00 000013A0  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005FD04 000013A4  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 8005FD08 000013A8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005FD0C 000013AC  7C 08 03 A6 */	mtlr r0
+/* 8005FD10 000013B0  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005FD14 000013B4  4E 80 00 20 */	blr
+.endfn getActScrollInfo__9daPyMng_cFv
+
+# .text:0x1378 | 0x8005FD18 | size: 0x8
+.fn gap_03_8005FD18_text, global
+.hidden gap_03_8005FD18_text
+/* 8005FD18 000013B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FD1C 000013BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FD18_text
+
+# .text:0x1380 | 0x8005FD20 | size: 0x8C
+# daPyMng_c::getScrollNum()
+.fn getScrollNum__9daPyMng_cFv, global
+/* 8005FD20 000013C0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8005FD24 000013C4  7C 08 02 A6 */	mflr r0
+/* 8005FD28 000013C8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8005FD2C 000013CC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 8005FD30 000013D0  3F E0 00 00 */	lis r31, mPlayerEntry__9daPyMng_c@ha
+/* 8005FD34 000013D4  3B FF 00 00 */	addi r31, r31, mPlayerEntry__9daPyMng_c@l
+/* 8005FD38 000013D8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 8005FD3C 000013DC  3B C0 00 00 */	li r30, 0x0
+/* 8005FD40 000013E0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 8005FD44 000013E4  3B A0 00 00 */	li r29, 0x0
+.L_8005FD48:
+/* 8005FD48 000013E8  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 8005FD4C 000013EC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FD50 000013F0  41 82 00 2C */	beq .L_8005FD7C
+/* 8005FD54 000013F4  7F A3 EB 78 */	mr r3, r29
+/* 8005FD58 000013F8  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8005FD5C 000013FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FD60 00001400  41 82 00 18 */	beq .L_8005FD78
+/* 8005FD64 00001404  88 03 15 3C */	lbz r0, 0x153c(r3)
+/* 8005FD68 00001408  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8005FD6C 0000140C  41 82 00 10 */	beq .L_8005FD7C
+/* 8005FD70 00001410  3B DE 00 01 */	addi r30, r30, 0x1
+/* 8005FD74 00001414  48 00 00 08 */	b .L_8005FD7C
+.L_8005FD78:
+/* 8005FD78 00001418  3B DE 00 01 */	addi r30, r30, 0x1
+.L_8005FD7C:
+/* 8005FD7C 0000141C  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8005FD80 00001420  3B FF 00 04 */	addi r31, r31, 0x4
+/* 8005FD84 00001424  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8005FD88 00001428  41 80 FF C0 */	blt .L_8005FD48
+/* 8005FD8C 0000142C  57 C3 06 3E */	clrlwi r3, r30, 24
+/* 8005FD90 00001430  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 8005FD94 00001434  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 8005FD98 00001438  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 8005FD9C 0000143C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8005FDA0 00001440  7C 08 03 A6 */	mtlr r0
+/* 8005FDA4 00001444  38 21 00 20 */	addi r1, r1, 0x20
+/* 8005FDA8 00001448  4E 80 00 20 */	blr
+.endfn getScrollNum__9daPyMng_cFv
+
+# .text:0x140C | 0x8005FDAC | size: 0x4
+.fn gap_03_8005FDAC_text, global
+.hidden gap_03_8005FDAC_text
+/* 8005FDAC 0000144C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FDAC_text
+
+# .text:0x1410 | 0x8005FDB0 | size: 0x74
+# daPyMng_c::addNum(int)
+.fn addNum__9daPyMng_cFi, global
+/* 8005FDB0 00001450  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005FDB4 00001454  7C 08 02 A6 */	mflr r0
+/* 8005FDB8 00001458  38 A0 00 01 */	li r5, 0x1
+/* 8005FDBC 0000145C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005FDC0 00001460  54 60 06 3E */	clrlwi r0, r3, 24
+/* 8005FDC4 00001464  7C A5 00 30 */	slw r5, r5, r0
+/* 8005FDC8 00001468  88 80 00 00 */	lbz r4, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005FDCC 0000146C  7C 80 28 39 */	and. r0, r4, r5
+/* 8005FDD0 00001470  40 82 00 40 */	bne .L_8005FE10
+/* 8005FDD4 00001474  54 A0 06 3E */	clrlwi r0, r5, 24
+/* 8005FDD8 00001478  7C 80 03 78 */	or r0, r4, r0
+/* 8005FDDC 0000147C  98 00 00 00 */	stb r0, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005FDE0 00001480  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8005FDE4 00001484  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FDE8 00001488  41 82 00 1C */	beq .L_8005FE04
+/* 8005FDEC 0000148C  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8005FDF0 00001490  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 8005FDF4 00001494  7D 89 03 A6 */	mtctr r12
+/* 8005FDF8 00001498  4E 80 04 21 */	bctrl
+/* 8005FDFC 0000149C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FE00 000014A0  40 82 00 08 */	bne .L_8005FE08
+.L_8005FE04:
+/* 8005FE04 000014A4  48 00 00 01 */	bl addNum__9daPyMng_cFv
+.L_8005FE08:
+/* 8005FE08 000014A8  38 60 00 01 */	li r3, 0x1
+/* 8005FE0C 000014AC  48 00 00 08 */	b .L_8005FE14
+.L_8005FE10:
+/* 8005FE10 000014B0  38 60 00 00 */	li r3, 0x0
+.L_8005FE14:
+/* 8005FE14 000014B4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005FE18 000014B8  7C 08 03 A6 */	mtlr r0
+/* 8005FE1C 000014BC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005FE20 000014C0  4E 80 00 20 */	blr
+.endfn addNum__9daPyMng_cFi
+
+# .text:0x1484 | 0x8005FE24 | size: 0xC
+.fn gap_03_8005FE24_text, global
+.hidden gap_03_8005FE24_text
+/* 8005FE24 000014C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FE28 000014C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FE2C 000014CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FE24_text
+
+# .text:0x1490 | 0x8005FE30 | size: 0x7C
+# daPyMng_c::decNum(int)
+.fn decNum__9daPyMng_cFi, global
+/* 8005FE30 000014D0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8005FE34 000014D4  7C 08 02 A6 */	mflr r0
+/* 8005FE38 000014D8  38 A0 00 01 */	li r5, 0x1
+/* 8005FE3C 000014DC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8005FE40 000014E0  54 60 06 3E */	clrlwi r0, r3, 24
+/* 8005FE44 000014E4  7C A5 00 30 */	slw r5, r5, r0
+/* 8005FE48 000014E8  88 80 00 00 */	lbz r4, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005FE4C 000014EC  7C 80 28 39 */	and. r0, r4, r5
+/* 8005FE50 000014F0  41 82 00 48 */	beq .L_8005FE98
+/* 8005FE54 000014F4  7C A0 28 F8 */	nor r0, r5, r5
+/* 8005FE58 000014F8  54 00 06 3E */	clrlwi r0, r0, 24
+/* 8005FE5C 000014FC  7C 80 00 38 */	and r0, r4, r0
+/* 8005FE60 00001500  98 00 00 00 */	stb r0, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 8005FE64 00001504  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8005FE68 00001508  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FE6C 0000150C  41 82 00 1C */	beq .L_8005FE88
+/* 8005FE70 00001510  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 8005FE74 00001514  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 8005FE78 00001518  7D 89 03 A6 */	mtctr r12
+/* 8005FE7C 0000151C  4E 80 04 21 */	bctrl
+/* 8005FE80 00001520  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FE84 00001524  40 82 00 08 */	bne .L_8005FE8C
+.L_8005FE88:
+/* 8005FE88 00001528  48 00 00 01 */	bl decNum__9daPyMng_cFv
+.L_8005FE8C:
+/* 8005FE8C 0000152C  48 00 00 01 */	bl decideCtrlPlrNo__9daPyMng_cFv
+/* 8005FE90 00001530  38 60 00 01 */	li r3, 0x1
+/* 8005FE94 00001534  48 00 00 08 */	b .L_8005FE9C
+.L_8005FE98:
+/* 8005FE98 00001538  38 60 00 00 */	li r3, 0x0
+.L_8005FE9C:
+/* 8005FE9C 0000153C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8005FEA0 00001540  7C 08 03 A6 */	mtlr r0
+/* 8005FEA4 00001544  38 21 00 10 */	addi r1, r1, 0x10
+/* 8005FEA8 00001548  4E 80 00 20 */	blr
+.endfn decNum__9daPyMng_cFi
+
+# .text:0x150C | 0x8005FEAC | size: 0x4
+.fn gap_03_8005FEAC_text, global
+.hidden gap_03_8005FEAC_text
+/* 8005FEAC 0000154C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FEAC_text
+
+# .text:0x1510 | 0x8005FEB0 | size: 0x18
+# daPyMng_c::addNum()
+.fn addNum__9daPyMng_cFv, global
+/* 8005FEB0 00001550  80 60 00 00 */	lwz r3, mNum__9daPyMng_c@sda21(r0)
+/* 8005FEB4 00001554  2C 03 00 04 */	cmpwi r3, 0x4
+/* 8005FEB8 00001558  4C 80 00 20 */	bgelr
+/* 8005FEBC 0000155C  38 03 00 01 */	addi r0, r3, 0x1
+/* 8005FEC0 00001560  90 00 00 00 */	stw r0, mNum__9daPyMng_c@sda21(r0)
+/* 8005FEC4 00001564  4E 80 00 20 */	blr
+.endfn addNum__9daPyMng_cFv
+
+# .text:0x1528 | 0x8005FEC8 | size: 0x8
+.fn gap_03_8005FEC8_text, global
+.hidden gap_03_8005FEC8_text
+/* 8005FEC8 00001568  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FECC 0000156C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FEC8_text
+
+# .text:0x1530 | 0x8005FED0 | size: 0x18
+# daPyMng_c::decNum()
+.fn decNum__9daPyMng_cFv, global
+/* 8005FED0 00001570  80 60 00 00 */	lwz r3, mNum__9daPyMng_c@sda21(r0)
+/* 8005FED4 00001574  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8005FED8 00001578  4C 81 00 20 */	blelr
+/* 8005FEDC 0000157C  38 03 FF FF */	subi r0, r3, 0x1
+/* 8005FEE0 00001580  90 00 00 00 */	stw r0, mNum__9daPyMng_c@sda21(r0)
+/* 8005FEE4 00001584  4E 80 00 20 */	blr
+.endfn decNum__9daPyMng_cFv
+
+# .text:0x1548 | 0x8005FEE8 | size: 0x8
+.fn gap_03_8005FEE8_text, global
+.hidden gap_03_8005FEE8_text
+/* 8005FEE8 00001588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FEEC 0000158C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FEE8_text
+
+# .text:0x1550 | 0x8005FEF0 | size: 0xB8
+# daPyMng_c::getNumInGame()
+.fn getNumInGame__9daPyMng_cFv, global
+/* 8005FEF0 00001590  3C 80 00 00 */	lis r4, m_playerID__9daPyMng_c@ha
+/* 8005FEF4 00001594  38 60 00 00 */	li r3, 0x0
+/* 8005FEF8 00001598  38 84 00 00 */	addi r4, r4, m_playerID__9daPyMng_c@l
+/* 8005FEFC 0000159C  38 A4 00 40 */	addi r5, r4, 0x40
+/* 8005FF00 000015A0  80 05 00 00 */	lwz r0, 0x0(r5)
+/* 8005FF04 000015A4  38 C4 00 50 */	addi r6, r4, 0x50
+/* 8005FF08 000015A8  38 84 00 80 */	addi r4, r4, 0x80
+/* 8005FF0C 000015AC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF10 000015B0  41 82 00 1C */	beq .L_8005FF2C
+/* 8005FF14 000015B4  80 06 00 00 */	lwz r0, 0x0(r6)
+/* 8005FF18 000015B8  54 00 10 3A */	slwi r0, r0, 2
+/* 8005FF1C 000015BC  7C 04 00 2E */	lwzx r0, r4, r0
+/* 8005FF20 000015C0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF24 000015C4  40 81 00 08 */	ble .L_8005FF2C
+/* 8005FF28 000015C8  38 60 00 01 */	li r3, 0x1
+.L_8005FF2C:
+/* 8005FF2C 000015CC  80 05 00 04 */	lwz r0, 0x4(r5)
+/* 8005FF30 000015D0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF34 000015D4  41 82 00 20 */	beq .L_8005FF54
+/* 8005FF38 000015D8  80 06 00 04 */	lwz r0, 0x4(r6)
+/* 8005FF3C 000015DC  54 00 10 3A */	slwi r0, r0, 2
+/* 8005FF40 000015E0  7C 04 00 2E */	lwzx r0, r4, r0
+/* 8005FF44 000015E4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF48 000015E8  40 81 00 0C */	ble .L_8005FF54
+/* 8005FF4C 000015EC  38 03 00 01 */	addi r0, r3, 0x1
+/* 8005FF50 000015F0  54 03 06 3E */	clrlwi r3, r0, 24
+.L_8005FF54:
+/* 8005FF54 000015F4  80 05 00 08 */	lwz r0, 0x8(r5)
+/* 8005FF58 000015F8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF5C 000015FC  41 82 00 20 */	beq .L_8005FF7C
+/* 8005FF60 00001600  80 06 00 08 */	lwz r0, 0x8(r6)
+/* 8005FF64 00001604  54 00 10 3A */	slwi r0, r0, 2
+/* 8005FF68 00001608  7C 04 00 2E */	lwzx r0, r4, r0
+/* 8005FF6C 0000160C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF70 00001610  40 81 00 0C */	ble .L_8005FF7C
+/* 8005FF74 00001614  38 03 00 01 */	addi r0, r3, 0x1
+/* 8005FF78 00001618  54 03 06 3E */	clrlwi r3, r0, 24
+.L_8005FF7C:
+/* 8005FF7C 0000161C  80 05 00 0C */	lwz r0, 0xc(r5)
+/* 8005FF80 00001620  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF84 00001624  4D 82 00 20 */	beqlr
+/* 8005FF88 00001628  80 06 00 0C */	lwz r0, 0xc(r6)
+/* 8005FF8C 0000162C  54 00 10 3A */	slwi r0, r0, 2
+/* 8005FF90 00001630  7C 04 00 2E */	lwzx r0, r4, r0
+/* 8005FF94 00001634  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FF98 00001638  4C 81 00 20 */	blelr
+/* 8005FF9C 0000163C  38 03 00 01 */	addi r0, r3, 0x1
+/* 8005FFA0 00001640  54 03 06 3E */	clrlwi r3, r0, 24
+/* 8005FFA4 00001644  4E 80 00 20 */	blr
+.endfn getNumInGame__9daPyMng_cFv
+
+# .text:0x1608 | 0x8005FFA8 | size: 0x8
+.fn gap_03_8005FFA8_text, global
+.hidden gap_03_8005FFA8_text
+/* 8005FFA8 00001648  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8005FFAC 0000164C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8005FFA8_text
+
+# .text:0x1610 | 0x8005FFB0 | size: 0x58
+# daPyMng_c::getEntryNum()
+.fn getEntryNum__9daPyMng_cFv, global
+/* 8005FFB0 00001650  3C 80 00 00 */	lis r4, mPlayerEntry__9daPyMng_c@ha
+/* 8005FFB4 00001654  84 04 00 00 */	lwzu r0, mPlayerEntry__9daPyMng_c@l(r4)
+/* 8005FFB8 00001658  38 60 00 00 */	li r3, 0x0
+/* 8005FFBC 0000165C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FFC0 00001660  41 82 00 08 */	beq .L_8005FFC8
+/* 8005FFC4 00001664  38 60 00 01 */	li r3, 0x1
+.L_8005FFC8:
+/* 8005FFC8 00001668  80 04 00 04 */	lwz r0, 0x4(r4)
+/* 8005FFCC 0000166C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FFD0 00001670  41 82 00 0C */	beq .L_8005FFDC
+/* 8005FFD4 00001674  38 03 00 01 */	addi r0, r3, 0x1
+/* 8005FFD8 00001678  54 03 06 3E */	clrlwi r3, r0, 24
+.L_8005FFDC:
+/* 8005FFDC 0000167C  80 04 00 08 */	lwz r0, 0x8(r4)
+/* 8005FFE0 00001680  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FFE4 00001684  41 82 00 0C */	beq .L_8005FFF0
+/* 8005FFE8 00001688  38 03 00 01 */	addi r0, r3, 0x1
+/* 8005FFEC 0000168C  54 03 06 3E */	clrlwi r3, r0, 24
+.L_8005FFF0:
+/* 8005FFF0 00001690  80 04 00 0C */	lwz r0, 0xc(r4)
+/* 8005FFF4 00001694  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8005FFF8 00001698  4D 82 00 20 */	beqlr
+/* 8005FFFC 0000169C  38 03 00 01 */	addi r0, r3, 0x1
+/* 80060000 000016A0  54 03 06 3E */	clrlwi r3, r0, 24
+/* 80060004 000016A4  4E 80 00 20 */	blr
+.endfn getEntryNum__9daPyMng_cFv
+
+# .text:0x1668 | 0x80060008 | size: 0x8
+.fn gap_03_80060008_text, global
+.hidden gap_03_80060008_text
+/* 80060008 000016A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006000C 000016AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060008_text
+
+# .text:0x1670 | 0x80060010 | size: 0x74
+# daPyMng_c::getItemKinopioNum()
+.fn getItemKinopioNum__9daPyMng_cFv, global
+/* 80060010 000016B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060014 000016B4  7C 08 02 A6 */	mflr r0
+/* 80060018 000016B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006001C 000016BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80060020 000016C0  3B E0 00 00 */	li r31, 0x0
+/* 80060024 000016C4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80060028 000016C8  3B C0 00 00 */	li r30, 0x0
+.L_8006002C:
+/* 8006002C 000016CC  7F C3 F3 78 */	mr r3, r30
+/* 80060030 000016D0  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 80060034 000016D4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060038 000016D8  41 82 00 24 */	beq .L_8006005C
+/* 8006003C 000016DC  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80060040 000016E0  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 80060044 000016E4  7D 89 03 A6 */	mtctr r12
+/* 80060048 000016E8  4E 80 04 21 */	bctrl
+/* 8006004C 000016EC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060050 000016F0  41 82 00 0C */	beq .L_8006005C
+/* 80060054 000016F4  38 1F 00 01 */	addi r0, r31, 0x1
+/* 80060058 000016F8  54 1F 06 3E */	clrlwi r31, r0, 24
+.L_8006005C:
+/* 8006005C 000016FC  3B DE 00 01 */	addi r30, r30, 0x1
+/* 80060060 00001700  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 80060064 00001704  41 80 FF C8 */	blt .L_8006002C
+/* 80060068 00001708  7F E3 FB 78 */	mr r3, r31
+/* 8006006C 0000170C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80060070 00001710  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80060074 00001714  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80060078 00001718  7C 08 03 A6 */	mtlr r0
+/* 8006007C 0000171C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80060080 00001720  4E 80 00 20 */	blr
+.endfn getItemKinopioNum__9daPyMng_cFv
+
+# .text:0x16E4 | 0x80060084 | size: 0xC
+.fn gap_03_80060084_text, global
+.hidden gap_03_80060084_text
+/* 80060084 00001724  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060088 00001728  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006008C 0000172C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060084_text
+
+# .text:0x16F0 | 0x80060090 | size: 0x74
+# daPyMng_c::getItemKinopio()
+.fn getItemKinopio__9daPyMng_cFv, global
+/* 80060090 00001730  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060094 00001734  7C 08 02 A6 */	mflr r0
+/* 80060098 00001738  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006009C 0000173C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800600A0 00001740  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 800600A4 00001744  3B C0 00 00 */	li r30, 0x0
+.L_800600A8:
+/* 800600A8 00001748  7F C3 F3 78 */	mr r3, r30
+/* 800600AC 0000174C  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800600B0 00001750  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800600B4 00001754  7C 7F 1B 78 */	mr r31, r3
+/* 800600B8 00001758  41 82 00 24 */	beq .L_800600DC
+/* 800600BC 0000175C  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 800600C0 00001760  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 800600C4 00001764  7D 89 03 A6 */	mtctr r12
+/* 800600C8 00001768  4E 80 04 21 */	bctrl
+/* 800600CC 0000176C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800600D0 00001770  41 82 00 0C */	beq .L_800600DC
+/* 800600D4 00001774  7F E3 FB 78 */	mr r3, r31
+/* 800600D8 00001778  48 00 00 14 */	b .L_800600EC
+.L_800600DC:
+/* 800600DC 0000177C  3B DE 00 01 */	addi r30, r30, 0x1
+/* 800600E0 00001780  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 800600E4 00001784  41 80 FF C4 */	blt .L_800600A8
+/* 800600E8 00001788  38 60 00 00 */	li r3, 0x0
+.L_800600EC:
+/* 800600EC 0000178C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800600F0 00001790  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800600F4 00001794  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800600F8 00001798  7C 08 03 A6 */	mtlr r0
+/* 800600FC 0000179C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80060100 000017A0  4E 80 00 20 */	blr
+.endfn getItemKinopio__9daPyMng_cFv
+
+# .text:0x1764 | 0x80060104 | size: 0xC
+.fn gap_03_80060104_text, global
+.hidden gap_03_80060104_text
+/* 80060104 000017A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060108 000017A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006010C 000017AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060104_text
+
+# .text:0x1770 | 0x80060110 | size: 0x5C
+# daPyMng_c::getPlayerIndex(PLAYER_TYPE_e)
+.fn getPlayerIndex__9daPyMng_cF13PLAYER_TYPE_e, global
+/* 80060110 000017B0  3C 80 00 00 */	lis r4, mPlayerType__9daPyMng_c@ha
+/* 80060114 000017B4  84 04 00 00 */	lwzu r0, mPlayerType__9daPyMng_c@l(r4)
+/* 80060118 000017B8  7C 03 00 00 */	cmpw r3, r0
+/* 8006011C 000017BC  40 82 00 0C */	bne .L_80060128
+/* 80060120 000017C0  38 60 00 00 */	li r3, 0x0
+/* 80060124 000017C4  4E 80 00 20 */	blr
+.L_80060128:
+/* 80060128 000017C8  80 04 00 04 */	lwz r0, 0x4(r4)
+/* 8006012C 000017CC  7C 03 00 00 */	cmpw r3, r0
+/* 80060130 000017D0  40 82 00 0C */	bne .L_8006013C
+/* 80060134 000017D4  38 60 00 01 */	li r3, 0x1
+/* 80060138 000017D8  4E 80 00 20 */	blr
+.L_8006013C:
+/* 8006013C 000017DC  80 04 00 08 */	lwz r0, 0x8(r4)
+/* 80060140 000017E0  7C 03 00 00 */	cmpw r3, r0
+/* 80060144 000017E4  40 82 00 0C */	bne .L_80060150
+/* 80060148 000017E8  38 60 00 02 */	li r3, 0x2
+/* 8006014C 000017EC  4E 80 00 20 */	blr
+.L_80060150:
+/* 80060150 000017F0  80 04 00 0C */	lwz r0, 0xc(r4)
+/* 80060154 000017F4  7C 03 00 00 */	cmpw r3, r0
+/* 80060158 000017F8  40 82 00 0C */	bne .L_80060164
+/* 8006015C 000017FC  38 60 00 03 */	li r3, 0x3
+/* 80060160 00001800  4E 80 00 20 */	blr
+.L_80060164:
+/* 80060164 00001804  38 60 FF FF */	li r3, -0x1
+/* 80060168 00001808  4E 80 00 20 */	blr
+.endfn getPlayerIndex__9daPyMng_cF13PLAYER_TYPE_e
+
+# .text:0x17CC | 0x8006016C | size: 0x4
+.fn gap_03_8006016C_text, global
+.hidden gap_03_8006016C_text
+/* 8006016C 0000180C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006016C_text
+
+# .text:0x17D0 | 0x80060170 | size: 0x64
+# daPyMng_c::changeItemKinopioPlrNo(int&)
+.fn changeItemKinopioPlrNo__9daPyMng_cFRi, global
+/* 80060170 00001810  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060174 00001814  7C 08 02 A6 */	mflr r0
+/* 80060178 00001818  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006017C 0000181C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80060180 00001820  7C 7F 1B 78 */	mr r31, r3
+/* 80060184 00001824  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 80060188 00001828  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8006018C 0000182C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060190 00001830  41 82 00 2C */	beq .L_800601BC
+/* 80060194 00001834  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80060198 00001838  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 8006019C 0000183C  7D 89 03 A6 */	mtctr r12
+/* 800601A0 00001840  4E 80 04 21 */	bctrl
+/* 800601A4 00001844  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800601A8 00001848  41 82 00 14 */	beq .L_800601BC
+/* 800601AC 0000184C  38 00 00 00 */	li r0, 0x0
+/* 800601B0 00001850  90 1F 00 00 */	stw r0, 0x0(r31)
+/* 800601B4 00001854  38 60 00 01 */	li r3, 0x1
+/* 800601B8 00001858  48 00 00 08 */	b .L_800601C0
+.L_800601BC:
+/* 800601BC 0000185C  38 60 00 00 */	li r3, 0x0
+.L_800601C0:
+/* 800601C0 00001860  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800601C4 00001864  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800601C8 00001868  7C 08 03 A6 */	mtlr r0
+/* 800601CC 0000186C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800601D0 00001870  4E 80 00 20 */	blr
+.endfn changeItemKinopioPlrNo__9daPyMng_cFRi
+
+# .text:0x1834 | 0x800601D4 | size: 0xC
+.fn gap_03_800601D4_text, global
+.hidden gap_03_800601D4_text
+/* 800601D4 00001874  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800601D8 00001878  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800601DC 0000187C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800601D4_text
+
+# .text:0x1840 | 0x800601E0 | size: 0x14
+# daPyMng_c::getCourseInListPlrNo(int)
+.fn getCourseInListPlrNo__9daPyMng_cFi, global
+/* 800601E0 00001880  3C 80 00 00 */	lis r4, mCourseInList__9daPyMng_c@ha
+/* 800601E4 00001884  54 60 10 3A */	slwi r0, r3, 2
+/* 800601E8 00001888  38 84 00 00 */	addi r4, r4, mCourseInList__9daPyMng_c@l
+/* 800601EC 0000188C  7C 64 00 2E */	lwzx r3, r4, r0
+/* 800601F0 00001890  4E 80 00 20 */	blr
+.endfn getCourseInListPlrNo__9daPyMng_cFi
+
+# .text:0x1854 | 0x800601F4 | size: 0xC
+.fn gap_03_800601F4_text, global
+.hidden gap_03_800601F4_text
+/* 800601F4 00001894  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800601F8 00001898  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800601FC 0000189C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800601F4_text
+
+# .text:0x1860 | 0x80060200 | size: 0x50
+# daPyMng_c::getCoinAll()
+.fn getCoinAll__9daPyMng_cFv, global
+/* 80060200 000018A0  3C A0 00 00 */	lis r5, mPlayerType__9daPyMng_c@ha
+/* 80060204 000018A4  3C 80 00 00 */	lis r4, mCoin__9daPyMng_c@ha
+/* 80060208 000018A8  38 65 00 00 */	addi r3, r5, mPlayerType__9daPyMng_c@l
+/* 8006020C 000018AC  80 05 00 00 */	lwz r0, mPlayerType__9daPyMng_c@l(r5)
+/* 80060210 000018B0  80 C3 00 04 */	lwz r6, 0x4(r3)
+/* 80060214 000018B4  38 84 00 00 */	addi r4, r4, mCoin__9daPyMng_c@l
+/* 80060218 000018B8  80 E3 00 08 */	lwz r7, 0x8(r3)
+/* 8006021C 000018BC  54 05 10 3A */	slwi r5, r0, 2
+/* 80060220 000018C0  54 C0 10 3A */	slwi r0, r6, 2
+/* 80060224 000018C4  80 C3 00 0C */	lwz r6, 0xc(r3)
+/* 80060228 000018C8  54 E3 10 3A */	slwi r3, r7, 2
+/* 8006022C 000018CC  7C E4 00 2E */	lwzx r7, r4, r0
+/* 80060230 000018D0  7C A4 28 2E */	lwzx r5, r4, r5
+/* 80060234 000018D4  54 C0 10 3A */	slwi r0, r6, 2
+/* 80060238 000018D8  7C 64 18 2E */	lwzx r3, r4, r3
+/* 8006023C 000018DC  7C A5 3A 14 */	add r5, r5, r7
+/* 80060240 000018E0  7C 04 00 2E */	lwzx r0, r4, r0
+/* 80060244 000018E4  7C A5 1A 14 */	add r5, r5, r3
+/* 80060248 000018E8  7C 65 02 14 */	add r3, r5, r0
+/* 8006024C 000018EC  4E 80 00 20 */	blr
+.endfn getCoinAll__9daPyMng_cFv
+
+# .text:0x18B0 | 0x80060250 | size: 0x208
+# daPyMng_c::incCoin(int)
+.fn incCoin__9daPyMng_cFi, global
+/* 80060250 000018F0  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 80060254 000018F4  7C 08 02 A6 */	mflr r0
+/* 80060258 000018F8  90 01 00 44 */	stw r0, 0x44(r1)
+/* 8006025C 000018FC  39 61 00 40 */	addi r11, r1, 0x40
+/* 80060260 00001900  48 00 00 01 */	bl _savegpr_27
+/* 80060264 00001904  90 61 00 08 */	stw r3, 0x8(r1)
+/* 80060268 00001908  3F E0 00 00 */	lis r31, m_playerID__9daPyMng_c@ha
+/* 8006026C 0000190C  3B FF 00 00 */	addi r31, r31, m_playerID__9daPyMng_c@l
+/* 80060270 00001910  38 61 00 08 */	addi r3, r1, 0x8
+/* 80060274 00001914  48 00 00 01 */	bl changeItemKinopioPlrNo__9daPyMng_cFRi
+/* 80060278 00001918  80 60 00 00 */	lwz r3, mspInstance__11dMultiMng_c@sda21(r0)
+/* 8006027C 0000191C  80 81 00 08 */	lwz r4, 0x8(r1)
+/* 80060280 00001920  48 00 00 01 */	bl incCoin__11dMultiMng_cFi
+/* 80060284 00001924  48 00 00 01 */	bl getCoinAll__9daPyMng_cFv
+/* 80060288 00001928  80 00 00 00 */	lwz r0, "scCoinMax__32@unnamed@d_a_player_manager_cpp@"@sda21(r0)
+/* 8006028C 0000192C  7C 03 00 00 */	cmpw r3, r0
+/* 80060290 00001930  41 80 01 8C */	blt .L_8006041C
+/* 80060294 00001934  3B 80 00 01 */	li r28, 0x1
+/* 80060298 00001938  48 00 00 01 */	bl getEntryNum__9daPyMng_cFv
+/* 8006029C 0000193C  68 60 00 01 */	xori r0, r3, 0x1
+/* 800602A0 00001940  7C 04 0E 70 */	srawi r4, r0, 1
+/* 800602A4 00001944  7C 00 18 38 */	and r0, r0, r3
+/* 800602A8 00001948  7C 00 20 50 */	subf r0, r0, r4
+/* 800602AC 0000194C  54 00 0F FF */	srwi. r0, r0, 31
+/* 800602B0 00001950  41 82 00 B4 */	beq .L_80060364
+/* 800602B4 00001954  80 60 00 00 */	lwz r3, ms_Instance_p__14dBgParameter_c@sda21(r0)
+/* 800602B8 00001958  3B BF 00 40 */	addi r29, r31, 0x40
+/* 800602BC 0000195C  C0 00 00 00 */	lfs f0, "@80832_8042BD78"@sda21(r0)
+/* 800602C0 00001960  3B 80 00 00 */	li r28, 0x0
+/* 800602C4 00001964  C0 23 00 44 */	lfs f1, 0x44(r3)
+/* 800602C8 00001968  3B 60 00 00 */	li r27, 0x0
+/* 800602CC 0000196C  C0 63 00 40 */	lfs f3, 0x40(r3)
+/* 800602D0 00001970  3B C0 00 00 */	li r30, 0x0
+/* 800602D4 00001974  EC 21 00 32 */	fmuls f1, f1, f0
+/* 800602D8 00001978  C0 43 00 3C */	lfs f2, 0x3c(r3)
+/* 800602DC 0000197C  EC 03 00 32 */	fmuls f0, f3, f0
+/* 800602E0 00001980  C0 63 00 38 */	lfs f3, 0x38(r3)
+/* 800602E4 00001984  EC 22 08 28 */	fsubs f1, f2, f1
+/* 800602E8 00001988  EC 03 00 2A */	fadds f0, f3, f0
+/* 800602EC 0000198C  D0 21 00 24 */	stfs f1, 0x24(r1)
+/* 800602F0 00001990  D0 01 00 20 */	stfs f0, 0x20(r1)
+.L_800602F4:
+/* 800602F4 00001994  80 1D 00 00 */	lwz r0, 0x0(r29)
+/* 800602F8 00001998  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800602FC 0000199C  41 82 00 10 */	beq .L_8006030C
+/* 80060300 000019A0  7F C3 F3 78 */	mr r3, r30
+/* 80060304 000019A4  48 00 00 01 */	bl getRemotePlayer__6dAudioFi
+/* 80060308 000019A8  7F 7B 1B 78 */	or r27, r27, r3
+.L_8006030C:
+/* 8006030C 000019AC  3B DE 00 01 */	addi r30, r30, 0x1
+/* 80060310 000019B0  3B BD 00 04 */	addi r29, r29, 0x4
+/* 80060314 000019B4  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 80060318 000019B8  41 80 FF DC */	blt .L_800602F4
+/* 8006031C 000019BC  83 C0 00 00 */	lwz r30, g_pSndObjMap__6dAudio@sda21(r0)
+/* 80060320 000019C0  38 61 00 18 */	addi r3, r1, 0x18
+/* 80060324 000019C4  38 81 00 20 */	addi r4, r1, 0x20
+/* 80060328 000019C8  48 00 00 01 */	bl cvtSndObjctPos__6dAudioFRC7mVec2_c
+/* 8006032C 000019CC  7F C3 F3 78 */	mr r3, r30
+/* 80060330 000019D0  7F 66 DB 78 */	mr r6, r27
+/* 80060334 000019D4  38 A1 00 18 */	addi r5, r1, 0x18
+/* 80060338 000019D8  38 80 00 B3 */	li r4, 0xb3
+/* 8006033C 000019DC  48 00 00 01 */	bl startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul
+/* 80060340 000019E0  83 C0 00 00 */	lwz r30, g_pSndObjMap__6dAudio@sda21(r0)
+/* 80060344 000019E4  38 61 00 10 */	addi r3, r1, 0x10
+/* 80060348 000019E8  38 81 00 20 */	addi r4, r1, 0x20
+/* 8006034C 000019EC  48 00 00 01 */	bl cvtSndObjctPos__6dAudioFRC7mVec2_c
+/* 80060350 000019F0  7F C3 F3 78 */	mr r3, r30
+/* 80060354 000019F4  7F 66 DB 78 */	mr r6, r27
+/* 80060358 000019F8  38 A1 00 10 */	addi r5, r1, 0x10
+/* 8006035C 000019FC  38 80 00 B4 */	li r4, 0xb4
+/* 80060360 00001A00  48 00 00 01 */	bl startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul
+.L_80060364:
+/* 80060364 00001A04  7C 1C 00 D0 */	neg r0, r28
+/* 80060368 00001A08  3B DF 00 40 */	addi r30, r31, 0x40
+/* 8006036C 00001A0C  7C 00 E3 78 */	or r0, r0, r28
+/* 80060370 00001A10  3B 60 00 00 */	li r27, 0x0
+/* 80060374 00001A14  54 1D 0F FE */	srwi r29, r0, 31
+.L_80060378:
+/* 80060378 00001A18  80 1E 00 00 */	lwz r0, 0x0(r30)
+/* 8006037C 00001A1C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060380 00001A20  41 82 00 4C */	beq .L_800603CC
+/* 80060384 00001A24  7F 63 DB 78 */	mr r3, r27
+/* 80060388 00001A28  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 8006038C 00001A2C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060390 00001A30  41 82 00 2C */	beq .L_800603BC
+/* 80060394 00001A34  38 80 00 04 */	li r4, 0x4
+/* 80060398 00001A38  48 00 00 01 */	bl isStatus__10daPlBase_cFi
+/* 8006039C 00001A3C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800603A0 00001A40  40 82 00 1C */	bne .L_800603BC
+/* 800603A4 00001A44  80 60 00 00 */	lwz r3, m_instance__11dScoreMng_c@sda21(r0)
+/* 800603A8 00001A48  7F 65 DB 78 */	mr r5, r27
+/* 800603AC 00001A4C  7F 86 E3 78 */	mr r6, r28
+/* 800603B0 00001A50  38 80 00 08 */	li r4, 0x8
+/* 800603B4 00001A54  48 00 00 01 */	bl fn_800e25a0__11dScoreMng_cFUlii
+/* 800603B8 00001A58  48 00 00 14 */	b .L_800603CC
+.L_800603BC:
+/* 800603BC 00001A5C  7F 63 DB 78 */	mr r3, r27
+/* 800603C0 00001A60  7F A5 EB 78 */	mr r5, r29
+/* 800603C4 00001A64  38 80 00 01 */	li r4, 0x1
+/* 800603C8 00001A68  48 00 00 01 */	bl addRest__9daPyMng_cFiib
+.L_800603CC:
+/* 800603CC 00001A6C  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 800603D0 00001A70  3B DE 00 04 */	addi r30, r30, 0x4
+/* 800603D4 00001A74  2C 1B 00 04 */	cmpwi r27, 0x4
+/* 800603D8 00001A78  41 80 FF A0 */	blt .L_80060378
+/* 800603DC 00001A7C  38 7F 00 50 */	addi r3, r31, 0x50
+/* 800603E0 00001A80  80 1F 00 50 */	lwz r0, 0x50(r31)
+/* 800603E4 00001A84  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 800603E8 00001A88  38 BF 00 90 */	addi r5, r31, 0x90
+/* 800603EC 00001A8C  81 03 00 08 */	lwz r8, 0x8(r3)
+/* 800603F0 00001A90  54 00 10 3A */	slwi r0, r0, 2
+/* 800603F4 00001A94  80 E3 00 0C */	lwz r7, 0xc(r3)
+/* 800603F8 00001A98  38 C0 00 00 */	li r6, 0x0
+/* 800603FC 00001A9C  7C C5 01 2E */	stwx r6, r5, r0
+/* 80060400 00001AA0  54 84 10 3A */	slwi r4, r4, 2
+/* 80060404 00001AA4  55 03 10 3A */	slwi r3, r8, 2
+/* 80060408 00001AA8  54 E0 10 3A */	slwi r0, r7, 2
+/* 8006040C 00001AAC  7C C5 21 2E */	stwx r6, r5, r4
+/* 80060410 00001AB0  7C C5 19 2E */	stwx r6, r5, r3
+/* 80060414 00001AB4  7C C5 01 2E */	stwx r6, r5, r0
+/* 80060418 00001AB8  48 00 00 28 */	b .L_80060440
+.L_8006041C:
+/* 8006041C 00001ABC  80 01 00 08 */	lwz r0, 0x8(r1)
+/* 80060420 00001AC0  38 7F 00 50 */	addi r3, r31, 0x50
+/* 80060424 00001AC4  38 9F 00 90 */	addi r4, r31, 0x90
+/* 80060428 00001AC8  54 00 10 3A */	slwi r0, r0, 2
+/* 8006042C 00001ACC  7C 03 00 2E */	lwzx r0, r3, r0
+/* 80060430 00001AD0  54 05 10 3A */	slwi r5, r0, 2
+/* 80060434 00001AD4  7C 64 28 2E */	lwzx r3, r4, r5
+/* 80060438 00001AD8  38 03 00 01 */	addi r0, r3, 0x1
+/* 8006043C 00001ADC  7C 04 29 2E */	stwx r0, r4, r5
+.L_80060440:
+/* 80060440 00001AE0  39 61 00 40 */	addi r11, r1, 0x40
+/* 80060444 00001AE4  48 00 00 01 */	bl _restgpr_27
+/* 80060448 00001AE8  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 8006044C 00001AEC  7C 08 03 A6 */	mtlr r0
+/* 80060450 00001AF0  38 21 00 40 */	addi r1, r1, 0x40
+/* 80060454 00001AF4  4E 80 00 20 */	blr
+.endfn incCoin__9daPyMng_cFi
+
+# .text:0x1AB8 | 0x80060458 | size: 0x8
+.fn gap_03_80060458_text, global
+.hidden gap_03_80060458_text
+/* 80060458 00001AF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006045C 00001AFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060458_text
+
+# .text:0x1AC0 | 0x80060460 | size: 0x128
+# daPyMng_c::addRest(int, int, bool)
+.fn addRest__9daPyMng_cFiib, global
+/* 80060460 00001B00  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 80060464 00001B04  7C 08 02 A6 */	mflr r0
+/* 80060468 00001B08  90 01 00 44 */	stw r0, 0x44(r1)
+/* 8006046C 00001B0C  93 E1 00 3C */	stw r31, 0x3c(r1)
+/* 80060470 00001B10  93 C1 00 38 */	stw r30, 0x38(r1)
+/* 80060474 00001B14  7C BE 2B 78 */	mr r30, r5
+/* 80060478 00001B18  93 A1 00 34 */	stw r29, 0x34(r1)
+/* 8006047C 00001B1C  7C 9D 23 78 */	mr r29, r4
+/* 80060480 00001B20  90 61 00 08 */	stw r3, 0x8(r1)
+/* 80060484 00001B24  38 61 00 08 */	addi r3, r1, 0x8
+/* 80060488 00001B28  48 00 00 01 */	bl changeItemKinopioPlrNo__9daPyMng_cFRi
+/* 8006048C 00001B2C  28 1E 00 01 */	cmplwi r30, 0x1
+/* 80060490 00001B30  40 82 00 94 */	bne .L_80060524
+/* 80060494 00001B34  80 60 00 00 */	lwz r3, ms_Instance_p__14dBgParameter_c@sda21(r0)
+/* 80060498 00001B38  C0 00 00 00 */	lfs f0, "@80832_8042BD78"@sda21(r0)
+/* 8006049C 00001B3C  C0 23 00 44 */	lfs f1, 0x44(r3)
+/* 800604A0 00001B40  C0 63 00 40 */	lfs f3, 0x40(r3)
+/* 800604A4 00001B44  EC 21 00 32 */	fmuls f1, f1, f0
+/* 800604A8 00001B48  C0 43 00 3C */	lfs f2, 0x3c(r3)
+/* 800604AC 00001B4C  EC 03 00 32 */	fmuls f0, f3, f0
+/* 800604B0 00001B50  C0 63 00 38 */	lfs f3, 0x38(r3)
+/* 800604B4 00001B54  80 61 00 08 */	lwz r3, 0x8(r1)
+/* 800604B8 00001B58  EC 22 08 28 */	fsubs f1, f2, f1
+/* 800604BC 00001B5C  EC 03 00 2A */	fadds f0, f3, f0
+/* 800604C0 00001B60  D0 21 00 24 */	stfs f1, 0x24(r1)
+/* 800604C4 00001B64  D0 01 00 20 */	stfs f0, 0x20(r1)
+/* 800604C8 00001B68  48 00 00 01 */	bl getRemotePlayer__6dAudioFi
+/* 800604CC 00001B6C  83 C0 00 00 */	lwz r30, g_pSndObjMap__6dAudio@sda21(r0)
+/* 800604D0 00001B70  7C 7F 1B 78 */	mr r31, r3
+/* 800604D4 00001B74  38 61 00 18 */	addi r3, r1, 0x18
+/* 800604D8 00001B78  38 81 00 20 */	addi r4, r1, 0x20
+/* 800604DC 00001B7C  48 00 00 01 */	bl cvtSndObjctPos__6dAudioFRC7mVec2_c
+/* 800604E0 00001B80  7F C3 F3 78 */	mr r3, r30
+/* 800604E4 00001B84  7F E6 FB 78 */	mr r6, r31
+/* 800604E8 00001B88  38 A1 00 18 */	addi r5, r1, 0x18
+/* 800604EC 00001B8C  38 80 00 B1 */	li r4, 0xb1
+/* 800604F0 00001B90  48 00 00 01 */	bl startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul
+/* 800604F4 00001B94  80 61 00 08 */	lwz r3, 0x8(r1)
+/* 800604F8 00001B98  48 00 00 01 */	bl getRemotePlayer__6dAudioFi
+/* 800604FC 00001B9C  83 E0 00 00 */	lwz r31, g_pSndObjMap__6dAudio@sda21(r0)
+/* 80060500 00001BA0  7C 7E 1B 78 */	mr r30, r3
+/* 80060504 00001BA4  38 61 00 10 */	addi r3, r1, 0x10
+/* 80060508 00001BA8  38 81 00 20 */	addi r4, r1, 0x20
+/* 8006050C 00001BAC  48 00 00 01 */	bl cvtSndObjctPos__6dAudioFRC7mVec2_c
+/* 80060510 00001BB0  7F E3 FB 78 */	mr r3, r31
+/* 80060514 00001BB4  7F C6 F3 78 */	mr r6, r30
+/* 80060518 00001BB8  38 A1 00 10 */	addi r5, r1, 0x10
+/* 8006051C 00001BBC  38 80 00 B2 */	li r4, 0xb2
+/* 80060520 00001BC0  48 00 00 01 */	bl startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul
+.L_80060524:
+/* 80060524 00001BC4  80 01 00 08 */	lwz r0, 0x8(r1)
+/* 80060528 00001BC8  3C 80 00 00 */	lis r4, mPlayerType__9daPyMng_c@ha
+/* 8006052C 00001BCC  3C 60 00 00 */	lis r3, mRest__9daPyMng_c@ha
+/* 80060530 00001BD0  80 A0 00 00 */	lwz r5, "scRestMax__32@unnamed@d_a_player_manager_cpp@"@sda21(r0)
+/* 80060534 00001BD4  54 00 10 3A */	slwi r0, r0, 2
+/* 80060538 00001BD8  38 84 00 00 */	addi r4, r4, mPlayerType__9daPyMng_c@l
+/* 8006053C 00001BDC  7C 84 00 2E */	lwzx r4, r4, r0
+/* 80060540 00001BE0  38 63 00 00 */	addi r3, r3, mRest__9daPyMng_c@l
+/* 80060544 00001BE4  54 80 10 3A */	slwi r0, r4, 2
+/* 80060548 00001BE8  7C 03 00 2E */	lwzx r0, r3, r0
+/* 8006054C 00001BEC  7C DD 02 14 */	add r6, r29, r0
+/* 80060550 00001BF0  7C 06 28 00 */	cmpw r6, r5
+/* 80060554 00001BF4  41 80 00 08 */	blt .L_8006055C
+/* 80060558 00001BF8  7C A6 2B 78 */	mr r6, r5
+.L_8006055C:
+/* 8006055C 00001BFC  3C 60 00 00 */	lis r3, mRest__9daPyMng_c@ha
+/* 80060560 00001C00  54 80 10 3A */	slwi r0, r4, 2
+/* 80060564 00001C04  38 63 00 00 */	addi r3, r3, mRest__9daPyMng_c@l
+/* 80060568 00001C08  7C C3 01 2E */	stwx r6, r3, r0
+/* 8006056C 00001C0C  83 E1 00 3C */	lwz r31, 0x3c(r1)
+/* 80060570 00001C10  83 C1 00 38 */	lwz r30, 0x38(r1)
+/* 80060574 00001C14  83 A1 00 34 */	lwz r29, 0x34(r1)
+/* 80060578 00001C18  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 8006057C 00001C1C  7C 08 03 A6 */	mtlr r0
+/* 80060580 00001C20  38 21 00 40 */	addi r1, r1, 0x40
+/* 80060584 00001C24  4E 80 00 20 */	blr
+.endfn addRest__9daPyMng_cFiib
+
+# .text:0x1BE8 | 0x80060588 | size: 0x8
+.fn gap_03_80060588_text, global
+.hidden gap_03_80060588_text
+/* 80060588 00001C28  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006058C 00001C2C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060588_text
+
+# .text:0x1BF0 | 0x80060590 | size: 0x70
+# daPyMng_c::incRestAll(bool)
+.fn incRestAll__9daPyMng_cFb, global
+/* 80060590 00001C30  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80060594 00001C34  7C 08 02 A6 */	mflr r0
+/* 80060598 00001C38  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8006059C 00001C3C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800605A0 00001C40  3F E0 00 00 */	lis r31, mPlayerEntry__9daPyMng_c@ha
+/* 800605A4 00001C44  3B FF 00 00 */	addi r31, r31, mPlayerEntry__9daPyMng_c@l
+/* 800605A8 00001C48  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800605AC 00001C4C  3B C0 00 00 */	li r30, 0x0
+/* 800605B0 00001C50  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800605B4 00001C54  7C 7D 1B 78 */	mr r29, r3
+.L_800605B8:
+/* 800605B8 00001C58  80 1F 00 00 */	lwz r0, 0x0(r31)
+/* 800605BC 00001C5C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800605C0 00001C60  41 82 00 14 */	beq .L_800605D4
+/* 800605C4 00001C64  7F C3 F3 78 */	mr r3, r30
+/* 800605C8 00001C68  7F A5 EB 78 */	mr r5, r29
+/* 800605CC 00001C6C  38 80 00 01 */	li r4, 0x1
+/* 800605D0 00001C70  48 00 00 01 */	bl addRest__9daPyMng_cFiib
+.L_800605D4:
+/* 800605D4 00001C74  3B DE 00 01 */	addi r30, r30, 0x1
+/* 800605D8 00001C78  3B FF 00 04 */	addi r31, r31, 0x4
+/* 800605DC 00001C7C  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 800605E0 00001C80  41 80 FF D8 */	blt .L_800605B8
+/* 800605E4 00001C84  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800605E8 00001C88  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800605EC 00001C8C  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800605F0 00001C90  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800605F4 00001C94  7C 08 03 A6 */	mtlr r0
+/* 800605F8 00001C98  38 21 00 20 */	addi r1, r1, 0x20
+/* 800605FC 00001C9C  4E 80 00 20 */	blr
+.endfn incRestAll__9daPyMng_cFb
+
+# .text:0x1C60 | 0x80060600 | size: 0x90
+# daPyMng_c::decRest(int)
+.fn decRest__9daPyMng_cFi, global
+/* 80060600 00001CA0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060604 00001CA4  7C 08 02 A6 */	mflr r0
+/* 80060608 00001CA8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006060C 00001CAC  90 61 00 08 */	stw r3, 0x8(r1)
+/* 80060610 00001CB0  38 61 00 08 */	addi r3, r1, 0x8
+/* 80060614 00001CB4  48 00 00 01 */	bl changeItemKinopioPlrNo__9daPyMng_cFRi
+/* 80060618 00001CB8  80 61 00 08 */	lwz r3, 0x8(r1)
+/* 8006061C 00001CBC  48 00 00 01 */	bl getRemotePlayer__6dAudioFi
+/* 80060620 00001CC0  7C 65 1B 78 */	mr r5, r3
+/* 80060624 00001CC4  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 80060628 00001CC8  38 80 00 B5 */	li r4, 0xb5
+/* 8006062C 00001CCC  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 80060630 00001CD0  80 01 00 08 */	lwz r0, 0x8(r1)
+/* 80060634 00001CD4  3C 80 00 00 */	lis r4, mPlayerType__9daPyMng_c@ha
+/* 80060638 00001CD8  3C 60 00 00 */	lis r3, mRest__9daPyMng_c@ha
+/* 8006063C 00001CDC  54 00 10 3A */	slwi r0, r0, 2
+/* 80060640 00001CE0  38 84 00 00 */	addi r4, r4, mPlayerType__9daPyMng_c@l
+/* 80060644 00001CE4  7C 04 00 2E */	lwzx r0, r4, r0
+/* 80060648 00001CE8  38 63 00 00 */	addi r3, r3, mRest__9daPyMng_c@l
+/* 8006064C 00001CEC  54 04 10 3A */	slwi r4, r0, 2
+/* 80060650 00001CF0  7C A3 20 2E */	lwzx r5, r3, r4
+/* 80060654 00001CF4  2C 05 00 00 */	cmpwi r5, 0x0
+/* 80060658 00001CF8  41 81 00 0C */	bgt .L_80060664
+/* 8006065C 00001CFC  38 60 00 00 */	li r3, 0x0
+/* 80060660 00001D00  48 00 00 20 */	b .L_80060680
+.L_80060664:
+/* 80060664 00001D04  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060668 00001D08  38 05 FF FF */	subi r0, r5, 0x1
+/* 8006066C 00001D0C  7C 03 21 2E */	stwx r0, r3, r4
+/* 80060670 00001D10  40 82 00 0C */	bne .L_8006067C
+/* 80060674 00001D14  38 00 00 00 */	li r0, 0x0
+/* 80060678 00001D18  90 00 00 00 */	stw r0, mBonusNoCap__9daPyMng_c@sda21(r0)
+.L_8006067C:
+/* 8006067C 00001D1C  38 65 FF FF */	subi r3, r5, 0x1
+.L_80060680:
+/* 80060680 00001D20  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80060684 00001D24  7C 08 03 A6 */	mtlr r0
+/* 80060688 00001D28  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006068C 00001D2C  4E 80 00 20 */	blr
+.endfn decRest__9daPyMng_cFi
+
+# .text:0x1CF0 | 0x80060690 | size: 0x68
+# daPyMng_c::addScore(int, int)
+.fn addScore__9daPyMng_cFii, global
+/* 80060690 00001D30  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80060694 00001D34  7C 08 02 A6 */	mflr r0
+/* 80060698 00001D38  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8006069C 00001D3C  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800606A0 00001D40  7C 7F 1B 78 */	mr r31, r3
+/* 800606A4 00001D44  80 00 00 00 */	lwz r0, mScore__9daPyMng_c@sda21(r0)
+/* 800606A8 00001D48  80 A0 00 00 */	lwz r5, "scScoreMax__32@unnamed@d_a_player_manager_cpp@"@sda21(r0)
+/* 800606AC 00001D4C  7C 03 02 14 */	add r0, r3, r0
+/* 800606B0 00001D50  90 81 00 08 */	stw r4, 0x8(r1)
+/* 800606B4 00001D54  7C 00 28 00 */	cmpw r0, r5
+/* 800606B8 00001D58  41 80 00 08 */	blt .L_800606C0
+/* 800606BC 00001D5C  7C A0 2B 78 */	mr r0, r5
+.L_800606C0:
+/* 800606C0 00001D60  28 04 00 03 */	cmplwi r4, 0x3
+/* 800606C4 00001D64  90 00 00 00 */	stw r0, mScore__9daPyMng_c@sda21(r0)
+/* 800606C8 00001D68  41 81 00 1C */	bgt .L_800606E4
+/* 800606CC 00001D6C  38 61 00 08 */	addi r3, r1, 0x8
+/* 800606D0 00001D70  48 00 00 01 */	bl changeItemKinopioPlrNo__9daPyMng_cFRi
+/* 800606D4 00001D74  80 60 00 00 */	lwz r3, mspInstance__11dMultiMng_c@sda21(r0)
+/* 800606D8 00001D78  7F E4 FB 78 */	mr r4, r31
+/* 800606DC 00001D7C  80 A1 00 08 */	lwz r5, 0x8(r1)
+/* 800606E0 00001D80  48 00 00 01 */	bl addScore__11dMultiMng_cFii
+.L_800606E4:
+/* 800606E4 00001D84  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800606E8 00001D88  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800606EC 00001D8C  7C 08 03 A6 */	mtlr r0
+/* 800606F0 00001D90  38 21 00 20 */	addi r1, r1, 0x20
+/* 800606F4 00001D94  4E 80 00 20 */	blr
+.endfn addScore__9daPyMng_cFii
+
+# .text:0x1D58 | 0x800606F8 | size: 0x8
+.fn gap_03_800606F8_text, global
+.hidden gap_03_800606F8_text
+/* 800606F8 00001D98  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800606FC 00001D9C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800606F8_text
+
+# .text:0x1D60 | 0x80060700 | size: 0x1C
+# daPyMng_c::setCourseInStarBGM()
+.fn setCourseInStarBGM__9daPyMng_cFv, global
+/* 80060700 00001DA0  80 00 00 00 */	lwz r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060704 00001DA4  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 80060708 00001DA8  4D 82 00 20 */	beqlr
+/* 8006070C 00001DAC  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 80060710 00001DB0  38 80 00 04 */	li r4, 0x4
+/* 80060714 00001DB4  48 00 00 00 */	b fn_8019bd90__11SndSceneMgrFi
+/* 80060718 00001DB8  4E 80 00 20 */	blr
+.endfn setCourseInStarBGM__9daPyMng_cFv
+
+# .text:0x1D7C | 0x8006071C | size: 0x4
+.fn gap_03_8006071C_text, global
+.hidden gap_03_8006071C_text
+/* 8006071C 00001DBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8006071C_text
+
+# .text:0x1D80 | 0x80060720 | size: 0x24
+# daPyMng_c::startStarBGM()
+.fn startStarBGM__9daPyMng_cFv, global
+/* 80060720 00001DC0  80 60 00 00 */	lwz r3, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060724 00001DC4  54 60 07 FF */	clrlwi. r0, r3, 31
+/* 80060728 00001DC8  4C 82 00 20 */	bnelr
+/* 8006072C 00001DCC  60 60 00 01 */	ori r0, r3, 0x1
+/* 80060730 00001DD0  90 00 00 00 */	stw r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060734 00001DD4  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 80060738 00001DD8  38 80 00 04 */	li r4, 0x4
+/* 8006073C 00001DDC  48 00 00 00 */	b fn_8019bd90__11SndSceneMgrFi
+/* 80060740 00001DE0  4E 80 00 20 */	blr
+.endfn startStarBGM__9daPyMng_cFv
+
+# .text:0x1DA4 | 0x80060744 | size: 0xC
+.fn gap_03_80060744_text, global
+.hidden gap_03_80060744_text
+/* 80060744 00001DE4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060748 00001DE8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006074C 00001DEC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060744_text
+
+# .text:0x1DB0 | 0x80060750 | size: 0x74
+# daPyMng_c::stopStarBGM()
+.fn stopStarBGM__9daPyMng_cFv, global
+/* 80060750 00001DF0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060754 00001DF4  7C 08 02 A6 */	mflr r0
+/* 80060758 00001DF8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006075C 00001DFC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80060760 00001E00  80 00 00 00 */	lwz r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060764 00001E04  54 00 07 FF */	clrlwi. r0, r0, 31
+/* 80060768 00001E08  41 82 00 48 */	beq .L_800607B0
+/* 8006076C 00001E0C  3B E0 00 00 */	li r31, 0x0
+.L_80060770:
+/* 80060770 00001E10  7F E3 FB 78 */	mr r3, r31
+/* 80060774 00001E14  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 80060778 00001E18  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006077C 00001E1C  41 82 00 10 */	beq .L_8006078C
+/* 80060780 00001E20  80 03 10 70 */	lwz r0, 0x1070(r3)
+/* 80060784 00001E24  2C 00 00 3C */	cmpwi r0, 0x3c
+/* 80060788 00001E28  40 80 00 28 */	bge .L_800607B0
+.L_8006078C:
+/* 8006078C 00001E2C  3B FF 00 01 */	addi r31, r31, 0x1
+/* 80060790 00001E30  2C 1F 00 04 */	cmpwi r31, 0x4
+/* 80060794 00001E34  41 80 FF DC */	blt .L_80060770
+/* 80060798 00001E38  80 00 00 00 */	lwz r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 8006079C 00001E3C  38 80 00 04 */	li r4, 0x4
+/* 800607A0 00001E40  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 800607A4 00001E44  54 00 00 3C */	clrrwi r0, r0, 1
+/* 800607A8 00001E48  90 00 00 00 */	stw r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 800607AC 00001E4C  48 00 00 01 */	bl fn_8019be60__11SndSceneMgrFi
+.L_800607B0:
+/* 800607B0 00001E50  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800607B4 00001E54  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800607B8 00001E58  7C 08 03 A6 */	mtlr r0
+/* 800607BC 00001E5C  38 21 00 10 */	addi r1, r1, 0x10
+/* 800607C0 00001E60  4E 80 00 20 */	blr
+.endfn stopStarBGM__9daPyMng_cFv
+
+# .text:0x1E24 | 0x800607C4 | size: 0xC
+.fn gap_03_800607C4_text, global
+.hidden gap_03_800607C4_text
+/* 800607C4 00001E64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800607C8 00001E68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800607CC 00001E6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800607C4_text
+
+# .text:0x1E30 | 0x800607D0 | size: 0x60
+# daPyMng_c::startMissBGM(int)
+.fn startMissBGM__9daPyMng_cFi, global
+/* 800607D0 00001E70  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800607D4 00001E74  7C 08 02 A6 */	mflr r0
+/* 800607D8 00001E78  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800607DC 00001E7C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800607E0 00001E80  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800607E4 00001E84  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800607E8 00001E88  7C 7F 1B 78 */	mr r31, r3
+/* 800607EC 00001E8C  41 82 00 30 */	beq .L_8006081C
+/* 800607F0 00001E90  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 800607F4 00001E94  81 8C 00 E0 */	lwz r12, 0xe0(r12)
+/* 800607F8 00001E98  7D 89 03 A6 */	mtctr r12
+/* 800607FC 00001E9C  4E 80 04 21 */	bctrl
+/* 80060800 00001EA0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060804 00001EA4  40 82 00 18 */	bne .L_8006081C
+/* 80060808 00001EA8  80 1F 15 54 */	lwz r0, 0x1554(r31)
+/* 8006080C 00001EAC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060810 00001EB0  41 82 00 0C */	beq .L_8006081C
+/* 80060814 00001EB4  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 80060818 00001EB8  48 00 00 01 */	bl startMiss__11SndSceneMgrFv
+.L_8006081C:
+/* 8006081C 00001EBC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80060820 00001EC0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80060824 00001EC4  7C 08 03 A6 */	mtlr r0
+/* 80060828 00001EC8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8006082C 00001ECC  4E 80 00 20 */	blr
+.endfn startMissBGM__9daPyMng_cFi
+
+# .text:0x1E90 | 0x80060830 | size: 0x24
+# daPyMng_c::startYoshiBGM()
+.fn startYoshiBGM__9daPyMng_cFv, global
+/* 80060830 00001ED0  80 60 00 00 */	lwz r3, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060834 00001ED4  54 60 07 BD */	rlwinm. r0, r3, 0, 30, 30
+/* 80060838 00001ED8  4C 82 00 20 */	bnelr
+/* 8006083C 00001EDC  60 60 00 02 */	ori r0, r3, 0x2
+/* 80060840 00001EE0  90 00 00 00 */	stw r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060844 00001EE4  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 80060848 00001EE8  38 80 02 00 */	li r4, 0x200
+/* 8006084C 00001EEC  48 00 00 00 */	b fn_8019bd90__11SndSceneMgrFi
+/* 80060850 00001EF0  4E 80 00 20 */	blr
+.endfn startYoshiBGM__9daPyMng_cFv
+
+# .text:0x1EB4 | 0x80060854 | size: 0xC
+.fn gap_03_80060854_text, global
+.hidden gap_03_80060854_text
+/* 80060854 00001EF4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060858 00001EF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006085C 00001EFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060854_text
+
+# .text:0x1EC0 | 0x80060860 | size: 0x78
+# daPyMng_c::stopYoshiBGM()
+.fn stopYoshiBGM__9daPyMng_cFv, global
+/* 80060860 00001F00  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060864 00001F04  7C 08 02 A6 */	mflr r0
+/* 80060868 00001F08  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006086C 00001F0C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80060870 00001F10  80 00 00 00 */	lwz r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060874 00001F14  54 00 07 BD */	rlwinm. r0, r0, 0, 30, 30
+/* 80060878 00001F18  41 82 00 4C */	beq .L_800608C4
+/* 8006087C 00001F1C  3B E0 00 00 */	li r31, 0x0
+.L_80060880:
+/* 80060880 00001F20  7F E3 FB 78 */	mr r3, r31
+/* 80060884 00001F24  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 80060888 00001F28  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006088C 00001F2C  41 82 00 14 */	beq .L_800608A0
+/* 80060890 00001F30  38 80 00 4B */	li r4, 0x4b
+/* 80060894 00001F34  48 00 00 01 */	bl isStatus__10daPlBase_cFi
+/* 80060898 00001F38  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006089C 00001F3C  40 82 00 28 */	bne .L_800608C4
+.L_800608A0:
+/* 800608A0 00001F40  3B FF 00 01 */	addi r31, r31, 0x1
+/* 800608A4 00001F44  2C 1F 00 04 */	cmpwi r31, 0x4
+/* 800608A8 00001F48  41 80 FF D8 */	blt .L_80060880
+/* 800608AC 00001F4C  80 00 00 00 */	lwz r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 800608B0 00001F50  38 80 02 00 */	li r4, 0x200
+/* 800608B4 00001F54  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 800608B8 00001F58  54 00 07 FA */	rlwinm r0, r0, 0, 31, 29
+/* 800608BC 00001F5C  90 00 00 00 */	stw r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 800608C0 00001F60  48 00 00 01 */	bl fn_8019be60__11SndSceneMgrFi
+.L_800608C4:
+/* 800608C4 00001F64  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800608C8 00001F68  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800608CC 00001F6C  7C 08 03 A6 */	mtlr r0
+/* 800608D0 00001F70  38 21 00 10 */	addi r1, r1, 0x10
+/* 800608D4 00001F74  4E 80 00 20 */	blr
+.endfn stopYoshiBGM__9daPyMng_cFv
+
+# .text:0x1F38 | 0x800608D8 | size: 0x8
+.fn gap_03_800608D8_text, global
+.hidden gap_03_800608D8_text
+/* 800608D8 00001F78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800608DC 00001F7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800608D8_text
+
+# .text:0x1F40 | 0x800608E0 | size: 0x88
+# daPyMng_c::checkLastAlivePlayer()
+.fn checkLastAlivePlayer__9daPyMng_cFv, global
+/* 800608E0 00001F80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800608E4 00001F84  7C 08 02 A6 */	mflr r0
+/* 800608E8 00001F88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800608EC 00001F8C  48 00 00 01 */	bl getEntryNum__9daPyMng_cFv
+/* 800608F0 00001F90  68 60 00 01 */	xori r0, r3, 0x1
+/* 800608F4 00001F94  7C 04 0E 70 */	srawi r4, r0, 1
+/* 800608F8 00001F98  7C 00 18 38 */	and r0, r0, r3
+/* 800608FC 00001F9C  7C 00 20 50 */	subf r0, r0, r4
+/* 80060900 00001FA0  54 00 0F FF */	srwi. r0, r0, 31
+/* 80060904 00001FA4  41 82 00 54 */	beq .L_80060958
+/* 80060908 00001FA8  80 00 00 00 */	lwz r0, mNum__9daPyMng_c@sda21(r0)
+/* 8006090C 00001FAC  2C 00 00 01 */	cmpwi r0, 0x1
+/* 80060910 00001FB0  41 81 00 28 */	bgt .L_80060938
+/* 80060914 00001FB4  80 60 00 00 */	lwz r3, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060918 00001FB8  54 60 07 7B */	rlwinm. r0, r3, 0, 29, 29
+/* 8006091C 00001FBC  40 82 00 3C */	bne .L_80060958
+/* 80060920 00001FC0  60 60 00 04 */	ori r0, r3, 0x4
+/* 80060924 00001FC4  90 00 00 00 */	stw r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 80060928 00001FC8  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 8006092C 00001FCC  38 80 04 00 */	li r4, 0x400
+/* 80060930 00001FD0  48 00 00 01 */	bl fn_8019bd90__11SndSceneMgrFi
+/* 80060934 00001FD4  48 00 00 24 */	b .L_80060958
+.L_80060938:
+/* 80060938 00001FD8  80 60 00 00 */	lwz r3, mBgmState__9daPyMng_c@sda21(r0)
+/* 8006093C 00001FDC  54 60 07 7B */	rlwinm. r0, r3, 0, 29, 29
+/* 80060940 00001FE0  41 82 00 18 */	beq .L_80060958
+/* 80060944 00001FE4  54 60 07 B8 */	rlwinm r0, r3, 0, 30, 28
+/* 80060948 00001FE8  90 00 00 00 */	stw r0, mBgmState__9daPyMng_c@sda21(r0)
+/* 8006094C 00001FEC  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 80060950 00001FF0  38 80 04 00 */	li r4, 0x400
+/* 80060954 00001FF4  48 00 00 01 */	bl fn_8019be60__11SndSceneMgrFi
+.L_80060958:
+/* 80060958 00001FF8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8006095C 00001FFC  7C 08 03 A6 */	mtlr r0
+/* 80060960 00002000  38 21 00 10 */	addi r1, r1, 0x10
+/* 80060964 00002004  4E 80 00 20 */	blr
+.endfn checkLastAlivePlayer__9daPyMng_cFv
+
+# .text:0x1FC8 | 0x80060968 | size: 0x8
+.fn gap_03_80060968_text, global
+.hidden gap_03_80060968_text
+/* 80060968 00002008  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006096C 0000200C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060968_text
+
+# .text:0x1FD0 | 0x80060970 | size: 0x98
+# daPyMng_c::executeLastPlayer()
+.fn executeLastPlayer__9daPyMng_cFv, global
+/* 80060970 00002010  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060974 00002014  7C 08 02 A6 */	mflr r0
+/* 80060978 00002018  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006097C 0000201C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80060980 00002020  3F E0 00 00 */	lis r31, m_yoshiID__9daPyMng_c@ha
+/* 80060984 00002024  3B FF 00 00 */	addi r31, r31, m_yoshiID__9daPyMng_c@l
+/* 80060988 00002028  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8006098C 0000202C  3B C0 00 00 */	li r30, 0x0
+.L_80060990:
+/* 80060990 00002030  80 7F 00 00 */	lwz r3, 0x0(r31)
+/* 80060994 00002034  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 80060998 00002038  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8006099C 0000203C  41 82 00 14 */	beq .L_800609B0
+/* 800609A0 00002040  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 800609A4 00002044  81 8C 00 D8 */	lwz r12, 0xd8(r12)
+/* 800609A8 00002048  7D 89 03 A6 */	mtctr r12
+/* 800609AC 0000204C  4E 80 04 21 */	bctrl
+.L_800609B0:
+/* 800609B0 00002050  3B DE 00 01 */	addi r30, r30, 0x1
+/* 800609B4 00002054  3B FF 00 04 */	addi r31, r31, 0x4
+/* 800609B8 00002058  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 800609BC 0000205C  41 80 FF D4 */	blt .L_80060990
+/* 800609C0 00002060  3B C0 00 00 */	li r30, 0x0
+.L_800609C4:
+/* 800609C4 00002064  7F C3 F3 78 */	mr r3, r30
+/* 800609C8 00002068  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800609CC 0000206C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800609D0 00002070  41 82 00 14 */	beq .L_800609E4
+/* 800609D4 00002074  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 800609D8 00002078  81 8C 00 D8 */	lwz r12, 0xd8(r12)
+/* 800609DC 0000207C  7D 89 03 A6 */	mtctr r12
+/* 800609E0 00002080  4E 80 04 21 */	bctrl
+.L_800609E4:
+/* 800609E4 00002084  3B DE 00 01 */	addi r30, r30, 0x1
+/* 800609E8 00002088  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 800609EC 0000208C  41 80 FF D8 */	blt .L_800609C4
+/* 800609F0 00002090  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800609F4 00002094  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800609F8 00002098  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 800609FC 0000209C  7C 08 03 A6 */	mtlr r0
+/* 80060A00 000020A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80060A04 000020A4  4E 80 00 20 */	blr
+.endfn executeLastPlayer__9daPyMng_cFv
+
+# .text:0x2068 | 0x80060A08 | size: 0x8
+.fn gap_03_80060A08_text, global
+.hidden gap_03_80060A08_text
+/* 80060A08 000020A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060A0C 000020AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060A08_text
+
+# .text:0x2070 | 0x80060A10 | size: 0x98
+# daPyMng_c::executeLastAll()
+.fn executeLastAll__9daPyMng_cFv, global
+/* 80060A10 000020B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060A14 000020B4  7C 08 02 A6 */	mflr r0
+/* 80060A18 000020B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80060A1C 000020BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80060A20 000020C0  3F E0 00 00 */	lis r31, m_yoshiID__9daPyMng_c@ha
+/* 80060A24 000020C4  3B FF 00 00 */	addi r31, r31, m_yoshiID__9daPyMng_c@l
+/* 80060A28 000020C8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80060A2C 000020CC  3B C0 00 00 */	li r30, 0x0
+.L_80060A30:
+/* 80060A30 000020D0  80 7F 00 00 */	lwz r3, 0x0(r31)
+/* 80060A34 000020D4  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 80060A38 000020D8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060A3C 000020DC  41 82 00 14 */	beq .L_80060A50
+/* 80060A40 000020E0  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80060A44 000020E4  81 8C 00 DC */	lwz r12, 0xdc(r12)
+/* 80060A48 000020E8  7D 89 03 A6 */	mtctr r12
+/* 80060A4C 000020EC  4E 80 04 21 */	bctrl
+.L_80060A50:
+/* 80060A50 000020F0  3B DE 00 01 */	addi r30, r30, 0x1
+/* 80060A54 000020F4  3B FF 00 04 */	addi r31, r31, 0x4
+/* 80060A58 000020F8  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 80060A5C 000020FC  41 80 FF D4 */	blt .L_80060A30
+/* 80060A60 00002100  3B C0 00 00 */	li r30, 0x0
+.L_80060A64:
+/* 80060A64 00002104  7F C3 F3 78 */	mr r3, r30
+/* 80060A68 00002108  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 80060A6C 0000210C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060A70 00002110  41 82 00 14 */	beq .L_80060A84
+/* 80060A74 00002114  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80060A78 00002118  81 8C 00 DC */	lwz r12, 0xdc(r12)
+/* 80060A7C 0000211C  7D 89 03 A6 */	mtctr r12
+/* 80060A80 00002120  4E 80 04 21 */	bctrl
+.L_80060A84:
+/* 80060A84 00002124  3B DE 00 01 */	addi r30, r30, 0x1
+/* 80060A88 00002128  2C 1E 00 04 */	cmpwi r30, 0x4
+/* 80060A8C 0000212C  41 80 FF D8 */	blt .L_80060A64
+/* 80060A90 00002130  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80060A94 00002134  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80060A98 00002138  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80060A9C 0000213C  7C 08 03 A6 */	mtlr r0
+/* 80060AA0 00002140  38 21 00 10 */	addi r1, r1, 0x10
+/* 80060AA4 00002144  4E 80 00 20 */	blr
+.endfn executeLastAll__9daPyMng_cFv
+
+# .text:0x2108 | 0x80060AA8 | size: 0x8
+.fn gap_03_80060AA8_text, global
+.hidden gap_03_80060AA8_text
+/* 80060AA8 00002148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060AAC 0000214C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060AA8_text
+
+# .text:0x2110 | 0x80060AB0 | size: 0x158
+# daPyMng_c::deleteCullingYoshi()
+.fn deleteCullingYoshi__9daPyMng_cFv, global
+/* 80060AB0 00002150  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 80060AB4 00002154  7C 08 02 A6 */	mflr r0
+/* 80060AB8 00002158  C0 00 00 00 */	lfs f0, "@80832_8042BD78"@sda21(r0)
+/* 80060ABC 0000215C  90 01 00 44 */	stw r0, 0x44(r1)
+/* 80060AC0 00002160  DB E1 00 30 */	stfd f31, 0x30(r1)
+/* 80060AC4 00002164  F3 E1 00 38 */	psq_st f31, 0x38(r1), 0, qr0
+/* 80060AC8 00002168  C3 E0 00 00 */	lfs f31, "@80186_8042BD48"@sda21(r0)
+/* 80060ACC 0000216C  93 E1 00 2C */	stw r31, 0x2c(r1)
+/* 80060AD0 00002170  3F E0 00 00 */	lis r31, m_yoshiID__9daPyMng_c@ha
+/* 80060AD4 00002174  3B FF 00 00 */	addi r31, r31, m_yoshiID__9daPyMng_c@l
+/* 80060AD8 00002178  93 C1 00 28 */	stw r30, 0x28(r1)
+/* 80060ADC 0000217C  93 A1 00 24 */	stw r29, 0x24(r1)
+/* 80060AE0 00002180  3B A0 00 00 */	li r29, 0x0
+/* 80060AE4 00002184  93 81 00 20 */	stw r28, 0x20(r1)
+/* 80060AE8 00002188  3B 80 00 00 */	li r28, 0x0
+/* 80060AEC 0000218C  80 60 00 00 */	lwz r3, ms_Instance_p__14dBgParameter_c@sda21(r0)
+/* 80060AF0 00002190  C0 23 00 44 */	lfs f1, 0x44(r3)
+/* 80060AF4 00002194  C0 63 00 40 */	lfs f3, 0x40(r3)
+/* 80060AF8 00002198  EC 21 00 32 */	fmuls f1, f1, f0
+/* 80060AFC 0000219C  C0 43 00 3C */	lfs f2, 0x3c(r3)
+/* 80060B00 000021A0  EC 03 00 32 */	fmuls f0, f3, f0
+/* 80060B04 000021A4  C0 63 00 38 */	lfs f3, 0x38(r3)
+/* 80060B08 000021A8  EC 22 08 28 */	fsubs f1, f2, f1
+/* 80060B0C 000021AC  EC 03 00 2A */	fadds f0, f3, f0
+/* 80060B10 000021B0  D0 21 00 1C */	stfs f1, 0x1c(r1)
+/* 80060B14 000021B4  D0 01 00 18 */	stfs f0, 0x18(r1)
+.L_80060B18:
+/* 80060B18 000021B8  80 7F 00 00 */	lwz r3, 0x0(r31)
+/* 80060B1C 000021BC  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 80060B20 000021C0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060B24 000021C4  7C 7E 1B 78 */	mr r30, r3
+/* 80060B28 000021C8  41 82 00 8C */	beq .L_80060BB4
+/* 80060B2C 000021CC  88 03 00 0B */	lbz r0, 0xb(r3)
+/* 80060B30 000021D0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060B34 000021D4  40 82 00 80 */	bne .L_80060BB4
+/* 80060B38 000021D8  81 83 00 60 */	lwz r12, 0x60(r3)
+/* 80060B3C 000021DC  81 8C 00 6C */	lwz r12, 0x6c(r12)
+/* 80060B40 000021E0  7D 89 03 A6 */	mtctr r12
+/* 80060B44 000021E4  4E 80 04 21 */	bctrl
+/* 80060B48 000021E8  88 03 00 00 */	lbz r0, 0x0(r3)
+/* 80060B4C 000021EC  7C 00 07 74 */	extsb r0, r0
+/* 80060B50 000021F0  2C 00 FF FF */	cmpwi r0, -0x1
+/* 80060B54 000021F4  40 82 00 60 */	bne .L_80060BB4
+/* 80060B58 000021F8  7F C3 F3 78 */	mr r3, r30
+/* 80060B5C 000021FC  38 80 00 B9 */	li r4, 0xb9
+/* 80060B60 00002200  48 00 00 01 */	bl isStatus__10daPlBase_cFi
+/* 80060B64 00002204  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060B68 00002208  41 82 00 4C */	beq .L_80060BB4
+/* 80060B6C 0000220C  C0 7E 00 B0 */	lfs f3, 0xb0(r30)
+/* 80060B70 00002210  C0 5E 00 AC */	lfs f2, 0xac(r30)
+/* 80060B74 00002214  C0 21 00 1C */	lfs f1, 0x1c(r1)
+/* 80060B78 00002218  C0 01 00 18 */	lfs f0, 0x18(r1)
+/* 80060B7C 0000221C  EC 81 18 28 */	fsubs f4, f1, f3
+/* 80060B80 00002220  D0 41 00 10 */	stfs f2, 0x10(r1)
+/* 80060B84 00002224  EC 40 10 28 */	fsubs f2, f0, f2
+/* 80060B88 00002228  D0 61 00 14 */	stfs f3, 0x14(r1)
+/* 80060B8C 0000222C  EC 04 01 32 */	fmuls f0, f4, f4
+/* 80060B90 00002230  EC 22 00 B2 */	fmuls f1, f2, f2
+/* 80060B94 00002234  D0 41 00 08 */	stfs f2, 0x8(r1)
+/* 80060B98 00002238  D0 81 00 0C */	stfs f4, 0xc(r1)
+/* 80060B9C 0000223C  EC 21 00 2A */	fadds f1, f1, f0
+/* 80060BA0 00002240  48 00 00 01 */	bl "sqrt__Q23EGG7Math<f>Ff"
+/* 80060BA4 00002244  FC 01 F8 40 */	fcmpo cr0, f1, f31
+/* 80060BA8 00002248  40 81 00 0C */	ble .L_80060BB4
+/* 80060BAC 0000224C  FF E0 08 90 */	fmr f31, f1
+/* 80060BB0 00002250  7F DD F3 78 */	mr r29, r30
+.L_80060BB4:
+/* 80060BB4 00002254  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 80060BB8 00002258  3B FF 00 04 */	addi r31, r31, 0x4
+/* 80060BBC 0000225C  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 80060BC0 00002260  41 80 FF 58 */	blt .L_80060B18
+/* 80060BC4 00002264  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 80060BC8 00002268  41 82 00 14 */	beq .L_80060BDC
+/* 80060BCC 0000226C  7F A3 EB 78 */	mr r3, r29
+/* 80060BD0 00002270  48 00 00 01 */	bl deleteRequest__7fBase_cFv
+/* 80060BD4 00002274  38 60 00 01 */	li r3, 0x1
+/* 80060BD8 00002278  48 00 00 08 */	b .L_80060BE0
+.L_80060BDC:
+/* 80060BDC 0000227C  38 60 00 00 */	li r3, 0x0
+.L_80060BE0:
+/* 80060BE0 00002280  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 80060BE4 00002284  E3 E1 00 38 */	psq_l f31, 0x38(r1), 0, qr0
+/* 80060BE8 00002288  CB E1 00 30 */	lfd f31, 0x30(r1)
+/* 80060BEC 0000228C  83 E1 00 2C */	lwz r31, 0x2c(r1)
+/* 80060BF0 00002290  83 C1 00 28 */	lwz r30, 0x28(r1)
+/* 80060BF4 00002294  83 A1 00 24 */	lwz r29, 0x24(r1)
+/* 80060BF8 00002298  83 81 00 20 */	lwz r28, 0x20(r1)
+/* 80060BFC 0000229C  7C 08 03 A6 */	mtlr r0
+/* 80060C00 000022A0  38 21 00 40 */	addi r1, r1, 0x40
+/* 80060C04 000022A4  4E 80 00 20 */	blr
+.endfn deleteCullingYoshi__9daPyMng_cFv
+
+# .text:0x2268 | 0x80060C08 | size: 0x8
+.fn gap_03_80060C08_text, global
+.hidden gap_03_80060C08_text
+/* 80060C08 000022A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060C0C 000022AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060C08_text
+
+# .text:0x2270 | 0x80060C10 | size: 0x1A0
+# daPyMng_c::setHipAttackQuake(int, unsigned char)
+.fn setHipAttackQuake__9daPyMng_cFiUc, global
+/* 80060C10 000022B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80060C14 000022B4  7C 08 02 A6 */	mflr r0
+/* 80060C18 000022B8  2C 04 FF FF */	cmpwi r4, -0x1
+/* 80060C1C 000022BC  3D 00 00 00 */	lis r8, m_playerID__9daPyMng_c@ha
+/* 80060C20 000022C0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80060C24 000022C4  39 08 00 00 */	addi r8, r8, m_playerID__9daPyMng_c@l
+/* 80060C28 000022C8  41 82 01 78 */	beq .L_80060DA0
+/* 80060C2C 000022CC  2C 03 00 02 */	cmpwi r3, 0x2
+/* 80060C30 000022D0  40 82 00 20 */	bne .L_80060C50
+/* 80060C34 000022D4  80 60 00 00 */	lwz r3, m_instance__8dQuake_c@sda21(r0)
+/* 80060C38 000022D8  7C 84 07 74 */	extsb r4, r4
+/* 80060C3C 000022DC  38 A0 00 07 */	li r5, 0x7
+/* 80060C40 000022E0  38 C0 00 00 */	li r6, 0x0
+/* 80060C44 000022E4  38 E0 00 00 */	li r7, 0x0
+/* 80060C48 000022E8  48 00 00 01 */	bl shockMotor__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eib
+/* 80060C4C 000022EC  48 00 01 54 */	b .L_80060DA0
+.L_80060C50:
+/* 80060C50 000022F0  88 00 00 00 */	lbz r0, m_isStaffCredit__10dScStage_c@sda21(r0)
+/* 80060C54 000022F4  54 89 15 BA */	clrlslwi r9, r4, 24, 2
+/* 80060C58 000022F8  38 C8 00 A0 */	addi r6, r8, 0xa0
+/* 80060C5C 000022FC  38 E0 00 05 */	li r7, 0x5
+/* 80060C60 00002300  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060C64 00002304  38 A8 00 B0 */	addi r5, r8, 0xb0
+/* 80060C68 00002308  38 00 00 00 */	li r0, 0x0
+/* 80060C6C 0000230C  7C E6 49 2E */	stwx r7, r6, r9
+/* 80060C70 00002310  39 40 00 00 */	li r10, 0x0
+/* 80060C74 00002314  7C 05 49 2E */	stwx r0, r5, r9
+/* 80060C78 00002318  40 82 00 84 */	bne .L_80060CFC
+/* 80060C7C 0000231C  38 00 00 00 */	li r0, 0x0
+/* 80060C80 00002320  7C 00 20 00 */	cmpw r0, r4
+/* 80060C84 00002324  41 82 00 18 */	beq .L_80060C9C
+/* 80060C88 00002328  80 06 00 00 */	lwz r0, 0x0(r6)
+/* 80060C8C 0000232C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060C90 00002330  41 82 00 0C */	beq .L_80060C9C
+/* 80060C94 00002334  90 E6 00 00 */	stw r7, 0x0(r6)
+/* 80060C98 00002338  39 40 00 01 */	li r10, 0x1
+.L_80060C9C:
+/* 80060C9C 0000233C  38 00 00 01 */	li r0, 0x1
+/* 80060CA0 00002340  7C 00 20 00 */	cmpw r0, r4
+/* 80060CA4 00002344  41 82 00 18 */	beq .L_80060CBC
+/* 80060CA8 00002348  80 06 00 04 */	lwz r0, 0x4(r6)
+/* 80060CAC 0000234C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060CB0 00002350  41 82 00 0C */	beq .L_80060CBC
+/* 80060CB4 00002354  90 E6 00 04 */	stw r7, 0x4(r6)
+/* 80060CB8 00002358  39 4A 00 01 */	addi r10, r10, 0x1
+.L_80060CBC:
+/* 80060CBC 0000235C  38 00 00 02 */	li r0, 0x2
+/* 80060CC0 00002360  7C 00 20 00 */	cmpw r0, r4
+/* 80060CC4 00002364  41 82 00 18 */	beq .L_80060CDC
+/* 80060CC8 00002368  80 06 00 08 */	lwz r0, 0x8(r6)
+/* 80060CCC 0000236C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060CD0 00002370  41 82 00 0C */	beq .L_80060CDC
+/* 80060CD4 00002374  90 E6 00 08 */	stw r7, 0x8(r6)
+/* 80060CD8 00002378  39 4A 00 01 */	addi r10, r10, 0x1
+.L_80060CDC:
+/* 80060CDC 0000237C  38 00 00 03 */	li r0, 0x3
+/* 80060CE0 00002380  7C 00 20 00 */	cmpw r0, r4
+/* 80060CE4 00002384  41 82 00 18 */	beq .L_80060CFC
+/* 80060CE8 00002388  80 06 00 0C */	lwz r0, 0xc(r6)
+/* 80060CEC 0000238C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060CF0 00002390  41 82 00 0C */	beq .L_80060CFC
+/* 80060CF4 00002394  90 E6 00 0C */	stw r7, 0xc(r6)
+/* 80060CF8 00002398  39 4A 00 01 */	addi r10, r10, 0x1
+.L_80060CFC:
+/* 80060CFC 0000239C  2C 0A 00 00 */	cmpwi r10, 0x0
+/* 80060D00 000023A0  41 82 00 60 */	beq .L_80060D60
+/* 80060D04 000023A4  88 00 00 00 */	lbz r0, lbl_80429FD0@sda21(r0)
+/* 80060D08 000023A8  7C 00 07 75 */	extsb. r0, r0
+/* 80060D0C 000023AC  40 82 00 28 */	bne .L_80060D34
+/* 80060D10 000023B0  38 88 0E A0 */	addi r4, r8, 0xea0
+/* 80060D14 000023B4  38 C0 01 52 */	li r6, 0x152
+/* 80060D18 000023B8  38 A0 01 51 */	li r5, 0x151
+/* 80060D1C 000023BC  38 60 01 50 */	li r3, 0x150
+/* 80060D20 000023C0  38 00 00 01 */	li r0, 0x1
+/* 80060D24 000023C4  90 C8 0E A0 */	stw r6, 0xea0(r8)
+/* 80060D28 000023C8  90 A4 00 04 */	stw r5, 0x4(r4)
+/* 80060D2C 000023CC  90 64 00 08 */	stw r3, 0x8(r4)
+/* 80060D30 000023D0  98 00 00 00 */	stb r0, lbl_80429FD0@sda21(r0)
+.L_80060D34:
+/* 80060D34 000023D4  38 0A FF FF */	subi r0, r10, 0x1
+/* 80060D38 000023D8  28 00 00 02 */	cmplwi r0, 0x2
+/* 80060D3C 000023DC  41 81 00 1C */	bgt .L_80060D58
+/* 80060D40 000023E0  54 00 10 3A */	slwi r0, r0, 2
+/* 80060D44 000023E4  38 88 0E A0 */	addi r4, r8, 0xea0
+/* 80060D48 000023E8  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 80060D4C 000023EC  38 A0 00 01 */	li r5, 0x1
+/* 80060D50 000023F0  7C 84 00 2E */	lwzx r4, r4, r0
+/* 80060D54 000023F4  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUlUl
+.L_80060D58:
+/* 80060D58 000023F8  48 00 00 01 */	bl fn_80060DB0
+/* 80060D5C 000023FC  48 00 00 44 */	b .L_80060DA0
+.L_80060D60:
+/* 80060D60 00002400  2C 03 00 01 */	cmpwi r3, 0x1
+/* 80060D64 00002404  40 82 00 24 */	bne .L_80060D88
+/* 80060D68 00002408  80 60 00 00 */	lwz r3, m_instance__8dQuake_c@sda21(r0)
+/* 80060D6C 0000240C  7C 84 07 74 */	extsb r4, r4
+/* 80060D70 00002410  38 A0 00 03 */	li r5, 0x3
+/* 80060D74 00002414  38 C0 00 03 */	li r6, 0x3
+/* 80060D78 00002418  38 E0 00 00 */	li r7, 0x0
+/* 80060D7C 0000241C  39 00 00 00 */	li r8, 0x0
+/* 80060D80 00002420  48 00 00 01 */	bl startShock__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eiib
+/* 80060D84 00002424  48 00 00 1C */	b .L_80060DA0
+.L_80060D88:
+/* 80060D88 00002428  80 60 00 00 */	lwz r3, m_instance__8dQuake_c@sda21(r0)
+/* 80060D8C 0000242C  7C 84 07 74 */	extsb r4, r4
+/* 80060D90 00002430  38 A0 00 04 */	li r5, 0x4
+/* 80060D94 00002434  38 C0 00 00 */	li r6, 0x0
+/* 80060D98 00002438  38 E0 00 00 */	li r7, 0x0
+/* 80060D9C 0000243C  48 00 00 01 */	bl shockMotor__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eib
+.L_80060DA0:
+/* 80060DA0 00002440  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80060DA4 00002444  7C 08 03 A6 */	mtlr r0
+/* 80060DA8 00002448  38 21 00 10 */	addi r1, r1, 0x10
+/* 80060DAC 0000244C  4E 80 00 20 */	blr
+.endfn setHipAttackQuake__9daPyMng_cFiUc
+
+# .text:0x2410 | 0x80060DB0 | size: 0x138
+.fn fn_80060DB0, global
+/* 80060DB0 00002450  94 21 FF B0 */	stwu r1, -0x50(r1)
+/* 80060DB4 00002454  7C 08 02 A6 */	mflr r0
+/* 80060DB8 00002458  90 01 00 54 */	stw r0, 0x54(r1)
+/* 80060DBC 0000245C  39 61 00 40 */	addi r11, r1, 0x40
+/* 80060DC0 00002460  DB E1 00 40 */	stfd f31, 0x40(r1)
+/* 80060DC4 00002464  F3 E1 00 48 */	psq_st f31, 0x48(r1), 0, qr0
+/* 80060DC8 00002468  48 00 00 01 */	bl _savegpr_25
+/* 80060DCC 0000246C  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 80060DD0 00002470  48 00 00 01 */	bl onPowerImpact__11SndSceneMgrFv
+/* 80060DD4 00002474  3F 80 00 00 */	lis r28, m_quakeTimer__9daPyMng_c@ha
+/* 80060DD8 00002478  3F 60 00 00 */	lis r27, m_quakeEffectFlag__9daPyMng_c@ha
+/* 80060DDC 0000247C  C3 E0 00 00 */	lfs f31, "@81205_8042BD7C"@sda21(r0)
+/* 80060DE0 00002480  3B 9C 00 00 */	addi r28, r28, m_quakeTimer__9daPyMng_c@l
+/* 80060DE4 00002484  3B 7B 00 00 */	addi r27, r27, m_quakeEffectFlag__9daPyMng_c@l
+/* 80060DE8 00002488  3B 40 00 00 */	li r26, 0x0
+/* 80060DEC 0000248C  3B A0 00 01 */	li r29, 0x1
+/* 80060DF0 00002490  3F C0 00 00 */	lis r30, "@81204_80309A28"@ha
+/* 80060DF4 00002494  3F E0 00 00 */	lis r31, "@81206_80309A3C"@ha
+.L_80060DF8:
+/* 80060DF8 00002498  80 1C 00 00 */	lwz r0, 0x0(r28)
+/* 80060DFC 0000249C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060E00 000024A0  41 82 00 B4 */	beq .L_80060EB4
+/* 80060E04 000024A4  80 1B 00 00 */	lwz r0, 0x0(r27)
+/* 80060E08 000024A8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060E0C 000024AC  40 82 00 A8 */	bne .L_80060EB4
+/* 80060E10 000024B0  93 BB 00 00 */	stw r29, 0x0(r27)
+/* 80060E14 000024B4  7F 43 D3 78 */	mr r3, r26
+/* 80060E18 000024B8  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 80060E1C 000024BC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060E20 000024C0  7C 79 1B 78 */	mr r25, r3
+/* 80060E24 000024C4  41 82 00 90 */	beq .L_80060EB4
+/* 80060E28 000024C8  38 80 00 4B */	li r4, 0x4b
+/* 80060E2C 000024CC  48 00 00 01 */	bl isStatus__10daPlBase_cFi
+/* 80060E30 000024D0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060E34 000024D4  41 82 00 10 */	beq .L_80060E44
+/* 80060E38 000024D8  7F 23 CB 78 */	mr r3, r25
+/* 80060E3C 000024DC  48 00 00 01 */	bl getRideYoshi__7dAcPy_cFv
+/* 80060E40 000024E0  7C 79 1B 78 */	mr r25, r3
+.L_80060E44:
+/* 80060E44 000024E4  2C 19 00 00 */	cmpwi r25, 0x0
+/* 80060E48 000024E8  41 82 00 6C */	beq .L_80060EB4
+/* 80060E4C 000024EC  C0 19 00 AC */	lfs f0, 0xac(r25)
+/* 80060E50 000024F0  38 7E 00 00 */	addi r3, r30, "@81204_80309A28"@l
+/* 80060E54 000024F4  D0 01 00 08 */	stfs f0, 0x8(r1)
+/* 80060E58 000024F8  38 A1 00 08 */	addi r5, r1, 0x8
+/* 80060E5C 000024FC  38 80 00 00 */	li r4, 0x0
+/* 80060E60 00002500  38 C0 00 00 */	li r6, 0x0
+/* 80060E64 00002504  C0 19 00 B0 */	lfs f0, 0xb0(r25)
+/* 80060E68 00002508  38 E0 00 00 */	li r7, 0x0
+/* 80060E6C 0000250C  D0 01 00 0C */	stfs f0, 0xc(r1)
+/* 80060E70 00002510  C0 19 00 B4 */	lfs f0, 0xb4(r25)
+/* 80060E74 00002514  D0 01 00 10 */	stfs f0, 0x10(r1)
+/* 80060E78 00002518  48 00 00 01 */	bl createEffect__3mEfFPCcUlPC7mVec3_cPC7mAng3_cPC7mVec3_c
+/* 80060E7C 0000251C  D3 E1 00 10 */	stfs f31, 0x10(r1)
+/* 80060E80 00002520  38 7F 00 00 */	addi r3, r31, "@81206_80309A3C"@l
+/* 80060E84 00002524  38 A1 00 08 */	addi r5, r1, 0x8
+/* 80060E88 00002528  38 80 00 00 */	li r4, 0x0
+/* 80060E8C 0000252C  38 C0 00 00 */	li r6, 0x0
+/* 80060E90 00002530  38 E0 00 00 */	li r7, 0x0
+/* 80060E94 00002534  48 00 00 01 */	bl createEffect__3mEfFPCcUlPC7mVec3_cPC7mAng3_cPC7mVec3_c
+/* 80060E98 00002538  80 60 00 00 */	lwz r3, m_instance__8dQuake_c@sda21(r0)
+/* 80060E9C 0000253C  7F 44 07 74 */	extsb r4, r26
+/* 80060EA0 00002540  38 A0 00 03 */	li r5, 0x3
+/* 80060EA4 00002544  38 C0 00 03 */	li r6, 0x3
+/* 80060EA8 00002548  38 E0 00 12 */	li r7, 0x12
+/* 80060EAC 0000254C  39 00 00 00 */	li r8, 0x0
+/* 80060EB0 00002550  48 00 00 01 */	bl startShock__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eiib
+.L_80060EB4:
+/* 80060EB4 00002554  3B 5A 00 01 */	addi r26, r26, 0x1
+/* 80060EB8 00002558  3B 7B 00 04 */	addi r27, r27, 0x4
+/* 80060EBC 0000255C  2C 1A 00 04 */	cmpwi r26, 0x4
+/* 80060EC0 00002560  3B 9C 00 04 */	addi r28, r28, 0x4
+/* 80060EC4 00002564  41 80 FF 34 */	blt .L_80060DF8
+/* 80060EC8 00002568  39 61 00 40 */	addi r11, r1, 0x40
+/* 80060ECC 0000256C  E3 E1 00 48 */	psq_l f31, 0x48(r1), 0, qr0
+/* 80060ED0 00002570  CB E1 00 40 */	lfd f31, 0x40(r1)
+/* 80060ED4 00002574  48 00 00 01 */	bl _restgpr_25
+/* 80060ED8 00002578  80 01 00 54 */	lwz r0, 0x54(r1)
+/* 80060EDC 0000257C  7C 08 03 A6 */	mtlr r0
+/* 80060EE0 00002580  38 21 00 50 */	addi r1, r1, 0x50
+/* 80060EE4 00002584  4E 80 00 20 */	blr
+.endfn fn_80060DB0
+
+# .text:0x2548 | 0x80060EE8 | size: 0x8
+.fn gap_03_80060EE8_text, global
+.hidden gap_03_80060EE8_text
+/* 80060EE8 00002588  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060EEC 0000258C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060EE8_text
+
+# .text:0x2550 | 0x80060EF0 | size: 0x24
+# daPyMng_c::checkBonusNoCap()
+.fn checkBonusNoCap__9daPyMng_cFv, global
+/* 80060EF0 00002590  3C 60 00 00 */	lis r3, mRest__9daPyMng_c@ha
+/* 80060EF4 00002594  38 80 00 00 */	li r4, 0x0
+/* 80060EF8 00002598  80 03 00 00 */	lwz r0, mRest__9daPyMng_c@l(r3)
+/* 80060EFC 0000259C  90 80 00 00 */	stw r4, mBonusNoCap__9daPyMng_c@sda21(r0)
+/* 80060F00 000025A0  2C 00 00 63 */	cmpwi r0, 0x63
+/* 80060F04 000025A4  4D 80 00 20 */	bltlr
+/* 80060F08 000025A8  38 00 00 01 */	li r0, 0x1
+/* 80060F0C 000025AC  90 00 00 00 */	stw r0, mBonusNoCap__9daPyMng_c@sda21(r0)
+/* 80060F10 000025B0  4E 80 00 20 */	blr
+.endfn checkBonusNoCap__9daPyMng_cFv
+
+# .text:0x2574 | 0x80060F14 | size: 0xC
+.fn gap_03_80060F14_text, global
+.hidden gap_03_80060F14_text
+/* 80060F14 000025B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060F18 000025B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060F1C 000025BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060F14_text
+
+# .text:0x2580 | 0x80060F20 | size: 0xB8
+# daPyMng_c::initYoshiPriority(daPlBase_c*)
+.fn initYoshiPriority__9daPyMng_cFP10daPlBase_c, global
+/* 80060F20 000025C0  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 80060F24 000025C4  7C 08 02 A6 */	mflr r0
+/* 80060F28 000025C8  90 01 00 34 */	stw r0, 0x34(r1)
+/* 80060F2C 000025CC  39 61 00 30 */	addi r11, r1, 0x30
+/* 80060F30 000025D0  48 00 00 01 */	bl _savegpr_27
+/* 80060F34 000025D4  38 00 00 00 */	li r0, 0x0
+/* 80060F38 000025D8  3F A0 00 00 */	lis r29, m_yoshiID__9daPyMng_c@ha
+/* 80060F3C 000025DC  90 01 00 08 */	stw r0, 0x8(r1)
+/* 80060F40 000025E0  7C 7B 1B 78 */	mr r27, r3
+/* 80060F44 000025E4  3B BD 00 00 */	addi r29, r29, m_yoshiID__9daPyMng_c@l
+/* 80060F48 000025E8  3B E1 00 08 */	addi r31, r1, 0x8
+/* 80060F4C 000025EC  3B 80 00 00 */	li r28, 0x0
+/* 80060F50 000025F0  3B C0 00 01 */	li r30, 0x1
+.L_80060F54:
+/* 80060F54 000025F4  80 7D 00 00 */	lwz r3, 0x0(r29)
+/* 80060F58 000025F8  80 1B 00 00 */	lwz r0, 0x0(r27)
+/* 80060F5C 000025FC  7C 03 00 00 */	cmpw r3, r0
+/* 80060F60 00002600  41 82 00 18 */	beq .L_80060F78
+/* 80060F64 00002604  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 80060F68 00002608  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80060F6C 0000260C  41 82 00 0C */	beq .L_80060F78
+/* 80060F70 00002610  88 03 10 36 */	lbz r0, 0x1036(r3)
+/* 80060F74 00002614  7F DF 01 AE */	stbx r30, r31, r0
+.L_80060F78:
+/* 80060F78 00002618  3B 9C 00 01 */	addi r28, r28, 0x1
+/* 80060F7C 0000261C  3B BD 00 04 */	addi r29, r29, 0x4
+/* 80060F80 00002620  2C 1C 00 04 */	cmpwi r28, 0x4
+/* 80060F84 00002624  41 80 FF D0 */	blt .L_80060F54
+/* 80060F88 00002628  38 00 00 04 */	li r0, 0x4
+/* 80060F8C 0000262C  38 61 00 08 */	addi r3, r1, 0x8
+/* 80060F90 00002630  38 80 00 00 */	li r4, 0x0
+/* 80060F94 00002634  7C 09 03 A6 */	mtctr r0
+.L_80060F98:
+/* 80060F98 00002638  88 03 00 00 */	lbz r0, 0x0(r3)
+/* 80060F9C 0000263C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80060FA0 00002640  40 82 00 14 */	bne .L_80060FB4
+/* 80060FA4 00002644  98 9B 10 36 */	stb r4, 0x1036(r27)
+/* 80060FA8 00002648  7F 63 DB 78 */	mr r3, r27
+/* 80060FAC 0000264C  48 00 00 01 */	bl setYoshiPriority__9daPyMng_cFP10daPlBase_c
+/* 80060FB0 00002650  48 00 00 10 */	b .L_80060FC0
+.L_80060FB4:
+/* 80060FB4 00002654  38 63 00 01 */	addi r3, r3, 0x1
+/* 80060FB8 00002658  38 84 00 01 */	addi r4, r4, 0x1
+/* 80060FBC 0000265C  42 00 FF DC */	bdnz .L_80060F98
+.L_80060FC0:
+/* 80060FC0 00002660  39 61 00 30 */	addi r11, r1, 0x30
+/* 80060FC4 00002664  48 00 00 01 */	bl _restgpr_27
+/* 80060FC8 00002668  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 80060FCC 0000266C  7C 08 03 A6 */	mtlr r0
+/* 80060FD0 00002670  38 21 00 30 */	addi r1, r1, 0x30
+/* 80060FD4 00002674  4E 80 00 20 */	blr
+.endfn initYoshiPriority__9daPyMng_cFP10daPlBase_c
+
+# .text:0x2638 | 0x80060FD8 | size: 0x8
+.fn gap_03_80060FD8_text, global
+.hidden gap_03_80060FD8_text
+/* 80060FD8 00002678  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80060FDC 0000267C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80060FD8_text
+
+# .text:0x2640 | 0x80060FE0 | size: 0x98
+# daPyMng_c::setYoshiPriority(daPlBase_c*)
+.fn setYoshiPriority__9daPyMng_cFP10daPlBase_c, global
+/* 80060FE0 00002680  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80060FE4 00002684  7C 08 02 A6 */	mflr r0
+/* 80060FE8 00002688  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80060FEC 0000268C  38 00 00 00 */	li r0, 0x0
+/* 80060FF0 00002690  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80060FF4 00002694  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80060FF8 00002698  3F C0 00 00 */	lis r30, m_yoshiID__9daPyMng_c@ha
+/* 80060FFC 0000269C  3B DE 00 00 */	addi r30, r30, m_yoshiID__9daPyMng_c@l
+/* 80061000 000026A0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80061004 000026A4  3B A0 00 00 */	li r29, 0x0
+/* 80061008 000026A8  93 81 00 10 */	stw r28, 0x10(r1)
+/* 8006100C 000026AC  7C 7C 1B 78 */	mr r28, r3
+/* 80061010 000026B0  8B E3 10 36 */	lbz r31, 0x1036(r3)
+/* 80061014 000026B4  98 03 10 36 */	stb r0, 0x1036(r3)
+.L_80061018:
+/* 80061018 000026B8  80 7E 00 00 */	lwz r3, 0x0(r30)
+/* 8006101C 000026BC  80 1C 00 00 */	lwz r0, 0x0(r28)
+/* 80061020 000026C0  7C 03 00 00 */	cmpw r3, r0
+/* 80061024 000026C4  41 82 00 24 */	beq .L_80061048
+/* 80061028 000026C8  48 00 00 01 */	bl searchBaseByID__10fManager_cF9fBaseID_e
+/* 8006102C 000026CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80061030 000026D0  41 82 00 18 */	beq .L_80061048
+/* 80061034 000026D4  88 83 10 36 */	lbz r4, 0x1036(r3)
+/* 80061038 000026D8  7C 1F 20 40 */	cmplw r31, r4
+/* 8006103C 000026DC  40 81 00 0C */	ble .L_80061048
+/* 80061040 000026E0  38 04 00 01 */	addi r0, r4, 0x1
+/* 80061044 000026E4  98 03 10 36 */	stb r0, 0x1036(r3)
+.L_80061048:
+/* 80061048 000026E8  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8006104C 000026EC  3B DE 00 04 */	addi r30, r30, 0x4
+/* 80061050 000026F0  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 80061054 000026F4  41 80 FF C4 */	blt .L_80061018
+/* 80061058 000026F8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8006105C 000026FC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80061060 00002700  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80061064 00002704  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80061068 00002708  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 8006106C 0000270C  7C 08 03 A6 */	mtlr r0
+/* 80061070 00002710  38 21 00 20 */	addi r1, r1, 0x20
+/* 80061074 00002714  4E 80 00 20 */	blr
+.endfn setYoshiPriority__9daPyMng_cFP10daPlBase_c
+
+# .text:0x26D8 | 0x80061078 | size: 0x8
+.fn gap_03_80061078_text, global
+.hidden gap_03_80061078_text
+/* 80061078 00002718  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006107C 0000271C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80061078_text
+
+# .text:0x26E0 | 0x80061080 | size: 0x5C
+# daPyMng_c::isEffectStop(int)
+.fn isEffectStop__9daPyMng_cFi, global
+/* 80061080 00002720  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80061084 00002724  7C 08 02 A6 */	mflr r0
+/* 80061088 00002728  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8006108C 0000272C  80 80 00 00 */	lwz r4, m_instance__7dInfo_c@sda21(r0)
+/* 80061090 00002730  88 04 0A FC */	lbz r0, 0xafc(r4)
+/* 80061094 00002734  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80061098 00002738  41 82 00 0C */	beq .L_800610A4
+/* 8006109C 0000273C  38 60 00 00 */	li r3, 0x0
+/* 800610A0 00002740  48 00 00 2C */	b .L_800610CC
+.L_800610A4:
+/* 800610A4 00002744  48 00 00 01 */	bl getPlayer__9daPyMng_cFi
+/* 800610A8 00002748  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800610AC 0000274C  41 82 00 1C */	beq .L_800610C8
+/* 800610B0 00002750  88 80 00 00 */	lbz r4, mExecStop__8dActor_c@sda21(r0)
+/* 800610B4 00002754  88 03 03 8E */	lbz r0, 0x38e(r3)
+/* 800610B8 00002758  7C 80 00 39 */	and. r0, r4, r0
+/* 800610BC 0000275C  41 82 00 0C */	beq .L_800610C8
+/* 800610C0 00002760  38 60 00 01 */	li r3, 0x1
+/* 800610C4 00002764  48 00 00 08 */	b .L_800610CC
+.L_800610C8:
+/* 800610C8 00002768  38 60 00 00 */	li r3, 0x0
+.L_800610CC:
+/* 800610CC 0000276C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800610D0 00002770  7C 08 03 A6 */	mtlr r0
+/* 800610D4 00002774  38 21 00 10 */	addi r1, r1, 0x10
+/* 800610D8 00002778  4E 80 00 20 */	blr
+.endfn isEffectStop__9daPyMng_cFi
+
+# .text:0x273C | 0x800610DC | size: 0x4
+.fn gap_03_800610DC_text, global
+.hidden gap_03_800610DC_text
+/* 800610DC 0000277C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800610DC_text
+
+# .text:0x2740 | 0x800610E0 | size: 0x24
+# daPyMng_c::isAcceptQuake(int)
+.fn isAcceptQuake__9daPyMng_cFi, global
+/* 800610E0 00002780  54 60 06 3E */	clrlwi r0, r3, 24
+/* 800610E4 00002784  38 60 00 01 */	li r3, 0x1
+/* 800610E8 00002788  88 80 00 00 */	lbz r4, mActPlayerInfo__9daPyMng_c@sda21(r0)
+/* 800610EC 0000278C  7C 60 00 30 */	slw r0, r3, r0
+/* 800610F0 00002790  7C 83 00 38 */	and r3, r4, r0
+/* 800610F4 00002794  7C 03 00 D0 */	neg r0, r3
+/* 800610F8 00002798  7C 00 1B 78 */	or r0, r0, r3
+/* 800610FC 0000279C  54 03 0F FE */	srwi r3, r0, 31
+/* 80061100 000027A0  4E 80 00 20 */	blr
+.endfn isAcceptQuake__9daPyMng_cFi
+
+# .text:0x2764 | 0x80061104 | size: 0xC
+.fn gap_03_80061104_text, global
+.hidden gap_03_80061104_text
+/* 80061104 000027A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80061108 000027A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006110C 000027AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80061104_text
+
+# .text:0x2770 | 0x80061110 | size: 0x48
+# daPyMng_c::isCreateBalloon(int)
+.fn isCreateBalloon__9daPyMng_cFi, global
+/* 80061110 000027B0  3C A0 00 00 */	lis r5, m_playerID__9daPyMng_c@ha
+/* 80061114 000027B4  54 60 10 3A */	slwi r0, r3, 2
+/* 80061118 000027B8  38 A5 00 00 */	addi r5, r5, m_playerID__9daPyMng_c@l
+/* 8006111C 000027BC  38 65 00 50 */	addi r3, r5, 0x50
+/* 80061120 000027C0  7C 03 00 2E */	lwzx r0, r3, r0
+/* 80061124 000027C4  38 65 00 70 */	addi r3, r5, 0x70
+/* 80061128 000027C8  54 04 10 3A */	slwi r4, r0, 2
+/* 8006112C 000027CC  7C 03 20 2E */	lwzx r0, r3, r4
+/* 80061130 000027D0  54 00 07 7B */	rlwinm. r0, r0, 0, 29, 29
+/* 80061134 000027D4  40 82 00 14 */	bne .L_80061148
+/* 80061138 000027D8  38 65 00 80 */	addi r3, r5, 0x80
+/* 8006113C 000027DC  7C 03 20 2E */	lwzx r0, r3, r4
+/* 80061140 000027E0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 80061144 000027E4  41 81 00 0C */	bgt .L_80061150
+.L_80061148:
+/* 80061148 000027E8  38 60 00 01 */	li r3, 0x1
+/* 8006114C 000027EC  4E 80 00 20 */	blr
+.L_80061150:
+/* 80061150 000027F0  38 60 00 00 */	li r3, 0x0
+/* 80061154 000027F4  4E 80 00 20 */	blr
+.endfn isCreateBalloon__9daPyMng_cFi
+
+# .text:0x27B8 | 0x80061158 | size: 0x8
+.fn gap_03_80061158_text, global
+.hidden gap_03_80061158_text
+/* 80061158 000027F8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006115C 000027FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80061158_text
+
+# .text:0x27C0 | 0x80061160 | size: 0x1A4
+# daPyMng_c::checkCorrectCreateInfo()
+.fn checkCorrectCreateInfo__9daPyMng_cFv, global
+/* 80061160 00002800  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80061164 00002804  7C 08 02 A6 */	mflr r0
+/* 80061168 00002808  39 80 00 00 */	li r12, 0x0
+/* 8006116C 0000280C  39 00 00 00 */	li r8, 0x0
+/* 80061170 00002810  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80061174 00002814  38 00 00 02 */	li r0, 0x2
+/* 80061178 00002818  38 60 00 05 */	li r3, 0x5
+/* 8006117C 0000281C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80061180 00002820  3F E0 00 00 */	lis r31, m_playerID__9daPyMng_c@ha
+/* 80061184 00002824  3B FF 00 00 */	addi r31, r31, m_playerID__9daPyMng_c@l
+/* 80061188 00002828  81 40 00 00 */	lwz r10, "scRestMax__32@unnamed@d_a_player_manager_cpp@"@sda21(r0)
+/* 8006118C 0000282C  39 3F 00 50 */	addi r9, r31, 0x50
+/* 80061190 00002830  38 FF 00 60 */	addi r7, r31, 0x60
+/* 80061194 00002834  38 BF 00 70 */	addi r5, r31, 0x70
+/* 80061198 00002838  38 9F 00 80 */	addi r4, r31, 0x80
+/* 8006119C 0000283C  7C 09 03 A6 */	mtctr r0
+.L_800611A0:
+/* 800611A0 00002840  80 09 00 00 */	lwz r0, 0x0(r9)
+/* 800611A4 00002844  28 00 00 03 */	cmplwi r0, 0x3
+/* 800611A8 00002848  40 81 00 08 */	ble .L_800611B0
+/* 800611AC 0000284C  91 09 00 00 */	stw r8, 0x0(r9)
+.L_800611B0:
+/* 800611B0 00002850  80 09 00 00 */	lwz r0, 0x0(r9)
+/* 800611B4 00002854  54 00 10 3A */	slwi r0, r0, 2
+/* 800611B8 00002858  7D 67 00 2E */	lwzx r11, r7, r0
+/* 800611BC 0000285C  28 0B 00 06 */	cmplwi r11, 0x6
+/* 800611C0 00002860  40 81 00 08 */	ble .L_800611C8
+/* 800611C4 00002864  7D 07 01 2E */	stwx r8, r7, r0
+.L_800611C8:
+/* 800611C8 00002868  80 09 00 00 */	lwz r0, 0x0(r9)
+/* 800611CC 0000286C  54 06 10 3A */	slwi r6, r0, 2
+/* 800611D0 00002870  7C 05 30 2E */	lwzx r0, r5, r6
+/* 800611D4 00002874  54 00 07 3D */	rlwinm. r0, r0, 0, 28, 30
+/* 800611D8 00002878  41 82 00 0C */	beq .L_800611E4
+/* 800611DC 0000287C  55 60 07 FE */	clrlwi r0, r11, 31
+/* 800611E0 00002880  7C 05 31 2E */	stwx r0, r5, r6
+.L_800611E4:
+/* 800611E4 00002884  80 C9 00 00 */	lwz r6, 0x0(r9)
+/* 800611E8 00002888  54 C0 10 3A */	slwi r0, r6, 2
+/* 800611EC 0000288C  7C 04 00 2E */	lwzx r0, r4, r0
+/* 800611F0 00002890  2C 00 00 00 */	cmpwi r0, 0x0
+/* 800611F4 00002894  41 80 00 0C */	blt .L_80061200
+/* 800611F8 00002898  7C 00 50 00 */	cmpw r0, r10
+/* 800611FC 0000289C  40 81 00 0C */	ble .L_80061208
+.L_80061200:
+/* 80061200 000028A0  54 C0 10 3A */	slwi r0, r6, 2
+/* 80061204 000028A4  7C 64 01 2E */	stwx r3, r4, r0
+.L_80061208:
+/* 80061208 000028A8  80 09 00 04 */	lwz r0, 0x4(r9)
+/* 8006120C 000028AC  28 00 00 03 */	cmplwi r0, 0x3
+/* 80061210 000028B0  40 81 00 08 */	ble .L_80061218
+/* 80061214 000028B4  91 09 00 04 */	stw r8, 0x4(r9)
+.L_80061218:
+/* 80061218 000028B8  80 09 00 04 */	lwz r0, 0x4(r9)
+/* 8006121C 000028BC  54 00 10 3A */	slwi r0, r0, 2
+/* 80061220 000028C0  7D 67 00 2E */	lwzx r11, r7, r0
+/* 80061224 000028C4  28 0B 00 06 */	cmplwi r11, 0x6
+/* 80061228 000028C8  40 81 00 08 */	ble .L_80061230
+/* 8006122C 000028CC  7D 07 01 2E */	stwx r8, r7, r0
+.L_80061230:
+/* 80061230 000028D0  80 09 00 04 */	lwz r0, 0x4(r9)
+/* 80061234 000028D4  54 06 10 3A */	slwi r6, r0, 2
+/* 80061238 000028D8  7C 05 30 2E */	lwzx r0, r5, r6
+/* 8006123C 000028DC  54 00 07 3D */	rlwinm. r0, r0, 0, 28, 30
+/* 80061240 000028E0  41 82 00 0C */	beq .L_8006124C
+/* 80061244 000028E4  55 60 07 FE */	clrlwi r0, r11, 31
+/* 80061248 000028E8  7C 05 31 2E */	stwx r0, r5, r6
+.L_8006124C:
+/* 8006124C 000028EC  80 C9 00 04 */	lwz r6, 0x4(r9)
+/* 80061250 000028F0  54 C0 10 3A */	slwi r0, r6, 2
+/* 80061254 000028F4  7C 04 00 2E */	lwzx r0, r4, r0
+/* 80061258 000028F8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8006125C 000028FC  41 80 00 0C */	blt .L_80061268
+/* 80061260 00002900  7C 00 50 00 */	cmpw r0, r10
+/* 80061264 00002904  40 81 00 0C */	ble .L_80061270
+.L_80061268:
+/* 80061268 00002908  54 C0 10 3A */	slwi r0, r6, 2
+/* 8006126C 0000290C  7C 64 01 2E */	stwx r3, r4, r0
+.L_80061270:
+/* 80061270 00002910  39 29 00 08 */	addi r9, r9, 0x8
+/* 80061274 00002914  39 8C 00 01 */	addi r12, r12, 0x1
+/* 80061278 00002918  42 00 FF 28 */	bdnz .L_800611A0
+/* 8006127C 0000291C  80 00 00 00 */	lwz r0, mKinopioMode__9daPyMng_c@sda21(r0)
+/* 80061280 00002920  28 00 00 06 */	cmplwi r0, 0x6
+/* 80061284 00002924  40 81 00 0C */	ble .L_80061290
+/* 80061288 00002928  38 00 00 00 */	li r0, 0x0
+/* 8006128C 0000292C  90 00 00 00 */	stw r0, mKinopioMode__9daPyMng_c@sda21(r0)
+.L_80061290:
+/* 80061290 00002930  48 00 00 01 */	bl getCoinAll__9daPyMng_cFv
+/* 80061294 00002934  80 00 00 00 */	lwz r0, "scCoinMax__32@unnamed@d_a_player_manager_cpp@"@sda21(r0)
+/* 80061298 00002938  7C 03 00 00 */	cmpw r3, r0
+/* 8006129C 0000293C  40 81 00 40 */	ble .L_800612DC
+/* 800612A0 00002940  38 7F 00 50 */	addi r3, r31, 0x50
+/* 800612A4 00002944  80 1F 00 50 */	lwz r0, 0x50(r31)
+/* 800612A8 00002948  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 800612AC 0000294C  38 BF 00 90 */	addi r5, r31, 0x90
+/* 800612B0 00002950  81 03 00 08 */	lwz r8, 0x8(r3)
+/* 800612B4 00002954  54 00 10 3A */	slwi r0, r0, 2
+/* 800612B8 00002958  80 E3 00 0C */	lwz r7, 0xc(r3)
+/* 800612BC 0000295C  38 C0 00 00 */	li r6, 0x0
+/* 800612C0 00002960  7C C5 01 2E */	stwx r6, r5, r0
+/* 800612C4 00002964  54 84 10 3A */	slwi r4, r4, 2
+/* 800612C8 00002968  55 03 10 3A */	slwi r3, r8, 2
+/* 800612CC 0000296C  54 E0 10 3A */	slwi r0, r7, 2
+/* 800612D0 00002970  7C C5 21 2E */	stwx r6, r5, r4
+/* 800612D4 00002974  7C C5 19 2E */	stwx r6, r5, r3
+/* 800612D8 00002978  7C C5 01 2E */	stwx r6, r5, r0
+.L_800612DC:
+/* 800612DC 0000297C  80 60 00 00 */	lwz r3, "scScoreMax__32@unnamed@d_a_player_manager_cpp@"@sda21(r0)
+/* 800612E0 00002980  80 00 00 00 */	lwz r0, mScore__9daPyMng_c@sda21(r0)
+/* 800612E4 00002984  7C 00 18 00 */	cmpw r0, r3
+/* 800612E8 00002988  40 81 00 08 */	ble .L_800612F0
+/* 800612EC 0000298C  90 60 00 00 */	stw r3, mScore__9daPyMng_c@sda21(r0)
+.L_800612F0:
+/* 800612F0 00002990  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800612F4 00002994  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800612F8 00002998  7C 08 03 A6 */	mtlr r0
+/* 800612FC 0000299C  38 21 00 10 */	addi r1, r1, 0x10
+/* 80061300 000029A0  4E 80 00 20 */	blr
+.endfn checkCorrectCreateInfo__9daPyMng_cFv
+
+# .text:0x2964 | 0x80061304 | size: 0xC
+.fn gap_03_80061304_text, global
+.hidden gap_03_80061304_text
+/* 80061304 000029A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80061308 000029A8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8006130C 000029AC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80061304_text

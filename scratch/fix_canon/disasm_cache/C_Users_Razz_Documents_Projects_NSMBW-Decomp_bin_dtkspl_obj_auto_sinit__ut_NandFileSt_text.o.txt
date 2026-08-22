@@ -1,0 +1,18 @@
+.include "macros.inc"
+.file "auto_sinit__ut_NandFileSt_text"
+
+# 0x8022B360..0x8022B36C | size: 0xC
+.text
+.balign 4
+
+# .text:0x0 | 0x8022B360 | size: 0xC
+.fn "__sinit_\ut_NandFileStream_cpp", global
+/* 8022B360 00000040  38 00 00 00 */	li r0, typeInfo__Q34nw4r2ut10FileStream@sda21
+/* 8022B364 00000044  90 00 00 00 */	stw r0, typeInfo__Q34nw4r2ut14NandFileStream@sda21(r0)
+/* 8022B368 00000048  4E 80 00 20 */	blr
+.endfn "__sinit_\ut_NandFileStream_cpp"
+
+# 0x802EDF2C..0x802EDF30 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\ut_NandFileStream_cpp"

@@ -1,0 +1,98 @@
+// fn_80080E40 — member of dBg_ctr_c
+// Signature: bool dBg_ctr_c::fn_80080E40(dBc_c *bc, u8 dir, u8 idx)
+//   r3 = this     → r29
+//   r4 = bc       → r30
+//   r5 = dir      → r31
+//   r6 = idx      → r28 (lookup-table index, zero-extended)
+// Returns bool
+
+extern const u32 lbl_802EFBE0[];
+extern const u32 lbl_802EFBF0[];
+
+bool dBg_ctr_c::fn_80080E40(dBc_c *bc, u8 dir, u8 idx) {
+    // Early exit if not entered or no owning actor
+    if (!mEntryFlag || mpActor == nullptr) {
+        return false;
+    }
+
+    // Early exit if m_d4 is non-zero
+    if (m_d4 != 0) {
+        return false;
+    }
+
+    // Check collision-flag byte against mask
+    if (!(*(const u8 *)((const u8 *)bc + 0xE5) & m_dd)) {
+        return false;
+    }
+
+    // Reject if bc's owner is our actor or our stored parent
+    if (bc->mpOwner == mpActor) {
+        return false;
+    }
+    if (bc->mpOwner == reinterpret_cast<dActor_c *>(m_38)) {
+        return false;
+    }
+
+    // Reject if bc's no-hit actor is our actor
+    if (bc->mpNoHitActor == mpActor) {
+        return false;
+    }
+
+    // Check bc's type byte against m_de
+    u8 *typePtr = *(u8 **)((const u8 *)bc + 0xE8);
+    if (*typePtr != m_de) {
+        return false;
+    }
+
+    // Lookup-table check: flags against mFlags
+    if (mFlags & lbl_802EFBE0[idx]) {
+        return false;
+    }
+
+    // Actor-kind-specific checks
+    u32 kind = bc->getActorKind();
+    if (kind == 1 || kind == 2) {
+        if (mFlags & lbl_802EFBF0[idx]) {
+            return false;
+        }
+    } else {
+        if (mFlags & (1 << 26)) {
+            return false;
+        }
+    }
+
+    // Switch on mFlags2
+    switch (mFlags2) {
+    case 1:
+        if (dir & (1 << 6)) {
+            return false;
+        }
+        break;
+    case 2:
+        if (dir & (1 << 7)) {
+            return false;
+        }
+        break;
+    case 3:
+        if ((dir & (1 << 28)) || (dir & (1 << 8))) {
+            return false;
+        }
+        break;
+    case 4:
+        if (dir & (1 << 9)) {
+            return false;
+        }
+        break;
+    }
+
+    // mFlags bit 11 + dir bit 10
+    if ((mFlags & (1 << 11)) && (dir & (1 << 10))) {
+        return false;
+    }
+    // mFlags bit 12 + dir bit 11
+    if ((mFlags & (1 << 12)) && (dir & (1 << 11))) {
+        return false;
+    }
+
+    return true;
+}

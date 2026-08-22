@@ -1,0 +1,2038 @@
+.include "macros.inc"
+.file "auto_03_8010D270_text"
+
+# 0x8010D270..0x8010E940 | size: 0x16D0
+.text
+.balign 4
+
+# .text:0x0 | 0x8010D270 | size: 0x30
+# dWarningManager_c_classInit()
+.fn dWarningManager_c_classInit__Fv, global
+/* 8010D270 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D274 00000044  7C 08 02 A6 */	mflr r0
+/* 8010D278 00000048  38 60 0B 94 */	li r3, 0xb94
+/* 8010D27C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D280 00000050  48 00 00 01 */	bl __nw__7fBase_cFUl
+/* 8010D284 00000054  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D288 00000058  41 82 00 08 */	beq .L_8010D290
+/* 8010D28C 0000005C  48 00 00 01 */	bl __ct__17dWarningManager_cFv
+.L_8010D290:
+/* 8010D290 00000060  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D294 00000064  7C 08 03 A6 */	mtlr r0
+/* 8010D298 00000068  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D29C 0000006C  4E 80 00 20 */	blr
+.endfn dWarningManager_c_classInit__Fv
+
+# .text:0x30 | 0x8010D2A0 | size: 0x10
+# dWarningManager_c::CreateWarningManager()
+.fn CreateWarningManager__17dWarningManager_cFv, global
+/* 8010D2A0 00000070  38 60 02 D0 */	li r3, 0x2d0
+/* 8010D2A4 00000074  38 80 00 00 */	li r4, 0x0
+/* 8010D2A8 00000078  38 A0 00 00 */	li r5, 0x0
+/* 8010D2AC 0000007C  48 00 00 00 */	b createRoot__7dBase_cFUsUlUc
+.endfn CreateWarningManager__17dWarningManager_cFv
+
+# .text:0x40 | 0x8010D2B0 | size: 0xE4
+# dWarningManager_c::dWarningManager_c()
+.fn __ct__17dWarningManager_cFv, global
+/* 8010D2B0 00000080  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D2B4 00000084  7C 08 02 A6 */	mflr r0
+/* 8010D2B8 00000088  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D2BC 0000008C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D2C0 00000090  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010D2C4 00000094  7C 7E 1B 78 */	mr r30, r3
+/* 8010D2C8 00000098  48 00 00 01 */	bl __ct__7dBase_cFv
+/* 8010D2CC 0000009C  3C 80 00 00 */	lis r4, __vt__17dWarningManager_c@ha
+/* 8010D2D0 000000A0  38 7E 00 74 */	addi r3, r30, 0x74
+/* 8010D2D4 000000A4  38 84 00 00 */	addi r4, r4, __vt__17dWarningManager_c@l
+/* 8010D2D8 000000A8  90 9E 00 60 */	stw r4, 0x60(r30)
+/* 8010D2DC 000000AC  48 00 00 01 */	bl __ct__15dWarningOther_cFv
+/* 8010D2E0 000000B0  38 7E 02 60 */	addi r3, r30, 0x260
+/* 8010D2E4 000000B4  48 00 00 01 */	bl __ct__17dWarningNunchuk_cFv
+/* 8010D2E8 000000B8  38 7E 04 4C */	addi r3, r30, 0x44c
+/* 8010D2EC 000000BC  48 00 00 01 */	bl __ct__14dWarningYoKo_cFv
+/* 8010D2F0 000000C0  38 7E 06 38 */	addi r3, r30, 0x638
+/* 8010D2F4 000000C4  48 00 00 01 */	bl __ct__17dWarningBattery_cFv
+/* 8010D2F8 000000C8  38 7E 08 DC */	addi r3, r30, 0x8dc
+/* 8010D2FC 000000CC  48 00 00 01 */	bl __ct__19dWarningErrorInfo_cFv
+/* 8010D300 000000D0  3C 60 00 00 */	lis r3, "__vt__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@ha
+/* 8010D304 000000D4  3D 20 00 00 */	lis r9, __vt__13sStateIDChk_c@ha
+/* 8010D308 000000D8  3D 00 00 00 */	lis r8, "__vt__33sFStateFct_c<17dWarningManager_c>"@ha
+/* 8010D30C 000000DC  3C E0 00 00 */	lis r7, "__vt__30sFState_c<17dWarningManager_c>"@ha
+/* 8010D310 000000E0  38 63 00 00 */	addi r3, r3, "__vt__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>"@l
+/* 8010D314 000000E4  39 29 00 00 */	addi r9, r9, __vt__13sStateIDChk_c@l
+/* 8010D318 000000E8  39 08 00 00 */	addi r8, r8, "__vt__33sFStateFct_c<17dWarningManager_c>"@l
+/* 8010D31C 000000EC  38 E7 00 00 */	addi r7, r7, "__vt__30sFState_c<17dWarningManager_c>"@l
+/* 8010D320 000000F0  3B E0 00 00 */	li r31, 0x0
+/* 8010D324 000000F4  3C C0 00 00 */	lis r6, StateID_WarningCheck__17dWarningManager_c@ha
+/* 8010D328 000000F8  90 7E 0B 0C */	stw r3, 0xb0c(r30)
+/* 8010D32C 000000FC  38 BE 0B 14 */	addi r5, r30, 0xb14
+/* 8010D330 00000100  38 9E 0B 10 */	addi r4, r30, 0xb10
+/* 8010D334 00000104  38 7E 0B 24 */	addi r3, r30, 0xb24
+/* 8010D338 00000108  91 3E 0B 10 */	stw r9, 0xb10(r30)
+/* 8010D33C 0000010C  38 C6 00 00 */	addi r6, r6, StateID_WarningCheck__17dWarningManager_c@l
+/* 8010D340 00000110  91 1E 0B 14 */	stw r8, 0xb14(r30)
+/* 8010D344 00000114  90 FE 0B 18 */	stw r7, 0xb18(r30)
+/* 8010D348 00000118  93 DE 0B 1C */	stw r30, 0xb1c(r30)
+/* 8010D34C 0000011C  93 FE 0B 20 */	stw r31, 0xb20(r30)
+/* 8010D350 00000120  48 00 00 01 */	bl __ct__20sStateMethodUsr_FI_cFR15sStateIDChkIf_cR13sStateFctIf_cRC12sStateIDIf_c
+/* 8010D354 00000124  3C 60 00 00 */	lis r3, "__vt__56sFStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c>"@ha
+/* 8010D358 00000128  38 63 00 00 */	addi r3, r3, "__vt__56sFStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c>"@l
+/* 8010D35C 0000012C  90 7E 0B 0C */	stw r3, 0xb0c(r30)
+/* 8010D360 00000130  7F C3 F3 78 */	mr r3, r30
+/* 8010D364 00000134  93 C0 00 00 */	stw r30, m_instance__17dWarningManager_c@sda21(r0)
+/* 8010D368 00000138  93 FE 0B 54 */	stw r31, 0xb54(r30)
+/* 8010D36C 0000013C  93 FE 0B 58 */	stw r31, 0xb58(r30)
+/* 8010D370 00000140  93 FE 0B 5C */	stw r31, 0xb5c(r30)
+/* 8010D374 00000144  93 FE 0B 60 */	stw r31, 0xb60(r30)
+/* 8010D378 00000148  9B E0 00 00 */	stb r31, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010D37C 0000014C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D380 00000150  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010D384 00000154  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D388 00000158  7C 08 03 A6 */	mtlr r0
+/* 8010D38C 0000015C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D390 00000160  4E 80 00 20 */	blr
+.endfn __ct__17dWarningManager_cFv
+
+# .text:0x124 | 0x8010D394 | size: 0xC
+.fn gap_03_8010D394_text, global
+.hidden gap_03_8010D394_text
+/* 8010D394 00000164  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D398 00000168  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D39C 0000016C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D394_text
+
+# .text:0x130 | 0x8010D3A0 | size: 0x40
+# sFState_c<dWarningManager_c>::~sFState_c()
+.fn "__dt__30sFState_c<17dWarningManager_c>Fv", global
+/* 8010D3A0 00000170  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D3A4 00000174  7C 08 02 A6 */	mflr r0
+/* 8010D3A8 00000178  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D3AC 0000017C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D3B0 00000180  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D3B4 00000184  7C 7F 1B 78 */	mr r31, r3
+/* 8010D3B8 00000188  41 82 00 10 */	beq .L_8010D3C8
+/* 8010D3BC 0000018C  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8010D3C0 00000190  40 81 00 08 */	ble .L_8010D3C8
+/* 8010D3C4 00000194  48 00 00 01 */	bl __dl__FPv
+.L_8010D3C8:
+/* 8010D3C8 00000198  7F E3 FB 78 */	mr r3, r31
+/* 8010D3CC 0000019C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D3D0 000001A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D3D4 000001A4  7C 08 03 A6 */	mtlr r0
+/* 8010D3D8 000001A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D3DC 000001AC  4E 80 00 20 */	blr
+.endfn "__dt__30sFState_c<17dWarningManager_c>Fv"
+
+# .text:0x170 | 0x8010D3E0 | size: 0x40
+# sFStateFct_c<dWarningManager_c>::~sFStateFct_c()
+.fn "__dt__33sFStateFct_c<17dWarningManager_c>Fv", global
+/* 8010D3E0 000001B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D3E4 000001B4  7C 08 02 A6 */	mflr r0
+/* 8010D3E8 000001B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D3EC 000001BC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D3F0 000001C0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D3F4 000001C4  7C 7F 1B 78 */	mr r31, r3
+/* 8010D3F8 000001C8  41 82 00 10 */	beq .L_8010D408
+/* 8010D3FC 000001CC  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8010D400 000001D0  40 81 00 08 */	ble .L_8010D408
+/* 8010D404 000001D4  48 00 00 01 */	bl __dl__FPv
+.L_8010D408:
+/* 8010D408 000001D8  7F E3 FB 78 */	mr r3, r31
+/* 8010D40C 000001DC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D410 000001E0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D414 000001E4  7C 08 03 A6 */	mtlr r0
+/* 8010D418 000001E8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D41C 000001EC  4E 80 00 20 */	blr
+.endfn "__dt__33sFStateFct_c<17dWarningManager_c>Fv"
+
+# .text:0x1B0 | 0x8010D420 | size: 0x60
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::~sStateMgr_c()
+.fn "__dt__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8010D420 000001F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D424 000001F4  7C 08 02 A6 */	mflr r0
+/* 8010D428 000001F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D42C 000001FC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D430 00000200  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D434 00000204  7C 9F 23 78 */	mr r31, r4
+/* 8010D438 00000208  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010D43C 0000020C  7C 7E 1B 78 */	mr r30, r3
+/* 8010D440 00000210  41 82 00 24 */	beq .L_8010D464
+/* 8010D444 00000214  34 63 00 18 */	addic. r3, r3, 0x18
+/* 8010D448 00000218  41 82 00 0C */	beq .L_8010D454
+/* 8010D44C 0000021C  38 80 00 00 */	li r4, 0x0
+/* 8010D450 00000220  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_8010D454:
+/* 8010D454 00000224  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8010D458 00000228  40 81 00 0C */	ble .L_8010D464
+/* 8010D45C 0000022C  7F C3 F3 78 */	mr r3, r30
+/* 8010D460 00000230  48 00 00 01 */	bl __dl__FPv
+.L_8010D464:
+/* 8010D464 00000234  7F C3 F3 78 */	mr r3, r30
+/* 8010D468 00000238  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D46C 0000023C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010D470 00000240  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D474 00000244  7C 08 03 A6 */	mtlr r0
+/* 8010D478 00000248  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D47C 0000024C  4E 80 00 20 */	blr
+.endfn "__dt__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x210 | 0x8010D480 | size: 0x64
+# sFStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c>::~sFStateMgr_c()
+.fn "__dt__56sFStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c>Fv", global
+/* 8010D480 00000250  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D484 00000254  7C 08 02 A6 */	mflr r0
+/* 8010D488 00000258  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D48C 0000025C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D490 00000260  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D494 00000264  7C 9F 23 78 */	mr r31, r4
+/* 8010D498 00000268  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010D49C 0000026C  7C 7E 1B 78 */	mr r30, r3
+/* 8010D4A0 00000270  41 82 00 28 */	beq .L_8010D4C8
+/* 8010D4A4 00000274  41 82 00 14 */	beq .L_8010D4B8
+/* 8010D4A8 00000278  34 63 00 18 */	addic. r3, r3, 0x18
+/* 8010D4AC 0000027C  41 82 00 0C */	beq .L_8010D4B8
+/* 8010D4B0 00000280  38 80 00 00 */	li r4, 0x0
+/* 8010D4B4 00000284  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_8010D4B8:
+/* 8010D4B8 00000288  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8010D4BC 0000028C  40 81 00 0C */	ble .L_8010D4C8
+/* 8010D4C0 00000290  7F C3 F3 78 */	mr r3, r30
+/* 8010D4C4 00000294  48 00 00 01 */	bl __dl__FPv
+.L_8010D4C8:
+/* 8010D4C8 00000298  7F C3 F3 78 */	mr r3, r30
+/* 8010D4CC 0000029C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D4D0 000002A0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010D4D4 000002A4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D4D8 000002A8  7C 08 03 A6 */	mtlr r0
+/* 8010D4DC 000002AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D4E0 000002B0  4E 80 00 20 */	blr
+.endfn "__dt__56sFStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c>Fv"
+
+# .text:0x274 | 0x8010D4E4 | size: 0xC
+.fn gap_03_8010D4E4_text, global
+.hidden gap_03_8010D4E4_text
+/* 8010D4E4 000002B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D4E8 000002B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D4EC 000002BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D4E4_text
+
+# .text:0x280 | 0x8010D4F0 | size: 0xBC
+# dWarningManager_c::~dWarningManager_c()
+.fn __dt__17dWarningManager_cFv, global
+/* 8010D4F0 000002C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D4F4 000002C4  7C 08 02 A6 */	mflr r0
+/* 8010D4F8 000002C8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D4FC 000002CC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D500 000002D0  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D504 000002D4  7C 9F 23 78 */	mr r31, r4
+/* 8010D508 000002D8  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010D50C 000002DC  7C 7E 1B 78 */	mr r30, r3
+/* 8010D510 000002E0  41 82 00 80 */	beq .L_8010D590
+/* 8010D514 000002E4  34 63 0B 0C */	addic. r3, r3, 0xb0c
+/* 8010D518 000002E8  38 00 00 00 */	li r0, 0x0
+/* 8010D51C 000002EC  90 00 00 00 */	stw r0, m_instance__17dWarningManager_c@sda21(r0)
+/* 8010D520 000002F0  41 82 00 18 */	beq .L_8010D538
+/* 8010D524 000002F4  41 82 00 14 */	beq .L_8010D538
+/* 8010D528 000002F8  34 63 00 18 */	addic. r3, r3, 0x18
+/* 8010D52C 000002FC  41 82 00 0C */	beq .L_8010D538
+/* 8010D530 00000300  38 80 00 00 */	li r4, 0x0
+/* 8010D534 00000304  48 00 00 01 */	bl __dt__14sStateMethod_cFv
+.L_8010D538:
+/* 8010D538 00000308  38 7E 08 DC */	addi r3, r30, 0x8dc
+/* 8010D53C 0000030C  38 80 FF FF */	li r4, -0x1
+/* 8010D540 00000310  48 00 00 01 */	bl __dt__19dWarningErrorInfo_cFv
+/* 8010D544 00000314  38 7E 06 38 */	addi r3, r30, 0x638
+/* 8010D548 00000318  38 80 FF FF */	li r4, -0x1
+/* 8010D54C 0000031C  48 00 00 01 */	bl __dt__17dWarningBattery_cFv
+/* 8010D550 00000320  38 7E 04 4C */	addi r3, r30, 0x44c
+/* 8010D554 00000324  38 80 FF FF */	li r4, -0x1
+/* 8010D558 00000328  48 00 00 01 */	bl __dt__14dWarningYoKo_cFv
+/* 8010D55C 0000032C  38 7E 02 60 */	addi r3, r30, 0x260
+/* 8010D560 00000330  38 80 FF FF */	li r4, -0x1
+/* 8010D564 00000334  48 00 00 01 */	bl __dt__17dWarningNunchuk_cFv
+/* 8010D568 00000338  38 7E 00 74 */	addi r3, r30, 0x74
+/* 8010D56C 0000033C  38 80 FF FF */	li r4, -0x1
+/* 8010D570 00000340  48 00 00 01 */	bl __dt__15dWarningOther_cFv
+/* 8010D574 00000344  7F C3 F3 78 */	mr r3, r30
+/* 8010D578 00000348  38 80 00 00 */	li r4, 0x0
+/* 8010D57C 0000034C  48 00 00 01 */	bl __dt__7dBase_cFv
+/* 8010D580 00000350  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 8010D584 00000354  40 81 00 0C */	ble .L_8010D590
+/* 8010D588 00000358  7F C3 F3 78 */	mr r3, r30
+/* 8010D58C 0000035C  48 00 00 01 */	bl __dl__7fBase_cFPv
+.L_8010D590:
+/* 8010D590 00000360  7F C3 F3 78 */	mr r3, r30
+/* 8010D594 00000364  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D598 00000368  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010D59C 0000036C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D5A0 00000370  7C 08 03 A6 */	mtlr r0
+/* 8010D5A4 00000374  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D5A8 00000378  4E 80 00 20 */	blr
+.endfn __dt__17dWarningManager_cFv
+
+# .text:0x33C | 0x8010D5AC | size: 0x4
+.fn gap_03_8010D5AC_text, global
+.hidden gap_03_8010D5AC_text
+/* 8010D5AC 0000037C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D5AC_text
+
+# .text:0x340 | 0x8010D5B0 | size: 0x134
+# dWarningManager_c::create()
+.fn create__17dWarningManager_cFv, global
+/* 8010D5B0 00000380  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D5B4 00000384  7C 08 02 A6 */	mflr r0
+/* 8010D5B8 00000388  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D5BC 0000038C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D5C0 00000390  7C 7F 1B 78 */	mr r31, r3
+/* 8010D5C4 00000394  38 63 00 74 */	addi r3, r3, 0x74
+/* 8010D5C8 00000398  48 00 00 01 */	bl createLayout__15dWarningOther_cFv
+/* 8010D5CC 0000039C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D5D0 000003A0  40 82 00 0C */	bne .L_8010D5DC
+/* 8010D5D4 000003A4  38 60 00 00 */	li r3, 0x0
+/* 8010D5D8 000003A8  48 00 00 F8 */	b .L_8010D6D0
+.L_8010D5DC:
+/* 8010D5DC 000003AC  38 7F 02 60 */	addi r3, r31, 0x260
+/* 8010D5E0 000003B0  48 00 00 01 */	bl createLayout__17dWarningNunchuk_cFv
+/* 8010D5E4 000003B4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D5E8 000003B8  40 82 00 0C */	bne .L_8010D5F4
+/* 8010D5EC 000003BC  38 60 00 00 */	li r3, 0x0
+/* 8010D5F0 000003C0  48 00 00 E0 */	b .L_8010D6D0
+.L_8010D5F4:
+/* 8010D5F4 000003C4  38 7F 04 4C */	addi r3, r31, 0x44c
+/* 8010D5F8 000003C8  48 00 00 01 */	bl createLayout__14dWarningYoKo_cFv
+/* 8010D5FC 000003CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D600 000003D0  40 82 00 0C */	bne .L_8010D60C
+/* 8010D604 000003D4  38 60 00 00 */	li r3, 0x0
+/* 8010D608 000003D8  48 00 00 C8 */	b .L_8010D6D0
+.L_8010D60C:
+/* 8010D60C 000003DC  38 7F 06 38 */	addi r3, r31, 0x638
+/* 8010D610 000003E0  48 00 00 01 */	bl createLayout__17dWarningBattery_cFv
+/* 8010D614 000003E4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D618 000003E8  40 82 00 0C */	bne .L_8010D624
+/* 8010D61C 000003EC  38 60 00 00 */	li r3, 0x0
+/* 8010D620 000003F0  48 00 00 B0 */	b .L_8010D6D0
+.L_8010D624:
+/* 8010D624 000003F4  38 7F 08 DC */	addi r3, r31, 0x8dc
+/* 8010D628 000003F8  48 00 00 01 */	bl createLayout__19dWarningErrorInfo_cFv
+/* 8010D62C 000003FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D630 00000400  40 82 00 0C */	bne .L_8010D63C
+/* 8010D634 00000404  38 60 00 00 */	li r3, 0x0
+/* 8010D638 00000408  48 00 00 98 */	b .L_8010D6D0
+.L_8010D63C:
+/* 8010D63C 0000040C  38 60 00 05 */	li r3, 0x5
+/* 8010D640 00000410  38 80 00 00 */	li r4, 0x0
+/* 8010D644 00000414  90 9F 0B 64 */	stw r4, 0xb64(r31)
+/* 8010D648 00000418  38 00 00 01 */	li r0, 0x1
+/* 8010D64C 0000041C  90 7F 0B 68 */	stw r3, 0xb68(r31)
+/* 8010D650 00000420  90 7F 0B 6C */	stw r3, 0xb6c(r31)
+/* 8010D654 00000424  90 7F 0B 70 */	stw r3, 0xb70(r31)
+/* 8010D658 00000428  98 9F 0B 8C */	stb r4, 0xb8c(r31)
+/* 8010D65C 0000042C  98 00 00 00 */	stb r0, m_Created__17dWarningManager_c@sda21(r0)
+/* 8010D660 00000430  98 9F 0B 8D */	stb r4, 0xb8d(r31)
+/* 8010D664 00000434  98 9F 0B 8F */	stb r4, 0xb8f(r31)
+/* 8010D668 00000438  90 9F 0B 50 */	stw r4, 0xb50(r31)
+/* 8010D66C 0000043C  98 9F 0B 90 */	stb r4, 0xb90(r31)
+/* 8010D670 00000440  80 80 00 00 */	lwz r4, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010D674 00000444  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8010D678 00000448  41 82 00 34 */	beq .L_8010D6AC
+/* 8010D67C 0000044C  80 64 00 04 */	lwz r3, 0x4(r4)
+/* 8010D680 00000450  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 8010D684 00000454  90 1F 0B 54 */	stw r0, 0xb54(r31)
+/* 8010D688 00000458  80 64 00 08 */	lwz r3, 0x8(r4)
+/* 8010D68C 0000045C  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 8010D690 00000460  90 1F 0B 58 */	stw r0, 0xb58(r31)
+/* 8010D694 00000464  80 64 00 0C */	lwz r3, 0xc(r4)
+/* 8010D698 00000468  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 8010D69C 0000046C  90 1F 0B 5C */	stw r0, 0xb5c(r31)
+/* 8010D6A0 00000470  80 64 00 10 */	lwz r3, 0x10(r4)
+/* 8010D6A4 00000474  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 8010D6A8 00000478  90 1F 0B 60 */	stw r0, 0xb60(r31)
+.L_8010D6AC:
+/* 8010D6AC 0000047C  38 80 00 04 */	li r4, 0x4
+/* 8010D6B0 00000480  38 00 00 00 */	li r0, 0x0
+/* 8010D6B4 00000484  90 9F 0B 7C */	stw r4, 0xb7c(r31)
+/* 8010D6B8 00000488  38 60 00 01 */	li r3, 0x1
+/* 8010D6BC 0000048C  90 9F 0B 80 */	stw r4, 0xb80(r31)
+/* 8010D6C0 00000490  90 9F 0B 84 */	stw r4, 0xb84(r31)
+/* 8010D6C4 00000494  90 9F 0B 88 */	stw r4, 0xb88(r31)
+/* 8010D6C8 00000498  90 1F 0B 74 */	stw r0, 0xb74(r31)
+/* 8010D6CC 0000049C  90 1F 0B 78 */	stw r0, 0xb78(r31)
+.L_8010D6D0:
+/* 8010D6D0 000004A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D6D4 000004A4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D6D8 000004A8  7C 08 03 A6 */	mtlr r0
+/* 8010D6DC 000004AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D6E0 000004B0  4E 80 00 20 */	blr
+.endfn create__17dWarningManager_cFv
+
+# .text:0x474 | 0x8010D6E4 | size: 0xC
+.fn gap_03_8010D6E4_text, global
+.hidden gap_03_8010D6E4_text
+/* 8010D6E4 000004B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D6E8 000004B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D6EC 000004BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D6E4_text
+
+# .text:0x480 | 0x8010D6F0 | size: 0x78
+# dWarningManager_c::execute()
+.fn execute__17dWarningManager_cFv, global
+/* 8010D6F0 000004C0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D6F4 000004C4  7C 08 02 A6 */	mflr r0
+/* 8010D6F8 000004C8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D6FC 000004CC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D700 000004D0  7C 7F 1B 78 */	mr r31, r3
+/* 8010D704 000004D4  88 03 0B 8F */	lbz r0, 0xb8f(r3)
+/* 8010D708 000004D8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010D70C 000004DC  41 82 00 0C */	beq .L_8010D718
+/* 8010D710 000004E0  48 00 00 01 */	bl SaveErrorDispSetup__17dWarningManager_cFv
+/* 8010D714 000004E4  48 00 00 28 */	b .L_8010D73C
+.L_8010D718:
+/* 8010D718 000004E8  88 03 0B 8E */	lbz r0, 0xb8e(r3)
+/* 8010D71C 000004EC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010D720 000004F0  41 82 00 0C */	beq .L_8010D72C
+/* 8010D724 000004F4  48 00 00 01 */	bl ConnectCutCheck__17dWarningManager_cFv
+/* 8010D728 000004F8  48 00 00 14 */	b .L_8010D73C
+.L_8010D72C:
+/* 8010D72C 000004FC  88 03 0B 8D */	lbz r0, 0xb8d(r3)
+/* 8010D730 00000500  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010D734 00000504  41 82 00 08 */	beq .L_8010D73C
+/* 8010D738 00000508  48 00 00 01 */	bl LowBatteryCheck__17dWarningManager_cFv
+.L_8010D73C:
+/* 8010D73C 0000050C  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010D740 00000510  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010D744 00000514  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010D748 00000518  7D 89 03 A6 */	mtctr r12
+/* 8010D74C 0000051C  4E 80 04 21 */	bctrl
+/* 8010D750 00000520  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D754 00000524  38 60 00 01 */	li r3, 0x1
+/* 8010D758 00000528  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D75C 0000052C  7C 08 03 A6 */	mtlr r0
+/* 8010D760 00000530  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D764 00000534  4E 80 00 20 */	blr
+.endfn execute__17dWarningManager_cFv
+
+# .text:0x4F8 | 0x8010D768 | size: 0x8
+.fn gap_03_8010D768_text, global
+.hidden gap_03_8010D768_text
+/* 8010D768 00000538  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D76C 0000053C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D768_text
+
+# .text:0x500 | 0x8010D770 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::executeState()
+.fn "executeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8010D770 00000540  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010D774 00000544  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010D778 00000548  7D 89 03 A6 */	mtctr r12
+/* 8010D77C 0000054C  4E 80 04 20 */	bctr
+.endfn "executeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x510 | 0x8010D780 | size: 0x60
+# dWarningManager_c::draw()
+.fn draw__17dWarningManager_cFv, global
+/* 8010D780 00000550  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D784 00000554  7C 08 02 A6 */	mflr r0
+/* 8010D788 00000558  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D78C 0000055C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D790 00000560  7C 7F 1B 78 */	mr r31, r3
+/* 8010D794 00000564  80 03 0B 68 */	lwz r0, 0xb68(r3)
+/* 8010D798 00000568  2C 00 00 05 */	cmpwi r0, 0x5
+/* 8010D79C 0000056C  41 82 00 2C */	beq .L_8010D7C8
+/* 8010D7A0 00000570  38 63 00 74 */	addi r3, r3, 0x74
+/* 8010D7A4 00000574  48 00 00 01 */	bl draw__15dWarningOther_cFv
+/* 8010D7A8 00000578  38 7F 02 60 */	addi r3, r31, 0x260
+/* 8010D7AC 0000057C  48 00 00 01 */	bl draw__17dWarningNunchuk_cFv
+/* 8010D7B0 00000580  38 7F 04 4C */	addi r3, r31, 0x44c
+/* 8010D7B4 00000584  48 00 00 01 */	bl draw__14dWarningYoKo_cFv
+/* 8010D7B8 00000588  38 7F 06 38 */	addi r3, r31, 0x638
+/* 8010D7BC 0000058C  48 00 00 01 */	bl draw__17dWarningBattery_cFv
+/* 8010D7C0 00000590  38 7F 08 DC */	addi r3, r31, 0x8dc
+/* 8010D7C4 00000594  48 00 00 01 */	bl draw__19dWarningErrorInfo_cFv
+.L_8010D7C8:
+/* 8010D7C8 00000598  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D7CC 0000059C  38 60 00 01 */	li r3, 0x1
+/* 8010D7D0 000005A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D7D4 000005A4  7C 08 03 A6 */	mtlr r0
+/* 8010D7D8 000005A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D7DC 000005AC  4E 80 00 20 */	blr
+.endfn draw__17dWarningManager_cFv
+
+# .text:0x570 | 0x8010D7E0 | size: 0x84
+# dWarningManager_c::doDelete()
+.fn doDelete__17dWarningManager_cFv, global
+/* 8010D7E0 000005B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010D7E4 000005B4  7C 08 02 A6 */	mflr r0
+/* 8010D7E8 000005B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010D7EC 000005BC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010D7F0 000005C0  7C 7F 1B 78 */	mr r31, r3
+/* 8010D7F4 000005C4  38 63 00 74 */	addi r3, r3, 0x74
+/* 8010D7F8 000005C8  48 00 00 01 */	bl doDelete__15dWarningOther_cFv
+/* 8010D7FC 000005CC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D800 000005D0  40 82 00 0C */	bne .L_8010D80C
+/* 8010D804 000005D4  38 60 00 00 */	li r3, 0x0
+/* 8010D808 000005D8  48 00 00 48 */	b .L_8010D850
+.L_8010D80C:
+/* 8010D80C 000005DC  38 7F 02 60 */	addi r3, r31, 0x260
+/* 8010D810 000005E0  48 00 00 01 */	bl doDelete__17dWarningNunchuk_cFv
+/* 8010D814 000005E4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D818 000005E8  40 82 00 0C */	bne .L_8010D824
+/* 8010D81C 000005EC  38 60 00 00 */	li r3, 0x0
+/* 8010D820 000005F0  48 00 00 30 */	b .L_8010D850
+.L_8010D824:
+/* 8010D824 000005F4  38 7F 04 4C */	addi r3, r31, 0x44c
+/* 8010D828 000005F8  48 00 00 01 */	bl doDelete__14dWarningYoKo_cFv
+/* 8010D82C 000005FC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D830 00000600  40 82 00 0C */	bne .L_8010D83C
+/* 8010D834 00000604  38 60 00 00 */	li r3, 0x0
+/* 8010D838 00000608  48 00 00 18 */	b .L_8010D850
+.L_8010D83C:
+/* 8010D83C 0000060C  38 7F 06 38 */	addi r3, r31, 0x638
+/* 8010D840 00000610  48 00 00 01 */	bl doDelete__17dWarningBattery_cFv
+/* 8010D844 00000614  7C 03 00 D0 */	neg r0, r3
+/* 8010D848 00000618  7C 00 1B 78 */	or r0, r0, r3
+/* 8010D84C 0000061C  54 03 0F FE */	srwi r3, r0, 31
+.L_8010D850:
+/* 8010D850 00000620  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010D854 00000624  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010D858 00000628  7C 08 03 A6 */	mtlr r0
+/* 8010D85C 0000062C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010D860 00000630  4E 80 00 20 */	blr
+.endfn doDelete__17dWarningManager_cFv
+
+# .text:0x5F4 | 0x8010D864 | size: 0xC
+.fn gap_03_8010D864_text, global
+.hidden gap_03_8010D864_text
+/* 8010D864 00000634  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D868 00000638  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010D86C 0000063C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D864_text
+
+# .text:0x600 | 0x8010D870 | size: 0x13C
+# dWarningManager_c::LowBatteryCheck()
+.fn LowBatteryCheck__17dWarningManager_cFv, global
+/* 8010D870 00000640  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8010D874 00000644  7C 08 02 A6 */	mflr r0
+/* 8010D878 00000648  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8010D87C 0000064C  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010D880 00000650  48 00 00 01 */	bl _savegpr_26
+/* 8010D884 00000654  7C 7F 1B 78 */	mr r31, r3
+/* 8010D888 00000658  80 60 00 00 */	lwz r3, mFader__8mFader_c@sda21(r0)
+/* 8010D88C 0000065C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010D890 00000660  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010D894 00000664  7D 89 03 A6 */	mtctr r12
+/* 8010D898 00000668  4E 80 04 21 */	bctrl
+/* 8010D89C 0000066C  38 03 FF FF */	subi r0, r3, 0x1
+/* 8010D8A0 00000670  7C 00 00 34 */	cntlzw r0, r0
+/* 8010D8A4 00000674  54 00 D9 7F */	srwi. r0, r0, 5
+/* 8010D8A8 00000678  41 82 00 EC */	beq .L_8010D994
+/* 8010D8AC 0000067C  80 00 00 00 */	lwz r0, m_WarningForbid__17dWarningManager_c@sda21(r0)
+/* 8010D8B0 00000680  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010D8B4 00000684  40 82 00 E0 */	bne .L_8010D994
+/* 8010D8B8 00000688  3B A0 00 00 */	li r29, 0x0
+/* 8010D8BC 0000068C  3B 80 00 00 */	li r28, 0x0
+/* 8010D8C0 00000690  3B 60 00 01 */	li r27, 0x1
+/* 8010D8C4 00000694  3B 40 00 00 */	li r26, 0x0
+/* 8010D8C8 00000698  3B C0 00 00 */	li r30, 0x0
+.L_8010D8CC:
+/* 8010D8CC 0000069C  7F 43 D3 78 */	mr r3, r26
+/* 8010D8D0 000006A0  48 00 00 01 */	bl PlayerEnterCheck__8dGameComFi
+/* 8010D8D4 000006A4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010D8D8 000006A8  41 82 00 34 */	beq .L_8010D90C
+/* 8010D8DC 000006AC  80 00 00 00 */	lwz r0, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010D8E0 000006B0  7C 60 F2 14 */	add r3, r0, r30
+/* 8010D8E4 000006B4  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010D8E8 000006B8  80 03 00 50 */	lwz r0, 0x50(r3)
+/* 8010D8EC 000006BC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010D8F0 000006C0  41 80 00 A4 */	blt .L_8010D994
+/* 8010D8F4 000006C4  2C 00 00 01 */	cmpwi r0, 0x1
+/* 8010D8F8 000006C8  40 81 00 0C */	ble .L_8010D904
+/* 8010D8FC 000006CC  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8010D900 000006D0  48 00 00 10 */	b .L_8010D910
+.L_8010D904:
+/* 8010D904 000006D4  7F 9C DB 78 */	or r28, r28, r27
+/* 8010D908 000006D8  48 00 00 08 */	b .L_8010D910
+.L_8010D90C:
+/* 8010D90C 000006DC  3B BD 00 01 */	addi r29, r29, 0x1
+.L_8010D910:
+/* 8010D910 000006E0  3B 5A 00 01 */	addi r26, r26, 0x1
+/* 8010D914 000006E4  57 7B 08 3C */	slwi r27, r27, 1
+/* 8010D918 000006E8  2C 1A 00 04 */	cmpwi r26, 0x4
+/* 8010D91C 000006EC  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8010D920 000006F0  41 80 FF AC */	blt .L_8010D8CC
+/* 8010D924 000006F4  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8010D928 000006F8  40 80 00 5C */	bge .L_8010D984
+/* 8010D92C 000006FC  7F 84 E3 78 */	mr r4, r28
+/* 8010D930 00000700  38 7F 06 38 */	addi r3, r31, 0x638
+/* 8010D934 00000704  48 00 00 01 */	bl setDisp__17dWarningBattery_cFi
+/* 8010D938 00000708  80 1F 0B 68 */	lwz r0, 0xb68(r31)
+/* 8010D93C 0000070C  38 80 00 03 */	li r4, 0x3
+/* 8010D940 00000710  90 1F 0B 6C */	stw r0, 0xb6c(r31)
+/* 8010D944 00000714  38 00 00 01 */	li r0, 0x1
+/* 8010D948 00000718  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010D94C 0000071C  90 9F 0B 68 */	stw r4, 0xb68(r31)
+/* 8010D950 00000720  98 00 00 00 */	stb r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010D954 00000724  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010D958 00000728  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8010D95C 0000072C  7D 89 03 A6 */	mtctr r12
+/* 8010D960 00000730  4E 80 04 21 */	bctrl
+/* 8010D964 00000734  90 7F 0B 48 */	stw r3, 0xb48(r31)
+/* 8010D968 00000738  3C 80 00 00 */	lis r4, StateID_WarningBattery__17dWarningManager_c@ha
+/* 8010D96C 0000073C  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010D970 00000740  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010D974 00000744  38 84 00 00 */	addi r4, r4, StateID_WarningBattery__17dWarningManager_c@l
+/* 8010D978 00000748  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010D97C 0000074C  7D 89 03 A6 */	mtctr r12
+/* 8010D980 00000750  4E 80 04 21 */	bctrl
+.L_8010D984:
+/* 8010D984 00000754  38 00 00 00 */	li r0, 0x0
+/* 8010D988 00000758  98 1F 0B 8D */	stb r0, 0xb8d(r31)
+/* 8010D98C 0000075C  38 60 00 00 */	li r3, 0x0
+/* 8010D990 00000760  48 00 00 01 */	bl setGetWPADInfoInterval__4mPadFUl
+.L_8010D994:
+/* 8010D994 00000764  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010D998 00000768  48 00 00 01 */	bl _restgpr_26
+/* 8010D99C 0000076C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8010D9A0 00000770  7C 08 03 A6 */	mtlr r0
+/* 8010D9A4 00000774  38 21 00 20 */	addi r1, r1, 0x20
+/* 8010D9A8 00000778  4E 80 00 20 */	blr
+.endfn LowBatteryCheck__17dWarningManager_cFv
+
+# .text:0x73C | 0x8010D9AC | size: 0x4
+.fn gap_03_8010D9AC_text, global
+.hidden gap_03_8010D9AC_text
+/* 8010D9AC 0000077C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010D9AC_text
+
+# .text:0x740 | 0x8010D9B0 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getStateID() const
+.fn "getStateID__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 8010D9B0 00000780  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010D9B4 00000784  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8010D9B8 00000788  7D 89 03 A6 */	mtctr r12
+/* 8010D9BC 0000078C  4E 80 04 20 */	bctr
+.endfn "getStateID__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x750 | 0x8010D9C0 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::changeState(const sStateIDIf_c&)
+.fn "changeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c", global
+/* 8010D9C0 00000790  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010D9C4 00000794  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010D9C8 00000798  7D 89 03 A6 */	mtctr r12
+/* 8010D9CC 0000079C  4E 80 04 20 */	bctr
+.endfn "changeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c"
+
+# .text:0x760 | 0x8010D9D0 | size: 0xB0
+# dWarningManager_c::NunchukDispSetup(int)
+.fn NunchukDispSetup__17dWarningManager_cFi, global
+/* 8010D9D0 000007A0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8010D9D4 000007A4  7C 08 02 A6 */	mflr r0
+/* 8010D9D8 000007A8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8010D9DC 000007AC  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010D9E0 000007B0  48 00 00 01 */	bl _savegpr_27
+/* 8010D9E4 000007B4  3F E0 00 00 */	lis r31, g_core__4mPad@ha
+/* 8010D9E8 000007B8  7C 7B 1B 78 */	mr r27, r3
+/* 8010D9EC 000007BC  7C 9C 23 78 */	mr r28, r4
+/* 8010D9F0 000007C0  3B A0 00 00 */	li r29, 0x0
+/* 8010D9F4 000007C4  3B FF 00 00 */	addi r31, r31, g_core__4mPad@l
+/* 8010D9F8 000007C8  3B C0 00 00 */	li r30, 0x0
+.L_8010D9FC:
+/* 8010D9FC 000007CC  80 00 00 00 */	lwz r0, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010DA00 000007D0  7C 60 F2 14 */	add r3, r0, r30
+/* 8010DA04 000007D4  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010DA08 000007D8  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8010DA0C 000007DC  54 00 10 3A */	slwi r0, r0, 2
+/* 8010DA10 000007E0  7C 7F 00 2E */	lwzx r3, r31, r0
+/* 8010DA14 000007E4  48 00 00 01 */	bl stopRumbleMgr__Q23EGG14CoreControllerFv
+/* 8010DA18 000007E8  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8010DA1C 000007EC  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8010DA20 000007F0  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8010DA24 000007F4  41 80 FF D8 */	blt .L_8010D9FC
+/* 8010DA28 000007F8  7F 84 E3 78 */	mr r4, r28
+/* 8010DA2C 000007FC  38 7B 02 60 */	addi r3, r27, 0x260
+/* 8010DA30 00000800  48 00 00 01 */	bl setPlayerNo__17dWarningNunchuk_cFi
+/* 8010DA34 00000804  3C 80 00 00 */	lis r4, mPlayerType__9daPyMng_c@ha
+/* 8010DA38 00000808  57 80 10 3A */	slwi r0, r28, 2
+/* 8010DA3C 0000080C  38 84 00 00 */	addi r4, r4, mPlayerType__9daPyMng_c@l
+/* 8010DA40 00000810  80 7B 04 40 */	lwz r3, 0x440(r27)
+/* 8010DA44 00000814  7C 84 00 2E */	lwzx r4, r4, r0
+/* 8010DA48 00000818  48 00 00 01 */	bl WindowPaneColorSet__8dGameComFPQ34nw4r3lyt6Windowi
+/* 8010DA4C 0000081C  81 9B 0B 0C */	lwz r12, 0xb0c(r27)
+/* 8010DA50 00000820  3C 80 00 00 */	lis r4, StateID_WarningNunchuk__17dWarningManager_c@ha
+/* 8010DA54 00000824  38 7B 0B 0C */	addi r3, r27, 0xb0c
+/* 8010DA58 00000828  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010DA5C 0000082C  38 84 00 00 */	addi r4, r4, StateID_WarningNunchuk__17dWarningManager_c@l
+/* 8010DA60 00000830  7D 89 03 A6 */	mtctr r12
+/* 8010DA64 00000834  4E 80 04 21 */	bctrl
+/* 8010DA68 00000838  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010DA6C 0000083C  48 00 00 01 */	bl _restgpr_27
+/* 8010DA70 00000840  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8010DA74 00000844  7C 08 03 A6 */	mtlr r0
+/* 8010DA78 00000848  38 21 00 20 */	addi r1, r1, 0x20
+/* 8010DA7C 0000084C  4E 80 00 20 */	blr
+.endfn NunchukDispSetup__17dWarningManager_cFi
+
+# .text:0x810 | 0x8010DA80 | size: 0xB0
+# dWarningManager_c::YoKoDispSetup(int)
+.fn YoKoDispSetup__17dWarningManager_cFi, global
+/* 8010DA80 00000850  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8010DA84 00000854  7C 08 02 A6 */	mflr r0
+/* 8010DA88 00000858  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8010DA8C 0000085C  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010DA90 00000860  48 00 00 01 */	bl _savegpr_27
+/* 8010DA94 00000864  3F E0 00 00 */	lis r31, g_core__4mPad@ha
+/* 8010DA98 00000868  7C 7B 1B 78 */	mr r27, r3
+/* 8010DA9C 0000086C  7C 9C 23 78 */	mr r28, r4
+/* 8010DAA0 00000870  3B A0 00 00 */	li r29, 0x0
+/* 8010DAA4 00000874  3B FF 00 00 */	addi r31, r31, g_core__4mPad@l
+/* 8010DAA8 00000878  3B C0 00 00 */	li r30, 0x0
+.L_8010DAAC:
+/* 8010DAAC 0000087C  80 00 00 00 */	lwz r0, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010DAB0 00000880  7C 60 F2 14 */	add r3, r0, r30
+/* 8010DAB4 00000884  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010DAB8 00000888  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8010DABC 0000088C  54 00 10 3A */	slwi r0, r0, 2
+/* 8010DAC0 00000890  7C 7F 00 2E */	lwzx r3, r31, r0
+/* 8010DAC4 00000894  48 00 00 01 */	bl stopRumbleMgr__Q23EGG14CoreControllerFv
+/* 8010DAC8 00000898  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8010DACC 0000089C  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8010DAD0 000008A0  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8010DAD4 000008A4  41 80 FF D8 */	blt .L_8010DAAC
+/* 8010DAD8 000008A8  7F 84 E3 78 */	mr r4, r28
+/* 8010DADC 000008AC  38 7B 04 4C */	addi r3, r27, 0x44c
+/* 8010DAE0 000008B0  48 00 00 01 */	bl setPlayerNo__14dWarningYoKo_cFi
+/* 8010DAE4 000008B4  3C 80 00 00 */	lis r4, mPlayerType__9daPyMng_c@ha
+/* 8010DAE8 000008B8  57 80 10 3A */	slwi r0, r28, 2
+/* 8010DAEC 000008BC  38 84 00 00 */	addi r4, r4, mPlayerType__9daPyMng_c@l
+/* 8010DAF0 000008C0  80 7B 06 2C */	lwz r3, 0x62c(r27)
+/* 8010DAF4 000008C4  7C 84 00 2E */	lwzx r4, r4, r0
+/* 8010DAF8 000008C8  48 00 00 01 */	bl WindowPaneColorSet__8dGameComFPQ34nw4r3lyt6Windowi
+/* 8010DAFC 000008CC  81 9B 0B 0C */	lwz r12, 0xb0c(r27)
+/* 8010DB00 000008D0  3C 80 00 00 */	lis r4, StateID_WarningYoKo__17dWarningManager_c@ha
+/* 8010DB04 000008D4  38 7B 0B 0C */	addi r3, r27, 0xb0c
+/* 8010DB08 000008D8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010DB0C 000008DC  38 84 00 00 */	addi r4, r4, StateID_WarningYoKo__17dWarningManager_c@l
+/* 8010DB10 000008E0  7D 89 03 A6 */	mtctr r12
+/* 8010DB14 000008E4  4E 80 04 21 */	bctrl
+/* 8010DB18 000008E8  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010DB1C 000008EC  48 00 00 01 */	bl _restgpr_27
+/* 8010DB20 000008F0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8010DB24 000008F4  7C 08 03 A6 */	mtlr r0
+/* 8010DB28 000008F8  38 21 00 20 */	addi r1, r1, 0x20
+/* 8010DB2C 000008FC  4E 80 00 20 */	blr
+.endfn YoKoDispSetup__17dWarningManager_cFi
+
+# .text:0x8C0 | 0x8010DB30 | size: 0xB0
+# dWarningManager_c::OtherDispSetup(int)
+.fn OtherDispSetup__17dWarningManager_cFi, global
+/* 8010DB30 00000900  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8010DB34 00000904  7C 08 02 A6 */	mflr r0
+/* 8010DB38 00000908  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8010DB3C 0000090C  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010DB40 00000910  48 00 00 01 */	bl _savegpr_27
+/* 8010DB44 00000914  3F E0 00 00 */	lis r31, g_core__4mPad@ha
+/* 8010DB48 00000918  7C 7B 1B 78 */	mr r27, r3
+/* 8010DB4C 0000091C  7C 9C 23 78 */	mr r28, r4
+/* 8010DB50 00000920  3B A0 00 00 */	li r29, 0x0
+/* 8010DB54 00000924  3B FF 00 00 */	addi r31, r31, g_core__4mPad@l
+/* 8010DB58 00000928  3B C0 00 00 */	li r30, 0x0
+.L_8010DB5C:
+/* 8010DB5C 0000092C  80 00 00 00 */	lwz r0, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010DB60 00000930  7C 60 F2 14 */	add r3, r0, r30
+/* 8010DB64 00000934  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010DB68 00000938  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 8010DB6C 0000093C  54 00 10 3A */	slwi r0, r0, 2
+/* 8010DB70 00000940  7C 7F 00 2E */	lwzx r3, r31, r0
+/* 8010DB74 00000944  48 00 00 01 */	bl stopRumbleMgr__Q23EGG14CoreControllerFv
+/* 8010DB78 00000948  3B BD 00 01 */	addi r29, r29, 0x1
+/* 8010DB7C 0000094C  3B DE 00 04 */	addi r30, r30, 0x4
+/* 8010DB80 00000950  2C 1D 00 04 */	cmpwi r29, 0x4
+/* 8010DB84 00000954  41 80 FF D8 */	blt .L_8010DB5C
+/* 8010DB88 00000958  7F 84 E3 78 */	mr r4, r28
+/* 8010DB8C 0000095C  38 7B 00 74 */	addi r3, r27, 0x74
+/* 8010DB90 00000960  48 00 00 01 */	bl setPlayerNo__15dWarningOther_cFi
+/* 8010DB94 00000964  3C 80 00 00 */	lis r4, mPlayerType__9daPyMng_c@ha
+/* 8010DB98 00000968  57 80 10 3A */	slwi r0, r28, 2
+/* 8010DB9C 0000096C  38 84 00 00 */	addi r4, r4, mPlayerType__9daPyMng_c@l
+/* 8010DBA0 00000970  80 7B 02 54 */	lwz r3, 0x254(r27)
+/* 8010DBA4 00000974  7C 84 00 2E */	lwzx r4, r4, r0
+/* 8010DBA8 00000978  48 00 00 01 */	bl WindowPaneColorSet__8dGameComFPQ34nw4r3lyt6Windowi
+/* 8010DBAC 0000097C  81 9B 0B 0C */	lwz r12, 0xb0c(r27)
+/* 8010DBB0 00000980  3C 80 00 00 */	lis r4, StateID_WarningCaution__17dWarningManager_c@ha
+/* 8010DBB4 00000984  38 7B 0B 0C */	addi r3, r27, 0xb0c
+/* 8010DBB8 00000988  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010DBBC 0000098C  38 84 00 00 */	addi r4, r4, StateID_WarningCaution__17dWarningManager_c@l
+/* 8010DBC0 00000990  7D 89 03 A6 */	mtctr r12
+/* 8010DBC4 00000994  4E 80 04 21 */	bctrl
+/* 8010DBC8 00000998  39 61 00 20 */	addi r11, r1, 0x20
+/* 8010DBCC 0000099C  48 00 00 01 */	bl _restgpr_27
+/* 8010DBD0 000009A0  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8010DBD4 000009A4  7C 08 03 A6 */	mtlr r0
+/* 8010DBD8 000009A8  38 21 00 20 */	addi r1, r1, 0x20
+/* 8010DBDC 000009AC  4E 80 00 20 */	blr
+.endfn OtherDispSetup__17dWarningManager_cFi
+
+# .text:0x970 | 0x8010DBE0 | size: 0x58
+# dWarningManager_c::HitAnyKey()
+.fn HitAnyKey__17dWarningManager_cFv, global
+/* 8010DBE0 000009B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010DBE4 000009B4  7C 08 02 A6 */	mflr r0
+/* 8010DBE8 000009B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010DBEC 000009BC  80 03 0B 64 */	lwz r0, 0xb64(r3)
+/* 8010DBF0 000009C0  80 60 00 00 */	lwz r3, m_instance__10dGameKey_c@sda21(r0)
+/* 8010DBF4 000009C4  54 00 10 3A */	slwi r0, r0, 2
+/* 8010DBF8 000009C8  7C 63 02 14 */	add r3, r3, r0
+/* 8010DBFC 000009CC  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010DC00 000009D0  80 03 00 1C */	lwz r0, 0x1c(r3)
+/* 8010DC04 000009D4  70 00 7F 1F */	andi. r0, r0, 0x7f1f
+/* 8010DC08 000009D8  41 82 00 1C */	beq .L_8010DC24
+/* 8010DC0C 000009DC  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 8010DC10 000009E0  38 80 00 81 */	li r4, 0x81
+/* 8010DC14 000009E4  38 A0 00 01 */	li r5, 0x1
+/* 8010DC18 000009E8  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 8010DC1C 000009EC  38 60 00 01 */	li r3, 0x1
+/* 8010DC20 000009F0  48 00 00 08 */	b .L_8010DC28
+.L_8010DC24:
+/* 8010DC24 000009F4  38 60 00 00 */	li r3, 0x0
+.L_8010DC28:
+/* 8010DC28 000009F8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010DC2C 000009FC  7C 08 03 A6 */	mtlr r0
+/* 8010DC30 00000A00  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010DC34 00000A04  4E 80 00 20 */	blr
+.endfn HitAnyKey__17dWarningManager_cFv
+
+# .text:0x9C8 | 0x8010DC38 | size: 0x8
+.fn gap_03_8010DC38_text, global
+.hidden gap_03_8010DC38_text
+/* 8010DC38 00000A08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010DC3C 00000A0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010DC38_text
+
+# .text:0x9D0 | 0x8010DC40 | size: 0x20
+# dWarningManager_c::GotoWarningCheck()
+.fn GotoWarningCheck__17dWarningManager_cFv, global
+/* 8010DC40 00000A10  38 00 00 01 */	li r0, 0x1
+/* 8010DC44 00000A14  98 03 0B 8C */	stb r0, 0xb8c(r3)
+/* 8010DC48 00000A18  3C 80 00 00 */	lis r4, StateID_WarningExitAnimeEndWait__17dWarningManager_c@ha
+/* 8010DC4C 00000A1C  85 83 0B 0C */	lwzu r12, 0xb0c(r3)
+/* 8010DC50 00000A20  38 84 00 00 */	addi r4, r4, StateID_WarningExitAnimeEndWait__17dWarningManager_c@l
+/* 8010DC54 00000A24  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010DC58 00000A28  7D 89 03 A6 */	mtctr r12
+/* 8010DC5C 00000A2C  4E 80 04 20 */	bctr
+.endfn GotoWarningCheck__17dWarningManager_cFv
+
+# .text:0x9F0 | 0x8010DC60 | size: 0x3C
+# dWarningManager_c::ForbidCheck()
+.fn ForbidCheck__17dWarningManager_cFv, global
+/* 8010DC60 00000A30  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010DC64 00000A34  7C 08 02 A6 */	mflr r0
+/* 8010DC68 00000A38  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010DC6C 00000A3C  80 00 00 00 */	lwz r0, m_WarningForbid__17dWarningManager_c@sda21(r0)
+/* 8010DC70 00000A40  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DC74 00000A44  41 82 00 14 */	beq .L_8010DC88
+/* 8010DC78 00000A48  38 80 00 01 */	li r4, 0x1
+/* 8010DC7C 00000A4C  48 00 00 01 */	bl AllWarningEnd__17dWarningManager_cFb
+/* 8010DC80 00000A50  38 60 00 01 */	li r3, 0x1
+/* 8010DC84 00000A54  48 00 00 08 */	b .L_8010DC8C
+.L_8010DC88:
+/* 8010DC88 00000A58  38 60 00 00 */	li r3, 0x0
+.L_8010DC8C:
+/* 8010DC8C 00000A5C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010DC90 00000A60  7C 08 03 A6 */	mtlr r0
+/* 8010DC94 00000A64  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010DC98 00000A68  4E 80 00 20 */	blr
+.endfn ForbidCheck__17dWarningManager_cFv
+
+# .text:0xA2C | 0x8010DC9C | size: 0x4
+.fn gap_03_8010DC9C_text, global
+.hidden gap_03_8010DC9C_text
+/* 8010DC9C 00000A6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010DC9C_text
+
+# .text:0xA30 | 0x8010DCA0 | size: 0xE4
+# dWarningManager_c::SaveErrorDispSetup()
+.fn SaveErrorDispSetup__17dWarningManager_cFv, global
+/* 8010DCA0 00000A70  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010DCA4 00000A74  7C 08 02 A6 */	mflr r0
+/* 8010DCA8 00000A78  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010DCAC 00000A7C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010DCB0 00000A80  7C 7F 1B 78 */	mr r31, r3
+/* 8010DCB4 00000A84  80 60 00 00 */	lwz r3, mFader__8mFader_c@sda21(r0)
+/* 8010DCB8 00000A88  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010DCBC 00000A8C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010DCC0 00000A90  7D 89 03 A6 */	mtctr r12
+/* 8010DCC4 00000A94  4E 80 04 21 */	bctrl
+/* 8010DCC8 00000A98  38 03 FF FF */	subi r0, r3, 0x1
+/* 8010DCCC 00000A9C  7C 00 00 34 */	cntlzw r0, r0
+/* 8010DCD0 00000AA0  54 00 D9 7F */	srwi. r0, r0, 5
+/* 8010DCD4 00000AA4  41 82 00 9C */	beq .L_8010DD70
+/* 8010DCD8 00000AA8  80 00 00 00 */	lwz r0, m_WarningForbid__17dWarningManager_c@sda21(r0)
+/* 8010DCDC 00000AAC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DCE0 00000AB0  40 82 00 90 */	bne .L_8010DD70
+/* 8010DCE4 00000AB4  88 1F 0B 09 */	lbz r0, 0xb09(r31)
+/* 8010DCE8 00000AB8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DCEC 00000ABC  40 82 00 84 */	bne .L_8010DD70
+/* 8010DCF0 00000AC0  38 00 00 01 */	li r0, 0x1
+/* 8010DCF4 00000AC4  98 00 00 00 */	stb r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010DCF8 00000AC8  38 60 00 04 */	li r3, 0x4
+/* 8010DCFC 00000ACC  80 1F 0B 50 */	lwz r0, 0xb50(r31)
+/* 8010DD00 00000AD0  90 7F 0B 68 */	stw r3, 0xb68(r31)
+/* 8010DD04 00000AD4  28 00 00 08 */	cmplwi r0, 0x8
+/* 8010DD08 00000AD8  41 81 00 48 */	bgt .L_8010DD50
+/* 8010DD0C 00000ADC  3C 60 00 00 */	lis r3, "@73812_80322BA8"@ha
+/* 8010DD10 00000AE0  54 00 10 3A */	slwi r0, r0, 2
+/* 8010DD14 00000AE4  38 63 00 00 */	addi r3, r3, "@73812_80322BA8"@l
+/* 8010DD18 00000AE8  7C 63 00 2E */	lwzx r3, r3, r0
+/* 8010DD1C 00000AEC  7C 69 03 A6 */	mtctr r3
+/* 8010DD20 00000AF0  4E 80 04 20 */	bctr
+/* 8010DD24 00000AF4  38 00 00 04 */	li r0, 0x4
+/* 8010DD28 00000AF8  48 00 00 28 */	b .L_8010DD50
+/* 8010DD2C 00000AFC  38 00 00 01 */	li r0, 0x1
+/* 8010DD30 00000B00  48 00 00 20 */	b .L_8010DD50
+/* 8010DD34 00000B04  38 00 00 02 */	li r0, 0x2
+/* 8010DD38 00000B08  48 00 00 18 */	b .L_8010DD50
+/* 8010DD3C 00000B0C  38 00 00 06 */	li r0, 0x6
+/* 8010DD40 00000B10  48 00 00 10 */	b .L_8010DD50
+/* 8010DD44 00000B14  38 00 00 05 */	li r0, 0x5
+/* 8010DD48 00000B18  48 00 00 08 */	b .L_8010DD50
+/* 8010DD4C 00000B1C  38 00 00 03 */	li r0, 0x3
+.L_8010DD50:
+/* 8010DD50 00000B20  90 1F 0A FC */	stw r0, 0xafc(r31)
+/* 8010DD54 00000B24  3C 80 00 00 */	lis r4, StateID_WarningSaveError__17dWarningManager_c@ha
+/* 8010DD58 00000B28  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010DD5C 00000B2C  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010DD60 00000B30  38 84 00 00 */	addi r4, r4, StateID_WarningSaveError__17dWarningManager_c@l
+/* 8010DD64 00000B34  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010DD68 00000B38  7D 89 03 A6 */	mtctr r12
+/* 8010DD6C 00000B3C  4E 80 04 21 */	bctrl
+.L_8010DD70:
+/* 8010DD70 00000B40  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010DD74 00000B44  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010DD78 00000B48  7C 08 03 A6 */	mtlr r0
+/* 8010DD7C 00000B4C  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010DD80 00000B50  4E 80 00 20 */	blr
+.endfn SaveErrorDispSetup__17dWarningManager_cFv
+
+# .text:0xB14 | 0x8010DD84 | size: 0xC
+.fn gap_03_8010DD84_text, global
+.hidden gap_03_8010DD84_text
+/* 8010DD84 00000B54  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010DD88 00000B58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010DD8C 00000B5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010DD84_text
+
+# .text:0xB20 | 0x8010DD90 | size: 0x198
+# dWarningManager_c::ConnectCutCheck()
+.fn ConnectCutCheck__17dWarningManager_cFv, global
+/* 8010DD90 00000B60  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010DD94 00000B64  7C 08 02 A6 */	mflr r0
+/* 8010DD98 00000B68  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010DD9C 00000B6C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010DDA0 00000B70  7C 7F 1B 78 */	mr r31, r3
+/* 8010DDA4 00000B74  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010DDA8 00000B78  A0 00 00 00 */	lhz r0, m_nowScene__8dScene_c@sda21(r0)
+/* 8010DDAC 00000B7C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DDB0 00000B80  41 82 01 60 */	beq .L_8010DF10
+/* 8010DDB4 00000B84  80 60 00 00 */	lwz r3, mFader__8mFader_c@sda21(r0)
+/* 8010DDB8 00000B88  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010DDBC 00000B8C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010DDC0 00000B90  7D 89 03 A6 */	mtctr r12
+/* 8010DDC4 00000B94  4E 80 04 21 */	bctrl
+/* 8010DDC8 00000B98  38 03 FF FF */	subi r0, r3, 0x1
+/* 8010DDCC 00000B9C  7C 00 00 34 */	cntlzw r0, r0
+/* 8010DDD0 00000BA0  54 00 D9 7F */	srwi. r0, r0, 5
+/* 8010DDD4 00000BA4  41 82 01 3C */	beq .L_8010DF10
+/* 8010DDD8 00000BA8  80 00 00 00 */	lwz r0, m_WarningForbid__17dWarningManager_c@sda21(r0)
+/* 8010DDDC 00000BAC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DDE0 00000BB0  40 82 01 30 */	bne .L_8010DF10
+/* 8010DDE4 00000BB4  88 1F 0B 09 */	lbz r0, 0xb09(r31)
+/* 8010DDE8 00000BB8  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DDEC 00000BBC  40 82 01 24 */	bne .L_8010DF10
+/* 8010DDF0 00000BC0  80 9F 0B 78 */	lwz r4, 0xb78(r31)
+/* 8010DDF4 00000BC4  38 00 00 04 */	li r0, 0x4
+/* 8010DDF8 00000BC8  54 83 10 3A */	slwi r3, r4, 2
+/* 8010DDFC 00000BCC  38 84 00 01 */	addi r4, r4, 0x1
+/* 8010DE00 00000BD0  7C 7F 1A 14 */	add r3, r31, r3
+/* 8010DE04 00000BD4  83 C3 0B 7C */	lwz r30, 0xb7c(r3)
+/* 8010DE08 00000BD8  2C 04 00 04 */	cmpwi r4, 0x4
+/* 8010DE0C 00000BDC  90 03 0B 7C */	stw r0, 0xb7c(r3)
+/* 8010DE10 00000BE0  41 80 00 08 */	blt .L_8010DE18
+/* 8010DE14 00000BE4  38 80 00 00 */	li r4, 0x0
+.L_8010DE18:
+/* 8010DE18 00000BE8  28 1E 00 03 */	cmplwi r30, 0x3
+/* 8010DE1C 00000BEC  90 9F 0B 78 */	stw r4, 0xb78(r31)
+/* 8010DE20 00000BF0  41 81 00 44 */	bgt .L_8010DE64
+/* 8010DE24 00000BF4  80 60 00 00 */	lwz r3, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010DE28 00000BF8  57 C0 10 3A */	slwi r0, r30, 2
+/* 8010DE2C 00000BFC  7C 63 02 14 */	add r3, r3, r0
+/* 8010DE30 00000C00  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010DE34 00000C04  85 83 00 5C */	lwzu r12, 0x5c(r3)
+/* 8010DE38 00000C08  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8010DE3C 00000C0C  7D 89 03 A6 */	mtctr r12
+/* 8010DE40 00000C10  4E 80 04 21 */	bctrl
+/* 8010DE44 00000C14  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010DE48 00000C18  3C 80 00 00 */	lis r4, StateID_Setup__Q213dRemoconMng_c10dConnect_c@ha
+/* 8010DE4C 00000C1C  38 84 00 00 */	addi r4, r4, StateID_Setup__Q213dRemoconMng_c10dConnect_c@l
+/* 8010DE50 00000C20  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010DE54 00000C24  7D 89 03 A6 */	mtctr r12
+/* 8010DE58 00000C28  4E 80 04 21 */	bctrl
+/* 8010DE5C 00000C2C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010DE60 00000C30  41 82 00 44 */	beq .L_8010DEA4
+.L_8010DE64:
+/* 8010DE64 00000C34  80 1F 0B 7C */	lwz r0, 0xb7c(r31)
+/* 8010DE68 00000C38  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010DE6C 00000C3C  40 82 00 A4 */	bne .L_8010DF10
+/* 8010DE70 00000C40  80 1F 0B 80 */	lwz r0, 0xb80(r31)
+/* 8010DE74 00000C44  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010DE78 00000C48  40 82 00 98 */	bne .L_8010DF10
+/* 8010DE7C 00000C4C  80 1F 0B 84 */	lwz r0, 0xb84(r31)
+/* 8010DE80 00000C50  38 7F 00 08 */	addi r3, r31, 0x8
+/* 8010DE84 00000C54  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010DE88 00000C58  40 82 00 88 */	bne .L_8010DF10
+/* 8010DE8C 00000C5C  80 03 0B 80 */	lwz r0, 0xb80(r3)
+/* 8010DE90 00000C60  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010DE94 00000C64  40 82 00 7C */	bne .L_8010DF10
+/* 8010DE98 00000C68  38 00 00 00 */	li r0, 0x0
+/* 8010DE9C 00000C6C  98 1F 0B 8E */	stb r0, 0xb8e(r31)
+/* 8010DEA0 00000C70  48 00 00 70 */	b .L_8010DF10
+.L_8010DEA4:
+/* 8010DEA4 00000C74  93 DF 0A F4 */	stw r30, 0xaf4(r31)
+/* 8010DEA8 00000C78  38 00 00 00 */	li r0, 0x0
+/* 8010DEAC 00000C7C  38 80 00 04 */	li r4, 0x4
+/* 8010DEB0 00000C80  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010DEB4 00000C84  90 1F 0A FC */	stw r0, 0xafc(r31)
+/* 8010DEB8 00000C88  38 00 00 01 */	li r0, 0x1
+/* 8010DEBC 00000C8C  98 00 00 00 */	stb r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010DEC0 00000C90  80 DF 0B 6C */	lwz r6, 0xb6c(r31)
+/* 8010DEC4 00000C94  80 BF 0B 68 */	lwz r5, 0xb68(r31)
+/* 8010DEC8 00000C98  80 1F 0B 48 */	lwz r0, 0xb48(r31)
+/* 8010DECC 00000C9C  90 DF 0B 70 */	stw r6, 0xb70(r31)
+/* 8010DED0 00000CA0  90 BF 0B 6C */	stw r5, 0xb6c(r31)
+/* 8010DED4 00000CA4  90 9F 0B 68 */	stw r4, 0xb68(r31)
+/* 8010DED8 00000CA8  90 1F 0B 4C */	stw r0, 0xb4c(r31)
+/* 8010DEDC 00000CAC  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010DEE0 00000CB0  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8010DEE4 00000CB4  7D 89 03 A6 */	mtctr r12
+/* 8010DEE8 00000CB8  4E 80 04 21 */	bctrl
+/* 8010DEEC 00000CBC  90 7F 0B 48 */	stw r3, 0xb48(r31)
+/* 8010DEF0 00000CC0  48 00 00 01 */	bl EasyPairingStop__8dGameComFv
+/* 8010DEF4 00000CC4  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010DEF8 00000CC8  3C 80 00 00 */	lis r4, StateID_WarningError__17dWarningManager_c@ha
+/* 8010DEFC 00000CCC  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010DF00 00000CD0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010DF04 00000CD4  38 84 00 00 */	addi r4, r4, StateID_WarningError__17dWarningManager_c@l
+/* 8010DF08 00000CD8  7D 89 03 A6 */	mtctr r12
+/* 8010DF0C 00000CDC  4E 80 04 21 */	bctrl
+.L_8010DF10:
+/* 8010DF10 00000CE0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010DF14 00000CE4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010DF18 00000CE8  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010DF1C 00000CEC  7C 08 03 A6 */	mtlr r0
+/* 8010DF20 00000CF0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010DF24 00000CF4  4E 80 00 20 */	blr
+.endfn ConnectCutCheck__17dWarningManager_cFv
+
+# .text:0xCB8 | 0x8010DF28 | size: 0x8
+.fn gap_03_8010DF28_text, global
+.hidden gap_03_8010DF28_text
+/* 8010DF28 00000CF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010DF2C 00000CFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010DF28_text
+
+# .text:0xCC0 | 0x8010DF30 | size: 0x4
+# dWarningManager_c::initializeState_WarningCheck()
+.fn initializeState_WarningCheck__17dWarningManager_cFv, global
+/* 8010DF30 00000D00  4E 80 00 20 */	blr
+.endfn initializeState_WarningCheck__17dWarningManager_cFv
+
+# .text:0xCC4 | 0x8010DF34 | size: 0xC
+.fn gap_03_8010DF34_text, global
+.hidden gap_03_8010DF34_text
+/* 8010DF34 00000D04  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010DF38 00000D08  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010DF3C 00000D0C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010DF34_text
+
+# .text:0xCD0 | 0x8010DF40 | size: 0x190
+# dWarningManager_c::executeState_WarningCheck()
+.fn executeState_WarningCheck__17dWarningManager_cFv, global
+/* 8010DF40 00000D10  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 8010DF44 00000D14  7C 08 02 A6 */	mflr r0
+/* 8010DF48 00000D18  90 01 00 34 */	stw r0, 0x34(r1)
+/* 8010DF4C 00000D1C  39 61 00 30 */	addi r11, r1, 0x30
+/* 8010DF50 00000D20  48 00 00 01 */	bl _savegpr_25
+/* 8010DF54 00000D24  A0 00 00 00 */	lhz r0, m_nowScene__8dScene_c@sda21(r0)
+/* 8010DF58 00000D28  7C 7F 1B 78 */	mr r31, r3
+/* 8010DF5C 00000D2C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DF60 00000D30  41 82 01 58 */	beq .L_8010E0B8
+/* 8010DF64 00000D34  80 60 00 00 */	lwz r3, mFader__8mFader_c@sda21(r0)
+/* 8010DF68 00000D38  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010DF6C 00000D3C  81 8C 00 10 */	lwz r12, 0x10(r12)
+/* 8010DF70 00000D40  7D 89 03 A6 */	mtctr r12
+/* 8010DF74 00000D44  4E 80 04 21 */	bctrl
+/* 8010DF78 00000D48  38 03 FF FF */	subi r0, r3, 0x1
+/* 8010DF7C 00000D4C  7C 00 00 34 */	cntlzw r0, r0
+/* 8010DF80 00000D50  54 00 D9 7F */	srwi. r0, r0, 5
+/* 8010DF84 00000D54  41 82 01 34 */	beq .L_8010E0B8
+/* 8010DF88 00000D58  80 00 00 00 */	lwz r0, m_WarningForbid__17dWarningManager_c@sda21(r0)
+/* 8010DF8C 00000D5C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DF90 00000D60  40 82 01 28 */	bne .L_8010E0B8
+/* 8010DF94 00000D64  88 1F 0B 90 */	lbz r0, 0xb90(r31)
+/* 8010DF98 00000D68  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DF9C 00000D6C  40 82 01 1C */	bne .L_8010E0B8
+/* 8010DFA0 00000D70  83 80 00 00 */	lwz r28, m_instance__7dInfo_c@sda21(r0)
+/* 8010DFA4 00000D74  7F FA FB 78 */	mr r26, r31
+/* 8010DFA8 00000D78  83 60 00 00 */	lwz r27, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010DFAC 00000D7C  3B 20 00 00 */	li r25, 0x0
+/* 8010DFB0 00000D80  3B C0 00 01 */	li r30, 0x1
+.L_8010DFB4:
+/* 8010DFB4 00000D84  80 1C 03 84 */	lwz r0, 0x384(r28)
+/* 8010DFB8 00000D88  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010DFBC 00000D8C  40 81 00 DC */	ble .L_8010E098
+/* 8010DFC0 00000D90  80 1A 0B 54 */	lwz r0, 0xb54(r26)
+/* 8010DFC4 00000D94  80 7B 00 04 */	lwz r3, 0x4(r27)
+/* 8010DFC8 00000D98  2C 00 00 03 */	cmpwi r0, 0x3
+/* 8010DFCC 00000D9C  83 A3 00 10 */	lwz r29, 0x10(r3)
+/* 8010DFD0 00000DA0  40 82 00 0C */	bne .L_8010DFDC
+/* 8010DFD4 00000DA4  93 BA 0B 54 */	stw r29, 0xb54(r26)
+/* 8010DFD8 00000DA8  48 00 00 C0 */	b .L_8010E098
+.L_8010DFDC:
+/* 8010DFDC 00000DAC  7C 1D 00 00 */	cmpw r29, r0
+/* 8010DFE0 00000DB0  40 82 00 0C */	bne .L_8010DFEC
+/* 8010DFE4 00000DB4  2C 1D 00 02 */	cmpwi r29, 0x2
+/* 8010DFE8 00000DB8  40 82 00 B0 */	bne .L_8010E098
+.L_8010DFEC:
+/* 8010DFEC 00000DBC  2C 1D 00 03 */	cmpwi r29, 0x3
+/* 8010DFF0 00000DC0  40 80 00 A8 */	bge .L_8010E098
+/* 8010DFF4 00000DC4  9B DF 0B 8C */	stb r30, 0xb8c(r31)
+/* 8010DFF8 00000DC8  93 3F 0B 64 */	stw r25, 0xb64(r31)
+/* 8010DFFC 00000DCC  88 00 00 00 */	lbz r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010E000 00000DD0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E004 00000DD4  41 82 00 14 */	beq .L_8010E018
+/* 8010E008 00000DD8  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 8010E00C 00000DDC  38 80 00 7F */	li r4, 0x7f
+/* 8010E010 00000DE0  38 A0 00 01 */	li r5, 0x1
+/* 8010E014 00000DE4  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+.L_8010E018:
+/* 8010E018 00000DE8  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 8010E01C 00000DEC  9B C0 00 00 */	stb r30, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010E020 00000DF0  41 82 00 18 */	beq .L_8010E038
+/* 8010E024 00000DF4  2C 1D 00 01 */	cmpwi r29, 0x1
+/* 8010E028 00000DF8  41 82 00 34 */	beq .L_8010E05C
+/* 8010E02C 00000DFC  2C 1D 00 02 */	cmpwi r29, 0x2
+/* 8010E030 00000E00  41 82 00 50 */	beq .L_8010E080
+/* 8010E034 00000E04  48 00 00 64 */	b .L_8010E098
+.L_8010E038:
+/* 8010E038 00000E08  57 20 10 3A */	slwi r0, r25, 2
+/* 8010E03C 00000E0C  7F E3 FB 78 */	mr r3, r31
+/* 8010E040 00000E10  7C BF 02 14 */	add r5, r31, r0
+/* 8010E044 00000E14  7F 24 CB 78 */	mr r4, r25
+/* 8010E048 00000E18  93 A5 0B 54 */	stw r29, 0xb54(r5)
+/* 8010E04C 00000E1C  48 00 00 01 */	bl YoKoDispSetup__17dWarningManager_cFi
+/* 8010E050 00000E20  38 00 00 02 */	li r0, 0x2
+/* 8010E054 00000E24  90 1F 0B 68 */	stw r0, 0xb68(r31)
+/* 8010E058 00000E28  48 00 00 60 */	b .L_8010E0B8
+.L_8010E05C:
+/* 8010E05C 00000E2C  57 20 10 3A */	slwi r0, r25, 2
+/* 8010E060 00000E30  7F E3 FB 78 */	mr r3, r31
+/* 8010E064 00000E34  7C BF 02 14 */	add r5, r31, r0
+/* 8010E068 00000E38  7F 24 CB 78 */	mr r4, r25
+/* 8010E06C 00000E3C  93 A5 0B 54 */	stw r29, 0xb54(r5)
+/* 8010E070 00000E40  48 00 00 01 */	bl NunchukDispSetup__17dWarningManager_cFi
+/* 8010E074 00000E44  38 00 00 01 */	li r0, 0x1
+/* 8010E078 00000E48  90 1F 0B 68 */	stw r0, 0xb68(r31)
+/* 8010E07C 00000E4C  48 00 00 3C */	b .L_8010E0B8
+.L_8010E080:
+/* 8010E080 00000E50  7F E3 FB 78 */	mr r3, r31
+/* 8010E084 00000E54  7F 24 CB 78 */	mr r4, r25
+/* 8010E088 00000E58  48 00 00 01 */	bl OtherDispSetup__17dWarningManager_cFi
+/* 8010E08C 00000E5C  38 00 00 00 */	li r0, 0x0
+/* 8010E090 00000E60  90 1F 0B 68 */	stw r0, 0xb68(r31)
+/* 8010E094 00000E64  48 00 00 24 */	b .L_8010E0B8
+.L_8010E098:
+/* 8010E098 00000E68  3B 39 00 01 */	addi r25, r25, 0x1
+/* 8010E09C 00000E6C  3B 7B 00 04 */	addi r27, r27, 0x4
+/* 8010E0A0 00000E70  2C 19 00 04 */	cmpwi r25, 0x4
+/* 8010E0A4 00000E74  3B 5A 00 04 */	addi r26, r26, 0x4
+/* 8010E0A8 00000E78  3B 9C 00 04 */	addi r28, r28, 0x4
+/* 8010E0AC 00000E7C  41 80 FF 08 */	blt .L_8010DFB4
+/* 8010E0B0 00000E80  38 00 00 00 */	li r0, 0x0
+/* 8010E0B4 00000E84  98 00 00 00 */	stb r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+.L_8010E0B8:
+/* 8010E0B8 00000E88  39 61 00 30 */	addi r11, r1, 0x30
+/* 8010E0BC 00000E8C  48 00 00 01 */	bl _restgpr_25
+/* 8010E0C0 00000E90  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 8010E0C4 00000E94  7C 08 03 A6 */	mtlr r0
+/* 8010E0C8 00000E98  38 21 00 30 */	addi r1, r1, 0x30
+/* 8010E0CC 00000E9C  4E 80 00 20 */	blr
+.endfn executeState_WarningCheck__17dWarningManager_cFv
+
+# .text:0xE60 | 0x8010E0D0 | size: 0x4
+# dWarningManager_c::finalizeState_WarningCheck()
+.fn finalizeState_WarningCheck__17dWarningManager_cFv, global
+/* 8010E0D0 00000EA0  4E 80 00 20 */	blr
+.endfn finalizeState_WarningCheck__17dWarningManager_cFv
+
+# .text:0xE64 | 0x8010E0D4 | size: 0xC
+.fn gap_03_8010E0D4_text, global
+.hidden gap_03_8010E0D4_text
+/* 8010E0D4 00000EA4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E0D8 00000EA8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E0DC 00000EAC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E0D4_text
+
+# .text:0xE70 | 0x8010E0E0 | size: 0x4
+# dWarningManager_c::initializeState_WarningCaution()
+.fn initializeState_WarningCaution__17dWarningManager_cFv, global
+/* 8010E0E0 00000EB0  4E 80 00 20 */	blr
+.endfn initializeState_WarningCaution__17dWarningManager_cFv
+
+# .text:0xE74 | 0x8010E0E4 | size: 0xC
+.fn gap_03_8010E0E4_text, global
+.hidden gap_03_8010E0E4_text
+/* 8010E0E4 00000EB4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E0E8 00000EB8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E0EC 00000EBC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E0E4_text
+
+# .text:0xE80 | 0x8010E0F0 | size: 0x98
+# dWarningManager_c::executeState_WarningCaution()
+.fn executeState_WarningCaution__17dWarningManager_cFv, global
+/* 8010E0F0 00000EC0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E0F4 00000EC4  7C 08 02 A6 */	mflr r0
+/* 8010E0F8 00000EC8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E0FC 00000ECC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E100 00000ED0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010E104 00000ED4  7C 7E 1B 78 */	mr r30, r3
+/* 8010E108 00000ED8  48 00 00 01 */	bl ForbidCheck__17dWarningManager_cFv
+/* 8010E10C 00000EDC  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E110 00000EE0  40 82 00 60 */	bne .L_8010E170
+/* 8010E114 00000EE4  38 7E 00 74 */	addi r3, r30, 0x74
+/* 8010E118 00000EE8  48 00 00 01 */	bl execute__15dWarningOther_cFv
+/* 8010E11C 00000EEC  88 1E 02 5A */	lbz r0, 0x25a(r30)
+/* 8010E120 00000EF0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E124 00000EF4  40 82 00 4C */	bne .L_8010E170
+/* 8010E128 00000EF8  80 1E 0B 64 */	lwz r0, 0xb64(r30)
+/* 8010E12C 00000EFC  3B E0 00 00 */	li r31, 0x0
+/* 8010E130 00000F00  80 60 00 00 */	lwz r3, m_instance__13dRemoconMng_c@sda21(r0)
+/* 8010E134 00000F04  54 00 10 3A */	slwi r0, r0, 2
+/* 8010E138 00000F08  9B FE 0B 8C */	stb r31, 0xb8c(r30)
+/* 8010E13C 00000F0C  7C 63 02 14 */	add r3, r3, r0
+/* 8010E140 00000F10  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 8010E144 00000F14  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 8010E148 00000F18  2C 00 00 02 */	cmpwi r0, 0x2
+/* 8010E14C 00000F1C  41 82 00 24 */	beq .L_8010E170
+/* 8010E150 00000F20  7F C3 F3 78 */	mr r3, r30
+/* 8010E154 00000F24  48 00 00 01 */	bl GotoWarningCheck__17dWarningManager_cFv
+/* 8010E158 00000F28  80 1E 0B 64 */	lwz r0, 0xb64(r30)
+/* 8010E15C 00000F2C  38 7E 00 74 */	addi r3, r30, 0x74
+/* 8010E160 00000F30  54 00 10 3A */	slwi r0, r0, 2
+/* 8010E164 00000F34  7C 9E 02 14 */	add r4, r30, r0
+/* 8010E168 00000F38  93 E4 0B 54 */	stw r31, 0xb54(r4)
+/* 8010E16C 00000F3C  48 00 00 01 */	bl WindowCloseSetup__15dWarningOther_cFv
+.L_8010E170:
+/* 8010E170 00000F40  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E174 00000F44  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E178 00000F48  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010E17C 00000F4C  7C 08 03 A6 */	mtlr r0
+/* 8010E180 00000F50  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E184 00000F54  4E 80 00 20 */	blr
+.endfn executeState_WarningCaution__17dWarningManager_cFv
+
+# .text:0xF18 | 0x8010E188 | size: 0x8
+.fn gap_03_8010E188_text, global
+.hidden gap_03_8010E188_text
+/* 8010E188 00000F58  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E18C 00000F5C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E188_text
+
+# .text:0xF20 | 0x8010E190 | size: 0x4
+# dWarningManager_c::finalizeState_WarningCaution()
+.fn finalizeState_WarningCaution__17dWarningManager_cFv, global
+/* 8010E190 00000F60  4E 80 00 20 */	blr
+.endfn finalizeState_WarningCaution__17dWarningManager_cFv
+
+# .text:0xF24 | 0x8010E194 | size: 0xC
+.fn gap_03_8010E194_text, global
+.hidden gap_03_8010E194_text
+/* 8010E194 00000F64  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E198 00000F68  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E19C 00000F6C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E194_text
+
+# .text:0xF30 | 0x8010E1A0 | size: 0x4
+# dWarningManager_c::initializeState_WarningNunchuk()
+.fn initializeState_WarningNunchuk__17dWarningManager_cFv, global
+/* 8010E1A0 00000F70  4E 80 00 20 */	blr
+.endfn initializeState_WarningNunchuk__17dWarningManager_cFv
+
+# .text:0xF34 | 0x8010E1A4 | size: 0xC
+.fn gap_03_8010E1A4_text, global
+.hidden gap_03_8010E1A4_text
+/* 8010E1A4 00000F74  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E1A8 00000F78  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E1AC 00000F7C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E1A4_text
+
+# .text:0xF40 | 0x8010E1B0 | size: 0x70
+# dWarningManager_c::executeState_WarningNunchuk()
+.fn executeState_WarningNunchuk__17dWarningManager_cFv, global
+/* 8010E1B0 00000F80  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E1B4 00000F84  7C 08 02 A6 */	mflr r0
+/* 8010E1B8 00000F88  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E1BC 00000F8C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E1C0 00000F90  7C 7F 1B 78 */	mr r31, r3
+/* 8010E1C4 00000F94  48 00 00 01 */	bl ForbidCheck__17dWarningManager_cFv
+/* 8010E1C8 00000F98  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E1CC 00000F9C  40 82 00 40 */	bne .L_8010E20C
+/* 8010E1D0 00000FA0  38 7F 02 60 */	addi r3, r31, 0x260
+/* 8010E1D4 00000FA4  48 00 00 01 */	bl execute__17dWarningNunchuk_cFv
+/* 8010E1D8 00000FA8  88 1F 04 46 */	lbz r0, 0x446(r31)
+/* 8010E1DC 00000FAC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E1E0 00000FB0  40 82 00 2C */	bne .L_8010E20C
+/* 8010E1E4 00000FB4  38 00 00 00 */	li r0, 0x0
+/* 8010E1E8 00000FB8  98 1F 0B 8C */	stb r0, 0xb8c(r31)
+/* 8010E1EC 00000FBC  7F E3 FB 78 */	mr r3, r31
+/* 8010E1F0 00000FC0  48 00 00 01 */	bl HitAnyKey__17dWarningManager_cFv
+/* 8010E1F4 00000FC4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E1F8 00000FC8  41 82 00 14 */	beq .L_8010E20C
+/* 8010E1FC 00000FCC  7F E3 FB 78 */	mr r3, r31
+/* 8010E200 00000FD0  48 00 00 01 */	bl GotoWarningCheck__17dWarningManager_cFv
+/* 8010E204 00000FD4  38 7F 02 60 */	addi r3, r31, 0x260
+/* 8010E208 00000FD8  48 00 00 01 */	bl WindowCloseSetup__17dWarningNunchuk_cFv
+.L_8010E20C:
+/* 8010E20C 00000FDC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E210 00000FE0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E214 00000FE4  7C 08 03 A6 */	mtlr r0
+/* 8010E218 00000FE8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E21C 00000FEC  4E 80 00 20 */	blr
+.endfn executeState_WarningNunchuk__17dWarningManager_cFv
+
+# .text:0xFB0 | 0x8010E220 | size: 0x4
+# dWarningManager_c::finalizeState_WarningNunchuk()
+.fn finalizeState_WarningNunchuk__17dWarningManager_cFv, global
+/* 8010E220 00000FF0  4E 80 00 20 */	blr
+.endfn finalizeState_WarningNunchuk__17dWarningManager_cFv
+
+# .text:0xFB4 | 0x8010E224 | size: 0xC
+.fn gap_03_8010E224_text, global
+.hidden gap_03_8010E224_text
+/* 8010E224 00000FF4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E228 00000FF8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E22C 00000FFC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E224_text
+
+# .text:0xFC0 | 0x8010E230 | size: 0x4
+# dWarningManager_c::initializeState_WarningYoKo()
+.fn initializeState_WarningYoKo__17dWarningManager_cFv, global
+/* 8010E230 00001000  4E 80 00 20 */	blr
+.endfn initializeState_WarningYoKo__17dWarningManager_cFv
+
+# .text:0xFC4 | 0x8010E234 | size: 0xC
+.fn gap_03_8010E234_text, global
+.hidden gap_03_8010E234_text
+/* 8010E234 00001004  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E238 00001008  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E23C 0000100C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E234_text
+
+# .text:0xFD0 | 0x8010E240 | size: 0x70
+# dWarningManager_c::executeState_WarningYoKo()
+.fn executeState_WarningYoKo__17dWarningManager_cFv, global
+/* 8010E240 00001010  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E244 00001014  7C 08 02 A6 */	mflr r0
+/* 8010E248 00001018  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E24C 0000101C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E250 00001020  7C 7F 1B 78 */	mr r31, r3
+/* 8010E254 00001024  48 00 00 01 */	bl ForbidCheck__17dWarningManager_cFv
+/* 8010E258 00001028  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E25C 0000102C  40 82 00 40 */	bne .L_8010E29C
+/* 8010E260 00001030  38 7F 04 4C */	addi r3, r31, 0x44c
+/* 8010E264 00001034  48 00 00 01 */	bl execute__14dWarningYoKo_cFv
+/* 8010E268 00001038  88 1F 06 32 */	lbz r0, 0x632(r31)
+/* 8010E26C 0000103C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E270 00001040  40 82 00 2C */	bne .L_8010E29C
+/* 8010E274 00001044  38 00 00 00 */	li r0, 0x0
+/* 8010E278 00001048  98 1F 0B 8C */	stb r0, 0xb8c(r31)
+/* 8010E27C 0000104C  7F E3 FB 78 */	mr r3, r31
+/* 8010E280 00001050  48 00 00 01 */	bl HitAnyKey__17dWarningManager_cFv
+/* 8010E284 00001054  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E288 00001058  41 82 00 14 */	beq .L_8010E29C
+/* 8010E28C 0000105C  7F E3 FB 78 */	mr r3, r31
+/* 8010E290 00001060  48 00 00 01 */	bl GotoWarningCheck__17dWarningManager_cFv
+/* 8010E294 00001064  38 7F 04 4C */	addi r3, r31, 0x44c
+/* 8010E298 00001068  48 00 00 01 */	bl WindowCloseSetup__14dWarningYoKo_cFv
+.L_8010E29C:
+/* 8010E29C 0000106C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E2A0 00001070  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E2A4 00001074  7C 08 03 A6 */	mtlr r0
+/* 8010E2A8 00001078  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E2AC 0000107C  4E 80 00 20 */	blr
+.endfn executeState_WarningYoKo__17dWarningManager_cFv
+
+# .text:0x1040 | 0x8010E2B0 | size: 0x4
+# dWarningManager_c::finalizeState_WarningYoKo()
+.fn finalizeState_WarningYoKo__17dWarningManager_cFv, global
+/* 8010E2B0 00001080  4E 80 00 20 */	blr
+.endfn finalizeState_WarningYoKo__17dWarningManager_cFv
+
+# .text:0x1044 | 0x8010E2B4 | size: 0xC
+.fn gap_03_8010E2B4_text, global
+.hidden gap_03_8010E2B4_text
+/* 8010E2B4 00001084  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E2B8 00001088  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E2BC 0000108C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E2B4_text
+
+# .text:0x1050 | 0x8010E2C0 | size: 0x4
+# dWarningManager_c::initializeState_WarningExitAnimeEndWait()
+.fn initializeState_WarningExitAnimeEndWait__17dWarningManager_cFv, global
+/* 8010E2C0 00001090  4E 80 00 20 */	blr
+.endfn initializeState_WarningExitAnimeEndWait__17dWarningManager_cFv
+
+# .text:0x1054 | 0x8010E2C4 | size: 0xC
+.fn gap_03_8010E2C4_text, global
+.hidden gap_03_8010E2C4_text
+/* 8010E2C4 00001094  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E2C8 00001098  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E2CC 0000109C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E2C4_text
+
+# .text:0x1060 | 0x8010E2D0 | size: 0xA0
+# dWarningManager_c::executeState_WarningExitAnimeEndWait()
+.fn executeState_WarningExitAnimeEndWait__17dWarningManager_cFv, global
+/* 8010E2D0 000010A0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E2D4 000010A4  7C 08 02 A6 */	mflr r0
+/* 8010E2D8 000010A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E2DC 000010AC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E2E0 000010B0  7C 7F 1B 78 */	mr r31, r3
+/* 8010E2E4 000010B4  48 00 00 01 */	bl ForbidCheck__17dWarningManager_cFv
+/* 8010E2E8 000010B8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E2EC 000010BC  40 82 00 70 */	bne .L_8010E35C
+/* 8010E2F0 000010C0  88 1F 02 5A */	lbz r0, 0x25a(r31)
+/* 8010E2F4 000010C4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E2F8 000010C8  41 82 00 10 */	beq .L_8010E308
+/* 8010E2FC 000010CC  38 7F 00 74 */	addi r3, r31, 0x74
+/* 8010E300 000010D0  48 00 00 01 */	bl execute__15dWarningOther_cFv
+/* 8010E304 000010D4  48 00 00 58 */	b .L_8010E35C
+.L_8010E308:
+/* 8010E308 000010D8  88 1F 04 46 */	lbz r0, 0x446(r31)
+/* 8010E30C 000010DC  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E310 000010E0  41 82 00 10 */	beq .L_8010E320
+/* 8010E314 000010E4  38 7F 02 60 */	addi r3, r31, 0x260
+/* 8010E318 000010E8  48 00 00 01 */	bl execute__17dWarningNunchuk_cFv
+/* 8010E31C 000010EC  48 00 00 40 */	b .L_8010E35C
+.L_8010E320:
+/* 8010E320 000010F0  88 1F 06 32 */	lbz r0, 0x632(r31)
+/* 8010E324 000010F4  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E328 000010F8  41 82 00 10 */	beq .L_8010E338
+/* 8010E32C 000010FC  38 7F 04 4C */	addi r3, r31, 0x44c
+/* 8010E330 00001100  48 00 00 01 */	bl execute__14dWarningYoKo_cFv
+/* 8010E334 00001104  48 00 00 28 */	b .L_8010E35C
+.L_8010E338:
+/* 8010E338 00001108  38 00 00 05 */	li r0, 0x5
+/* 8010E33C 0000110C  90 1F 0B 68 */	stw r0, 0xb68(r31)
+/* 8010E340 00001110  3C 80 00 00 */	lis r4, StateID_WarningCheck__17dWarningManager_c@ha
+/* 8010E344 00001114  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010E348 00001118  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010E34C 0000111C  38 84 00 00 */	addi r4, r4, StateID_WarningCheck__17dWarningManager_c@l
+/* 8010E350 00001120  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E354 00001124  7D 89 03 A6 */	mtctr r12
+/* 8010E358 00001128  4E 80 04 21 */	bctrl
+.L_8010E35C:
+/* 8010E35C 0000112C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E360 00001130  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E364 00001134  7C 08 03 A6 */	mtlr r0
+/* 8010E368 00001138  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E36C 0000113C  4E 80 00 20 */	blr
+.endfn executeState_WarningExitAnimeEndWait__17dWarningManager_cFv
+
+# .text:0x1100 | 0x8010E370 | size: 0x4
+# dWarningManager_c::finalizeState_WarningExitAnimeEndWait()
+.fn finalizeState_WarningExitAnimeEndWait__17dWarningManager_cFv, global
+/* 8010E370 00001140  4E 80 00 20 */	blr
+.endfn finalizeState_WarningExitAnimeEndWait__17dWarningManager_cFv
+
+# .text:0x1104 | 0x8010E374 | size: 0xC
+.fn gap_03_8010E374_text, global
+.hidden gap_03_8010E374_text
+/* 8010E374 00001144  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E378 00001148  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E37C 0000114C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E374_text
+
+# .text:0x1110 | 0x8010E380 | size: 0x4
+# dWarningManager_c::initializeState_WarningBattery()
+.fn initializeState_WarningBattery__17dWarningManager_cFv, global
+/* 8010E380 00001150  4E 80 00 20 */	blr
+.endfn initializeState_WarningBattery__17dWarningManager_cFv
+
+# .text:0x1114 | 0x8010E384 | size: 0xC
+.fn gap_03_8010E384_text, global
+.hidden gap_03_8010E384_text
+/* 8010E384 00001154  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E388 00001158  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E38C 0000115C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E384_text
+
+# .text:0x1120 | 0x8010E390 | size: 0x64
+# dWarningManager_c::executeState_WarningBattery()
+.fn executeState_WarningBattery__17dWarningManager_cFv, global
+/* 8010E390 00001160  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E394 00001164  7C 08 02 A6 */	mflr r0
+/* 8010E398 00001168  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E39C 0000116C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E3A0 00001170  7C 7F 1B 78 */	mr r31, r3
+/* 8010E3A4 00001174  38 63 06 38 */	addi r3, r3, 0x638
+/* 8010E3A8 00001178  48 00 00 01 */	bl execute__17dWarningBattery_cFv
+/* 8010E3AC 0000117C  88 1F 08 BD */	lbz r0, 0x8bd(r31)
+/* 8010E3B0 00001180  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E3B4 00001184  40 82 00 2C */	bne .L_8010E3E0
+/* 8010E3B8 00001188  80 7F 0B 6C */	lwz r3, 0xb6c(r31)
+/* 8010E3BC 0000118C  38 00 00 00 */	li r0, 0x0
+/* 8010E3C0 00001190  90 7F 0B 68 */	stw r3, 0xb68(r31)
+/* 8010E3C4 00001194  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010E3C8 00001198  98 00 00 00 */	stb r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010E3CC 0000119C  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010E3D0 000011A0  80 9F 0B 48 */	lwz r4, 0xb48(r31)
+/* 8010E3D4 000011A4  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E3D8 000011A8  7D 89 03 A6 */	mtctr r12
+/* 8010E3DC 000011AC  4E 80 04 21 */	bctrl
+.L_8010E3E0:
+/* 8010E3E0 000011B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E3E4 000011B4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E3E8 000011B8  7C 08 03 A6 */	mtlr r0
+/* 8010E3EC 000011BC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E3F0 000011C0  4E 80 00 20 */	blr
+.endfn executeState_WarningBattery__17dWarningManager_cFv
+
+# .text:0x1184 | 0x8010E3F4 | size: 0xC
+.fn gap_03_8010E3F4_text, global
+.hidden gap_03_8010E3F4_text
+/* 8010E3F4 000011C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E3F8 000011C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E3FC 000011CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E3F4_text
+
+# .text:0x1190 | 0x8010E400 | size: 0x4
+# dWarningManager_c::finalizeState_WarningBattery()
+.fn finalizeState_WarningBattery__17dWarningManager_cFv, global
+/* 8010E400 000011D0  4E 80 00 20 */	blr
+.endfn finalizeState_WarningBattery__17dWarningManager_cFv
+
+# .text:0x1194 | 0x8010E404 | size: 0xC
+.fn gap_03_8010E404_text, global
+.hidden gap_03_8010E404_text
+/* 8010E404 000011D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E408 000011D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E40C 000011DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E404_text
+
+# .text:0x11A0 | 0x8010E410 | size: 0x4
+# dWarningManager_c::initializeState_WarningError()
+.fn initializeState_WarningError__17dWarningManager_cFv, global
+/* 8010E410 000011E0  4E 80 00 20 */	blr
+.endfn initializeState_WarningError__17dWarningManager_cFv
+
+# .text:0x11A4 | 0x8010E414 | size: 0xC
+.fn gap_03_8010E414_text, global
+.hidden gap_03_8010E414_text
+/* 8010E414 000011E4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E418 000011E8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E41C 000011EC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E414_text
+
+# .text:0x11B0 | 0x8010E420 | size: 0xC4
+# dWarningManager_c::executeState_WarningError()
+.fn executeState_WarningError__17dWarningManager_cFv, global
+/* 8010E420 000011F0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E424 000011F4  7C 08 02 A6 */	mflr r0
+/* 8010E428 000011F8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E42C 000011FC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E430 00001200  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010E434 00001204  7C 7E 1B 78 */	mr r30, r3
+/* 8010E438 00001208  48 00 00 01 */	bl ForbidCheck__17dWarningManager_cFv
+/* 8010E43C 0000120C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E440 00001210  40 82 00 8C */	bne .L_8010E4CC
+/* 8010E444 00001214  38 7E 08 DC */	addi r3, r30, 0x8dc
+/* 8010E448 00001218  48 00 00 01 */	bl execute__19dWarningErrorInfo_cFv
+/* 8010E44C 0000121C  88 1E 0B 09 */	lbz r0, 0xb09(r30)
+/* 8010E450 00001220  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E454 00001224  40 82 00 78 */	bne .L_8010E4CC
+/* 8010E458 00001228  80 7E 0B 6C */	lwz r3, 0xb6c(r30)
+/* 8010E45C 0000122C  3B E0 00 00 */	li r31, 0x0
+/* 8010E460 00001230  80 1E 0B 70 */	lwz r0, 0xb70(r30)
+/* 8010E464 00001234  90 7E 0B 68 */	stw r3, 0xb68(r30)
+/* 8010E468 00001238  90 1E 0B 6C */	stw r0, 0xb6c(r30)
+/* 8010E46C 0000123C  9B E0 00 00 */	stb r31, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010E470 00001240  48 00 00 01 */	bl EasyPairingResume__8dGameComFv
+/* 8010E474 00001244  81 9E 0B 0C */	lwz r12, 0xb0c(r30)
+/* 8010E478 00001248  38 7E 0B 0C */	addi r3, r30, 0xb0c
+/* 8010E47C 0000124C  80 9E 0B 48 */	lwz r4, 0xb48(r30)
+/* 8010E480 00001250  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E484 00001254  7D 89 03 A6 */	mtctr r12
+/* 8010E488 00001258  4E 80 04 21 */	bctrl
+/* 8010E48C 0000125C  80 1E 0B 4C */	lwz r0, 0xb4c(r30)
+/* 8010E490 00001260  90 1E 0B 48 */	stw r0, 0xb48(r30)
+/* 8010E494 00001264  80 1E 0B 7C */	lwz r0, 0xb7c(r30)
+/* 8010E498 00001268  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010E49C 0000126C  40 82 00 30 */	bne .L_8010E4CC
+/* 8010E4A0 00001270  80 1E 0B 80 */	lwz r0, 0xb80(r30)
+/* 8010E4A4 00001274  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010E4A8 00001278  40 82 00 24 */	bne .L_8010E4CC
+/* 8010E4AC 0000127C  80 1E 0B 84 */	lwz r0, 0xb84(r30)
+/* 8010E4B0 00001280  38 7E 00 08 */	addi r3, r30, 0x8
+/* 8010E4B4 00001284  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010E4B8 00001288  40 82 00 14 */	bne .L_8010E4CC
+/* 8010E4BC 0000128C  80 03 0B 80 */	lwz r0, 0xb80(r3)
+/* 8010E4C0 00001290  2C 00 00 04 */	cmpwi r0, 0x4
+/* 8010E4C4 00001294  40 82 00 08 */	bne .L_8010E4CC
+/* 8010E4C8 00001298  9B FE 0B 8E */	stb r31, 0xb8e(r30)
+.L_8010E4CC:
+/* 8010E4CC 0000129C  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E4D0 000012A0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E4D4 000012A4  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010E4D8 000012A8  7C 08 03 A6 */	mtlr r0
+/* 8010E4DC 000012AC  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E4E0 000012B0  4E 80 00 20 */	blr
+.endfn executeState_WarningError__17dWarningManager_cFv
+
+# .text:0x1274 | 0x8010E4E4 | size: 0xC
+.fn gap_03_8010E4E4_text, global
+.hidden gap_03_8010E4E4_text
+/* 8010E4E4 000012B4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E4E8 000012B8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E4EC 000012BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E4E4_text
+
+# .text:0x1280 | 0x8010E4F0 | size: 0x4
+# dWarningManager_c::finalizeState_WarningError()
+.fn finalizeState_WarningError__17dWarningManager_cFv, global
+/* 8010E4F0 000012C0  4E 80 00 20 */	blr
+.endfn finalizeState_WarningError__17dWarningManager_cFv
+
+# .text:0x1284 | 0x8010E4F4 | size: 0xC
+.fn gap_03_8010E4F4_text, global
+.hidden gap_03_8010E4F4_text
+/* 8010E4F4 000012C4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E4F8 000012C8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E4FC 000012CC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E4F4_text
+
+# .text:0x1290 | 0x8010E500 | size: 0x4
+# dWarningManager_c::initializeState_WarningSaveError()
+.fn initializeState_WarningSaveError__17dWarningManager_cFv, global
+/* 8010E500 000012D0  4E 80 00 20 */	blr
+.endfn initializeState_WarningSaveError__17dWarningManager_cFv
+
+# .text:0x1294 | 0x8010E504 | size: 0xC
+.fn gap_03_8010E504_text, global
+.hidden gap_03_8010E504_text
+/* 8010E504 000012D4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E508 000012D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E50C 000012DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E504_text
+
+# .text:0x12A0 | 0x8010E510 | size: 0x78
+# dWarningManager_c::executeState_WarningSaveError()
+.fn executeState_WarningSaveError__17dWarningManager_cFv, global
+/* 8010E510 000012E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E514 000012E4  7C 08 02 A6 */	mflr r0
+/* 8010E518 000012E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E51C 000012EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E520 000012F0  7C 7F 1B 78 */	mr r31, r3
+/* 8010E524 000012F4  48 00 00 01 */	bl ForbidCheck__17dWarningManager_cFv
+/* 8010E528 000012F8  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E52C 000012FC  40 82 00 48 */	bne .L_8010E574
+/* 8010E530 00001300  38 7F 08 DC */	addi r3, r31, 0x8dc
+/* 8010E534 00001304  48 00 00 01 */	bl execute__19dWarningErrorInfo_cFv
+/* 8010E538 00001308  88 1F 0B 09 */	lbz r0, 0xb09(r31)
+/* 8010E53C 0000130C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E540 00001310  40 82 00 34 */	bne .L_8010E574
+/* 8010E544 00001314  38 60 00 00 */	li r3, 0x0
+/* 8010E548 00001318  98 60 00 00 */	stb r3, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010E54C 0000131C  38 00 00 05 */	li r0, 0x5
+/* 8010E550 00001320  3C 80 00 00 */	lis r4, StateID_WarningCheck__17dWarningManager_c@ha
+/* 8010E554 00001324  98 7F 0B 8F */	stb r3, 0xb8f(r31)
+/* 8010E558 00001328  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010E55C 0000132C  38 84 00 00 */	addi r4, r4, StateID_WarningCheck__17dWarningManager_c@l
+/* 8010E560 00001330  90 1F 0B 68 */	stw r0, 0xb68(r31)
+/* 8010E564 00001334  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010E568 00001338  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E56C 0000133C  7D 89 03 A6 */	mtctr r12
+/* 8010E570 00001340  4E 80 04 21 */	bctrl
+.L_8010E574:
+/* 8010E574 00001344  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E578 00001348  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E57C 0000134C  7C 08 03 A6 */	mtlr r0
+/* 8010E580 00001350  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E584 00001354  4E 80 00 20 */	blr
+.endfn executeState_WarningSaveError__17dWarningManager_cFv
+
+# .text:0x1318 | 0x8010E588 | size: 0x8
+.fn gap_03_8010E588_text, global
+.hidden gap_03_8010E588_text
+/* 8010E588 00001358  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E58C 0000135C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E588_text
+
+# .text:0x1320 | 0x8010E590 | size: 0x4
+# dWarningManager_c::finalizeState_WarningSaveError()
+.fn finalizeState_WarningSaveError__17dWarningManager_cFv, global
+/* 8010E590 00001360  4E 80 00 20 */	blr
+.endfn finalizeState_WarningSaveError__17dWarningManager_cFv
+
+# .text:0x1324 | 0x8010E594 | size: 0xC
+.fn gap_03_8010E594_text, global
+.hidden gap_03_8010E594_text
+/* 8010E594 00001364  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E598 00001368  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E59C 0000136C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E594_text
+
+# .text:0x1330 | 0x8010E5A0 | size: 0x168
+# dWarningManager_c::AllWarningEnd(bool)
+.fn AllWarningEnd__17dWarningManager_cFb, global
+/* 8010E5A0 00001370  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E5A4 00001374  7C 08 02 A6 */	mflr r0
+/* 8010E5A8 00001378  2C 04 00 00 */	cmpwi r4, 0x0
+/* 8010E5AC 0000137C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E5B0 00001380  38 00 00 00 */	li r0, 0x0
+/* 8010E5B4 00001384  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E5B8 00001388  7C 7F 1B 78 */	mr r31, r3
+/* 8010E5BC 0000138C  90 03 0B 74 */	stw r0, 0xb74(r3)
+/* 8010E5C0 00001390  90 03 0B 78 */	stw r0, 0xb78(r3)
+/* 8010E5C4 00001394  98 00 00 00 */	stb r0, m_WarningCheck__17dWarningManager_c@sda21(r0)
+/* 8010E5C8 00001398  40 82 00 08 */	bne .L_8010E5D0
+/* 8010E5CC 0000139C  90 00 00 00 */	stw r0, m_WarningForbid__17dWarningManager_c@sda21(r0)
+.L_8010E5D0:
+/* 8010E5D0 000013A0  88 03 02 59 */	lbz r0, 0x259(r3)
+/* 8010E5D4 000013A4  38 80 00 04 */	li r4, 0x4
+/* 8010E5D8 000013A8  38 C0 00 00 */	li r6, 0x0
+/* 8010E5DC 000013AC  38 A0 00 05 */	li r5, 0x5
+/* 8010E5E0 000013B0  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E5E4 000013B4  98 C3 0B 8D */	stb r6, 0xb8d(r3)
+/* 8010E5E8 000013B8  98 C3 0B 8E */	stb r6, 0xb8e(r3)
+/* 8010E5EC 000013BC  98 C3 0B 90 */	stb r6, 0xb90(r3)
+/* 8010E5F0 000013C0  90 A3 0B 68 */	stw r5, 0xb68(r3)
+/* 8010E5F4 000013C4  90 A3 0B 6C */	stw r5, 0xb6c(r3)
+/* 8010E5F8 000013C8  90 A3 0B 70 */	stw r5, 0xb70(r3)
+/* 8010E5FC 000013CC  90 83 0B 7C */	stw r4, 0xb7c(r3)
+/* 8010E600 000013D0  90 83 0B 80 */	stw r4, 0xb80(r3)
+/* 8010E604 000013D4  90 83 0B 84 */	stw r4, 0xb84(r3)
+/* 8010E608 000013D8  90 83 0B 88 */	stw r4, 0xb88(r3)
+/* 8010E60C 000013DC  41 82 00 20 */	beq .L_8010E62C
+/* 8010E610 000013E0  98 C3 02 59 */	stb r6, 0x259(r3)
+/* 8010E614 000013E4  3C 80 00 00 */	lis r4, StateID_StartWait__15dWarningOther_c@ha
+/* 8010E618 000013E8  38 84 00 00 */	addi r4, r4, StateID_StartWait__15dWarningOther_c@l
+/* 8010E61C 000013EC  85 83 02 10 */	lwzu r12, 0x210(r3)
+/* 8010E620 000013F0  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E624 000013F4  7D 89 03 A6 */	mtctr r12
+/* 8010E628 000013F8  4E 80 04 21 */	bctrl
+.L_8010E62C:
+/* 8010E62C 000013FC  88 1F 04 45 */	lbz r0, 0x445(r31)
+/* 8010E630 00001400  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E634 00001404  41 82 00 28 */	beq .L_8010E65C
+/* 8010E638 00001408  38 00 00 00 */	li r0, 0x0
+/* 8010E63C 0000140C  98 1F 04 45 */	stb r0, 0x445(r31)
+/* 8010E640 00001410  3C 80 00 00 */	lis r4, StateID_StartWait__17dWarningNunchuk_c@ha
+/* 8010E644 00001414  38 7F 03 FC */	addi r3, r31, 0x3fc
+/* 8010E648 00001418  81 9F 03 FC */	lwz r12, 0x3fc(r31)
+/* 8010E64C 0000141C  38 84 00 00 */	addi r4, r4, StateID_StartWait__17dWarningNunchuk_c@l
+/* 8010E650 00001420  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E654 00001424  7D 89 03 A6 */	mtctr r12
+/* 8010E658 00001428  4E 80 04 21 */	bctrl
+.L_8010E65C:
+/* 8010E65C 0000142C  88 1F 06 31 */	lbz r0, 0x631(r31)
+/* 8010E660 00001430  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E664 00001434  41 82 00 28 */	beq .L_8010E68C
+/* 8010E668 00001438  38 00 00 00 */	li r0, 0x0
+/* 8010E66C 0000143C  98 1F 06 31 */	stb r0, 0x631(r31)
+/* 8010E670 00001440  3C 80 00 00 */	lis r4, StateID_StartWait__14dWarningYoKo_c@ha
+/* 8010E674 00001444  38 7F 05 E8 */	addi r3, r31, 0x5e8
+/* 8010E678 00001448  81 9F 05 E8 */	lwz r12, 0x5e8(r31)
+/* 8010E67C 0000144C  38 84 00 00 */	addi r4, r4, StateID_StartWait__14dWarningYoKo_c@l
+/* 8010E680 00001450  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E684 00001454  7D 89 03 A6 */	mtctr r12
+/* 8010E688 00001458  4E 80 04 21 */	bctrl
+.L_8010E68C:
+/* 8010E68C 0000145C  88 1F 08 BD */	lbz r0, 0x8bd(r31)
+/* 8010E690 00001460  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E694 00001464  41 82 00 14 */	beq .L_8010E6A8
+/* 8010E698 00001468  38 60 00 00 */	li r3, 0x0
+/* 8010E69C 0000146C  38 00 00 01 */	li r0, 0x1
+/* 8010E6A0 00001470  98 7F 08 BD */	stb r3, 0x8bd(r31)
+/* 8010E6A4 00001474  98 1F 08 C2 */	stb r0, 0x8c2(r31)
+.L_8010E6A8:
+/* 8010E6A8 00001478  88 1F 0B 09 */	lbz r0, 0xb09(r31)
+/* 8010E6AC 0000147C  2C 00 00 00 */	cmpwi r0, 0x0
+/* 8010E6B0 00001480  41 82 00 1C */	beq .L_8010E6CC
+/* 8010E6B4 00001484  38 60 00 00 */	li r3, 0x0
+/* 8010E6B8 00001488  38 00 00 01 */	li r0, 0x1
+/* 8010E6BC 0000148C  98 7F 0B 09 */	stb r3, 0xb09(r31)
+/* 8010E6C0 00001490  38 7F 08 DC */	addi r3, r31, 0x8dc
+/* 8010E6C4 00001494  98 1F 0B 0A */	stb r0, 0xb0a(r31)
+/* 8010E6C8 00001498  48 00 00 01 */	bl execute__19dWarningErrorInfo_cFv
+.L_8010E6CC:
+/* 8010E6CC 0000149C  38 00 00 00 */	li r0, 0x0
+/* 8010E6D0 000014A0  98 1F 0B 8F */	stb r0, 0xb8f(r31)
+/* 8010E6D4 000014A4  3C 80 00 00 */	lis r4, StateID_WarningCheck__17dWarningManager_c@ha
+/* 8010E6D8 000014A8  38 7F 0B 0C */	addi r3, r31, 0xb0c
+/* 8010E6DC 000014AC  90 1F 0B 50 */	stw r0, 0xb50(r31)
+/* 8010E6E0 000014B0  38 84 00 00 */	addi r4, r4, StateID_WarningCheck__17dWarningManager_c@l
+/* 8010E6E4 000014B4  81 9F 0B 0C */	lwz r12, 0xb0c(r31)
+/* 8010E6E8 000014B8  81 8C 00 18 */	lwz r12, 0x18(r12)
+/* 8010E6EC 000014BC  7D 89 03 A6 */	mtctr r12
+/* 8010E6F0 000014C0  4E 80 04 21 */	bctrl
+/* 8010E6F4 000014C4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E6F8 000014C8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E6FC 000014CC  7C 08 03 A6 */	mtlr r0
+/* 8010E700 000014D0  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E704 000014D4  4E 80 00 20 */	blr
+.endfn AllWarningEnd__17dWarningManager_cFb
+
+# .text:0x1498 | 0x8010E708 | size: 0x8
+.fn gap_03_8010E708_text, global
+.hidden gap_03_8010E708_text
+/* 8010E708 000014D8  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8010E70C 000014DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E708_text
+
+# .text:0x14A0 | 0x8010E710 | size: 0x70
+# dWarningManager_c::onControllerCut(int)
+.fn onControllerCut__17dWarningManager_cFi, global
+/* 8010E710 000014E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E714 000014E4  7C 08 02 A6 */	mflr r0
+/* 8010E718 000014E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E71C 000014EC  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E720 000014F0  7C 9F 23 78 */	mr r31, r4
+/* 8010E724 000014F4  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010E728 000014F8  7C 7E 1B 78 */	mr r30, r3
+/* 8010E72C 000014FC  7F E3 FB 78 */	mr r3, r31
+/* 8010E730 00001500  48 00 00 01 */	bl PlayerEnterCheck__8dGameComFi
+/* 8010E734 00001504  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E738 00001508  41 82 00 30 */	beq .L_8010E768
+/* 8010E73C 0000150C  80 9E 0B 74 */	lwz r4, 0xb74(r30)
+/* 8010E740 00001510  54 80 10 3A */	slwi r0, r4, 2
+/* 8010E744 00001514  38 84 00 01 */	addi r4, r4, 0x1
+/* 8010E748 00001518  7C 7E 02 14 */	add r3, r30, r0
+/* 8010E74C 0000151C  2C 04 00 04 */	cmpwi r4, 0x4
+/* 8010E750 00001520  93 E3 0B 7C */	stw r31, 0xb7c(r3)
+/* 8010E754 00001524  41 80 00 08 */	blt .L_8010E75C
+/* 8010E758 00001528  38 80 00 00 */	li r4, 0x0
+.L_8010E75C:
+/* 8010E75C 0000152C  38 00 00 01 */	li r0, 0x1
+/* 8010E760 00001530  90 9E 0B 74 */	stw r4, 0xb74(r30)
+/* 8010E764 00001534  98 1E 0B 8E */	stb r0, 0xb8e(r30)
+.L_8010E768:
+/* 8010E768 00001538  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E76C 0000153C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E770 00001540  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010E774 00001544  7C 08 03 A6 */	mtlr r0
+/* 8010E778 00001548  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E77C 0000154C  4E 80 00 20 */	blr
+.endfn onControllerCut__17dWarningManager_cFi
+
+# .text:0x1510 | 0x8010E780 | size: 0x60
+# sFStateFct_c<dWarningManager_c>::build(const sStateIDIf_c&)
+.fn "build__33sFStateFct_c<17dWarningManager_c>FRC12sStateIDIf_c", global
+/* 8010E780 00001550  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E784 00001554  7C 08 02 A6 */	mflr r0
+/* 8010E788 00001558  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E78C 0000155C  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 8010E790 00001560  7C 9F 23 78 */	mr r31, r4
+/* 8010E794 00001564  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8010E798 00001568  7C 7E 1B 78 */	mr r30, r3
+/* 8010E79C 0000156C  7F E3 FB 78 */	mr r3, r31
+/* 8010E7A0 00001570  81 9F 00 00 */	lwz r12, 0x0(r31)
+/* 8010E7A4 00001574  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8010E7A8 00001578  7D 89 03 A6 */	mtctr r12
+/* 8010E7AC 0000157C  4E 80 04 21 */	bctrl
+/* 8010E7B0 00001580  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8010E7B4 00001584  40 82 00 10 */	bne .L_8010E7C4
+/* 8010E7B8 00001588  93 FE 00 0C */	stw r31, 0xc(r30)
+/* 8010E7BC 0000158C  38 7E 00 04 */	addi r3, r30, 0x4
+/* 8010E7C0 00001590  48 00 00 08 */	b .L_8010E7C8
+.L_8010E7C4:
+/* 8010E7C4 00001594  38 60 00 00 */	li r3, 0x0
+.L_8010E7C8:
+/* 8010E7C8 00001598  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E7CC 0000159C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 8010E7D0 000015A0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8010E7D4 000015A4  7C 08 03 A6 */	mtlr r0
+/* 8010E7D8 000015A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E7DC 000015AC  4E 80 00 20 */	blr
+.endfn "build__33sFStateFct_c<17dWarningManager_c>FRC12sStateIDIf_c"
+
+# .text:0x1570 | 0x8010E7E0 | size: 0xC
+# sFStateFct_c<dWarningManager_c>::dispose(sStateIf_c*&)
+.fn "dispose__33sFStateFct_c<17dWarningManager_c>FRP10sStateIf_c", global
+/* 8010E7E0 000015B0  38 00 00 00 */	li r0, 0x0
+/* 8010E7E4 000015B4  90 04 00 00 */	stw r0, 0x0(r4)
+/* 8010E7E8 000015B8  4E 80 00 20 */	blr
+.endfn "dispose__33sFStateFct_c<17dWarningManager_c>FRP10sStateIf_c"
+
+# .text:0x157C | 0x8010E7EC | size: 0x4
+.fn gap_03_8010E7EC_text, global
+.hidden gap_03_8010E7EC_text
+/* 8010E7EC 000015BC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E7EC_text
+
+# .text:0x1580 | 0x8010E7F0 | size: 0x1C
+# sFState_c<dWarningManager_c>::initialize()
+.fn "initialize__30sFState_c<17dWarningManager_c>Fv", global
+/* 8010E7F0 000015C0  7C 64 1B 78 */	mr r4, r3
+/* 8010E7F4 000015C4  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 8010E7F8 000015C8  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8010E7FC 000015CC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010E800 000015D0  81 8C 00 28 */	lwz r12, 0x28(r12)
+/* 8010E804 000015D4  7D 89 03 A6 */	mtctr r12
+/* 8010E808 000015D8  4E 80 04 20 */	bctr
+.endfn "initialize__30sFState_c<17dWarningManager_c>Fv"
+
+# .text:0x159C | 0x8010E80C | size: 0x4
+.fn gap_03_8010E80C_text, global
+.hidden gap_03_8010E80C_text
+/* 8010E80C 000015DC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E80C_text
+
+# .text:0x15A0 | 0x8010E810 | size: 0x1C
+# sFState_c<dWarningManager_c>::execute()
+.fn "execute__30sFState_c<17dWarningManager_c>Fv", global
+/* 8010E810 000015E0  7C 64 1B 78 */	mr r4, r3
+/* 8010E814 000015E4  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 8010E818 000015E8  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8010E81C 000015EC  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010E820 000015F0  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 8010E824 000015F4  7D 89 03 A6 */	mtctr r12
+/* 8010E828 000015F8  4E 80 04 20 */	bctr
+.endfn "execute__30sFState_c<17dWarningManager_c>Fv"
+
+# .text:0x15BC | 0x8010E82C | size: 0x4
+.fn gap_03_8010E82C_text, global
+.hidden gap_03_8010E82C_text
+/* 8010E82C 000015FC  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E82C_text
+
+# .text:0x15C0 | 0x8010E830 | size: 0x1C
+# sFState_c<dWarningManager_c>::finalize()
+.fn "finalize__30sFState_c<17dWarningManager_c>Fv", global
+/* 8010E830 00001600  7C 64 1B 78 */	mr r4, r3
+/* 8010E834 00001604  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 8010E838 00001608  80 84 00 04 */	lwz r4, 0x4(r4)
+/* 8010E83C 0000160C  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8010E840 00001610  81 8C 00 30 */	lwz r12, 0x30(r12)
+/* 8010E844 00001614  7D 89 03 A6 */	mtctr r12
+/* 8010E848 00001618  4E 80 04 20 */	bctr
+.endfn "finalize__30sFState_c<17dWarningManager_c>Fv"
+
+# .text:0x15DC | 0x8010E84C | size: 0x4
+.fn gap_03_8010E84C_text, global
+.hidden gap_03_8010E84C_text
+/* 8010E84C 0000161C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_8010E84C_text
+
+# .text:0x15E0 | 0x8010E850 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::initializeState()
+.fn "initializeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8010E850 00001620  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010E854 00001624  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 8010E858 00001628  7D 89 03 A6 */	mtctr r12
+/* 8010E85C 0000162C  4E 80 04 20 */	bctr
+.endfn "initializeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x15F0 | 0x8010E860 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::finalizeState()
+.fn "finalizeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8010E860 00001630  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010E864 00001634  81 8C 00 14 */	lwz r12, 0x14(r12)
+/* 8010E868 00001638  7D 89 03 A6 */	mtctr r12
+/* 8010E86C 0000163C  4E 80 04 20 */	bctr
+.endfn "finalizeState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x1600 | 0x8010E870 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::refreshState()
+.fn "refreshState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv", global
+/* 8010E870 00001640  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010E874 00001644  81 8C 00 1C */	lwz r12, 0x1c(r12)
+/* 8010E878 00001648  7D 89 03 A6 */	mtctr r12
+/* 8010E87C 0000164C  4E 80 04 20 */	bctr
+.endfn "refreshState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv"
+
+# .text:0x1610 | 0x8010E880 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getState() const
+.fn "getState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 8010E880 00001650  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010E884 00001654  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 8010E888 00001658  7D 89 03 A6 */	mtctr r12
+/* 8010E88C 0000165C  4E 80 04 20 */	bctr
+.endfn "getState__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x1620 | 0x8010E890 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getNewStateID() const
+.fn "getNewStateID__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 8010E890 00001660  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010E894 00001664  81 8C 00 24 */	lwz r12, 0x24(r12)
+/* 8010E898 00001668  7D 89 03 A6 */	mtctr r12
+/* 8010E89C 0000166C  4E 80 04 20 */	bctr
+.endfn "getNewStateID__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x1630 | 0x8010E8A0 | size: 0x10
+# sStateMgr_c<dWarningManager_c, sStateMethodUsr_FI_c, sFStateFct_c, sStateIDChk_c>::getOldStateID() const
+.fn "getOldStateID__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv", global
+/* 8010E8A0 00001670  85 83 00 18 */	lwzu r12, 0x18(r3)
+/* 8010E8A4 00001674  81 8C 00 2C */	lwz r12, 0x2c(r12)
+/* 8010E8A8 00001678  7D 89 03 A6 */	mtctr r12
+/* 8010E8AC 0000167C  4E 80 04 20 */	bctr
+.endfn "getOldStateID__86sStateMgr_c<17dWarningManager_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>CFv"
+
+# .text:0x1640 | 0x8010E8B0 | size: 0x30
+# sFStateID_c<dWarningManager_c>::finalizeState(dWarningManager_c&) const
+.fn "finalizeState__32sFStateID_c<17dWarningManager_c>CFR17dWarningManager_c", global
+/* 8010E8B0 00001680  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E8B4 00001684  7C 08 02 A6 */	mflr r0
+/* 8010E8B8 00001688  7C 65 1B 78 */	mr r5, r3
+/* 8010E8BC 0000168C  7C 83 23 78 */	mr r3, r4
+/* 8010E8C0 00001690  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E8C4 00001694  39 85 00 24 */	addi r12, r5, 0x24
+/* 8010E8C8 00001698  48 00 00 01 */	bl __ptmf_scall
+/* 8010E8CC 0000169C  60 00 00 00 */	nop
+/* 8010E8D0 000016A0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E8D4 000016A4  7C 08 03 A6 */	mtlr r0
+/* 8010E8D8 000016A8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E8DC 000016AC  4E 80 00 20 */	blr
+.endfn "finalizeState__32sFStateID_c<17dWarningManager_c>CFR17dWarningManager_c"
+
+# .text:0x1670 | 0x8010E8E0 | size: 0x30
+# sFStateID_c<dWarningManager_c>::executeState(dWarningManager_c&) const
+.fn "executeState__32sFStateID_c<17dWarningManager_c>CFR17dWarningManager_c", global
+/* 8010E8E0 000016B0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E8E4 000016B4  7C 08 02 A6 */	mflr r0
+/* 8010E8E8 000016B8  7C 65 1B 78 */	mr r5, r3
+/* 8010E8EC 000016BC  7C 83 23 78 */	mr r3, r4
+/* 8010E8F0 000016C0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E8F4 000016C4  39 85 00 18 */	addi r12, r5, 0x18
+/* 8010E8F8 000016C8  48 00 00 01 */	bl __ptmf_scall
+/* 8010E8FC 000016CC  60 00 00 00 */	nop
+/* 8010E900 000016D0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E904 000016D4  7C 08 03 A6 */	mtlr r0
+/* 8010E908 000016D8  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E90C 000016DC  4E 80 00 20 */	blr
+.endfn "executeState__32sFStateID_c<17dWarningManager_c>CFR17dWarningManager_c"
+
+# .text:0x16A0 | 0x8010E910 | size: 0x30
+# sFStateID_c<dWarningManager_c>::initializeState(dWarningManager_c&) const
+.fn "initializeState__32sFStateID_c<17dWarningManager_c>CFR17dWarningManager_c", global
+/* 8010E910 000016E0  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 8010E914 000016E4  7C 08 02 A6 */	mflr r0
+/* 8010E918 000016E8  7C 65 1B 78 */	mr r5, r3
+/* 8010E91C 000016EC  7C 83 23 78 */	mr r3, r4
+/* 8010E920 000016F0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 8010E924 000016F4  39 85 00 0C */	addi r12, r5, 0xc
+/* 8010E928 000016F8  48 00 00 01 */	bl __ptmf_scall
+/* 8010E92C 000016FC  60 00 00 00 */	nop
+/* 8010E930 00001700  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8010E934 00001704  7C 08 03 A6 */	mtlr r0
+/* 8010E938 00001708  38 21 00 10 */	addi r1, r1, 0x10
+/* 8010E93C 0000170C  4E 80 00 20 */	blr
+.endfn "initializeState__32sFStateID_c<17dWarningManager_c>CFR17dWarningManager_c"

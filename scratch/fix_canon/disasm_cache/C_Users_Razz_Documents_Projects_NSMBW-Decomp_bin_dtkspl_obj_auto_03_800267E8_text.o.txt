@@ -1,0 +1,342 @@
+.include "macros.inc"
+.file "auto_03_800267E8_text"
+
+# 0x800267E8..0x80026BB0 | size: 0x3C8
+.text
+.balign 4
+
+# .text:0x0 | 0x800267E8 | size: 0x8
+.fn pad_03_800267E8_text, local
+/* 800267E8 00000040  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 800267EC 00000044  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn pad_03_800267E8_text
+
+# .text:0x8 | 0x800267F0 | size: 0x58
+# sFStateID_c<daEnBrosBase_c>::~sFStateID_c()
+.fn "__dt__29sFStateID_c<14daEnBrosBase_c>Fv", global
+/* 800267F0 00000048  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800267F4 0000004C  7C 08 02 A6 */	mflr r0
+/* 800267F8 00000050  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800267FC 00000054  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80026800 00000058  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80026804 0000005C  7C 9F 23 78 */	mr r31, r4
+/* 80026808 00000060  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8002680C 00000064  7C 7E 1B 78 */	mr r30, r3
+/* 80026810 00000068  41 82 00 1C */	beq .L_8002682C
+/* 80026814 0000006C  38 80 00 00 */	li r4, 0x0
+/* 80026818 00000070  48 00 00 01 */	bl __dt__10sStateID_cFv
+/* 8002681C 00000074  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80026820 00000078  40 81 00 0C */	ble .L_8002682C
+/* 80026824 0000007C  7F C3 F3 78 */	mr r3, r30
+/* 80026828 00000080  48 00 00 01 */	bl __dl__FPv
+.L_8002682C:
+/* 8002682C 00000084  7F C3 F3 78 */	mr r3, r30
+/* 80026830 00000088  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80026834 0000008C  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80026838 00000090  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8002683C 00000094  7C 08 03 A6 */	mtlr r0
+/* 80026840 00000098  38 21 00 10 */	addi r1, r1, 0x10
+/* 80026844 0000009C  4E 80 00 20 */	blr
+.endfn "__dt__29sFStateID_c<14daEnBrosBase_c>Fv"
+
+# .text:0x60 | 0x80026848 | size: 0x8
+.fn gap_03_80026848_text, global
+.hidden gap_03_80026848_text
+/* 80026848 000000A0  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 8002684C 000000A4  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80026848_text
+
+# .text:0x68 | 0x80026850 | size: 0x5C
+# sFStateVirtualID_c<daEnBrosBase_c>::~sFStateVirtualID_c()
+.fn "__dt__36sFStateVirtualID_c<14daEnBrosBase_c>Fv", global
+/* 80026850 000000A8  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80026854 000000AC  7C 08 02 A6 */	mflr r0
+/* 80026858 000000B0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8002685C 000000B4  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80026860 000000B8  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80026864 000000BC  7C 9F 23 78 */	mr r31, r4
+/* 80026868 000000C0  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 8002686C 000000C4  7C 7E 1B 78 */	mr r30, r3
+/* 80026870 000000C8  41 82 00 20 */	beq .L_80026890
+/* 80026874 000000CC  41 82 00 0C */	beq .L_80026880
+/* 80026878 000000D0  38 80 00 00 */	li r4, 0x0
+/* 8002687C 000000D4  48 00 00 01 */	bl __dt__10sStateID_cFv
+.L_80026880:
+/* 80026880 000000D8  2C 1F 00 00 */	cmpwi r31, 0x0
+/* 80026884 000000DC  40 81 00 0C */	ble .L_80026890
+/* 80026888 000000E0  7F C3 F3 78 */	mr r3, r30
+/* 8002688C 000000E4  48 00 00 01 */	bl __dl__FPv
+.L_80026890:
+/* 80026890 000000E8  7F C3 F3 78 */	mr r3, r30
+/* 80026894 000000EC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80026898 000000F0  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 8002689C 000000F4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800268A0 000000F8  7C 08 03 A6 */	mtlr r0
+/* 800268A4 000000FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 800268A8 00000100  4E 80 00 20 */	blr
+.endfn "__dt__36sFStateVirtualID_c<14daEnBrosBase_c>Fv"
+
+# .text:0xC4 | 0x800268AC | size: 0x4
+.fn gap_03_800268AC_text, global
+.hidden gap_03_800268AC_text
+/* 800268AC 00000104  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800268AC_text
+
+# .text:0xC8 | 0x800268B0 | size: 0xC
+.fn "baseID_DieFall<5dEn_c>__Fv_RC12sStateIDIf_c_800268B0", global
+/* 800268B0 00000108  3C 60 00 00 */	lis r3, StateID_DieFall__5dEn_c@ha
+/* 800268B4 0000010C  38 63 00 00 */	addi r3, r3, StateID_DieFall__5dEn_c@l
+/* 800268B8 00000110  4E 80 00 20 */	blr
+.endfn "baseID_DieFall<5dEn_c>__Fv_RC12sStateIDIf_c_800268B0"
+
+# .text:0xD4 | 0x800268BC | size: 0x4
+.fn gap_03_800268BC_text, global
+.hidden gap_03_800268BC_text
+/* 800268BC 00000114  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800268BC_text
+
+# .text:0xD8 | 0x800268C0 | size: 0xC
+.fn "baseID_DieFumi<5dEn_c>__Fv_RC12sStateIDIf_c_800268C0", global
+/* 800268C0 00000118  3C 60 00 00 */	lis r3, StateID_DieFumi__5dEn_c@ha
+/* 800268C4 0000011C  38 63 00 00 */	addi r3, r3, StateID_DieFumi__5dEn_c@l
+/* 800268C8 00000120  4E 80 00 20 */	blr
+.endfn "baseID_DieFumi<5dEn_c>__Fv_RC12sStateIDIf_c_800268C0"
+
+# .text:0xE4 | 0x800268CC | size: 0x4
+.fn gap_03_800268CC_text, global
+.hidden gap_03_800268CC_text
+/* 800268CC 00000124  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800268CC_text
+
+# .text:0xE8 | 0x800268D0 | size: 0xDC
+# sFStateVirtualID_c<daEnBrosBase_c>::number() const
+.fn "number__36sFStateVirtualID_c<14daEnBrosBase_c>CFv", global
+/* 800268D0 00000128  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800268D4 0000012C  7C 08 02 A6 */	mflr r0
+/* 800268D8 00000130  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800268DC 00000134  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800268E0 00000138  7C 7F 1B 78 */	mr r31, r3
+/* 800268E4 0000013C  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 800268E8 00000140  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800268EC 00000144  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 800268F0 00000148  7D 89 03 A6 */	mtctr r12
+/* 800268F4 0000014C  4E 80 04 21 */	bctrl
+/* 800268F8 00000150  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800268FC 00000154  40 82 00 94 */	bne .L_80026990
+/* 80026900 00000158  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026904 0000015C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026908 00000160  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8002690C 00000164  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026910 00000168  7D 89 03 A6 */	mtctr r12
+/* 80026914 0000016C  4E 80 04 21 */	bctrl
+/* 80026918 00000170  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8002691C 00000174  40 82 00 74 */	bne .L_80026990
+/* 80026920 00000178  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026924 0000017C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026928 00000180  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8002692C 00000184  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026930 00000188  7D 89 03 A6 */	mtctr r12
+/* 80026934 0000018C  4E 80 04 21 */	bctrl
+/* 80026938 00000190  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8002693C 00000194  40 82 00 54 */	bne .L_80026990
+/* 80026940 00000198  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026944 0000019C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026948 000001A0  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8002694C 000001A4  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026950 000001A8  7D 89 03 A6 */	mtctr r12
+/* 80026954 000001AC  4E 80 04 21 */	bctrl
+/* 80026958 000001B0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8002695C 000001B4  40 82 00 34 */	bne .L_80026990
+/* 80026960 000001B8  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026964 000001BC  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026968 000001C0  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 8002696C 000001C4  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026970 000001C8  7D 89 03 A6 */	mtctr r12
+/* 80026974 000001CC  4E 80 04 21 */	bctrl
+/* 80026978 000001D0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 8002697C 000001D4  41 82 00 08 */	beq .L_80026984
+/* 80026980 000001D8  48 00 00 10 */	b .L_80026990
+.L_80026984:
+/* 80026984 000001DC  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026988 000001E0  48 00 00 01 */	bl "superID__36sFStateVirtualID_c<14daEnBrosBase_c>CFv"
+/* 8002698C 000001E4  7C 7F 1B 78 */	mr r31, r3
+.L_80026990:
+/* 80026990 000001E8  7F E3 FB 78 */	mr r3, r31
+/* 80026994 000001EC  48 00 00 01 */	bl number__10sStateID_cCFv
+/* 80026998 000001F0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 8002699C 000001F4  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800269A0 000001F8  7C 08 03 A6 */	mtlr r0
+/* 800269A4 000001FC  38 21 00 10 */	addi r1, r1, 0x10
+/* 800269A8 00000200  4E 80 00 20 */	blr
+.endfn "number__36sFStateVirtualID_c<14daEnBrosBase_c>CFv"
+
+# .text:0x1C4 | 0x800269AC | size: 0x4
+.fn gap_03_800269AC_text, global
+.hidden gap_03_800269AC_text
+/* 800269AC 00000204  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_800269AC_text
+
+# .text:0x1C8 | 0x800269B0 | size: 0xE0
+# sFStateVirtualID_c<daEnBrosBase_c>::superID() const
+.fn "superID__36sFStateVirtualID_c<14daEnBrosBase_c>CFv", global
+/* 800269B0 00000208  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800269B4 0000020C  7C 08 02 A6 */	mflr r0
+/* 800269B8 00000210  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800269BC 00000214  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800269C0 00000218  7C 7F 1B 78 */	mr r31, r3
+/* 800269C4 0000021C  80 63 00 30 */	lwz r3, 0x30(r3)
+/* 800269C8 00000220  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800269CC 00000224  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 800269D0 00000228  7D 89 03 A6 */	mtctr r12
+/* 800269D4 0000022C  4E 80 04 21 */	bctrl
+/* 800269D8 00000230  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800269DC 00000234  40 82 00 9C */	bne .L_80026A78
+/* 800269E0 00000238  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 800269E4 0000023C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 800269E8 00000240  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 800269EC 00000244  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 800269F0 00000248  7D 89 03 A6 */	mtctr r12
+/* 800269F4 0000024C  4E 80 04 21 */	bctrl
+/* 800269F8 00000250  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800269FC 00000254  40 82 00 74 */	bne .L_80026A70
+/* 80026A00 00000258  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026A04 0000025C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026A08 00000260  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80026A0C 00000264  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026A10 00000268  7D 89 03 A6 */	mtctr r12
+/* 80026A14 0000026C  4E 80 04 21 */	bctrl
+/* 80026A18 00000270  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80026A1C 00000274  40 82 00 54 */	bne .L_80026A70
+/* 80026A20 00000278  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026A24 0000027C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026A28 00000280  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80026A2C 00000284  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026A30 00000288  7D 89 03 A6 */	mtctr r12
+/* 80026A34 0000028C  4E 80 04 21 */	bctrl
+/* 80026A38 00000290  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80026A3C 00000294  40 82 00 34 */	bne .L_80026A70
+/* 80026A40 00000298  83 FF 00 30 */	lwz r31, 0x30(r31)
+/* 80026A44 0000029C  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026A48 000002A0  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 80026A4C 000002A4  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 80026A50 000002A8  7D 89 03 A6 */	mtctr r12
+/* 80026A54 000002AC  4E 80 04 21 */	bctrl
+/* 80026A58 000002B0  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80026A5C 000002B4  41 82 00 08 */	beq .L_80026A64
+/* 80026A60 000002B8  48 00 00 10 */	b .L_80026A70
+.L_80026A64:
+/* 80026A64 000002BC  80 7F 00 30 */	lwz r3, 0x30(r31)
+/* 80026A68 000002C0  48 00 00 01 */	bl "superID__36sFStateVirtualID_c<14daEnBrosBase_c>CFv"
+/* 80026A6C 000002C4  7C 7F 1B 78 */	mr r31, r3
+.L_80026A70:
+/* 80026A70 000002C8  7F E3 FB 78 */	mr r3, r31
+/* 80026A74 000002CC  48 00 00 08 */	b .L_80026A7C
+.L_80026A78:
+/* 80026A78 000002D0  7F E3 FB 78 */	mr r3, r31
+.L_80026A7C:
+/* 80026A7C 000002D4  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80026A80 000002D8  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80026A84 000002DC  7C 08 03 A6 */	mtlr r0
+/* 80026A88 000002E0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80026A8C 000002E4  4E 80 00 20 */	blr
+.endfn "superID__36sFStateVirtualID_c<14daEnBrosBase_c>CFv"
+
+# .text:0x2A8 | 0x80026A90 | size: 0x88
+# sFStateID_c<daEnBrosBase_c>::isSameName(const char*) const
+.fn "isSameName__29sFStateID_c<14daEnBrosBase_c>CFPCc", global
+/* 80026A90 000002E8  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80026A94 000002EC  7C 08 02 A6 */	mflr r0
+/* 80026A98 000002F0  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80026A9C 000002F4  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 80026AA0 000002F8  7C 9F 23 78 */	mr r31, r4
+/* 80026AA4 000002FC  38 80 00 3A */	li r4, 0x3a
+/* 80026AA8 00000300  93 C1 00 08 */	stw r30, 0x8(r1)
+/* 80026AAC 00000304  7C 7E 1B 78 */	mr r30, r3
+/* 80026AB0 00000308  7F E3 FB 78 */	mr r3, r31
+/* 80026AB4 0000030C  48 00 00 01 */	bl strrchr
+/* 80026AB8 00000310  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80026ABC 00000314  41 82 00 08 */	beq .L_80026AC4
+/* 80026AC0 00000318  3B E3 00 01 */	addi r31, r3, 0x1
+.L_80026AC4:
+/* 80026AC4 0000031C  81 9E 00 00 */	lwz r12, 0x0(r30)
+/* 80026AC8 00000320  7F C3 F3 78 */	mr r3, r30
+/* 80026ACC 00000324  81 8C 00 20 */	lwz r12, 0x20(r12)
+/* 80026AD0 00000328  7D 89 03 A6 */	mtctr r12
+/* 80026AD4 0000032C  4E 80 04 21 */	bctrl
+/* 80026AD8 00000330  38 80 00 3A */	li r4, 0x3a
+/* 80026ADC 00000334  48 00 00 01 */	bl strrchr
+/* 80026AE0 00000338  7F E4 FB 78 */	mr r4, r31
+/* 80026AE4 0000033C  38 63 00 01 */	addi r3, r3, 0x1
+/* 80026AE8 00000340  48 00 00 01 */	bl strcmp
+/* 80026AEC 00000344  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80026AF0 00000348  40 82 00 0C */	bne .L_80026AFC
+/* 80026AF4 0000034C  38 60 00 01 */	li r3, 0x1
+/* 80026AF8 00000350  48 00 00 08 */	b .L_80026B00
+.L_80026AFC:
+/* 80026AFC 00000354  38 60 00 00 */	li r3, 0x0
+.L_80026B00:
+/* 80026B00 00000358  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80026B04 0000035C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 80026B08 00000360  83 C1 00 08 */	lwz r30, 0x8(r1)
+/* 80026B0C 00000364  7C 08 03 A6 */	mtlr r0
+/* 80026B10 00000368  38 21 00 10 */	addi r1, r1, 0x10
+/* 80026B14 0000036C  4E 80 00 20 */	blr
+.endfn "isSameName__29sFStateID_c<14daEnBrosBase_c>CFPCc"
+
+# .text:0x330 | 0x80026B18 | size: 0x8
+.fn gap_03_80026B18_text, global
+.hidden gap_03_80026B18_text
+/* 80026B18 00000370  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 80026B1C 00000374  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+.endfn gap_03_80026B18_text
+
+# .text:0x338 | 0x80026B20 | size: 0x30
+# sFStateID_c<daEnBrosBase_c>::initializeState(daEnBrosBase_c&) const
+.fn "initializeState__29sFStateID_c<14daEnBrosBase_c>CFR14daEnBrosBase_c", global
+/* 80026B20 00000378  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80026B24 0000037C  7C 08 02 A6 */	mflr r0
+/* 80026B28 00000380  7C 65 1B 78 */	mr r5, r3
+/* 80026B2C 00000384  7C 83 23 78 */	mr r3, r4
+/* 80026B30 00000388  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80026B34 0000038C  39 85 00 0C */	addi r12, r5, 0xc
+/* 80026B38 00000390  48 00 00 01 */	bl __ptmf_scall
+/* 80026B3C 00000394  60 00 00 00 */	nop
+/* 80026B40 00000398  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80026B44 0000039C  7C 08 03 A6 */	mtlr r0
+/* 80026B48 000003A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80026B4C 000003A4  4E 80 00 20 */	blr
+.endfn "initializeState__29sFStateID_c<14daEnBrosBase_c>CFR14daEnBrosBase_c"
+
+# .text:0x368 | 0x80026B50 | size: 0x30
+# sFStateID_c<daEnBrosBase_c>::executeState(daEnBrosBase_c&) const
+.fn "executeState__29sFStateID_c<14daEnBrosBase_c>CFR14daEnBrosBase_c", global
+/* 80026B50 000003A8  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80026B54 000003AC  7C 08 02 A6 */	mflr r0
+/* 80026B58 000003B0  7C 65 1B 78 */	mr r5, r3
+/* 80026B5C 000003B4  7C 83 23 78 */	mr r3, r4
+/* 80026B60 000003B8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80026B64 000003BC  39 85 00 18 */	addi r12, r5, 0x18
+/* 80026B68 000003C0  48 00 00 01 */	bl __ptmf_scall
+/* 80026B6C 000003C4  60 00 00 00 */	nop
+/* 80026B70 000003C8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80026B74 000003CC  7C 08 03 A6 */	mtlr r0
+/* 80026B78 000003D0  38 21 00 10 */	addi r1, r1, 0x10
+/* 80026B7C 000003D4  4E 80 00 20 */	blr
+.endfn "executeState__29sFStateID_c<14daEnBrosBase_c>CFR14daEnBrosBase_c"
+
+# .text:0x398 | 0x80026B80 | size: 0x30
+# sFStateID_c<daEnBrosBase_c>::finalizeState(daEnBrosBase_c&) const
+.fn "finalizeState__29sFStateID_c<14daEnBrosBase_c>CFR14daEnBrosBase_c", global
+/* 80026B80 000003D8  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 80026B84 000003DC  7C 08 02 A6 */	mflr r0
+/* 80026B88 000003E0  7C 65 1B 78 */	mr r5, r3
+/* 80026B8C 000003E4  7C 83 23 78 */	mr r3, r4
+/* 80026B90 000003E8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 80026B94 000003EC  39 85 00 24 */	addi r12, r5, 0x24
+/* 80026B98 000003F0  48 00 00 01 */	bl __ptmf_scall
+/* 80026B9C 000003F4  60 00 00 00 */	nop
+/* 80026BA0 000003F8  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 80026BA4 000003FC  7C 08 03 A6 */	mtlr r0
+/* 80026BA8 00000400  38 21 00 10 */	addi r1, r1, 0x10
+/* 80026BAC 00000404  4E 80 00 20 */	blr
+.endfn "finalizeState__29sFStateID_c<14daEnBrosBase_c>CFR14daEnBrosBase_c"

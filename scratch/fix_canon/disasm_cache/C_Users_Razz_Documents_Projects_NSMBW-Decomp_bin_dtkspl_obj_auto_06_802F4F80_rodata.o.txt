@@ -1,0 +1,74 @@
+.include "macros.inc"
+.file "auto_06_802F4F80_rodata"
+
+# 0x802F4F80..0x802F5000 | size: 0x80
+.rodata
+.balign 8
+
+# .rodata:0x0 | 0x802F4F80 | size: 0x10
+.obj l_float_speed, global
+	.4byte 0x3F4CCCCD
+	.4byte 0x3F4CCCCD
+	.4byte 0x3F4CCCCD
+	.4byte 0x3F4CCCCD
+.endobj l_float_speed
+
+# .rodata:0x10 | 0x802F4F90 | size: 0x10
+.obj l_toge_float_speed, global
+	.4byte 0x3F000000
+	.4byte 0x3F000000
+	.4byte 0x3F000000
+	.4byte 0x3F000000
+.endobj l_toge_float_speed
+
+# .rodata:0x20 | 0x802F4FA0 | size: 0x10
+.obj l_attach_float_speed, global
+	.4byte 0x3E99999A
+	.4byte 0x3EB33333
+	.4byte 0x3ED9999A
+	.4byte 0x3F4CCCCD
+.endobj l_attach_float_speed
+
+# .rodata:0x30 | 0x802F4FB0 | size: 0x24
+.obj l_ice_cc, global
+	.4byte 0x00000000
+	.4byte 0x00000000
+	.4byte 0x40800000
+	.4byte 0x40800000
+	.4byte 0x03000000
+	.4byte 0x000000EF
+	.4byte 0x00180010
+	.4byte 0x00000000
+	.4byte ccCallBack__7daIce_cFP5dCc_cP5dCc_c
+.endobj l_ice_cc
+
+# .rodata:0x54 | 0x802F4FD4 | size: 0x4
+.obj gap_06_802F4FD4_rodata, global
+.hidden gap_06_802F4FD4_rodata
+	.4byte 0x00000000
+.endobj gap_06_802F4FD4_rodata
+
+# .rodata:0x58 | 0x802F4FD8 | size: 0x18
+# daIce_c::enlargeBgc()::cs_enlarge_f
+.obj "@LOCAL@enlargeBgc__7daIce_cFv@cs_enlarge_f", global
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte enlargeBgcLand__7daIce_cFv
+	.4byte 0x00000000
+	.4byte 0xFFFFFFFF
+	.4byte enlargeBgcWater__7daIce_cFv
+.endobj "@LOCAL@enlargeBgc__7daIce_cFv@cs_enlarge_f"
+
+# .rodata:0x70 | 0x802F4FF0 | size: 0xC
+# daIce_c::initializeState_PushSink()::cs_float_speed
+.obj "@LOCAL@initializeState_PushSink__7daIce_cFv@cs_float_speed", global
+	.4byte 0xBF59999A
+	.4byte 0xC0900000
+	.4byte 0xBF800000
+.endobj "@LOCAL@initializeState_PushSink__7daIce_cFv@cs_float_speed"
+
+# .rodata:0x7C | 0x802F4FFC | size: 0x4
+.obj gap_06_802F4FFC_rodata, global
+.hidden gap_06_802F4FFC_rodata
+	.4byte 0x00000000
+.endobj gap_06_802F4FFC_rodata

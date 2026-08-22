@@ -1,0 +1,20 @@
+.include "macros.inc"
+.file "auto_sinit__d_effactor_mn_text"
+
+# 0x80092BE0..0x80092BF4 | size: 0x14
+.text
+.balign 4
+
+# .text:0x0 | 0x80092BE0 | size: 0x14
+.fn "__sinit_\d_effactor_mng_cpp", global
+/* 80092BE0 00000040  38 60 00 00 */	li r3, ms_linkManager__14dEffActorMng_c@sda21
+/* 80092BE4 00000044  38 00 00 00 */	li r0, 0x0
+/* 80092BE8 00000048  90 00 00 00 */	stw r0, ms_linkManager__14dEffActorMng_c@sda21(r0)
+/* 80092BEC 0000004C  90 03 00 04 */	stw r0, 0x4(r3)
+/* 80092BF0 00000050  4E 80 00 20 */	blr
+.endfn "__sinit_\d_effactor_mng_cpp"
+
+# 0x802EDDB0..0x802EDDB4 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_effactor_mng_cpp"

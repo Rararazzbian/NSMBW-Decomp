@@ -1,0 +1,20 @@
+.include "macros.inc"
+.file "auto_sinit__d_tencoin_mng_text"
+
+# 0x800E78B0..0x800E78C4 | size: 0x14
+.text
+.balign 4
+
+# .text:0x0 | 0x800E78B0 | size: 0x14
+.fn "__sinit_\d_tencoin_mng_cpp", global
+/* 800E78B0 00000040  38 60 00 00 */	li r3, ms_linkManager__13dTenCoinMng_c@sda21
+/* 800E78B4 00000044  38 00 00 00 */	li r0, 0x0
+/* 800E78B8 00000048  90 00 00 00 */	stw r0, ms_linkManager__13dTenCoinMng_c@sda21(r0)
+/* 800E78BC 0000004C  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800E78C0 00000050  4E 80 00 20 */	blr
+.endfn "__sinit_\d_tencoin_mng_cpp"
+
+# 0x802EDE34..0x802EDE38 | size: 0x4
+.section .ctors, "a"
+.balign 4
+	.4byte "__sinit_\d_tencoin_mng_cpp"
