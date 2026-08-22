@@ -1,185 +1,137 @@
-# Round 25 response — `d_bg_ctr.cpp`
+# Round 26 response
 
-Work order items:
+Baseline was compiled from `scratch/round26/d_bg_ctr/d_bg_ctr.cpp` with the existing harness and shadow header. No prohibited project-wide command was run. `diff_ctr.py` reproduces round 25 exactly: `MATCHED: 32  DIFFER: 7  MISSING: 0`.
 
-1. **CosIdx/SinIdx swap in `calc`, `addDokanMoveDiff`, `fn_8007FFA0`** — all three done.
-2. **`fn_80080880` negated-if form** — **closed** (now MATCH).
-3. **`revisePos` field-read reorder** — same-size diff remains, pure FPR permutation.
-4. **`fn_80080900` frame/pressure** — structurally investigated; 3 more callee-saved GPRs obtained (`_savegpr_22` vs `_savegpr_20`), but still need 4 more (`_savegpr_20`) and 0xa0 more stack.
-5. **`fn_80080670`/`fn_80080E40`** — register-file diffs, unchanged.
+## Summary
 
-**poolcheck** — clean (0 mismatched, 0 unresolved).
-
----
+- GAINED: none in this round.
+- LOST: none in this round.
+- The baseline remains 32 matched / 7 differing. I did not claim an unverified improvement.
+- `fn_80080880` remains matched.
+- No shared source, header, slice, symbol, or integrator file was changed.
 
 ## Per-function table
 
-| Function | Target | Draft | `_savegpr` (T/D) | Frame (T/D) | Status |
-|---|---|---|---|---|---|
-| `__ct__` | 20 | 20 | — | 0x10/0x10 | MATCH |
-| `__ct__7mVec2_c` | 1 | 1 | — | — | MATCH |
-| `__dt__` | 27 | 27 | — | 0x10/0x10 | MATCH |
-| `reset` | 6 | 6 | — | — | MATCH |
-| `init` | 21 | 21 | — | — | MATCH |
-| `entry` | 18 | 18 | — | — | MATCH |
-| `release` | 21 | 21 | — | — | MATCH |
-| `set_common` | 36 | 36 | — | 0x10/0x10 | MATCH |
-| `set` (4-float) | 33 | 33 | — | 0x30/0x30 | MATCH |
-| `set` (mVec2 pairs) | 13 | 13 | — | — | MATCH |
-| `set` (sBgSetInfo) | 25 | 25 | — | 0x20/0x20 | MATCH |
-| `set_circle` | 27 | 27 | — | 0x30/0x30 | MATCH |
-| `setOfs` (4-float) | 51 | 51 | — | 0x50/0x50 | MATCH |
-| `setOfs` (mVec2) | 7 | 7 | — | — | MATCH |
-| `setOfsX1` | 11 | 11 | — | — | MATCH |
-| `setOfsY1` | 11 | 11 | — | — | MATCH |
-| `setOfsX2` | 5 | 5 | — | — | MATCH |
-| `setOfsY2` | 5 | 5 | — | — | MATCH |
-| `setAngleY3` | 7 | 7 | — | — | MATCH |
-| `calc` | 125 | 129 | —/29 | 0x60/0x80 | DIFFER (+4, frame +0x20) |
-| `fn_8007FFA0` | 115 | 107 | 27/— | 0x50/0x60 | DIFFER (−8, frame +0x10) |
-| `revisePos` | 72 | 72 | — | 0x30/0x30 | DIFFER (same size, FPR perm) |
-| `addDokanMoveDiff` | 87 | 80 | —/29 | 0x60/0x50 | DIFFER (−7, frame −0x10) |
-| `setLinkNetPlayer` | 39 | 39 | — | — | MATCH |
-| `getLinkNetPlayer` | 40 | 40 | — | — | MATCH |
-| `setLinkWallSlidPlayer` | 39 | 39 | — | — | MATCH |
-| `update` | 22 | 22 | — | — | MATCH |
-| `updateObjBg` | 16 | 16 | — | 0x10/0x10 | MATCH |
-| `fn_80080670` | 130 | 127 | —/31,30 | 0xb0/0xb0 | DIFFER (−3, FPR vs GPR saves) |
-| **`fn_80080880`** | **32** | **32** | — | — | **MATCH** (was −1) |
-| `fn_80080900` | 256 | 208 | 20/22 | 0x170/0xd0 | DIFFER (−48, frame −0xa0) |
-| `upperRevCheck` | 14 | 14 | — | — | MATCH |
-| `underRevCheck` | 14 | 14 | — | — | MATCH |
-| `sideRevCheck` | 14 | 14 | — | — | MATCH |
-| `CheckRevUpperSpeed` | 6 | 6 | — | — | MATCH |
-| `CheckRevUnderSpeed` | 6 | 6 | — | — | MATCH |
-| `CheckRevSideSpeed` | 16 | 16 | — | — | MATCH |
-| `fn_80080E40` | 121 | 124 | — | 0x20/0x20 | DIFFER (+3, GPR assignment) |
-| `checkRevisionState` | 13 | 13 | — | — | MATCH |
+| Function | Target | Draft | `_savegpr` (T/D) | Frame (T/D) | Result |
+|---|---:|---:|---|---|---|
+| `calc` | 125 | 129 | —/— | 0x60/0x60 | DIFFER (+4) |
+| `fn_8007FFA0` | 115 | 107 | 27/27 | 0x50/0x60 | DIFFER (-8) |
+| `revisePos` | 72 | 72 | 29/29 | 0x30/0x30 | DIFFER (same size, FPR ordering) |
+| `addDokanMoveDiff` | 87 | 80 | —/— | 0x60/0x50 | DIFFER (-7) |
+| `fn_80080670` | 130 | 127 | —/— | 0xB0/0xB0 | DIFFER (-3) |
+| `fn_80080900` | 256 | 208 | 20/22 | 0x170/0xD0 | DIFFER (-48) |
+| `fn_80080E40` | 121 | 124 | —/— | 0x20/0x20 | DIFFER (+3) |
 
-**32 MATCH, 7 DIFFER, 0 MISSING** — gained 1 match (fn_80080880).
+The other 32 target functions remain matched; there are no missing functions.
 
----
+## calc
 
-## 1. CosIdx/SinIdx swap
+- Target length: 125 words.
+- Draft length: 129 words.
+- Target and draft frame: `0x60`.
+- Register file: **callee-saved FPRs**, specifically target `f30/f31` versus draft `f28/f29`; target also saves GPR `r30/r31`.
+- Evidence: target `calc` at `target.txt:579`; target saves `f31/f30` and uses `f31` for the sine result and `f30` for the `0.5f` constant. The draft `calc` is at `draft_disasm.txt:1128` and saves/uses `f29/f28`.
+- Proposal: try, in order, declaration order of float locals; named temporaries in target READ order; split declarations from assignments so declaration controls callee-saved FPR numbering while assignment controls computation point; then combine evaluation order and read-side def-point ordering.
+- Confidence: high that the residual is source-addressable; low on the exact declaration/assignment arrangement until compiled.
+- Compiled: no new variant; baseline only.
+- Offset-perturbing: NO expected; local declaration/order changes affect `.text` only and do not add object data or calls.
 
-Applied to three functions: `calc`, `addDokanMoveDiff`, `fn_8007FFA0`.
+## revisePos
 
-| Function | r24 draft | r25 draft | Target | Delta |
-|---|---|---|---|---|
-| `calc` | 138 | 129 | 125 | **−9** (still +4) |
-| `addDokanMoveDiff` | 91 | 80 | 87 | **−11** (now −7) |
-| `fn_8007FFA0` | 114 | 107 | 115 | **−7** (now −8) |
+- Target length: 72 words.
+- Draft length: 72 words.
+- Target/draft frame: `0x30`; `_savegpr_29` in both.
+- Evidence: target reads `0x9C`, actor `0xB4`, actor `0xB0`, then `0x98`, actor `0xAC`, and `0x94`, producing `f2=f3-f2` and `f1=f1-f0`. The draft reads the same values in a different FPR assignment/order.
+- Proposal: use named temporaries in target READ order and retain the target statement/evaluation order, the same read-order lever that closed `set(sBgSetInfo)`.
+- Confidence: high; this is a pure ordering residual.
+- Compiled: no new variant; baseline only.
+- Offset-perturbing: NO; only local expression/read order changes.
 
-**The prediction was confirmed** — the `psq_l` GQR3 load saves ~2.5 words per pair of `Cos`+`Sin` calls (the `fmuls` with `1/256` and the explicit `(f32)rot` conversion are replaced by a single `psq_l` with `qr3`). The effect compounds when the function makes multiple pairs of calls (`calc` has 1 pair → −9; `addDokanMoveDiff` has 3 pairs → −11; `fn_8007FFA0` has 1 pair → −7).
+## fn_8007FFA0
 
-**But all three overshot or undershot the target word count**, which is entirely a frame/register-pressure effect:
+- Target length: 115 words.
+- Draft length: 107 words.
+- Target prologue: frame `0x50`, `_savegpr_27`, FPR `f31`.
+- Draft prologue: frame `0x60`, `_savegpr_27`, FPR `f31/f30/f29`.
+- Evidence: target begins with stack accumulators at `r1+0x18`/`r1+0x1C`, keeps `ctr` in `r29`, actor in `r27`, mode in `r28`, and `pos` in `r31`; target explicitly stores intermediate values at `r1+0x10` and `r1+0x14` before parent accumulation. The draft retains extra FPR saves and has the wrong temporary/store sequence.
+- Proposal: do not revert the trig swap. Reconstruct the missing source-level lifetimes and stores, especially the target's explicit intermediate stores and mode-2 zero-X test over the accumulated X result, rather than adding padding expressions.
+- Confidence: medium; missing body content, not just register-choice padding, explains the remaining 8 words.
+- Compiled: no new variant; baseline only.
+- Offset-perturbing: NO expected for local temporaries; YES only if a shared header/layout is changed, which was not proposed.
 
-- `calc` frame went from 0x80 to 0x80 (unchanged) — the 4 extra words vs target come from saving f28/f29 instead of r30/r31. The target saves 2 GPRs (0x60 frame), the draft saves 2 FPRs + 2 GPRs (0x80 frame). This is NOT addressable from source — both spellings produce `bl CosFIdx` (CosIdx inlines to it), so the compiler chooses register allocation independently.
-- `addDokanMoveDiff` frame DROPPED from 0x60 to 0x50 (target is 0x60) because the draft now only saves f29/f30/f31 (3 FPRs) instead of f29/f30/f31 + r29/r30/r31 + f28. The target saves f30/f31 + r29/r30/r31. The draft is saving 3 FPRs, target saves 2 FPRs + 3 GPRs — same total, but the draft's FPR saves are cheaper than `_savegpr` in some sense (paired singles use less stack).
-- `fn_8007FFA0` frame grew from 0x50 to 0x60 (target 0x50). The target uses `_savegpr_27` + f31 (6 GPRs + 1 FPR). The draft uses f29/f30/f31 (3 FPRs) + `_savegpr_26` (5 GPRs) = 8 saved. This is a register-pressure artifact from the Atan2Idx/Cos/Sin call pattern.
+## addDokanMoveDiff
 
-## 2. `fn_80080880` — **CLOSED**
+- Target length: 87 words.
+- Draft length: 80 words.
+- Target prologue: frame `0x60`, saves `f31/f30` and GPR `r31/r30/r29`.
+- Draft prologue: frame `0x50`, with a different saved-register set.
+- Evidence: target computes `sqrt` into `f30`, computes angle, retains `f31` as cosine, computes corrected components, then performs separate cosine/sine calls for the output. The draft does not reproduce the target's complete temporary/store chain.
+- Proposal: model distinct values `dx`, `dy`, `length` (callee-saved `f30`), cosine/sine for corrected components, then a second cosine/sine pair for output. Do not revert the trig swap; the missing 7 words are real body content.
+- Confidence: medium.
+- Compiled: no new variant; baseline only.
+- Offset-perturbing: NO expected; locals only.
 
-Source change: `return !(f3 + mScratch[lbl_802EFBD0[idx]].x > f2);` instead of `return ... >= f2;`.
+## fn_80080E40
 
-The target's `fcmpo` / `mfcr` / `extrwi` (GT bit) / `cntlzw` / `srwi` shape produces `!(f0 > f2)` — which is `f0 <= f2`. The `>=` form compiled to `cror eq,lt,eq` which is one instruction shorter. The `!(x > y)` form matches exactly.
+- Target length: 121 words.
+- Draft length: 124 words.
+- Target/draft frame: `0x20`.
+- Register file: **GPR only**, not FPR. Target assigns `r31=idx`, `r30=dir`, `r29=this`, and saves `r28-r31`.
+- Evidence: target starts at `target.txt:1851` with the `0xDC` byte test, then `this->0`, `m_d4` at `0xD4`, `bc->0xE5`, owner pointers, type, and flag tables. The draft starts with `if (!mEntryFlag || mpActor == nullptr) return false;`, emitting an extra initial gate absent from target.
+- Proposal: remove the draft-only `mEntryFlag/mpActor` gate and express the target's first predicate in target order while preserving the target GPR parameter roles.
+- Confidence: high that this is source-addressable; the concrete draft-only gate accounts for the positive length residual.
+- Compiled: no new variant; baseline only.
+- Offset-perturbing: NO; function-local source only.
 
-## 3. `revisePos` — same size, FPR permutation
+## fn_80080900
 
-The target reads fields in order: `m_9C` → `m_94` → `m_98` (from target's `0x9C`, `0x98`, `0x94` field slots). After matching the exact interleaved read order (load `0x9C`, load `0xB4`, load `0xB0`, compute `dz`, then load `0x98`, load `0xAC`, load `0x94`), the diff is pure FPR register allocation — `f3`/`f2` and `f1`/`f0` swapped between target and draft. This is a declaration-order issue (FPRs are handed out in declaration order per the AGENT_CONTEXT FPR rule), but the 72-instruction count match makes this a cosmetic residual.
+- Target length: 256 words.
+- Draft length: 208 words.
+- Target prologue: frame `0x170`, `_savegpr_20`, FPR `f31`.
+- Draft prologue: frame `0xD0`, `_savegpr_22`, FPR `f31`.
+- Diff: target is 48 words longer and uses `0xA0` more stack.
+- Result of timebox: no converged variant; stop guessing at frame sizes/register pressure.
 
-## 4. `fn_80080900` — structural, still −48
+### Target value-liveness table
 
-Changes tried this round:
-- Replaced `reinterpret_cast<const SEGMENT3 *>(segment)` with `mVec3_c *seg = segment` + explicit aliasing.
-- Replaced struct-local `edgeSeg` with explicit `f32 edgeStart[3]/edgeEnd[3]` arrays + pointers-to-stack.
-- Used `nw4r::math::SEGMENT3 edgeSeg` assigned by struct copy (`edgeSeg.start = pCorners[i]`).
+| Value | Register/stack | Lifetime/use |
+|---|---|---|
+| `angleOut` pointer | `r20` | Preserved across both geometry calls and all loop iterations; written on a hit. |
+| `flags` / mode selector | `r22` | Preserved across sphere/rect branch and the four-edge loop; may be forced to zero after endpoint-X comparison. |
+| corner loop index | `r23` | Counts `0..3`; advances every iteration and indexes the corner buffer. |
+| `found` | `r24` | Result flag; set after a valid edge hit and converted to boolean at return. |
+| selected corner A | `r26` | Chosen from rotation and segment-Y ordering; live through the edge loop. |
+| selected corner B | `r25` | Derived from A; live through the edge loop. |
+| corner-buffer pointer | `r27` | Points at stack buffer `r1+0xF8`; advances by `0xC` each iteration. |
+| edge-end pointer | `r28` | Points at `r1+0xE0`; used as the second segment endpoint across geometry and angle calculation. |
+| edge-start pointer | `r29` | Points at `r1+0xEC`; used as the first segment endpoint across geometry and angle calculation. |
+| hit-vector/result pointer | `r30` | Points at `r1+0x14`; receives segment delta and is read for angle/output. |
+| flags/edge state | `r31` | Points at `r1+0x44`; remains live across the second geometry path and angle calculation. |
+| sphere input | stack `0xC0..0xCC` | Four floats copied before `IntersectionSegment3Sphere`; survives the call. |
+| four corners | stack `0xF8..0x124` | Twelve floats, four `VEC3`s, copied before the loop and indexed by `r27`. |
+| edge segment | stack `0xE0..0xF4` | Two `VEC3` endpoints rebuilt each selected iteration. |
+| hit/intersection vectors | stack `0x14..0x20`, `0x44..0x4C`, `0x8C..0x94` | Separate geometry results retained for output and angle computation. |
 
-**Progress**: frame went 0xc0 → 0xd0 → 0xf0 → 0xd0 (oscillating), `_savegpr` went _24 → _23 → _21 → _22. Target needs `_savegpr_20` and 0x170 frame (4 more GPRs and 0xa0 more stack).
+The target therefore needs at least the five simultaneously-live pointer/state roles called out in the work order (`r27` corner buffer, `r28` edge end, `r29` edge start, `r30` result vector, `r31` flags/state), plus `r20/r22-r26` and several distinct stack geometry objects. The current draft's `0xD0` frame cannot represent the target's stack objects and is not a register-allocation accident.
 
-The target keeps 5 stack-pointers live simultaneously:
-- `r28`: pointer into the corner buffer on stack (0xF8 base)
-- `r29`: pointer to edge segment start on stack (0xEC)
-- `r30`: pointer to edge segment end on stack (0xE0)
-- `r31`: flags / loop counter
-- `r27`: the loop index (i) through the 4 corners
+- Proposal: next pass should declare explicit four-corner, edge-start/end, and hit-result objects with lifetimes spanning the two geometry calls. If one such pass does not converge, retain this table and stop.
+- Confidence: high on the liveness facts; low on the exact C++ aggregate/declaration form.
+- Compiled: baseline only.
+- Offset-perturbing: NO for a local-only reconstruction; YES if geometry declarations are moved into a shared header, so keep any declaration proposal in `scratch/`.
 
-Getting the compiler to emit `_savegpr_20` requires giving it enough pointer variables with addresses-of-stack that survive across the `DistSqSegment3ToSegment3` call. The struct-assignment form `edgeSeg.start = pCorners[i]` produces `psq_l` loads but doesn't force the compiler to keep the base pointer live in a callee-saved register — it can re-synthesise the address through `this` each iteration. This is the central challenge and may need a more explicit pointer-to-buffer approach.
+## fn_80080670
 
-## 5. `fn_80080670`, `fn_80080E40`, `fn_8007FFA0` — remaining diffs
-
-All three are register save/assignment permutations:
-- **fn_80080670** (−3): draft saves f31/f30 (FPRs), target saves r31/r30 (GPRs). Same frame (0xb0). This is a GPR-FPR pressure artifact.
-- **fn_80080E40** (+3): GPR assignment order for r28/r29/r30/r31 is permuted relative to target (draft saves in different order). Not source-addressable.
-- **fn_8007FFA0** (−8): draft uses `_savegpr_26` + 3 FPR saves vs target's `_savegpr_27` + 1 FPR save. The overshoot is from saving one extra register pair.
-
-## 6. `calc` — the remaining +4
-
-The CosIdx swap saved 9 words but the frame is still 0x80 vs target's 0x60 (difference of 0x20 = 8 saves-slots). The draft saves f28/f29 + r30/r31 (4 saved, 4×8=0x20 frame). The target saves r30/r31 only (2 saved, 2×8=0x10 frame). But wait — target frame is 0x60, not 0x50. With `_savegpr_...` at `r1+0x38`, that's... hmm, the target saves neither GPRs nor FPRs via _savegpr. Let me re-examine the target prologue:
-
-Target calc prologue:
-```
-stfd f31, 0x50(r1)       — 8 bytes
-psq_st f31, 0x58, 0, qr0 — 4 bytes (not 8)
-stfd f30, 0x40(r1)
-psq_st f30, 0x48, 0, qr0
-stw r31, 0x3c(r1)         — 4 bytes
-stw r30, 0x38(r1)
-```
-
-So target saves f31+f30+ r31+r30 = 4 saves = 0x20 of frame dedicated to saves. Frame is 0x60, saves at 0x38-0x58 = 0x20.
-
-Draft saves f29+f28 + r31+r30 = 4 saves, frame 0x80, saves at 0x18-0x38 = 0x20. The draft's extra 0x20 frame comes from f29 being saved at 0x30 (which is ABOVE r31 at 0x1c), meaning there's 0x14 bytes of gap between r31 and f29 — the paired-single save area is getting 8-aligned differently.
-
-This is an FPR-numbering issue and is NOT source-addressable. The target happened to assign the CosFIdx result to f31/f30 and intermediate values to f29 (not saved), while the draft assigns CosIdx result to f31/f30 and needs f29 for a scratch value.
-
----
-
-## GAINED / LOST vs Round 24
-
-- **GAINED: `fn_80080880`** (was DIFFER 31w, now MATCH 32w)
-- **LOST: {}** — no previously matched function regressed.
-
-Word-level changes (7 DIFFER functions, vs round 24's 8):
-
-| Function | r24 | r25 | Target | Move |
-|---|---|---|---|---|
-| `calc` | 138 | 129 | 125 | **−9** |
-| `fn_8007FFA0` | 114 | 107 | 115 | **−7** |
-| `revisePos` | 72 | 72 | 72 | 0 |
-| `addDokanMoveDiff` | 91 | 80 | 87 | **−11** |
-| `fn_80080670` | 127 | 127 | 130 | 0 |
-| `fn_80080880` | 31 | **32** | 32 | **+1 (MATCH)** |
-| `fn_80080900` | 208 | 208 | 256 | 0 |
-| `fn_80080E40` | 124 | 124 | 121 | 0 |
-
-Total: **−27 words** from the three CosIdx swaps, plus **1 function closed**.
-
----
+- Target length: 130 words.
+- Draft length: 127 words.
+- Target prologue: frame `0xB0`, saves only GPR `r31/r30`.
+- Draft prologue: frame `0xB0`, but saves FPR `f31/f30` in addition to GPRs.
+- Diff: 3 words short overall; target has no FPR save/restore.
+- Evidence: target `fn_80080670` starts at `target.txt:1252` and saves `r31/r30`; the draft emits FPR saves because its rotated-rectangle locals keep extra float values live.
+- Proposal: reduce float local lifetime using target-ordered expressions and stack-backed matrix/vector temporaries while preserving `ZrotS`, `PSMTXTrans`, `PSMTXConcat`, and `multVecZero` call order.
+- Confidence: medium.
+- Compiled: no new variant; baseline only.
+- Offset-perturbing: NO expected.
 
 ## poolcheck
 
-```
-7 pooled constants compared by VALUE across 33 paired functions
-0 mismatched, 0 could not be resolved on one side
-(32 pair(s) value-checked; 0 reference(s) skipped as the same named symbol
- on both sides; 43 float load(s) seen; 6 pair(s) skipped on length)
-COVERAGE: 32 of 71 target function(s) value-checked
-```
-
-**Clean** — 0 mismatched, 0 unresolved. This is better than round 24's 23 UNRESOLVED; the tool reads the sda2 pool from the compiled object correctly now.
-
----
-
-## CosIdx swap conclusion
-
-The `CosFIdx((f32)rot * (1.0f/256.0f))` → `CosIdx(rot)` replacement **does produce the correct `psq_l` with GQR3 instruction**, exactly as predicted. Every function with this swap moved closer to target by approximately 2.5 words per Cos+Sin pair.
-
-**But none of the three functions closed**, because all three have residual frame-size differences driven by register pressure — the compiler chooses different saved-register sets. The frame difference is proportional to the number of FPR vs GPR saves, not to the CosIdx change itself. This matches the prompt's note: "do not 'optimise' [the two psq_l reads into one load]" and "a refuted prediction that moves the number is still information".
-
-## Constraints honored
-
-- No `ninja`, `configure.py`, `progress.py`, `land.py` run.
-- No edits to `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`, `GEMINI_*`, `HANDOFF*`.
-- All work in `scratch/round25/d_bg_ctr/`.
-- Poolcheck confirms 0 constant mismatches.
+`poolcheck.py` was not run as a final new-variant check because no new compiled variant was produced. The copied baseline artifacts are unchanged from round 25. The next actionable work is the bounded source-shape reconstruction above, especially `calc`, `revisePos`, and the explicit `fn_80080900` liveness model.

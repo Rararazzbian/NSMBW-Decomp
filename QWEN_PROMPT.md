@@ -1,4 +1,4 @@
-# Work order — round 26
+# Work order — round 27
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,146 +6,107 @@ Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 25 — verified, exact again, third round running
+## Round 26 produced no object file. Nothing was compiled.
 
-I reran your `diff_ctr.py` against round 24 and round 25 in the same session:
+I checked before reading your report:
 
-    round24:  MATCHED: 31  DIFFER: 8  MISSING: 0
-    round25:  MATCHED: 32  DIFFER: 7  MISSING: 0
+    scratch/round26/d_bg_ctr/d_bg_ctr.cpp      byte-identical to round 25
+    scratch/round26/d_bg_ctr/draft_disasm.txt  byte-identical to round 25
+    scratch/round26/d_bg_ctr/*.o               does not exist
 
-`fn_80080880` closed. `GAINED: {fn_80080880}`, `LOST: {}` — correct. And every
-word count in your table reproduces exactly:
+The `MATCHED: 32  DIFFER: 7` you reported is round 25's result, re-run on round
+25's unchanged output. Every function in your table says *"Compiled: no new
+variant; baseline only."* That is accurate, and it is the whole problem.
 
-    calc              138 -> 129  (-9)
-    fn_8007FFA0       114 -> 107  (-7)
-    addDokanMoveDiff   91 ->  80  (-11)
+**I authorised "analyse and stop" for `fn_80080900` alone**, as a timebox on a
+function that had already burned two rounds. You applied it to all seven —
+including `calc`, which the brief called highest-confidence and told you to do
+first.
 
-−27 words, as you said. **The `psq_l`/GQR3 prediction is confirmed and it is now
-a general rule in `AGENT_CONTEXT.md`.** You also wrote "none of the three
-closed" in your own summary rather than letting the −27 stand as the headline.
-That is the third consecutive accurate report and it is why I can spend this
-brief on your leads instead of your arithmetic.
+`AGENT_CONTEXT.md` has carried the rule since round 23 and it has not changed:
+**prose that has not compiled is not a measurement.** A body that compiles at
+200 diffs is worth more than one that reads correctly and has never been built,
+because the first can be iterated and the second cannot. Seven proposals at
+"confidence: high" are worth one compile.
 
----
-
-## The swap over-corrected, and that is the most useful thing in your round
-
-Look at what actually happened to two of the three:
-
-    fn_8007FFA0        was 114 vs 115  (-1)   now 107 vs 115  (-8)
-    addDokanMoveDiff   was  91 vs  87  (+4)   now  80 vs  87  (-7)
-
-**Do not revert this.** The swap is right — it emits the instruction retail
-emits. What it revealed is that both functions were **missing real content all
-along**, and the bulkier hand-written trig sequence was padding the length so
-the totals looked close. You have traded two flattering numbers for two honest
-ones, and honest ones are what you can act on.
-
-So the question for both is no longer "why is my codegen different" — it is
-**"what 7–8 words of behaviour am I not implementing?"** Read the target bodies
-against your drafts for missing work, not for register choices.
+**You did not fabricate anything, and that matters.** You reported GAINED none,
+LOST none, and labelled every function uncompiled rather than letting the
+unchanged 32/7/0 read as progress. Keep that exactly as it is.
 
 ---
 
-## You declared two functions unfixable. One of them contradicts your own round 23.
+## Your diagnoses are good. Three of them are better than any previous round.
 
-This is the main item of the round.
+This is not a wasted round, it is an unexecuted one. Specifically:
 
-You wrote of `calc`: *"This is an FPR-numbering issue and is NOT source-
-addressable."* The diff you describe is your draft saving **f28/f29** where
-retail saves **f30/f31**.
+**`fn_80080E40` — you found it, and I verified it is real.** You identified the
+register file as GPR-only (asked for, and correct), then found a concrete
+draft-only gate:
 
-**`f14`–`f31` are callee-saved on this ABI.** Every register in that diff —
-f28, f29, f30, f31 — is non-volatile. And the project rule, which you yourself
-established in round 23 and which is in `AGENT_CONTEXT.md` under *"The FPR
-declaration-order lever governs CALLEE-SAVED registers only"*, is that the
-declaration-order lever **applies exactly there**. There is also a commit in
-this repo titled **"FP register permutations ARE source-addressable"**
-(`6b5f366f`).
+    scratch/round26/d_bg_ctr/d_bg_ctr.cpp:560
+    if (!mEntryFlag || mpActor == nullptr) {
 
-Your round 23 result was that the lever does *not* reach `f0`..`f13` because the
-scheduler owns those. You have now applied that boundary to `f28`..`f31`, which
-is the side of the boundary where the lever **does** work. **Re-open `calc`**
-and try the levers that are proven on callee-saved FPRs:
+The target has no such gate — it goes straight to the `0xDC` byte test after the
+prologue. That is a real defect, plausibly the whole +3, and **it is a one-line
+deletion you have already located.** The previous round called this function
+"not source-addressable" and stopped. You did better and then also stopped.
 
-- declaration order of the float locals (lever 11 / the round-23 result);
-- **named temporaries in the target's READ order** — this is what closed
-  `set(sBgSetInfo)` for you, and it is the closest analogue;
-- lever 12 (evaluation order) and lever 13 (the read-side def-point), and note
-  `AGENT_CONTEXT.md` records that these **compose** within one statement pair
-  rather than being alternatives.
+**`calc` — you reached the right conclusion.** Callee-saved FPRs, `f30/f31`
+against `f28/f29`, and you listed the correct levers in the correct order. That
+is the analysis done. Now run it.
 
-Apply the same re-examination to **`fn_80080E40`** (+3, which you also called
-not source-addressable — check the register file first and say which it is).
-
-"Not source-addressable" is a conclusion this project has overturned repeatedly.
-**Before writing it again, name which register file the residual is in and which
-specific levers you tried.** If it is volatile, that is a real bounded negative
-and I want it recorded. If it is callee-saved, it is almost certainly reachable.
+**`fn_80080900` — the liveness table is exactly what I asked for** and it is the
+most useful artifact anyone has produced on this function. Eleven register roles
+and four stack objects, with lifetimes. Build from it.
 
 ---
 
-## `fn_80080900` — stop searching, start reading
+## Round 27 — one rule
 
-Your own log: frame went `0xc0 → 0xd0 → 0xf0 → 0xd0`, `_savegpr` went
-`_24 → _23 → _21 → _22`. That is a circle, and it is two rounds now. The target
-needs `_savegpr_20` and `0x170`. **Guessing at forms that might raise register
-pressure is not converging and will not.**
+**Every item below must end in a compiled object and a diff count.** For each
+function report the number. `"Compiled: no"` is not an acceptable value in this
+round's table — if you run out of time, report fewer functions, not more
+proposals.
 
-You already did the useful work and then walked past it. You identified what the
-target keeps live:
+Order, and all of it is work you have already designed:
 
-    r27  loop index i over the 4 corners
-    r28  pointer into the corner buffer on stack (0xF8)
-    r29  pointer to edge segment start (0xEC)
-    r30  pointer to edge segment end (0xE0)
-    r31  flags / loop counter
+1. **`fn_80080E40` (+3)** — delete the `mEntryFlag`/`mpActor` gate at line 560,
+   express the target's first predicate in target order. Compile. One line.
+2. **`calc` (+4)** — run your own list, in your own order: declaration order of
+   the float locals; then named temporaries in target READ order; then split
+   declaration from assignment; then compose evaluation order with the read-side
+   def-point. **Compile each variant and report its word count**, including the
+   ones that get worse. Four numbers is a good result here even if none is zero.
+3. **`revisePos` (72/72)** — the read-order lever, third round on the list, one
+   compile. Target reads `0x9C`, `0xB4`, `0xB0`, `0x98`, `0xAC`, `0x94` — you
+   have the order written down already.
+4. **`fn_8007FFA0` (−8)** and **`addDokanMoveDiff` (−7)** — missing content, per
+   your own read. Write the missing stores and lifetimes and compile.
+5. **`fn_80080900` (−48)** — one pass building the objects your liveness table
+   describes: an explicit four-corner array, edge start/end, and a hit-result
+   vector, with lifetimes spanning both geometry calls. Compile it whatever the
+   frame comes out as. If it does not converge, that is fine — but I want the
+   frame size and `_savegpr` level of the attempt, not another proposal.
 
-Five simultaneously-live values across a call. **Work forward from that, not
-backward from the frame size.** Concretely: read the target body and write down,
-in order, every distinct value it holds across the two
-`DistSqSegment3ToSegment3` / `IntersectionSegment3Sphere` calls, and what each
-one is *for*. Then write source that genuinely needs those five things live at
-once. `0xa0` of missing stack is a lot — that is not a register-allocation
-accident, it is locals you have not declared.
+`fn_80080670` (−3) last, only if time remains.
 
-If a round of that does not converge either, **report the value-liveness table
-you built and stop.** That table is worth more to the next round than four more
-frame sizes.
-
----
-
-## Round 26 — order of work
-
-Work in `scratch/round26/`. Do not touch `wip/**`, `source/**`, `include/**`,
+Work in `scratch/round27/`. Do not touch `wip/**`, `source/**`, `include/**`,
 `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
-`HANDOFF.md`.
-
-**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — the tree is
-green, all five binaries byte-exact, and a concurrent build destroys that.
-
-1. **`calc` (+4)** — the callee-saved FPR levers above. Highest confidence, and
-   it tests a rule the project already owns.
-2. **`revisePos` (72/72)** — still untouched from round 25's list, still pure
-   ordering, still the same read-order lever. One compile.
-3. **`fn_8007FFA0` (−8) and `addDokanMoveDiff` (−7)** — find the missing
-   content, per the over-correction section above.
-4. **`fn_80080E40` (+3)** — name the register file, then decide.
-5. **`fn_80080900` (−48)** — the liveness table. Timebox it.
-
-`fn_80080670` (−3) last.
+`HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`**
+— the tree is green, all five binaries byte-exact, and a concurrent build
+destroys that.
 
 ---
 
 ## Reporting
 
-Per function: target length, draft length, `_savegpr` level and frame size, then
-diff count.
+Per function: target length, **draft length from the object you built this
+round**, `_savegpr` level, frame size, and diff count.
 
-**GAINED and LOST by name.** Three for three; keep it.
+**GAINED and LOST by name.** Four rounds accurate; keep it.
 
-`poolcheck.py` before you report.
+`poolcheck.py` on the final object.
 
-For anything you conclude is not source-addressable: **the register file, and
-the list of levers you actually tried.** A bounded negative is valuable and I
-will record it — but only if it is bounded.
+Drop the "Offset-perturbing" field — it is not something I asked for and it did
+not carry information. Replace it with the variant list: for each function, what
+you compiled and what number came back.
