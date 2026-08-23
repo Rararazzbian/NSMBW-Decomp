@@ -8,9 +8,6 @@ namespace dAudio {
     int getBgmTempo();
 }
 
-dWmBgmSync_c::~dWmBgmSync_c() {
-}
-
 bool dWmBgmSync_c::execute() {
     if (m_18 == nullptr) {
         return false;

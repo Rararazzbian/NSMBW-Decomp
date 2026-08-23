@@ -2540,3 +2540,65 @@ it is possible by byte range but is not a TU boundary, and the file-local helper
 `fn_8008B830` / `fn_8008BA00` fall outside the carve and would need pins.
 Treat that group as one ~8.7 KB unit, not seven small ones.
 
+## PARKED: dWmBgmSync_c -- code is 5/5 byte-exact, the SLICE is unsolved
+
+`dol/bases/d_wm_bgm_sync.cpp`, 0x80102DB0-0x80103020. Source is in
+`scratch/qwen_bgm/d_wm_bgm_sync.cpp` and its header in
+`scratch/qwen_bgm/shadow/game/bases/d_wm_bgm_sync.hpp`.
+
+**All five functions verified byte-identical by direct hex comparison**, not
+just by fndiff:
+
+    execute       67 words, 0 byte diffs
+    getAnmRate    19 words, 0 byte diffs
+    fn_80102F10   29 words, 0 byte diffs
+    __sinit       28 words, 0 byte diffs
+    __arraydtor   matches instruction for instruction
+
+Four landing attempts, all REJECTED at binary verification (never at compile or
+link). The code is not the problem; the section ranges are.
+
+### Ranges established, with the method that proved each
+
+    .text    0xfc630-0xfc8a0    0x80102DB0-0x80103020, from the symbol table
+    .ctors   0x1a0-0x1a4        found by parsing the DOL segment table and
+                                scanning .ctors for a pointer to 0x80102F90
+    .data    0x23100-0x23128    sc_ForceList__6dWmLib at 0x803217A0, 0x24 -> 0x28
+    .sdata   0x1550-0x1560      "F7C0"/"W7C0" at 0x80428ED0/0x80428ED8. Pinned by
+                                READING THE RELOCATED POINTERS out of the .data
+                                image: sc_ForceList's mNodeName field holds the
+                                address of its own TU's copy. 31 identical string
+                                pairs exist, one per TU that includes the header,
+                                so this is the only way to tell them apart. The
+                                range tiles exactly onto d_wm_obj_actor.cpp's
+                                0x1540-0x1550.
+    .bss     0x23250-0x23260    @53531 at 0x80374BD0
+    .sbss    0x6a0-0x6a8        c_StartPointKinokoHouseID__6dWmLib at 0x8042A540
+    .sdata2  0x20e0-0x2110      0x8042D440-0x8042D470
+
+Section bases for wiimj2d, derived from d_2d.cpp and d_CourseSelectGuide.cpp
+slices against `bin/dtk/dtk_splits_wiimj2d.txt` -- reusable for any unit:
+
+    .text 0x80006780   .data 0x802FE6A0   .bss  0x80351980
+    .ctors 0x802EDCE0  .sdata 0x80427980  .sbss 0x80429EA0
+    .sdata2 0x8042B360 .rodata 0x802EDFE0
+
+### The open question
+
+`__vt__12dWmBgmSync_c` sits at 0x803217C8 -- immediately after this unit's
+sc_ForceList and before the next TU's copy at 0x803217D8. Our object does not
+emit it, because the class's virtual destructor is only declared, not defined.
+
+Adding `dWmBgmSync_c::~dWmBgmSync_c() {}` DOES emit it, at .data offset 0x28
+with size 0x10, which matches 0x803217C8 exactly. But landing with
+`.data 0x23100-0x23138` still rejected, and defining the dtor also emits a
+0x40-byte `__dt__12dWmBgmSync_cFv` into .text that retail places in a different
+TU (0x800EE540). Whether the linker discards ours as a duplicate weak symbol,
+and whether .rodata is also involved, was not resolved.
+
+**Next steps for whoever picks this up:** get a byte-level diff of the produced
+DOL against retail rather than guessing ranges -- `land.py` only reports
+pass/fail, so the cheap win is to build once and diff the two images to see
+exactly which address disagrees. That turns four blind attempts into one
+measurement.
+
