@@ -1091,8 +1091,10 @@ void dEnTorideKokoopa_c::initializeState_Jump() {
         speed = mpParamJump->mJumpSpeed2;
     }
     float rate = calcJumpRate();
+    float muki = (float)l_EnMuki[mDirection];
     mSpeed.y = speed.y;
-    mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];
+    float sx = speed.x;
+    mSpeed.x = (muki * rate) * sx;
     jumpEffect();
     jumpSE();
 }
@@ -1160,8 +1162,10 @@ void dEnTorideKokoopa_c::initializeState_BigJump() {
         speed = mpParamJump->mBigJumpSpeed2;
     }
     float rate = calcJumpRate();
+    float muki = (float)l_EnMuki[mDirection];
     mSpeed.y = speed.y;
-    mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];
+    float sx = speed.x;
+    mSpeed.x = (muki * rate) * sx;
     jumpEffect();
     jumpSE();
 }

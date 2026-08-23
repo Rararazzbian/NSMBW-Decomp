@@ -2109,3 +2109,49 @@ sits in the higher register.
   exhausted, the remaining levers are the *types* and the *provenance* of the
   values — what `l_EnMuki` is declared as, whether `speed` is copied as a struct
   or assigned component-wise, whether a call result is a local or inlined.
+
+## A spurious callee-saved register can be a MERGE register, not a cached value
+
+`setQuakeDead` was diagnosed for three rounds as MWCC common-subexpressioning
+the constant zero across a call. It is not. Chaining the zero stores, reversing
+them, copying one from the other, using a typed `s16` local and casting to
+`(u16)` all produce **byte-identical** output — reducing the number of literal
+zeros changes nothing, so a use-count threshold is not the trigger.
+
+The listing says what is happening:
+
+    draft                              retail
+    li    r29, 0x0                     li    r0, 0x0
+    sth   r29, 0x792(r30)              sth   r0, 0x792(r30)
+    sth   r29, 0x790(r30)              sth   r0, 0x790(r30)
+    bl    UnKnownScoreSet...           bl    UnKnownScoreSet...
+    lwz   r3, 0x770(r30)               lwz   r3, 0x770(r30)
+    cmpwi r3, 0x0                      cmpwi r3, 0x0
+    bne   .L1                          bne   .L1
+    b     .L2      <-- no li:          li    r3, 0x0
+                       r29 IS 0        b     .L2
+    .L1: bl searchBaseByID             .L1: bl searchBaseByID
+    mr    r29, r3  <-- merge in r29    .L2: cmpwi r3, 0x0
+    .L2: cmpwi r29, 0x0                beq   .L3
+    beq   .L3                          bl    deleteRequest
+    mr    r3, r29  <-- and back out
+    bl    deleteRequest
+
+MWCC put the *store constant* in a callee-saved register so it could reuse it as
+the **merge register for the conditional expression** — the null arm then costs
+nothing. It pays two `mr`s, a save/restore pair and `0x10` of frame to save one
+`li`. Exactly `+2 +2 -1 = +3` words.
+
+**Rule: before attacking a spurious non-volatile, find out what it is for.** A
+register holding a value across a call is the obvious reading and it was wrong
+here; this one was chosen as the destination of a conditional merge, and the
+constant was pulled into it afterwards. The listing distinguishes the two cases
+immediately — a cached value is *read* after the call, a merge register is
+*written* on both arms and tested once.
+
+The corollary is the fix direction. Nothing about the stores matters; what
+matters is denying MWCC a register that already holds the value the null arm
+needs. A computed zero (`x >> 31`, a reload of a member known to be zero) cannot
+be served from the merge register and immediately restores the retail shape —
+right words, right frame, right save set, one instruction spent on the wrong
+opcode.

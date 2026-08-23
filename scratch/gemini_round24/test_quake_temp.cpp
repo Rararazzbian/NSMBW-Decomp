@@ -329,11 +329,10 @@ void dEnTorideKokoopa_c::setQuakeDead() {
     mCc.release();
     mUnk792 = 0;
     mUnk790 = 0;
-    dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
-    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
-    if (base != nullptr) {
-        base->deleteRequest();
-    }
+    dScoreMng_c *sm = dScoreMng_c::m_instance;
+    sm->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
+    fBase_c *base = (mUnk770 == 0) ? (fBase_c*)0 : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (base != 0) base->deleteRequest();
     mActorProperties &= ~8;
     sDeathInfoData deathData = l_dieQuake;
     deathData.mDirection = dir;
@@ -1091,8 +1090,9 @@ void dEnTorideKokoopa_c::initializeState_Jump() {
         speed = mpParamJump->mJumpSpeed2;
     }
     float rate = calcJumpRate();
+    float muki = (float)l_EnMuki[mDirection];
     mSpeed.y = speed.y;
-    mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];
+    mSpeed.x = (muki * rate) * speed.x;
     jumpEffect();
     jumpSE();
 }
@@ -1160,8 +1160,9 @@ void dEnTorideKokoopa_c::initializeState_BigJump() {
         speed = mpParamJump->mBigJumpSpeed2;
     }
     float rate = calcJumpRate();
+    float muki = (float)l_EnMuki[mDirection];
     mSpeed.y = speed.y;
-    mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];
+    mSpeed.x = (muki * rate) * speed.x;
     jumpEffect();
     jumpSE();
 }
