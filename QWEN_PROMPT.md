@@ -6,6 +6,34 @@ Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
 ---
 
+## COMPLETENESS — read this before anything else
+
+**Every task in this brief is in scope. Do all of them.**
+
+You have previously skipped work and explained it with *"the prompt omits
+them."* That reasoning is not accepted here, and I am removing it as an option:
+
+- **If a task's details seem incomplete, that is not permission to skip it.**
+  Make the most reasonable interpretation, do the work, and state the assumption
+  you made in your report.
+- **If something you need is missing** — a file, a figure, a tool — **do not
+  drop the task.** Find the nearest valid substitute, use it, and say what you
+  substituted and why. You did exactly this in round 31 when `diff_ctr.py` was
+  not where I said it would be, and that was the right call.
+- **A task is only "not done" if you ran out of budget**, and then you must
+  name it in a `NOT REACHED` list at the end of your report. Silence is not an
+  acceptable way to leave something undone.
+- **Meeting a minimum matters.** If a task asks for three variants and you
+  produce two, that task is incomplete — say so explicitly in the report rather
+  than presenting the round as fully covered. Round 31 fell short on T1 and T3
+  and did not flag either.
+
+At the end of your report, include a **compliance table**: one row per task,
+with `required` / `delivered` / `met?`. I will be checking it against your
+artifacts either way, so make it accurate.
+
+---
+
 ## Round 31: the volume test passed. This is your best round.
 
 Verified before reading your report:

@@ -65,6 +65,14 @@ If it does not go to zero, say what it became.
 
 ---
 
+## Completeness
+
+All three items below are in scope. If a task's details seem incomplete, that is
+not permission to skip it — make the most reasonable interpretation, do it, and
+state your assumption. If something you need is missing, substitute the nearest
+valid thing and say what you substituted. A task is only "not done" if you ran
+out of budget, and then name it in a `NOT REACHED` list at the end.
+
 ## Round 28 — order of work
 
 1. **Vtable placement.** Move the two helper class definitions to the end of the
