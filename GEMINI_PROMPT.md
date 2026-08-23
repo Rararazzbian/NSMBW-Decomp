@@ -1,4 +1,4 @@
-# Work order — round 27
+# Work order — round 28
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,95 +6,87 @@ Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 26: headline exact, regression repaired, and you answered the question
+## The landing assessment is first-rate, and I verified it
 
-Verified independently. **Your figures are exactly right — all of them:**
+I checked your retail addresses against the symbol maps. **Every one is exact:**
 
-    246/251 raw + 2 artifacts = 248/251 (98.80%)
-    24,420 + 6,396 artifact bytes = 30,816 matched bytes
-    LOST: 0
+    __vt__18dEnTorideKokoopa_c    = .data:0x80314360  size 0x5E4   ✓
+    __vt__20KokoopaSpFumiCheck_c  = .data:0x80315298  size 0x10    ✓
+    __vt__21MugenComboFumiCheck_c = .data:0x803152A8  size 0x10    ✓
+    getFumiRev__12FumiCcInfo_cFv  = .text:0x800B07B0  size 0x50    ✓
 
-`__sinit` is back to 4 diffs. You recalibrated the pad against the new vtables
-and recovered **5,784 bytes**, plus `hitCallback_PenguinSlide`. Net +5,860.
+A clear **NO** verdict, four concrete blockers, and a seven-header audit with a
+retail symbol behind every entry. That is exactly what I asked for and it is
+worth more than another percentage point — it converts "98.8% matched" into a
+finite list of things to fix. `setQuakeDead` not closing is fine; this was the
+valuable half.
 
-You also used the *corrected* baseline I gave you (24,956) instead of carrying
-forward your own inflated 30,880, and you checked the artifact-matched pair
-explicitly. Both were asked for and both were done. That is the derived-figure
-defect closed.
-
-**And you answered the Jump/BigJump question.** `f0`..`f4`, volatile, zero
-callee-saved FPRs on either side — so the lever does not apply and you recorded
-it as a bounded negative and stopped. That is exactly the right handling, and it
-retires 720 bytes from the board as unreachable rather than leaving them to be
-re-litigated every round. Fifth time of asking, and worth it.
+Your headline is also right again: 246 raw + 2 artifacts = 248/251, and you
+checked the artifact pair by name.
 
 ---
 
-## One function left, and then the real question
+## Your blocker #1 is a definition-order problem, and it is fixable this round
 
-    340 B  setQuakeDead   (352/340, 84 diffs)  <- the last actionable function
-    360 B  initializeState_Jump      bounded negative, volatile FPRs
-    360 B  initializeState_BigJump   bounded negative, volatile FPRs
+You found the real defect and then described it as a constraint rather than a
+bug:
 
-Your `setQuakeDead` diagnosis is concrete and I think it is right: the target
-calls `searchBaseByID` and tests the returned `r3` directly without persisting
-it, while your draft hoists a `0` across `UnKnownScoreSet` into non-volatile
-`r29` and grows the frame to `0x40`. That is the same family as the result from
-the other unit this week — **a value held across a call that the target does not
-hold** — so the fix is to stop the constant living across the call: sink it to
-its use, or restructure the ternary so nothing survives `UnKnownScoreSet`.
+    retail:  __vt__20KokoopaSpFumiCheck_c   at 0x80315298  (END of .data,
+             __vt__21MugenComboFumiCheck_c  at 0x803152A8   after the 49 state
+                                                            ID tables)
 
-**That is item one and it should not take the whole round.**
+    draft:   __vt__20KokoopaSpFumiCheck_c   at 0x80314350  (START of .data,
+             __vt__21MugenComboFumiCheck_c  at 0x80314968   before/just after
+                                                            the kokoopa vtable)
 
----
+**MWCC emits a class's vtable in the order the class is defined in the
+translation unit.** `AGENT_CONTEXT.md` carries this for functions —
+*"Function DEFINITION ORDER is part of the object"* and *"interleave by
+ADDRESS, not by logical grouping"* — and it governs vtables the same way. Your
+two helper classes are defined near the top of the file, so their vtables land
+at the top of `.data`.
 
-## Item two: tell me whether this unit can actually land
+**Move both class definitions to the bottom of the translation unit**, after
+everything that produces the state ID tables, so their vtables emit last. Retail
+puts them at the very end; match that. This should:
 
-This is now the more important question, and it is the one nobody has answered.
+- put `__vt__20KokoopaSpFumiCheck_c` and `__vt__21MugenComboFumiCheck_c` at
+  `0x80315298`/`0x803152A8`;
+- let `g_padData` go to **zero**, which is your own conclusion — "at link time
+  this TU requires zero pad";
+- and very likely resolve blocker #2, the `0x80` state-ID displacement, since
+  that gap exists because 16 bytes of vtable are sitting where they should not
+  be.
 
-The unit is at 98.8% matched **in a scratch harness**. Matching is not landing.
-`AGENT_CONTEXT.md` carries the rule that a high tally does not mean a unit is
-landable, because **the tally never links**. Before anyone proposes putting this
-in `source/`, I need a written landing assessment from you. Specifically:
-
-1. **`g_padData`.** You have said it is a harness artifact that disappears in a
-   real link because `d_enemy_state.o` supplies those bytes. **Is that still
-   true after the recalibration?** You have now sized it against your own new
-   vtables — which means it is currently compensating for something real. State
-   plainly: at link time, with `d_enemy_state.o` present, does this TU need a
-   pad at all? If it does, it cannot land as written.
-
-2. **The shadowed headers in `scratch/gemini_round24/include/`.** List every
-   header you are shadowing and every declaration you have added or changed in
-   them. For each, say whether it is (a) a genuine correction that belongs in
-   the real `include/`, or (b) a local hack that only works in the harness.
-   Anything in category (b) blocks the landing.
-
-3. **New symbols.** `MugenComboFumiCheck_c`, `KokoopaSpFumiCheck_c`,
-   `FumiCcInfo_c` — their vtables are now real `.data` in your object. Do those
-   vtables exist in retail at the addresses your layout implies? You have the
-   `.data` dump technique from the round-23 work; use it.
-
-4. **Anything else you would not put in `source/` as written.**
-
-An honest "here are three things that block it" is worth far more than another
-percentage point. **Do not attempt the landing yourself** — do not run `ninja`,
-`configure.py`, `progress.py` or `land.py`, and do not touch `source/`,
-`include/`, or `slices/`. I want the assessment, not the attempt.
+**Verify by construction, not by arithmetic** — the rule that settled the pad
+region. Move them, recompile, and report the actual `.data` addresses of both
+vtables and of `__vt__18dEnTorideKokoopa_c`, plus what `g_padData` had to become.
+If it does not go to zero, say what it became.
 
 ---
 
-## Round 27 — order of work
+## Round 28 — order of work
 
-1. `setQuakeDead` — the value held across the call.
-2. The landing assessment, items 1–4 above, in writing.
+1. **Vtable placement.** Move the two helper class definitions to the end of the
+   TU. Report the resulting `.data` addresses and the required pad size. This is
+   blockers #1 and #2, and it is the difference between a unit that can land and
+   one that cannot.
+2. **`setQuakeDead` (352/340, 84 diffs).** Your diagnosis stands: the draft
+   hoists a `0` across `UnKnownScoreSet` into non-volatile `r29` and grows the
+   frame to `0x40`, where the target tests `searchBaseByID`'s `r3` directly and
+   persists nothing. Stop the constant living across the call.
+3. **Re-verify `__sinit` after step 1.** Moving 16 bytes of `.data` is exactly
+   the class of change that broke it in round 25. Check it explicitly and report
+   its diff count whatever it is.
 
-Continue in `scratch/gemini_round24/`. Keep writing source after every closure
-and appending to the report as you go.
+`initializeState_Jump` / `BigJump` are closed as bounded negatives. Do not
+reopen them.
 
-Do not touch `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`,
-`configure.py`, `QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`. **Do not run
-`ninja`, `configure.py`, `progress.py` or `land.py`.**
+Continue in `scratch/gemini_round24/`. Do not touch `wip/**`, `source/**`,
+`include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
+`CODEX_HANDOFF.md`, or `HANDOFF.md`. **Do not run `ninja`, `configure.py`,
+`progress.py` or `land.py`** — and still do not attempt the landing itself. I
+will do the header promotion and the five-binary verification.
 
 ---
 
@@ -102,6 +94,8 @@ Do not touch `wip/**`, `source/**`, `include/**`, `slices/`, `syms.txt`,
 
 - Baseline **248/251, 30,816 bytes**. Compute the headline once.
 - **GAINED and LOST by name**, including the artifact-matched pair by name.
+- **The `.data` address of every vtable in your object**, before and after the
+  move, against the retail addresses above.
+- **`__sinit`'s diff count**, explicitly.
 - `poolcheck.py` output.
-- **The landing assessment as a numbered section**, with a one-line verdict at
-  the top: can this unit land as written, yes or no?
+- An updated landing verdict: which of your four blockers are now cleared.
