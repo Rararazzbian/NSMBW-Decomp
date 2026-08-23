@@ -3,6 +3,7 @@
 #include <types.h>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_actor.hpp>
+#include <game/bases/d_p_sw_manager.hpp>
 
 class dBgParameter_c {
 public:
@@ -27,6 +28,8 @@ public:
     u8 mPad2[0x34];
     u8 mScrollDirX; ///< See BG_SCROLL_DIR_X_e.
     u8 mScrollDirY; ///< See BG_SCROLL_DIR_Y_e.
+    u8 mPad3[2];
+    dPSwManager_c::PSwData_s mPSwData;
 
     float getLoopScrollDispPosX(float x);
 
