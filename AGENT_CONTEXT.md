@@ -2284,3 +2284,34 @@ level even when the generated code is close.
 **Rule: before settling on a construct, grep `source/` for it.** Zero hits
 across 169 matched files is strong evidence the original does not contain it.
 Plenty of hits, with context, shows you the shape the author actually used.
+
+## A callee-saved register is not always a value surviving a call
+
+`calc`'s spurious `f29` was chased for several rounds as "a float that must
+survive the trig calls". It is not. Reading the listing, `f29` holds
+`mOffset2.y * sin` — a product computed **after** the last call and consumed
+twice, with no call in between. It is in a callee-saved register because MWCC
+ran out of volatile ones: eight rotation products plus `px`, `py`, `cos` and
+`sin` exceed `f0`–`f13` at the peak, and the overflow goes somewhere.
+
+That reframes the target's shape:
+
+    target : 2 callee-saved FPRs + 0x10 more stack   -> overflow spilled to MEMORY
+    draft  : 3 callee-saved FPRs + less stack        -> overflow spilled to a REGISTER
+
+Same pressure, different resolution. MWCC prefers a callee-saved register and
+only uses memory once it has run out, so the lever is **how many float
+temporaries are simultaneously live at the peak** — which is set by how the
+computations and their consumers are interleaved, not by anything crossing a
+call.
+
+**Rule: before attributing a callee-saved register to a call, find the
+instruction that defines it and the instructions that use it, and check whether
+a call actually sits between them.** If none does, it is pressure, and the fix
+is scheduling the work in smaller groups (compute-and-store one result at a
+time) or larger ones, not moving definitions around calls.
+
+Note also that an aggregate return slot is not the same thing as extra frame.
+`calc`'s target and draft *both* allocate one for `getCenterPos` — at
+`r1+0x20` and `r1+0xc` respectively — so the `0x60` versus `0x50` difference was
+never the aggregate, it is room for about four 4-byte spills below the slot.

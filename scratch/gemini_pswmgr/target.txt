@@ -1,0 +1,192 @@
+# dPSwManager_c::dPSwManager_c()
+.fn __ct__13dPSwManager_cFv, global
+/* 800D86C0 00000658  3C 80 00 00 */	lis r4, __vt__13dPSwManager_c@ha
+/* 800D86C4 0000065C  38 84 00 00 */	addi r4, r4, __vt__13dPSwManager_c@l
+/* 800D86C8 00000660  90 83 00 00 */	stw r4, 0x0(r3)
+/* 800D86CC 00000664  90 60 00 00 */	stw r3, ms_instance__13dPSwManager_c@sda21(r0)
+/* 800D86D0 00000668  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::~dPSwManager_c()
+.fn __dt__13dPSwManager_cFv, global
+/* 800D86E0 00000678  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 800D86E4 0000067C  7C 08 02 A6 */	mflr r0
+/* 800D86E8 00000680  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D86EC 00000684  90 01 00 14 */	stw r0, 0x14(r1)
+/* 800D86F0 00000688  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 800D86F4 0000068C  7C 7F 1B 78 */	mr r31, r3
+/* 800D86F8 00000690  41 82 00 18 */	beq .L_800D8710
+/* 800D86FC 00000694  2C 04 00 00 */	cmpwi r4, 0x0
+/* 800D8700 00000698  38 00 00 00 */	li r0, 0x0
+/* 800D8704 0000069C  90 00 00 00 */	stw r0, ms_instance__13dPSwManager_c@sda21(r0)
+/* 800D8708 000006A0  40 81 00 08 */	ble .L_800D8710
+/* 800D870C 000006A4  48 00 00 01 */	bl __dl__FPv
+.L_800D8710:
+/* 800D8710 000006A8  7F E3 FB 78 */	mr r3, r31
+/* 800D8714 000006AC  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 800D8718 000006B0  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 800D871C 000006B4  7C 08 03 A6 */	mtlr r0
+/* 800D8720 000006B8  38 21 00 10 */	addi r1, r1, 0x10
+/* 800D8724 000006BC  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::initialize()
+.fn initialize__13dPSwManager_cFv, global
+/* 800D8730 000006C8  80 A0 00 00 */	lwz r5, ms_Instance_p__14dBgParameter_c@sda21(r0)
+/* 800D8734 000006CC  80 05 00 84 */	lwz r0, 0x84(r5)
+/* 800D8738 000006D0  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D873C 000006D4  80 85 00 88 */	lwz r4, 0x88(r5)
+/* 800D8740 000006D8  80 05 00 8C */	lwz r0, 0x8c(r5)
+/* 800D8744 000006DC  90 03 00 0C */	stw r0, 0xc(r3)
+/* 800D8748 000006E0  90 83 00 08 */	stw r4, 0x8(r3)
+/* 800D874C 000006E4  80 05 00 90 */	lwz r0, 0x90(r5)
+/* 800D8750 000006E8  90 03 00 10 */	stw r0, 0x10(r3)
+/* 800D8754 000006EC  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::execute()
+.fn execute__13dPSwManager_cFv, global
+/* 800D8760 000006F8  48 00 00 00 */	b ProcMain__13dPSwManager_cFv
+.endfn
+
+# dPSwManager_c::ProcMain()
+.fn ProcMain__13dPSwManager_cFv, global
+/* 800D8770 00000708  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 800D8774 0000070C  7C 08 02 A6 */	mflr r0
+/* 800D8778 00000710  90 01 00 24 */	stw r0, 0x24(r1)
+/* 800D877C 00000714  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 800D8780 00000718  3F E0 88 89 */	lis r31, 0x8889
+/* 800D8784 0000071C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 800D8788 00000720  3B C0 00 00 */	li r30, 0x0
+/* 800D878C 00000724  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 800D8790 00000728  93 81 00 10 */	stw r28, 0x10(r1)
+/* 800D8794 0000072C  7C 7C 1B 78 */	mr r28, r3
+.L_800D8798:
+/* 800D8798 00000730  7F 83 E3 78 */	mr r3, r28
+/* 800D879C 00000734  7F C4 F3 78 */	mr r4, r30
+/* 800D87A0 00000738  48 00 00 01 */	bl checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+/* 800D87A4 0000073C  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D87A8 00000740  41 82 00 9C */	beq .L_800D8844
+/* 800D87AC 00000744  7F 83 E3 78 */	mr r3, r28
+/* 800D87B0 00000748  7F C4 F3 78 */	mr r4, r30
+/* 800D87B4 0000074C  48 00 00 01 */	bl getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+/* 800D87B8 00000750  2C 03 00 00 */	cmpwi r3, 0x0
+/* 800D87BC 00000754  7C 7D 1B 78 */	mr r29, r3
+/* 800D87C0 00000758  41 82 00 08 */	beq .L_800D87C8
+/* 800D87C4 0000075C  3B A3 FF FF */	subi r29, r3, 0x1
+.L_800D87C8:
+/* 800D87C8 00000760  38 1F 88 89 */	subi r0, r31, 0x7777
+/* 800D87CC 00000764  7C 00 E8 16 */	mulhwu r0, r0, r29
+/* 800D87D0 00000768  54 00 D9 7E */	srwi r0, r0, 5
+/* 800D87D4 0000076C  1C 00 00 3C */	mulli r0, r0, 0x3c
+/* 800D87D8 00000770  7C 00 E8 51 */	subf. r0, r0, r29
+/* 800D87DC 00000774  40 82 00 38 */	bne .L_800D8814
+/* 800D87E0 00000778  28 1D 00 B4 */	cmplwi r29, 0xb4
+/* 800D87E4 0000077C  40 81 00 18 */	ble .L_800D87FC
+/* 800D87E8 00000780  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 800D87EC 00000784  38 80 00 AA */	li r4, 0xaa
+/* 800D87F0 00000788  38 A0 00 01 */	li r5, 0x1
+/* 800D87F4 0000078C  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+/* 800D87F8 00000790  48 00 00 1C */	b .L_800D8814
+.L_800D87FC:
+/* 800D87FC 00000794  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 800D8800 00000798  41 82 00 14 */	beq .L_800D8814
+/* 800D8804 0000079C  80 60 00 00 */	lwz r3, sInstance__11SndAudioMgr@sda21(r0)
+/* 800D8808 000007A0  38 80 00 AB */	li r4, 0xab
+/* 800D880C 000007A4  38 A0 00 01 */	li r5, 0x1
+/* 800D8810 000007A8  48 00 00 01 */	bl startSystemSe__11SndAudioMgrFUiUl
+.L_800D8814:
+/* 800D8814 000007AC  2C 1D 00 00 */	cmpwi r29, 0x0
+/* 800D8818 000007B0  40 82 00 1C */	bne .L_800D8834
+/* 800D881C 000007B4  80 60 00 00 */	lwz r3, sInstance__11SndSceneMgr@sda21(r0)
+/* 800D8820 000007B8  38 80 00 08 */	li r4, 0x8
+/* 800D8824 000007BC  48 00 00 01 */	bl fn_8019be60__11SndSceneMgrFi
+/* 800D8828 000007C0  7F 83 E3 78 */	mr r3, r28
+/* 800D882C 000007C4  7F C4 F3 78 */	mr r4, r30
+/* 800D8830 000007C8  48 00 00 01 */	bl offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+.L_800D8834:
+/* 800D8834 000007CC  7F 83 E3 78 */	mr r3, r28
+/* 800D8838 000007D0  7F C4 F3 78 */	mr r4, r30
+/* 800D883C 000007D4  7F A5 EB 78 */	mr r5, r29
+/* 800D8840 000007D8  48 00 00 01 */	bl setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei
+.L_800D8844:
+/* 800D8844 000007DC  3B DE 00 01 */	addi r30, r30, 0x1
+/* 800D8848 000007E0  2C 1E 00 03 */	cmpwi r30, 0x3
+/* 800D884C 000007E4  41 80 FF 4C */	blt .L_800D8798
+/* 800D8850 000007E8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 800D8854 000007EC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 800D8858 000007F0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 800D885C 000007F4  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 800D8860 000007F8  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 800D8864 000007FC  7C 08 03 A6 */	mtlr r0
+/* 800D8868 00000800  38 21 00 20 */	addi r1, r1, 0x20
+/* 800D886C 00000804  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::finalize()
+.fn finalize__13dPSwManager_cFv, global
+/* 800D8870 00000808  80 A0 00 00 */	lwz r5, ms_Instance_p__14dBgParameter_c@sda21(r0)
+/* 800D8874 0000080C  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 800D8878 00000810  90 05 00 84 */	stw r0, 0x84(r5)
+/* 800D887C 00000814  80 03 00 0C */	lwz r0, 0xc(r3)
+/* 800D8880 00000818  80 83 00 08 */	lwz r4, 0x8(r3)
+/* 800D8884 0000081C  90 85 00 88 */	stw r4, 0x88(r5)
+/* 800D8888 00000820  90 05 00 8C */	stw r0, 0x8c(r5)
+/* 800D888C 00000824  80 03 00 10 */	lwz r0, 0x10(r3)
+/* 800D8890 00000828  90 05 00 90 */	stw r0, 0x90(r5)
+/* 800D8894 0000082C  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::checkSwitch(dPSwManager_c::SwType_e)
+.fn checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e, global
+/* 800D88A0 00000838  38 00 00 01 */	li r0, 0x1
+/* 800D88A4 0000083C  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 800D88A8 00000840  7C 00 20 30 */	slw r0, r0, r4
+/* 800D88AC 00000844  7C 63 00 38 */	and r3, r3, r0
+/* 800D88B0 00000848  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::checkMove()
+.fn checkMove__13dPSwManager_cFv, global
+/* 800D88C0 00000858  80 63 00 04 */	lwz r3, 0x4(r3)
+/* 800D88C4 0000085C  7C 03 00 D0 */	neg r0, r3
+/* 800D88C8 00000860  7C 00 1B 78 */	or r0, r0, r3
+/* 800D88CC 00000864  54 03 0F FE */	srwi r3, r0, 31
+/* 800D88D0 00000868  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::getTimer(dPSwManager_c::SwType_e)
+.fn getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e, global
+/* 800D88E0 00000878  54 80 10 3A */	slwi r0, r4, 2
+/* 800D88E4 0000087C  7C 63 02 14 */	add r3, r3, r0
+/* 800D88E8 00000880  80 63 00 08 */	lwz r3, 0x8(r3)
+/* 800D88EC 00000884  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::onSwitch(dPSwManager_c::SwType_e, int)
+.fn onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei, global
+/* 800D88F0 00000888  38 00 00 01 */	li r0, 0x1
+/* 800D88F4 0000088C  80 C3 00 04 */	lwz r6, 0x4(r3)
+/* 800D88F8 00000890  7C 00 20 30 */	slw r0, r0, r4
+/* 800D88FC 00000894  7C C0 03 78 */	or r0, r6, r0
+/* 800D8900 00000898  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D8904 0000089C  48 00 00 00 */	b setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei
+.endfn
+
+# dPSwManager_c::offSwitch(dPSwManager_c::SwType_e)
+.fn offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e, global
+/* 800D8910 000008A8  38 00 00 01 */	li r0, 0x1
+/* 800D8914 000008AC  80 A3 00 04 */	lwz r5, 0x4(r3)
+/* 800D8918 000008B0  7C 00 20 30 */	slw r0, r0, r4
+/* 800D891C 000008B4  7C A0 00 78 */	andc r0, r5, r0
+/* 800D8920 000008B8  90 03 00 04 */	stw r0, 0x4(r3)
+/* 800D8924 000008BC  4E 80 00 20 */	blr
+.endfn
+
+# dPSwManager_c::setTimer(dPSwManager_c::SwType_e, int)
+.fn setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei, global
+/* 800D8930 000008C8  54 80 10 3A */	slwi r0, r4, 2
+/* 800D8934 000008CC  7C 63 02 14 */	add r3, r3, r0
+/* 800D8938 000008D0  90 A3 00 08 */	stw r5, 0x8(r3)
+/* 800D893C 000008D4  4E 80 00 20 */	blr
+.endfn
