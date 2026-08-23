@@ -2476,3 +2476,67 @@ function from `GXSetColorUpdate`. Declaring the obvious spelling compiles
 cleanly and matches nothing, which reads like a wrong diagnosis rather than a
 wrong spelling. Count the underscores before declaring.
 
+## Count the null guards in a destructor to find hidden empty base classes
+
+MWCC inlines an empty base destructor as a `this == 0` guard. So the number of
+guards in a derived destructor equals **self + every empty base inlined above the
+first base that has a real destructor**. That makes an invisible class visible.
+
+`d3d::proc_c` appears nowhere in `include/`, has no vtable and no data. Its only
+emitted symbol is 4 bytes at 0x80007510:
+
+    /* 80007510  48 00 00 00 */  b create__Q23m3d6proc_cFP12mAllocator_cPUl
+
+Is it a real class, or an illusion -- are its subclasses really deriving from
+`m3d::proc_c` directly? The destructors answer it:
+
+    3 guards  41820024 / 41820010 / 4182000C
+              dDrawShadowModel_c, dCapture_c, dSetupGX_c, dCaptureCoin_c,
+              dProcShareProc_c        = {self, d3d::proc_c, m3d::proc_c}
+
+    4 guards  41820028 / 41820014 / 41820010 / 4182000C
+              dMakeShadowTex_c, dDrawShadowProjMap_c
+                                      = {self, dDrawScreen_c, d3d::proc_c,
+                                         m3d::proc_c}
+
+A direct `m3d::proc_c` subclass would show two. So `d3d::proc_c` is real,
+contributes exactly one guard, and has no members and no user-declared dtor.
+
+**Corollary, unverified but worth checking before anyone lands it:**
+`include/game/bases/d_wm_sv_mdl.hpp` declares
+`class dWmSVMdl_c : public m3d::proc_c`, but `__dt__10dWmSVMdl_cFv` at
+0x800F2730 has **three** guards, not two. That header is probably wrong and
+should be `: public d3d::proc_c`. `d_wm_sv_mdl.cpp` is not landed, so nothing
+has ever tested it.
+
+## An empty base class needs a declaration and a syms.txt pin, never a decompile
+
+`d3d::proc_c` is size 0x8 -- identical to `m3d::scnLeaf_c` -- so it contributes
+zero bytes to any derived object. Every derived vtable is the plain `m3d::proc_c`
+shape with `getType__Q23m3d6proc_cCFv` in slot +0x0C, so it contributes zero
+vtable slots. Its one function lives in a different TU nobody is decompiling.
+
+Therefore a header plus one pin is sufficient:
+
+    create__Q23d3d6proc_cFP12mAllocator_cPUl=0x80007510
+
+and the header must declare *only* `create` -- non-virtual, second parameter
+`size_t *` (mangles `PUl`), returning `bool` (callers do `cmpwi r3, 0`). Do not
+re-declare `getType`, `drawOpa`, `drawXlu`, `remove` or `entry`, and do not
+declare a destructor; any of those changes the vtable or adds a guard.
+
+Suggested home: `include/game/bases/d_3d.hpp`. The `d3d` TU begins at
+0x80007510, the byte immediately after the landed `dol/bases/d_2d.cpp` slice
+ends, mirroring the existing `d_2d.hpp` / `d_2d.cpp` pair. It is not in the
+`m3d` namespace, so it does not belong under `m_3d/`.
+
+**But the base was not the blocker.** `dDrawShadowModel_c` shares one retail TU
+(0x8008A004-0x8008C200) with six other classes -- `dCapture_c`, `dSetupGX_c`,
+`dCaptureCoin_c`, `dDrawScreen_c`, `dMakeShadowTex_c`, `dDrawShadowProjMap_c`.
+The tell is that every class's weak inline `drawXlu`/`__dt` bodies are bunched at
+the end of the object in reverse declaration order, and their vtables run
+contiguously in `.data` from 0x80310FB0 to 0x803110A0. Slicing one class out of
+it is possible by byte range but is not a TU boundary, and the file-local helpers
+`fn_8008B830` / `fn_8008BA00` fall outside the carve and would need pins.
+Treat that group as one ~8.7 KB unit, not seven small ones.
+
