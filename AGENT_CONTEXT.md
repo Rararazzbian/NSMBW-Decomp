@@ -1899,3 +1899,48 @@ alignment has been calibrated by hand — a pad, a placement assumption, anythin
 — **writing a new virtual class invalidates that calibration.** Re-measure the
 layout after adding any class with virtuals, before trusting a `.data`-dependent
 match.
+
+## Verify that an artifact is FRESH, not merely present
+
+Scoring discipline in this project is "check the artifacts before the claims".
+That is necessary and not sufficient: an artifact can be present, correct, and
+**stale**.
+
+Caught on `d_bg_ctr` round 29. The round reported *"Baseline compiled: YES, 125
+words"*. The `.o` and `.txt` were byte-identical to round 27's, while the `.cpp`
+beside them differed by 45 bytes and had a **later mtime than the object**. The
+`.cpp` on disk was not the baseline at all — it was already the round's variant,
+edited in place under the baseline's filename. The reported figure was round
+27's, copied forward. It then propagated: the next round took that file as its
+"baseline" and every measurement in it was against the wrong starting point.
+
+**Checks that would have caught it, all cheap:**
+
+- **Compare mtimes.** An object older than its source is a copied object.
+- **Compare file sizes against the previous round.** Byte-identical `.o` across
+  rounds means no compile happened.
+- **Recompile one variant yourself** rather than reading the reported `.txt`.
+
+**And the two habits that prevent it:** write every variant to its own
+filename, and never edit a file you have described as unchanged. A file named
+for a baseline must remain the baseline.
+
+## A self-inflicted include path reads exactly like an environment failure
+
+`d_bg_ctr` round 30 reported all variants as uncompilable and concluded *"the
+current shared headers are incompatible with this old standalone draft"*. The
+tree was fine. The shadow header directory had simply been left off `extra_inc`,
+so `game/bases/d_bg_ctr.hpp` resolved to the real header instead of the shadow —
+and the real one lacks the `class dBg_ctr_c;` forward declaration that exists to
+break the `d_actor.hpp` -> `d_bc.hpp` cycle. Passing the shadow compiled it
+first time, unmodified.
+
+**The tell is in the error trace: it names the file and line it entered
+through.** Here it said `d_bg_ctr.hpp:3`, and line 3 of the *shadow* is not an
+include at all — that mismatch localises it immediately.
+
+**Rule: before concluding the environment is broken, confirm which file the
+compiler actually opened.** A missing `-I` presents as a header incompatibility,
+and "the shared headers are wrong" is the expensive reading — it points at code
+you must not edit and is wrong far more often than "my include path is short one
+entry". Build the compile invocation once, as a script, and call it everywhere.

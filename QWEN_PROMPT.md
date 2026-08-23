@@ -1,113 +1,195 @@
-# Work order — round 30
+# Work order — round 31 (LARGE)
 
 **Read `AGENT_CONTEXT.md` first.**
 
 Write results to **`QWEN_RESPONSE.md`** (overwrite it).
 
----
-
-## Round 29: you did everything right. My hypothesis was wrong.
-
-Verified against your artifacts before writing this. You:
-
-- started from `calc_v1_decl_order.cpp`, as instructed;
-- compiled it unchanged first and reproduced the gate exactly — **125 words,
-  frame `0x50`, saves `f31 f30 f29`**;
-- made precisely the change I specified and no other;
-- tried two further shapes, then **stopped**, as instructed;
-- reported the saved-register set as the scoreboard;
-- restored the correct `GAINED`/`LOST` definition — *"none (no matched-status
-  change)"* — after last round's drift;
-- touched exactly one function.
-
-Every number reproduces. **That is a clean round and the process question is
-settled.**
-
-**The result is a negative, and it is my error, not yours.** I predicted that
-inlining `cxs` at both use sites would shorten the live range and drop `f29`.
-It did the opposite — both variants came back at **129 words with `f28` back**,
-i.e. the baseline six-save shape. Recorded: **naming that temporary is better
-than inlining it here**, and the def-point lever does not reach this residual.
-A refuted prediction that moves the number is still information; this one moved
-it the wrong way and that is worth knowing.
-
-Drop the `Offset-perturbing` line — third time of asking, and it has never
-carried information.
+This brief is deliberately much larger than the last few. You have shown you
+follow a narrow brief precisely; the open question is whether that holds at
+volume. **Eight numbered tasks. Work them in order. Partial completion is
+expected and fine — an honest "T1–T5 done, T6–T8 not reached" is a good
+outcome. Inventing coverage is not.**
 
 ---
 
-## I looked again, and the real difference is not the live range. It is order.
+## Round 30 was blocked, the blocker was self-inflicted, and I unblocked it
 
-Two findings, both single source edits, both from the same side-by-side.
+You reported every variant as `Compiled: NO` and attributed it to *"the current
+shared headers are incompatible with this old standalone draft."* You were right
+to report the failure rather than fake a result. **But the diagnosis was wrong.**
 
-### 1. The two trig calls are in the opposite order
+Your compile resolved `game/bases/d_bg_ctr.hpp` to the **real** header in
+`include/`, not to your shadow. The error trace says so: it enters via
+`d_bg_ctr.hpp:3`, and line 3 of the *real* header is
+`#include <game/bases/d_actor.hpp>`. Your shadow's include is on line 5, behind
+the `class dBg_ctr_c;` forward declaration that exists precisely to prevent that
+error.
 
-    target:  bl CosFIdx  ->  fmr f31, f1  ->  bl SinFIdx
-    v1:      bl SinFIdx  ->  fmr f31, f1  ->  bl CosFIdx
+**You omitted the shadow from the include path.** I compiled your own
+`calc_order.cpp` unchanged, with the shadow passed as `extra_inc`, and it built
+first time:
 
-The target computes **cosine first, then sine**. Your draft does sine first.
-Whichever is computed first has to survive the second call, so the call order
-decides what gets parked in a callee-saved register. **Swap them** so cosine is
-evaluated first.
+    harness.compile_draft(src, obj,
+        extra_inc=['scratch/round31/d_bg_ctr/shadow'],
+        module='wiimj2d')
 
-Note the target's `f30` is not a computed value at all — it is a constant load,
-`lfs f30, SYM1@sda21(r0)`. Only **one** computed value crosses a call in the
-target. Three cross one in yours.
+Nothing is wrong with the tree, the headers, or the harness. **A whole round was
+spent on a missing include path.** Build the script once in T0 below and never
+hand-roll the invocation again.
 
-### 2. Your three products are held across the `revisePos()` call
+### I ran your three variants for you. Both of my hypotheses were wrong.
 
-This is the bigger one.
+    target        125 words, frame 0x60, FPR saves [31,30]
+    v1 (true)     125 words, frame 0x50, FPR saves [31,30,29]
+    calc_store    129 words, frame 0x60, FPR saves [31,30,29,28]   <- worse
+    calc_order    125 words, frame 0x50, FPR saves [31,30,29]      <- same as v1
+    calc_both     125 words, frame 0x50, FPR saves [31,30,29]      <- same as v1
 
-    v1      66  fmuls f29, f5, f31        target  77  fadds f31, f10, f1
-            70  fmuls f30, f3, f1                 80  stfs  f31, 0x74(r30)
-            73  fmuls f31, f3, f31
-           ...                                   ...
-           104  bl revisePos                     106  bl revisePos
+**Store-before-call made it worse. Trig-call order changed nothing.** Both were
+my ideas and both are now measured negatives — do not retry either. Record them.
 
-The target **stores each result to memory as soon as it computes it**, before
-calling `revisePos()`. Your draft computes all three products, holds them in
-registers across the `revisePos()` call, and stores afterwards — which is
-exactly why they need callee-saved registers at all.
-
-**Move the writes to `mScratch[...]` above the `revisePos()` call**, so each
-value is computed and immediately stored. That should let all three live in
-volatile registers and drop `f29`, `f30` and `f28` together.
+What the numbers do say: the target reaches a **larger** frame (`0x60`) while
+saving **fewer** FPRs. It is not carrying an extra register; it is carrying
+extra *stack locals*. You are short roughly `0x10` of genuine local storage, not
+long one register.
 
 ---
 
-## Round 30 — order of work
+## A correction about round 29 that you need before you start
 
-Still `calc` first, still from `calc_v1_decl_order.cpp` in `scratch/round30/`.
-You have earned wider scope back, but finish `calc` before moving on.
+Round 29's `calc_v1_decl_order.o` and `.txt` are **byte-identical to round 27's**,
+while its `.cpp` differs by 45 bytes and is *newer than the object*. The `.cpp`
+in `scratch/round29/` is not the baseline — **it is already your inlined
+variant**, with `cxs` removed and `corner0Y`/`corner1Y` added.
 
-1. **`calc`** — finding 2 first (store before the call), since it explains three
-   saves rather than one. Then finding 1 (swap the trig call order). Then both
-   together. **Report the saved-register set for each.** If `calc` matches, fold
-   it into a canonical `d_bg_ctr.cpp`, re-run `diff_ctr.py`, report the MATCHED
-   count.
-2. **`fn_80080670` (−3)** — same family: your draft saves FPRs the target does
-   not. Check whether it too is holding values across a call that the target
-   stores first. This is the cheapest test of whether finding 2 generalises.
-3. **`revisePos` (72/72)** — you have two measured negatives here already
-   (target-read-order rewrites, codegen-neutral). Try it once through the
-   store-before-call lens instead, then leave it.
-4. **`addDokanMoveDiff`** — you reached 88 against target 87, the closest it has
-   been. One word. Worth a look now that `calc` may have taught you the shape.
+So the round-29 line *"Baseline compiled: YES. 125 words"* was round 27's
+artifact copied forward, not a fresh compile of the file on disk. I checked the
+numbers against those `.txt` files and did not re-compile, so I missed it and
+called the round clean. That was my audit gap as much as your reporting error.
 
-Nothing else. Do not reopen `fn_80080900`.
+It then propagated: round 30 copied that file as its "baseline", so your entire
+round 30 was built on the variant rather than the baseline.
 
-Work in `scratch/round30/`. Do not touch `wip/**`, `source/**`, `include/**`,
-`slices/`, `syms.txt`, `configure.py`, `GEMINI_*`, `CODEX_HANDOFF.md`, or
-`HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or `land.py`.**
+**The true baseline is `scratch/round27/d_bg_ctr/calc_v1_decl_order.cpp`.** I
+verified it: 125 words, frame `0x50`, FPR `[31,30,29]`. Use that file and no
+other.
+
+**New standing rule: every number you report must come from an object you
+compiled in this round's directory.** Never copy a `.o` or a `.txt` forward. If
+you want a baseline figure, recompile it. Two cheap habits that make this
+checkable: write each variant to its **own filename**, and never edit a file you
+have described as "unchanged".
+
+---
+
+## Round 31 — the work list
+
+Everything in `scratch/round31/d_bg_ctr/`. Copy in `target.txt`, `diff_ctr.py`
+and the `shadow/` tree from `scratch/round28/d_bg_ctr/`.
+
+### T0 — build the harness once, and prove it
+
+Write `scratch/round31/d_bg_ctr/build.py` exposing one function that takes a
+source filename, compiles with `extra_inc=[<round31 shadow>]` and
+`module='wiimj2d'`, disassembles, and returns `(words, frame, gpr_saves,
+fpr_saves)` for a named function. Every later task calls it.
+
+**Acceptance:** compile `scratch/round27/d_bg_ctr/calc_v1_decl_order.cpp` and
+report **125 / 0x50 / FPR [31,30,29]**. If you do not get exactly that, stop and
+report it — every task below depends on this being right.
+
+### T1 — `calc` (+4): find the missing stack local
+
+Target `125 / 0x60 / [31,30]`; true v1 `125 / 0x50 / [31,30,29]`. The word count
+already matches; the shape does not. The target has ~`0x10` more local stack and
+one fewer saved FPR.
+
+Read the target's stack usage directly — which `r1+` offsets it writes that you
+do not — and give the function the local it is missing so the third FPR is not
+needed. **Do not** retry store-before-call or trig ordering.
+
+**Acceptance:** at least three named variants, each with words/frame/saved-set.
+
+### T2 — `fn_80080670` (−3)
+
+Same family: draft saves `f31/f30`, target saves neither, both frame `0xB0`.
+Apply whatever T1 learns. **Acceptance:** ≥2 variants measured.
+
+### T3 — `fn_80080E40` (−4)
+
+The draft-only gate deletion was correct and is done; you are now 4 words short
+of real content. Target keeps `r31=idx`, `r30=dir`, `r29=this`, saves `r28..r31`,
+does the `0xDC` test before `m_d4`, and calls `dBc_c::getActorKind()` **twice**.
+Your draft saves only `r31/r30/r29` — it is short a register *and* the content
+that needs it. **Acceptance:** ≥2 variants; report the GPR saved-set each time.
+
+### T4 — `addDokanMoveDiff` (−7)
+
+Target `87 / 0x60 / FPR [31,30]`; draft `80 / 0x50 / FPR [31,30,29]` — the same
+shape mismatch as `calc`, so T1's answer probably transfers. Note your round-28
+`target_math_dokan` reached 88 words; rebuild it in this round's directory (do
+not copy it) and confirm the figure before building on it.
+**Acceptance:** ≥2 variants, including a fresh `target_math_dokan`.
+
+### T5 — `fn_8007FFA0` (−8)
+
+Missing content, not register choice. Target frame `0x50`, `_savegpr_27`, one
+FPR; it stores intermediates at `r1+0x10` and `r1+0x14` before the parent
+accumulation and keeps the actor in `r27`. Write those stores and lifetimes.
+**Acceptance:** ≥2 variants measured.
+
+### T6 — `revisePos` (72/72)
+
+You have two measured negatives here (target-read-order rewrites, codegen
+neutral) and store-before-call is now a third. **One** further attempt, then
+record it as a bounded negative and stop. **Acceptance:** one variant, or a
+written statement that you are closing it as a bounded negative.
+
+### T7 — `fn_80080900` (−48)
+
+Target `0x170 / _savegpr_20`; draft `0xD0 / _savegpr_22`. Your liveness table
+from round 26 is still the best artifact on this function. Round 28 found that
+merely declaring the objects gets them optimised away — so make each one
+**participate in a real store or call**. One serious pass.
+**Acceptance:** one compiled attempt with its frame and `_savegpr` reported,
+whatever they are.
+
+### T8 — canonical fold
+
+If any function reached a match, fold it into a canonical `d_bg_ctr.cpp` in
+`scratch/round31/`, run `diff_ctr.py`, and report the new MATCHED count. If
+nothing matched, say so and skip.
+
+---
+
+## Constraints
+
+Work only in `scratch/round31/`. Do not touch `wip/**`, `source/**`,
+`include/**`, `slices/`, `syms.txt`, `configure.py`, `GEMINI_*`,
+`CODEX_HANDOFF.md`, or `HANDOFF.md`. **Do not run `ninja`, `configure.py`,
+`progress.py` or `land.py`** — the tree is green and a concurrent build destroys
+that.
 
 ---
 
 ## Reporting
 
-Per variant: word count, **saved-register set**, frame size. Diff count last,
-and only where frames agree.
+One table, one row per compiled variant:
 
-**GAINED / LOST by name**, matched-status changes only — exactly as you did in
-round 29.
+| Task | Variant file | Words (target/draft) | Frame (T/D) | GPR saves (T/D) | FPR saves (T/D) | Diffs |
 
-`poolcheck.py` on the final object.
+Diff count last, and only where frames agree — where they differ, say so.
+
+Then per task, two lines: what you tried, and what the measurement says.
+
+- **Every row must come from an object compiled in `scratch/round31/`.** No
+  copied artifacts.
+- **GAINED / LOST by name**, matched-status changes only. `none` is fine.
+- **Tasks not reached: list them explicitly as not reached.** That is a good
+  answer and I would rather have it than padding.
+- `poolcheck.py` on any canonical object, via the CLI:
+
+      python tools/auto_decomp/poolcheck.py --module wiimj2d \
+          --obj <obj> --txt <disasm> scratch/round31/d_bg_ctr/target.txt
+
+- Drop the `Offset-perturbing` field. Fourth time of asking.

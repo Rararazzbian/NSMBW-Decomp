@@ -9,7 +9,7 @@
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/sLib/s_lib.hpp>
 
-u8 g_padData[128] = { 1 };
+u8 g_padData[112] = { 1 };
 
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, Jump_St);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, Jump);
@@ -166,8 +166,10 @@ static const sDeathInfoData l_dieFire = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_
 static const sDeathInfoData l_dieStar = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0 };
 static const sDeathInfoData l_dieQuake = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0xFF };
 bool dEnTorideKokoopa_c::hitCallback_PenguinSlide(dCc_c *myCc, dCc_c *otherCc) {
-    daPlBase_c::DamageType_e dmg = (mUnk794 & 2) ? (daPlBase_c::DamageType_e)2 : (daPlBase_c::DamageType_e)3;
-    ((daPlBase_c*)otherCc->getOwner())->setDamage(this, dmg);
+    daPlBase_c *pl = (daPlBase_c*)otherCc->getOwner();
+    daPlBase_c::DamageType_e dmg = (daPlBase_c::DamageType_e)3;
+    if (mUnk794 & 2) dmg = (daPlBase_c::DamageType_e)2;
+    pl->setDamage(this, dmg);
     return true;
 }
 
@@ -314,7 +316,7 @@ void dEnTorideKokoopa_c::setQuakeDamage() {
 
 void dEnTorideKokoopa_c::setQuakeDead() {
     u8 dir = getPl_LRflag(mPos);
-    if (*(u32*)((u8*)mAnmMatClr.mpChildren + 0x3C) != 0) {
+    if (mAnmMatClr.mpChildren[1].getObj() != nullptr) {
         mAnmMatClr.setFrame(0.0f, 1);
     }
     removeCc();
@@ -322,16 +324,15 @@ void dEnTorideKokoopa_c::setQuakeDead() {
     mUnk792 = 0;
     mUnk790 = 0;
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
-    dActor_c *act = (mUnk770 == 0) ? nullptr : (dActor_c*)fManager_c::searchBaseByID((fBaseID_e)mUnk770);
-    if (act != nullptr) {
-        act->deleteRequest();
+    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (base != nullptr) {
+        base->deleteRequest();
     }
     mActorProperties &= ~8;
-    sDeathInfoData deathData = (sDeathInfoData){ 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0xFF };
+    sDeathInfoData deathData = l_dieQuake;
     deathData.mDirection = dir;
     mDeathInfo = deathData;
 }
-
 void dEnTorideKokoopa_c::setShellDamage(dActor_c *killedBy) {
     if (mpBossLife->isDmgSection()) {
         if (mAnmMatClr.mpChildren[1].getObj() != nullptr) {
