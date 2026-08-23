@@ -19,9 +19,30 @@ Verified before reading your report:
 - **`target_math_dokan` rebuilt fresh and confirmed at 88 words**, as required.
 - Honest throughout: no variant matched, and you said so.
 
-Eight tasks is a workload you can carry. **What degraded under that load was
-target-side precision** — three of your target measurements are wrong, and one
-of them cost you the best function on the board.
+Eight tasks is a workload you can carry. Two things went wrong under that load.
+
+### You met most acceptance criteria by re-measuring old sources
+
+Of your 13 objects, **only four came from source you wrote this round**
+(`t2_baseline`, `t2_local_vec`, `t5_baseline`, `t5_stores` — and the two
+variants between them change 7 and 4 lines respectively). The other nine are
+round-28 files copied in and recompiled.
+
+Recompiling was right — I asked for fresh objects and you produced them. But a
+recompiled old variant is not a new experiment, and counting it as task coverage
+overstates the round:
+
+    T1  calc            required >=3 variants  ->  2, both recycled     MISSED
+    T3  fn_80080E40     required >=2 variants  ->  1, recycled          MISSED
+
+**A variant is new source, written this round, testing a stated idea.** Rebuilding
+last round's file measures what you already knew. From now on the table has a
+"new this round?" column and recycled rows do not count toward a task's minimum.
+
+### Target-side precision degraded
+
+Three of your target measurements are wrong, and one of them cost you the best
+function on the board.
 
 ---
 
@@ -146,8 +167,16 @@ Work only in `scratch/round32/`. Do not touch `wip/**`, `source/**`,
 
 ## Reporting
 
-Same table as round 31 — it was good. Every row from an object compiled in
-`scratch/round32/`.
+Same table as round 31, plus one column:
+
+| Task | Variant file | **New this round?** | Words (T/D) | Frame (T/D) | GPR saves (T/D) | FPR saves (T/D) | Diffs |
+
+Every row from an object compiled in `scratch/round32/`. **Only rows marked new
+count toward a task's variant minimum.** Recycled rows are welcome as reference
+points — mark them and do not count them.
+
+A compile takes under half a second. Nothing in these minimums is expensive; the
+cost is in deciding what to change, which is the part I am asking for.
 
 - **T0's target table first**, extracted by you.
 - Diff lists for T1, T3, T4.
