@@ -1,26 +1,62 @@
-# dIceEfMaker_c report
+# GXStateSave_c
 
 ## Result
 
-**DIFFS 0: 1 out of 6 functions.**
+**DIFFS 0 out of 4**
 
-`fin__13dIceEfMaker_cFv` matches exactly.
+The assigned class was reconstructed in `scratch/qwen_gx/draft.cpp`, but the required scratch build could not compile because the seeded header `game/bases/d_gx_state_save.hpp` and its GX declarations are absent from this checkout. Therefore no valid object or fndiff lines could be produced.
 
-## Function results
+## Derived layout
 
-| Function | Target | Draft | Result |
-|---|---|---|---|
-| `init__13dIceEfMaker_cFiP13dIceEfScale_c` | 11 words / frame none / GPR none / FPR none | 11 words / frame none / GPR none / FPR none | DIFFS 2 |
-| `execute__13dIceEfMaker_cFv` | 39 words / frame 0x30 / GPR none / FPR none; `_savegpr_27` | 44 words / frame 0x40 / GPR none / FPR none; `_savegpr_27` | DIFFS 33; the temporary vector representation and return-value handling produce a larger frame and different instruction sequence. |
-| `fin__13dIceEfMaker_cFv` | 1 word / frame none / GPR none / FPR none | 1 word / frame none / GPR none / FPR none | DIFFS 0 |
-| `setEfScale__13dIceEfMaker_cFRC13dIceEfScale_c` | 33 words / frame none / GPR none / FPR none | 33 words / frame none / GPR none / FPR none | DIFFS 32; the loads are allocated into the reverse FPR order from the target, so the stores do not match despite the identical shape. |
-| `createEffect__13dIceEfMaker_cFQ213dIceEfMaker_c8EfKind_e` | 31 words / frame 0x20 / GPR [30, 31] / FPR none | emitted as `createEffect__13dIceEfMaker_cFi` (35 words / frame 0x30 / GPR [30, 31] / FPR none) | Not comparable under the authoritative mangled-name extraction; the draft declaration uses `int`, while the target parameter is the scoped `EfKind_e` type. |
-| `hahenEffect__13dIceEfMaker_cFv` | 26 words / frame 0x20 / GPR [31] / FPR none | 33 words / frame 0x30 / GPR [31] / FPR none | DIFFS 20; the manager call is unresolved in the available headers and the raw function-pointer reconstruction adds instructions and frame space. |
+| Offset | Contents | Evidence |
+|---|---|---|
+| `+0x000` | `u32` saved-state mask | constructor, save OR, restore tests/clear |
+| `+0x004..+0x1B3` | vertex attribute format storage | `GXGetVtxAttrFmtv` / `GXSetVtxAttrFmtv` |
+| `+0x1B4..+0x28B` | vertex descriptor storage | `GXGetVtxDescv` / `GXSetVtxDescv` |
+| `+0x28C..+0x2A7` | projection values | projection get/set |
+| `+0x2A8..+0x2BF` | six viewport floats | viewport get/set |
+| `+0x2C0..+0x2CF` | four scissor `u32`s | scissor get/set |
+| `+0x2D0..+0x2D3` | cull mode | cull get/set |
+| `+0x2D4` | color-update flag | cache byte / restore |
+| `+0x2D5` | alpha-update flag | cache byte / restore |
+| `+0x2D6` | dither flag | cache byte / restore |
+
+The compiled class storage is intended to be `0x2D7` bytes. No offset perturbation is intended by this layout.
+
+## Function status
+
+### `__ct__13GXStateSave_cFv`
+
+- Target: 12 bytes, frame `0x0`, GPR saves none, FPR saves none.
+- Draft: `mMask(0)` was written as the sole constructor operation.
+- Compiled: **NO** — missing seeded header prevented compilation.
+- fndiff: **not available**.
+- Assessment: likely exact once the intended header/declarations are available.
+
+### `__dt__13GXStateSave_cFv`
+
+- Target: 64 bytes, frame `0x10`, GPR saves `r30/r31`, FPR saves none.
+- Draft: out-of-line empty destructor; expected compiler-generated deleting-wrapper shape.
+- Compiled: **NO** — missing seeded header prevented compilation.
+- fndiff: **not available**.
+- Assessment: source body is intentionally empty, matching the target's no-member-destruction instructions, but this cannot be verified without the header/build environment.
+
+### `save__13GXStateSave_cFUl`
+
+- Target: 248 bytes, frame `0x10`, GPR saves `r30/r31`, FPR saves none.
+- Draft: implements the nine mask-selected saves in target order and ORs the mask into `+0x0`.
+- Compiled: **NO** — missing `GXStateSave_c` header and GX declarations.
+- fndiff: **not available**.
+- Assessment: implementation follows the listing, but API signatures and compiler register allocation remain unverified.
+
+### `restore__13GXStateSave_cFv`
+
+- Target: 300 bytes, frame `0x10`, GPR saves `r31`, FPR saves none.
+- Draft: implements the nine restore operations in target order and clears the mask.
+- Compiled: **NO** — missing `GXStateSave_c` header and GX declarations.
+- fndiff: **not available**.
+- Assessment: implementation follows the listing, including target bit order, but API signatures and compiler register allocation remain unverified.
 
 ## Landing readiness
 
-**Not ready: 1/6, not 6/6.** Five functions remain: `init`, `execute`, `setEfScale`, `createEffect`, and `hahenEffect`.
-
-## Reached / did not reach
-
-All six requested functions were attempted, compiled into a real object, and measured with `fndiff --all`. I reached an exact match for `fin` only. I did not reach a byte-identical unit or a landing-ready 6/6 result. No project-wide build, `ninja`, `configure.py`, `progress.py`, or `land.py` was run.
+**Not landing-ready: 0/4 verified.** The source transcription is present, but all four functions still need a real compile and fndiff score after the intended `game/bases/d_gx_state_save.hpp` header/API declarations are restored or supplied in the scratch shadow. No shared files were modified, and no prohibited commands were run.
