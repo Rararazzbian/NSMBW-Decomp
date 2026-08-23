@@ -22,16 +22,16 @@ bool dWmBgmSync_c::execute() {
             if (m_08 == 0) {
                 m_04++;
             }
-        }
 
-        if (m_04 == *m_18) {
-            m_0c = true;
-            m_04 = 0;
-            m_10 = 0.0f;
-            m_14 = fn_80102F10();
-        } else {
-            m_10 += 1.0f;
-            m_14 = fn_80102F10() - m_10;
+            if (m_04 == *m_18) {
+                m_0c = true;
+                m_04 = 0;
+                m_10 = 0.0f;
+                m_14 = fn_80102F10();
+            } else {
+                m_10 += 1.0f;
+                m_14 = fn_80102F10() - m_10;
+            }
         }
 
         if (dAudio::getBgmAccentSign()) {
