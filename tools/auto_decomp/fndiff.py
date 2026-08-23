@@ -23,8 +23,30 @@ import sys
 FN_RE = re.compile(r'^\.fn\s+(\S+?),')
 INSN_RE = re.compile(r'\*/\s*(\S.*)$')
 LABEL_RE = re.compile(r'\.L_[0-9A-Fa-f]{8}')
-POOL_RE = re.compile(r'"@[^"]*"')
 MANGLE_RE = re.compile(r'\b(fn_[0-9A-Fa-f]{8})__\S+')
+
+# A relocated operand: the symbol part of  SYMBOL@ha / @l / @sda21 / @sda2.
+RELOC_RE = re.compile(r'("@[^"]*"|[\w.$]+)@(ha|l|sda21|sda2)\b')
+
+# dtk's disambiguating retail-address suffix on an otherwise identical symbol.
+ADDR_SUFFIX_RE = re.compile(r'_8[0-9A-Fa-f]{7}(?=")')
+
+# Symbols whose *name* is generated rather than written by a human. Two of
+# these that disagree across a pair are a naming artifact, not a code
+# difference: the target names data after its retail address and the draft
+# names it after a section offset or a source identifier.
+ANON_RES = [
+    re.compile(r'^"@\d+'),                     # "@69447_8042C168"  pooled float
+    re.compile(r'^@\d+$'),                     # @13813
+    re.compile(r'^\.\.\.\w+\.\d+$'),           # ...bss.0  ...data.0
+    re.compile(r'^lbl_[0-9A-Fa-f]{8}$'),       # lbl_802F0C80
+    re.compile(r'^gap_\w+$'),
+    re.compile(r'_8[0-9A-Fa-f]{7}$'),          # dtk address suffix
+]
+
+
+def is_anon(sym):
+    return any(r.search(sym) for r in ANON_RES)
 
 
 def read_functions(path):
@@ -56,22 +78,44 @@ def canonical_name(name):
 
 
 def canonicalise(body):
-    """Rewrite labels and pool symbols to per-side sequential ids."""
-    labels, pools = {}, {}
+    """Rewrite branch labels to per-side sequential ids and strip manglings.
+
+    Relocated operands are deliberately left alone here — they are compared
+    pairwise by artifact_pair() instead, because renumbering them per side
+    desynchronises the moment one side names a datum and the other does not.
+    """
+    labels = {}
 
     def label(m):
         return labels.setdefault(m.group(0), '.L%d' % len(labels))
 
-    def pool(m):
-        return pools.setdefault(m.group(0), '@P%d' % len(pools))
-
     out = []
     for insn in body:
         insn = LABEL_RE.sub(label, insn)
-        insn = POOL_RE.sub(pool, insn)
         insn = MANGLE_RE.sub(r'\1', insn)
+        # dtk appends the retail address to symbols it must disambiguate, e.g.
+        #   bl "baseID_Jump<10sStateID_c>__Fv_RC12sStateIDIf_c_800A8720"
+        # against a draft that emits the same template instantiation unadorned.
+        insn = ADDR_SUFFIX_RE.sub('', insn)
         out.append(insn)
     return out
+
+
+def artifact_pair(a, b):
+    """True if a and b differ only in generated symbol names."""
+    if a == b:
+        return False
+    sa = RELOC_RE.findall(a)
+    sb = RELOC_RE.findall(b)
+    if not sa or len(sa) != len(sb):
+        return False
+    for (na, _), (nb, _) in zip(sa, sb):
+        if na == nb:
+            continue
+        # A real symbol named differently on both sides is a real difference.
+        if not (is_anon(na) or is_anon(nb)):
+            return False
+    return RELOC_RE.sub(r'@SYM@\2', a) == RELOC_RE.sub(r'@SYM@\2', b)
 
 
 def frame_size(body):
@@ -114,13 +158,20 @@ def compare(tgt, drf, name, verbose):
     print('=== %s' % name)
     print('  target: %s' % describe(tgt))
     print('  draft : %s' % describe(drf))
-    diffs = [(i, a, b) for i, (a, b) in enumerate(zip(t, d)) if a != b]
+    diffs, artifacts = [], []
+    for i, (a, b) in enumerate(zip(t, d)):
+        if a == b:
+            continue
+        (artifacts if artifact_pair(a, b) else diffs).append((i, a, b))
     if verbose:
         for i, a, b in diffs:
             print('  %4d  T: %-46s D: %s' % (i, a, b))
+        for i, a, b in artifacts:
+            print('  %4d  T: %-46s D: %s   [naming artifact]' % (i, a, b))
     extra = len(d) - len(t)
-    print('  DIFFS %d%s' % (
+    print('  DIFFS %d%s%s' % (
         len(diffs),
+        '' if not artifacts else '  (+ %d naming artifact(s))' % len(artifacts),
         '' if extra == 0 else '  (+ %+d words of length difference)' % extra))
     return len(diffs) + abs(extra)
 

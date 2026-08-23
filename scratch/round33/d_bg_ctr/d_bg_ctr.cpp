@@ -487,12 +487,13 @@ void dBg_ctr_c::calc() {
         f32 cos = nw4r::math::CosIdx(rot);
         f32 sin = nw4r::math::SinIdx(rot);
 
+        f32 px = mPos.x;
+        f32 py = mPos.y;
+
         f32 cx = mCenter.x;
         f32 cy = mCenter.y;
         f32 ox = mOffset2.x;
         f32 oy = mOffset2.y;
-        f32 px = mPos.x;
-        f32 py = mPos.y;
 
         f32 cxc = cx * cos;
         f32 cxs = cx * sin;

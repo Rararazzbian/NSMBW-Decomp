@@ -2008,3 +2008,52 @@ reordering statements and change how the memory is addressed.** A cursor plus
 `[0]/[1]/[2]`, a struct copy, and N independent offset reads are three different
 codegen shapes for identical semantics. Declaration order cannot reach all of
 them.
+
+## Two candidates with different CONTROL-FLOW SHAPES cannot be ranked by diff count
+
+`setQuakeDead` was tested as a ternary (83 canonical diffs) and as a guard `if`
+(50). The guard `if` scored better and **cannot ever match**. Retail:
+
+    lwz   r3, 0x770(r30)
+    cmpwi r3, 0x0
+    bne   .L_800A9B28
+    li    r3, 0x0            <-- null materialised
+    b     .L_800A9B2C        <-- and branched over the call
+    .L_800A9B28:
+    bl    searchBaseByID__10fManager_cF9fBaseID_e
+    .L_800A9B2C:
+    cmpwi r3, 0x0            <-- ONE test, on the merged value
+    beq   .L_800A9B38
+    bl    deleteRequest__7fBase_cFv
+
+`li r3,0` plus an unconditional `b` into a **single shared** compare is a
+conditional-expression merge — a ternary. A guard `if` tests, branches to the
+end, calls, then tests again at a *different* label, and emits neither the
+`li r3,0` nor the `b`. The shapes are distinguishable by eye and only one of
+them is the source.
+
+This is the sibling of *"When the FRAME SIZE differs, diff count is not a
+progress metric."* **Read the branch structure and pick the shape from the
+listing; only then use the diff count, and only to rank variants that already
+share that shape.** A lower score on the wrong skeleton is a trap, because it
+looks like progress for several rounds before it stops moving.
+
+## Rematerialised constants are cheaper than the register that carries one
+
+The same function shows why. Retail materialises zero **twice**:
+
+    li  r0, 0x0     <-- before the call, for two sth stores
+    ... bl UnKnownScoreSet__11dScoreMng_cFP8dActor_cUlff
+    li  r3, 0x0     <-- after the call, for the null pointer
+
+The draft materialised it once and kept it alive across the call in
+callee-saved `r29` — MWCC had common-subexpressioned the `s16` zero and the null
+pointer into one value. That one CSE costs a saved register, two words of
+prologue and epilogue, and `0x10` of frame, to save a single `li`.
+
+**When a constant appears on both sides of a call and the target has a spurious
+non-volatile, look for a CSE you do not want.** The fix is to give the compiler
+two values it cannot unify — type the pointer arm as a pointer, use a
+differently-typed zero for the stores, or split the expression so the two zeros
+live in separate trees. Retail code is full of rematerialised constants; a draft
+that hoists them is usually one CSE away from matching.
