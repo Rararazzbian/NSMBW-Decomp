@@ -15,6 +15,17 @@ public:
         mData[7] = 0.0f;
     }
 
+    dIceEfScale_c(float s0, float s1, float s2, float s3, float s4, float s5, float s6, float s7) {
+        mData[0] = s0;
+        mData[1] = s1;
+        mData[2] = s2;
+        mData[3] = s3;
+        mData[4] = s4;
+        mData[5] = s5;
+        mData[6] = s6;
+        mData[7] = s7;
+    }
+
     float mData[8];
 };
 
