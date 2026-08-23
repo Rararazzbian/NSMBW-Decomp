@@ -1944,3 +1944,67 @@ compiler actually opened.** A missing `-I` presents as a header incompatibility,
 and "the shared headers are wrong" is the expensive reading — it points at code
 you must not edit and is wrong far more often than "my include path is short one
 entry". Build the compile invocation once, as a script, and call it everywhere.
+
+## Count diffs on CANONICALISED text, or the number is mostly noise
+
+`revisePos` was reported at 16 differing instructions. Ten of those were names:
+
+    T: b .L_800801F8                D: b .L_00000D38          (6 branch labels)
+    T: bl fn_8007FFA0               D: bl fn_8007FFA0__FP...  (3 mangled calls)
+    T: lfs f0, "@69447_8042C168"    D: lfs f0, "@13813"       (1 pooled float)
+
+The target disassembly names labels after retail addresses and the draft names
+them after object offsets; static helpers carry a mangling suffix on one side
+only; and pooled constants are numbered per-object. **None of those is a code
+difference.** The real figure was 6, and 6 is a number you can work with.
+
+Use `tools/auto_decomp/fndiff.py`:
+
+    python tools/auto_decomp/fndiff.py TARGET.txt DRAFT.txt FUNCTION -v
+    python tools/auto_decomp/fndiff.py TARGET.txt DRAFT.txt --all
+
+It renumbers labels and pool symbols per side by order of first appearance and
+strips `fn_XXXXXXXX__<mangling>` down to `fn_XXXXXXXX`, then diffs positionally.
+It also prints words / frame / GPR saves / FPR saves for both sides, so one
+invocation replaces the whole target-figure table. `--all` scores every function
+in the object, which is the fastest way to see that a fix broke nothing else.
+
+## Register ALLOCATION order and load EMISSION order are separate levers
+
+Closing `revisePos` needed both, and they pull in opposite directions.
+
+The remaining diffs were three subtractions of a vector on `this` from a vector
+on `actor`. Draft and target loaded the same six addresses in the same order and
+performed the same three `fsubs` — but assigned different registers:
+
+    target:  lfs f3,0xb0(r4)  lfs f2,0x98(r3)   fsubs f2, f3, f2
+    draft:   lfs f2,0xb0(r4)  lfs f3,0x98(r3)   fsubs f2, f2, f3
+
+**Allocation follows declaration order.** The six values were declared
+`old, actor, actor, old, actor, old`; swapping to a consistent `old, actor` per
+pair made every register identical and took 6 diffs to 4.
+
+**Emission order also follows declaration order** — which is why the fix that
+corrected the registers then broke the load order. The target emits the
+`actor`-side load first within each pair while allocating the `this`-side first.
+No reordering of six scalar declarations produces both; nine shapes were tried
+and every one bottomed out at 4.
+
+**What produced both was changing the read form, not the read order:**
+
+    const f32 *op = (const f32 *)((const u8 *)this  + 0x94);
+    const f32 *np = (const f32 *)((const u8 *)actor + 0xAC);
+    f32 f4 = np[2] - op[2];
+    f32 f2 = np[1] - op[1];
+    f32 f1 = np[0] - op[0];
+
+Zero diffs. Three separate `rawF32(p, offset)` reads and one indexed cursor
+compute the same values and produce different schedules: MWCC treats the indexed
+loads off a single base as one group and hoists them together, which is exactly
+the actor-first emission the target has.
+
+**Rule: when registers are right and only the load order is wrong, stop
+reordering statements and change how the memory is addressed.** A cursor plus
+`[0]/[1]/[2]`, a struct copy, and N independent offset reads are three different
+codegen shapes for identical semantics. Declaration order cannot reach all of
+them.
