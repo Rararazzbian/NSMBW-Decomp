@@ -2207,3 +2207,38 @@ anonymous entry. `setQuakeDead` reads a named `l_dieQuake` and gets a named one.
 reading.** Anonymous-versus-named is a source-structure signal even when the
 generated code is otherwise identical, and it tells you where the original had a
 literal rather than a global.
+
+## Use an ALIGNMENT-AWARE edit script, not a positional diff, once lengths differ
+
+`setQuakeDead` scored 80 positional diffs against an 85-word target. The real
+picture, from `difflib.SequenceMatcher` over the canonicalised instruction
+lists, is **78 of 85 instructions identical** and one decision responsible for
+everything else:
+
+    stwu r1, -0x30      vs  -0x40                  frame
+    (nothing)           vs  stw r29, 0x34(r1)      save
+    li   r0, 0x0        vs  li   r29, 0x0          the store constant
+    sth  r0, 0x792      vs  sth  r29, 0x792
+    sth  r0, 0x790      vs  sth  r29, 0x790
+    li   r3, 0x0        vs  (nothing)              the null arm
+    cmpwi r3, 0x0       vs  mr r29, r3 / cmpwi r29, 0x0
+    (nothing)           vs  mr r3, r29
+    (nothing)           vs  lwz r29, 0x34(r1)      restore
+    addi r1, r1, 0x30   vs  0x40
+
+A positional diff reports 80 because one inserted instruction shifts everything
+after it. **80 says "rewrite this function"; the edit script says "one register
+choice".** Those lead to completely different rounds of work, and the second one
+is true.
+
+`fndiff.py` reports positional diffs, which is right for ranking variants of the
+same length. **The moment the word counts differ, stop reading its number and
+run an alignment:**
+
+    import difflib
+    sm = difflib.SequenceMatcher(None, target_insns, draft_insns, autojunk=False)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes(): ...
+
+Then count the *opcodes*, not the rows. Three replaces and two inserts is a
+small function-level problem. Eighty scattered rows is not a problem
+description at all.

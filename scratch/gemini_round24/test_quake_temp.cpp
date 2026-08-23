@@ -167,10 +167,6 @@ void dEnTorideKokoopa_c::deadProc() {
 
 
 
-static const sDeathInfoData l_dieFumi_st = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnTorideKokoopa_c::StateID_DieFumi_St, -1, -1, 0, 0 };
-static const sDeathInfoData l_dieFire = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieFire, -1, -1, 0, 0 };
-static const sDeathInfoData l_dieStar = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0 };
-static const sDeathInfoData l_dieQuake = { 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0xFF };
 bool dEnTorideKokoopa_c::hitCallback_PenguinSlide(dCc_c *myCc, dCc_c *otherCc) {
     daPlBase_c *pl = (daPlBase_c*)otherCc->getOwner();
     daPlBase_c::DamageType_e dmg = (daPlBase_c::DamageType_e)3;
@@ -321,21 +317,21 @@ void dEnTorideKokoopa_c::setQuakeDamage() {
 }
 
 void dEnTorideKokoopa_c::setQuakeDead() {
-u8 dir = getPl_LRflag(mPos);
+    u8 dir = getPl_LRflag(mPos);
     if (mAnmMatClr.mpChildren[1].getObj() != nullptr) {
         mAnmMatClr.setFrame(0.0f, 1);
     }
     removeCc();
     mCc.release();
-
     mUnk792 = 0;
     mUnk790 = 0;
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
-    fBase_c *base = (mUnk770 == 0) ? (fBase_c*)*(u32*)0 : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
-    if (base != nullptr) { base->deleteRequest(); }
-
+    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (base != nullptr) {
+        base->deleteRequest();
+    }
     mActorProperties &= ~8;
-    sDeathInfoData deathData = l_dieQuake;
+    sDeathInfoData deathData = (sDeathInfoData){ 0.0f, 3.0f, -4.0f, -0.1875f, &dEnBoss_c::StateID_DieStar, -1, -1, 0, 0xFF };
     deathData.mDirection = dir;
     mDeathInfo = deathData;
 }
@@ -1093,7 +1089,8 @@ void dEnTorideKokoopa_c::initializeState_Jump() {
     float rate = calcJumpRate();
     float muki = (float)l_EnMuki[mDirection];
     mSpeed.y = speed.y;
-    mSpeed.x = (muki * rate) * speed.x;
+    float sx = speed.x;
+    mSpeed.x = (muki * rate) * sx;
     jumpEffect();
     jumpSE();
 }
@@ -1163,7 +1160,8 @@ void dEnTorideKokoopa_c::initializeState_BigJump() {
     float rate = calcJumpRate();
     float muki = (float)l_EnMuki[mDirection];
     mSpeed.y = speed.y;
-    mSpeed.x = (muki * rate) * speed.x;
+    float sx = speed.x;
+    mSpeed.x = (muki * rate) * sx;
     jumpEffect();
     jumpSE();
 }
