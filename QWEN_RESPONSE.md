@@ -1,66 +1,112 @@
-# GXStateSave_c
+# dWmBgmSync_c work order response
 
-## Result
+## Headline
 
-**4 of 4 exact — DIFFS 0 out of 4**
+**2/5 at `DIFFS 0`**.
 
-All four functions now compile and match the retail listing exactly.
+Exact matches:
 
-## Derived layout
+- `getAnmRate__12dWmBgmSync_cFf`: `DIFFS 0`
+- `__sinit_\\d_wm_bgm_sync_cpp`: `DIFFS 0` apart from 10 expected naming artifacts
 
-| Offset | Contents |
-|---|---|
-| `+0x000` | `unsigned long` saved-state mask |
-| `+0x004` | 27 `GXVtxAttrFmtList` entries |
-| `+0x1B4` | 27 `GXVtxDescList` entries |
-| `+0x28C` | projection storage, 7 `f32` values |
-| `+0x2A8` | viewport storage, 6 `f32` values |
-| `+0x2C0` | scissor storage, four `unsigned long` values |
-| `+0x2D0` | cull mode |
-| `+0x2D4..+0x2D6` | color-update, alpha-update, and dither bytes |
+Not yet exact:
 
-The class is non-virtual. The layout is offset-preserving and totals `0x2D7` bytes. The attr-format count is 27 (`GX_VA_MAX_ATTR + 1`), placing the descriptor array at `+0x1B4`.
+- `execute__12dWmBgmSync_cFv`: `DIFFS 48`
+- `fn_80102F10`: `DIFFS 19`
+- `__arraydtor$53530`: not emitted by this draft
 
-## Function results
+The draft was compiled with the supplied `scratch/qwen_bgm/build.py`, producing `scratch/qwen_bgm/d_wm_bgm_sync.o` and `scratch/qwen_bgm/d_wm_bgm_sync.txt`.
 
-### `__ct__13GXStateSave_cFv`
+## Header proposal
 
-- fndiff: `DIFFS 0`
-- Target: 3 words / frame none / GPR none / FPR none
-- Draft: 3 words / frame none / GPR none / FPR none
+Copied and changed only in:
 
-### `__dt__13GXStateSave_cFv`
+`scratch/qwen_bgm/shadow/game/bases/d_wm_bgm_sync.hpp`
 
-- fndiff: `DIFFS 0`
-- Target: 16 words / frame `0x10` / GPR `[31]` / FPR none
-- Draft: 16 words / frame `0x10` / GPR `[31]` / FPR none
+Changes:
 
-### `save__13GXStateSave_cFUl`
+```diff
+-    virtual void execute();
++    virtual bool execute();
 
-- fndiff: `DIFFS 0`
-- Target: 62 words / frame `0x10` / GPR `[30, 31]` / FPR none
-- Draft: 62 words / frame `0x10` / GPR `[30, 31]` / FPR none
+     float getAnmRate(float frameCount);
++
++private:
++    float fn_80102F10();
++
++public:
+@@
+-    u8 mPad2[0x8];
++    f32 m_10;
++    f32 m_14;
+     const s16 *m_18;
+```
 
-### `restore__13GXStateSave_cFv`
+The two floats replace the existing 8-byte padding at offsets `0x10` and `0x14`; total class size and all following offsets are unchanged. `execute` is declared `bool` because the retail body returns `0` for a null `m_18` and `1` on every non-null path. The helper is private and takes `this`, matching the local call relocations.
 
-- fndiff: `DIFFS 0`
-- Target: 75 words / frame `0x10` / GPR `[31]` / FPR none
-- Draft: 75 words / frame `0x10` / GPR `[31]` / FPR none
+## `execute__12dWmBgmSync_cFv`
 
-## Fixes applied
+- Evidence: target is 268 bytes, frame `0x10`, saves only `r31`; target writes live floats at `0x10` and `0x14`, and returns `0/1` in `r3`.
+- Proposal: implemented in `scratch/qwen_bgm/d_wm_bgm_sync.cpp` with the target branch structure, beat counter updates, elapsed-frame accumulator, next-beat value, accent sign, and boolean return.
+- Compiled: YES. Draft shape is 67 words, frame `0x10`, GPR `[31]`, FPR none.
+- Result: `DIFFS 48`.
+- Verbose residual: the target enters the non-null path with `bne`, calls `getBgmBeatTrg` immediately, and uses `clrlwi.`. The draft takes the complementary `beq` path and places the early return before the call. The target later uses `clrlwi.` followed by a branch and explicit `li 1`/`li 0` stores for the accent value; the draft's `u8` declaration produces a boolean normalisation sequence (`neg`, `or`, `srwi`).
+- Confidence: medium on the behavioral reconstruction; low on the exact source shape until the audio declarations and return/control-flow idiom are aligned with the landed project declarations.
+- Offset-perturbing: NO. The member replacement is exactly 8 bytes and the draft frame matches the target.
 
-- Changed `mVtxAttrFmt` from 32 to 27 elements.
-- Corrected the restore cull guard to `mMask & 16`.
-- Added the seven exact `EGG::StateGX` wrapper declarations and calls, including the required trailing underscore in each function name.
-- Used `unsigned long` for scissor storage and wrapper parameters, and `bool` for the three boolean wrappers, matching the target mangling.
-- The earlier prediction that the initial cache-byte source shape was sufficient was false; the exact EGG wrapper declarations/calls were required to close the remaining diffs.
+## `getAnmRate__12dWmBgmSync_cFf`
+
+- Evidence: target is 76 bytes, frame `0x20`, saves `r31` and `f31`; it calls `getBgmTempo`, calls the helper, then divides `frameCount` by the helper result.
+- Proposal: `dAudio::getBgmTempo(); return frameCount / fn_80102F10();`
+- Compiled: YES.
+- Result: `DIFFS 0`.
+- Confidence: high.
+- Offset-perturbing: NO.
+
+## `fn_80102F10`
+
+- Evidence: target is 116 bytes, frame `0x20`, saves `r31`; it calls `getBgmTempo`, masks the low 16 bits, reads `m_18[0]` as `s16`, and performs the standard MWCC integer-to-double conversions for `3600.0f * tempo / beat`.
+- Proposal: implemented as:
+
+```cpp
+float dWmBgmSync_c::fn_80102F10() {
+    int tempo = dAudio::getBgmTempo();
+    const s16 *beat = m_18;
+    return 3600.0f * (f32)(tempo & 0xffff) / (f32)*beat;
+}
+```
+
+- Compiled: YES. Draft shape is 29 words, frame `0x20`, GPR `[31]`, FPR none.
+- Result: `DIFFS 19`.
+- Verbose residual: target order after the call is `lwz r4, 0x18(r31)`, `lis r5, 0x4330`, `clrlwi r3, r3, 16`, then stores/converts; the draft performs `clrlwi` before loading `m_18`, uses different stack slots and FPR assignment, and reverses the final arithmetic register order. Size and saved-register shape match exactly.
+- Confidence: medium on arithmetic semantics, low on exact MWCC expression/declaration shape. The next useful experiment is to vary declaration order and split the masked tempo / beat conversions while preserving the target's required stack-store order.
+- Offset-perturbing: NO. The function has the target size and frame.
+
+## `__sinit_\\d_wm_bgm_sync_cpp`
+
+- Evidence: including `<game/bases/d_wm_lib.hpp>` emits the static initializer; target and draft are both 28 words, frame `0x20`, no saved GPR/FPR registers.
+- Compiled: YES.
+- Result: `DIFFS 0` with 10 naming artifacts for draft-local static symbol names.
+- Confidence: high. The initializer instruction sequence is byte-identical apart from draft symbol naming.
+- Offset-perturbing: NO.
+
+## `__arraydtor$53530`
+
+- Evidence: target is 28 bytes at `0x80103000`, calls `__destroy_arr` with element size `0x24` and count `1` for `dWmLib::sc_ForceList`.
+- Proposal: no hand-written destructor, per the work order.
+- Compiled: NO: the current draft disassembly contains the initializer and `.ctors` entry but no emitted `__arraydtor$53530` symbol.
+- Confidence: low on the missing emission mechanism. The include trick successfully emits `__sinit`, but this standalone draft does not reproduce the separately placed array-destructor object.
+- Offset-perturbing: not applicable; no destructor object was emitted.
+
+## Verification commands
+
+```text
+python -c "import sys; sys.path.insert(0,'scratch/qwen_bgm'); import build; print(build.build('d_wm_bgm_sync.cpp','d_wm_bgm_sync','execute__12dWmBgmSync_cFv'))"
+python tools/auto_decomp/fndiff.py scratch/qwen_bgm/target.txt scratch/qwen_bgm/d_wm_bgm_sync.txt --all
+```
+
+No `ninja`, `configure.py`, `progress.py`, `land.py`, `syms.txt`, `include/**`, or `source/**` files were modified.
 
 ## Landing readiness
 
-**Landing-ready: 4/4 exact.** The source and scratch/shadow headers are complete, and all four functions have real objects and `fndiff.py --all -v` lines showing `DIFFS 0`. No prohibited commands were run, and no shared headers, source files, or symbol maps were modified.
-
-Verified command:
-
-```text
-python tools/auto_decomp/fndiff.py scratch/qwen_gx/target.txt scratch/qwen_gx/close.txt --all -v
-```
+**Not landing-ready yet.** The header proposal is complete and two functions plus the initializer are proven exact, but `execute` and `fn_80102F10` still have instruction residuals and the required array destructor is absent from the draft object. The current artifacts and verbose residuals identify the remaining source-shape/API-declaration work.
