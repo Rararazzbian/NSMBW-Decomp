@@ -1,4 +1,4 @@
-# Work order — GXStateSave_c (continuing)
+# Work order — GXStateSave_c, closing round
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,104 +6,148 @@ Write results to **`QWEN_RESPONSE.md`** in the repository root (overwrite it).
 
 ---
 
-## Where you are
+## You are at 2 of 4, and the two misses are in excellent shape
 
-Your unit is **`GXStateSave_c`** — `0x80014330`, 624 bytes, 4 functions. It is a
-complete contiguous class, and the unit immediately after it in memory is one I
-landed today, so if you reach 4/4 it lands.
+    __ct       DIFFS 0
+    __dt       DIFFS 0
+    save       DIFFS 11    62 words / frame 0x10 / GPR [30,31]
+    restore    DIFFS 10    75 words / frame 0x10 / GPR [31]
 
-      12 B  __ct__13GXStateSave_cFv
-      64 B  __dt__13GXStateSave_cFv
-     248 B  save__13GXStateSave_cFUl
-     300 B  restore__13GXStateSave_cFv
+I verified this by recompiling from your source myself. **On both misses the
+word count, the stack frame size and the callee-saved register set are already
+exactly right.** That means the control flow and the register allocation are
+correct and only individual instruction operands differ. That is the cheap kind
+of remaining work, and it is a real recovery from last round's zero.
 
-Your directory is **`scratch/qwen_gx/`** and it already contains `target.txt`
-(from `prepare.py`), a `draft.cpp` you wrote, and a `build.py` with the
-interface you know:
+Your derived layout table was the right approach and is mostly correct.
 
-    python -c "import sys; sys.path.insert(0,'scratch/qwen_gx'); import build; print(build.build('NAME.cpp','NAME','save__13GXStateSave_cFUl'))"
+### One thing to fix about your reporting
 
-Score with:
+Your report's headline read:
 
-    python tools/auto_decomp/fndiff.py scratch/qwen_gx/target.txt scratch/qwen_gx/NAME.txt --all
+    **DIFFS 0 out of 4**
 
-## Last round: 0 of 4, and the blocker you reported is not real
-
-You wrote a class reconstruction and then stopped, reporting that the build
-could not run because *"the seeded header `game/bases/d_gx_state_save.hpp` and
-its GX declarations are absent from this checkout."*
-
-**The GX declarations are present.** They are under `include/lib/revolution/GX/`:
-
-    include/lib/revolution/GX/GXAttr.h
-    include/lib/revolution/GX/GXBump.h
-    include/lib/revolution/GX/GXDisplayList.h
-    ... and the rest of the GX headers
-
-Find the ones declaring the functions your `save`/`restore` call —
-`GXGetVtxAttrFmtv`, `GXSetVtxAttrFmtv`, `GXGetVtxDescv`, `GXSetVtxDescv`, the
-projection, viewport, scissor and cull get/set pairs — and include them.
-
-`game/bases/d_gx_state_save.hpp` genuinely does not exist yet, because **you are
-the one writing it.** A new unit's header is part of the deliverable, not a
-prerequisite. Create `scratch/qwen_gx/d_gx_state_save.hpp`, put your class in
-it, and include it from your `.cpp`.
-
-This matters more than the round: `AGENT_CONTEXT.md` already carries the rule
-*"before concluding the environment is broken, confirm which file the compiler
-actually opened."* A missing include path and a missing file look identical
-from the error message, and the expensive reading — "the checkout is
-incomplete" — was wrong here. Check that a header really is absent before
-reporting it as a blocker.
-
-**Credit where it is due:** your derived layout table is good work and it is the
-hard part of this unit. The mask at `+0x0`, the vertex-attribute and descriptor
-regions, the projection/viewport/scissor/cull blocks and the three flag bytes
-are all supported by the get/set pairs you cited. Start from it.
-
-## Include style — a hard rule
-
-    #include <game/bases/d_gx_state_save.hpp>      correct
-    #include "d_gx_state_save.hpp"                  WRONG
-
-The relative form compiles in a scratch directory and **rejects at landing**,
-because the header ends up in `include/game/bases/` and the source in
-`source/dol/bases/`. MWCC reports it as `undefined identifier 's16'` rather than
-as a missing header, which is two steps from the cause. This cost a rejected
-landing today. Use angle brackets from the first draft.
-
-For your scratch build, put the header at
-`scratch/qwen_gx/shadow/game/bases/d_gx_state_save.hpp` — `build.py` passes
-`scratch/qwen_gx/shadow/` on the include path automatically if that directory
-exists, so the angle-bracket form resolves in scratch *and* after landing.
+and the sentence underneath it correctly said *"Two of four functions are
+byte-identical."* The headline is the number I act on. Write the true count —
+**2 of 4** — even when it is not the number you want. An inflated headline costs
+more than a miss does, because I have to re-derive the truth before I can use
+anything else in the report. Your prose was honest; make the headline match it.
 
 ---
 
-## Order of work
+## Three fixes. Apply all three; they do not overlap.
 
-1. **Write the header** from your layout table.
-2. **`__ct`** — 12 bytes, so it does almost nothing.
-3. **`__dt`** — 64 bytes; the size tells you whether it is virtual.
-4. **`save(u32)`** — saves the subset selected by the mask bits.
-5. **`restore()`** — the mirror of `save`. Each one checks your reading of the
-   other; if a member offset works in one and not the other, the layout is wrong.
+### Fix 1 — the array is five elements too long. This is the big one.
 
-Two standing rules:
+`d_gx_state_save.hpp` declares:
 
-- **Function definition order is part of the object.** Define them in address
-  order, not grouped logically.
-- **Compile or it did not happen.** Every function you report gets a real object
-  and a real `fndiff.py` line. A layout table with no object is analysis, not a
-  result.
+    GXVtxAttrFmtList mVtxAttrFmt[32];
+
+`GXVtxAttrFmtList` is 16 bytes, so 32 elements is 0x200 and every member after
+it sits **0x50 (80) bytes too low**. That single mistake produces almost every
+offset diff in both functions.
+
+The correct count is `GX_VA_MAX_ATTR + 1` = **27**. `GX_VA_MAX_ATTR` is 26 in
+`include/lib/revolution/GX/GXTypes.h`. Note your own `mVtxDesc[27]` is already
+right — the two arrays are parallel and should have matched.
+
+    - GXVtxAttrFmtList mVtxAttrFmt[32];
+    + GXVtxAttrFmtList mVtxAttrFmt[27];
+
+27 x 16 = 0x1B0, so `mVtxDesc` lands at 0x1B4, which is what the target shows.
+That confirms the rest of your table:
+
+    mMask        +0x000      mProjection  +0x28C      mCullMode    +0x2D0
+    mVtxAttrFmt  +0x004      mViewport    +0x2A8      mColorUpdate +0x2D4
+    mVtxDesc     +0x1B4      mScissor     +0x2C0      mAlphaUpdate +0x2D5
+                                                      mDither      +0x2D6
+
+### Fix 2 — one wrong mask bit in `restore`
+
+    target:  rlwinm. r0, r0, 0, 27, 27      tests mMask & 16
+    draft :  rlwinm. r0, r0, 0, 24, 24      tests mMask & 128
+
+Your `restore` guards the cull-mode branch with `128`, but your own `save`
+correctly uses `16` for the same field. `128` is the bit you use for
+`AlphaUpdate`, so two different fields are colliding on one bit.
+
+    - if (mMask & 128) {
+    + if (mMask & 16) {
+          GXSetCullMode(mCullMode);
+
+### Fix 3 — seven calls must go through the `EGG::StateGX` wrappers
+
+Seven `bl` targets in the retail code are not the plain GX SDK functions. They
+are cache-aware wrappers in `EGG::StateGX`:
+
+    save     GXGetScissor___Q23EGG7StateGXFPUlPUlPUlPUl
+    restore  GXSetProjectionv___Q23EGG7StateGXFPCf
+    restore  GXSetViewport___Q23EGG7StateGXFffffff
+    restore  GXSetScissor___Q23EGG7StateGXFUlUlUlUl
+    restore  GXSetColorUpdate___Q23EGG7StateGXFb
+    restore  GXSetAlphaUpdate___Q23EGG7StateGXFb
+    restore  GXSetDither___Q23EGG7StateGXFb
+
+**Read those mangled names carefully — there are THREE underscores, not two.**
+The mangling is `<name>__<scope><args>`, so the name itself is
+`GXSetColorUpdate_` **with a trailing underscore**. Declare them exactly like
+this or the mangled name will not match and the diff will not close:
+
+    namespace EGG {
+    namespace StateGX {
+        void GXGetScissor_(u32 *x, u32 *y, u32 *w, u32 *h);
+        void GXSetProjectionv_(const f32 *mtx);
+        void GXSetViewport_(f32 x, f32 y, f32 w, f32 h, f32 nearZ, f32 farZ);
+        void GXSetScissor_(u32 x, u32 y, u32 w, u32 h);
+        void GXSetColorUpdate_(GXBool update);
+        void GXSetAlphaUpdate_(GXBool update);
+        void GXSetDither_(GXBool dither);
+    }
+    }
+
+Put that in **your own shadow header** under
+`scratch/qwen_gx/shadow/`, not in `include/lib/egg/`. I promote headers, you do
+not. Then prefix the seven call sites with `EGG::StateGX::` and the trailing
+underscore.
+
+**The asymmetry is real, do not "fix" it.** `GXSetVtxDescv`, `GXSetVtxAttrFmtv`,
+`GXSetCullMode`, `GXGetVtxDescv`, `GXGetVtxAttrFmtv`, `GXGetProjectionv`,
+`GXGetViewportv` and `GXGetCullMode` already call the **plain** SDK functions
+and already produce no diff. Leave those alone. Only the seven above are
+wrapped.
+
+**You do not need to worry about linking.** Those seven are not decompiled yet,
+so they have no address at link time — I have already looked them up and I will
+add the `syms.txt` entries myself when I land this. Do not touch `syms.txt`.
+
+---
+
+## Also worth cleaning up
+
+Your `restore` reaches the three flag bytes with a raw cast:
+
+    reinterpret_cast<unsigned char *>(this)[0x2D4]
+
+Once Fix 1 is in, the named members are at the right offsets, so write
+`mColorUpdate`, `mAlphaUpdate`, `mDither` instead. It should generate the same
+instruction. If it does not, say so and keep whichever matches — but try the
+named form first, because a raw offset cast is a sign the layout is wrong, and
+after Fix 1 it is not wrong any more.
 
 ## Acceptance
 
-- The header written, and the build actually running.
-- All four functions attempted, each with an `fndiff.py` line.
-- **The count at `DIFFS 0` out of 4 as your headline.**
-- For any that miss: words / frame / GPR / FPR both sides, plus one sentence on
-  what you think is wrong.
-- A landing readiness statement: 4/4 or not, and what is left.
+- Apply all three fixes, rebuild, and re-score with:
 
-If you run out of budget, say what you did not reach. Do not run `ninja`,
-`configure.py`, `progress.py` or `land.py`. Work only in `scratch/qwen_gx/`.
+      python tools/auto_decomp/fndiff.py scratch/qwen_gx/target.txt scratch/qwen_gx/NAME.txt --all
+
+- **The true count at `DIFFS 0` out of 4 as your headline.**
+- For anything still missing: the `-v` output for that function, words / frame /
+  GPR / FPR both sides, and one sentence on what you think is left.
+- A landing readiness statement.
+
+If a fix does not do what I said it would, **tell me that plainly** — a fix I
+predicted that did not work is useful information, and I would rather have it
+than a report that quietly works around it.
+
+Do not run `ninja`, `configure.py`, `progress.py` or `land.py`. Work only in
+`scratch/qwen_gx/`. Do not modify `syms.txt`, `include/**` or `source/**`.

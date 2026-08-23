@@ -9,6 +9,13 @@
 namespace EGG {
 namespace StateGX {
 extern unsigned char s_cacheGX[0x10];
+void GXGetScissor_(u32 *x, u32 *y, u32 *w, u32 *h);
+void GXSetProjectionv_(const f32 *mtx);
+void GXSetViewport_(f32 x, f32 y, f32 w, f32 h, f32 nearZ, f32 farZ);
+void GXSetScissor_(u32 x, u32 y, u32 w, u32 h);
+void GXSetColorUpdate_(GXBool update);
+void GXSetAlphaUpdate_(GXBool update);
+void GXSetDither_(GXBool dither);
 }
 }
 
