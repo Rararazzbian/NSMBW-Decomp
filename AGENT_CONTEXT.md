@@ -2404,3 +2404,29 @@ backwards to "wrong include form" takes a while.
 
 All 170 landed files use the angle-bracket form. Use it from the first draft —
 it works in scratch too, so there is no reason not to.
+
+## A promoted declaration is not enough: external functions also need a syms.txt entry
+
+`dIceEfMaker_c` compiled cleanly and then failed at link:
+
+    undefined: 'dEffActorMng_c::createIceFragEff(mVec3_c&,unsigned long,signed char)'
+    Referenced from 'dIceEfMaker_c::hahenEffect()' in d_ice_effect_maker.o
+
+The header promotion added the *declaration*, which is all the compiler needs.
+The function is defined in a part of the binary nobody has decompiled yet, so
+the linker had nothing to bind the call to.
+
+**The fix is a `syms.txt` entry at the retail address**, which `land.py` takes
+directly:
+
+    --syms 'createIceFragEff__14dEffActorMng_cFR7mVec3_cUlSc=0x80092720'
+
+Find the address and the exact mangled name with
+`mcp__nsmbw-decomp__search_symbols`, and copy the `name=0xADDR` format from a
+sibling already in the file.
+
+**So a landing manifest needs three kinds of entry, not two:** new headers,
+changed shared headers, and **every external symbol the unit calls that is not
+already in `syms.txt`**. Check the last one by grepping `syms.txt` for each
+external call in the draft before attempting the landing — it turns a rejected build
+into a one-line argument.
