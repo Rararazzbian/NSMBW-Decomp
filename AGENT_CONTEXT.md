@@ -2315,3 +2315,50 @@ Note also that an aggregate return slot is not the same thing as extra frame.
 `calc`'s target and draft *both* allocate one for `getCenterPos` — at
 `r1+0x20` and `r1+0xc` respectively — so the `0x60` versus `0x50` difference was
 never the aggregate, it is room for about four 4-byte spills below the slot.
+
+## Starting a new unit: use prepare.py, and check the boundary
+
+Do not hand-roll the target extraction. The project has a tool:
+
+    python tools/auto_decomp/prepare.py --unit dol/bases/d_foo.cpp \
+        --range 0x800B8130-0x800B8388
+
+It collects every dtk object whose start address falls inside the range,
+disassembles them, concatenates them in address order, and writes
+`tools/auto_decomp/work/<unit>/target.txt` plus a `draft.cpp` stub.
+
+Its docstring carries the warning that matters most: **the range is a hypothesis
+until proven.** A TU does not end at its `__sinit` — the
+`sFStateID_c<YourClass>` template instantiations after it belong to you too.
+Getting the end wrong was the single most common error this project made. After
+preparing, check by name that the last function in `target.txt` belongs to your
+class and the next one does not.
+
+`mcp__nsmbw-decomp__find_targets` lists candidates smallest-first with function
+counts, and `get_target` gives an annotated listing for a range plus a suggested
+slice and the symbols it references — including which are file-static
+(`@unnamed@<file>@` in the name tells you the original had it as a file-scope
+static).
+
+## The loop that actually moves the number
+
+Proven end to end this session, twice:
+
+    find_targets  ->  prepare.py  ->  decompile smallest-first  ->  fndiff --all
+    ->  100%  ->  land.py  ->  five binaries byte-identical  ->  commit
+
+`dPSwManager_c` went from unclaimed to landed in one agent-round plus ten
+minutes of verification: 12 functions, 640 bytes, 11.353% -> 11.363%.
+
+Two things make it work, and both are worth defending:
+
+- **Smallest first.** A 4-byte function is a `blr` and an empty body; an 8-byte
+  accessor is one load and a return. Banking a dozen of those is most of a small
+  unit, and it builds the header and the class layout you need for the hard
+  ones.
+- **The unit must reach 100%.** Landing needs a contiguous range with no holes,
+  so 16 of 17 is worth the same as 0 of 17. Pick units small enough to finish.
+
+Verify a peer's 100% claim three ways before landing: their score, **your own
+recompile from their source with your own harness invocation**, and then
+`land.py`, which is the only one that counts.

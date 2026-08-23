@@ -1,4 +1,4 @@
-# Work order — round 35: a new unit
+# Work order — round 36
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,95 +6,99 @@ Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Kokoopa is PARKED, not closed, and not your failure
+## `dPSwManager_c` LANDED
 
-Round 34 was 18 more variants and no movement. Across rounds 30–34 you and I
-together have run roughly seventy variants on `setQuakeDead` and the twins and
-moved the object by one diff. That is not a reflection on the work — the
-analysis has been good and the last four rounds each produced a real, reusable
-fact. It is a reflection on the problem: all three remaining functions are MWCC
-register-allocation coin-flips where the source is already correct.
+Twelve of twelve, first round on a new unit. I verified it three ways before
+trusting it — your `fndiff` run, my own recompile from your source with my own
+harness invocation, and then the real gate:
 
-The state, so nothing is lost:
+    python tools/auto_decomp/land.py --unit dol/bases/d_p_sw_manager.cpp ...
 
-    d_enemy_toride_kokoopa: 248/251 matched, 30,816 / 31,876 bytes
-      setQuakeDead      78 of 85 instructions identical. Every difference
-                        follows from MWCC putting the zero for two sth stores
-                        in callee-saved r29 instead of volatile r0 and reusing
-                        it as the conditional's merge register.
-      Jump / BigJump    5 diffs each, twins, one fix closes both. Retail
-                        allocates speed.x before the two FP registers the
-                        int-to-float conversion consumes; the draft allocates
-                        it after.
+    ACCEPTED -- all five binaries are byte-identical to the original.
+    Total: Decompiled 738648/6500368 code bytes (11.363%)
 
-Both blocker descriptions and every ruled-out shape are in `AGENT_CONTEXT.md`
-and in your rounds 30–34 reports. **Do not touch `scratch/gemini_round24/` this
-round.** We come back to it with fresh eyes.
+`source/dol/bases/d_p_sw_manager.cpp` and
+`include/game/bases/d_p_sw_manager.hpp` are in the tree, the slice is in
+`slices/wiimj2d.json`, and your `d_bg_parameter.hpp` change went in as
+described — additive at the end of the class, every existing offset untouched.
+The build proved it harmless.
 
-One fact worth carrying away, which I found while looking for the idiom: across
-**169 landed byte-exact source files there is not one `? nullptr :` or
-`? NULL :` anywhere.** The landed style is an unconditional call and a cast:
+Your landing manifest was accurate enough to act on without a single
+correction: the slice ranges, the header change, and the promotion list were all
+right. That is what made this a ten-minute landing instead of an afternoon.
 
-    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+**11.353% → 11.363%.** Small in absolute terms, and the first thing to actually
+land this session.
 
-So the ternary we have been refining in `setQuakeDead` is probably not what the
-original author wrote either. That is a lead for next time, not for now.
+## One process note for next time
+
+You hand-rolled `extract_target.py` to pull the retail listing out of a
+disassembly file. It worked, but the project already has the tool:
+
+    python tools/auto_decomp/prepare.py --unit dol/bases/d_foo.cpp \
+        --range 0x800B8130-0x800B8388
+
+It collects every dtk object whose start address falls in the range,
+disassembles them, concatenates in address order, and writes
+`tools/auto_decomp/work/<unit>/target.txt` plus a `draft.cpp` stub. Read its
+docstring — it carries a warning that cost this project real time: **the range
+is a hypothesis until proven**, and a TU does not end at its `__sinit`; the
+`sFStateID_c<YourClass>` instantiations after it belong to you too. After
+preparing, check that the last function in `target.txt` belongs to your class
+and the next one does not.
 
 ---
 
-## Round 35 — `dPSwManager_c`, a fresh unit
+## Round 36 — `dPanelObjList_c`
 
-    0x800D86C0    640 B    12 functions    dPSwManager_c
+    0x800145B0    624 B    17 functions
 
-      20 B  __ct__13dPSwManager_cFv
-      72 B  __dt__13dPSwManager_cFv
-      40 B  initialize__13dPSwManager_cFv
-       4 B  execute__13dPSwManager_cFv
-     256 B  ProcMain__13dPSwManager_cFv
-      40 B  finalize__13dPSwManager_cFv
-      ... 6 more, all small
+Seventeen functions in 624 bytes, so most are tiny — a constructor, a
+destructor, and a run of accessors:
 
-Twelve functions, one of them substantial, the rest small. Everything is named,
-so there is no symbol-map problem. **A unit this size can reach 100% in a round
-or two, and unlike kokoopa it can then actually land** — which is what moves the
-project number.
+      60 B  __ct__15dPanelObjList_cFv
+      64 B  __dt__15dPanelObjList_cFv
+       8 B  getValue__15dPanelObjList_cCFv
+      20 B  isChange__15dPanelObjList_cCFv
+       8 B  setChange__15dPanelObjList_cFb
+       8 B  getPosX__15dPanelObjList_cCFv
+      ... 11 more
 
-Work in a new directory: **`scratch/gemini_pswmgr/`**.
+Work in **`scratch/gemini_panelobj/`**. Use `prepare.py` to get the target, then
+your own harness for the compile/disassemble loop, and `fndiff.py --all` as the
+scoreboard.
 
-### 1. Set up and measure before writing anything
+### 1. Prepare and verify the range
 
-Extract the target listing for the unit, build the compile/disassemble harness,
-and get a baseline. You did this well for kokoopa; reuse that machinery. Use
-`tools/auto_decomp/fndiff.py --all` as the scoreboard from the start rather than
-inventing a scorer.
-
-**Acceptance:** the target listing extracted, the harness working, and a table of
-all twelve functions with target words / frame / GPR saves / FPR saves.
+**Acceptance:** `target.txt` produced by `prepare.py`, the boundary sanity-check
+done and stated — last function in range belongs to `dPanelObjList_c`, next one
+does not — and a table of all seventeen with target words / frame / GPR / FPR.
 
 ### 2. Decompile, smallest first
 
-Constructor, destructor, `execute`, the accessors — take the trivial ones first
-and bank them. `ProcMain` last.
+Eight-byte accessors first. They are one or two instructions each and they bank
+quickly. Constructor and destructor next. Anything substantial last.
 
-Two rules that have cost this project whole rounds, so apply them from the
-start:
+- **Function definition order is part of the object.** Address order, not
+  logical grouping.
+- **Compile or it did not happen.** Every reported function gets an object and
+  an `fndiff.py` line.
+- **Grep `source/` before inventing an idiom.** 170 landed files now, all
+  byte-exact, and accessors are exactly the kind of thing where the house style
+  is consistent and easy to copy.
 
-- **Function definition order is part of the object.** Define them in the order
-  the addresses run, not in logical groups.
-- **Compile or it did not happen.** Every function you report gets a real object
-  and a real `fndiff.py` line. Prose is not a measurement.
+**Acceptance:** all seventeen attempted, with the count at `DIFFS 0` as your
+headline.
 
-**Acceptance:** every one of the twelve attempted, with a `fndiff.py` line each.
-Say how many are at `DIFFS 0`.
+### 3. The landing manifest
 
-### 3. Report what the unit needs from me
+Same as last round, and last round's was good: the slice `memoryRanges`, any
+new header, any shared-header change classified as additive or modifying, and
+anything you need me to declare. If the unit reaches 17/17 I will land it
+immediately.
 
-If you need a header promoted, a symbol added, or a type you cannot resolve,
-say so precisely — the retail address and size, and what you need declared. That
-is the manifest that lets me land it.
-
-**Acceptance:** a landing readiness statement — is the unit landable, and if
-not, the exact remaining list.
+**Acceptance:** a landing readiness statement — landable yes or no, and the
+exact remaining list.
 
 ---
 
@@ -108,20 +112,23 @@ out of budget, and then name it in a `NOT REACHED` list at the end.
 
 ## Constraints
 
-Work only in `scratch/gemini_pswmgr/`. Do not touch `scratch/gemini_round24/`,
-`scratch/round33/`, `scratch/claude_kokoopa/`, `wip/**`, `source/**`,
-`include/**`, `slices/`, `syms.txt`, `configure.py`, `tools/**`, `QWEN_*`,
+Work only in `scratch/gemini_panelobj/`. `prepare.py` writes to
+`tools/auto_decomp/work/` — that is its own output directory and it is fine for
+it to do so, but do not edit anything else under `tools/**`. Do not touch
+`scratch/gemini_round24/`, `scratch/gemini_pswmgr/`, `scratch/round33/`,
+`scratch/qwen_ice/`, `scratch/claude_kokoopa/`, `wip/**`, `source/**`,
+`include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
 `CODEX_HANDOFF.md`, or `HANDOFF.md`. **Do not run `ninja`, `configure.py`,
-`progress.py` or `land.py`**, and do not attempt the landing.
+`progress.py` or `land.py`** — I run the landing.
 
 ---
 
 ## Reporting
 
-- **Lead with the count at `DIFFS 0` out of 12.**
-- The twelve-function target table.
+- **Lead with the count at `DIFFS 0` out of 17.**
+- The seventeen-function target table.
 - Per-function results with `fndiff.py` lines.
-- **GAINED and LOST by name** — for a new unit, GAINED is everything matched.
+- **GAINED and LOST by name.**
 - `poolcheck.py` output.
-- The landing readiness statement.
+- The landing manifest and readiness statement.
 - `NOT REACHED`, if anything.
