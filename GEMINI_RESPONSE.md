@@ -1,36 +1,40 @@
-# Round 31 Report: `d_enemy_toride_kokoopa` Jump Twins Allocation Mapping, `setQuakeDead` Redundant-Zero Analysis, & Landing Readiness Audit
+# Round 32 Report: `setQuakeDead` Primary Object Fold (85w / 1 Diff), Merge Register Sweep, & Jump Twins FPR Analysis
 
-## 1. Summary & Headline Metrics
+## 1. Headline Metrics & Primary Result
 
-- **Current Unit Standing (Round 31)**:
+- **Primary Headline: `setQuakeDead` Folded at 85 Words / 1 Instruction Diff**:
+  - Successfully folded the best non-CSE zero variant (`(mUnk770 >> 31)`) into the primary draft object `scratch/gemini_round24/d_enemy_toride_kokoopa.cpp`.
+  - Rebuilt and verified `d_enemy_toride_kokoopa.o` and `draft_disasm.txt`.
+  - **`setQuakeDead` metrics**: **85 words / frame `0x30` / GPR `[30, 31]` / FPR `none`** (exact match with retail on frame size, save set, and word count).
+  - **Residual**: Exactly **1 instruction difference** (`36 T: li r3, 0x0` vs `D: srwi r3, r3, 31`), branching into the identical shared `cmpwi r3, 0x0` merge check.
+
+- **Current TU Standing (Round 32)**:
   - Total Functions in TU: **251** (31,876 bytes)
   - Matched Functions: **248 / 251 (98.80%)**
   - Matched Bytes: **30,816 / 31,876 bytes (96.67%)**
-  - Disagreements vs 248 / 251: **None** (independently audited by `fndiff.py --all` and `poolcheck.py`).
   - Unmatched Functions: **3 / 251 (1,060 bytes total)**
-    - `setQuakeDead__18dEnTorideKokoopa_cFv` (340 B / 85 words target)
-    - `initializeState_Jump__18dEnTorideKokoopa_cFv` (360 B / 90 words target)
-    - `initializeState_BigJump__18dEnTorideKokoopa_cFv` (360 B / 90 words target)
-- **GAINED Functions**: **0** (No unmatched function reached 0 diffs this round).
-- **LOST Functions**: **0** (Zero regressions across all 248 matched functions).
-- **Constant Pool Verification (`poolcheck.py`)**:
-  - `177 pooled constants compared by VALUE across 250 paired functions`
-  - `0 mismatched, 0 could not be resolved on one side` (Exit code: 0 clean).
+    - `setQuakeDead__18dEnTorideKokoopa_cFv` (340 B / 85 words target vs 85 words draft, **1 diff**)
+    - `initializeState_Jump__18dEnTorideKokoopa_cFv` (360 B / 90 words target vs 90 words draft, **5 diffs** / 6 canonical)
+    - `initializeState_BigJump__18dEnTorideKokoopa_cFv` (360 B / 90 words target vs 90 words draft, **5 diffs** / 6 canonical)
+  - **GAINED Functions**: **0** (No new function closed to 0 diffs this round; `setQuakeDead` closed from 84 diffs down to 1 diff in the primary object).
+  - **LOST Functions**: **0** (Zero regressions across all 248 matching functions).
+  - **Constant Pool Verification (`poolcheck.py`)**: `177 pooled constants compared by VALUE across 251 paired functions; 0 mismatched, 0 could not be resolved on one side` (Exit code: 0 clean).
 
 ---
 
 ## 2. GAINED & LOST Sections
 
 ### GAINED Functions (0 Gained)
-No functions reached full byte-identical closure in Round 31.
+No functions reached full 0-diff byte-identity in Round 32. `setQuakeDead` advanced from 84 diffs (88 words, frame `0x40`, `r29` saved) to 1 diff (85 words, frame `0x30`, `r29` eliminated) in the primary object.
 
 ### LOST Functions (0 Lost)
-Zero functions regressed or fell out of the matched set in Round 31.
+Zero functions regressed or left the matched set in Round 32.
 
 ### Explicit Artifact-Matched Pair Re-Check:
+All 4 artifact-matched functions were re-verified against the fresh folded object and remain 100% matched:
 1. **`__sinit_\d_enemy_toride_kokoopa_cpp` (5,784 B / 1,446 insns / frame `0x420`):**
    - Raw Byte Diffs: **0** (1,446 / 1,446 instructions byte-identical)
-   - Canonical Diffs in `fndiff.py`: **0** (+ 4 naming artifacts)
+   - Canonical Diffs in `fndiff.py`: **0** (+ 4 naming artifacts: `.data.0`, `.bss.0`, section disambiguations)
    - Status: **MATCHED 100%**
 2. **`executeState_ShellAtk_St__18dEnTorideKokoopa_cFv` (612 B / 153 insns / frame `0x10`):**
    - Raw Byte Diffs: **0** (153 / 153 instructions byte-identical)
@@ -47,111 +51,145 @@ Zero functions regressed or fell out of the matched set in Round 31.
 
 ---
 
-## 3. Work Order Item 1: `initializeState_Jump` and `initializeState_BigJump` Analysis
+## 3. Item 1: Primary Object Fold Confirmation (`setQuakeDead`)
 
-### 3.1. Target Allocation vs Draft Baseline
-- **Symbol Profile**: 90 words / frame `0x30` / GPR saves `[30, 31]` / FPR saves `none`.
-- **Symbol Map Evidence on `l_EnMuki`**:
-  - `l_EnMuki = .sdata2:0x8042C480; // type:object size:0x2 data:byte` (`include/game/bases/d_enemy.hpp` declares `extern const s8 l_EnMuki[];`).
-  - Retail accesses `l_EnMuki[mDirection]` via `lbzx r4, r3, r4` + `extsb r4, r4` and converts to float using magic double `0x4330000080000000` via stack pair `0x18(r1)` / `0x1c(r1)`.
-- **Register Allocation Target vs Draft**:
-  - **Retail Target**: `f0 = speed.y`, `f1 = rate`, `f2 = speed.x`, `f3 = stack int->float double`, `f4 = magic constant double`.
-  - **Draft Baseline**: `f0 = speed.y`, `f1 = rate`, `f2 = stack int->float double`, `f3 = magic constant double`, `f4 = speed.x`.
+The 85-word non-CSE zero variant has been folded into `scratch/gemini_round24/d_enemy_toride_kokoopa.cpp`:
+```cpp
+void dEnTorideKokoopa_c::setQuakeDead() {
+    u8 dir = getPl_LRflag(mPos);
+    if (mAnmMatClr.mpChildren[1].getObj() != nullptr) {
+        mAnmMatClr.setFrame(0.0f, 1);
+    }
+    removeCc();
+    mCc.release();
+    mUnk792 = 0;
+    mUnk790 = 0;
+    dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
+    fBase_c *base = (mUnk770 == 0) ? (fBase_c*)(mUnk770 >> 31) : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (base != nullptr) {
+        base->deleteRequest();
+    }
+    mActorProperties &= ~8;
+    sDeathInfoData deathData = l_dieQuake;
+    deathData.mDirection = dir;
+    mDeathInfo = deathData;
+}
+```
 
-### 3.2. Jump Twins Variant Exploration Table (≥5 New Variants)
+### `fndiff.py` Output for `setQuakeDead`:
+```
+=== setQuakeDead__18dEnTorideKokoopa_cFv
+  target: 85 words / frame 0x30 / GPR [30, 31] / FPR none
+  draft : 85 words / frame 0x30 / GPR [30, 31] / FPR none
+    36  T: li r3, 0x0                                     D: srwi r3, r3, 31
+    13  T: lfs f1, "@75100"@sda21(r0)                     D: lfs f1, "@27198"@sda21(r0)   [naming artifact]
+    26  T: lfs f1, "@75100"@sda21(r0)                     D: lfs f1, "@27198"@sda21(r0)   [naming artifact]
+    30  T: lfs f2, "@75250"@sda21(r0)                     D: lfs f2, "@27311"@sda21(r0)   [naming artifact]
+    42  T: lis r11, "@70611"@ha                           D: lis r11, l_dieQuake@ha   [naming artifact]
+    43  T: lwzu r10, "@70611"@l(r11)                      D: lwzu r10, l_dieQuake@l(r11)   [naming artifact]
+  DIFFS 1  (+ 5 naming artifact(s))
+```
 
-| Variant # | Source Code Shape | `initializeState_Jump` Diffs | `initializeState_BigJump` Diffs | Observed FPR Allocation (`f2`, `f3`, `f4`) |
-| :--- | :--- | :---: | :---: | :--- |
-| **Starting 5-Diff Form** | `float rate = calcJumpRate(); float muki = (float)l_EnMuki[mDirection]; mSpeed.y = speed.y; float sx = speed.x; mSpeed.x = (muki * rate) * sx;` | **DIFFS 5** (+ 2 naming artifacts) | **DIFFS 5** (+ 2 naming artifacts) | `f2` = int->float stack double, `f3` = magic double, `f4` = `sx` (`f0` = `speed.y`, `f1` = `rate`) |
-| **Variant 1 (Component-wise in branches)** | Assign `speed.x`/`speed.y` component-wise in `if (flag)` branches rather than struct copy: `speed.x = mpParamJump->mJumpSpeed1.x; speed.y = mpParamJump->mJumpSpeed1.y;` with starting math | **DIFFS 5** (+ 2 naming artifacts) | **DIFFS 5** (+ 2 naming artifacts) | `f2` = int->float stack double, `f3` = magic double, `f4` = `sx` (`f0` = `speed.y`, `f1` = `rate`) |
-| **Variant 2 (Ternary struct initialization)** | `mVec2_c speed = (flag != 0) ? mpParamJump->mJumpSpeed1 : mpParamJump->mJumpSpeed2;` with starting math | **DIFFS 5** (+ 2 naming artifacts) | **DIFFS 5** (+ 2 naming artifacts) | `f2` = int->float stack double, `f3` = magic double, `f4` = `sx` (`f0` = `speed.y`, `f1` = `rate`) |
-| **Variant 3 (Reference ternary binding)** | `const mVec2_c &speed = (flag != 0) ? mpParamJump->mJumpSpeed1 : mpParamJump->mJumpSpeed2;` with starting math | **DIFFS 44** (+ 2 naming artifacts, -6 words length) | **DIFFS 44** (+ 2 naming artifacts, -6 words length) | `f2` = magic double, `f3` = `sx` (from `0x0(r31)`), `f0` = stack double reused (stack frame shortened to `0x20`) |
-| **Variant 4 (Comma operator sequencing)** | `float sx = (mSpeed.y = speed.y, speed.x); mSpeed.x = (muki * rate) * sx;` | **DIFFS 5** (+ 2 naming artifacts) | **DIFFS 5** (+ 2 naming artifacts) | `f2` = int->float stack double, `f3` = magic double, `f4` = `sx` (`f0` = `speed.y`, `f1` = `rate`) |
-| **Variant 5 (Double-precision cast)** | `double muki = (double)l_EnMuki[mDirection]; mSpeed.y = speed.y; float sx = speed.x; mSpeed.x = (muki * rate) * sx;` | **DIFFS 22** (+ 2 naming artifacts, +1 word length) | **DIFFS 22** (+ 2 naming artifacts, +1 word length) | `f2` = int->float stack double, `f3` = magic double, `f4` = `sx` (`fsub`/`fmul` in double with terminal `frsp f0, f0`) |
-| **Variant 6 (Parenthesized product with inlined cast)** | `mSpeed.y = speed.y; mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];` | **DIFFS 11** (+ 2 naming artifacts) | **DIFFS 11** (+ 2 naming artifacts) | `f0` = `speed.x`, `f1` = `rate` (then reused for int->float), `f2` = magic double, `f3` = `speed.y` |
-
-### 3.3. Diagnostic Findings on Register Inversion
-1. **The Allocation Inversion Root Cause**: When `(float)l_EnMuki[mDirection]` is evaluated, MWCC's code generator reserves two registers (`f3`, `f2` in the draft) for the subtraction `fsubs f0, f2, f3`. Because `float sx = speed.x` appears textually after `muki` in the C++ AST, MWCC allocates `f4` to `sx` when loading `0x10(r1)`.
-2. **Impact of Hoisting `sx`**: Moving `float sx = speed.x` earlier before `muki` causes `sx` to land in `f4` or `f31` (if live across `calcJumpRate`), but does not reorder the int-to-float pair ahead of `speed.x` in retail's exact `f2`-first sequence without perturbing other instructions.
-3. **Twin Consistency**: In all tested variants, `initializeState_Jump` and `initializeState_BigJump` behave identically across all register assignments, instruction counts, and diff structures.
+- **Verification Result**: Exact 248 / 251 functions match confirmed. Zero regressions.
 
 ---
 
-## 4. Work Order Item 2: `setQuakeDead` Non-CSE Null & Redundant `li r3, 0` Analysis
+## 4. Item 2: `setQuakeDead` Merge Register & Zero Materialization Sweep
 
-### 4.1. The Narrow Technical Question
-The `(fBase_c *)mUnk770` variant achieved the exact target frame (`0x30`), exact non-volatile GPR set (`[30, 31]`), and exact instruction sequence minus one word (84 words vs 85 target words). The missing word is `li r3, 0` at target instruction 36.
-Retail generates:
-```asm
-800A9B14: lwz   r3, 0x770(r30)
-800A9B18: cmpwi r3, 0x0
-800A9B1C: bne   .L_call
-800A9B20: li    r3, 0x0            ; <-- Redundant null materialised in r3
-800A9B24: b     .L_check           ; <-- Branch into shared merge check
-.L_call:
-800A9B28: bl    searchBaseByID__10fManager_cF9fBaseID_e
-.L_check:
-800A9B2C: cmpwi r3, 0x0            ; <-- Single shared test on merged value
-800A9B30: beq   .L_skip
-800A9B34: bl    deleteRequest__7fBase_cFv
-```
+### 4.1. The Optimization Mechanism: Callee-Saved Merge Register vs Volatile Materialization
+In retail, MWCC stores constant 0 into `mUnk792` and `mUnk790` using volatile register `r0` (`li r0, 0x0`), calls `UnKnownScoreSet`, and subsequently materializes `li r3, 0x0` inside the false arm of the ternary before branching (`b .L_800A9B2C`) into the shared `cmpwi r3, 0x0` merge test.
 
-### 4.2. Measured Variants Comparison Table (≥3 Variants)
+When literal `0` / `nullptr` is written in standard C++ ternary source, MWCC identifies that constant 0 is required both before `UnKnownScoreSet` (for the two halfword stores) and after `UnKnownScoreSet` (for the null branch). Because non-volatile `r29` is available, MWCC places constant 0 into `r29` before the call and reuses `r29` as the ternary merge register — saving the `li r3, 0` at the cost of `stw r29`/`lwz r29`, two `mr` instructions, and `0x10` extra stack frame (88 words vs 85 words).
 
-| Variant | Source Code Form | Words | Frame | Non-Volatile Set (GPR) | `li r3,0` + `b` -> shared `cmpwi` Present | Notes / Mechanism |
-| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Variant A (Different Pointer Type Null)** | `fBase_c *base = (mUnk770 == 0) ? (dActor_c*)0 : fManager_c::searchBaseByID((fBaseID_e)mUnk770); if (base != 0) base->deleteRequest();` | **88** | `0x40` | `[29, 30, 31]` | **No** (Hoists `r29`) | Literal 0 in pointer cast participates in global constant CSE across `UnKnownScoreSet`, saving constant 0 into `r29` and adding 0x10 to frame. |
-| **Variant B (Condition on Local `id`, Argument `mUnk770`)** | `u32 id = mUnk770; fBase_c *base = (id == 0) ? (fBase_c*)mUnk770 : fManager_c::searchBaseByID((fBaseID_e)mUnk770); if (base != 0) base->deleteRequest();` | **84** | `0x30` | `[30, 31]` | **No** (Elides `li r3,0`) | Frame `0x30` and GPR `[30, 31]` preserved. MWCC value range analysis recognizes `r3` already holds 0 on the zero path, eliding `li r3,0` and jumping straight to `.L_check`. |
-| **Variant C (Condition on `mUnk770`, Passed Local `id`)** | `fBaseID_e id = (fBaseID_e)mUnk770; fBase_c *base = (mUnk770 == 0) ? (fBase_c*)0 : fManager_c::searchBaseByID(id); if (base != 0) base->deleteRequest();` | **88** | `0x40` | `[29, 30, 31]` | **No** (Hoists `r29`) | Passing distinct name `id` does not hide literal 0 in false arm from global CSE, resulting in `r29` hoisting. |
-| **Variant D (Null Arm via Right Shift `(mUnk770 >> 31)`)** | `fBase_c *base = (mUnk770 == 0) ? (fBase_c*)(mUnk770 >> 31) : fManager_c::searchBaseByID((fBaseID_e)mUnk770); if (base != 0) base->deleteRequest();` | **85** | `0x30` | `[30, 31]` | **No** (Emits `srwi r3, r3, 31` + `b`) | **Exact 85 words, frame `0x30`, GPR `[30,31]`**. Generates `srwi r3, r3, 31` + `b .L_check` into shared `cmpwi r3, 0`. Exactly **1 instruction diff** vs target (`srwi` vs `li`). |
-| **Variant E (Null Arm via Zero Member `(u32)mUnk790`)** | `fBase_c *base = (mUnk770 == 0) ? (fBase_c*)(u32)mUnk790 : fManager_c::searchBaseByID((fBaseID_e)mUnk770); if (base != 0) base->deleteRequest();` | **85** | `0x30` | `[30, 31]` | **No** (Emits `lhz r3, 0x790(r30)` + `b`) | **Exact 85 words, frame `0x30`, GPR `[30,31]`**. Generates `lhz r3, 0x790(r30)` + `b .L_check` into shared `cmpwi r3, 0`. Exactly **1 instruction diff** vs target (`lhz` vs `li`). |
+### 4.2. Systematic Sweep of All Proposed Directions
 
-### 4.3. Findings on MWCC Redundant Constant Materialization
-1. **The Optimization Paradox**: In C++, writing literal `0` / `nullptr` triggers MWCC global constant propagation which discovers 3 uses of constant 0 spanning across `UnKnownScoreSet` and allocates `r29`. Writing a variable expression like `(fBase_c*)mUnk770` avoids constant propagation (retaining frame `0x30` and GPR `[30, 31]`), but MWCC's copy-propagation / value-tracking detects that `r3` already contains 0 from `lwz r3, 0x770(r30)` and removes the redundant `li r3, 0`.
-2. **The 85-Word Frame `0x30` Bridge**: Variants D and E prove that any non-constant zero expression that computes 0 without constant literal CSE yields the **exact 85 words / frame `0x30` / GPR `[30, 31]` profile**, isolating the discrepancy down to a single instruction in the ternary merge path.
+| Variant | Source Expression Form | Words | Frame | Non-Volatile GPR Set | `li r3,0` + `b` -> shared `cmpwi` Present | `fndiff.py` Diffs |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **Retail Target** | `fBase_c *base = (mUnk770 == 0) ? <null> : fManager_c::searchBaseByID(...)` | **85** | **`0x30`** | **`[30, 31]`** | **YES (`li r3, 0; b .L`)** | **0** |
+| **Baseline Literal Ternary** | `(mUnk770 == 0) ? nullptr : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (hoists `r29`, elides `li`) | 80 (+3 len) |
+| **Variant 1: `(void*)0` null** | `(mUnk770 == 0) ? (fBase_c*)(void*)0 : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (hoists `r29`, elides `li`) | 80 (+3 len) |
+| **Variant 2: `(dActor_c*)0` null** | `(mUnk770 == 0) ? (dActor_c*)0 : (dActor_c*)searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (hoists `r29`, elides `li`) | 80 (+3 len) |
+| **Variant 3: `(int*)0` null** | `(mUnk770 == 0) ? (fBase_c*)(int*)0 : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (hoists `r29`, elides `li`) | 80 (+3 len) |
+| **Variant 4: `(u32)0` null** | `(mUnk770 == 0) ? (fBase_c*)(u32)0 : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (hoists `r29`, elides `li`) | 80 (+3 len) |
+| **Variant 5: `(fBase_c*)false`** | `(mUnk770 == 0) ? (fBase_c*)false : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (hoists `r29`, elides `li`) | 80 (+3 len) |
+| **Variant 6: `(mUnk770 - mUnk770)`** | `(mUnk770 == 0) ? (fBase_c*)(mUnk770 - mUnk770) : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (folds to const 0 at compile time) | 80 (+3 len) |
+| **Variant 7: `(mUnk770 ^ mUnk770)`** | `(mUnk770 == 0) ? (fBase_c*)(mUnk770 ^ mUnk770) : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (folds to const 0 at compile time) | 80 (+3 len) |
+| **Variant 8: `(mUnk770 & 0)`** | `(mUnk770 == 0) ? (fBase_c*)(mUnk770 & 0) : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (folds to const 0 at compile time) | 80 (+3 len) |
+| **Variant 9: `(mUnk770 * 0)`** | `(mUnk770 == 0) ? (fBase_c*)(mUnk770 * 0) : searchBaseByID(...)` | 88 | `0x40` | `[29, 30, 31]` | NO (folds to const 0 at compile time) | 80 (+3 len) |
+| **Variant 10: `(mUnk770 >> 31)` [BEST]** | `(mUnk770 == 0) ? (fBase_c*)(mUnk770 >> 31) : searchBaseByID(...)` | **85** | **`0x30`** | **`[30, 31]`** | **YES (`srwi r3, r3, 31; b .L`)** | **1** |
+| **Variant 11: `(u32)mUnk790` [BEST]** | `(mUnk770 == 0) ? (fBase_c*)(u32)mUnk790 : searchBaseByID(...)` | **85** | **`0x30`** | **`[30, 31]`** | **YES (`lhz r3, 0x790(r30); b .L`)** | **1** |
+| **Variant 12: `(u32)mUnk792` [BEST]** | `(mUnk770 == 0) ? (fBase_c*)(u32)mUnk792 : searchBaseByID(...)` | **85** | **`0x30`** | **`[30, 31]`** | **YES (`lhz r3, 0x792(r30); b .L`)** | **1** |
+| **Variant 13: `(u32)(u16)mUnk770`** | `(mUnk770 == 0) ? (fBase_c*)(u32)(u16)mUnk770 : searchBaseByID(...)` | **85** | **`0x30`** | **`[30, 31]`** | **YES (`rlwinm r3, r3, 0, 16, 31; b .L`)** | **1** |
+| **Variant 14: In-condition declaration** | `if (fBase_c *b = (mUnk770 == 0 ? (fBase_c*)(mUnk770 >> 31) : searchBaseByID(...)))` | **85** | **`0x30`** | **`[30, 31]`** | **YES (`srwi r3, r3, 31; b .L`)** | **1** |
+| **Variant 15: `q5_null_then_if` (Claude)** | `fBase_c *base = nullptr; if (mUnk770 != 0) base = searchBaseByID(...); if (base) ...` | 86 | `0x30` | `[30, 31]` | NO (merges in `r0`, 2 `mr`s) | 51 |
+| **Variant 16: Guard `if`** | `if (mUnk770 != 0) { fBase_c *base = searchBaseByID(...); if (base) ... }` | 83 | `0x30` | `[30, 31]` | NO (omits `li` and merge branch) | 48 |
+| **Variant 17: Direct `searchBaseByID`** | `fBase_c *base = searchBaseByID(mUnk770); if (base) ...` | 81 | `0x30` | `[30, 31]` | NO (omits null check) | 47 |
 
----
+### 4.3. Findings on the Three Proposed Directions
+1. **Direction 1 (Differently Typed Null Pointers)**:
+   - Tested `(void*)0`, `(dActor_c*)0`, `(int*)0`, `(u32)0`, `(s32)0`, `(uintptr_t)0`, `(fBase_c*)false`, and `(fBase_c*)(int)(float)0.0f`.
+   - *Result*: All statically-typed null pointer expressions compile identically to 88 words / frame `0x40` / GPR `[29, 30, 31]` with 80 diffs.
+   - *Compiler Mechanism*: MWCC C++ front-end converts all compile-time null pointer constant expressions into an untyped integer literal node `0` before AST lowering. When global constant propagation / CSE runs across `UnKnownScoreSet`, it sees the identical constant `0` at the store and at the ternary, triggering the `r29` merge register optimization.
 
-## 5. Work Order Item 3: Landing Readiness Statement
+2. **Direction 2 (Constant Expressions vs Non-Constant Expressions)**:
+   - Arithmetic cancellations (`x - x`, `x ^ x`, `x & 0`, `x * 0`) are evaluated at compile-time by MWCC's constant folder, yielding a constant `0` that participates in the same global CSE.
+   - In contrast, dynamic / non-constant zero expressions (`mUnk770 >> 31`, `(u32)mUnk790`, `(u32)mUnk792`, `(u32)(u16)mUnk770`) cannot be proved to equal literal 0 across the basic block graph by the early constant propagation pass. Consequently, MWCC cannot serve them from `r29`, leaves `r0` for the stores, eliminates `r29`, and compiles the exact retail skeleton: **85 words, frame `0x30`, GPR `[30, 31]`, with a single instruction diff** (`srwi`, `lhz`, or `rlwinm` vs `li r3, 0`).
 
-### Plain Statement: Is this unit landable with the current object?
-### **NO.**
-
-### Detailed Landing Gate Analysis:
-Under `tools/auto_decomp/land.py`, the landing gate requires that the unit form a single **contiguous address range per section** and satisfy:
-```
-ninja && python progress.py --verify-bin -> 5/5 binaries hash-identical
-```
-There is no non-matching hole-punching mechanism in `land.py`. **248 / 251 matched functions cannot land. 251 / 251 matched functions are required.**
-
-### Exact Remaining Unmatched List (3 Functions / 1,060 Bytes Total):
-1. **`initializeState_Jump__18dEnTorideKokoopa_cFv`**
-   - Section Address: `0x800ABA40` (Size: 360 bytes / 90 words)
-   - Current Status: **5 instruction diffs** (register allocation inversion `f2` vs `f4`)
-2. **`initializeState_BigJump__18dEnTorideKokoopa_cFv`**
-   - Section Address: `0x800ABE00` (Size: 360 bytes / 90 words)
-   - Current Status: **5 instruction diffs** (exact twin of `initializeState_Jump`)
-3. **`setQuakeDead__18dEnTorideKokoopa_cFv`**
-   - Section Address: `0x800A9A90` (Size: 340 bytes / 85 words)
-   - Current Status: **80 diffs** (with literal ternary hoisting `r29`) / **1 diff** (with non-CSE zero expression)
+3. **Direction 3 (Forcing Stores Out of Callee-Saved Register)**:
+   - The store constant is only placed in `r29` *because* the ternary merge requires a zero value across the call. When the ternary is written with a non-CSE expression, the stores automatically revert to `li r0, 0x0` in volatile register `r0` without any changes to the store statements.
 
 ---
 
-## 6. Constant Pool Verification Output (`poolcheck.py`)
+## 5. Item 3: The Jump Twins (`initializeState_Jump` & `initializeState_BigJump`)
+
+### 5.1. Build Confirmation on `l_EnMuki` Declaration
+- **Verification**: Verified that `include/game/bases/d_enemy.hpp` line 316 already declares `extern const s8 l_EnMuki[];`.
+- **Comparative A/B Build Test Across Types**:
+  - `s8` declaration (`extern const s8 l_EnMuki[];`): Emits `lbzx r4, r3, r4` + `extsb r4, r4` -> int-to-float magic double pair `0x18(r1)`/`0x1c(r1)`. Yields **5 diffs** on both Jump and BigJump (90w / frame `0x30` / GPR `[30, 31]`).
+  - `s16` declaration (`extern const s16 l_EnMuki[];`): Emits `lhax r4, r3, r4`. Yields **13 diffs** on both twins.
+  - `int` declaration (`extern const int l_EnMuki[];`): Emits `lwzx r4, r3, r4`. Yields **13 diffs** on both twins.
+  - `float` declaration (`extern const float l_EnMuki[];`): Emits `lfsx f2, r3, r0` (bypasses int-to-float). Yields **31 diffs** (83w / frame `0x20`).
+- **Conclusion**: `s8` is definitively the authentic retail declaration type, matching retail byte-for-byte on opcode (`lbzx` + `extsb`), frame size (`0x30`), and word count (90 words).
+
+### 5.2. Measured Jump Twins Variants Table (≥4 Variants with FPR Allocations)
+
+| Variant | Source Expression Form | Jump Diffs | BigJump Diffs | Words / Frame / GPR | Observed FPR Allocation (`f2`, `f3`, `f4`) |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Retail Target** | `mVec2_c speed = ...; float rate = ...; mSpeed.y = speed.y; float sx = speed.x; mSpeed.x = (muki * rate) * sx;` | **0** | **0** | **90w / `0x30` / `[30, 31]`** | `f0` = `speed.y`, `f1` = `rate`, **`f2` = `speed.x`**, **`f3` = stack int->float double**, **`f4` = magic constant double** |
+| **Starting Form (`k6_sx_late`)** | `float rate = ...; float muki = ...; mSpeed.y = speed.y; float sx = speed.x; mSpeed.x = (muki * rate) * sx;` | **5** | **5** | 90w / `0x30` / `[30, 31]` | `f0` = `speed.y`, `f1` = `rate`, **`f2` = stack int->float double**, **`f3` = magic constant double**, **`f4` = `speed.x`** |
+| **Variant 1: Component-wise `speed.x`/`speed.y`** | `if (flag) { speed.x = p->mJumpSpeed1.x; speed.y = p->mJumpSpeed1.y; } else ...` with late `sx` math | **5** | **5** | 90w / `0x30` / `[30, 31]` | `f0` = `speed.y`, `f1` = `rate`, `f2` = int->float double, `f3` = magic double, `f4` = `speed.x` |
+| **Variant 2: Component-wise `speed.y`/`speed.x`** | `if (flag) { speed.y = p->mJumpSpeed1.y; speed.x = p->mJumpSpeed1.x; } else ...` with late `sx` math | **13** | **13** | 90w / `0x30` / `[30, 31]` | `f0` = `speed.y`, `f1` = `rate`, `f2` = int->float double, `f3` = magic double, `f4` = `speed.x` (load reordered) |
+| **Variant 3: Separate scalar locals (`sx`, `sy`)** | `float sx, sy; if (flag) { sx = p->...x; sy = p->...y; } else ...` | **80** | **80** | 92w / `0x40` / `[30, 31]` | `f2` = magic double (hoists `sy` across call into stack spill `0x40`) |
+| **Variant 4: Direct `mSpeed.y` in branches** | `if (flag) { sx = p->...x; mSpeed.y = p->...y; } else ...` | **78** | **78** | 89w / `0x30` / `[30, 31]` | `f2` = magic double (eliminates `0x14(r1)` store, breaks prologue) |
+| **Variant 5: Pointer selection (`const mVec2_c *`)** | `const mVec2_c *pSpeed = flag ? &p->mJumpSpeed1 : &p->mJumpSpeed2;` | **44** | **44** | 84w / `0x20` / `[30, 31]` | `f2` = magic double (elides struct copy to stack, shrinks frame to `0x20`) |
+| **Variant 6: `sx` declared before `muki`** | `float rate = ...; float sx = speed.x; float muki = ...; mSpeed.y = speed.y; mSpeed.x = (muki * rate) * sx;` | **5** | **5** | 90w / `0x30` / `[30, 31]` | `f0` = `speed.y`, `f1` = `rate`, `f2` = int->float double, `f3` = magic double, `f4` = `speed.x` |
+| **Variant 7: `mSpeed.y` before `calcJumpRate()`** | `mSpeed.y = speed.y; float rate = calcJumpRate(); float muki = ...; float sx = speed.x; mSpeed.x = ...` | **18** | **18** | 90w / `0x30` / `[30, 31]` | `f0` = int->float double, `f2` = magic double, `f3` = `speed.x` |
+
+### 5.3. Inversion Analysis on FPR Allocation
+Across all tested variants, `initializeState_Jump` and `initializeState_BigJump` behave identically with symmetric register allocation and diff patterns. In retail:
+1. `speed.x` is loaded from `0x10(r1)` into volatile register **`f2`** first.
+2. `(float)l_EnMuki[mDirection]` is subsequently converted using **`f3`** (stack double `0x18(r1)`) and **`f4`** (magic constant double).
+3. In all standard C++ forms, MWCC evaluates `(float)l_EnMuki[mDirection]` before `speed.x`, taking `f2` and `f3` for the conversion subtraction `fsubs f0, f2, f3`, which pushes `speed.x` into `f4` and forces MWCC to commute the final multiply to `fmuls f0, f4, f0`.
+
+---
+
+## 6. Constant Pool Verification (`poolcheck.py`)
 
 ```
-177 pooled constants compared by VALUE across 250 paired functions
+177 pooled constants compared by VALUE across 251 paired functions
 0 mismatched, 0 could not be resolved on one side
-(248 pair(s) value-checked; 16 reference(s) skipped as the same named symbol on both sides; 381 float load(s) seen; 1 pair(s) skipped on length)
+(248 pair(s) value-checked; 16 reference(s) skipped as the same named symbol on both sides; 381 float load(s) seen; 0 pair(s) skipped on length)
 COVERAGE: 248 of 488 target function(s) value-checked; 240 were not checked at all (unpaired, length-mismatched, or already differing).
 ```
+
+Exit code: **0 (clean)**.
 
 ---
 
 ## 7. Verbatim `fndiff.py --all` Output
 
 ```
-﻿=== "baseID_Jump_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
+=== "baseID_Jump_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
   target: 3 words / frame none / GPR none / FPR none
   draft : 3 words / frame none / GPR none / FPR none
   DIFFS 0
@@ -341,8 +379,8 @@ COVERAGE: 248 of 488 target function(s) value-checked; 240 were not checked at a
   DIFFS 0  (+ 3 naming artifact(s))
 === setQuakeDead__18dEnTorideKokoopa_cFv
   target: 85 words / frame 0x30 / GPR [30, 31] / FPR none
-  draft : 88 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  DIFFS 80  (+ +3 words of length difference)
+  draft : 85 words / frame 0x30 / GPR [30, 31] / FPR none
+  DIFFS 1  (+ 5 naming artifact(s))
 === setShellDamage__18dEnTorideKokoopa_cFP8dActor_c
   target: 66 words / frame 0x10 / GPR [30, 31] / FPR none
   draft : 66 words / frame 0x10 / GPR [30, 31] / FPR none
@@ -1139,10 +1177,6 @@ COVERAGE: 248 of 488 target function(s) value-checked; 240 were not checked at a
 
 ---
 
-## 8. Work Order Completeness & Not Reached List
+## 8. NOT REACHED
 
-- **Items Attempted**:
-  - Item 1 (`initializeState_Jump` and `initializeState_BigJump` sweep & FPR allocation mapping): **Completed in full** (6 new variants evaluated and mapped).
-  - Item 2 (`setQuakeDead` redundant-zero & non-CSE analysis): **Completed in full** (5 new variants evaluated across words, frame, GPRs, and merge pattern).
-  - Item 3 (Landing readiness statement and remaining blocker audit): **Completed in full**.
-- **`NOT REACHED`**: **None** (all three numbered work order items were reached, measured, and reported in full).
+**None**. All three numbered items in the Round 32 work order were fully executed, measured, verified, and reported in full detail.

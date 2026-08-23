@@ -2155,3 +2155,55 @@ needs. A computed zero (`x >> 31`, a reload of a member known to be zero) cannot
 be served from the merge register and immediately restores the retail shape —
 right words, right frame, right save set, one instruction spent on the wrong
 opcode.
+
+## A construct that fails in one function and matches in four others is not the bug
+
+`setQuakeDead` would not accept a plain `nullptr` in its conditional expression:
+the literal let MWCC merge the conditional into the register already holding the
+zero used by two nearby stores, costing a callee-saved register, two `mr`s and
+`0x10` of frame. A *computed* zero (`x >> 31`) avoided that and reached the
+right word count, frame and save set with a single instruction differing — so it
+looked like the answer.
+
+It is not, and the file itself says so. **`setShellDead`, `setFumiDead`,
+`setFireDead` and `setStarDead` all match byte-exact and all contain the
+identical block**, plain `nullptr` included:
+
+    mUnk792 = 0;
+    mUnk790 = 0;
+    <a call>
+    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (base != nullptr) base->deleteRequest();
+
+and retail's `setShellDead` emits `li r0, 0x0` for the stores and a separate
+`li r3, 0x0` for the null. The construct is right. Something *else* in
+`setQuakeDead` is wrong, and it is changing how that construct is compiled.
+
+Nor is it register availability: retail's `setQuakeDead` saves only `[30,31]`,
+so `r29` is free there too and it still materialises a fresh zero.
+
+**Rule: before contorting a construct to make one function match, grep the file
+for the same construct in functions that already match.** A matched sibling is
+stronger evidence than any listing — it is a known-correct sample of the
+original author's style, compiled by the real compiler with the real flags. If
+the construct is identical and one function matches, the difference is
+elsewhere, and every hour spent on the construct is wasted.
+
+The corollary: **a workaround that reaches the right shape by writing something
+no human would write is a warning, not a result.** `(fBase_c *)(mUnk770 >> 31)`
+as a null pointer is not source anyone shipped.
+
+## A named global where retail has an anonymous pool symbol is a REAL difference
+
+My differ treats `lis r11, l_dieQuake@ha` against
+`lis r11, "@70611_802F0C40"@ha` as a naming artifact, because one side is
+compiler-generated — which is right for scoring and wrong for reading. An
+anonymous pooled symbol is what a **compound literal** produces; a named symbol
+is what a named global produces. `setShellDead`, which matches, writes its
+death-info struct as `(sDeathInfoData){ 0.0f, 3.0f, -4.0f, ... }` and gets an
+anonymous entry. `setQuakeDead` reads a named `l_dieQuake` and gets a named one.
+
+**Rule: artifact-classed rows are invisible in the score but still worth
+reading.** Anonymous-versus-named is a source-structure signal even when the
+generated code is otherwise identical, and it tells you where the original had a
+literal rather than a global.

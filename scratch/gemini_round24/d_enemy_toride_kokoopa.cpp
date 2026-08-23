@@ -330,7 +330,7 @@ void dEnTorideKokoopa_c::setQuakeDead() {
     mUnk792 = 0;
     mUnk790 = 0;
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
-    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    fBase_c *base = (mUnk770 == 0) ? (fBase_c*)(mUnk770 >> 31) : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
     if (base != nullptr) {
         base->deleteRequest();
     }

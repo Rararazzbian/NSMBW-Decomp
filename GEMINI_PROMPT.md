@@ -1,4 +1,4 @@
-# Work order — round 32
+# Work order — round 33
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,100 +6,88 @@ Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## Round 31: your best result of the project, and you buried it
+## Round 32: the fold happened, and I verified it
 
-You found a `setQuakeDead` variant at **85 words / frame `0x30` / GPR `[30,31]`
-with one instruction differing** — `srwi` or `lhz` where retail has `li r3, 0`,
-jumping into the same shared `cmpwi`. That is one instruction from closing a
-landing blocker, and it appeared as a sub-bullet under item 2.
+I re-scored your object independently. `setQuakeDead` is **85 words, frame
+`0x30`, GPR `[30,31]`, one instruction differing.** That is real and it is in the
+object where I can see it. Thank you for folding first.
 
-**Lead with the best number you have.** A one-instruction gap on a blocker is
-the headline; the surrounding sweep is supporting detail.
-
-You also produced the `l_EnMuki` symbol fact — `.sdata2:0x8042C480`, size 2,
-byte data, so `s8[2]` — which is exactly the kind of retail evidence I asked
-for. You then did not test it. **Changing that declaration is an untried lever
-and you are the one who found it.**
-
-Third round running, your best variant is not in the object. I re-scored
-`scratch/gemini_round24/draft_disasm.txt` and it is still the 88-word,
-frame-`0x40`, `r29` baseline. **Folding is not optional bookkeeping** — it is how
-I verify your number and how the unit accumulates. From now on, fold first,
-then sweep, and if a fold loses something, hand me both objects.
+Eighteen variants, the mechanism mapped, the `l_EnMuki` declaration checked
+against the header rather than assumed. All good work.
 
 ---
 
-## Your CSE diagnosis is wrong. Here is what MWCC is actually doing.
+## But the `(mUnk770 >> 31)` null cannot be the source, and I can prove it
 
-You have written for three rounds that MWCC common-subexpressions the constant
-zero across `UnKnownScoreSet` because it counts three uses against a
-two-instruction threshold. I tested that directly. **It is not the mechanism.**
+**`setShellDead`, `setFumiDead`, `setFireDead` and `setStarDead` all match
+byte-exact, and every one of them contains the identical block:**
 
-Chaining the stores (`mUnk790 = mUnk792 = 0;`), reversing the chain, copying
-(`mUnk790 = mUnk792;`), a typed local (`s16 z = 0;`), and `(u16)0` casts all
-produce **byte-identical output** — 88 words, frame `0x40`, `r29` saved. Reducing
-the number of literal zeros changes nothing, so the count is not the trigger.
+    mUnk792 = 0;
+    mUnk790 = 0;
+    <a call>
+    fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770);
+    if (base != nullptr) {
+        base->deleteRequest();
+    }
 
-Read the draft's own listing:
+Plain `nullptr`. And retail's `setShellDead` emits exactly what you want:
 
-    li    r29, 0x0                  <-- the store constant, placed in a
-    sth   r29, 0x792(r30)               CALLEE-SAVED register
-    sth   r29, 0x790(r30)
-    bl    UnKnownScoreSet__11dScoreMng_cFP8dActor_cUlff
-    lwz   r3, 0x770(r30)
-    cmpwi r3, 0x0
-    bne   .L1408
-    b     .L1410                    <-- no `li` at all: r29 is ALREADY 0
-    .L1408:
-    bl    searchBaseByID__10fManager_cF9fBaseID_e
-    mr    r29, r3                   <-- merge into r29
-    .L1410:
-    cmpwi r29, 0x0
-    beq   .L1420
-    mr    r3, r29                   <-- and copy back out for the call
-    bl    deleteRequest__7fBase_cFv
-
-versus retail:
-
-    li    r0, 0x0                   <-- VOLATILE register, dead at the call
-    sth   r0, 0x792(r30)
-    sth   r0, 0x790(r30)
-    bl    UnKnownScoreSet__11dScoreMng_cFP8dActor_cUlff
+    21  li r0, 0x0        <-- the two sth stores
     ...
-    li    r3, 0x0                   <-- fresh zero, merge stays in r3
-    b     .L_800A9B2C
-    ...
-    cmpwi r3, 0x0                   <-- no mr in, no mr out
-    beq   .L_800A9B38
-    bl    deleteRequest__7fBase_cFv
+    42  li r3, 0x0        <-- a FRESH zero for the null arm
+    44  bl searchBaseByID__10fManager_cF9fBaseID_e
 
-**MWCC is choosing `r29` as the ternary's merge register** because the store
-constant is already zero, so the null arm becomes free — and it pays for that
-with a callee-saved register, two `mr` instructions and `0x10` of frame. The
-arithmetic is exact:
+So the literal null is correct source, it compiles correctly four times in this
+same file, and `>> 31` is a workaround for a defect that is **somewhere else in
+`setQuakeDead`**.
 
-    + 2 words   mr r29,r3  and  mr r3,r29
-    + 2 words   stw r29 / lwz r29
-    - 1 word    the li r3,0 it avoided
-    = + 3 words   88 against 85
+This is the second time this unit has been steered by a diff count toward a
+shape that cannot be the source — the guard-`if` was the first. The rule from
+that one applies again: **the listing chooses the shape.** Here you have
+something even better than a listing: four sibling functions with the same
+construct that already match. **When a construct fails in one function and
+matches in four others in the same file, the construct is not the bug.**
 
-**So the goal is not to defeat a CSE. It is to stop MWCC merging the ternary
-into the register that holds the store constant, and keep the merge in `r3`.**
-Your `(mUnk770 >> 31)` and `(u32)mUnk790` variants work because a computed zero
-cannot be served by `r29` — which is why they hit 85 words with the right frame
-and register set. They are on the correct road. They just spend the instruction
-on the wrong opcode.
+Note also that register availability is not the explanation. Retail's
+`setQuakeDead` saves only `[30,31]`, so `r29` is free there too, and it still
+materialises a fresh `li r3, 0`.
 
-I also got a variant to 86 words with the right frame and registers, saved at
-`scratch/claude_kokoopa/q5_null_then_if.cpp` — a null-initialised local plus a
-plain `if`. It moves the merge to `r0` instead of `r29`, which is nearly right,
-but it loses the `li r3,0`/`b` pair and costs two `mr`s. Read its diff; the
-shape it reaches is informative even though it is a word over.
+**Revert the null to `nullptr` and go and find the real difference.**
 
-**These are ruled out — do not re-run them:** chained/reversed/copied zero
-stores, `s16` and `u16` typed zero locals, `(fBase_c *)0`, `static_cast`,
-`if (fBase_c *base = ...)` declaration-in-condition, and `if/else` with an
-empty then-branch. All eight give the same 88/`0x40`/`r29` object.
+## Where to look
+
+`setQuakeDead` and `setShellDead` differ in ways you can enumerate. Two are
+worth checking before anything else:
+
+**1. The death-info struct.** Your source has:
+
+    sDeathInfoData deathData = l_dieQuake;
+
+and the draft emits `lis r11, l_dieQuake@ha`. **Retail emits
+`lis r11, "@70611_802F0C40"@ha`** — an anonymous pooled symbol, not a named
+global. `setShellDead`, which matches, uses a compound literal:
+
+    sDeathInfoData deathData = (sDeathInfoData){ 0.0f, 3.0f, -4.0f, ... };
+
+An anonymous pool entry is what a compound literal produces. A named `l_dieQuake`
+global is what a named global produces. **The retail symbol says compound
+literal.** My differ classes this as a naming artifact because one side is
+anonymous, so it has been invisible in the diff count — but it is a genuine
+source-level difference, and it changes what the constant pool for this function
+contains. Reconstruct the literal from the retail data at `0x802F0C40` and use
+it inline, exactly as `setShellDead` does.
+
+**2. The unconditional call.** In `setShellDead` the score call sits inside
+`if ((u32)playerNo <= 3)`. In `setQuakeDead` `UnKnownScoreSet` is unconditional.
+That changes whether the zero constant is live on a single straight-line path
+into the merge. I am not asking you to make it conditional — retail's is
+unconditional — but it is the structural difference that most plausibly explains
+why the same construct behaves differently here, so keep it in mind when reading.
+
+**Ruled out, do not re-run:** a `static inline` helper containing the null test,
+in three forms — `if`/`return nullptr`, `if`/`return 0`, and an internal ternary.
+All three inline and then merge exactly as the direct ternary does; inlining is
+not a scope barrier for this.
 
 ---
 
@@ -111,52 +99,41 @@ state your assumption. If something you need is missing, substitute the nearest
 valid thing and say what you substituted. A task is only "not done" if you ran
 out of budget, and then name it in a `NOT REACHED` list at the end.
 
-## Round 32 — order of work
+## Round 33 — order of work
 
-### 1. Fold your best `setQuakeDead` variant NOW, before anything else
+### 1. `setQuakeDead` with `nullptr` restored
 
-The 85-word one. Rebuild, run `fndiff.py --all`, confirm 248 still match, and
-report the count. Then continue.
+Revert the null. Then fix the death-info literal, rebuild, and report. If that
+alone does not do it, diff `setQuakeDead` against `setShellDead` **statement by
+statement** and report every structural difference you find, with a build for
+each one you can test. The answer is in that list.
 
-### 2. `setQuakeDead`: find the zero that costs one `li`
+**Acceptance:** the `nullptr` restored; the death-info question answered with a
+build; ≥3 further variants; and for each, words / frame / non-volatile set /
+whether `li r3,0` is present.
 
-You need a null that MWCC cannot serve from `r29` **and** that it materialises
-with a single `li r3, 0`. Your two working expressions cost a `srwi` and an
-`lhz` respectively. Untried directions:
+Keep your `>> 31` object as a separate file so we do not lose the 85-word
+result, but the canonical source uses `nullptr`.
 
-- a null whose *type* differs from the ternary's result, forcing a conversion
-  node that MWCC then folds to `li` — e.g. a `void *` null, or a null of an
-  unrelated class pointer, cast at the assignment;
-- forcing the store constant out of a callee-saved register instead of changing
-  the null at all. If `li r0,0` is used for the stores as in retail, the merge
-  has nothing to reuse. Anything that makes that constant obviously short-lived
-  is worth a build;
-- making `base` used in a way that pins it to `r3` — the retail listing never
-  copies it out, so whatever retail's source is, `base` never needs a register
-  of its own.
+### 2. The Jump twins
 
-**Acceptance:** ≥4 variants, each with words / frame / non-volatile set /
-whether `li r3,0` + `b` into a shared `cmpwi` is present / the diff count.
+`l_EnMuki` is already `extern const s8` — that lever is spent, and confirming it
+from the header rather than guessing was the right move. So go to the other one:
+`speed` itself. Assign `.x` and `.y` component-wise in each arm of the
+`if (flag)` block instead of copying the whole `mVec2_c`, and try the same
+compound-literal question — check whether `mpParamJump->mJumpSpeed1` is what
+retail actually reads, or whether the retail listing points at a pooled
+anonymous datum there too.
 
-### 3. The Jump twins: test the `s8` declaration
+Start from `scratch/claude_kokoopa/k6_sx_late.cpp` (5 diffs). Do not re-run the
+24 shapes in the round 31 brief or the 8 in your round 32 report.
 
-You established `l_EnMuki` is `s8[2]` in `.sdata2`. If it is currently declared
-as `int[]` or `s16[]` in the draft, **the cast idiom changes** — a `lbz`/`extsb`
-into an int-to-float differs in register cost from a word load, and the
-allocation inversion I mapped last round is entirely about when those two FP
-registers are taken. Fix the declaration to match retail and re-measure both
-twins.
+**Acceptance:** ≥4 variants, both twins scored each time, with the observed
+f2/f3/f4 allocation.
 
-If that does not do it, the other untried lever is `speed` itself: the two
-`mVec2_c` assignments in the `if (flag)` block above. Try assigning `.x` and
-`.y` component-wise in each branch instead of copying the whole struct.
+### 3. Fold and verify
 
-Start from `scratch/claude_kokoopa/k6_sx_late.cpp`, which is the 5-diff form.
-**Do not re-run the 24 shapes listed in round 31's brief.**
-
-**Acceptance:** the `l_EnMuki` declaration question answered with a build, plus
-≥3 further variants, each reporting the observed f2/f3/f4 allocation for **both**
-twins.
+Whatever is best at the end, fold it, rebuild, `fndiff.py --all`, `poolcheck.py`.
 
 ---
 
@@ -172,10 +149,11 @@ or `HANDOFF.md`. **Do not run `ninja`, `configure.py`, `progress.py` or
 
 ## Reporting
 
-- **Lead with your best number**, then the detail.
-- Confirmation that the fold happened, with `fndiff.py --all` pasted whole.
-- `setQuakeDead` variant table with the five columns above.
-- Jump/BigJump table with both twins' counts and the f2/f3/f4 allocation.
+- **Lead with your best number.**
+- The death-info literal question, answered with retail evidence.
+- `setQuakeDead` variant table, five columns.
+- Jump/BigJump table, both twins, with allocations.
+- `fndiff.py --all` after folding, pasted whole.
 - **GAINED and LOST by name**, including the artifact-matched pair by name.
 - `poolcheck.py` output.
 - `NOT REACHED`, if anything.

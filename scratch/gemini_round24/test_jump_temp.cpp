@@ -1073,7 +1073,7 @@ void dEnTorideKokoopa_c::executeState_Jump_St() {
 }
 
 void dEnTorideKokoopa_c::initializeState_Jump() {
-    const char *anmName = mpParamJump->mAnmNames[1];
+const char *anmName = mpParamJump->mAnmNames[1];
     if (anmName != nullptr) {
         nw4r::g3d::ResAnmChr anm = mResFile.GetResAnmChr(anmName);
         mAnmChrKokoopa.setAnm(mMdlKokoopa, anm, (m3d::playMode_e)1);
@@ -1084,15 +1084,19 @@ void dEnTorideKokoopa_c::initializeState_Jump() {
     if (mpBossLife->isNonDamage() == 0 && mpBossLife->isOneDamage() == 0) {
         flag = 0;
     }
+
     mVec2_c speed;
     if (flag != 0) {
         speed = mpParamJump->mJumpSpeed1;
     } else {
         speed = mpParamJump->mJumpSpeed2;
     }
-    float rate = calcJumpRate();
+    float sx = speed.x;
     mSpeed.y = speed.y;
-    mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];
+    float rate = calcJumpRate();
+    float muki = (float)l_EnMuki[mDirection];
+    mSpeed.x = (muki * rate) * sx;
+
     jumpEffect();
     jumpSE();
 }
@@ -1142,7 +1146,7 @@ void dEnTorideKokoopa_c::executeState_BigJump_St() {
 }
 
 void dEnTorideKokoopa_c::initializeState_BigJump() {
-    const char *anmName = mpParamJump->mAnmNames[3];
+const char *anmName = mpParamJump->mAnmNames[3];
     if (anmName != nullptr) {
         nw4r::g3d::ResAnmChr anm = mResFile.GetResAnmChr(anmName);
         mAnmChrKokoopa.setAnm(mMdlKokoopa, anm, (m3d::playMode_e)1);
@@ -1153,15 +1157,19 @@ void dEnTorideKokoopa_c::initializeState_BigJump() {
     if (mpBossLife->isNonDamage() == 0 && mpBossLife->isOneDamage() == 0) {
         flag = 0;
     }
+
     mVec2_c speed;
     if (flag != 0) {
         speed = mpParamJump->mBigJumpSpeed1;
     } else {
         speed = mpParamJump->mBigJumpSpeed2;
     }
-    float rate = calcJumpRate();
+    float sx = speed.x;
     mSpeed.y = speed.y;
-    mSpeed.x = (speed.x * rate) * (float)l_EnMuki[mDirection];
+    float rate = calcJumpRate();
+    float muki = (float)l_EnMuki[mDirection];
+    mSpeed.x = (muki * rate) * sx;
+
     jumpEffect();
     jumpSE();
 }
