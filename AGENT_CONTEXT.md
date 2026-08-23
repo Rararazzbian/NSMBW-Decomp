@@ -2057,3 +2057,55 @@ two values it cannot unify — type the pointer arm as a pointer, use a
 differently-typed zero for the stores, or split the expression so the two zeros
 live in separate trees. Retail code is full of rematerialised constants; a draft
 that hoists them is usually one CSE away from matching.
+
+## A unit lands as a CONTIGUOUS RANGE. Every unmatched function is a blocker.
+
+`tools/auto_decomp/land.py` is the only script that writes to `source/`, and its
+gate is:
+
+    ninja  &&  python progress.py --verify-bin   ->  5/5 binaries hash-identical
+
+A slice is a contiguous address range per section (`--slice '{".text":
+"0x1000-0x2000"}'`). There is no mechanism for landing a unit with holes in it,
+and no supported non-matching escape hatch. **248/251 does not land. 251/251
+does.**
+
+So "closed as a bounded negative" is not a status a function in a landing
+candidate can have. It is a decision to stop work, and stopping work on a
+function is stopping work on the unit. `initializeState_Jump` and
+`initializeState_BigJump` carried that label for four rounds; when they were
+finally re-examined they turned out to have matching word count, matching frame
+and matching save sets, with six diffs that were purely register numbers — the
+same class of problem that closed `revisePos` in an hour.
+
+**Rule: on a unit you intend to land, the only acceptable end state for a
+function is matched.** Park one if a round is better spent elsewhere, and say
+so, but never record it as closed — the label stops anyone from looking again,
+and the label was wrong here.
+
+## When a value's REGISTER is wrong and the arithmetic is right, find what was allocated before it
+
+The remaining diffs in the Jump twins are one inversion:
+
+    retail : f0 = speed.y   f1 = rate   f2 = speed.x   f3,f4 = int->float pair
+    draft  : f0 = speed.y   f1 = rate   f2,f3 = int->float pair   f4 = speed.x
+
+`(float)someIntArray[i]` lowers to the magic-constant idiom — store the int,
+`lfd` it, `lfd` the constant, `fsubs` — and that consumes **two** FP registers.
+Whether it is allocated before or after a neighbouring load decides every
+register number downstream, and it also decides whether MWCC commutes the final
+multiply: the draft emits `fmuls f0, f4, f0` where retail emits
+`fmuls f0, f0, f2`, because in the draft the operand that should be on the right
+sits in the higher register.
+
+**Two things worth carrying:**
+
+- **An int-to-float cast is not free in register terms.** When counting what is
+  live at a point, count the cast as two FP registers, not zero. It is invisible
+  in the source and expensive in the allocator.
+- **Reordering statements will not always reach the target allocation.**
+  Twenty-four permutations of four statements bottomed out at five diffs here,
+  and the cursor form that closed `revisePos` did not help. When order is
+  exhausted, the remaining levers are the *types* and the *provenance* of the
+  values — what `l_EnMuki` is declared as, whether `speed` is copied as a struct
+  or assigned component-wise, whether a call result is a local or inlined.
