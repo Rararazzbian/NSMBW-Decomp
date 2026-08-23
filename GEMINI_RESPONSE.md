@@ -1,1138 +1,278 @@
-# Round 34 Report: `setQuakeDead` Allocator Deconstruction & Register Sweep, Jump Twins Provenance Experiments, and Full TU Verification
+# Gemini Response — Round 35: `dPSwManager_c` (100% Matched)
 
-## 1. Headline Metrics & Primary Result
-
-- **Primary TU Standing (Round 34)**:
-  - **Total Functions in TU**: **251** (31,876 bytes)
-  - **Matched Functions**: **248 / 251 (98.80%)**
-  - **Matched Bytes**: **30,816 / 31,876 bytes (96.67%)**
-  - **Unmatched Functions**: **3 / 251 (1,060 bytes total)**:
-    - `setQuakeDead__18dEnTorideKokoopa_cFv` (340 B target / 85w target; canonical source with `nullptr` & compound literal is 88w / frame `0x40` / GPR `[29, 30, 31]` / 80 diffs [positional] = 78/85 identical instructions via alignment-aware edit script; closest honest non-volatile shape is Claude's `q5_null_then_if` at 86w / frame `0x30` / GPR `[30, 31]` / merge in `r0`)
-    - `initializeState_Jump__18dEnTorideKokoopa_cFv` (360 B target / 90w target vs 90w draft, **5 diffs** / 0 words length difference / frame `0x30` / GPR `[30, 31]`)
-    - `initializeState_BigJump__18dEnTorideKokoopa_cFv` (360 B target / 90w target vs 90w draft, **5 diffs** / 0 words length difference / frame `0x30` / GPR `[30, 31]`)
-  - **GAINED Functions**: **0**
-  - **LOST Functions**: **0** (Zero regressions across all 248 matching functions).
-  - **Constant Pool Verification (`poolcheck.py`)**: `177 pooled constants compared by VALUE across 250 paired functions; 0 mismatched, 0 could not be resolved on one side` (Exit code: 0 clean).
+**Status: 12 / 12 functions at `DIFFS 0` (640 / 640 bytes .text matched, 100%).**
 
 ---
 
-## 2. Work Order Item 1: `setQuakeDead` Allocator Analysis & Variant Sweep
+## 1. Summary
 
-### 2.1. Structural & Allocator Deconstruction
-In Round 33/34, an alignment-aware edit script (`difflib.SequenceMatcher`) proved that **78 of 85 instructions in `setQuakeDead` are 100% identical** between the canonical draft and retail. Head matches, tail matches, and the 32-instruction compound literal death-info block at the end is byte-exact.
+A complete, byte-exact reconstruction of the new unit `dPSwManager_c` in `scratch/gemini_pswmgr/`. All 12 member functions match retail byte-for-byte with 0 diffs.
 
-Every single difference traces to one register allocation decision:
-1. In retail, `mUnk792 = 0; mUnk790 = 0;` uses volatile `r0` (`li r0, 0x0; sth r0, 0x792(r30); sth r0, 0x790(r30)`).
-2. In retail, `fBase_c *base = (mUnk770 == 0) ? nullptr : searchBaseByID(...)` evaluates with `cmpwi r3, 0; bne .L_call; li r3, 0; b .L_merge; .L_call: bl searchBaseByID; .L_merge: cmpwi r3, 0; beq .L_skip; bl deleteRequest`. The null arm explicitly materializes `li r3, 0x0`.
-3. In the draft, MWCC notices that callee-saved `r29` is unoccupied across `UnKnownScoreSet`. It places the zero constant for `mUnk792/mUnk790 = 0` into `r29` (`li r29, 0x0`), preserves `r29` across `UnKnownScoreSet`, and then reuses `r29` as the merge register for the ternary (`mr r29, r3`), completely omitting the `li r3, 0` on the false arm.
-
-In `setShellDead`, by contrast, `killedBy` is live across `removeCc()`, `mCc.release()`, and the zero stores, occupying `r29`. Because `r29` is occupied by `killedBy`, MWCC refuses to allocate a fourth callee-saved register (`r28`) just for a constant zero, and naturally falls back to `r0` and `li r3, 0`. In `setQuakeDead`, `r29` is unconstrained, triggering MWCC's greedy global allocation heuristic.
-
-### 2.2. Measured `setQuakeDead` Variants Table
-
-| Variant | Source Code Shape / Description | Store-Constant Register | Merge Register | `li r3, 0` Present | Words | Frame | Non-Volatile GPR Set |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Target (Retail)** | Standard ternary with `nullptr` & `UnKnownScoreSet` | **`r0`** | **`r3`** | **YES** | **85w** | **`0x30`** | **`[30, 31]`** |
-| **Canonical Baseline** | `fBase_c *base = (mUnk770 == 0) ? nullptr : fManager_c::searchBaseByID((fBaseID_e)mUnk770); if (base != nullptr) base->deleteRequest();` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V1_reg_base** | `register fBase_c *base = (mUnk770 == 0) ? nullptr : ...` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V1b_reg_zero** | `register u32 z = 0; mUnk792 = z; mUnk790 = z;` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V1c_reg_this** | `register dEnTorideKokoopa_c *th = this;` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V2_scope_zero** | `{ u16 z = 0; mUnk792 = z; mUnk790 = z; }` (nested block) | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V2b_scope_base** | `{ fBase_c *base = ...; if (base) base->deleteRequest(); }` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V3_store_u32** | `*(u32*)&mUnk790 = 0;` (32-bit word store) | `r29` | `r29` | NO | 87w | `0x40` | `[29, 30, 31]` |
-| **V4b_score_local** | `dScoreMng_c *sm = dScoreMng_c::m_instance; sm->UnKnownScoreSet(...);` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **V5_claude_q5** | `fBase_c *base = nullptr; if (mUnk770 != 0) base = searchBaseByID(...); if (base) base->deleteRequest();` | **`r0`** | **`r0`** | NO | 86w | **`0x30`** | **`[30, 31]`** |
-| **V5b_if_else_init** | `fBase_c *base; if (mUnk770 == 0) base = nullptr; else base = searchBaseByID(...);` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **Dir_late** | `getPl_LRflag(mPos)` placed late after base deletion | `r31` | `r31` | NO | 86w | **`0x30`** | **`[30, 31]`** |
-| **Ternary_id_local** | `fBaseID_e id = (fBaseID_e)mUnk770; fBase_c *base = (id == 0) ? nullptr : searchBaseByID(id);` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **Ternary_u32_cond** | `fBase_c *base = ((u32)mUnk770 == 0) ? nullptr : ...` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **Ternary_not_cond** | `fBase_c *base = (!mUnk770) ? nullptr : ...` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **Ternary_zero_literal**| `fBase_c *base = (mUnk770 == 0) ? (fBase_c*)0 : ...` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **Ternary_in_if** | `if (fBase_c *base = (mUnk770 == 0) ? nullptr : ...) base->deleteRequest();` | `r29` | `r29` | NO | 88w | `0x40` | `[29, 30, 31]` |
-| **Ternary_reorder_score**| Base deletion placed *before* `UnKnownScoreSet` (probe) | **`r0`** | **`r3`** | **YES** | **85w** | **`0x30`** | **`[30, 31]`** |
+- **Unit:** `dPSwManager_c` (`dol/bases/d_p_sw_manager.cpp`)
+- **Address Range:** `0x800D86C0` – `0x800D8940` (size `0x280` / 640 B)
+- **Functions Matched:** 12 / 12 (100%)
+- **Sections Emitted:**
+  - `.text`: `0x800D86C0` – `0x800D8940` (`0x280` B, 12 functions)
+  - `.data`: `0x80318F48` – `0x80318F54` (`0xC` B vtable `__vt__13dPSwManager_c`, 1 virtual dtor slot)
+  - `.sbss`: `0x8042A2E0` – `0x8042A2E4` (`0x4` B `ms_instance__13dPSwManager_c`)
+- **Constant Pool:** No pooled constants / float loads (`poolcheck.py` clean).
 
 ---
 
-## 3. Work Order Item 2: The Twins (`initializeState_Jump` and `initializeState_BigJump`)
+## 2. Target Baseline & Measurement Table
 
-### 3.1. Register Inversion & Provenance Analysis
-Both twins (`initializeState_Jump` and `initializeState_BigJump`) are 90 words long, have matching frame size `0x30`, save identical non-volatile registers `[30, 31]`, and differ by exactly 5 instructions.
+All twelve functions in retail definition order:
 
-The residual is an instruction scheduling / register assignment inversion between `speed.x` and the integer-to-float magic conversion of `l_EnMuki[mDirection]`:
-- **Retail Target**:
-  - `speed.y` loaded into `f0` (`lfs f0, 0x14(r1)`)
-  - `calcJumpRate()` returns in `f1`
-  - Magic constant loaded into `f4` (`lfd f4, @75355@sda21(r0)`)
-  - `speed.x` loaded into `f2` (`lfs f2, 0x10(r1)`)
-  - Converted integer loaded into `f3` (`lfd f3, 0x18(r1)`)
-  - `stfs f0, 0xec(r30)` (`mSpeed.y = speed.y`)
-  - `fsubs f0, f3, f4` -> `f0 = muki`
-  - `fmuls f0, f0, f1` -> `f0 = muki * rate`
-  - `fmuls f0, f0, f2` -> `f0 = (muki * rate) * speed.x` (operands in order because `f0 < f2`)
-  - `stfs f0, 0xe8(r30)` (`mSpeed.x = ...`)
-- **Draft**:
-  - `speed.y` loaded into `f0` (`lfs f0, 0x14(r1)`)
-  - `calcJumpRate()` returns in `f1`
-  - Converted integer loaded into `f2` (`lfd f2, 0x18(r1)`)
-  - Magic constant loaded into `f3` (`lfd f3, @sda21(r0)`)
-  - `fsubs f0, f2, f3` -> `f0 = muki`
-  - `speed.x` loaded into `f4` (`lfs f4, 0x10(r1)`)
-  - `fmuls f0, f0, f1` -> `f0 = muki * rate`
-  - `fmuls f0, f4, f0` -> `f0 = speed.x * (muki * rate)` (operands commuted because `f4 > f0`)
-  - `stfs f0, 0xe8(r30)` (`mSpeed.x = ...`)
-
-### 3.2. Measured Twins Variants Table
-
-| Variant | Source Code Shape / Description | Jump Diffs (Score) | BigJump Diffs (Score) | Observed FPR Allocation (`magic`, `speed.x`, `int->float`, `fsubs`, `fmuls`) |
-| :--- | :--- | :---: | :---: | : |
-| **Target (Retail)** | Retail target disassembly | **0** (90w / `0x30`) | **0** (90w / `0x30`) | `magic=f4`, `sx=f2`, `int=f3` -> `fsubs f0, f3, f4`, `fmuls f0, f0, f1`, `fmuls f0, f0, f2` |
-| **Baseline (J0)** | Canonical local copy `mVec2_c speed; if ...` | **5** (90w / `0x30`) | **5** (90w / `0x30`) | `magic=f3`, `sx=f4`, `int=f2` -> `fsubs f0, f2, f3`, `fmuls f0, f0, f1`, `fmuls f0, f4, f0` |
-| **J1_const_ref** | `const mVec2_c &speed = (flag != 0) ? ... : ...;` | 44 (84w / -6w) | 44 (84w / -6w) | `magic=f2`, `sx=None` (no stack copy), `fsubs f0, f0, f2`, `fmuls f0, f0, f1`, `fmuls f0, f3, f0` |
-| **J2_const_ptr** | `const mVec2_c *speed = (flag != 0) ? ... : ...;` | 44 (84w / -6w) | 44 (84w / -6w) | `magic=f2`, `sx=None` (no stack copy), `fsubs f0, f0, f2`, `fmuls f0, f0, f1`, `fmuls f0, f3, f0` |
-| **J3_ptr_if_else** | `const mVec2_c *speed; if (flag != 0) ...;` | 44 (84w / -6w) | 44 (84w / -6w) | `magic=f2`, `sx=None` (no stack copy), `fsubs f0, f0, f2`, `fmuls f0, f0, f1`, `fmuls f0, f3, f0` |
-| **J4_decl_order** | `float sx; float muki; float rate = ...;` (split declaration) | **5** (90w / `0x30`) | **5** (90w / `0x30`) | `magic=f3`, `sx=f4`, `int=f2` -> `fsubs f0, f2, f3`, `fmuls f0, f0, f1`, `fmuls f0, f4, f0` |
-| **M1_sx_first_prod** | `mSpeed.x = sx * (muki * rate);` | **5** (90w / `0x30`) | **5** (90w / `0x30`) | `magic=f3`, `sx=f4`, `int=f2` -> `fsubs f0, f2, f3`, `fmuls f0, f0, f1`, `fmuls f0, f4, f0` |
-| **M7_compound_sx** | `mSpeed.x = muki * rate; mSpeed.x *= sx;` | **5** (90w / `0x30`) | **5** (90w / `0x30`) | `magic=f3`, `sx=f4`, `int=f2` -> `fsubs f0, f2, f3`, `fmuls f0, f0, f1`, `fmuls f0, f0, f4` |
-| **T1_sy_first** | `f32 sy = speed.y; f32 sx = speed.x; ...` | 7 (90w / `0x30`) | 7 (90w / `0x30`) | `magic=f2`, `sx=f4`, `int=f0` -> `fsubs f0, f0, f2`, `fmuls f0, f0, f1`, `fmuls f0, f4, f0` |
-| **T5_speed_direct** | `mSpeed.x = (muki * rate) * speed.x;` | 8 (90w / `0x30`) | 8 (90w / `0x30`) | `magic=f3`, `sx=f0`, `int=f2` -> `fsubs f2, f2, f3`, `fmuls f1, f2, f1`, `fmuls f0, f0, f1` |
-
-**Takeaway on Speed Provenance**:
-Passing `speed` by `const reference` or `const pointer` completely strips the 2 stack stores `stfs f1, 0x10(r1)` and `stfs f0, 0x14(r1)`, shrinking the functions by 6 words (84w vs 90w target). The retail binary indisputably uses a copied local `mVec2_c speed;`, which creates the `0x10(r1)` and `0x14(r1)` stack slots.
+| Function | Target Words | Target Frame | Target GPR Saves | Target FPR Saves | Byte Size | Status |
+|---|---|---|---|---|---|---|
+| `__ct__13dPSwManager_cFv` | 5 | none | none | none | 0x14 (20 B) | **DIFFS 0** |
+| `__dt__13dPSwManager_cFv` | 18 | 0x10 | `[31]` | none | 0x48 (72 B) | **DIFFS 0** |
+| `initialize__13dPSwManager_cFv` | 10 | none | none | none | 0x28 (40 B) | **DIFFS 0** |
+| `execute__13dPSwManager_cFv` | 1 | none | none | none | 0x04 (4 B) | **DIFFS 0** |
+| `ProcMain__13dPSwManager_cFv` | 64 | 0x20 | `[28, 29, 30, 31]` | none | 0x100 (256 B) | **DIFFS 0** |
+| `finalize__13dPSwManager_cFv` | 10 | none | none | none | 0x28 (40 B) | **DIFFS 0** |
+| `checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` | 5 | none | none | none | 0x14 (20 B) | **DIFFS 0** |
+| `checkMove__13dPSwManager_cFv` | 5 | none | none | none | 0x14 (20 B) | **DIFFS 0** |
+| `getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e` | 4 | none | none | none | 0x10 (16 B) | **DIFFS 0** |
+| `onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` | 6 | none | none | none | 0x18 (24 B) | **DIFFS 0** |
+| `offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` | 6 | none | none | none | 0x18 (24 B) | **DIFFS 0** |
+| `setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` | 4 | none | none | none | 0x10 (16 B) | **DIFFS 0** |
 
 ---
 
-## 4. GAINED & LOST Sections
-
-### GAINED Functions (0 Gained)
-No new functions reached 0-diff byte-identity in Round 34. The primary draft `scratch/gemini_round24/d_enemy_toride_kokoopa.cpp` preserves the canonical 248 matching functions, the verified `.rodata` compound literal, and the canonical 5-diff Jump twins.
-
-### LOST Functions (0 Lost)
-Zero functions regressed or left the matched set in Round 34.
-
-### Explicit Artifact-Matched Pair Re-Check:
-All 4 artifact-matched functions were re-verified against the freshly compiled primary object `d_enemy_toride_kokoopa.o` and remain 100% matched under the union gate / naming-artifact rule:
-1. **`__sinit_\d_enemy_toride_kokoopa_cpp` (5,784 B / 1,446 insns / frame `0x420`):**
-   - Raw Byte Diffs: **0** (1,446 / 1,446 instructions byte-identical)
-   - Canonical Diffs in `fndiff.py`: **0** (+ 4 naming artifacts: `.data.0`, `.bss.0`, section disambiguations)
-   - Status: **MATCHED 100%**
-2. **`executeState_ShellAtk_St__18dEnTorideKokoopa_cFv` (612 B / 153 insns / frame `0x10`):**
-   - Raw Byte Diffs: **0** (153 / 153 instructions byte-identical)
-   - Canonical Diffs in `fndiff.py`: **0** (+ 6 naming artifacts)
-   - Status: **MATCHED 100%**
-3. **`executeState_LandOn__18dEnTorideKokoopa_cFv` (236 B / 59 insns / frame `0x10`):**
-   - Raw Byte Diffs: **0** (59 / 59 instructions byte-identical)
-   - Canonical Diffs in `fndiff.py`: **0** (+ 3 naming artifacts)
-   - Status: **MATCHED 100%**
-4. **`initializeState_ShellAtk_St__18dEnTorideKokoopa_cFv` (508 B / 127 insns / frame `0x20`):**
-   - Raw Byte Diffs: **0** (127 / 127 instructions byte-identical)
-   - Canonical Diffs in `fndiff.py`: **0** (+ 12 naming artifacts)
-   - Status: **MATCHED 100%**
-
----
-
-## 5. Constant Pool Verification (`poolcheck.py`)
+## 3. Per-Function Results (`fndiff.py --all`)
 
 ```
-177 pooled constants compared by VALUE across 250 paired functions
-0 mismatched, 0 could not be resolved on one side
-(248 pair(s) value-checked; 16 reference(s) skipped as the same named symbol on both sides; 381 float load(s) seen; 1 pair(s) skipped on length)
-COVERAGE: 248 of 488 target function(s) value-checked; 240 were not checked at all (unpaired, length-mismatched, or already differing).
-```
-
----
-
-## 6. Full Unit Function Diff Log (`fndiff.py --all`)
-
-```
-=== "baseID_Jump_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_BigJump_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_BigJump<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_LandOn<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_AttackReady<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_AttackBegin<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_AttackSearch<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_AttackEnd<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_FireHit<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_StarHit<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_SlideHit<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_QuakeHit<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_ShellHit<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_ShellAtk_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_ShellAtk<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_ShellOut<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_DieFumi_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_DemoAwake_Wait<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_DemoIkaku<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_DemoIkaku_Wait<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== "baseID_DemoEscape_St<10sStateID_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== __ct__18dEnTorideKokoopa_cFv
-  target: 129 words / frame 0x20 / GPR none / FPR none / _savegpr_27
-  draft : 129 words / frame 0x20 / GPR none / FPR none / _savegpr_27
-  DIFFS 0  (+ 1 naming artifact(s))
-=== __ct__Q23mEf13levelEffect_cFv
-  target: 22 words / frame 0x10 / GPR [31] / FPR none
-  draft : 22 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== __dt__18dEnTorideKokoopa_cFv
-  target: 83 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  draft : 83 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  DIFFS 0
-=== preExecute__18dEnTorideKokoopa_cFv
-  target: 67 words / frame 0x10 / GPR [31] / FPR none
-  draft : 67 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== getDrawScale__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== moveAdjust_HIO__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== postExecute__18dEnTorideKokoopa_cFQ27fBase_c12MAIN_STATE_e
-  target: 29 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 29 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0
-=== draw__18dEnTorideKokoopa_cFv
-  target: 26 words / frame 0x10 / GPR [31] / FPR none
-  draft : 26 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== drawKokoopa__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== drawShell__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalUpdate__18dEnTorideKokoopa_cFv
-  target: 58 words / frame 0x30 / GPR [31] / FPR none
-  draft : 58 words / frame 0x30 / GPR [31] / FPR none
-  DIFFS 0
-=== calcKokoopaMdl__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== calcFacePos__18dEnTorideKokoopa_cFv
-  target: 7 words / frame none / GPR none / FPR none
-  draft : 7 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== calcCcData__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== calcShellMdl__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== calcBlitzPos__18dEnTorideKokoopa_cFv
-  target: 35 words / frame 0x50 / GPR [30, 31] / FPR none
-  draft : 35 words / frame 0x50 / GPR [30, 31] / FPR none
-  DIFFS 0
-=== getMagicStickEffectOffset__18dEnTorideKokoopa_cCFv
-  target: 6 words / frame none / GPR none / FPR none
-  draft : 6 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== isQuakeDamage__18dEnTorideKokoopa_cFv
-  target: 41 words / frame 0x10 / GPR [31] / FPR none
-  draft : 41 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== hitCallback_PenguinSlide__18dEnTorideKokoopa_cFP5dCc_cP5dCc_c
-  target: 19 words / frame 0x10 / GPR none / FPR none
-  draft : 19 words / frame 0x10 / GPR none / FPR none
-  DIFFS 0
-=== setFumiDamage__18dEnTorideKokoopa_cFP8dActor_c
-  target: 59 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 59 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== setFumiDead__18dEnTorideKokoopa_cFP8dActor_c
-  target: 112 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  draft : 112 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== setFireDamage__18dEnTorideKokoopa_cFP8dActor_c
-  target: 68 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 68 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== setFireDead__18dEnTorideKokoopa_cFP8dActor_c
-  target: 113 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  draft : 113 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== setStarDamage__18dEnTorideKokoopa_cFP8dActor_c
-  target: 59 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 59 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== setStarDead__18dEnTorideKokoopa_cFP8dActor_c
-  target: 112 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  draft : 112 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== setQuakeDamage__18dEnTorideKokoopa_cFv
-  target: 47 words / frame 0x10 / GPR [31] / FPR none
-  draft : 47 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== setQuakeDead__18dEnTorideKokoopa_cFv
-  target: 85 words / frame 0x30 / GPR [30, 31] / FPR none
-  draft : 88 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  DIFFS 80  (+ +3 words of length difference)
-=== setShellDamage__18dEnTorideKokoopa_cFP8dActor_c
-  target: 66 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 66 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== setShellDead__18dEnTorideKokoopa_cFP8dActor_c
-  target: 111 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  draft : 111 words / frame 0x40 / GPR [29, 30, 31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== damageProc__18dEnTorideKokoopa_cFv
-  target: 40 words / frame 0x10 / GPR [31] / FPR none
-  draft : 40 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== speedUp__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== deadProc__18dEnTorideKokoopa_cFv
-  target: 19 words / frame 0x10 / GPR none / FPR none
-  draft : 19 words / frame 0x10 / GPR none / FPR none
-  DIFFS 0
-=== calcJumpRate__18dEnTorideKokoopa_cFv
-  target: 47 words / frame 0x30 / GPR [31] / FPR [30, 31]
-  draft : 47 words / frame 0x30 / GPR [31] / FPR [30, 31]
-  DIFFS 0  (+ 4 naming artifact(s))
-=== getJumpDist__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== movelimitCheck__18dEnTorideKokoopa_cFf
-  target: 47 words / frame 0x30 / GPR [31] / FPR [31]
-  draft : 47 words / frame 0x30 / GPR [31] / FPR [31]
-  DIFFS 0  (+ 1 naming artifact(s))
-=== moveRevise__18dEnTorideKokoopa_cFv
-  target: 52 words / frame 0x20 / GPR [30, 31] / FPR none
-  draft : 52 words / frame 0x20 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 8 naming artifact(s))
-=== wandCcCallback__18dEnTorideKokoopa_cFP5dCc_cP5dCc_c
-  target: 30 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 30 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0
-=== calcAttackTarget__18dEnTorideKokoopa_cFv
-  target: 51 words / frame 0x20 / GPR none / FPR none / _savegpr_27
-  draft : 51 words / frame 0x20 / GPR none / FPR none / _savegpr_27
-  DIFFS 0
-=== lockonTurn__18dEnTorideKokoopa_cFv
-  target: 35 words / frame 0x10 / GPR [31] / FPR none
-  draft : 35 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== calcLookAngle__18dEnTorideKokoopa_cFv
-  target: 31 words / frame 0x10 / GPR [31] / FPR none
-  draft : 31 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== changeShell__18dEnTorideKokoopa_cFv
-  target: 21 words / frame 0x10 / GPR [31] / FPR none
-  draft : 21 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== setShellCc__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== changeKokoopa__18dEnTorideKokoopa_cFv
-  target: 16 words / frame 0x10 / GPR [31] / FPR none
-  draft : 16 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== setKokoopaCc__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== setAtkCnt__18dEnTorideKokoopa_cFv
-  target: 35 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 35 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0
-=== getTorideFunfareTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getTurnSpeed__18dEnTorideKokoopa_cFv
-  target: 13 words / frame 0x10 / GPR none / FPR none
-  draft : 13 words / frame 0x10 / GPR none / FPR none
-  DIFFS 0
-=== calcDirAngle__18dEnTorideKokoopa_cFs
-  target: 27 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 27 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0
-=== defaultDirAngle__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== blitzMove__18dEnTorideKokoopa_cFP8dActor_c
-  target: 36 words / frame 0x20 / GPR [30, 31] / FPR none
-  draft : 36 words / frame 0x20 / GPR [30, 31] / FPR none
-  DIFFS 0
-=== getDownTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getFumiRecoverTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getTenmetsuTime_Fire__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getTenmetsuTime_Press__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== calcRootJntPos__18dEnTorideKokoopa_cFv
-  target: 16 words / frame 0x10 / GPR [31] / FPR none
-  draft : 16 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== calcShellJntPos__18dEnTorideKokoopa_cFv
-  target: 16 words / frame 0x10 / GPR [31] / FPR none
-  draft : 16 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== isTorideBoss__18dEnTorideKokoopa_cFv
-  target: 24 words / frame none / GPR none / FPR none
-  draft : 24 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== jumpEffect__18dEnTorideKokoopa_cFv
-  target: 23 words / frame 0x20 / GPR none / FPR none
-  draft : 23 words / frame 0x20 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== jumpRootEffect__18dEnTorideKokoopa_cFv
-  target: 28 words / frame 0x20 / GPR none / FPR none
-  draft : 28 words / frame 0x20 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== landonEffect__18dEnTorideKokoopa_cFv
-  target: 23 words / frame 0x20 / GPR none / FPR none
-  draft : 23 words / frame 0x20 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== shellLandonEffect__18dEnTorideKokoopa_cFv
-  target: 34 words / frame 0x20 / GPR [31] / FPR none
-  draft : 34 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== hitFireLoopEffect__18dEnTorideKokoopa_cFv
-  target: 26 words / frame 0x20 / GPR none / FPR none
-  draft : 26 words / frame 0x20 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== hitFireDamageEffect__18dEnTorideKokoopa_cFv
-  target: 26 words / frame 0x20 / GPR none / FPR none
-  draft : 26 words / frame 0x20 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== shellChangeEffect__18dEnTorideKokoopa_cFv
-  target: 32 words / frame 0x20 / GPR [31] / FPR none
-  draft : 32 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== getShellChangeEffectOffsetY__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== shellBumMarEffect__18dEnTorideKokoopa_cFv
-  target: 26 words / frame 0x30 / GPR none / FPR none
-  draft : 26 words / frame 0x30 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== shellAtkEffect__18dEnTorideKokoopa_cFv
-  target: 94 words / frame 0x40 / GPR [31] / FPR none
-  draft : 94 words / frame 0x40 / GPR [31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== downFallEffect__18dEnTorideKokoopa_cFv
-  target: 28 words / frame 0x20 / GPR none / FPR none
-  draft : 28 words / frame 0x20 / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== downLandOnEffect__18dEnTorideKokoopa_cFf
-  target: 37 words / frame 0x30 / GPR [31] / FPR none
-  draft : 37 words / frame 0x30 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== fumidmgEffect__18dEnTorideKokoopa_cFv
-  target: 26 words / frame 0x20 / GPR [31] / FPR none
-  draft : 26 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== fumideadEffect__18dEnTorideKokoopa_cFv
-  target: 33 words / frame 0x20 / GPR [30, 31] / FPR none
-  draft : 33 words / frame 0x20 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== shellWallEffect__18dEnTorideKokoopa_cFv
-  target: 79 words / frame 0x50 / GPR [30, 31] / FPR none
-  draft : 79 words / frame 0x50 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== notice1Vo__18dEnTorideKokoopa_cFv
-  target: 34 words / frame 0x10 / GPR [31] / FPR none
-  draft : 34 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== notice2Vo__18dEnTorideKokoopa_cFv
-  target: 46 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  draft : 46 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  DIFFS 0
-=== wakeVo__18dEnTorideKokoopa_cFv
-  target: 42 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  draft : 42 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  DIFFS 0
-=== escJumpVo__18dEnTorideKokoopa_cFv
-  target: 14 words / frame none / GPR none / FPR none
-  draft : 14 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== magicShotVo__18dEnTorideKokoopa_cFv
-  target: 14 words / frame none / GPR none / FPR none
-  draft : 14 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== shellOutVo__18dEnTorideKokoopa_cFv
-  target: 30 words / frame 0x10 / GPR [31] / FPR none
-  draft : 30 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== damageSVo__18dEnTorideKokoopa_cFv
-  target: 14 words / frame none / GPR none / FPR none
-  draft : 14 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== damageLVo__18dEnTorideKokoopa_cFv
-  target: 14 words / frame none / GPR none / FPR none
-  draft : 14 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== deadVo__18dEnTorideKokoopa_cFv
-  target: 24 words / frame none / GPR none / FPR none
-  draft : 24 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== loseFirstVo__18dEnTorideKokoopa_cFv
-  target: 14 words / frame none / GPR none / FPR none
-  draft : 14 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== loseSecondVo__18dEnTorideKokoopa_cFv
-  target: 42 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  draft : 42 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  DIFFS 0
-=== checkDownJump__18dEnTorideKokoopa_cFv
-  target: 45 words / frame 0x40 / GPR [30, 31] / FPR [29, 30, 31]
-  draft : 45 words / frame 0x40 / GPR [30, 31] / FPR [29, 30, 31]
-  DIFFS 0  (+ 2 naming artifact(s))
-=== isCreateBlitz__18dEnTorideKokoopa_cCFv
-  target: 37 words / frame 0x10 / GPR [31] / FPR none
-  draft : 37 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== getCreateBlitzFrm__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== isShootBlitz__18dEnTorideKokoopa_cCFv
-  target: 41 words / frame 0x10 / GPR [31] / FPR none
-  draft : 41 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== getShootFrm__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== setBeginMoveState__18dEnTorideKokoopa_cFv
-  target: 38 words / frame 0x10 / GPR [31] / FPR none
-  draft : 38 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== getJumpGravity__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_Jump_St__18dEnTorideKokoopa_cFv
-  target: 37 words / frame 0x20 / GPR [31] / FPR none
-  draft : 37 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== finalizeState_Jump_St__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_Jump_St__18dEnTorideKokoopa_cFv
-  target: 50 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 50 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_Jump__18dEnTorideKokoopa_cFv
-  target: 90 words / frame 0x30 / GPR [30, 31] / FPR none
-  draft : 90 words / frame 0x30 / GPR [30, 31] / FPR none
-  DIFFS 5  (+ 2 naming artifact(s))
-=== jumpSE__18dEnTorideKokoopa_cFv
-  target: 8 words / frame none / GPR none / FPR none
-  draft : 8 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_Jump__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_Jump__18dEnTorideKokoopa_cFv
-  target: 40 words / frame 0x10 / GPR [31] / FPR none
-  draft : 40 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== initializeState_BigJump_St__18dEnTorideKokoopa_cFv
-  target: 37 words / frame 0x20 / GPR [31] / FPR none
-  draft : 37 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== finalizeState_BigJump_St__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_BigJump_St__18dEnTorideKokoopa_cFv
-  target: 50 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 50 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_BigJump__18dEnTorideKokoopa_cFv
-  target: 90 words / frame 0x30 / GPR [30, 31] / FPR none
-  draft : 90 words / frame 0x30 / GPR [30, 31] / FPR none
-  DIFFS 5  (+ 2 naming artifact(s))
-=== finalizeState_BigJump__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_BigJump__18dEnTorideKokoopa_cFv
-  target: 40 words / frame 0x10 / GPR [31] / FPR none
-  draft : 40 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== initializeState_LandOn__18dEnTorideKokoopa_cFv
-  target: 43 words / frame 0x20 / GPR [31] / FPR none
-  draft : 43 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== landonSE__18dEnTorideKokoopa_cFv
-  target: 8 words / frame none / GPR none / FPR none
-  draft : 8 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_LandOn__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_LandOn__18dEnTorideKokoopa_cFv
-  target: 59 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 59 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== initializeState_AttackReady__18dEnTorideKokoopa_cFv
-  target: 33 words / frame 0x20 / GPR [31] / FPR none
-  draft : 33 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== finalizeState_AttackReady__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_AttackReady__18dEnTorideKokoopa_cFv
-  target: 52 words / frame 0x10 / GPR [31] / FPR none
-  draft : 52 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_AttackBegin__18dEnTorideKokoopa_cFv
-  target: 29 words / frame 0x20 / GPR [31] / FPR none
-  draft : 29 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== finalizeState_AttackBegin__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_AttackBegin__18dEnTorideKokoopa_cFv
-  target: 50 words / frame 0x10 / GPR [31] / FPR none
-  draft : 50 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_AttackSearch__18dEnTorideKokoopa_cFv
-  target: 56 words / frame 0x20 / GPR [31] / FPR none
-  draft : 56 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== finalizeState_AttackSearch__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_AttackSearch__18dEnTorideKokoopa_cFv
-  target: 128 words / frame 0x20 / GPR [30, 31] / FPR none
-  draft : 128 words / frame 0x20 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== blitzchargeSE__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== createBlitz__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getAtkSearch2ndTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getAtkSearchTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_Attack__18dEnTorideKokoopa_cFv
-  target: 38 words / frame 0x20 / GPR [31] / FPR none
-  draft : 38 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== finalizeState_Attack__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_Attack__18dEnTorideKokoopa_cFv
-  target: 109 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 109 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== calcWandCcData__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== setBlitzTarget__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== blitzShoot__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_AttackEnd__18dEnTorideKokoopa_cFv
-  target: 39 words / frame 0x20 / GPR [31] / FPR none
-  draft : 39 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== getAtkEndTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_AttackEnd__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_AttackEnd__18dEnTorideKokoopa_cFv
-  target: 63 words / frame 0x10 / GPR [31] / FPR none
-  draft : 63 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== beginDance__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getAtkEndTime_Wait__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_FumiHit__18dEnTorideKokoopa_cFv
-  target: 68 words / frame 0x20 / GPR [31] / FPR none
-  draft : 68 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== getPressScale__18dEnTorideKokoopa_cFv
-  target: 7 words / frame none / GPR none / FPR none
-  draft : 7 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== getPressTime__18dEnTorideKokoopa_cFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_FumiHit__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_FumiHit__18dEnTorideKokoopa_cFv
-  target: 108 words / frame 0x30 / GPR [31] / FPR none
-  draft : 108 words / frame 0x30 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== initializeState_FireHit__18dEnTorideKokoopa_cFv
-  target: 49 words / frame 0x20 / GPR [31] / FPR none
-  draft : 49 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 5 naming artifact(s))
-=== finalizeState_FireHit__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_FireHit__18dEnTorideKokoopa_cFv
-  target: 36 words / frame 0x10 / GPR [31] / FPR none
-  draft : 36 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_StarHit__18dEnTorideKokoopa_cFv
-  target: 47 words / frame 0x20 / GPR [31] / FPR none
-  draft : 47 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 5 naming artifact(s))
-=== finalizeState_StarHit__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_StarHit__18dEnTorideKokoopa_cFv
-  target: 31 words / frame 0x10 / GPR [31] / FPR none
-  draft : 31 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_QuakeHit__18dEnTorideKokoopa_cFv
-  target: 19 words / frame 0x10 / GPR [31] / FPR none
-  draft : 19 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== finalizeState_QuakeHit__18dEnTorideKokoopa_cFv
-  target: 4 words / frame none / GPR none / FPR none
-  draft : 4 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_QuakeHit__18dEnTorideKokoopa_cFv
-  target: 4 words / frame none / GPR none / FPR none
-  draft : 4 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_SlideHit__18dEnTorideKokoopa_cFv
-  target: 47 words / frame 0x20 / GPR [31] / FPR none
-  draft : 47 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 5 naming artifact(s))
-=== finalizeState_SlideHit__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_SlideHit__18dEnTorideKokoopa_cFv
-  target: 31 words / frame 0x10 / GPR [31] / FPR none
-  draft : 31 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_ShellHit__18dEnTorideKokoopa_cFv
-  target: 47 words / frame 0x20 / GPR [31] / FPR none
-  draft : 47 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 5 naming artifact(s))
-=== finalizeState_ShellHit__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_ShellHit__18dEnTorideKokoopa_cFv
-  target: 31 words / frame 0x10 / GPR [31] / FPR none
-  draft : 31 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_ShellAtk_St__18dEnTorideKokoopa_cFv
-  target: 127 words / frame 0x20 / GPR [30, 31] / FPR none
-  draft : 127 words / frame 0x20 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 12 naming artifact(s))
-=== shellinSE__18dEnTorideKokoopa_cFv
-  target: 8 words / frame none / GPR none / FPR none
-  draft : 8 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_ShellAtk_St__18dEnTorideKokoopa_cFv
-  target: 4 words / frame none / GPR none / FPR none
-  draft : 4 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_ShellAtk_St__18dEnTorideKokoopa_cFv
-  target: 153 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 153 words / frame 0x10 / GPR [30, 31] / FPR none
-  DIFFS 0  (+ 6 naming artifact(s))
-=== shellatkSE__18dEnTorideKokoopa_cFv
-  target: 8 words / frame none / GPR none / FPR none
-  draft : 8 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== shelllandonSE__18dEnTorideKokoopa_cFv
-  target: 8 words / frame none / GPR none / FPR none
-  draft : 8 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_ShellAtk__18dEnTorideKokoopa_cFv
-  target: 69 words / frame 0x20 / GPR [31] / FPR [31]
-  draft : 69 words / frame 0x20 / GPR [31] / FPR [31]
-  DIFFS 0  (+ 3 naming artifact(s))
-=== finalizeState_ShellAtk__18dEnTorideKokoopa_cFv
-  target: 4 words / frame none / GPR none / FPR none
-  draft : 4 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_ShellAtk__18dEnTorideKokoopa_cFv
-  target: 117 words / frame 0x20 / GPR [31] / FPR [31]
-  draft : 117 words / frame 0x20 / GPR [31] / FPR [31]
-  DIFFS 0  (+ 3 naming artifact(s))
-=== initializeState_ShellOut__18dEnTorideKokoopa_cFv
-  target: 79 words / frame 0x20 / GPR [31] / FPR none
-  draft : 79 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 5 naming artifact(s))
-=== shelloutSE__18dEnTorideKokoopa_cFv
-  target: 8 words / frame none / GPR none / FPR none
-  draft : 8 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_ShellOut__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_ShellOut__18dEnTorideKokoopa_cFv
-  target: 100 words / frame 0x10 / GPR [31] / FPR none
-  draft : 100 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== checkGetUp__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getupSE__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getKokoopaOnFrm__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== getShellOffFrm__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_DieFumi_St__18dEnTorideKokoopa_cFv
-  target: 64 words / frame 0x20 / GPR [31] / FPR none
-  draft : 64 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== finalizeState_DieFumi_St__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DieFumi_St__18dEnTorideKokoopa_cFv
-  target: 103 words / frame 0x30 / GPR [31] / FPR none
-  draft : 103 words / frame 0x30 / GPR [31] / FPR none
-  DIFFS 0  (+ 2 naming artifact(s))
-=== initializeState_DieFire__18dEnTorideKokoopa_cFv
-  target: 13 words / frame 0x10 / GPR [31] / FPR none
-  draft : 13 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== finalizeState_DieFire__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DieFire__18dEnTorideKokoopa_cFv
-  target: 19 words / frame 0x10 / GPR [31] / FPR none
-  draft : 19 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== initializeState_DieShell__18dEnTorideKokoopa_cFv
-  target: 13 words / frame 0x10 / GPR [31] / FPR none
-  draft : 13 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== finalizeState_DieShell__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DieShell__18dEnTorideKokoopa_cFv
-  target: 19 words / frame 0x10 / GPR [31] / FPR none
-  draft : 19 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== hitShellDamageEffect__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_DemoWait__18dEnTorideKokoopa_cFv
-  target: 53 words / frame 0x20 / GPR [31] / FPR none
-  draft : 53 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 3 naming artifact(s))
-=== finalizeState_DemoWait__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DemoWait__18dEnTorideKokoopa_cFv
-  target: 25 words / frame 0x10 / GPR [31] / FPR none
-  draft : 25 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_DemoAwake__18dEnTorideKokoopa_cFv
-  target: 54 words / frame 0x20 / GPR [31] / FPR none
-  draft : 54 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== finalizeState_DemoAwake__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DemoAwake__18dEnTorideKokoopa_cFv
-  target: 51 words / frame 0x10 / GPR [31] / FPR none
-  draft : 51 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== awakeSE__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_DemoAwake_Wait__18dEnTorideKokoopa_cFv
-  target: 49 words / frame 0x20 / GPR [31] / FPR none
-  draft : 49 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== finalizeState_DemoAwake_Wait__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DemoAwake_Wait__18dEnTorideKokoopa_cFv
-  target: 30 words / frame 0x10 / GPR [31] / FPR none
-  draft : 30 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_DemoIkaku__18dEnTorideKokoopa_cFv
-  target: 54 words / frame 0x20 / GPR [31] / FPR none
-  draft : 54 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== finalizeState_DemoIkaku__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DemoIkaku__18dEnTorideKokoopa_cFv
-  target: 56 words / frame 0x10 / GPR [31] / FPR none
-  draft : 56 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== ikakuSE__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== ikakuEffect__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== initializeState_DemoIkaku_Wait__18dEnTorideKokoopa_cFv
-  target: 49 words / frame 0x20 / GPR [31] / FPR none
-  draft : 49 words / frame 0x20 / GPR [31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== finalizeState_DemoIkaku_Wait__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DemoIkaku_Wait__18dEnTorideKokoopa_cFv
-  target: 30 words / frame 0x10 / GPR [31] / FPR none
-  draft : 30 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== initializeState_DemoEscape_St__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== finalizeState_DemoEscape_St__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== executeState_DemoEscape_St__18dEnTorideKokoopa_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== setBattleReady__18dEnTorideKokoopa_cFv
-  target: 21 words / frame 0x10 / GPR [31] / FPR none
-  draft : 21 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== tenmetsuFin__18dEnTorideKokoopa_cFv
-  target: 9 words / frame none / GPR none / FPR none
-  draft : 9 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== tenmetsuProc__18dEnTorideKokoopa_cFv
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getShellOnFrm__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== getKokoopaOffFrm__18dEnTorideKokoopa_cCFv
-  target: 2 words / frame none / GPR none / FPR none
-  draft : 2 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== isStarInvalid__18dEnTorideKokoopa_cCFv
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== isFireInvalid__18dEnTorideKokoopa_cCFv
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== isFumiInvalid__18dEnTorideKokoopa_cCFv
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getLookatPos__18dEnTorideKokoopa_cCFv
+=== __ct__13dPSwManager_cFv
   target: 5 words / frame none / GPR none / FPR none
   draft : 5 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "__sinit_\d_enemy_toride_kokoopa_cpp"
-  target: 1446 words / frame 0x420 / GPR none / FPR none / _savegpr_25
-  draft : 1446 words / frame 0x420 / GPR none / FPR none / _savegpr_25
-  DIFFS 0  (+ 4 naming artifact(s))
-=== "__dt__33sFStateID_c<18dEnTorideKokoopa_c>Fv"
-  target: 22 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 22 words / frame 0x10 / GPR [30, 31] / FPR none
+=== __dt__13dPSwManager_cFv
+  target: 18 words / frame 0x10 / GPR [31] / FPR none
+  draft : 18 words / frame 0x10 / GPR [31] / FPR none
   DIFFS 0
-=== "__dt__40sFStateVirtualID_c<18dEnTorideKokoopa_c>Fv"
-  target: 23 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 23 words / frame 0x10 / GPR [30, 31] / FPR none
+=== initialize__13dPSwManager_cFv
+  target: 10 words / frame none / GPR none / FPR none
+  draft : 10 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "baseID_DieShell<9dEnBoss_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
+=== execute__13dPSwManager_cFv
+  target: 1 words / frame none / GPR none / FPR none
+  draft : 1 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "baseID_DieFire<9dEnBoss_c>__Fv_RC12sStateIDIf_c"
-  target: 3 words / frame none / GPR none / FPR none
-  draft : 3 words / frame none / GPR none / FPR none
+=== ProcMain__13dPSwManager_cFv
+  target: 64 words / frame 0x20 / GPR [28, 29, 30, 31] / FPR none
+  draft : 64 words / frame 0x20 / GPR [28, 29, 30, 31] / FPR none
   DIFFS 0
-=== "number__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv"
-  target: 55 words / frame 0x10 / GPR [31] / FPR none
-  draft : 55 words / frame 0x10 / GPR [31] / FPR none
+=== finalize__13dPSwManager_cFv
+  target: 10 words / frame none / GPR none / FPR none
+  draft : 10 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "superID__40sFStateVirtualID_c<18dEnTorideKokoopa_c>CFv"
-  target: 56 words / frame 0x10 / GPR [31] / FPR none
-  draft : 56 words / frame 0x10 / GPR [31] / FPR none
+=== checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+  target: 5 words / frame none / GPR none / FPR none
+  draft : 5 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "isSameName__33sFStateID_c<18dEnTorideKokoopa_c>CFPCc"
-  target: 34 words / frame 0x10 / GPR [30, 31] / FPR none
-  draft : 34 words / frame 0x10 / GPR [30, 31] / FPR none
+=== checkMove__13dPSwManager_cFv
+  target: 5 words / frame none / GPR none / FPR none
+  draft : 5 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "initializeState__33sFStateID_c<18dEnTorideKokoopa_c>CFR18dEnTorideKokoopa_c"
-  target: 12 words / frame 0x10 / GPR none / FPR none
-  draft : 12 words / frame 0x10 / GPR none / FPR none
+=== getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+  target: 4 words / frame none / GPR none / FPR none
+  draft : 4 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "executeState__33sFStateID_c<18dEnTorideKokoopa_c>CFR18dEnTorideKokoopa_c"
-  target: 12 words / frame 0x10 / GPR none / FPR none
-  draft : 12 words / frame 0x10 / GPR none / FPR none
+=== onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei
+  target: 6 words / frame none / GPR none / FPR none
+  draft : 6 words / frame none / GPR none / FPR none
   DIFFS 0
-=== "finalizeState__33sFStateID_c<18dEnTorideKokoopa_c>CFR18dEnTorideKokoopa_c"
-  target: 12 words / frame 0x10 / GPR none / FPR none
-  draft : 12 words / frame 0x10 / GPR none / FPR none
+=== offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+  target: 6 words / frame none / GPR none / FPR none
+  draft : 6 words / frame none / GPR none / FPR none
   DIFFS 0
-=== getFumiRev__12FumiCcInfo_cFv
-  target: 20 words / frame none / GPR none / FPR none
-  draft : 20 words / frame none / GPR none / FPR none
+=== setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei
+  target: 4 words / frame none / GPR none / FPR none
+  draft : 4 words / frame none / GPR none / FPR none
   DIFFS 0
-=== operate__21MugenComboFumiCheck_cFRiP5dEn_cR12FumiCcInfo_c
-  target: 15 words / frame none / GPR none / FPR none
-  draft : 15 words / frame none / GPR none / FPR none
-  DIFFS 0  (+ 1 naming artifact(s))
-=== operate__20KokoopaSpFumiCheck_cFRiP5dEn_cR12FumiCcInfo_c
-  target: 86 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  draft : 86 words / frame 0x20 / GPR [29, 30, 31] / FPR none
-  DIFFS 0  (+ 4 naming artifact(s))
-=== __dt__20KokoopaSpFumiCheck_cFv
-  target: 16 words / frame 0x10 / GPR [31] / FPR none
-  draft : 16 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-=== __dt__21MugenComboFumiCheck_cFv
-  target: 16 words / frame 0x10 / GPR [31] / FPR none
-  draft : 16 words / frame 0x10 / GPR [31] / FPR none
-  DIFFS 0
-
 ```
 
 ---
 
-## 7. NOT REACHED
+## 4. GAINED and LOST
 
-None. All three numbered items in the Round 34 work order were investigated and executed in full.
+### GAINED (12 functions, +640 bytes .text):
+- `__ct__13dPSwManager_cFv` (+20 B)
+- `__dt__13dPSwManager_cFv` (+72 B)
+- `initialize__13dPSwManager_cFv` (+40 B)
+- `execute__13dPSwManager_cFv` (+4 B)
+- `ProcMain__13dPSwManager_cFv` (+256 B)
+- `finalize__13dPSwManager_cFv` (+40 B)
+- `checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` (+20 B)
+- `checkMove__13dPSwManager_cFv` (+20 B)
+- `getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e` (+16 B)
+- `onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` (+24 B)
+- `offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` (+24 B)
+- `setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` (+16 B)
+
+### LOST:
+- None.
+
+---
+
+## 5. Poolcheck Output
+
+```
+$ python tools/auto_decomp/poolcheck.py scratch/gemini_pswmgr/target.txt --obj scratch/gemini_pswmgr/d_p_sw_manager.o --txt scratch/gemini_pswmgr/d_p_sw_manager.txt
+
+0 pooled constants compared by VALUE across 12 paired functions
+0 mismatched, 0 could not be resolved on one side
+(12 pair(s) value-checked; 0 reference(s) skipped as the same named symbol on both sides; 0 float load(s) seen; 0 pair(s) skipped on length)
+
+Note: this unit contains no float loads at all in its paired, matched functions -- there was genuinely nothing to check.
+```
+
+---
+
+## 6. Structural Insights & Reconstruction Details
+
+### Struct Copy Idiom in `initialize()` and `finalize()`
+In `initialize()` and `finalize()`, 16 bytes are transferred between `dPSwManager_c` and `dBgParameter_c::ms_Instance_p` (1 `u32` switch flags word at `0x04` / `0x84` and 3 `int` timer words at `0x08`–`0x14` / `0x88`–`0x94`).
+Individual scalar assignments produced a 1-register sequential schedule because `bgParam` occupied `r4`. Wrapping the 16 bytes in a structure (`PSwData_s` containing `u32 mSwitchFlags; int mTimer[3];`) causes MWCC to emit a 16-byte bitwise aggregate copy with pipelined 2-word load/store scheduling, placing `bgParam` in `r5` and using both `r4` and `r0` as transfer registers, producing byte-exact codegen for both `initialize()` and `finalize()`.
+
+### `ProcMain()` Timing & SE Triggers
+- Iterates `i` from `0` to `2` across all 3 switch types (`SwType_e`).
+- Decrements the active timer if non-zero.
+- Checks frame rate modulo `timer % 60 == 0` (via magic constant `0x88888889` integer arithmetic).
+- Triggers `SndAudioMgr::sInstance->startSystemSe(0xAAu, 1ul)` when `(u32)timer > 180` (more than 3 seconds remaining).
+- Triggers `SndAudioMgr::sInstance->startSystemSe(0xABu, 1ul)` when `0 < timer <= 180` (final 3 countdown beeps).
+- When `timer == 0`: calls `SndSceneMgr::sInstance->fn_8019be60(8)` and `offSwitch(i)`.
+- Updates timer via `setTimer(i, timer)`.
+
+---
+
+## 7. Landing Manifest (What the Unit Needs from Claude)
+
+### A. New Header: `include/game/bases/d_p_sw_manager.hpp`
+- Location: `scratch/gemini_pswmgr/include/game/bases/d_p_sw_manager.hpp`
+- Content:
+```cpp
+#pragma once
+
+#include <types.h>
+
+class dPSwManager_c {
+public:
+    enum SwType_e {
+        SW_TYPE_0 = 0,
+        SW_TYPE_1 = 1,
+        SW_TYPE_2 = 2,
+    };
+
+    struct PSwData_s {
+        u32 mSwitchFlags;
+        int mTimer[3];
+    };
+
+    dPSwManager_c();
+    virtual ~dPSwManager_c();
+
+    void initialize();
+    void execute();
+    void ProcMain();
+    void finalize();
+    u32 checkSwitch(SwType_e type);
+    bool checkMove();
+    int getTimer(SwType_e type);
+    void onSwitch(SwType_e type, int timer);
+    void offSwitch(SwType_e type);
+    void setTimer(SwType_e type, int timer);
+
+    static dPSwManager_c *ms_instance;
+
+public:
+    PSwData_s mData;
+};
+```
+
+### B. Shared Header Proposal: `include/game/bases/d_bg_parameter.hpp`
+- Diff:
+```diff
+--- a/include/game/bases/d_bg_parameter.hpp
++++ b/include/game/bases/d_bg_parameter.hpp
+@@ -4,6 +4,7 @@
+ #include <types.h>
+ #include <game/mLib/m_vec.hpp>
+ #include <game/bases/d_actor.hpp>
++#include <game/bases/d_p_sw_manager.hpp>
+ 
+ class dBgParameter_c {
+ public:
+@@ -27,6 +28,8 @@ public:
+     u8 mPad2[0x34];
+     u8 mScrollDirX; ///< See BG_SCROLL_DIR_X_e.
+     u8 mScrollDirY; ///< See BG_SCROLL_DIR_Y_e.
++    u8 mPad3[2];
++    dPSwManager_c::PSwData_s mPSwData;
+ 
+     float getLoopScrollDispPosX(float x);
+```
+- **Evidence:** Retail `initialize` and `finalize` access `0x84(ms_Instance_p)` for flags and `0x88, 0x8C, 0x90(ms_Instance_p)` for timers.
+- **Offset-perturbing:** NO. Existing fields end at `mScrollDirY` (`0x81`). `mPad3[2]` aligns to `0x84`. `mPSwData` spans `0x84`–`0x94`. No following members exist in `dBgParameter_c`.
+- **Compiled & Tested:** Verified in `scratch/gemini_pswmgr/`.
+
+### C. Proposed Slice Block for `slices/wiimj2d.json`
+```json
+{
+  "source": "dol/bases/d_p_sw_manager.cpp",
+  "memoryRanges": {
+    ".text": "0xD1F40-0xD21C0",
+    ".data": "0x1A8A8-0x1A8B8",
+    ".sbss": "0x440-0x448"
+  }
+}
+```
+- **Arithmetic verification:**
+  - `.text` base: `0x80006780`. Address `0x800D86C0` – `0x800D8940` -> `0xD1F40` – `0xD21C0` (size `0x280` = 640 B).
+    - Preceding slice / symbol: `__dt__14dPropelParts_cFv` (ends at `0x800D86B8` -> padded to `0x800D86C0`).
+    - Succeeding slice / symbol: `startQuake__8dQuake_cFScQ28dQuake_c12TYPE_QUAKE_eib` (starts at `0x800D8940`).
+  - `.data` base: `0x802FE6A0`. Address `0x80318F48` – `0x80318F58` -> `0x1A8A8` – `0x1A8B8` (size `0x10` = 16 B).
+    - Preceding symbol: `__vt__14dPropelParts_c` at `0x80318F38` (size `0xC`, padded to `0x80318F48`).
+    - Contained symbol: `__vt__13dPSwManager_c` at `0x80318F48` (size `0xC`, padded to `0x80318F58`).
+    - Succeeding symbol: `@63685` at `0x80318F58`.
+  - `.sbss` base: `0x80429EA0`. Address `0x8042A2E0` – `0x8042A2E8` -> `0x440` – `0x448` (size `0x8` = 8 B).
+    - Preceding symbol: `@GUARD@update__18dPlayerOrchestra_cFv@scPressTwoButton@0` at `0x8042A2D9` (aligned to 8 at `0x8042A2E0`).
+    - Contained symbol: `ms_instance__13dPSwManager_c` at `0x8042A2E0` (size `0x4`, aligned to 8 at `0x8042A2E8`).
+    - Succeeding symbol: `m_instance__8dQuake_c` at `0x8042A2E8`.
+- **Overlap check:** 0 overlaps against all 144 existing slices in `slices/wiimj2d.json`.
+
+### D. Symbols for `syms.txt`
+```
+__ct__13dPSwManager_cFv=0x800D86C0
+__dt__13dPSwManager_cFv=0x800D86E0
+initialize__13dPSwManager_cFv=0x800D8730
+execute__13dPSwManager_cFv=0x800D8760
+ProcMain__13dPSwManager_cFv=0x800D8770
+finalize__13dPSwManager_cFv=0x800D8870
+checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e=0x800D88A0
+checkMove__13dPSwManager_cFv=0x800D88C0
+getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e=0x800D88E0
+onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei=0x800D88F0
+offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e=0x800D8910
+setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei=0x800D8930
+__vt__13dPSwManager_c=0x80318F48
+ms_instance__13dPSwManager_c=0x8042A2E0
+```
+
+### E. Source Code File
+- Full source is ready at `scratch/gemini_pswmgr/d_p_sw_manager.cpp` (to land at `source/dol/bases/d_p_sw_manager.cpp`).
+
+---
+
+## 8. Landing Readiness Statement
+
+**The unit `dPSwManager_c` is 100% READY TO LAND.**
+
+All 12 functions are matched byte-exact with 0 diffs. Function definitions are in exact binary order. All section sizes, alignments, relocations, vtable slots, and symbol names match the retail DOL object.
+
+---
+
+## 9. NOT REACHED
+
+None. All items in the round 35 work order were reached and completed in full.
