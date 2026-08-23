@@ -35,12 +35,7 @@ public:
     virtual bool operate(int &i, dEn_c *, FumiCcInfo_c &) { i = 0; return false; }
 };
 
-class MugenComboFumiCheck_c : public FumiCheckBase_c {
-public:
-    MugenComboFumiCheck_c() {}
-    virtual ~MugenComboFumiCheck_c();
-    virtual bool operate(int &, dEn_c *, FumiCcInfo_c &);
-};
+
 
 class dEnFumiCheck_c {
 public:

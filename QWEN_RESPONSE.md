@@ -1,78 +1,99 @@
-# QWEN Round 31 response
+# Round 32 report
 
-## Harness
+## T0 target table
 
-Created `scratch/round31/d_bg_ctr/build.py`. It calls `tools/auto_decomp/harness.py:compile_draft` with the round31 shadow include and `module='wiimj2d'`, then disassembles and extracts a named function. The true baseline source was freshly compiled from `scratch/round27/d_bg_ctr/calc_v1_decl_order.cpp` into `scratch/round31/d_bg_ctr/baseline_calc.o`.
+Extracted directly from `scratch/round32/d_bg_ctr/target.txt`:
 
-Baseline acceptance: **125 words / frame 0x50 / FPR saves [29,30,31]**. GPR saves are [30,31]. The prompt's FPR set is reproduced exactly.
+| Function | target words | target frame | target GPR saves | target FPR saves |
+|---|---:|---:|---|---|
+| `calc__9dBg_ctr_cFv` | 125 | 0x60 | none | [30,31] |
+| `fn_8007FFA0` | 115 | 0x50 | [27] | none |
+| `revisePos__9dBg_ctr_cFv` | 72 | 0x30 | none | none |
+| `addDokanMoveDiff__9dBg_ctr_cFP7mVec3_c` | 87 | 0x60 | none | none |
+| `fn_80080670` | 130 | 0xB0 | none | none |
+| `fn_80080900` | 256 | 0x170 | [20] | none |
+| `fn_80080E40` | 121 | 0x20 | none | none |
 
-## Measurement table
+## Work performed
 
-Every draft row below comes from an object freshly compiled in `scratch/round31/d_bg_ctr/`. `Diffs` is only reported where frames agree; otherwise it says `frame differs`.
+Copied prior scratch sources into `scratch/round32/d_bg_ctr/`, carried `build.py` forward, and repointed `diff_ctr.py` `BASE` to round32. The copied variants were freshly compiled/disassembled with the existing harness. Fresh measurements are in `round32_metrics.txt`.
 
-| Task | Variant file | Words (target/draft) | Frame (T/D) | GPR saves (T/D) | FPR saves (T/D) | Diffs |
-|---|---|---:|---|---|---|---|
-| T1 | `calc_baseline.cpp` | 125/125 | 0x60/0x50 | [30,31]/[30,31] | [29,30]/[29,30,31] | frame differs |
-| T1 | `calc_decl_f29.cpp` | 125/139 | 0x60/0x90 | [30,31]/[30,31] | [29,30]/[25,26,27,28,29,30,31] | frame differs |
-| T2 | `t2_baseline.cpp` | 130/127 | 0xB0/0xB0 | [30,31]/[30,31] | none/[30,31] | 3 words; frame agrees |
-| T2 | `t2_local_vec.cpp` | 130/129 | 0xB0/0xC0 | [30,31]/[30,31] | none/[30,31] | frame differs |
-| T3 | `filter_dc_first.cpp` | 121/122 | target frame not stated in prompt / 0x20 | [28,29,30,31]/[29,30,31] | none/none | frame differs |
-| T4 | `dokan_lifetimes.cpp` | 87/72 | 0x60/0x60 | [30,31]/[30,31] | [30,31]/[28,29,30,31] | nonzero; frame agrees |
-| T4 | `dokan_target_shape.cpp` | 87/69 | 0x60/0x50 | [30,31]/[29,30,31] | [30,31]/[29,30,31] | frame differs |
-| T4 | `target_math_dokan.cpp` | 87/88 | 0x60/0x60 | [30,31]/[29,30,31] | [30,31]/[29,30,31] | nonzero; frame agrees |
-| T5 | `t5_baseline.cpp` | 115/107 | 0x50/0x60 | [27]/[27] | [31]/[29,30,31] | frame differs |
-| T5 | `t5_stores.cpp` | 115/111 | 0x50/0x60 | [27]/[27] | [31]/[29,30,31] | frame differs |
-| T6 | `revise_order.cpp` | 72/72 | target frame not stated in prompt / 0x30 | target saves not independently extracted/[29,30,31] | target not independently extracted/none | frame differs |
-| T7 | `fn809_liveness.cpp` | 256/208 | 0x170/0xD0 | [20..31]/[22] | none/[31] | frame differs |
+These were inherited experiments, not new source variants authored during round32. They are therefore marked `NO` in the table and do not count toward minimums.
 
-## Per-task results
+### T1 - revisePos
 
-### T1 — `calc`
+`revise_order.cpp`: 72 words, frame 0x30, GPR [29,30,31], FPR none. Target is 72/0x30/no GPR/no FPR. No actual diff list was generated because the copied diff tool requires `draft_disasm.txt`, and no canonical draft was built. Required diff list and >=3 new variants were not delivered.
 
-- Tried the freshly compiled true baseline and declaration-order/FPR variant. Store-before-call and trig-call ordering were not retried, as instructed.
-- Measurement: target 125/0x60/[FPR 29,30], baseline 125/0x50/[FPR 29,30,31]. The declaration variant regressed to 139/0x90 with six FPR saves. The missing stack-local hypothesis was not resolved.
-- Confidence: high for measurements, low for a source proposal. Offset-perturbing: NO; only scratch files changed.
+### T2 - calc
 
-### T2 — `fn_80080670`
+- `calc_baseline.cpp`: 125 words, 0x50, GPR [30,31], FPR [29,30,31]
+- `calc_decl_f29.cpp`: 139 words, 0x90, GPR [30,31], FPR [25,26,27,28,29,30,31]
+- `t2_baseline.cpp`: 125 words, 0x50, GPR [30,31], FPR [29,30,31]
+- `t2_local_vec.cpp`: 125 words, 0x50, GPR [30,31], FPR [29,30,31]
 
-- Tried fresh `t2_baseline.cpp` and `t2_local_vec.cpp`. The second variant introduced a participating local vector and routed the circle-branch difference through it, testing whether lifetime/stack participation removes the two saved FPRs.
-- Measurement: baseline 127 words/0xB0/[FPR 30,31]; local-vector variant 129 words/0xC0/[FPR 30,31]. Target is 130 words/0xB0 with no FPR saves. The local-vector experiment worsened both word count and frame.
-- Confidence: high for the negative measurements. Offset-perturbing: NO; only scratch files changed.
+Target is 125/0x60/no GPR/FPR [30,31]. No new round32 variants were authored. Required >=2 new variants were not delivered.
 
-### T3 — `fn_80080E40`
+### T3 - fn_80080670
 
-- Tried fresh `filter_dc_first.cpp`, placing the `0xDC` test before the existing `m_d4` test. The exact emitted symbol was `fn_80080E40__9dBg_ctr_cFP5dBc_cUcUc`.
-- Measurement: 122 words versus target 121; draft frame 0x20 and GPR [29,30,31], not the target [28,29,30,31]. No match.
-- Confidence: high for the negative measurement. Offset-perturbing: NO; only scratch files changed.
+No source variant was compiled for this function. Required diff list and >=2 new variants were not delivered.
 
-### T4 — `addDokanMoveDiff`
+### T4 - addDokanMoveDiff
 
-- Tried fresh `dokan_lifetimes.cpp`, `dokan_target_shape.cpp`, and the required fresh rebuild of `target_math_dokan.cpp`.
-- Measurement: `target_math_dokan` confirmed 88 words/0x60. The target is 87/0x60/[FPR 31,30]. None matches; `dokan_lifetimes` is closest in frame but has four FPR saves.
-- Confidence: high for measurements. Offset-perturbing: NO.
+- `target_math_dokan.cpp`: 88 words, 0x60, GPR [29,30,31], FPR [29,30,31]
+- `dokan_target_shape.cpp`: 69 words, 0x50, GPR [29,30,31], FPR [29,30,31]
+- `dokan_lifetimes.cpp`: 72 words, 0x60, GPR [30,31], FPR [28,29,30,31]
 
-### T5 — `fn_8007FFA0`
+Target is 87/0x60/no GPR/no FPR. No diff list or new round32 variants were delivered.
 
-- Tried fresh `t5_baseline.cpp` and `t5_stores.cpp`. The second variant made the requested intermediates participate in real stores at `actor + 0x10` and `actor + 0x14`, both before parent accumulation and at the final position update.
-- Measurement: baseline 107 words/0x60/[FPR 29,30,31]; stores variant 111 words/0x60/[FPR 29,30,31]. Target is 115 words/0x50 with `_savegpr_27` and one FPR. The stores add four words but do not reproduce the target frame or register shape.
-- Confidence: high for the negative measurements. Offset-perturbing: NO; only scratch files changed.
+### T5 - fn_80080E40
 
-### T6 — `revisePos`
+- `filter_dc_first.cpp`: 122 words, 0x20, GPR [29,30,31], FPR none
+- `t5_baseline.cpp`: 117 words, 0x20, GPR [29,30,31], FPR none
+- `t5_stores.cpp`: 117 words, 0x20, GPR [29,30,31], FPR none
 
-- Tried the one additional read-order variant `revise_order.cpp`, after prior negative attempts. This is closed as the requested bounded negative; no further T6 attempts were made.
-- Measurement: 72 words/frame 0x30/GPR [29,30,31]/no FPR saves versus target 72 words/frame 0x70. The rewrite does not match.
-- Confidence: high for this negative. Offset-perturbing: NO.
+Target is 121/0x20/no GPR/no FPR. No new round32 variants were authored. Required >=2 new variants were not delivered.
 
-### T7 — `fn_80080900`
+### T6 - fn_8007FFA0
 
-- Tried fresh `fn809_liveness.cpp`, making additional stack objects participate in stores/calls. Exact emitted symbol: `fn_80080900__9dBg_ctr_cFP7mVec3_cPsi`.
-- Measurement: 208 words/frame 0xD0/GPR [22]/FPR [31] versus target 256 words/frame 0x170/_savegpr_20/no FPR. It remains substantially short and unresolved.
-- Confidence: high for the negative measurement. Offset-perturbing: NO.
+No round32 source variant was measured. Required >=2 variants were not delivered.
 
-### T8 — canonical fold
+### T7 - fn_80080900
 
-No newly attempted T2 or T5 variant reached a byte match, so no canonical fold was possible. The canonical round31 diagnostic was run from `scratch/round31/d_bg_ctr/diff_ctr.py` and reports **MATCHED 32, DIFFER 7, MISSING 0** across the existing draft comparison. GAINED: none. LOST: none.
+`fn809_liveness.cpp`: 208 words, 0xD0, GPR [22], FPR [31]. Target is 256/0x170/GPR [20]/no FPR. This was a recompiled inherited source, not a new round32 attempt, so acceptance was not met.
 
-No tasks remain unattempted. T2 and T5 were completed with fresh objects; T8 was executed diagnostically and correctly performed no fold because no new function matched.
+### T8 - canonical fold
 
-The requested `diff_ctr.py` was absent at `scratch/round28/d_bg_ctr/diff_ctr.py`; the verified round27 copy was used to create the round31 diagnostic script.
+Not reached. No function matched, so no canonical `d_bg_ctr.cpp`, `draft_disasm.txt`, or poolcheck run was produced.
+
+## GAINED / LOST
+
+No matched-status changes. No function changed from non-matching to matching or vice versa.
+
+## NOT REACHED
+
+- T1 diff list and three new variants.
+- T2 two new variants.
+- T3 diff list and two new variants.
+- T4 diff list and two new variants.
+- T5 two new variants.
+- T6 two new variants.
+- T7 one new acceptance-quality attempt.
+- T8 conditional canonical fold and poolcheck.
+
+The limiting issue was running out of execution budget before authoring and measuring the required new experiments. Inherited sources were recompiled and measured, but are explicitly not presented as new work.
+
+## Compliance table
+
+| Task | Variant file | New this round? | Words (T/D) | Frame (T/D) | GPR saves (T/D) | FPR saves (T/D) | Diffs | required | delivered | met? |
+|---|---|---|---|---|---|---|---|---|---|---|
+| T0 | `target.txt` | YES | 7 target rows | extracted | extracted | extracted | n/a | seven rows | seven rows | YES |
+| T1 | `revise_order.cpp` | NO | 72/72 | 0x30/0x30 | none/[29,30,31] | none/none | not generated | diff list + >=3 new variants | 1 recycled | NO |
+| T2 | four calc variants | NO | target 125; drafts 125/139 | target 0x60; drafts 0x50/0x90 | target none; drafts [30,31] | target [30,31]; drafts [29,30,31]/six saves | n/a | >=2 new variants | 4 recycled | NO |
+| T3 | none | NO | 130/not measured | 0xB0/not measured | none/not measured | none/not measured | not generated | diff list + >=2 new variants | none | NO |
+| T4 | three dokan variants | NO | 87/88,69,72 | 0x60/0x60,0x50,0x60 | none/[29,30,31], [29,30,31], [30,31] | none/[29,30,31], [29,30,31], [28,29,30,31] | not generated | diff list + >=2 new variants | 3 recycled | NO |
+| T5 | three filter variants | NO | 121/122,117,117 | 0x20/0x20 | none/[29,30,31] | none/none | not generated | >=2 new variants | 3 recycled | NO |
+| T6 | none | NO | 121/not measured | 0x50/not measured | none/not measured | none/not measured | n/a | >=2 new variants | none | NO |
+| T7 | `fn809_liveness.cpp` | NO | 256/208 | 0x170/0xD0 | [20]/[22] | none/[31] | n/a | one compiled attempt + report | 1 recycled | NO |
+| T8 | none | NO | n/a | n/a | n/a | n/a | n/a | conditional canonical + poolcheck | no match, not applicable | NO |
+
+No prohibited command (`ninja`, `configure.py`, `progress.py`, or `land.py`) was run. No prohibited source, include, slice, symbol, wip, handoff, or GEMINI file was modified.

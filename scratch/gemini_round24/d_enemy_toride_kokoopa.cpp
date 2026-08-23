@@ -9,6 +9,8 @@
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/sLib/s_lib.hpp>
 
+
+
 u8 g_padData[112] = { 1 };
 
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, Jump_St);
@@ -39,6 +41,10 @@ STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoAwake_Wait);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoIkaku);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoIkaku_Wait);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoEscape_St);
+
+dEnTorideKokoopa_c::~dEnTorideKokoopa_c() {
+    mCc.release();
+}
 
 int dEnTorideKokoopa_c::getTenmetsuTime_Fire() {
     return 24;
@@ -2083,11 +2089,24 @@ void dEnTorideKokoopa_c::executeState_DemoEscape_St() {}
 float dEnTorideKokoopa_c::getShellOnFrm() const { return 0.0f; }
 float dEnTorideKokoopa_c::getKokoopaOffFrm() const { return 0.0f; }
 
-class KokoopaSpFumiCheck_c : public FumiCheckBase_c {
-public:
-    virtual ~KokoopaSpFumiCheck_c() {}
-    virtual bool operate(int &result, dEn_c *en, FumiCcInfo_c &fumi);
-};
+
+float FumiCcInfo_c::getFumiRev() {
+    dActor_c *owner = mCc2->mpOwner;
+    switch ((int)owner->mKind) {
+    case 1:
+        if (mCc2->mCcData.mAttack == CC_ATTACK_SPIN) {
+            return mCc1->mCollOffsetY[CC_KIND_PLAYER_ATTACK];
+        } else {
+            return mCc1->mCollOffsetY[CC_KIND_PLAYER];
+        }
+    case 2:
+        return mCc1->mCollOffsetY[CC_KIND_YOSHI];
+    }
+}
+
+
+
+
 
 dEnTorideKokoopa_c::dEnTorideKokoopa_c() :
     mResFile(),
@@ -2120,24 +2139,6 @@ dEnTorideKokoopa_c::dEnTorideKokoopa_c() :
     mLookatPos = mPos;
     mFumiProc.mFumiCheck.m_00 = 5;
     mFumiProc.refresh(new KokoopaSpFumiCheck_c());
-}
-
-dEnTorideKokoopa_c::~dEnTorideKokoopa_c() {
-    mCc.release();
-}
-
-float FumiCcInfo_c::getFumiRev() {
-    dActor_c *owner = mCc2->mpOwner;
-    switch ((int)owner->mKind) {
-    case 1:
-        if (mCc2->mCcData.mAttack == CC_ATTACK_SPIN) {
-            return mCc1->mCollOffsetY[CC_KIND_PLAYER_ATTACK];
-        } else {
-            return mCc1->mCollOffsetY[CC_KIND_PLAYER];
-        }
-    case 2:
-        return mCc1->mCollOffsetY[CC_KIND_YOSHI];
-    }
 }
 
 bool MugenComboFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
@@ -2180,4 +2181,5 @@ bool KokoopaSpFumiCheck_c::operate(int &result, dEn_c *en, FumiCcInfo_c &fumi) {
     return false;
 }
 
+KokoopaSpFumiCheck_c::~KokoopaSpFumiCheck_c() {}
 MugenComboFumiCheck_c::~MugenComboFumiCheck_c() {}
