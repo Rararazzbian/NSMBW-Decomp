@@ -1,4 +1,4 @@
-# Work order — dWmBgmSync_c
+# Work order — dWmBgmSync_c, closing round
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,188 +6,172 @@ Write results to **`QWEN_RESPONSE.md`** in the repository root (overwrite it).
 
 ---
 
-## GXStateSave_c LANDED — 4/4
+## You are at 3 of 5, not 2 of 5 — and one of my instructions was wrong
 
-    ACCEPTED -- all five binaries are byte-identical to the original.
-    Total: Decompiled 741112/6500368 code bytes (11.401%)
+You reported 2/5. The real number is **3/5**. `__arraydtor$53530` also matches:
+I compared it instruction by instruction against yours and every single one is
+identical. The only differences are generated symbol names — the serial
+(`$53530` vs `$11200`), the pool constants (`"@58120_8042D468"` vs `"@16759"`),
+and the address suffix on `sc_ForceList__6dWmLib`. All naming artifacts, none
+real. `fndiff` did not pair the two because the serials differ, so it silently
+compared four functions and said nothing about the fifth. Worth knowing: **a
+function fndiff does not mention is unchecked, not passing.**
 
-You went from 0/4 to 4/4 in two rounds. All three fixes I gave you worked
-exactly as predicted, and your headline this time was the true number. That is
-the report I can act on without re-deriving anything.
+    execute        DIFFS 48    67 words / frame 0x10 / GPR [31]
+    getAnmRate     DIFFS 0
+    fn_80102F10    DIFFS 19    29 words / frame 0x20 / GPR [31]
+    __sinit        DIFFS 0     (+10 naming artifacts)
+    __arraydtor    matches instruction for instruction
 
-**Two things you got right that are worth naming.** You derived the symbol
-`s_cacheGX__Q23EGG7StateGX` correctly from the disassembly — that global is real
-and your name for it was exact. And your `EGG::StateGX` diagnosis held up under
-the link. Landing took three attempts, but **none of them was your code** — the
-source was byte-exact from the first try. All three were missing addresses for
-library functions nobody has decompiled yet, which is my job, not yours.
+**Your `#include` reading of the static initialiser was exactly right.** Both
+`__sinit` and `__arraydtor` came out byte-exact without you writing a line of
+either. That was the part of the unit I was least sure about.
 
----
+### I gave you a wrong instruction and you were right to ignore it
 
-## Your unit: `dol/bases/d_wm_bgm_sync.cpp` — five functions, 0x80102DB0-0x80103020
+My brief said the counter logic was nested:
 
-This is a music-synchronisation class for the world map. It is a good fit for
-you: flat arithmetic, no vtable manipulation in the bodies, and **the class
-header already exists and is 90% correct**.
+    if (m_08 > 0) { m_08--; if (m_08 == 0) m_04++; }
 
-    268 B  execute__12dWmBgmSync_cFv          0x80102DB0
-     76 B  getAnmRate__12dWmBgmSync_cFf       0x80102EC0
-    116 B  fn_80102F10                        0x80102F10   (file-static helper)
-    112 B  __sinit_\d_wm_bgm_sync_cpp         0x80102F90   (see below -- free)
-     28 B  __arraydtor$53530                  0x80103000   (also free)
+**That was wrong.** You wrote it sequentially and your version is what retail
+does. The proof is that the reload sits on a shared label reached from both
+paths:
 
-Target listing: `tools/auto_decomp/work/dol_bases_d_wm_bgm_sync/target.txt`
-**It contains neighbours** (`dWmEffectManager_c` and others) — ignore them.
-Also ignore `__arraydtor$65837` at the very top; that one belongs to the
-*previous* unit, not yours.
+    80102E00  ble .L_80102E0C        <- skips the decrement
+    80102E04  subi r0, r3, 0x1
+    80102E08  stw r0, 0x8(r31)
+    .L_80102E0C:
+    80102E0C  lwz r0, 0x8(r31)       <- reached whether or not it decremented
+    80102E10  cmpwi r0, 0x0
+    80102E14  bne .L_80102E24        <- an independent second test
 
-Work in **`scratch/qwen_bgm/`**. I have set up `target.txt`, a `build.py` with
-the interface you know, and a `shadow/` directory.
-
-    python -c "import sys; sys.path.insert(0,'scratch/qwen_bgm'); import build; print(build.build('NAME.cpp','NAME','execute__12dWmBgmSync_cFv'))"
-    python tools/auto_decomp/fndiff.py scratch/qwen_bgm/target.txt scratch/qwen_bgm/NAME.txt --all
-
----
-
-## The last two functions are FREE. Do not write them.
-
-`__sinit` and `__arraydtor$53530` construct and destroy a file-scope static
-called `dWmLib::sc_ForceList`. **That static is already defined in
-`include/game/bases/d_wm_lib.hpp`**, like this:
-
-    static ForceInCourseList_t sc_ForceList[] = {
-        {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0",
-         mVec3_c(2160.0f, -30.0f, -478.0f)}
-    };
-    static int c_StartPointKinokoHouseID = dCsvData_c::c_START_ID;
-
-Because it is declared `static` **inside a header**, every `.cpp` that includes
-that header gets its own private copy — and the compiler emits a constructor
-call, a `__register_global_object`, and a matching array destructor for it,
-automatically. That is exactly what those last two functions are.
-
-So: **`#include <game/bases/d_wm_lib.hpp>` and they appear by themselves.** Do
-not hand-write them and do not try to reproduce the float constants; they are
-the `mVec3_c(2160.0f, -30.0f, -478.0f)` above, and they are already right.
-
-Verification that this reading is correct: both array destructors do
-`li r5, 0x24` (element size — `ForceInCourseList_t` is 0x24 bytes) and
-`li r6, 0x1` (exactly one element), matching the single-entry initialiser.
+A nested `if` would put the second compare inside the first branch. **Keep your
+two sequential `if`s exactly as they are.** None of the 48 diffs come from there.
 
 ---
 
-## The header needs one fix, and it is the only layout work in this unit
+## `execute` — three independent fixes
 
-`include/game/bases/d_wm_bgm_sync.hpp` already exists and names almost every
-member correctly. One field is wrong:
+### Fix 1: `getBgmBeatTrg` returns `u8`, not `bool`
 
-    u8 mPad2[0x8];          // declared as padding at 0x10-0x17
+    target:  bl getBgmBeatTrg__6dAudioFv        draft:  bl getBgmBeatTrg__6dAudioFv
+             clrlwi. r0, r3, 24                         cmpwi r3, 0x0
+             beq .L_80102E24                            beq .L_000000DC
 
-**Those eight bytes are two live floats.** The evidence:
+MWCC trusts a `bool` return to be already 0-or-1 and tests it directly. For any
+other type it masks the low byte first, which is the `clrlwi.` retail shows.
+Your own `getBgmAccentSign` is declared `u8` and is masked correctly — the two
+should match.
 
-    stfs f0, 0x10(r31)      execute, reset to 0.0f
-    lfs  f1, 0x10(r31)      execute, read back
-    stfs f1, 0x14(r31)      execute, store
-    stfs f0, 0x14(r31)      execute, second branch
+    - bool getBgmBeatTrg();
+    + u8 getBgmBeatTrg();
 
-Replace `u8 mPad2[0x8]` with two `f32` members at 0x10 and 0x14. The size is
-unchanged, so this is safe. Name them for what they do — 0x10 accumulates
-elapsed frames since the last beat, 0x14 holds frames remaining until the next
-one.
+### Fix 2: no early return — one return at the end
 
-**Copy the header into `scratch/qwen_bgm/shadow/game/bases/d_wm_bgm_sync.hpp`
-and edit it there.** Do not edit `include/` — I promote headers.
+    target:  bne .L_80102EA4        <- jumps to the SAME label the normal end uses
+    draft:   beq .L_00000044
+             li r3, 0x1
+             b .L_000000F8          <- a second, duplicated return
 
-Every other offset the header names (0x4, 0x8, 0xc, 0xd, 0xe, 0x18) is already
-correct. Do not change them.
+Retail has a single return that both paths share. Your `return true;` inside the
+`m_0e` check creates a second one. Invert the test and wrap the body instead:
 
----
+    - m_0c = false;
+    - if (m_0e) {
+    -     return true;
+    - }
+    - if (dAudio::getBgmBeatTrg()) {
+    -     ...
+    - }
+    - m_0d = dAudio::getBgmAccentSign();
+    - return true;
 
-## What the three functions do
+    + m_0c = false;
+    + if (!m_0e) {
+    +     if (dAudio::getBgmBeatTrg()) {
+    +         ...            // body unchanged, keep the two sequential ifs
+    +     }
+    +     ...                // see Fix 3
+    + }
+    + return true;
 
-### `execute()` — frame 0x10, saves r31 only, returns a value
+### Fix 3: `m_0d` is written by an explicit if/else, not a bool conversion
 
-Calls `dAudio::getBgmBeatTrg()`, `fn_80102F10` (twice), `dAudio::getBgmAccentSign()`.
+    target:  clrlwi. r0, r3, 24        draft:  clrlwi r4, r3, 24
+             beq .L_80102E9C                   li r3, 0x1
+             li r0, 0x1                        neg r0, r4
+             stb r0, 0xd(r31)                  or r0, r0, r4
+             b .L_80102EA4                     srwi r0, r0, 31
+             li r0, 0x0                        stb r0, 0xd(r31)
+             stb r0, 0xd(r31)
 
-    1. if (m_18 == nullptr) return 0;
-    2. m_0c = false;
-       if (m_0e) return 1;                    // early out
-    3. if (dAudio::getBgmBeatTrg()) {
-           if (m_08 > 0) { m_08--; if (m_08 == 0) m_04++; }
-           if (m_04 == *m_18) {               // lha -- m_18[0] is s16
-               m_0c = true; m_04 = 0; m_10 = 0.0f;
-               m_14 = fn_80102F10();
-           } else {
-               m_10 += 1.0f;
-               m_14 = fn_80102F10() - m_10;
-           }
-       }
-    4. m_0d = dAudio::getBgmAccentSign();
-    5. return 1;
+`neg` / `or` / `srwi` is MWCC's branchless "is this non-zero" idiom, which is
+what a plain assignment produces. Retail branches and stores a literal on each
+side, which is what a written-out if/else produces.
 
-**Note the declared return type.** The header currently says
-`virtual void execute();` but the body returns 0 and 1 in r3. Check the retail
-listing and fix the return type if it really is not `void` — a `void` function
-will not emit those `li r3` values.
+    - m_0d = dAudio::getBgmAccentSign();
 
-### `getAnmRate(f32)` — frame 0x20, saves r31 and f31
-
-    return frameCount / fn_80102F10();
-
-It also calls `dAudio::getBgmTempo()` and **discards the result**. That call is
-real and must be there, even though nothing reads it. Do not optimise it away;
-if your version drops it, find a form that keeps it.
-
-`f31` is callee-saved because `frameCount` has to survive the call — the
-prologue does `fmr f31, f1` immediately.
-
-### `fn_80102F10` — frame 0x20, saves r31, no FPRs
-
-Straight-line, no branches. Reads `m_18[0]` and calls `dAudio::getBgmTempo()`,
-returns a `f32` "frames per beat".
-
-    tempo    = getBgmTempo() & 0xFFFF        // clrlwi r3, r3, 16
-    result   = 3600.0f * ... / ...           // see the listing for exact order
-
-**Two int-to-float conversions in here cost you nothing to get right if you just
-write the casts.** The `0x43300000` stores and the magic-constant subtractions
-are MWCC's standard int-to-double idiom, not something to reproduce by hand —
-write `(f32)` casts and let the compiler emit them. See AGENT_CONTEXT on this.
-
-It is called from all three sites in this unit and nowhere else, so it is
-private. Declare it as a private member function (it takes `this`).
+    + if (dAudio::getBgmAccentSign()) {
+    +     m_0d = true;
+    + } else {
+    +     m_0d = false;
+    + }
 
 ---
 
-## Order of work
+## `fn_80102F10` — the two operands are the wrong way round
 
-1. **Copy and fix the header** (the two floats, and the `execute` return type).
-2. **`fn_80102F10`** — everything else calls it, so close it first.
-3. **`getAnmRate`** — 76 bytes, one division.
-4. **`execute`** — the biggest, and the only one with branching.
-5. Add the `d_wm_lib.hpp` include and confirm `__sinit` and `__arraydtor` appear
-   and match.
+This is one fix, but it has two parts and both matter.
 
-**Function definition order is part of the object.** Define them in address
-order: `execute`, `getAnmRate`, `fn_80102F10`.
+**The multiplicand and the divisor are swapped.** Retail multiplies 3600 by
+`*beat` and divides by the tempo. You have it the other way round:
 
-**Compile or it did not happen.** Every function you report gets a real object
-and a real `fndiff.py` line.
+    target:  fsubs f1, f0, f1        ; f1 = (f32)*beat
+             lfs   f0, "@58098"      ; 3600.0f
+             fmuls f0, f0, f1        ; 3600.0f * *beat
+             fsubs f1, f2, f3        ; (f32)(tempo & 0xffff)
+             fdivs f1, f0, f1        ; divide by the tempo
+
+**The two conversions have different signedness, and the magic constant proves
+which is which.** Retail biases `*beat` with `xoris r0, r0, 0x8000` and decodes
+it against `@58101` — the signed idiom, which is what you get for free from an
+`s16`. It does *not* bias the tempo, and decodes it against `@58103` — the
+**unsigned** idiom, which needs an explicit `(u32)`. Your version applies the
+signed form to both.
+
+    - return 3600.0f * (f32)(tempo & 0xffff) / (f32)*beat;
+    + return 3600.0f * (f32)*beat / (f32)(u32)(tempo & 0xffff);
+
+Do not hand-roll the conversions — write the casts and let MWCC emit the
+`0x43300000` idiom. It already does this correctly for you; the only thing wrong
+was which cast went where.
+
+---
+
+## The two misses do NOT share a cause
+
+`execute`'s three fixes are all about control-flow shape and declared types.
+`fn_80102F10`'s is an arithmetic expression bug. Fixing one will not move the
+other, so check both counts separately after rebuilding.
 
 ## Acceptance
 
-- **The true count at `DIFFS 0` out of 5 as your headline.** Include `__sinit`
-  and `__arraydtor$53530` in that count — if the include trick works they are
-  free, and if it does not I need to know.
-- For any miss: the `-v` output, words / frame / GPR / FPR both sides, and one
-  sentence on what you think is wrong.
-- The corrected header, and a note of exactly what you changed in it.
+- Rebuild and re-score with `--all`.
+- **The true count at `DIFFS 0` out of 5 as your headline.** Count
+  `__arraydtor` as matched — it already is, and if `fndiff` still does not
+  mention it, say so rather than leaving it out.
+- For any remaining miss: the `-v` output, words / frame / GPR / FPR both sides,
+  and one sentence on what you think is left.
+- The final header, and exactly what you changed in it.
 - A landing readiness statement.
 
-You do **not** need to supply addresses for `dAudio::getBgmBeatTrg`,
-`getBgmAccentSign`, `getBgmTempo`, `__register_global_object`, `__destroy_arr`
-or the `ForceInCourseList_t` destructor. I have them and I will add the
-`syms.txt` entries when I land. Do not touch `syms.txt`.
+If one of my fixes does not do what I said, **say so plainly.** I was wrong
+about the nested `if` this round and your version was correct; I would rather be
+told than have you work around it silently.
+
+You do not need addresses for `dAudio::*`, `__register_global_object`,
+`__destroy_arr` or the `ForceInCourseList_t` destructor — I have them and will
+add the `syms.txt` entries when I land. Do not touch `syms.txt`.
 
 Do not run `ninja`, `configure.py`, `progress.py` or `land.py`. Work only in
 `scratch/qwen_bgm/`. Do not modify `include/**` or `source/**`.
