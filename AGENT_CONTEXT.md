@@ -2430,3 +2430,49 @@ changed shared headers, and **every external symbol the unit calls that is not
 already in `syms.txt`**. Check the last one by grepping `syms.txt` for each
 external call in the draft before attempting the landing — it turns a rejected build
 into a one-line argument.
+
+## An external DATA symbol needs a syms.txt entry too, and search_symbols will not find it
+
+`GXStateSave_c` was at 4/4 and was rejected at link twice before it landed.
+Neither rejection was a codegen problem -- the source was already byte-exact
+both times. Both were missing addresses.
+
+    undefined: 'EGG::StateGX::s_cacheGX'      <- a data global in .bss
+    undefined: 'GXGetViewportv'               <- a plain C function
+    undefined: 'GXGetCullMode'
+
+The unit was the first to call deeply into the undecompiled Nintendo GX
+library. Fifteen `--syms` entries were needed in the end.
+
+**Two lookup sources, and they cover different things:**
+
+- `mcp__nsmbw-decomp__search_symbols` lists **functions only**. A data global
+  will come back "no matches" even when it exists.
+- `bin/dtk/wiimj2d_symbols.txt` has **everything**, with section and size:
+
+      s_cacheGX__Q23EGG7StateGX = .bss:0x80424BC0; // type:object size:0x14
+      GXGetViewportv = .text:0x801C9D80; // type:function size:0x20
+
+  Grep that file when `search_symbols` comes back empty, before concluding a
+  symbol does not exist.
+
+**So the landing manifest has four parts, not three:** new headers, changed
+shared headers, external *function* addresses, and external *data* addresses.
+
+A useful corollary: the size in that file is authoritative. The agent guessed
+`s_cacheGX[0x10]`; it is `0x14`. That particular error was harmless because an
+extern array reference only needs the address, but the same guess on a member
+array is exactly what put every later member 0x50 bytes out in the same unit.
+
+## Read a mangled name's underscores carefully
+
+The seven cache-aware wrappers in this unit mangle as:
+
+    GXSetColorUpdate___Q23EGG7StateGXFb
+
+That is **three** underscores. The scheme is `<name>__<scope><args>`, so the
+name is `GXSetColorUpdate_` **with a trailing underscore** -- a different
+function from `GXSetColorUpdate`. Declaring the obvious spelling compiles
+cleanly and matches nothing, which reads like a wrong diagnosis rather than a
+wrong spelling. Count the underscores before declaring.
+
