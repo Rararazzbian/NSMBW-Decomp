@@ -2242,3 +2242,45 @@ run an alignment:**
 Then count the *opcodes*, not the rows. Three replaces and two inserts is a
 small function-level problem. Eighty scattered rows is not a problem
 description at all.
+
+## PARKED units: record the state, never the word "closed"
+
+`d_enemy_toride_kokoopa` sat at 248/251 for five rounds while roughly seventy
+variants were tried on its last three functions. All three are MWCC
+register-allocation coin-flips where the source is already correct — 78 of 85
+instructions identical in one case, 5 register-number diffs in the other two.
+The analysis was good every round and the object moved by one diff.
+
+That is a signal to park the unit and spend the round on one with headroom, not
+a signal to try harder. **But park it with its state written down:**
+
+- what is matched and what is not, by name;
+- the mechanism for each blocker in one sentence;
+- every ruled-out source shape, so the next attempt does not re-derive them.
+
+`find_targets` lists 264 named candidates in `wiimj2d` alone. A 640-byte unit
+that reaches 100% lands and moves the project number; a 31,876-byte unit at
+98.8% does not move it at all, because landing needs a contiguous range with no
+holes. **When a unit stalls, the marginal byte is cheaper somewhere else.**
+
+Never write "closed as a bounded negative". That phrase stopped anyone looking
+at the Jump twins for four rounds, and when they were finally re-examined they
+had matching words, frame and save sets.
+
+## The landed source in `source/` is a style corpus — grep it before guessing
+
+169 landed files are byte-exact reconstructions that the real compiler accepted.
+They are the best available evidence for how the original author wrote things.
+
+Searching them settled a question five rounds of reasoning had not: **there is
+not one `? nullptr :` or `? NULL :` in any of them.** The idiom throughout is an
+unconditional call and a cast:
+
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+
+So a reconstruction resting on a null-ternary is probably wrong at the source
+level even when the generated code is close.
+
+**Rule: before settling on a construct, grep `source/` for it.** Zero hits
+across 169 matched files is strong evidence the original does not contain it.
+Plenty of hits, with context, shows you the shape the author actually used.
