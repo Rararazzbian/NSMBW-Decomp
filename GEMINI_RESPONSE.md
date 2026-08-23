@@ -1,95 +1,133 @@
-# Gemini Response — Round 35: `dPSwManager_c` (100% Matched)
+# Gemini Response — Round 36: `dPanelObjList_c` (100% Matched)
 
-**Status: 12 / 12 functions at `DIFFS 0` (640 / 640 bytes .text matched, 100%).**
+**Status: 17 / 17 functions at `DIFFS 0` (624 / 624 bytes .text matched, 100%).**
 
 ---
 
 ## 1. Summary
 
-A complete, byte-exact reconstruction of the new unit `dPSwManager_c` in `scratch/gemini_pswmgr/`. All 12 member functions match retail byte-for-byte with 0 diffs.
+A complete, byte-exact reconstruction of the new unit `dPanelObjList_c` in `scratch/gemini_panelobj/`. All 17 member functions match retail machine code byte-for-byte with 0 diffs.
 
-- **Unit:** `dPSwManager_c` (`dol/bases/d_p_sw_manager.cpp`)
-- **Address Range:** `0x800D86C0` – `0x800D8940` (size `0x280` / 640 B)
-- **Functions Matched:** 12 / 12 (100%)
+- **Unit:** `dPanelObjList_c` (`dol/bases/d_panel_obj_list.cpp`)
+- **Address Range:** `0x800145B0` – `0x80014820` (size `0x270` / 624 B)
+- **Functions Matched:** 17 / 17 (100%)
 - **Sections Emitted:**
-  - `.text`: `0x800D86C0` – `0x800D8940` (`0x280` B, 12 functions)
-  - `.data`: `0x80318F48` – `0x80318F54` (`0xC` B vtable `__vt__13dPSwManager_c`, 1 virtual dtor slot)
-  - `.sbss`: `0x8042A2E0` – `0x8042A2E4` (`0x4` B `ms_instance__13dPSwManager_c`)
-- **Constant Pool:** No pooled constants / float loads (`poolcheck.py` clean).
+  - `.text`: `0x800145B0` – `0x80014820` (`0x270` B / 624 B, 17 functions)
+  - `.sdata2`: `0x8042B460` – `0x8042B478` (`0x18` B / 24 B, 4 pooled constants)
+- **Constant Pool:** 5 pooled constant references value-checked against retail DOL with `poolcheck.py` (0 mismatches, 0 unresolved).
+- **Binary Verification:** `.text` and `.sdata2` raw bytes compared against retail `auto_03_80014330_text.o` and `wiimj2d.dol` — 100% byte-identical.
+
+### Boundary Sanity-Check
+- **Preparation:** `target.txt` generated using `prepare.py --unit dol/bases/d_panel_obj_list.cpp --range 0x800145B0-0x80014820`.
+- **Preceding Function:** `restore__13GXStateSave_cFv` at `0x80014480` (size `0x12C`, ends at `0x800145AC` + 4-byte padding `0x800145AC`–`0x800145B0`).
+- **First In-Range Function:** `__ct__15dPanelObjList_cFv` at `0x800145B0`.
+- **Last In-Range Function:** `getParts__15dPanelObjList_cCFv` at `0x800147E0` (size `0x40`, ends at `0x80014820`), belonging to `dPanelObjList_c`.
+- **Succeeding Function:** `addPanelObjList__14dPanelObjMgr_cFP15dPanelObjList_c` at `0x80014820`, belonging to `dPanelObjMgr_c` (outside this TU).
+- **Result:** Range `0x800145B0`–`0x80014820` contains all 17 functions of `dPanelObjList_c` with no excess or missing functions.
 
 ---
 
 ## 2. Target Baseline & Measurement Table
 
-All twelve functions in retail definition order:
+All seventeen functions in retail definition order:
 
-| Function | Target Words | Target Frame | Target GPR Saves | Target FPR Saves | Byte Size | Status |
-|---|---|---|---|---|---|---|
-| `__ct__13dPSwManager_cFv` | 5 | none | none | none | 0x14 (20 B) | **DIFFS 0** |
-| `__dt__13dPSwManager_cFv` | 18 | 0x10 | `[31]` | none | 0x48 (72 B) | **DIFFS 0** |
-| `initialize__13dPSwManager_cFv` | 10 | none | none | none | 0x28 (40 B) | **DIFFS 0** |
-| `execute__13dPSwManager_cFv` | 1 | none | none | none | 0x04 (4 B) | **DIFFS 0** |
-| `ProcMain__13dPSwManager_cFv` | 64 | 0x20 | `[28, 29, 30, 31]` | none | 0x100 (256 B) | **DIFFS 0** |
-| `finalize__13dPSwManager_cFv` | 10 | none | none | none | 0x28 (40 B) | **DIFFS 0** |
-| `checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` | 5 | none | none | none | 0x14 (20 B) | **DIFFS 0** |
-| `checkMove__13dPSwManager_cFv` | 5 | none | none | none | 0x14 (20 B) | **DIFFS 0** |
-| `getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e` | 4 | none | none | none | 0x10 (16 B) | **DIFFS 0** |
-| `onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` | 6 | none | none | none | 0x18 (24 B) | **DIFFS 0** |
-| `offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` | 6 | none | none | none | 0x18 (24 B) | **DIFFS 0** |
-| `setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` | 4 | none | none | none | 0x10 (16 B) | **DIFFS 0** |
+| # | Function | Address | Bytes | Words | Frame | GPR Saves | FPR Saves | Result |
+|---|---|---|---|---|---|---|---|---|
+|  1 | `__ct__15dPanelObjList_cFv` | `0x800145B0` | 60 B | 15 | none | none | none | **DIFFS 0 (MATCH)** |
+|  2 | `__dt__15dPanelObjList_cFv` | `0x800145F0` | 64 B | 16 | `0x10` | `[31]` | none | **DIFFS 0 (MATCH)** |
+|  3 | `getValue__15dPanelObjList_cCFv` | `0x80014630` |  8 B |  2 | none | none | none | **DIFFS 0 (MATCH)** |
+|  4 | `isChange__15dPanelObjList_cCFv` | `0x80014640` | 20 B |  5 | none | none | none | **DIFFS 0 (MATCH)** |
+|  5 | `setChange__15dPanelObjList_cFb` | `0x80014660` |  8 B |  2 | none | none | none | **DIFFS 0 (MATCH)** |
+|  6 | `getPosX__15dPanelObjList_cCFv` | `0x80014670` |  8 B |  2 | none | none | none | **DIFFS 0 (MATCH)** |
+|  7 | `getPosY__15dPanelObjList_cCFv` | `0x80014680` |  8 B |  2 | none | none | none | **DIFFS 0 (MATCH)** |
+|  8 | `getPosZ__15dPanelObjList_cCFv` | `0x80014690` |  8 B |  2 | none | none | none | **DIFFS 0 (MATCH)** |
+|  9 | `setPosXY__15dPanelObjList_cFff` | `0x800146A0` | 12 B |  3 | none | none | none | **DIFFS 0 (MATCH)** |
+| 10 | `setPos__15dPanelObjList_cFfff` | `0x800146B0` | 16 B |  4 | none | none | none | **DIFFS 0 (MATCH)** |
+| 11 | `getType__15dPanelObjList_cCFv` | `0x800146C0` |  8 B |  2 | none | none | none | **DIFFS 0 (MATCH)** |
+| 12 | `setScaleFoot__15dPanelObjList_cFf` | `0x800146D0` | 28 B |  7 | none | none | none | **DIFFS 0 (MATCH)** |
+| 13 | `setScaleAngle__15dPanelObjList_cFfs` | `0x800146F0` | 28 B |  7 | none | none | none | **DIFFS 0 (MATCH)** |
+| 14 | `getScale__15dPanelObjList_cCFv` | `0x80014710` | 64 B | 16 | `0x10` | `[31]` | none | **DIFFS 0 (MATCH)** |
+| 15 | `getAngleF__15dPanelObjList_cCFv` | `0x80014750` | 72 B | 18 | `0x10` | none | none | **DIFFS 0 (MATCH)** |
+| 16 | `getAngleS__15dPanelObjList_cCFv` | `0x800147A0` | 64 B | 16 | `0x10` | `[31]` | none | **DIFFS 0 (MATCH)** |
+| 17 | `getParts__15dPanelObjList_cCFv` | `0x800147E0` | 64 B | 16 | `0x10` | `[31]` | none | **DIFFS 0 (MATCH)** |
 
 ---
 
 ## 3. Per-Function Results (`fndiff.py --all`)
 
 ```
-=== __ct__13dPSwManager_cFv
+=== __ct__15dPanelObjList_cFv
+  target: 15 words / frame none / GPR none / FPR none
+  draft : 15 words / frame none / GPR none / FPR none
+     0  T: lfs f1, "@49125"@sda21(r0)                     D: lfs f1, "@104"@sda21(r0)   [naming artifact]
+     2  T: lfs f0, "@49126"@sda21(r0)                     D: lfs f0, "@105"@sda21(r0)   [naming artifact]
+  DIFFS 0  (+ 2 naming artifact(s))
+=== __dt__15dPanelObjList_cFv
+  target: 16 words / frame 0x10 / GPR [31] / FPR none
+  draft : 16 words / frame 0x10 / GPR [31] / FPR none
+  DIFFS 0
+=== getValue__15dPanelObjList_cCFv
+  target: 2 words / frame none / GPR none / FPR none
+  draft : 2 words / frame none / GPR none / FPR none
+  DIFFS 0
+=== isChange__15dPanelObjList_cCFv
   target: 5 words / frame none / GPR none / FPR none
   draft : 5 words / frame none / GPR none / FPR none
   DIFFS 0
-=== __dt__13dPSwManager_cFv
-  target: 18 words / frame 0x10 / GPR [31] / FPR none
-  draft : 18 words / frame 0x10 / GPR [31] / FPR none
+=== setChange__15dPanelObjList_cFb
+  target: 2 words / frame none / GPR none / FPR none
+  draft : 2 words / frame none / GPR none / FPR none
   DIFFS 0
-=== initialize__13dPSwManager_cFv
-  target: 10 words / frame none / GPR none / FPR none
-  draft : 10 words / frame none / GPR none / FPR none
+=== getPosX__15dPanelObjList_cCFv
+  target: 2 words / frame none / GPR none / FPR none
+  draft : 2 words / frame none / GPR none / FPR none
   DIFFS 0
-=== execute__13dPSwManager_cFv
-  target: 1 words / frame none / GPR none / FPR none
-  draft : 1 words / frame none / GPR none / FPR none
+=== getPosY__15dPanelObjList_cCFv
+  target: 2 words / frame none / GPR none / FPR none
+  draft : 2 words / frame none / GPR none / FPR none
   DIFFS 0
-=== ProcMain__13dPSwManager_cFv
-  target: 64 words / frame 0x20 / GPR [28, 29, 30, 31] / FPR none
-  draft : 64 words / frame 0x20 / GPR [28, 29, 30, 31] / FPR none
+=== getPosZ__15dPanelObjList_cCFv
+  target: 2 words / frame none / GPR none / FPR none
+  draft : 2 words / frame none / GPR none / FPR none
   DIFFS 0
-=== finalize__13dPSwManager_cFv
-  target: 10 words / frame none / GPR none / FPR none
-  draft : 10 words / frame none / GPR none / FPR none
+=== setPosXY__15dPanelObjList_cFff
+  target: 3 words / frame none / GPR none / FPR none
+  draft : 3 words / frame none / GPR none / FPR none
   DIFFS 0
-=== checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e
-  target: 5 words / frame none / GPR none / FPR none
-  draft : 5 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== checkMove__13dPSwManager_cFv
-  target: 5 words / frame none / GPR none / FPR none
-  draft : 5 words / frame none / GPR none / FPR none
-  DIFFS 0
-=== getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e
+=== setPos__15dPanelObjList_cFfff
   target: 4 words / frame none / GPR none / FPR none
   draft : 4 words / frame none / GPR none / FPR none
   DIFFS 0
-=== onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei
-  target: 6 words / frame none / GPR none / FPR none
-  draft : 6 words / frame none / GPR none / FPR none
+=== getType__15dPanelObjList_cCFv
+  target: 2 words / frame none / GPR none / FPR none
+  draft : 2 words / frame none / GPR none / FPR none
   DIFFS 0
-=== offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e
-  target: 6 words / frame none / GPR none / FPR none
-  draft : 6 words / frame none / GPR none / FPR none
+=== setScaleFoot__15dPanelObjList_cFf
+  target: 7 words / frame none / GPR none / FPR none
+  draft : 7 words / frame none / GPR none / FPR none
   DIFFS 0
-=== setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei
-  target: 4 words / frame none / GPR none / FPR none
-  draft : 4 words / frame none / GPR none / FPR none
+=== setScaleAngle__15dPanelObjList_cFfs
+  target: 7 words / frame none / GPR none / FPR none
+  draft : 7 words / frame none / GPR none / FPR none
+  DIFFS 0
+=== getScale__15dPanelObjList_cCFv
+  target: 16 words / frame 0x10 / GPR [31] / FPR none
+  draft : 16 words / frame 0x10 / GPR [31] / FPR none
+     7  T: lfs f1, "@49126"@sda21(r0)                     D: lfs f1, "@105"@sda21(r0)   [naming artifact]
+  DIFFS 0  (+ 1 naming artifact(s))
+=== getAngleF__15dPanelObjList_cCFv
+  target: 18 words / frame 0x10 / GPR none / FPR none
+  draft : 18 words / frame 0x10 / GPR none / FPR none
+     8  T: lfd f2, "@49173"@sda21(r0)                     D: lfd f2, "@139"@sda21(r0)   [naming artifact]
+    10  T: lfs f0, "@49170"@sda21(r0)                     D: lfs f0, "@136"@sda21(r0)   [naming artifact]
+  DIFFS 0  (+ 2 naming artifact(s))
+=== getAngleS__15dPanelObjList_cCFv
+  target: 16 words / frame 0x10 / GPR [31] / FPR none
+  draft : 16 words / frame 0x10 / GPR [31] / FPR none
+  DIFFS 0
+=== getParts__15dPanelObjList_cCFv
+  target: 16 words / frame 0x10 / GPR [31] / FPR none
+  draft : 16 words / frame 0x10 / GPR [31] / FPR none
   DIFFS 0
 ```
 
@@ -97,19 +135,24 @@ All twelve functions in retail definition order:
 
 ## 4. GAINED and LOST
 
-### GAINED (12 functions, +640 bytes .text):
-- `__ct__13dPSwManager_cFv` (+20 B)
-- `__dt__13dPSwManager_cFv` (+72 B)
-- `initialize__13dPSwManager_cFv` (+40 B)
-- `execute__13dPSwManager_cFv` (+4 B)
-- `ProcMain__13dPSwManager_cFv` (+256 B)
-- `finalize__13dPSwManager_cFv` (+40 B)
-- `checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` (+20 B)
-- `checkMove__13dPSwManager_cFv` (+20 B)
-- `getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e` (+16 B)
-- `onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` (+24 B)
-- `offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e` (+24 B)
-- `setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei` (+16 B)
+### GAINED (17 functions, +624 bytes .text):
+- `__ct__15dPanelObjList_cFv` (+60 B)
+- `__dt__15dPanelObjList_cFv` (+64 B)
+- `getValue__15dPanelObjList_cCFv` (+8 B)
+- `isChange__15dPanelObjList_cCFv` (+20 B)
+- `setChange__15dPanelObjList_cFb` (+8 B)
+- `getPosX__15dPanelObjList_cCFv` (+8 B)
+- `getPosY__15dPanelObjList_cCFv` (+8 B)
+- `getPosZ__15dPanelObjList_cCFv` (+8 B)
+- `setPosXY__15dPanelObjList_cFff` (+12 B)
+- `setPos__15dPanelObjList_cFfff` (+16 B)
+- `getType__15dPanelObjList_cCFv` (+8 B)
+- `setScaleFoot__15dPanelObjList_cFf` (+28 B)
+- `setScaleAngle__15dPanelObjList_cFfs` (+28 B)
+- `getScale__15dPanelObjList_cCFv` (+64 B)
+- `getAngleF__15dPanelObjList_cCFv` (+72 B)
+- `getAngleS__15dPanelObjList_cCFv` (+64 B)
+- `getParts__15dPanelObjList_cCFv` (+64 B)
 
 ### LOST:
 - None.
@@ -119,160 +162,168 @@ All twelve functions in retail definition order:
 ## 5. Poolcheck Output
 
 ```
-$ python tools/auto_decomp/poolcheck.py scratch/gemini_pswmgr/target.txt --obj scratch/gemini_pswmgr/d_p_sw_manager.o --txt scratch/gemini_pswmgr/d_p_sw_manager.txt
+$ python tools/auto_decomp/poolcheck.py scratch/gemini_panelobj/d_panel_obj_list.cpp scratch/gemini_panelobj tools/auto_decomp/work/dol_bases_d_panel_obj_list/target.txt
 
-0 pooled constants compared by VALUE across 12 paired functions
+5 pooled constants compared by VALUE across 17 paired functions
 0 mismatched, 0 could not be resolved on one side
-(12 pair(s) value-checked; 0 reference(s) skipped as the same named symbol on both sides; 0 float load(s) seen; 0 pair(s) skipped on length)
-
-Note: this unit contains no float loads at all in its paired, matched functions -- there was genuinely nothing to check.
+(17 pair(s) value-checked; 0 reference(s) skipped as the same named symbol on both sides; 10 float load(s) seen; 0 pair(s) skipped on length)
+COVERAGE: 17 of 63 target function(s) value-checked; 46 were not checked at all (unpaired, length-mismatched, or already differing).
 ```
 
 ---
 
 ## 6. Structural Insights & Reconstruction Details
 
-### Struct Copy Idiom in `initialize()` and `finalize()`
-In `initialize()` and `finalize()`, 16 bytes are transferred between `dPSwManager_c` and `dBgParameter_c::ms_Instance_p` (1 `u32` switch flags word at `0x04` / `0x84` and 3 `int` timer words at `0x08`–`0x14` / `0x88`–`0x94`).
-Individual scalar assignments produced a 1-register sequential schedule because `bgParam` occupied `r4`. Wrapping the 16 bytes in a structure (`PSwData_s` containing `u32 mSwitchFlags; int mTimer[3];`) causes MWCC to emit a 16-byte bitwise aggregate copy with pipelined 2-word load/store scheduling, placing `bgParam` in `r5` and using both `r4` and `r0` as transfer registers, producing byte-exact codegen for both `initialize()` and `finalize()`.
+### Class Layout (`dPanelObjList_c`)
+`dPanelObjList_c` represents a node in a doubly-linked list of panel objects managed by `dPanelObjMgr_c`.
+- `0x00`: `dPanelObjList_c *mpPrev;`
+- `0x04`: `dPanelObjList_c *mpNext;`
+- `0x08`: `u16 mValue;`
+- `0x0A`: `u8 mType;`
+- `0x0B`: `u8 mChange;` (or `bool`)
+- `0x0C`: `f32 mPosX;`
+- `0x10`: `f32 mPosY;`
+- `0x14`: `f32 mPosZ;`
+- `0x18`: `f32 mScale;`
+- `0x1C`: `s16 mAngle;`
+- `0x1E`: `u8 mParts;`
+- `0x1F`: `u8 mPad1F;` (aligns total size to `0x20` = 32 B)
 
-### `ProcMain()` Timing & SE Triggers
-- Iterates `i` from `0` to `2` across all 3 switch types (`SwType_e`).
-- Decrements the active timer if non-zero.
-- Checks frame rate modulo `timer % 60 == 0` (via magic constant `0x88888889` integer arithmetic).
-- Triggers `SndAudioMgr::sInstance->startSystemSe(0xAAu, 1ul)` when `(u32)timer > 180` (more than 3 seconds remaining).
-- Triggers `SndAudioMgr::sInstance->startSystemSe(0xABu, 1ul)` when `0 < timer <= 180` (final 3 countdown beeps).
-- When `timer == 0`: calls `SndSceneMgr::sInstance->fn_8019be60(8)` and `offSwitch(i)`.
-- Updates timer via `setTimer(i, timer)`.
+Static assertions verified size (`sizeof == 0x20`) and all 12 member offsets.
+
+### `getType()` Return Type
+In CFront mangling, `int` and `u8` return types mangle identically (`getType__15dPanelObjList_cCFv`). Declaring `int getType() const` matches `lbz r3, 0xa(r3); blr;` while informing MWCC that `r3` is already a full word in callers (`getScale`, `getAngleS`, `getParts`), eliminating spurious `clrlwi` zero-extension instructions.
+
+### `getScale()` & `getAngleS()` Branch Shape
+In `getScale()`:
+```cpp
+f32 dPanelObjList_c::getScale() const {
+    int type = getType();
+    f32 scale = 1.0f;
+    if ((u32)(type - 1) <= 1) {
+        scale = mScale;
+    }
+    return scale;
+}
+```
+Evaluating `getType()` into a local `int type` and initializing `f32 scale = 1.0f` after the call allows MWCC to schedule `lfs f1, 1.0f` before `cmplwi r0, 1` / `bgt`, matching retail's 16-word, no-extra-jump layout without reserving non-volatile FPRs. `getAngleS()` follows the symmetric shape with `(u32)(type - 2) <= 1` and default `0`.
+
+### Angle Conversion in `getAngleF()`
+`getAngleF()` converts `getAngleS()` (`s16`) to float radians via the float multiplier `0.0000958738019107841f` (`0x38c90fdb` = `M_PI / 32768.0f`), matching the standard MWCC integer-to-float conversion and multiplication sequence.
 
 ---
 
 ## 7. Landing Manifest (What the Unit Needs from Claude)
 
-### A. New Header: `include/game/bases/d_p_sw_manager.hpp`
-- Location: `scratch/gemini_pswmgr/include/game/bases/d_p_sw_manager.hpp`
-- Content:
+### A. New Header: `include/game/bases/d_panel_obj_list.hpp`
+- Location in scratch: `scratch/gemini_panelobj/d_panel_obj_list.hpp`
+- Full content:
 ```cpp
 #pragma once
 
 #include <types.h>
 
-class dPSwManager_c {
+class dPanelObjList_c {
 public:
-    enum SwType_e {
-        SW_TYPE_0 = 0,
-        SW_TYPE_1 = 1,
-        SW_TYPE_2 = 2,
-    };
+    dPanelObjList_c();
+    ~dPanelObjList_c();
 
-    struct PSwData_s {
-        u32 mSwitchFlags;
-        int mTimer[3];
-    };
-
-    dPSwManager_c();
-    virtual ~dPSwManager_c();
-
-    void initialize();
-    void execute();
-    void ProcMain();
-    void finalize();
-    u32 checkSwitch(SwType_e type);
-    bool checkMove();
-    int getTimer(SwType_e type);
-    void onSwitch(SwType_e type, int timer);
-    void offSwitch(SwType_e type);
-    void setTimer(SwType_e type, int timer);
-
-    static dPSwManager_c *ms_instance;
+    u16 getValue() const;
+    bool isChange() const;
+    void setChange(bool change);
+    f32 getPosX() const;
+    f32 getPosY() const;
+    f32 getPosZ() const;
+    void setPosXY(f32 x, f32 y);
+    void setPos(f32 x, f32 y, f32 z);
+    int getType() const;
+    void setScaleFoot(f32 scale);
+    void setScaleAngle(f32 scale, s16 angle);
+    f32 getScale() const;
+    f32 getAngleF() const;
+    s16 getAngleS() const;
+    u8 getParts() const;
 
 public:
-    PSwData_s mData;
+    dPanelObjList_c *mpPrev;
+    dPanelObjList_c *mpNext;
+    u16 mValue;
+    u8 mType;
+    u8 mChange;
+    f32 mPosX;
+    f32 mPosY;
+    f32 mPosZ;
+    f32 mScale;
+    s16 mAngle;
+    u8 mParts;
+    u8 mPad1F;
 };
 ```
 
-### B. Shared Header Proposal: `include/game/bases/d_bg_parameter.hpp`
-- Diff:
-```diff
---- a/include/game/bases/d_bg_parameter.hpp
-+++ b/include/game/bases/d_bg_parameter.hpp
-@@ -4,6 +4,7 @@
- #include <types.h>
- #include <game/mLib/m_vec.hpp>
- #include <game/bases/d_actor.hpp>
-+#include <game/bases/d_p_sw_manager.hpp>
- 
- class dBgParameter_c {
- public:
-@@ -27,6 +28,8 @@ public:
-     u8 mPad2[0x34];
-     u8 mScrollDirX; ///< See BG_SCROLL_DIR_X_e.
-     u8 mScrollDirY; ///< See BG_SCROLL_DIR_Y_e.
-+    u8 mPad3[2];
-+    dPSwManager_c::PSwData_s mPSwData;
- 
-     float getLoopScrollDispPosX(float x);
-```
-- **Evidence:** Retail `initialize` and `finalize` access `0x84(ms_Instance_p)` for flags and `0x88, 0x8C, 0x90(ms_Instance_p)` for timers.
-- **Offset-perturbing:** NO. Existing fields end at `mScrollDirY` (`0x81`). `mPad3[2]` aligns to `0x84`. `mPSwData` spans `0x84`–`0x94`. No following members exist in `dBgParameter_c`.
-- **Compiled & Tested:** Verified in `scratch/gemini_pswmgr/`.
+### B. Shared Header Changes
+- **None.** No shared headers were modified. The new header `include/game/bases/d_panel_obj_list.hpp` is strictly additive.
 
 ### C. Proposed Slice Block for `slices/wiimj2d.json`
 ```json
 {
-  "source": "dol/bases/d_p_sw_manager.cpp",
+  "source": "dol/bases/d_panel_obj_list.cpp",
   "memoryRanges": {
-    ".text": "0xD1F40-0xD21C0",
-    ".data": "0x1A8A8-0x1A8B8",
-    ".sbss": "0x440-0x448"
+    ".text": "0xde30-0xe0a0",
+    ".sdata2": "0x100-0x118"
   }
 }
 ```
+
 - **Arithmetic verification:**
-  - `.text` base: `0x80006780`. Address `0x800D86C0` – `0x800D8940` -> `0xD1F40` – `0xD21C0` (size `0x280` = 640 B).
-    - Preceding slice / symbol: `__dt__14dPropelParts_cFv` (ends at `0x800D86B8` -> padded to `0x800D86C0`).
-    - Succeeding slice / symbol: `startQuake__8dQuake_cFScQ28dQuake_c12TYPE_QUAKE_eib` (starts at `0x800D8940`).
-  - `.data` base: `0x802FE6A0`. Address `0x80318F48` – `0x80318F58` -> `0x1A8A8` – `0x1A8B8` (size `0x10` = 16 B).
-    - Preceding symbol: `__vt__14dPropelParts_c` at `0x80318F38` (size `0xC`, padded to `0x80318F48`).
-    - Contained symbol: `__vt__13dPSwManager_c` at `0x80318F48` (size `0xC`, padded to `0x80318F58`).
-    - Succeeding symbol: `@63685` at `0x80318F58`.
-  - `.sbss` base: `0x80429EA0`. Address `0x8042A2E0` – `0x8042A2E8` -> `0x440` – `0x448` (size `0x8` = 8 B).
-    - Preceding symbol: `@GUARD@update__18dPlayerOrchestra_cFv@scPressTwoButton@0` at `0x8042A2D9` (aligned to 8 at `0x8042A2E0`).
-    - Contained symbol: `ms_instance__13dPSwManager_c` at `0x8042A2E0` (size `0x4`, aligned to 8 at `0x8042A2E8`).
-    - Succeeding symbol: `m_instance__8dQuake_c` at `0x8042A2E8`.
-- **Overlap check:** 0 overlaps against all 144 existing slices in `slices/wiimj2d.json`.
+  - `.text` base: `0x80006780`. Address `0x800145B0` – `0x80014820`:
+    - `0x800145B0 - 0x80006780 = 0xDE30`
+    - `0x80014820 - 0x80006780 = 0xE0A0` (size `0x270` = 624 B).
+    - Preceding symbol: `restore__13GXStateSave_cFv` (ends at `0x800145AC`, padded to `0x800145B0`).
+    - Succeeding symbol: `addPanelObjList__14dPanelObjMgr_cFP15dPanelObjList_c` (starts at `0x80014820`).
+  - `.sdata2` base: `0x8042B360`. Address `0x8042B460` – `0x8042B478`:
+    - `0x8042B460 - 0x8042B360 = 0x100`
+    - `0x8042B478 - 0x8042B360 = 0x118` (size `0x18` = 24 B).
+    - Preceding slice: `dol/bases/d_CourseSelectGuide.cpp` (`.sdata2` claim `0xd0-0x100`, ends exactly at `0x100` / `0x8042B460`).
+    - Succeeding symbol: `@52531` at `0x8042B478`.
+- **Overlap check:** 0 overlaps against all 145 existing slices in `slices/wiimj2d.json`.
 
 ### D. Symbols for `syms.txt`
 ```
-__ct__13dPSwManager_cFv=0x800D86C0
-__dt__13dPSwManager_cFv=0x800D86E0
-initialize__13dPSwManager_cFv=0x800D8730
-execute__13dPSwManager_cFv=0x800D8760
-ProcMain__13dPSwManager_cFv=0x800D8770
-finalize__13dPSwManager_cFv=0x800D8870
-checkSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e=0x800D88A0
-checkMove__13dPSwManager_cFv=0x800D88C0
-getTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_e=0x800D88E0
-onSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_ei=0x800D88F0
-offSwitch__13dPSwManager_cFQ213dPSwManager_c8SwType_e=0x800D8910
-setTimer__13dPSwManager_cFQ213dPSwManager_c8SwType_ei=0x800D8930
-__vt__13dPSwManager_c=0x80318F48
-ms_instance__13dPSwManager_c=0x8042A2E0
+__ct__15dPanelObjList_cFv=0x800145B0
+__dt__15dPanelObjList_cFv=0x800145F0
+getValue__15dPanelObjList_cCFv=0x80014630
+isChange__15dPanelObjList_cCFv=0x80014640
+setChange__15dPanelObjList_cFb=0x80014660
+getPosX__15dPanelObjList_cCFv=0x80014670
+getPosY__15dPanelObjList_cCFv=0x80014680
+getPosZ__15dPanelObjList_cCFv=0x80014690
+setPosXY__15dPanelObjList_cFff=0x800146A0
+setPos__15dPanelObjList_cFfff=0x800146B0
+getType__15dPanelObjList_cCFv=0x800146C0
+setScaleFoot__15dPanelObjList_cFf=0x800146D0
+setScaleAngle__15dPanelObjList_cFfs=0x800146F0
+getScale__15dPanelObjList_cCFv=0x80014710
+getAngleF__15dPanelObjList_cCFv=0x80014750
+getAngleS__15dPanelObjList_cCFv=0x800147A0
+getParts__15dPanelObjList_cCFv=0x800147E0
 ```
 
 ### E. Source Code File
-- Full source is ready at `scratch/gemini_pswmgr/d_p_sw_manager.cpp` (to land at `source/dol/bases/d_p_sw_manager.cpp`).
+- Full source ready at `scratch/gemini_panelobj/d_panel_obj_list.cpp` (to land at `source/dol/bases/d_panel_obj_list.cpp`).
 
 ---
 
 ## 8. Landing Readiness Statement
 
-**The unit `dPSwManager_c` is 100% READY TO LAND.**
+**The unit `dPanelObjList_c` is 100% READY TO LAND.**
 
-All 12 functions are matched byte-exact with 0 diffs. Function definitions are in exact binary order. All section sizes, alignments, relocations, vtable slots, and symbol names match the retail DOL object.
+- All 17 functions are matched byte-exact with 0 diffs.
+- Function definitions are in exact binary address order.
+- All section sizes (`.text` 0x270 B, `.sdata2` 0x18 B), alignments, constant pool values, and relocations match the retail object.
+- Slice memory ranges are strictly non-overlapping and perfectly adjacent to existing claims.
 
 ---
 
 ## 9. NOT REACHED
 
-None. All items in the round 35 work order were reached and completed in full.
+None. All items in the round 36 work order were completed in full.
