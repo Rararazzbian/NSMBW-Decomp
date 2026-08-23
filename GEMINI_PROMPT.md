@@ -1,4 +1,4 @@
-# Work order — round 36
+# Work order — round 37
 
 **Read `AGENT_CONTEXT.md` first.**
 
@@ -6,99 +6,97 @@ Write results to **`GEMINI_RESPONSE.md`** (overwrite it).
 
 ---
 
-## `dPSwManager_c` LANDED
-
-Twelve of twelve, first round on a new unit. I verified it three ways before
-trusting it — your `fndiff` run, my own recompile from your source with my own
-harness invocation, and then the real gate:
-
-    python tools/auto_decomp/land.py --unit dol/bases/d_p_sw_manager.cpp ...
+## `dPanelObjList_c` LANDED — 17/17, second in a row
 
     ACCEPTED -- all five binaries are byte-identical to the original.
-    Total: Decompiled 738648/6500368 code bytes (11.363%)
+    Total: Decompiled 739272/6500368 code bytes (11.373%)
 
-`source/dol/bases/d_p_sw_manager.cpp` and
-`include/game/bases/d_p_sw_manager.hpp` are in the tree, the slice is in
-`slices/wiimj2d.json`, and your `d_bg_parameter.hpp` change went in as
-described — additive at the end of the class, every existing offset untouched.
-The build proved it harmless.
+Two units, two rounds, both 100% first attempt. 11.353% → 11.363% → 11.373%.
 
-Your landing manifest was accurate enough to act on without a single
-correction: the slice ranges, the header change, and the promotion list were all
-right. That is what made this a ten-minute landing instead of an afternoon.
+I verified it the same three ways — your score, my own recompile from your
+source against a target I prepared myself for the exact range, and then
+`land.py`. Your slice ranges and the `.sdata2` adjacency check were right, and
+your overlap check saved me from doing it.
 
-**11.353% → 11.363%.** Small in absolute terms, and the first thing to actually
-land this session.
+### One correction, because it cost a rejected landing
 
-## One process note for next time
+Your `.cpp` opened with:
 
-You hand-rolled `extract_target.py` to pull the retail listing out of a
-disassembly file. It worked, but the project already has the tool:
+    #include "d_panel_obj_list.hpp"
 
-    python tools/auto_decomp/prepare.py --unit dol/bases/d_foo.cpp \
-        --range 0x800B8130-0x800B8388
+A relative include works in `scratch/` where both files sit together, and fails
+the moment the header is in `include/game/bases/` and the source in
+`source/dol/bases/`. The build rejected it — correctly, and it rolled everything
+back cleanly. What made it slow to read is that MWCC does not say "header not
+found"; it says:
 
-It collects every dtk object whose start address falls in the range,
-disassembles them, concatenates in address order, and writes
-`tools/auto_decomp/work/<unit>/target.txt` plus a `draft.cpp` stub. Read its
-docstring — it carries a warning that cost this project real time: **the range
-is a hypothesis until proven**, and a TU does not end at its `__sinit`; the
-`sFStateID_c<YourClass>` instantiations after it belong to you too. After
-preparing, check that the last function in `target.txt` belongs to your class
-and the next one does not.
+    Error: undefined identifier 's16'
+    Error: undefined identifier 'u8'
+
+two steps downstream of the real cause. **Always use
+`#include <game/bases/x.hpp>`.** That is the house style in all 170 landed
+files, and it is the only form that works both in scratch and after landing.
 
 ---
 
-## Round 36 — `dPanelObjList_c`
+## Round 37 — `dIceEfMaker_c`
 
-    0x800145B0    624 B    17 functions
+    0x800B8130    600 B    6 functions
 
-Seventeen functions in 624 bytes, so most are tiny — a constructor, a
-destructor, and a run of accessors:
+      44 B  init__13dIceEfMaker_cFiP13dIceEfScale_c
+     156 B  execute__13dIceEfMaker_cFv
+       4 B  fin__13dIceEfMaker_cFv
+     132 B  setEfScale__13dIceEfMaker_cFRC13dIceEfScale_c
+     124 B  createEffect__13dIceEfMaker_cFQ213dIceEfMaker_c8EfKind_e
+     104 B  hahenEffect__13dIceEfMaker_cFv
 
-      60 B  __ct__15dPanelObjList_cFv
-      64 B  __dt__15dPanelObjList_cFv
-       8 B  getValue__15dPanelObjList_cCFv
-      20 B  isChange__15dPanelObjList_cCFv
-       8 B  setChange__15dPanelObjList_cFb
-       8 B  getPosX__15dPanelObjList_cCFv
-      ... 11 more
+Those six are **every** `dIceEfMaker_c` symbol in the binary and they run
+contiguously to 0x800B8388, so this is a complete TU. The file name is confirmed
+by a symbol in it: `l_mdl_scale_tbl__32@unnamed@d_ice_effect_maker_cpp@`, so the
+unit is `dol/bases/d_ice_effect_maker.cpp` and that table is a file-scope static.
 
-Work in **`scratch/gemini_panelobj/`**. Use `prepare.py` to get the target, then
-your own harness for the compile/disassemble loop, and `fndiff.py --all` as the
-scoreboard.
+**I gave this to the other agent first and it reached 1/6** — only the 4-byte
+`fin`. It got stuck on exactly the part you are good at: the class layout has to
+be reconstructed from the binary before any body can be written, and there is a
+second type, `dIceEfScale_c`, in the signatures. Its partial work is at
+`scratch/qwen_ice/` — **you may read it, do not write there.** Read its notes
+before starting; it did real analysis even though it did not land the code.
 
-### 1. Prepare and verify the range
+Work in **`scratch/gemini_icefx/`**.
 
-**Acceptance:** `target.txt` produced by `prepare.py`, the boundary sanity-check
-done and stated — last function in range belongs to `dPanelObjList_c`, next one
-does not — and a table of all seventeen with target words / frame / GPR / FPR.
+### What I already know from the binary, so you do not re-derive it
 
-### 2. Decompile, smallest first
+- **`init(int, dIceEfScale_c *)`** stores `0` to `+0x0` and the `int` to `+0x4`,
+  then: if the pointer argument is null it substitutes
+  `l_mdl_scale_tbl + (arg << 5)` — so the table has **32-byte entries** indexed
+  by that int — and tail-calls into the `setEfScale` body.
+- **`execute()`** frame `0x30`, uses `_savegpr_27` / `_restgpr_27`. It reads
+  `+0x848` for an actor, calls `getCenterPos__12dBaseActor_cCFv` into a stack
+  temp, then loops `i = 0..7` testing bit `i` of the word at `+0x0`; for each
+  set bit it calls a virtual through **slot 0xC** on the pointer at
+  `+0x828 + 4*i`, and clears the bit if the call returns 0.
+- So the layout is at least: a **u32 bitmask at +0x0**, an **int at +0x4**, an
+  **array of 8 pointers at +0x828**, and an **actor pointer at +0x848**.
+  `0x828 + 8*4 = 0x848` confirms the array length.
+- `execute` also loads a float from `.sdata2` symbol `@61403` and stores it into
+  the stack temp at `+0x10` before the loop.
 
-Eight-byte accessors first. They are one or two instructions each and they bank
-quickly. Constructor and destructor next. Anything substantial last.
+### Order of work
 
-- **Function definition order is part of the object.** Address order, not
-  logical grouping.
-- **Compile or it did not happen.** Every reported function gets an object and
-  an `fndiff.py` line.
-- **Grep `source/` before inventing an idiom.** 170 landed files now, all
-  byte-exact, and accessors are exactly the kind of thing where the house style
-  is consistent and easy to copy.
+1. **Reconstruct the class and `dIceEfScale_c` from the listing**, and state the
+   evidence for each member — the instruction and offset that proves it. This is
+   the step that blocked the other agent and it is the whole unit.
+2. **Then bodies, smallest first**: `fin` (4 bytes, empty), `init`, `hahenEffect`,
+   `createEffect`, `setEfScale`, `execute`.
+3. **Fold, score with `fndiff.py --all`, run `poolcheck.py`.**
 
-**Acceptance:** all seventeen attempted, with the count at `DIFFS 0` as your
-headline.
+Use `prepare.py` for the target; the range is `0x800B8130-0x800B8388`. Check the
+boundary by name afterwards.
 
-### 3. The landing manifest
-
-Same as last round, and last round's was good: the slice `memoryRanges`, any
-new header, any shared-header change classified as additive or modifying, and
-anything you need me to declare. If the unit reaches 17/17 I will land it
-immediately.
-
-**Acceptance:** a landing readiness statement — landable yes or no, and the
-exact remaining list.
+**Acceptance:** the layout table with per-member evidence; all six attempted with
+an `fndiff.py` line each; the count at `DIFFS 0` out of 6 as your headline; and a
+landing manifest with the slice `memoryRanges`, any new header, and any shared
+header change classified as additive or modifying.
 
 ---
 
@@ -112,21 +110,19 @@ out of budget, and then name it in a `NOT REACHED` list at the end.
 
 ## Constraints
 
-Work only in `scratch/gemini_panelobj/`. `prepare.py` writes to
-`tools/auto_decomp/work/` — that is its own output directory and it is fine for
-it to do so, but do not edit anything else under `tools/**`. Do not touch
-`scratch/gemini_round24/`, `scratch/gemini_pswmgr/`, `scratch/round33/`,
-`scratch/qwen_ice/`, `scratch/claude_kokoopa/`, `wip/**`, `source/**`,
-`include/**`, `slices/`, `syms.txt`, `configure.py`, `QWEN_*`,
-`CODEX_HANDOFF.md`, or `HANDOFF.md`. **Do not run `ninja`, `configure.py`,
-`progress.py` or `land.py`** — I run the landing.
+Work only in `scratch/gemini_icefx/`. You may **read** `scratch/qwen_ice/`.
+`prepare.py` writes to `tools/auto_decomp/work/`, which is its own output
+directory and fine; do not edit anything else under `tools/**`. Do not touch any
+other `scratch/` directory, `wip/**`, `source/**`, `include/**`, `slices/`,
+`syms.txt`, `configure.py`, `QWEN_*`, `CODEX_HANDOFF.md`, or `HANDOFF.md`.
+**Do not run `ninja`, `configure.py`, `progress.py` or `land.py`** — I land.
 
 ---
 
 ## Reporting
 
-- **Lead with the count at `DIFFS 0` out of 17.**
-- The seventeen-function target table.
+- **Lead with the count at `DIFFS 0` out of 6.**
+- The class layout table with evidence per member.
 - Per-function results with `fndiff.py` lines.
 - **GAINED and LOST by name.**
 - `poolcheck.py` output.

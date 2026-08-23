@@ -2362,3 +2362,45 @@ Two things make it work, and both are worth defending:
 Verify a peer's 100% claim three ways before landing: their score, **your own
 recompile from their source with your own harness invocation**, and then
 `land.py`, which is the only one that counts.
+
+## `find_targets` returns function GROUPS, not translation units — verify before assigning
+
+`find_targets` groups consecutive functions sharing a class, which is a good
+heuristic and not the same thing as a TU. `dHanaBody_c` looked like a tidy
+208-byte, five-function unit; it is a fragment of `d_hana_body.cpp`, which also
+contains `dHanaBodyBase_c`, `dHanaHead_c`, `dHanaBigHead_c` and `dHanaBigBody_c`
+across roughly 7 KB, with `dHanaBody_c`'s own functions scattered through it.
+Landing that group alone is impossible — a slice is a contiguous range.
+
+**Check with `search_symbols` before committing an agent to a unit:**
+
+    mcp__nsmbw-decomp__search_symbols  pattern="dIceEfMaker_c"
+
+If every symbol of the class comes back inside one address run with nothing
+foreign between, it is a complete TU and it can land. If the class's functions
+are scattered, or the run contains other classes, you are looking at part of a
+bigger file — either take the whole file or pick something else.
+
+Two confirmations worth having: a `@unnamed@<file>_cpp@` suffix on a static
+symbol names the source file outright, and `prepare.py` pulling in a wall of
+unrelated classes is a hint the range is wrong.
+
+## Include headers as `<game/bases/x.hpp>`, never `"x.hpp"`
+
+A relative include resolves in a scratch directory where the header and source
+sit together, and breaks the moment the header lands in `include/game/bases/`
+and the source in `source/dol/bases/`. This rejected a landing that had already
+been verified at 17/17.
+
+The reason it is worth a rule of its own is the error message. MWCC does not say
+the header is missing. It says:
+
+    Error: undefined identifier 's16'
+    Error: undefined identifier 'u8'
+
+pointing at a function two hundred lines below the real cause, because the types
+header that the missing include would have pulled in never arrived. Reading that
+backwards to "wrong include form" takes a while.
+
+All 170 landed files use the angle-bracket form. Use it from the first draft —
+it works in scratch too, so there is no reason not to.
