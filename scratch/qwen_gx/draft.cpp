@@ -1,51 +1,36 @@
 #include <game/bases/d_gx_state_save.hpp>
 
-class GXStateSave_c {
-public:
-    GXStateSave_c();
-    ~GXStateSave_c();
-    void save(unsigned long mask);
-    void restore();
-
-private:
-    unsigned long mMask;
-    unsigned char mData[0x2D3];
-};
-
 GXStateSave_c::GXStateSave_c() : mMask(0) {}
 
 GXStateSave_c::~GXStateSave_c() {}
 
 void GXStateSave_c::save(unsigned long mask) {
     if (mask & 1) {
-        GXGetVtxDescv(reinterpret_cast<GXVtxDescList*>(reinterpret_cast<unsigned char*>(this) + 0x1B4));
+        GXGetVtxDescv(mVtxDesc);
     }
     if (mask & 2) {
-        GXGetVtxAttrFmtv(0, reinterpret_cast<GXVtxAttrFmtList*>(reinterpret_cast<unsigned char*>(this) + 4));
+        GXGetVtxAttrFmtv(0, mVtxAttrFmt);
     }
     if (mask & 4) {
         GXGetProjectionv(reinterpret_cast<float*>(reinterpret_cast<unsigned char*>(this) + 0x28C));
     }
     if (mask & 8) {
-        GXGetViewport(reinterpret_cast<float*>(reinterpret_cast<unsigned char*>(this) + 0x2A8));
+        GXGetViewportv(mViewport);
     }
     if (mask & 16) {
-        *reinterpret_cast<GXCullMode*>(reinterpret_cast<unsigned char*>(this) + 0x2D0) = GXGetCullMode();
+        GXGetCullMode(&mCullMode);
     }
     if (mask & 32) {
-        GXGetScissor(reinterpret_cast<unsigned long*>(reinterpret_cast<unsigned char*>(this) + 0x2C0),
-                     reinterpret_cast<unsigned long*>(reinterpret_cast<unsigned char*>(this) + 0x2C4),
-                     reinterpret_cast<unsigned long*>(reinterpret_cast<unsigned char*>(this) + 0x2C8),
-                     reinterpret_cast<unsigned long*>(reinterpret_cast<unsigned char*>(this) + 0x2CC));
+        GXGetScissor(&mScissor[0], &mScissor[1], &mScissor[2], &mScissor[3]);
     }
     if (mask & 64) {
-        reinterpret_cast<unsigned char*>(this)[0x2D4] = GXGetColorUpdate();
+        mColorUpdate = 0;
     }
     if (mask & 128) {
-        reinterpret_cast<unsigned char*>(this)[0x2D5] = GXGetAlphaUpdate();
+        mAlphaUpdate = 0;
     }
     if (mask & 256) {
-        reinterpret_cast<unsigned char*>(this)[0x2D6] = GXGetDither();
+        mDither = 0;
     }
     mMask |= mask;
 }
