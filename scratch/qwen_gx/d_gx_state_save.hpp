@@ -6,10 +6,16 @@
 #include <revolution/GX/GXPixel.h>
 #include <revolution/GX/GXTransform.h>
 
+namespace EGG {
+namespace StateGX {
+extern unsigned char s_cacheGX[0x10];
+}
+}
+
 class GXStateSave_c {
 public:
     GXStateSave_c();
-    virtual ~GXStateSave_c();
+    ~GXStateSave_c();
     void save(unsigned long mask);
     void restore();
 

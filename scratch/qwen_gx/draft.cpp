@@ -9,7 +9,7 @@ void GXStateSave_c::save(unsigned long mask) {
         GXGetVtxDescv(mVtxDesc);
     }
     if (mask & 2) {
-        GXGetVtxAttrFmtv(0, mVtxAttrFmt);
+        GXGetVtxAttrFmtv(GX_VTXFMT0, mVtxAttrFmt);
     }
     if (mask & 4) {
         GXGetProjectionv(reinterpret_cast<float*>(reinterpret_cast<unsigned char*>(this) + 0x28C));
@@ -24,29 +24,29 @@ void GXStateSave_c::save(unsigned long mask) {
         GXGetScissor(&mScissor[0], &mScissor[1], &mScissor[2], &mScissor[3]);
     }
     if (mask & 64) {
-        mColorUpdate = 0;
+        mColorUpdate = EGG::StateGX::s_cacheGX[0xC];
     }
     if (mask & 128) {
-        mAlphaUpdate = 0;
+        mAlphaUpdate = EGG::StateGX::s_cacheGX[0xD];
     }
     if (mask & 256) {
-        mDither = 0;
+        mDither = EGG::StateGX::s_cacheGX[0xE];
     }
     mMask |= mask;
 }
 
 void GXStateSave_c::restore() {
     if (mMask & 1) {
-        GXSetVtxDescv(reinterpret_cast<GXVtxDescList*>(reinterpret_cast<unsigned char*>(this) + 0x1B4));
+        GXSetVtxDescv(mVtxDesc);
     }
     if (mMask & 2) {
-        GXSetVtxAttrFmtv(0, reinterpret_cast<GXVtxAttrFmtList*>(reinterpret_cast<unsigned char*>(this) + 4));
+        GXSetVtxAttrFmtv(GX_VTXFMT0, mVtxAttrFmt);
     }
     if (mMask & 128) {
-        GXSetCullMode(*reinterpret_cast<GXCullMode*>(reinterpret_cast<unsigned char*>(this) + 0x2D0));
+        GXSetCullMode(mCullMode);
     }
     if (mMask & 4) {
-        GXSetProjection(reinterpret_cast<float*>(reinterpret_cast<unsigned char*>(this) + 0x28C));
+        GXSetProjectionv(mProjection);
     }
     if (mMask & 8) {
         float* viewport = reinterpret_cast<float*>(reinterpret_cast<unsigned char*>(this) + 0x2A8);
