@@ -1,5 +1,4 @@
-#ifndef GAME_BASES_D_GX_STATE_SAVE_HPP
-#define GAME_BASES_D_GX_STATE_SAVE_HPP
+#pragma once
 
 #include <revolution/GX/GXAttr.h>
 #include <revolution/GX/GXGeometry.h>
@@ -8,7 +7,7 @@
 
 namespace EGG {
 namespace StateGX {
-extern unsigned char s_cacheGX[0x10];
+extern u8 s_cacheGX[0x14];
 void GXGetScissor_(unsigned long *x, unsigned long *y, unsigned long *w, unsigned long *h);
 void GXSetProjectionv_(const f32 *mtx);
 void GXSetViewport_(f32 x, f32 y, f32 w, f32 h, f32 nearZ, f32 farZ);
@@ -38,5 +37,3 @@ private:
     GXBool mAlphaUpdate;
     GXBool mDither;
 };
-
-#endif
