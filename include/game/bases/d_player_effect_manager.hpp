@@ -51,7 +51,9 @@ public:
     virtual ~dPyEffectMng_c();
 
     void update();
-    void fn_800d2de0(float, int, mVec3_c &, u8); ///< @unofficial
+    bool fn_800d2de0(float, int, mVec3_c &, u8); ///< @unofficial Returns
+                                                 ///< true if a slot accepted the effect.
+
 
     dPyEffect_c mEffects[10];
 
@@ -59,3 +61,10 @@ public:
 };
 
 STATIC_ASSERT(sizeof(dPyEffectMng_c) == 0xC5C);
+
+/// @brief Unnamed per-slot helper (dPyEffect_c method) at 0x800D2BB0.
+/// @details Called by dPyEffectMng_c::fn_800d2de0 with (slot, f32, int,
+/// mVec3_c&, u8); returns truthy when the slot took the effect. Declared
+/// extern "C" because its real name was never recovered; the first argument
+/// is the slot's `this`. @unofficial
+extern "C" bool fn_800D2BB0(dPyEffect_c *effect, f32, int, mVec3_c &, u8);
