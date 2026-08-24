@@ -63,7 +63,8 @@ Ordered easiest first.
 ## 3. dFunsuiAct_c — 332 B, 1 function — EASY
 - Range: 0x800B2D20-0x800B2E6C
 - Status: IN PROGRESS: container-worker
-- Attempts: 0
+- Attempts: 2 (prior session's ~40 sweeps = attempt 1, unrecorded; best
+  swB_B6 83w target / 81w draft / 72 aligned-match)
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
