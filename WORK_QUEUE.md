@@ -62,9 +62,12 @@ Ordered easiest first.
 
 ## 3. dFunsuiAct_c — 332 B, 1 function — EASY
 - Range: 0x800B2D20-0x800B2E6C
-- Status: IN PROGRESS: container-worker
-- Attempts: 2 (prior session's ~40 sweeps = attempt 1, unrecorded; best
-  swB_B6 83w target / 81w draft / 72 aligned-match)
+- Status: DONE (landed 2026-08-24, container-worker). posMove 83/83 words,
+  byte-verified; landed as dol/bases/d_funsui_act.cpp with slices
+  .text 0xac5a0-0xac6ec, .data 0x17228-0x17238 (Wm_en_quicksand string),
+  .sdata2 0x14e0-0x14f0 (function-local cs_rev_speed[2] + two pool floats).
+  New header include/game/bases/d_funsui_act.hpp.
+- Attempts: 2 (prior session's ~40 sweeps = attempt 1; closed on attempt 2)
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):

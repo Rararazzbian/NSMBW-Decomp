@@ -35,3 +35,13 @@ frame 0xd0 with _savegpr_27. Best drafts: 61w/58 diffs (cursor form) and
 ~50 variants across sweeps 12-27 collapses to cursor form or mulli instead.
 Full state + ruled-out list in READY_TO_LAND.md PARKED section. Claiming
 dFunsuiAct_c next per stall rule.
+
+## dol/bases/d_funsui_act.cpp (dFunsuiAct_c::posMove) — 1/1 — LANDED 11.405% -> 11.410%
+Resumed prior session's claim (best was swB_B6 83w/81w/72). Two levers closed
+it: (1) naming the getCenterPos receiver through a dBaseActor_c* alias moves
+`mr r31,r3` from the switch preamble into case 3 where retail has it; (2) an
+mVec2_c declared FIRST in case 3 and read back through for both member writes
+leaves retail's dead float-pair stores at r1+0x8/0xc and shifts every later
+temp slot up 8 bytes to match. cs_rev_speed is a function-local static whose
+mangled name reproduces retail's exactly; its .sdata2 block (0x8042C840, 16 B
+incl. two anonymous pool floats) is claimed by this TU. Five binaries verified.
