@@ -181,8 +181,14 @@ Ordered easiest first.
 
 ## 10. MsgRes_c — 220 B, 4 functions — EASY/MEDIUM
 - Range: 0x800CE7F0-0x800CE8E4
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). All four byte-exact in
 - Attempts: 1
+  three compiles; landed as dol/bases/d_message.cpp, slices .text
+  0xc8070-0xc8170 (incl. 12B zero pad), .data 0x19618-0x19624 (__vt__8MsgRes_c
+  only). Shared header include/lib/egg/core/eggMsgRes.h expanded ADDITIVE
+  (ctor/virtual dtor/getMsgEntry + u8[0x1C] field block -- MWCC puts the vptr
+  AFTER members, so this fixes the 0x1C offset). Externals: EGG::MsgRes
+  ctor/dtor/getMsgEntry pinned.
 - Existing header: include/game/bases/d_message.hpp (also referenced from
   d_lyttextBox.hpp and d_tag_processor.hpp, which take `MsgRes_c*` params —
   those are unrelated classes, not part of this unit)
@@ -201,8 +207,8 @@ Ordered easiest first.
 
 ## 12. dPyEffectMng_c — 408 B, 4 functions — EASY/MEDIUM
 - Range: 0x800D2D10-0x800D2EBC
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: include/game/bases/d_player_effect_manager.hpp (also
   referenced from d_a_player_manager.hpp)
 - Virtual: YES — `__vt__14dPyEffectMng_c` at .data:0x80317E08, size 0xC

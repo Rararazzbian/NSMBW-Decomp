@@ -2837,3 +2837,23 @@ Corollary for diagnosis order on an FP permutation residual: check the RETURN
 TYPE axis BEFORE burning sweeps on declaration order / def-point splits. The
 mangling cannot refute or confirm it — only the diff can, which is exactly why
 it hides.
+
+## MWCC places a polymorphic class's implicit vptr AFTER its declared data members
+
+Found while reconstructing `MsgRes_c : EGG::MsgRes` (retail ctor stores the
+derived vtable at `this+0x1C`, not at 0). Measured behavior of
+`mwcceppc 4.0.0.1 -RTTI off`: for a class whose FIRST member declarations are
+data, the compiler emits the implicit vptr AFTER those members -- it does not
+hoist it to offset 0 like Itanium/GCC-style layouts.
+
+- `class X { u8 f[0x1C]; virtual ~X(); ... };` -> sizeof 0x20, vptr at 0x1C.
+- Declaring an EXPLICIT `void *vtbl` member as well double-books the slot:
+  the explicit member takes 0x1C and the compiler's own vptr lands at 0x20.
+- So when retail shows a vtable store at a nonzero offset K inside a simple
+  single-inheritance object, model it with an @unofficial byte block of size K
+  declared before any virtual member -- do NOT reach for an invented base
+  class unless there is other evidence one exists.
+- Corollary: `(vtable symbol size)` still follows `(size - 8) / 4 = slots`,
+  and a derived class adds NO new slot when its only virtual is the dtor that
+  overrides the base's: both __vt__Q23EGG6MsgRes and __vt__8MsgRes_c are 0xC =
+  {0, 0, deleting dtor}.

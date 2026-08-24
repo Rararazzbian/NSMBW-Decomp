@@ -112,3 +112,17 @@ s14/s15 had tried f32 with `return vel;` and paid +1 word for an fmr. init
 7/7, startShake 4/4, move 61/61, hex-diff zero, land.py ACCEPTED. Slice .text
 0xd1a20-0xd1b50, .sdata2 0x1a88-0x1a8c; no external symbols; new header.
 Lever written to AGENT_CONTEXT.
+
+## dol/bases/d_message.cpp (MsgRes_c) — 4/4 — LANDED 11.439% -> 11.443%
+Ctor/dtor/getScale/getFont byte-exact in three compiles. Layout solved by
+reading the BASE ctor: EGG::MsgRes zeroes 0x0-0x18 then stores &__vt__Q23EGG6MsgRes
+at this+0x1C, and buildMsgRes allocates 0x20 -- so the class is [0x1C fields]
+[vptr@0x1C]. MWCC appends a polymorphic class's implicit vptr AFTER declared
+data members (not at offset 0): an @unofficial u8[0x1C] block places it exactly.
+Declaring my own void* vptr member double-books the slot (vptr lands at 0x20).
+Vtable {0,0,&__dt__8MsgRes_c} reproduced automatically once ~MsgRes_c() is the
+class's only virtual and is defined out-of-line. getScale/getFont pass r3-r5
+straight through to getMsgEntry(this,g,id) and lhz/lbz offsets 0x4/0x6.
+eggMsgRes.h expanded ADDITIVE + committed before landing; gate ACCEPTED first
+try. Slice .text 0xc8070-0xc8170, .data 0x19618-0x19624. Lever written to
+AGENT_CONTEXT.
