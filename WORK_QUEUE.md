@@ -107,8 +107,15 @@ Ordered easiest first.
 
 ## 6. dDvdErrorWideMsg_c — 268 B, 2 functions — EASY
 - Range: 0x801079A0-0x80107AB8
-- Status: IN PROGRESS: container-worker
-- Attempts: 1
+- Status: DONE (landed 2026-08-24, container-worker). Both functions byte-exact;
+- Attempts: 2 (attempt 1 was a manifest bug, not code)
+  sMsgBase is genuinely [14][3]: symbol map's 0x9C + anonymous lbl_803224E4
+  (0xC) tile it; initialize loops i<14 and external helper fn_80107AF0 reads
+  row 13. Landed as dol/bases/d_dvd_error_wide_msg.cpp, slices .text
+  0x101220-0x101338, .data 0x23da8-0x23e50. New header
+  include/game/bases/d_dvd_error_wide_msg.hpp (also declares LangLoc, whose
+  own TU is still unlanded). Externals pinned: fn_80107AF0/fn_80107DA0/
+  __ct__7LangLocFv + 18 dvdStr_* string literals.
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):

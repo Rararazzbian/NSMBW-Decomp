@@ -2739,3 +2739,35 @@ name of a BASE-CLASS type inside that arm:
 A fresh derived-typed name (daPlBase_c *q = p) does NOT move it; the base-class
 type is what does. Verified on dFunsuiAct_c::posMove: hoisted copy cost ~11
 diffs, base-pointer alias scored exact.
+
+## Slice claims are exact-size contracts with your compiled object
+
+Learned landing dDvdErrorWideMsg_c (2026-08-24), two rejected attempts.
+
+The linker script does NO absolute placement: objects link in slice-file
+order, and each slice's memoryRanges are consumed by cutting FILLER objects
+from the original binary between consecutive claims. Therefore:
+
+**A slice range must equal, byte for byte, what your compiled object emits
+in that section.** Check `grep '^# \.' draft.txt` — the sum of the section
+fragments is your claim size. Not where the next retail symbol starts.
+
+- Over-claim (claiming through the next symbol to "include trailing
+  alignment padding"): your object falls short of the claim, the next
+  filler starts late, and EVERY subsequent byte of that section shifts —
+  132k diff bytes from an 8-byte mistake. The shift shows up as thousands
+  of isolated single-byte diffs whose values are all `orig - delta`
+  (address constants and branch displacements referencing moved objects).
+- Under-claim: filler re-supplies bytes your object was supposed to emit;
+  your tail lands on top of the next region and shifts it forward.
+
+Unclaimed gaps between TUs (inter-unit alignment padding, e.g. the 8 bytes
+before a neighbour's 32-aligned function) are CORRECTLY reproduced by the
+filler cut from the original binary — that is the mechanism, so leave them
+out of the claim. "Include trailing padding" is only right when YOUR OWN
+object emits that padding (inter-function alignment inside your TU).
+
+Diagnosis recipe that cracked it in minutes: rebuild with the unit applied,
+`cmp -l` built vs original, classify every differing byte by section. When
+one section holds ~all diffs and every value differs by the same small
+delta, it is a placement shift, not codegen — fix the manifest, not the C++.

@@ -62,3 +62,17 @@ ctor with none. (2) zeroing mBuffer/mLoaded belongs in an in-class ctor so
 the new-expression's own null-check covers it — an explicit `if (inst)`
 in the caller duplicates the check (+2 words). heap->alloc compiles to
 vtable slot 0x14 exactly as the frozen eggHeap.h lays it out.
+
+## dol/bases/d_dvd_error_wide_msg.cpp (dDvdErrorWideMsg_c) — 2/2 — LANDED 11.420% -> 11.424%
+Resumed prior session's claim (both functions already DIFFS 0; the working
+tree had a broken edit: 15 initializer rows for a [14][3] table). Retail
+truth: sMsgBase is exactly 14 rows — symbol map's 0x9C + anonymous
+lbl_803224E4 (0xC) tile it; initialize's loop runs i<14 and fn_80107AF0
+reads row 13. Prior final.o had one wrong word (row 3 mid pointer). Fixed
+table, hex-verified both functions and all 42 pointers against retail DOL.
+Two land.py rejections taught the real slice contract (see AGENT_CONTEXT):
+claims must match the compiled object's per-section sizes EXACTLY; my first
+manifest over-claimed .data by 8 bytes into the next TU's table and shifted
+132k downstream bytes. Second rejection was the same bug on .text (claimed
+through next symbol instead of object end); fixed by claiming .text
+0x101220-0x101338 / .data 0x23da8-0x23e50.
