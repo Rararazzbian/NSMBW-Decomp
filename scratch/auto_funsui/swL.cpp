@@ -1,21 +1,14 @@
-#include <game/bases/d_funsui_act.hpp>
 #include <game/bases/d_a_player_base.hpp>
 #include <game/framework/f_manager.hpp>
+#include <game/bases/d_funsui_act.hpp>
 
-// Anonymous retail pool literals and the effect-name string, pinned by
-// address (syms.txt) so this TU emits no data of its own.
-extern const float l_zero_8042C848;
-extern const float l_5500_8042C84C;
-extern const char l_str_803158C8[16];
-extern const float l_revSpeed_8042C840[2];
-
-/// @unofficial 0x38c is not named in the frozen headers; see the landed
-/// d_a_player_demo_manager.cpp for the same raw-cast pattern.
 static inline u8 &field_38c_ref(daPlBase_c *p) {
     return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(p) + 0x38c);
 }
 
 void dFunsuiAct_c::posMove() {
+    static const float cs_rev_speed[2] = { 3.0f, -3.0f };
+
     daPlBase_c *p = (daPlBase_c *)fManager_c::searchBaseByID(mBaseId);
     if (p == NULL) {
         return;
@@ -28,8 +21,8 @@ void dFunsuiAct_c::posMove() {
 
         if (mTimer > 0) {
             mTimer--;
-            mSpeed = l_zero_8042C848;
-            mTargetY += l_revSpeed_8042C840[mRevIndex];
+            mSpeed = 0.0f;
+            mTargetY += cs_rev_speed[mRevIndex];
         } else {
             mTargetY = pl->mPos.x;
         }
@@ -38,17 +31,19 @@ void dFunsuiAct_c::posMove() {
         break;
     }
     case 3: {
+        mVec3_c v;
+        float px = p->mPos.x;
         float nc = mCurrentY + mSpeed;
-        mTargetY = p->mPos.x;
+        mTargetY = px;
         mCurrentY = nc;
-        p->mPos.x = mTargetY;
+        p->mPos.x = px;
         p->mPos.y = nc;
-
         mVec3_c c1 = p->getCenterPos();
         mVec3_c c2 = p->getCenterPos();
-
-        mVec3_c v(c1.x, c2.y, l_5500_8042C84C);
-        mEffect.createEffect(l_str_803158C8, 0, &v, NULL, NULL);
+        v.x = c1.x;
+        v.y = c2.y;
+        v.z = 5500.0f;
+        mEffect.createEffect("Wm_en_quicksand", 0, &v, NULL, NULL);
         break;
     }
     }
