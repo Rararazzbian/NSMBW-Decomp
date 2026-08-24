@@ -38,7 +38,7 @@ Ordered easiest first.
 
 ## 2. dRandom_c — 248 B, 1 function — EASY
 - Range: 0x800D9850-0x800D9948
-- Status: UNCLAIMED
+- Status: IN PROGRESS: container-worker
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
