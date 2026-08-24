@@ -286,8 +286,8 @@ Ordered easiest first.
 
 ## 15. KokoopaSpFumiCheck_c — 408 B, 2 functions — MEDIUM
 - Range: 0x800B0840-0x800B09E0
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker (claimed 2026-08-24)
+- Attempts: 1
 - Existing header: none
 - Virtual: YES — `__vt__20KokoopaSpFumiCheck_c` at .data:0x80315298, size
   0x10 (base info + 2 virtual function pointers)
