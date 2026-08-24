@@ -143,8 +143,8 @@ Ordered easiest first.
 
 ## 8. dScRestartCrsin_c — 360 B, 2 functions — EASY
 - Range: 0x801018E0-0x80101A48
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: include/game/bases/d_s_restart_crsin.hpp
 - Virtual: no evidence
 - Functions (address order):
