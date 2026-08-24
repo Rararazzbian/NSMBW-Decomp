@@ -163,8 +163,11 @@ Ordered easiest first.
 ## 9. dPosShake_c — 288 B, 3 functions — EASY
 - **Head start:** Partial work exists at `scratch/trial/` — 2 of 3 already at DIFFS 0 (init, startShake). `move` is 61/61 words with a single f1/f2 register mirror. Start from that source, do not restart.
 - Range: 0x800D81A0-0x800D82D0
-- Status: IN PROGRESS: container-worker
-- Attempts: 1
+- Status: DONE (landed 2026-08-24, container-worker). All three byte-exact; landed as dol/bases/d_pos_shake.cpp, slices .text 0xd1a20-0xd1b50,
+- Attempts: 2 (attempt 1 stalled on an f1/f2 register mirror; closed on attempt 2)
+  .sdata2 0x1a88-0x1a8c (one anonymous 0.0f literal at 0x8042CDE8). New header
+  include/game/bases/d_pos_shake.hpp. Key: move() RETURNS f32 (returns x) --
+  invisible to the mangling, visible only as x living in f1. No externals.
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
@@ -178,8 +181,8 @@ Ordered easiest first.
 
 ## 10. MsgRes_c — 220 B, 4 functions — EASY/MEDIUM
 - Range: 0x800CE7F0-0x800CE8E4
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: include/game/bases/d_message.hpp (also referenced from
   d_lyttextBox.hpp and d_tag_processor.hpp, which take `MsgRes_c*` params —
   those are unrelated classes, not part of this unit)

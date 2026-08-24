@@ -100,3 +100,15 @@ shadow==include additive-only. The one open question — claiming .text through
 ZERO, and the next filler's natural alignment (16) forces the ld to pad our
 object by exactly those 8 bytes, so claim-through-pad reproduces retail.
 land.py ACCEPTED first try. Manifest mechanics recorded in AGENT_CONTEXT.
+
+## dol/bases/d_pos_shake.cpp (dPosShake_c) — 3/3 — LANDED 11.434% -> 11.439%
+Resumed prior session's claim (attempt 1 stalled at a clean 20-word f1/f2
+register mirror on move(); ~24 swept variants all converged on the same swap).
+Fix was OUTSIDE the swept axis: move() returns f32 -- CFront mangling omits
+return types so `move__11dPosShake_cFv` proves nothing, and retail keeps x in
+f1 = the float return register for the whole function. `return x;` costs zero
+extra instructions (epilogue stores leave it in place); the prior session's
+s14/s15 had tried f32 with `return vel;` and paid +1 word for an fmr. init
+7/7, startShake 4/4, move 61/61, hex-diff zero, land.py ACCEPTED. Slice .text
+0xd1a20-0xd1b50, .sdata2 0x1a88-0x1a8c; no external symbols; new header.
+Lever written to AGENT_CONTEXT.

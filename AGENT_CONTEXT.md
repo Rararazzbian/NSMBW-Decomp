@@ -2806,3 +2806,34 @@ all five binaries identical. The earlier d_dvd_error_wide_msg over-claim
 failure was a claim reaching into a region another object actually EMITS,
 not mere padding. Padding you can attribute to nobody = leave out only if a
 neighbour emits it; padding before a 16-aligned next function = fine to cover.
+
+## A void-vs-float return type can BE the whole register residual (FP edition of the r3 rule)
+
+The CFront return-type trap in section 2 is usually told about GPRs (`r3`).
+It has an exact FPR analog that closed `dPosShake_c::move` after ~24 source
+variants had converged on an unmoving 20-word f1/f2 swap: **a function whose
+retail body keeps one float alive in `f1` for its ENTIRE length — from the
+first load to the final store, through branches and calls — is a candidate for
+`f32` return with that value as the result.** MWCC reserves `f1` for a float
+return from entry, so the value lands there naturally and every other volatile
+shifts down one slot; declared `void`, the constant wins f1 instead and the
+local sits in f2.
+
+Two measurements make this cheap to apply:
+
+- **`return x;` where x is already in `f1` at the epilogue costs ZERO extra
+  words** — the stores then `blr` leave the return value in place. Returning a
+  DIFFERENT value than the one that happens to sit in f1 costs +1 word
+  (`fmr f1, fx`) and drags the tail out of shape. So when testing the
+  hypothesis, return the value retail keeps in f1, not the semantically
+  obvious one.
+- **Sibling classes are the cheapest prior.** `dRotShake_c::move` (landed,
+  byte-exact) returns its velocity; its positional twin `dPosShake_c::move`
+  returns its offset. When a near-identical sibling function returns a value,
+  weight the same-return hypothesis heavily before sweeping register
+  permutations.
+
+Corollary for diagnosis order on an FP permutation residual: check the RETURN
+TYPE axis BEFORE burning sweeps on declaration order / def-point splits. The
+mangling cannot refute or confirm it — only the diff can, which is exactly why
+it hides.
