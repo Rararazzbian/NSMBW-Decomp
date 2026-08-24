@@ -69,3 +69,53 @@ The base+IV+frame-rebuild lowering appears NOWHERE else in any prepared target
 occurrence elsewhere in wiimj2d with known-or-guessable source, or obtain MWCC's
 optimization report for both compilations. Absent that, treat the five-GPR shape
 as driven by a pressure/source property not yet identified.
+
+## PARKED: dol/bases/d_a_zoom_pipe_base.cpp (daZoomPipeBase_c)
+Parked 2026-08-24 at Attempts 3 per the stall rule. Three sessions spent;
+execute closed, init is one allocator mechanism away but nobody found the lever.
+
+- Source: scratch/auto_zoompipe/d_a_zoom_pipe_base.cpp
+- Header: scratch/auto_zoompipe/shadow/game/bases/d_a_zoom_pipe_base.hpp
+  (declares daObjPipeBase_c {calcDownLength, execute}, extern "C" fn_80045A10,
+  daZoomPipeBase_c layout: mParam@0x4, mTargetLength@0x5C8, mSpeed[2]@0x5CC,
+  mStep@0x5D4, mCurrent@0x5D8, mIdx@0x5DC)
+- Functions: 1 of 2 byte-exact.
+  execute__16daZoomPipeBase_cFv 53/53 words DIFFS 0, hex-verified.
+  init__16daZoomPipeBase_cFUi 44/44 words, frame 0x20 both sides,
+  20 diffs (plus 3 cosmetic @sda21 pool-label name artifacts whose bytes match).
+- Slice hypothesis (session 2, verified tiling):
+  .text 0x80063F80-0x80064104 (init 176 B + execute 212 B);
+  .sdata2 0xA78-0xA88 tiles exactly between spin_child_base and d_actor.
+  No __sinit, no __vt__, no .data/.bss seen for this class.
+- Externals to pin at landing: daObjPipeBase_c::calcDownLength,
+  daObjPipeBase_c::execute, fn_80045A10 (unnamed helper, extern "C";
+  param 3 is FLOAT -- retail narrows the int arg with fsubs before the call;
+  args after it are (1, 0, 0)).
+
+### The residual, fully decoded (session 4 analysis -- start HERE)
+init converts three nibbles of mParam to float via stw-magic/lfd/fsubs/fmuls.
+Source mapping CONFIRMED CORRECT against retail:
+  mStep      (0x5D4) = ((w>>8)&0xF) * 0.5f + 0.5f   [extrwi r,4,20]
+  mSpeed[1]  (0x5D0) = (w&0xF)      * 16.f + 16.f   [clrlwi 28]
+  mSpeed[0]  (0x5CC) = ((w>>4)&0xF) * 16.f + 16.f   [extrwi r,4,24]
+  mCurrent   (0x5D8) = mSpeed[0]
+Retail allocates the two reusable int->double conversion slot pairs:
+  pair A {r1+0x8,+0xC}: 1st conv = mStep nibble, REUSED 2nd conv = mSpeed[1]
+  pair B {r1+0x10,+0x14}: 3rd conv = mSpeed[0], then REUSED for kind=(w>>16)&3
+The draft inverts the middle two: mSpeed[1] takes fresh pair B, mSpeed[0]
+reuses pair A. Every remaining diff follows from that one inversion --
+retail keeps the mStep product live in f6 across the region and folds late;
+the draft interleaves through volatile f0-f3. Retail also schedules the
+mSpeed[1] conversion's live range OVERLAPPING mSpeed[0]'s (stfw w19/lfd w23
+vs stfw w21/lfd w24), which forces distinct slots; the draft's schedule has
+no overlap (lfd lands between the other's stfw), so the allocator pairs them
+the opposite way.
+
+### What would settle it
+Find a source shape that makes the compiler schedule the mSpeed[1]
+conversion's lfd AFTER mSpeed[0]'s stfw (restoring the overlap). Untried
+candidates: bind (w&0xF) to a named local converted at a controlled point;
+interleave an unrelated op between the two assignments; convert through an
+explicit double local. ~100 swept variants over sessions 1-3 reordered
+statements/declarations/compound-add forms without hitting it; see
+scratch/auto_zoompipe/ variants and the WORK_QUEUE Attempts note.

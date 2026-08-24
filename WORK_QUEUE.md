@@ -231,12 +231,16 @@ Ordered easiest first.
 
 ## 13. daZoomPipeBase_c — 388 B, 2 functions — MEDIUM
 - Range: 0x80063F80-0x80064104
-- Status: IN PROGRESS: container-worker
+- Status: PARKED (container-worker, 2026-08-24, at Attempts 3). See
+  READY_TO_LAND.md PARKED section -- execute 53/53 byte-exact; init 44/44
+  words with ONE residual mechanism (int->double conversion slot-pair
+  assignment inverted vs retail; source member/nibble mapping confirmed
+  correct). Full decode + untried levers recorded there.
 - Attempts: 3 (session 1: execute MATCHed via j_W5 shape; init stuck at ~19
   diffs. Session 2: init ABI decoded — fn_80045A10 is unnamed extern-C,
   param3 float, r4=param passthrough, consts pin f3/f4/f5; sdata2 slice
   0xA78-0xA88 tiles exactly between spin_child_base and d_actor.
-  Session 3: resumed; if init does not close this attempt, park.)
+  Session 3: execute merged+matched; init still 20 diffs -> parked.)
 - Existing header: none
 - Virtual: unclear — no `__dt`/`__vt__` symbol surfaced for this class in
   this run; the `Base_c` suffix strongly implies it is inherited from

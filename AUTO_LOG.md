@@ -138,3 +138,14 @@ declaration taking the slot as explicit this -- no invented member name
 needed. Ctor/dtor are pure __construct_array/__destroy_arr machinery.
 Slices .text/.data/.sbss all matched object sizes exactly. dPyEffect_c's own
 TU portion (0x800D2AE0-0x800D2D10) is a separate future unit.
+
+## dol/bases/d_a_zoom_pipe_base.cpp (daZoomPipeBase_c) — 1/2 — PARKED (Attempts 3)
+execute__16daZoomPipeBase_cFv byte-exact (53/53, DIFFS 0). init__16daZoom-
+PipeBase_cFUi stuck at 20 diffs after three sessions/~100 swept variants ->
+parked per stall rule. Session-4 decode: source member/nibble/constant map is
+CORRECT; the residual is purely WHICH int->double stack slot-pair each
+conversion gets. Retail: mSpeed[1]'s conv reuses pair A {0x8,0xC}, mSpeed[0]'s
+takes fresh pair B {0x10,0x14} (their live ranges overlap); draft inverts the
+pairing because its schedule has no overlap. Untried lever recorded in
+READY_TO_LAND.md: force the lfd of the second conversion to schedule after
+the stfw of the third. State committed for instant resume.
