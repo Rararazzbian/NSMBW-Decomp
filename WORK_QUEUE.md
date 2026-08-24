@@ -76,8 +76,8 @@ Ordered easiest first.
 
 ## 4. LangLocString — 404 B, 1 function — EASY
 - Range: 0x80107BE0-0x80107D74
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
