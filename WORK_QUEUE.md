@@ -92,8 +92,8 @@ Ordered easiest first.
 
 ## 5. dRomFontMgr_c — 224 B, 2 functions — EASY
 - Range: 0x80106F00-0x80106FE4
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: include/game/bases/d_rom_font_manager.hpp
 - Virtual: no evidence
 - Functions (address order):
