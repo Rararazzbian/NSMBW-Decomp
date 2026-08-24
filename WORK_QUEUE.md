@@ -127,8 +127,12 @@ Ordered easiest first.
 ## 7. dRotShake_c — 292 B, 2 functions — EASY
 - **Head start:** Partial work exists at `scratch/trial/` — init already at DIFFS 0. `move` is 63/63 words, same register-mirror character. Start from that source, do not restart.
 - Range: 0x800DF950-0x800DFA7C
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). Both functions byte-exact;
 - Attempts: 1
+  landed as dol/bases/d_rot_shake.cpp with slice .text 0xd91d0-0xd9300 (claim
+  runs to next TU bindAnimToNode__8dsChrLib at 0x800DFA80). New header
+  include/game/bases/d_rot_shake.hpp; no external symbols -- move() makes no
+  calls at all. Key: head must be compound-add form (see AGENT_CONTEXT).
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):

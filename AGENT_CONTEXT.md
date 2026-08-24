@@ -2771,3 +2771,38 @@ Diagnosis recipe that cracked it in minutes: rebuild with the unit applied,
 `cmp -l` built vs original, classify every differing byte by section. When
 one section holds ~all diffs and every value differs by the same small
 delta, it is a placement shift, not codegen — fix the manifest, not the C++.
+
+## The compound-add lever: when retail folds a sum into the LEFT operand's register and your binary-op form will not
+
+Found landing `dRotShake_c::move` (2026-08-24, 21 sweep variants).
+
+Symptom: word count, frame and callee-saved set all match; the residual is a
+clean GPR permutation AND the first `add` lands in the "wrong" operand's
+register. Retail: `add r6, r6, r0` — the sum keeps m000's register (the LEFT
+operand / base). Every draft spelled `s16 x = m000 + q;` produced
+`add r0, r4, r0` — the sum took the RIGHT operand's register, then needed an
+extra copy (`extsh. r5, r0`) that permuted every later v/x reference.
+
+What worked: split initialization from accumulation,
+
+    s16 x = m000;
+    x += -v / m004;
+
+Compound assignment makes the add UPDATE x's virtual register instead of
+creating a fresh one for the sum; coalescing then keeps it in the base
+register. Named-local vs inline cast of the quotient, declaration orders,
+and the algebraic rewrite `m000 - v / m004` did NOT fix it (the rewrite also
+changes the emitted op to subf-compatible forms and lost 2 words).
+
+This refines the existing "add keeps the BASE's register" rule: keeping it is
+not automatic — the SOURCE SHAPE decides whether the sum is a new value or an
+update. When retail shows base-register folding and your plain `a + b` form
+refuses, try `a = lhs_init; a += rhs;` before sweeping declaration orders.
+
+Corollary for slice manifests, confirmed in the same landing: claiming .text
+through the NEXT TU's start symbol is safe when your object ends short of it
+by pure inter-unit alignment padding (4 bytes here) — land.py accepted with
+all five binaries identical. The earlier d_dvd_error_wide_msg over-claim
+failure was a claim reaching into a region another object actually EMITS,
+not mere padding. Padding you can attribute to nobody = leave out only if a
+neighbour emits it; padding before a 16-aligned next function = fine to cover.

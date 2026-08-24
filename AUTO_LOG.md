@@ -76,3 +76,14 @@ manifest over-claimed .data by 8 bytes into the next TU's table and shifted
 132k downstream bytes. Second rejection was the same bug on .text (claimed
 through next symbol instead of object end); fixed by claiming .text
 0x101220-0x101338 / .data 0x23da8-0x23e50.
+
+## dol/bases/d_rot_shake.cpp (dRotShake_c) — 2/2 — LANDED 11.424% -> 11.429%
+Resumed prior session's claim (attempt 1; init already DIFFS 0, move stuck at
+30 diffs as a clean GPR permutation: retail keeps v=r5/x=r6 and folds the
+m000+q sum into m000's register; every draft form `x = m000 + q` folded the
+sum into the quotient register r0 instead). Fix found on variant sw17 of 21:
+split the head into compound-add form -- `s16 x = m000; x += -v / m004;` --
+which makes the add update x's register exactly like retail. Tail then fell
+into place with no further edits. init 10/10, move 63/63 words, hex-diff
+zero, land.py ACCEPTED first try. Slice .text 0xd91d0-0xd9300; no external
+symbols (the unit performs zero calls). Lever written up in AGENT_CONTEXT.
