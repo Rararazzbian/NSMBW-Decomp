@@ -434,3 +434,278 @@ Ordered easiest first.
 - **dSwitchFlagMng_c** — actually an 11-function, ~2.8 KB class
   (find_targets itself flagged "1 more" on this group); the candidate was
   7 functions.
+
+## 18. daLiftAllHitDraw_c — 3812 B, 7 functions — EASY
+- Range: 0x800BD7F0-0x800BE6D4
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: none
+- Virtual: no (no __vt__20daLiftAllHitDraw_c in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      452 B  toge_hline_texset__18daLiftAllHitDraw_cFiiff   0x800BD7F0
+      1680 B  hline_texset__18daLiftAllHitDraw_cFiiff   0x800BD9C0
+      832 B  texset__18daLiftAllHitDraw_cFv   0x800BE050
+      80 B  init__18daLiftAllHitDraw_cFv   0x800BE390
+      436 B  move__18daLiftAllHitDraw_cFR7mVec3_c   0x800BE3E0
+      148 B  draw__18daLiftAllHitDraw_cFv   0x800BE5A0
+      148 B  doDelete__18daLiftAllHitDraw_cFv   0x800BE640
+- Vetting: every daLiftAllHitDraw_c symbol falls in 0x800BD7F0-0x800BE6D4, nothing
+  foreign between (all 7 search_symbols hits match the 7 candidate functions
+  exactly, size and count agree). Next symbol after the range is fn_800BE6E0
+  (unnamed dtk placeholder, different function). Not present in slices/wiimj2d.json
+  or source/dol/bases/. External deps are minimal: only runtime helper
+  _savegpr_18 and a few .sdata/.sdata2 float constant loads — no calls into other
+  undecompiled classes.
+
+## 19. PauseManager_c — 2908 B, 21 functions — MEDIUM
+- Range: 0x800D0A90-0x800D15EC
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: include/game/bases/d_pause_manager.hpp
+- Virtual: yes (__vt__14PauseManager_c present in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      36 B  __ct__14PauseManager_cFv   0x800D0A90
+      76 B  __dt__14PauseManager_cFv   0x800D0AC0
+      32 B  CourseHoinitialize__14PauseManager_cFv   0x800D0B10
+      44 B  initialize__14PauseManager_cFv   0x800D0B30
+      164 B  execute__14PauseManager_cFv   0x800D0B60
+      40 B  setPauseEnable__14PauseManager_cFb   0x800D0C10
+      12 B  isDisable__14PauseManager_cFv   0x800D0C40
+      144 B  ProcMainInit__14PauseManager_cFv   0x800D0C50
+      12 B  ProcMainPauseOn__14PauseManager_cFv   0x800D0CE0
+      168 B  SelectSoundSet__14PauseManager_cFi   0x800D0CF0
+      404 B  KeyChack__14PauseManager_cFv   0x800D0DA0
+      52 B  ProcMainPause__14PauseManager_cFv   0x800D0F40
+      144 B  ProcMainPauseOffInit__14PauseManager_cFv   0x800D0F80
+      180 B  ProcMainPauseOff__14PauseManager_cFv   0x800D1010
+      284 B  CourseOutConfirmation__14PauseManager_cFv   0x800D10D0
+      144 B  ConfirmationSelectDecisionWait__14PauseManager_cFv   0x800D11F0
+      84 B  OtasukeDisp__14PauseManager_cFv   0x800D1280
+      100 B  PauseSetUp__14PauseManager_cFi   0x800D12E0
+      592 B  setPause__14PauseManager_cFv   0x800D1350
+      36 B  onDispOtasukeWindow__14PauseManager_cFv   0x800D15A0
+      28 B  isOtasukePause__14PauseManager_cFv   0x800D15D0
+- Vetting: every PauseManager_c symbol falls in 0x800D0A90-0x800D15EC (21/21
+  match the candidate exactly, contiguous, no gaps). Next symbol after the
+  range is set__5dPc_cFP8dActor_cUc (dPc_c, different class, touches boundary
+  with 4 bytes of padding). Not present in slices/wiimj2d.json.
+  External calls NOT yet decompiled (need syms.txt addresses at landing):
+  isWarning__17dWarningManager_cFv, chkCancelButton__8dGameComFi,
+  isGameStop__8dGameComFUl, isNowCourseClear__8dGameComFv,
+  getGameDisplay__10dScStage_cFv, setNextScene__10dScStage_cFUsiQ210dScStage_c6Exit_eQ28dFader_c12fader_type_e,
+  setNextScene__8dScene_cFUsUlb, getPlayer__9daPyMng_cFi,
+  isPlayerPauseEnable__9daPyMng_cFSc, offRumbleEnable/onRumbleEnable__Q213dRemoconMng_c10dConnect_cFv,
+  setFader__8dFader_cFQ28dFader_c12fader_type_e, startSystemSe__11SndAudioMgrFUiUl.
+  Also several .sdata statics from dInfo_c, dScStage_c, dGameKeyCore_c, Pausewindow_c,
+  dActorCreateMng_c. Marked MEDIUM for the volume of cross-class references,
+  despite the unit itself being a clean, exact contiguous match.
+
+## 20. dIceMng_c — 2904 B, 17 functions — MEDIUM
+- Range: 0x800B8490-0x800B8FE8
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: include/game/bases/d_ice_manager.hpp
+- Virtual: no (no __vt__9dIceMng_c in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      148 B  __ct__9dIceMng_cFP8dActor_c   0x800B8490
+      108 B  __dt__9dIceMng_cFv   0x800B8530
+      208 B  initialize__9dIceMng_cFv   0x800B85A0
+      196 B  getIceAct__9dIceMng_cFv   0x800B8670
+      16 B  setIceStatus__9dIceMng_cFiii   0x800B8740
+      332 B  createIce__9dIceMng_cFP8dIceInfoi   0x800B8750
+      120 B  removeIce__9dIceMng_cFv   0x800B88A0
+      92 B  setTime__9dIceMng_cFv   0x800B8920
+      124 B  setNonMeltTime__9dIceMng_cFv   0x800B8980
+      100 B  checkMeltShake__9dIceMng_cCFv   0x800B8A00
+      144 B  checkInstantBreak__9dIceMng_cFi   0x800B8A70
+      128 B  setMeltShake__9dIceMng_cFv   0x800B8B00
+      128 B  stopMeltShake__9dIceMng_cFv   0x800B8B80
+      116 B  breakEffect__9dIceMng_cFv   0x800B8C00
+      184 B  beginMelt_Normal__9dIceMng_cFv   0x800B8C80
+      496 B  checkLowAir__9dIceMng_cFv   0x800B8D40
+      184 B  manageProc__9dIceMng_cFv   0x800B8F30
+- Vetting: every dIceMng_c symbol falls in 0x800B8490-0x800B8FE8 (17/17 match,
+  contiguous, no gaps). Next symbol after the range is
+  __sinit_\d_ice_param_cpp (different TU's static initializer). Not present in
+  slices/wiimj2d.json. External calls NOT yet decompiled: setInfo__7daIce_cF7mVec3_c13dIceEfScale_c,
+  checkInstantBreak__7daIce_cFi, breakEffect__7daIce_cFv, and a virtual dispatch
+  through StateID_Melt_Normal__7daIce_c — daIce_c is itself a large undecompiled
+  class (~5000+ B, seen but rejected as its own candidate for being oversized/
+  fragmented past this window). Also calls checkGround/checkWater/isFoot__5dBc_c,
+  cvtSndObjctPos__6dAudioFRC7mVec3_c + g_pSndObjMap__6dAudio, startSound__14SndObjctCmnMapFUlRCQ34nw4r4math4VEC2Ul,
+  searchBaseByID__10fManager_cF9fBaseID_e, deleteRequest__7fBase_cFv,
+  getCenterPos__12dBaseActor_cCFv, construct__8dActor_cFUsP7dBase_cUlPC7mVec3_cPC7mAng3_cUc.
+  MEDIUM due to the daIce_c dependency.
+
+## 21. dWaterDraw_c — 2744 B, 10 functions — MEDIUM
+- Range: 0x800EAB10-0x800EB5C8
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: none
+- Virtual: no (no __vt__12dWaterDraw_c in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      108 B  createWater__12dWaterDraw_cFP7mVec3_cffUcUc   0x800EAB10
+      72 B  executeWater__12dWaterDraw_cFv   0x800EAB80
+      84 B  executeWater__12dWaterDraw_cFP7mVec3_cff   0x800EABD0
+      616 B  drawWater__12dWaterDraw_cFUc   0x800EAC30
+      244 B  color_insert__12dWaterDraw_cF11_GXTevRegID14_GXTevKColorIDUc   0x800EAEA0
+      244 B  color_insert_heat__12dWaterDraw_cF11_GXTevRegID14_GXTevKColorIDUc   0x800EAFA0
+      168 B  repeat_calc__12dWaterDraw_cFP7mVec3_cff   0x800EB0A0
+      588 B  model_set__12dWaterDraw_cFUc   0x800EB150
+      380 B  model_repeatset__12dWaterDraw_cFv   0x800EB3A0
+      168 B  model_anmplay__12dWaterDraw_cFv   0x800EB520
+- Vetting: every dWaterDraw_c symbol falls in 0x800EAB10-0x800EB5C8 (10/10
+  match, contiguous, no gaps). Next symbol after the range is
+  WaterEntryInital__16dWaterEntryMng_cFv (different class). Not present in
+  slices/wiimj2d.json. External calls NOT yet decompiled are almost entirely
+  standard nw4r3g3d/m3d graphics-engine functions (GXGetTevColor, GXGetTevKColor,
+  GetResAnmTexSrt, GetResMdl, GetResMatNumEntries, setTevColor, setTevKColor,
+  m3d::mdl_c::create/setAnm, m3d::anmTexSrt_c::create/setAnm/setFrame,
+  m3d::scnLeaf_c methods, ScnMdl::CopiedMatAccess ctor, SetEffectMtx,
+  PSMTXTrans/PSMTXScale, X/Y/ZrotM) plus dHeapAllocator_c, dRes_c::getRes,
+  and dResMng_c/dScStage_c statics — these are common SDK/engine calls very
+  likely already available project-wide. MEDIUM only due to call volume, not
+  risk.
+
+## 22. daLiftRemoconMain_c — 2636 B, 11 functions — MEDIUM
+- Range: 0x800439B0-0x800443FC
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: none
+- Virtual: yes (__vt__19daLiftRemoconMain_c present in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      116 B  MultiRemoconShockSet__19daLiftRemoconMain_cFUc   0x800439B0
+      616 B  RidePlayerCancelCheck__19daLiftRemoconMain_cCFSc   0x80043A30
+      40 B  PlayerNoRideClear__19daLiftRemoconMain_cFv   0x80043CA0
+      204 B  BufferEntryCanselCheck__19daLiftRemoconMain_cCFUc   0x80043CD0
+      192 B  PlayerNoRideEntry__19daLiftRemoconMain_cFUc   0x80043DA0
+      72 B  PlayerNoRideSort__19daLiftRemoconMain_cFi   0x80043E60
+      84 B  PlayerNoRideDelete__19daLiftRemoconMain_cFUc   0x80043EB0
+      424 B  PlayerNoEntryHead__19daLiftRemoconMain_cFUc   0x80043F10
+      288 B  PlayerNoRideCheck__19daLiftRemoconMain_cFUc   0x800440C0
+      432 B  PlayerRideCheck__19daLiftRemoconMain_cFRSc   0x800441E0
+      108 B  __dt__19daLiftRemoconMain_cFv   0x80044390
+- Vetting: every daLiftRemoconMain_c symbol falls in 0x800439B0-0x800443FC
+  (11/11 match, contiguous, no gaps). Next symbol after the range is
+  __dt__11dRideRoll_cFv (different class). Not present in slices/wiimj2d.json.
+  External calls NOT yet decompiled: startShock__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eiib
+  + m_instance__8dQuake_c (see unit 25, dQuake_c, in this same batch),
+  getCtrlPlayer__9daPyMng_cFi, isStatus__10daPlBase_cFi, onStatus__10daPlBase_cFi,
+  isFoot__5dBc_cFv, plus destructor calls __dt__11dRide_ctr_cFv,
+  __dt__13dActorState_cFv, __dl__7fBase_cFPv. MEDIUM.
+
+## 23. dEnemyMng_c — 2376 B, 19 functions — MEDIUM
+- Range: 0x800A7450-0x800A7D98
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: include/game/bases/d_enemy_manager.hpp
+- Virtual: no (no __vt__11dEnemyMng_c in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      100 B  EnemyInfoAllClear__11dEnemyMng_cFv   0x800A7450
+      120 B  createRevivalBallon__11dEnemyMng_cFR7mVec3_cii   0x800A74C0
+      12 B  createYoshiEgg__11dEnemyMng_cFR7mVec3_cUlUlSc   0x800A7540
+      8 B  SanboEatCreateYoshiEgg__11dEnemyMng_cFR7mVec3_cUlUlSci   0x800A7550
+      220 B  CommonCreateYoshiEgg__11dEnemyMng_cFR7mVec3_cUlUlSci   0x800A7560
+      80 B  setBigHanaMng__11dEnemyMng_cFP14daBigHanaMgr_c   0x800A7640
+      76 B  demo_ivy_create__11dEnemyMng_cFP7mVec3_c   0x800A7690
+      84 B  TeresaZposCount__11dEnemyMng_cFv   0x800A76E0
+      84 B  MagSearchKillerZposCount__11dEnemyMng_cFv   0x800A7740
+      192 B  multi_item_set__11dEnemyMng_cFP7mVec3_cPUlUliUlScUc   0x800A77A0
+      48 B  setNoGetItemTimer__11dEnemyMng_cFi   0x800A7860
+      56 B  getNoGetItemTimer__11dEnemyMng_cFi   0x800A7890
+      196 B  search_magkiller_line_check__11dEnemyMng_cFiUc   0x800A78D0
+      580 B  search_magkiller_entry__11dEnemyMng_cFfPfUc   0x800A79A0
+      12 B  clrQuakeComboCount__11dEnemyMng_cFv   0x800A7BF0
+      88 B  incQuakeComboCount__11dEnemyMng_cFi   0x800A7C00
+      196 B  breakdownSE__11dEnemyMng_cFiRC7mVec3_c   0x800A7C60
+      68 B  clrTogemetComboCount__11dEnemyMng_cFv   0x800A7D30
+      24 B  search_magkiller_delete__11dEnemyMng_cFi   0x800A7D80
+- Vetting: every dEnemyMng_c symbol falls in 0x800A7450-0x800A7D98 (19/19
+  match, contiguous, no gaps). Next symbol after the range is
+  baseID_Ice<10sStateID_c>__Fv_RC12sStateIDIf_c (local template symbol,
+  different scope). Not present in slices/wiimj2d.json. External calls not
+  yet exhaustively enumerated (get_target not run at full disassembly depth
+  for this unit — recommend running get_target with a large max_lines at
+  landing time); function names suggest calls into daBigHanaMgr_c (setBigHanaMng
+  takes a P14daBigHanaMgr_c), fManager_c-style actor creation, and dAudio SE
+  helpers similar to sibling managers in this batch. MEDIUM.
+
+## 24. daFlyDokan_c — 2168 B, 10 functions — MEDIUM
+- Range: 0x80041C00-0x80042478
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: none
+- Virtual: yes (__vt__12daFlyDokan_c present in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      308 B  create__12daFlyDokan_cFv   0x80041C00
+      380 B  createMdl__12daFlyDokan_cFv   0x80041D40
+      60 B  execute__12daFlyDokan_cFv   0x80041EC0
+      924 B  draw__12daFlyDokan_cFv   0x80041F00
+      4 B  deleteReady__12daFlyDokan_cFv   0x800422A0
+      160 B  doDelete__12daFlyDokan_cFv   0x800422B0
+      104 B  fly__12daFlyDokan_cFv   0x80042350
+      4 B  calcMoveSpeed__12daFlyDokan_cFv   0x800423C0
+      4 B  loadBreakMdl__12daFlyDokan_cFv   0x800423D0
+      152 B  __dt__12daFlyDokan_cFv   0x800423E0
+- Vetting: every daFlyDokan_c symbol falls in 0x80041C00-0x80042478 (10/10
+  match, contiguous, no gaps). Next symbol after the range is
+  callBackF__17daIceAshibaBase_cFP8dActor_cP8dActor_c (different class). Not
+  present in slices/wiimj2d.json. External calls not yet exhaustively
+  enumerated (recommend a full-depth get_target pass at landing time,
+  especially for the 924 B draw function, which is very likely to reference
+  m3d/nw4r3g3d model-drawing calls similar to unit 21's dWaterDraw_c). Has a
+  vtable, so a virtual-call table entry check will also be needed at landing.
+  MEDIUM.
+
+## 25. dQuake_c — 2160 B, 9 functions — EASY
+- Range: 0x800D8940-0x800D91B0
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: include/game/bases/d_quake.hpp
+- Virtual: no (no __vt__8dQuake_c in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      268 B  startQuake__8dQuake_cFScQ28dQuake_c12TYPE_QUAKE_eib   0x800D8940
+      276 B  startQuakeAll__8dQuake_cFQ28dQuake_c12TYPE_QUAKE_eib   0x800D8A50
+      120 B  stopQuake__8dQuake_cFv   0x800D8B70
+      164 B  startShock__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eiib   0x800D8BF0
+      176 B  shockMotor__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_eib   0x800D8CA0
+      204 B  startShockAll__8dQuake_cFQ28dQuake_c12TYPE_SHOCK_eiib   0x800D8D50
+      260 B  shockMotorPattern__8dQuake_cFScQ28dQuake_c16TYPE_SHOCK_PTN_eib   0x800D8E20
+      96 B  shockCamera__8dQuake_cFScQ28dQuake_c12TYPE_SHOCK_ei   0x800D8F30
+      544 B  execute__8dQuake_cFv   0x800D8F90
+- Vetting: every dQuake_c symbol falls in 0x800D8940-0x800D91B0 (9/9 match,
+  contiguous, no gaps). Next symbol after the range is
+  getRailInfoP__7dRail_cFUc (different class, dRail_c). Not present in
+  slices/wiimj2d.json. Note: a startQuakeShock__10daPlBase_cFQ28dQuake_c12TYPE_SHOCK_e
+  symbol appears far away in source/dol/bases/d_a_player_base.cpp — that is a
+  DIFFERENT class (daPlBase_c) calling into dQuake_c's enum type, not a
+  dQuake_c method, and is already marked [done] there; it does not affect this
+  unit's contiguity. Has header, no vtable, self-contained state/math logic.
+  EASY.
+
+## 26. dBgGlobal_c — 2136 B, 12 functions — MEDIUM
+- Range: 0x80081070-0x800818C8
+- Status: UNCLAIMED
+- Attempts: 0
+- Existing header: none
+- Virtual: yes (__vt__11dBgGlobal_c present in bin/dtk/wiimj2d_symbols.txt)
+- Functions (address order):
+      652 B  __ct__11dBgGlobal_cFv   0x80081070
+      240 B  __dt__11dBgGlobal_cFv   0x80081300
+      24 B  getEnvironment__11dBgGlobal_cFii   0x800813F0
+      192 B  setEnvironment__11dBgGlobal_cFv   0x80081410
+      456 B  loadCourseData__11dBgGlobal_cFv   0x800814D0
+      212 B  expandUnit__11dBgGlobal_cFv   0x800816A0
+      120 B  reexpandUnit__11dBgGlobal_cFi   0x80081780
+      68 B  create__11dBgGlobal_cFPQ23EGG7FrmHeap   0x80081800
+      24 B  GetBgUnitP__11dBgGlobal_cFii   0x80081850
+      32 B  getUnitHeadData__11dBgGlobal_cFiiUs   0x80081870
+      28 B  getUnitP__11dBgGlobal_cFiiUs   0x80081890
+      24 B  getCourseDataP__11dBgGlobal_cFii   0x800818B0
+- Vetting: every dBgGlobal_c symbol falls in 0x80081070-0x800818C8 (12/12
+  match, contiguous, no gaps). Next symbol after the range is fn_800818D0
+  (unnamed dtk placeholder). Not present in slices/wiimj2d.json. Has a
+  vtable, so landing needs the vtable entry; external calls not yet
+  exhaustively enumerated (recommend a full-depth get_target pass at landing
+  time — this is bg/course-data bookkeeping, likely touches dBgUnit_c and
+  EGG::FrmHeap). MEDIUM.
