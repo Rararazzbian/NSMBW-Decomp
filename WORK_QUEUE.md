@@ -143,7 +143,14 @@ Ordered easiest first.
 
 ## 8. dScRestartCrsin_c — 360 B, 2 functions — EASY
 - Range: 0x801018E0-0x80101A48
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). Both functions byte-exact;
+  landed as dol/bases/d_s_restart_crsin.cpp, slices .text 0xfb160-0xfb2d0,
+  .rodata 0x6cf0-0x6d0e (c_stage u8[15][2] table), .bss 0x226e0-0x226f0
+  (m_startGameInfo). The 8 .text bytes past object end are retail-zero pad.
+  Externals pinned: setNextScene__8dScene_cFUsUlb=0x800E1F50,
+  m_isDispOff__10dScCrsin_c=0x8042A490, m_titleRandomTable__10dScStage_c=
+  0x803744BC, m_titleCount__10dScStage_c=0x8042A4D8. Header expanded
+  (additive): StartGameInfo block + dScCrsin_c static decl.
 - Attempts: 1
 - Existing header: include/game/bases/d_s_restart_crsin.hpp
 - Virtual: no evidence
@@ -156,8 +163,8 @@ Ordered easiest first.
 ## 9. dPosShake_c — 288 B, 3 functions — EASY
 - **Head start:** Partial work exists at `scratch/trial/` — 2 of 3 already at DIFFS 0 (init, startShake). `move` is 61/61 words with a single f1/f2 register mirror. Start from that source, do not restart.
 - Range: 0x800D81A0-0x800D82D0
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):

@@ -87,3 +87,16 @@ which makes the add update x's register exactly like retail. Tail then fell
 into place with no further edits. init 10/10, move 63/63 words, hex-diff
 zero, land.py ACCEPTED first try. Slice .text 0xd91d0-0xd9300; no external
 symbols (the unit performs zero calls). Lever written up in AGENT_CONTEXT.
+
+## dol/bases/d_s_restart_crsin.cpp (dScRestartCrsin_c) — 2/2 — LANDED 11.429% -> 11.434%
+Resumed prior session's claim: scratch was already byte-exact and the landing
+was fully staged but never run (stale tree blocked land.py; source/ copy also
+held a pre-final cpp). Re-verified everything before gating: fndiff MATCH both,
+wdiff 0 differing words, object .text 0x168/.rodata 0x1E/.bss 0x10 vs claims
+0x170/0x1E/0x10, all five externals resolvable (setFader pre-pinned), headers
+shadow==include additive-only. The one open question — claiming .text through
+8 bytes of trailing pad past object end (dRotShake precedent) vs exact-size
+(dvderr lesson) — settled empirically: retail bytes at VA 0x80101A48-50 are
+ZERO, and the next filler's natural alignment (16) forces the ld to pad our
+object by exactly those 8 bytes, so claim-through-pad reproduces retail.
+land.py ACCEPTED first try. Manifest mechanics recorded in AGENT_CONTEXT.
