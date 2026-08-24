@@ -25,3 +25,13 @@ closed call community that may really be this TU (~4.7 KB more); left
 unclaimed deliberately. Two new levers recorded in AGENT_CONTEXT: pinning
 anonymous pool literals via syms.txt instead of seeding a pool, and compound
 assignment on both if/else arms to defeat store tail-merging.
+
+## dol/bases/d_random.cpp (dRandom_c::calcMachineRandom) — 0/1 byte-exact — PARKED
+Target fully decoded: CRC32 over {u64 time, nick[0x18], 4x RandRec{3 floats via
+two mVec3_c copies, raw pos, dist}} from mPad::g_core[i], do-while ++i<=3,
+frame 0xd0 with _savegpr_27. Best drafts: 61w/58 diffs (cursor form) and
+63w/54 diffs (sw27 k1). Blocker: retail lowers both array walks as pinned base
++ running byte IV + per-iteration frame-base rebuild; every source spelling in
+~50 variants across sweeps 12-27 collapses to cursor form or mulli instead.
+Full state + ruled-out list in READY_TO_LAND.md PARKED section. Claiming
+dFunsuiAct_c next per stall rule.

@@ -2662,3 +2662,44 @@ This checkout runs on Linux via three shims, all outside tools/**:
   scratch driver, never by editing tools/**.
 - land.py invokes `python`: `/usr/local/bin/python -> python3` symlink.
 See `scratch/auto_lift2/build.py` for the working driver pattern.
+
+## MWCC normalizes spelled index/pointer forms back to CURSOR addressing under low pressure
+
+Measured on dRandom_c::calcMachineRandom (~50 variants, sweeps 12-27). Retail
+lowers two parallel array walks (`g_core[i]` global pointer array, records into
+a local buffer) as PINNED BASE + RUNNING BYTE IV: `lis/addi` base once, an
+index register advanced by the element size, `lwzx rD, rBASE, rIV`, and for the
+frame-local array a per-iteration `addi rX, r1, K; add rX, rX, rIV`. No source
+spelling reproduces it:
+
+- `[i]`, `[i+4]`, pointer, reference, array-reference bindings -> moving-pointer
+  cursor form (displacement loads, cursor advanced by stride).
+- Binding the record reference INSIDE the loop -> frame-base rebuild kept, but
+  the scale comes back as `mulli r0, r0, 0x18` instead of an IV.
+- EXPLICIT source-level offset variables (`*(T*)((char*)base + off)`,
+  `off += sizeof(T)`) are normalized BACK to cursors. The optimizer treats any
+  spelled induction as an induction and re-fuses it when registers are free.
+- Loop forms (for / while / do-while / ++i<=3 / i++<3 / u32 counter): no effect.
+- By-value static-inline helper returning mVec3_c (sret semantics): no effect
+  on store order or addressing.
+
+The five-callee-saved-GPR shape therefore comes from something that creates
+register pressure or defeats fusion, not from indexing SPELLING. Diagnostic
+value even unresolved: **when your draft saves fewer GPRs than retail, count the
+values live ACROSS CALLS on each side; each extra live quantity is one more
+saved register, and the addressing mode follows the pressure** (cheap frame
+bases get rematerialized instead of hoisted only when hoisting costs pressure).
+
+Corpus negative worth reusing: grep over all prepared target.txt files shows
+the `addi rX, r1, K ; add rX, rX, rY` loop-rebuild pair occurs in NO other unit
+in this module. If you meet it again, do not hunt for a common idiom -- it is
+rare, and the answer is probably pressure, not spelling.
+
+## A local array of objects with class-type members emits __construct_array
+
+Declaring a local struct whose members have non-trivial default constructors
+(e.g. `mVec3_c pos; mVec2_c raw;`) inside a function that memsets/uses it as
+raw bytes adds ~12 words of `__construct_array` prologue that retail does not
+have. An all-float layout of the same size compiles clean. When a draft's word
+count is ~+12 over target with a `bl __construct_array` up front, replace
+class-typed members by their float components rather than hunting elsewhere.

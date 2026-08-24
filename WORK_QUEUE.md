@@ -38,7 +38,10 @@ Ordered easiest first.
 
 ## 2. dRandom_c — 248 B, 1 function — EASY
 - Range: 0x800D9850-0x800D9948
-- Status: IN PROGRESS: container-worker
+- Status: PARKED (container-worker, 2026-08-24). See READY_TO_LAND.md PARKED
+  section: code structure fully decoded, best draft 63w/54 diffs vs 62w target,
+  blocked on a compiler addressing-mode difference no source shape reached in
+  ~27 sweeps across two sessions.
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
