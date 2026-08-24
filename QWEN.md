@@ -105,3 +105,50 @@ the top of `WORK_QUEUE.md`: find candidates, verify each is a whole contiguous
 translation unit, and append the survivors. **A candidate that is a fragment of
 a larger file can never land** — three of today's candidates looked like tidy
 small units and were not. Vet before you work.
+
+## Use your subagents — they are the main lever you have
+
+Three are defined and dispatch has been verified working, including **running
+several in parallel**. Delegate aggressively: a subagent's working output never
+enters your context, so the parent stays clean across a long unit.
+
+- **sweep** — use when a function has the right word count, frame size and
+  register set but still has diffs. That is a register-allocation mismatch, and
+  it is solved by compiling variants, never by reasoning about the compiler.
+  Hand it the function and let it search.
+- **diagnose** — use when a function misses and you want the root cause before
+  trying fixes. It compares raw bytes rather than trusting `fndiff`, and groups
+  differences by cause rather than listing them.
+- **vet** — use before claiming a unit, and whenever you extend the queue.
+  Three in four small candidates are fragments that can never land.
+
+**Fan out where the work is independent.** Several sweeps over different
+functions, or several vets over different candidates, can run at once. A sweep
+of a dozen variants produces thousands of lines you do not need to read — you
+need only the winner.
+
+Keep the judgement for yourself: which unit to take, whether a result is real,
+and when to stop. Delegate the searching, not the deciding.
+
+## The stall rule is enforced by a counter, not by memory
+
+`WORK_QUEUE.md` carries an `Attempts:` line for every unit. **Increment it and
+commit before you start work on that unit.** When it reaches **3**, park the
+unit: write the full state into `READY_TO_LAND.md`, set `Status: PARKED`, and
+claim the next one.
+
+This exists because you cannot remember previous sessions. On 2026-08-23 a
+single function consumed most of a ten-hour run — each fresh session believed it
+was making its first attempt, and ran fifteen sweeps in total. The counter is
+the only thing standing between one hard function and an entire night.
+
+A parked unit with good notes is a real contribution. A unit ground on for
+fifteen sweeps is not.
+
+## Your model path
+
+All 59 model providers now point at `http://127.0.0.1:8999/v1`, a key-rotating
+proxy running in this container. It holds three upstream keys, retires exhausted
+ones automatically, and retries on rate limits. If a request fails on
+authentication, check `/var/log/cheaperinference.log` — do not edit
+`settings.json` to work around it.

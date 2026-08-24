@@ -20,11 +20,20 @@ Ordered easiest first.
 > the landed sources. `dPanelObjMgr_c` was queued here in error and removed —
 > it landed on 2026-08-23. `find_targets` does not know what has been done.
 
+> **The stall rule is enforced by the `Attempts:` line, not by memory.**
+> Each session starts fresh and cannot recall how many tries previous sessions
+> made. So BEFORE you start work on a unit, increment its `Attempts:` count and
+> commit that. When it reaches **3**, park the unit, write the state into
+> `READY_TO_LAND.md`, set `Status: PARKED`, and claim the next one.
+> On 2026-08-23 one function consumed most of a ten-hour run because this
+> counter did not exist and every fresh session started from zero.
+
 ---
 
 ## 1. dLiftAllhitDraw2_c — 200 B, 1 function — EASY
 - Range: 0x800BFDD0-0x800BFE98
 - Status: DONE (landed 2026-08-24, container-worker). True scope was draw +
+- Attempts: 0
   __sinit at 0x800BFEA0 (.bss float[4] at 0x803590F0, .ctors slot 0x802EDDF4);
   landed as dol/bases/d_lift_allhit_draw2.cpp with slice .text 0xB9650-0xB973C.
   The unnamed helpers fn_800BE6E0..fn_800BFCB0 before draw are a closed call
@@ -39,6 +48,7 @@ Ordered easiest first.
 ## 2. dRandom_c — 248 B, 1 function — EASY
 - Range: 0x800D9850-0x800D9948
 - Status: PARKED (container-worker, 2026-08-24). See READY_TO_LAND.md PARKED
+- Attempts: 0
   section: code structure fully decoded, best draft 63w/54 diffs vs 62w target,
   blocked on a compiler addressing-mode difference no source shape reached in
   ~27 sweeps across two sessions.
@@ -52,7 +62,8 @@ Ordered easiest first.
 
 ## 3. dFunsuiAct_c — 332 B, 1 function — EASY
 - Range: 0x800B2D20-0x800B2E6C
-- Status: UNCLAIMED
+- Status: IN PROGRESS: container-worker
+- Attempts: 0
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
@@ -62,6 +73,7 @@ Ordered easiest first.
 ## 4. LangLocString — 404 B, 1 function — EASY
 - Range: 0x80107BE0-0x80107D74
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
@@ -73,6 +85,7 @@ Ordered easiest first.
 ## 5. dRomFontMgr_c — 224 B, 2 functions — EASY
 - Range: 0x80106F00-0x80106FE4
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: include/game/bases/d_rom_font_manager.hpp
 - Virtual: no evidence
 - Functions (address order):
@@ -85,6 +98,7 @@ Ordered easiest first.
 ## 6. dDvdErrorWideMsg_c — 268 B, 2 functions — EASY
 - Range: 0x801079A0-0x80107AB8
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
@@ -97,6 +111,7 @@ Ordered easiest first.
 - **Head start:** Partial work exists at `scratch/trial/` — init already at DIFFS 0. `move` is 63/63 words, same register-mirror character. Start from that source, do not restart.
 - Range: 0x800DF950-0x800DFA7C
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
@@ -108,6 +123,7 @@ Ordered easiest first.
 ## 8. dScRestartCrsin_c — 360 B, 2 functions — EASY
 - Range: 0x801018E0-0x80101A48
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: include/game/bases/d_s_restart_crsin.hpp
 - Virtual: no evidence
 - Functions (address order):
@@ -120,6 +136,7 @@ Ordered easiest first.
 - **Head start:** Partial work exists at `scratch/trial/` — 2 of 3 already at DIFFS 0 (init, startShake). `move` is 61/61 words with a single f1/f2 register mirror. Start from that source, do not restart.
 - Range: 0x800D81A0-0x800D82D0
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
@@ -134,6 +151,7 @@ Ordered easiest first.
 ## 10. MsgRes_c — 220 B, 4 functions — EASY/MEDIUM
 - Range: 0x800CE7F0-0x800CE8E4
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: include/game/bases/d_message.hpp (also referenced from
   d_lyttextBox.hpp and d_tag_processor.hpp, which take `MsgRes_c*` params —
   those are unrelated classes, not part of this unit)
@@ -153,6 +171,7 @@ Ordered easiest first.
 ## 12. dPyEffectMng_c — 408 B, 4 functions — EASY/MEDIUM
 - Range: 0x800D2D10-0x800D2EBC
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: include/game/bases/d_player_effect_manager.hpp (also
   referenced from d_a_player_manager.hpp)
 - Virtual: YES — `__vt__14dPyEffectMng_c` at .data:0x80317E08, size 0xC
@@ -171,6 +190,7 @@ Ordered easiest first.
 ## 13. daZoomPipeBase_c — 388 B, 2 functions — MEDIUM
 - Range: 0x80063F80-0x80064104
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: unclear — no `__dt`/`__vt__` symbol surfaced for this class in
   this run; the `Base_c` suffix strongly implies it is inherited from
@@ -199,6 +219,7 @@ Ordered easiest first.
   **Treat as the whole ~8.7 KB group or skip.**
 - Range: 0x8008BE60-0x8008BFB0
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: YES — `__vt__18dDrawShadowModel_c` at .data:0x80310FB0, size 0x20
   (base info + 6 virtual function pointers)
@@ -216,6 +237,7 @@ Ordered easiest first.
 ## 15. KokoopaSpFumiCheck_c — 408 B, 2 functions — MEDIUM
 - Range: 0x800B0840-0x800B09E0
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: YES — `__vt__20KokoopaSpFumiCheck_c` at .data:0x80315298, size
   0x10 (base info + 2 virtual function pointers)
@@ -239,6 +261,7 @@ Ordered easiest first.
   d3d::proc_c header shape and its syms pin.
 - Range: 0x80092D50-0x80092E94
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: none
 - Virtual: YES — `__vt__15dScEffectProc_c` at .data:0x80311908, size 0x24
   (base info + 7 virtual function pointers)
@@ -259,6 +282,7 @@ Ordered easiest first.
 ## 17. dLevelEffect_c (dEf::dLevelEffect_c) — 256 B, 2 functions — HARD
 - Range: 0x8008FD20-0x8008FE28
 - Status: UNCLAIMED
+- Attempts: 0
 - Existing header: include/game/bases/d_effect.hpp — class already declared:
   `class dLevelEffect_c : public mEf::levelEffect_c { ... virtual ~dLevelEffect_c() {} ... }`
   (also referenced from d_a_en_togezo_base.hpp, d_a_player.hpp)
