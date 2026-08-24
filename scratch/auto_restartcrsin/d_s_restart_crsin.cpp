@@ -8,7 +8,11 @@ STATIC_ASSERT(sizeof(dScRestartCrsin_c::StartGameInfo) == 0x10);
 dScRestartCrsin_c::StartGameInfo dScRestartCrsin_c::m_startGameInfo;
 
 void dScRestartCrsin_c::startTitle(unsigned char param1, bool param2) {
-    static const char c_stage[] = "G\0_GER\0_FRA\0_SPA\0_ITA\0_NED\0_CHN";
+    static const u8 c_stage[15][2] = {
+        {0x00, 0x03}, {0x00, 0x05}, {0x01, 0x00}, {0x01, 0x03}, {0x02, 0x00},
+        {0x02, 0x04}, {0x02, 0x15}, {0x03, 0x00}, {0x03, 0x04}, {0x04, 0x03},
+        {0x04, 0x04}, {0x04, 0x14}, {0x05, 0x17}, {0x06, 0x05}, {0x07, 0x06},
+    };
 
     if (param1 == 0) {
         m_startGameInfo._0C = 0;
@@ -16,9 +20,9 @@ void dScRestartCrsin_c::startTitle(unsigned char param1, bool param2) {
         m_startGameInfo._08 = 2;
         m_startGameInfo._07 = 0;
     } else {
-        int idx = dScStage_c::m_titleRandomTable[dScStage_c::m_titleCount] * 2;
-        m_startGameInfo._0C = c_stage[idx];
-        m_startGameInfo._0D = (&c_stage[idx])[1];
+        int t = dScStage_c::m_titleRandomTable[dScStage_c::m_titleCount];
+        m_startGameInfo._0C = c_stage[t][0];
+        m_startGameInfo._0D = c_stage[t][1];
         m_startGameInfo._08 = 3;
         m_startGameInfo._07 = 1;
     }
