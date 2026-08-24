@@ -92,7 +92,9 @@ Ordered easiest first.
 
 ## 5. dRomFontMgr_c — 224 B, 2 functions — EASY
 - Range: 0x80106F00-0x80106FE4
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). Both functions byte-exact;
+  class CONTAINS nw4r::ut::RomFont (no vtable of its own); member zeroing is in
+  an in-class ctor. Slice .text 0x100780-0x100864, .sbss 0x6c8-0x6cc.
 - Attempts: 1
 - Existing header: include/game/bases/d_rom_font_manager.hpp
 - Virtual: no evidence
@@ -105,8 +107,8 @@ Ordered easiest first.
 
 ## 6. dDvdErrorWideMsg_c — 268 B, 2 functions — EASY
 - Range: 0x801079A0-0x80107AB8
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
