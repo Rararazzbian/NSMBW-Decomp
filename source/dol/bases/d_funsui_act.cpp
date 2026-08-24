@@ -1,0 +1,49 @@
+#include <game/bases/d_a_player_base.hpp>
+#include <game/framework/f_manager.hpp>
+#include <game/bases/d_funsui_act.hpp>
+
+/// @unofficial 0x38c is not named in the frozen headers; see the landed
+/// d_a_player_demo_manager.cpp for the same raw-cast pattern.
+static inline u8 &field_38c_ref(daPlBase_c *p) {
+    return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(p) + 0x38c);
+}
+
+void dFunsuiAct_c::posMove() {
+    static const float cs_rev_speed[2] = { 3.0f, -3.0f };
+    daPlBase_c *p = (daPlBase_c *)fManager_c::searchBaseByID(mBaseId);
+    if (p == NULL) {
+        return;
+    }
+
+    switch (field_38c_ref(p)) {
+    case 1:
+    case 2: {
+        daPlBase_c *pl = (daPlBase_c *)fManager_c::searchBaseByID(mBaseId);
+
+        if (mTimer > 0) {
+            mTimer--;
+            mTargetY += cs_rev_speed[mRevIndex];
+            mSpeed = 0.0f;
+        } else {
+            mTargetY = pl->mPos.x;
+        }
+        mCurrentY += mSpeed;
+        pl->updateFunsuiPos(mTargetY, mCurrentY);
+        break;
+    }
+    case 3: {
+        mVec2_c pos;
+        pos.x = p->mPos.x;
+        pos.y = mCurrentY + mSpeed;
+        mTargetY = pos.x;
+        mCurrentY = pos.y;
+        p->mPos.x = pos.x;
+        p->mPos.y = pos.y;
+
+        dBaseActor_c *a = p;
+        mVec3_c v(a->getCenterPos().x, a->getCenterPos().y, 5500.0f);
+        mEffect.createEffect("Wm_en_quicksand", 0, &v, NULL, NULL);
+        break;
+    }
+    }
+}
