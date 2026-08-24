@@ -127,8 +127,8 @@ Ordered easiest first.
 ## 7. dRotShake_c — 292 B, 2 functions — EASY
 - **Head start:** Partial work exists at `scratch/trial/` — init already at DIFFS 0. `move` is 63/63 words, same register-mirror character. Start from that source, do not restart.
 - Range: 0x800DF950-0x800DFA7C
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: none
 - Virtual: no evidence
 - Functions (address order):
