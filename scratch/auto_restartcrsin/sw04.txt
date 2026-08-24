@@ -1,0 +1,125 @@
+.include "macros.inc"
+.file "sw04.cpp"
+
+# 0x00000000..0x00000168 | size: 0x168
+.text
+.balign 16
+
+# .text:0x0 | size: 0xE8
+# dScRestartCrsin_c::startTitle(unsigned char, bool)
+.fn startTitle__17dScRestartCrsin_cFUcb, global
+/* 00000000 00000040  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 00000004 00000044  7C 08 02 A6 */	mflr r0
+/* 00000008 00000048  2C 03 00 00 */	cmpwi r3, 0x0
+/* 0000000C 0000004C  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000010 00000050  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 00000014 00000054  7C 9F 23 78 */	mr r31, r4
+/* 00000018 00000058  40 82 00 2C */	bne .L_00000044
+/* 0000001C 0000005C  3C 80 00 00 */	lis r4, m_startGameInfo__17dScRestartCrsin_c@ha
+/* 00000020 00000060  38 A0 00 00 */	li r5, 0x0
+/* 00000024 00000064  38 84 00 00 */	addi r4, r4, m_startGameInfo__17dScRestartCrsin_c@l
+/* 00000028 00000068  38 60 00 27 */	li r3, 0x27
+/* 0000002C 0000006C  38 00 00 02 */	li r0, 0x2
+/* 00000030 00000070  98 A4 00 0C */	stb r5, 0xc(r4)
+/* 00000034 00000074  98 64 00 0D */	stb r3, 0xd(r4)
+/* 00000038 00000078  90 04 00 08 */	stw r0, 0x8(r4)
+/* 0000003C 0000007C  98 A4 00 07 */	stb r5, 0x7(r4)
+/* 00000040 00000080  48 00 00 4C */	b .L_0000008C
+.L_00000044:
+/* 00000044 00000084  3C 60 00 00 */	lis r3, m_titleRandomTable__10dScStage_c@ha
+/* 00000048 00000088  80 00 00 00 */	lwz r0, m_titleCount__10dScStage_c@sda21(r0)
+/* 0000004C 0000008C  38 63 00 00 */	addi r3, r3, m_titleRandomTable__10dScStage_c@l
+/* 00000050 00000090  3C C0 00 00 */	lis r6, "@LOCAL@startTitle__17dScRestartCrsin_cFUcb@c_stage"@ha
+/* 00000054 00000094  7C 03 00 AE */	lbzx r0, r3, r0
+/* 00000058 00000098  3C A0 00 00 */	lis r5, m_startGameInfo__17dScRestartCrsin_c@ha
+/* 0000005C 0000009C  38 C6 00 00 */	addi r6, r6, "@LOCAL@startTitle__17dScRestartCrsin_cFUcb@c_stage"@l
+/* 00000060 000000A0  38 60 00 03 */	li r3, 0x3
+/* 00000064 000000A4  54 00 08 3C */	slwi r0, r0, 1
+/* 00000068 000000A8  38 A5 00 00 */	addi r5, r5, m_startGameInfo__17dScRestartCrsin_c@l
+/* 0000006C 000000AC  7C 80 32 14 */	add r4, r0, r6
+/* 00000070 000000B0  7C C6 00 AE */	lbzx r6, r6, r0
+/* 00000074 000000B4  88 84 00 01 */	lbz r4, 0x1(r4)
+/* 00000078 000000B8  38 00 00 01 */	li r0, 0x1
+/* 0000007C 000000BC  98 C5 00 0C */	stb r6, 0xc(r5)
+/* 00000080 000000C0  98 85 00 0D */	stb r4, 0xd(r5)
+/* 00000084 000000C4  90 65 00 08 */	stw r3, 0x8(r5)
+/* 00000088 000000C8  98 05 00 07 */	stb r0, 0x7(r5)
+.L_0000008C:
+/* 0000008C 000000CC  3C E0 00 00 */	lis r7, m_startGameInfo__17dScRestartCrsin_c@ha
+/* 00000090 000000D0  38 80 00 00 */	li r4, 0x0
+/* 00000094 000000D4  38 E7 00 00 */	addi r7, r7, m_startGameInfo__17dScRestartCrsin_c@l
+/* 00000098 000000D8  38 00 00 FF */	li r0, 0xff
+/* 0000009C 000000DC  88 C7 00 0C */	lbz r6, 0xc(r7)
+/* 000000A0 000000E0  38 60 00 00 */	li r3, 0x0
+/* 000000A4 000000E4  88 A7 00 0D */	lbz r5, 0xd(r7)
+/* 000000A8 000000E8  98 C7 00 0E */	stb r6, 0xe(r7)
+/* 000000AC 000000EC  98 A7 00 0F */	stb r5, 0xf(r7)
+/* 000000B0 000000F0  98 87 00 06 */	stb r4, 0x6(r7)
+/* 000000B4 000000F4  98 07 00 05 */	stb r0, 0x5(r7)
+/* 000000B8 000000F8  48 00 00 01 */	bl setFader__8dFader_cFQ28dFader_c12fader_type_e
+/* 000000BC 000000FC  38 00 00 01 */	li r0, 0x1
+/* 000000C0 00000100  98 00 00 00 */	stb r0, m_isDispOff__10dScCrsin_c@sda21(r0)
+/* 000000C4 00000104  7F E4 FB 78 */	mr r4, r31
+/* 000000C8 00000108  7F E5 FB 78 */	mr r5, r31
+/* 000000CC 0000010C  38 60 00 06 */	li r3, 0x6
+/* 000000D0 00000110  48 00 00 01 */	bl setNextScene__8dScene_cFUsUlb
+/* 000000D4 00000114  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 000000D8 00000118  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 000000DC 0000011C  7C 08 03 A6 */	mtlr r0
+/* 000000E0 00000120  38 21 00 10 */	addi r1, r1, 0x10
+/* 000000E4 00000124  4E 80 00 20 */	blr
+.endfn startTitle__17dScRestartCrsin_cFUcb
+/* 000000E8 00000128  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+/* 000000EC 0000012C  00 00 00 00 */	.4byte 0x00000000 /* invalid */
+
+# .text:0xF0 | size: 0x78
+# dScRestartCrsin_c::reStartPeachCastle()
+.fn reStartPeachCastle__17dScRestartCrsin_cFv, global
+/* 000000F0 00000130  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 000000F4 00000134  7C 08 02 A6 */	mflr r0
+/* 000000F8 00000138  3C A0 00 00 */	lis r5, m_startGameInfo__17dScRestartCrsin_c@ha
+/* 000000FC 0000013C  38 C0 00 00 */	li r6, 0x0
+/* 00000100 00000140  90 01 00 14 */	stw r0, 0x14(r1)
+/* 00000104 00000144  38 A5 00 00 */	addi r5, r5, m_startGameInfo__17dScRestartCrsin_c@l
+/* 00000108 00000148  38 00 00 28 */	li r0, 0x28
+/* 0000010C 0000014C  38 80 00 FF */	li r4, 0xff
+/* 00000110 00000150  90 C5 00 08 */	stw r6, 0x8(r5)
+/* 00000114 00000154  38 60 00 01 */	li r3, 0x1
+/* 00000118 00000158  98 C5 00 07 */	stb r6, 0x7(r5)
+/* 0000011C 0000015C  98 C5 00 06 */	stb r6, 0x6(r5)
+/* 00000120 00000160  98 85 00 05 */	stb r4, 0x5(r5)
+/* 00000124 00000164  98 C5 00 0C */	stb r6, 0xc(r5)
+/* 00000128 00000168  98 05 00 0D */	stb r0, 0xd(r5)
+/* 0000012C 0000016C  98 C5 00 0E */	stb r6, 0xe(r5)
+/* 00000130 00000170  98 05 00 0F */	stb r0, 0xf(r5)
+/* 00000134 00000174  48 00 00 01 */	bl setFader__8dFader_cFQ28dFader_c12fader_type_e
+/* 00000138 00000178  38 60 00 01 */	li r3, 0x1
+/* 0000013C 0000017C  38 00 00 02 */	li r0, 0x2
+/* 00000140 00000180  98 60 00 00 */	stb r3, m_isDispOff__10dScCrsin_c@sda21(r0)
+/* 00000144 00000184  38 60 00 06 */	li r3, 0x6
+/* 00000148 00000188  38 80 00 00 */	li r4, 0x0
+/* 0000014C 0000018C  38 A0 00 00 */	li r5, 0x0
+/* 00000150 00000190  90 00 00 00 */	stw r0, m_exitMode__10dScStage_c@sda21(r0)
+/* 00000154 00000194  48 00 00 01 */	bl setNextScene__8dScene_cFUsUlb
+/* 00000158 00000198  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 0000015C 0000019C  7C 08 03 A6 */	mtlr r0
+/* 00000160 000001A0  38 21 00 10 */	addi r1, r1, 0x10
+/* 00000164 000001A4  4E 80 00 20 */	blr
+.endfn reStartPeachCastle__17dScRestartCrsin_cFv
+
+# 0x00000000..0x00000020 | size: 0x20
+.rodata
+.balign 8
+
+# .rodata:0x0 | size: 0x20
+# dScRestartCrsin_c::startTitle(unsigned char, bool)::c_stage
+.obj "@LOCAL@startTitle__17dScRestartCrsin_cFUcb@c_stage", local
+	.4byte 0x47005F47
+	.4byte 0x4552005F
+	.4byte 0x46524100
+	.4byte 0x5F535041
+	.4byte 0x005F4954
+	.4byte 0x41005F4E
+	.4byte 0x4544005F
+	.4byte 0x43484E00
+.endobj "@LOCAL@startTitle__17dScRestartCrsin_cFUcb@c_stage"
