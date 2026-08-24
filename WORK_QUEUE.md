@@ -24,7 +24,11 @@ Ordered easiest first.
 
 ## 1. dLiftAllhitDraw2_c — 200 B, 1 function — EASY
 - Range: 0x800BFDD0-0x800BFE98
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). True scope was draw +
+  __sinit at 0x800BFEA0 (.bss float[4] at 0x803590F0, .ctors slot 0x802EDDF4);
+  landed as dol/bases/d_lift_allhit_draw2.cpp with slice .text 0xB9650-0xB973C.
+  The unnamed helpers fn_800BE6E0..fn_800BFCB0 before draw are a closed call
+  community that may be the same TU -- left unclaimed, see AUTO_LOG/AGENT_CONTEXT.
 - Existing header: none
 - Virtual: no evidence (no `__dt`/`__vt__` symbol found)
 - Functions (address order):

@@ -2602,3 +2602,63 @@ pass/fail, so the cheap win is to build once and diff the two images to see
 exactly which address disagrees. That turns four blind attempts into one
 measurement.
 
+
+## PIN anonymous pool literals via syms.txt instead of seeding a pool
+
+When a unit's functions reference `.sdata2` literals that sit inside a pool
+block shared with *unclaimed* code (anonymous `@NNNNN_80XXXXXX` entries), do
+not try to reproduce the block by declaring an array: a 56-byte const array
+exceeds the small-data threshold and every load loses its `@sda21` addressing,
+and named scalars get folded back into anonymous entries you cannot place.
+Instead declare the literals as externs and pin them:
+
+    extern const float l_poolZero_8042CA70;   // .sdata2:0x8042CA70
+    ...
+    if (y < l_poolZero_8042CA70) ...
+
+    --syms 'l_poolZero_8042CA70=0x8042CA70'
+
+The TU then emits **no** pool of its own, every load resolves to the exact
+retail address, no slice claim for `.sdata2` is needed, and the whole seeding
+problem disappears. Verified end to end on `d_lift_allhit_draw2.cpp`. The
+fndiff output will show `SYM0@sda21` vs `l_poolZero@sda21` forever -- the
+standard naming-artifact rule applies; verify with raw bytes.
+
+Same trick works for a runtime-initialised static whose constructor argument is
+a pooled literal: `LiftScaleInit s(l_poolOne_8042CA90);` reproduces a 7-word
+`__sinit` that loads the literal once and stores it three times.
+
+## Compound assignment on BOTH if/else arms defeats store tail-merging
+
+An if/else whose arms assign the same member compiles to two compute+store
+pairs -- unless MWCC tail-merges them into ONE shared store at the join label,
+one word short of retail. Plain assignment arms merged on
+`dLiftAllhitDraw2_c::draw`; spelling both arms as compound assignment
+(`v.x += bg;` / `v.x -= bg;`) emitted retail's two separate stores exactly.
+The ctor had already stored the base value, so the compound form is also the
+semantically honest source. Same family as lever 11: compound assignment has a
+different tree shape than plain assignment, and the merger does not fire on it.
+
+## Finding a TU's true extent from .ctors link order
+
+A vetted "1 function, no sinit" unit grew once the real boundary was found:
+scan `.ctors` for a pointer to your function's neighbourhood; each entry points
+at some TU's `__sinit`, and entries appear in link order. Our TU's sinit
+terminates it; the next entry's sinit address bounds where the next TU's text
+can start. Combined with the internal-linkage arguments (a file-static
+initialised by your `__sinit` can only be referenced from inside your TU;
+anonymous pool literals are always local), this brackets an unsplit region
+cheaply. Note dtk's split objects are NOT TU-aligned in unsplit territory --
+the big chunks just run between sinits.
+
+## Container toolchain (Linux worker)
+
+This checkout runs on Linux via three shims, all outside tools/**:
+- `wibo` runs the 32-bit `mwcceppc.exe`/`mwldeppc.exe` (`tools/mwcceppc_wrapper.py`
+  already prefers wibo when present). Test: `wibo compilers/Wii/1.1/mwcceppc.exe -h`.
+- `dtk-windows-x86_64.exe` is PE32+ which wibo 1.2 cannot load. A native build
+  lives at `scratch/auto_lift2/dtk` (decomp-toolkit v1.8.3); point
+  `harness.DTK` / `prepare.py`'s DTK at it by monkey-patching from your own
+  scratch driver, never by editing tools/**.
+- land.py invokes `python`: `/usr/local/bin/python -> python3` symlink.
+See `scratch/auto_lift2/build.py` for the working driver pattern.
