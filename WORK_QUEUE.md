@@ -24,7 +24,7 @@ Ordered easiest first.
 
 ## 1. dLiftAllhitDraw2_c — 200 B, 1 function — EASY
 - Range: 0x800BFDD0-0x800BFE98
-- Status: UNCLAIMED
+- Status: IN PROGRESS: container-worker
 - Existing header: none
 - Virtual: no evidence (no `__dt`/`__vt__` symbol found)
 - Functions (address order):
