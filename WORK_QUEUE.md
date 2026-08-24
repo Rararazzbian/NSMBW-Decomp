@@ -232,10 +232,11 @@ Ordered easiest first.
 ## 13. daZoomPipeBase_c — 388 B, 2 functions — MEDIUM
 - Range: 0x80063F80-0x80064104
 - Status: IN PROGRESS: container-worker
-- Attempts: 2 (session 1: execute MATCHed via j_W5 shape; init stuck at ~19
+- Attempts: 3 (session 1: execute MATCHed via j_W5 shape; init stuck at ~19
   diffs. Session 2: init ABI decoded — fn_80045A10 is unnamed extern-C,
   param3 float, r4=param passthrough, consts pin f3/f4/f5; sdata2 slice
-  0xA78-0xA88 tiles exactly between spin_child_base and d_actor.)
+  0xA78-0xA88 tiles exactly between spin_child_base and d_actor.
+  Session 3: resumed; if init does not close this attempt, park.)
 - Existing header: none
 - Virtual: unclear — no `__dt`/`__vt__` symbol surfaced for this class in
   this run; the `Base_c` suffix strongly implies it is inherited from
