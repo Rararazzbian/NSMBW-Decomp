@@ -2703,3 +2703,39 @@ raw bytes adds ~12 words of `__construct_array` prologue that retail does not
 have. An all-float layout of the same size compiles clean. When a draft's word
 count is ~+12 over target with a `bl __construct_array` up front, replace
 class-typed members by their float components rather than hunting elsewhere.
+
+## A first-declared local read back through for member writes reproduces dead spill pairs
+
+When retail shows a DEAD float pair stored to the bottom of the frame
+(`stfs fX, 0x8(r1)` / `stfs fY, 0xc(r1)`) just before the first call of a
+block, and every later temp slot sits 8 bytes higher than your draft's, the
+source probably declared a small vector local FIRST and did the writes through
+it:
+
+    mVec2_c pos;                 // declared before everything else in the block
+    pos.x = p->mPos.x;
+    pos.y = mCurrentY + mSpeed;
+    mTargetY = pos.x;            // reads keep pos's memory home alive
+    mCurrentY = pos.y;
+    p->mPos.x = pos.x;
+    p->mPos.y = pos.y;
+
+MWCC scalar-promotes pos into registers but keeps its frame home, emits the
+two "dead" stores, and allocates every later temp ABOVE it. Verified
+end-to-end on dFunsuiAct_c::posMove (83/83 words). Declaring plain `float`
+intermediates instead produces NO spill pair and slots 8 bytes lower;
+assigning probe fields after separate floats puts them in the WRONG order
+(nc below px) and inflates the frame to 0x50.
+
+## Aliasing the receiver through a base-class pointer moves callee-saved copies into the arm that uses them
+
+If retail assigns a value to a callee-saved register INSIDE one switch arm but
+your draft hoists the copy to before the dispatch, bind the receiver to a new
+name of a BASE-CLASS type inside that arm:
+
+    dBaseActor_c *a = p;                    // daPlBase_c* p
+    mVec3_c v(a->getCenterPos().x, ...);
+
+A fresh derived-typed name (daPlBase_c *q = p) does NOT move it; the base-class
+type is what does. Verified on dFunsuiAct_c::posMove: hoisted copy cost ~11
+diffs, base-pointer alias scored exact.
