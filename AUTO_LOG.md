@@ -53,3 +53,12 @@ exactly (28 literal addresses hoisted into r4-r31 under _savegpr_14, then
 sequential stores). MWCC emits each literal with alignment = size rounded to
 pow2 (6-7 byte strings at 8-byte stride, 3-4 byte at 4-byte stride), which
 tiles .sdata 0x804293C0-0x804294E4 exactly. No external symbols.
+
+## dol/bases/d_rom_font_manager.cpp (dRomFontMgr_c) — 2/2 — LANDED 11.416% -> 11.420%
+load_resource matched first try. createInstance needed two shape fixes:
+(1) containment, not inheritance — deriving from RomFont made MWCC emit a
+vtable store retail does not have; a plain first member calls the same base
+ctor with none. (2) zeroing mBuffer/mLoaded belongs in an in-class ctor so
+the new-expression's own null-check covers it — an explicit `if (inst)`
+in the caller duplicates the check (+2 words). heap->alloc compiles to
+vtable slot 0x14 exactly as the frozen eggHeap.h lays it out.
