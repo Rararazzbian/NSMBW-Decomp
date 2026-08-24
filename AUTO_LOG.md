@@ -45,3 +45,11 @@ leaves retail's dead float-pair stores at r1+0x8/0xc and shifts every later
 temp slot up 8 bytes to match. cs_rev_speed is a function-local static whose
 mangled name reproduces retail's exactly; its .sdata2 block (0x8042C840, 16 B
 incl. two anonymous pool floats) is claimed by this TU. Five binaries verified.
+
+## dol/bases/d_lang_loc_string.cpp (LangLocString::LangLocString) — 1/1 — LANDED 11.410% -> 11.416%
+Byte-exact on the FIRST compile: 45 char* members assigned inline locale-code
+string literals ("JPJpn".."CM") in offset order reproduce retail's schedule
+exactly (28 literal addresses hoisted into r4-r31 under _savegpr_14, then
+sequential stores). MWCC emits each literal with alignment = size rounded to
+pow2 (6-7 byte strings at 8-byte stride, 3-4 byte at 4-byte stride), which
+tiles .sdata 0x804293C0-0x804294E4 exactly. No external symbols.

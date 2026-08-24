@@ -76,7 +76,11 @@ Ordered easiest first.
 
 ## 4. LangLocString — 404 B, 1 function — EASY
 - Range: 0x80107BE0-0x80107D74
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). Ctor 101/101 words,
+  byte-verified on first compile; landed as dol/bases/d_lang_loc_string.cpp
+  with slices .text 0x101460-0x1015f4 and .sdata 0x1a40-0x1b64 (the TU owns
+  all 45 locale-code string literals, 0x804293C0-0x804294E4). New header
+  include/game/bases/d_lang_loc_string.hpp; no external symbols.
 - Attempts: 1
 - Existing header: none
 - Virtual: no evidence
