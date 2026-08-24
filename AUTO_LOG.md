@@ -126,3 +126,15 @@ straight through to getMsgEntry(this,g,id) and lhz/lbz offsets 0x4/0x6.
 eggMsgRes.h expanded ADDITIVE + committed before landing; gate ACCEPTED first
 try. Slice .text 0xc8070-0xc8170, .data 0x19618-0x19624. Lever written to
 AGENT_CONTEXT.
+
+## dol/bases/d_player_effect_manager.cpp (dPyEffectMng_c) — 4/4 — LANDED 11.443% -> 11.449%
+Byte-exact on the FIRST compile. The prior analysis session's header was so
+complete that only bodies were needed. Two findings worth keeping:
+fn_800d2de0 returns bool (mangling hides it again -- third unit running;
+landed d_a_player.cpp discards the result at all four call sites so the
+void->bool header fix is codegen-neutral there, proven by the gate). And the
+unnamed per-slot helper fn_800D2BB0 is callable via an extern "C"
+declaration taking the slot as explicit this -- no invented member name
+needed. Ctor/dtor are pure __construct_array/__destroy_arr machinery.
+Slices .text/.data/.sbss all matched object sizes exactly. dPyEffect_c's own
+TU portion (0x800D2AE0-0x800D2D10) is a separate future unit.

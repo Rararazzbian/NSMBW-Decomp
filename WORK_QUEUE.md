@@ -207,8 +207,13 @@ Ordered easiest first.
 
 ## 12. dPyEffectMng_c — 408 B, 4 functions — EASY/MEDIUM
 - Range: 0x800D2D10-0x800D2EBC
-- Status: IN PROGRESS: container-worker
+- Status: DONE (landed 2026-08-24, container-worker). All four byte-exact on
 - Attempts: 1
+  FIRST compile; landed as dol/bases/d_player_effect_manager.cpp, slices
+  .text 0xcc590-0xcc73c, .data 0x19768-0x19774, .sbss 0x430-0x434.
+  fn_800d2de0 returns bool (header fixed void->bool; landed callers discard).
+  dPyEffect_c's own TU portion (ct/dt/fn_800D2BB0/update at 0x800D2AE0-
+  0x800D2D10) remains UNLANDED -- it is a separate future unit.
 - Existing header: include/game/bases/d_player_effect_manager.hpp (also
   referenced from d_a_player_manager.hpp)
 - Virtual: YES — `__vt__14dPyEffectMng_c` at .data:0x80317E08, size 0xC
@@ -226,8 +231,8 @@ Ordered easiest first.
 
 ## 13. daZoomPipeBase_c — 388 B, 2 functions — MEDIUM
 - Range: 0x80063F80-0x80064104
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker
+- Attempts: 1
 - Existing header: none
 - Virtual: unclear — no `__dt`/`__vt__` symbol surfaced for this class in
   this run; the `Base_c` suffix strongly implies it is inherited from
