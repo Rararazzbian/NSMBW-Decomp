@@ -293,13 +293,17 @@ Ordered easiest first.
 
 ## 15. KokoopaSpFumiCheck_c — 408 B, 2 functions — MEDIUM
 - Range: 0x800B0840-0x800B09E0
-- Status: IN PROGRESS: container-worker (claimed 2026-08-24, resumed session 4)
-- Attempts: 4 (attempt 1: dtor closed; attempt 2: resume -- __dt MATCH,
+- Status: IN PROGRESS: container-worker (claimed 2026-08-24, resumed session 5)
+- Attempts: 5 (attempt 1: dtor closed; attempt 2: resume -- __dt MATCH,
   operate 86/86 words with one GPR permutation left [out=r31/player=r30/en=r29
   vs ours en=r31/out=r30/pl=r29]; object .text 0x1a0 + .data 0x10 verified;
   header fix found: class must be STANDALONE, not FumiCheckBase_c-derived --
   retail has zero FumiCheckBase_c symbols and the derived form emits a weak
-  base dtor no landed TU can carry)
+  base dtor no landed TU can carry. Attempt 4: ten local-binding permutations
+  ALL canonicalise to identical homes -- declaration order is dead here.
+  Attempt 5: coloring follows internal definition order; probing file order
+  (retail defines operate BEFORE dtor; our draft has dtor first) and landed
+  siblings' spelling.)
 - Existing header: none
 - Virtual: YES — `__vt__20KokoopaSpFumiCheck_c` at .data:0x80315298, size
   0x10 (base info + 2 virtual function pointers)
