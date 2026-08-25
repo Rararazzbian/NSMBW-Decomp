@@ -476,8 +476,8 @@ Ordered easiest first.
 
 ## 18. daLiftAllHitDraw_c — 3812 B, 7 functions — EASY
 - Range: 0x800BD7F0-0x800BE6D4
-- Status: UNCLAIMED
-- Attempts: 0
+- Status: IN PROGRESS: container-worker-1 (claimed 2026-08-25)
+- Attempts: 1
 - Existing header: none
 - Virtual: no (no __vt__20daLiftAllHitDraw_c in bin/dtk/wiimj2d_symbols.txt)
 - Functions (address order):
