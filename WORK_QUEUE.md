@@ -286,8 +286,8 @@ Ordered easiest first.
 
 ## 15. KokoopaSpFumiCheck_c — 408 B, 2 functions — MEDIUM
 - Range: 0x800B0840-0x800B09E0
-- Status: IN PROGRESS: container-worker (claimed 2026-08-24, resumed session 2)
-- Attempts: 2 (attempt 1: dtor closed; attempt 2: resume -- __dt MATCH,
+- Status: IN PROGRESS: container-worker (claimed 2026-08-24, resumed session 3)
+- Attempts: 3 (attempt 1: dtor closed; attempt 2: resume -- __dt MATCH,
   operate 86/86 words with one GPR permutation left [out=r31/player=r30/en=r29
   vs ours en=r31/out=r30/pl=r29]; object .text 0x1a0 + .data 0x10 verified;
   header fix found: class must be STANDALONE, not FumiCheckBase_c-derived --
