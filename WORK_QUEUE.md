@@ -28,6 +28,13 @@ Ordered easiest first.
 > On 2026-08-23 one function consumed most of a ten-hour run because this
 > counter did not exist and every fresh session started from zero.
 
+> **Take `DEFERRED` units last.** They are flagged as structurally awkward — a
+> fragment of a larger file, or missing a base class — and each one costs a full
+> round to discover that again. Units 18+ are larger and were vetted more
+> recently; prefer those. The percentage moves with BYTES, not with unit count:
+> nine units averaging 323 bytes moved it +0.044%, while nine at ~2,600 bytes
+> would move it roughly +0.21%.
+
 ---
 
 ## 1. dLiftAllhitDraw2_c — 200 B, 1 function — EASY
@@ -268,7 +275,7 @@ Ordered easiest first.
   file-local helpers `fn_8008B830` / `fn_8008BA00` fall outside the carve.
   **Treat as the whole ~8.7 KB group or skip.**
 - Range: 0x8008BE60-0x8008BFB0
-- Status: UNCLAIMED
+- Status: DEFERRED — shares one ~8.7 KB TU with six sibling classes (weak inline bodies bunched in reverse declaration order, vtables contiguous in .data); needs the whole group or nothing. Do not claim; revisit only when the queue is otherwise empty.
 - Attempts: 0
 - Existing header: none
 - Virtual: YES — `__vt__18dDrawShadowModel_c` at .data:0x80310FB0, size 0x20
@@ -315,7 +322,7 @@ Ordered easiest first.
   now at `include/game/bases/d_gx_state_save.hpp`. See AGENT_CONTEXT for the
   d3d::proc_c header shape and its syms pin.
 - Range: 0x80092D50-0x80092E94
-- Status: UNCLAIMED
+- Status: DEFERRED — needs two base classes that have no headers (dEffectProcBase_c and d3d::proc_c). Do not claim; revisit only when the queue is otherwise empty.
 - Attempts: 0
 - Existing header: none
 - Virtual: YES — `__vt__15dScEffectProc_c` at .data:0x80311908, size 0x24
@@ -336,7 +343,7 @@ Ordered easiest first.
 
 ## 17. dLevelEffect_c (dEf::dLevelEffect_c) — 256 B, 2 functions — HARD
 - Range: 0x8008FD20-0x8008FE28
-- Status: UNCLAIMED
+- Status: DEFERRED — HARD: ~45-entry inherited vtable. Do not claim; revisit only when the queue is otherwise empty.
 - Attempts: 0
 - Existing header: include/game/bases/d_effect.hpp — class already declared:
   `class dLevelEffect_c : public mEf::levelEffect_c { ... virtual ~dLevelEffect_c() {} ... }`
