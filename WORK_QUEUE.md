@@ -293,8 +293,17 @@ Ordered easiest first.
 
 ## 15. KokoopaSpFumiCheck_c — 408 B, 2 functions — MEDIUM
 - Range: 0x800B0840-0x800B09E0
-- Status: IN PROGRESS: container-worker (claimed 2026-08-24, resumed session 5;
-  session 6 = attempt 6)
+- Status: DONE (landed 2026-08-25, container-worker, attempt 6). Both functions
+  byte-exact; landed as dol/bases/d_kokoopa_sp_fumi_check.cpp with slices
+  .text 0xaa0c0-0xaa260, .data 0x16bf8-0x16c08 (__vt__20KokoopaSpFumiCheck_c =
+  {0,0,&dt,&op} -- operate IS virtual), .sdata2 0x1408-0x1414 ({0.0f,4.0f,
+  10.0f} @ 8042C768). Header change ADDITIVE ONLY: standalone
+  KokoopaSpFumiCheck_c appended to existing d_en_fumi_check.hpp. Externals
+  isFoot__5dBc_cFv / __dl__FPv were already pinned. Key levers: real
+  daPlBase_c/dEn_c headers fixed the GPR coloring; plain float literals emit
+  the TU's own anonymous pool; definition order = link order (operate before
+  dtor); linker drops unreferenced weak getPlrNo copy but keeps its balign 8
+  pads, reproducing retail's zero gap at 800B0998.
 - Attempts: 6 (attempt 1: dtor closed; attempt 2: resume -- __dt MATCH,
   operate 86/86 words with one GPR permutation left [out=r31/player=r30/en=r29
   vs ours en=r31/out=r30/pl=r29]; object .text 0x1a0 + .data 0x10 verified;

@@ -149,3 +149,17 @@ takes fresh pair B {0x10,0x14} (their live ranges overlap); draft inverts the
 pairing because its schedule has no overlap. Untried lever recorded in
 READY_TO_LAND.md: force the lfd of the second conversion to schedule after
 the stfw of the third. State committed for instant resume.
+
+## dol/bases/d_kokoopa_sp_fumi_check.cpp (KokoopaSpFumiCheck_c) — 2/2 — LANDED 11.449% -> 11.456%
+Resumed own IN PROGRESS claim (attempt 6) and found the "one GPR permutation
+left" from attempts 4-5 was already solved by variant s8 sitting in sw_perm
+since session 3 — the fix was swapping the fake FumiPlayerView/FumiEnemyView
+structs for the REAL daPlBase_c/dEn_c headers; only the 4 remaining diffs were
+canonicalisation artifacts of its extern pool pins. Replacing them with plain
+float literals made MWCC emit the TU's own anonymous .sdata2 {0.0f,4.0f,10.0f}
+at 8042C768-74. First gate run REJECTED: definition order is link order --
+s9's dtor-first object linked dtor at the claim start; retail has operate
+first. s10 reordered, ACCEPTED second run. Vtable {0,0,&dt,&op} proves operate
+is virtual; header change purely additive (appended standalone class to the
+existing shared d_en_fumi_check.hpp). Linker mechanics (weak-copy drop +
+balign pad survival) recorded in AGENT_CONTEXT.

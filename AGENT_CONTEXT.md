@@ -2857,3 +2857,34 @@ hoist it to offset 0 like Itanium/GCC-style layouts.
   and a derived class adds NO new slot when its only virtual is the dtor that
   overrides the base's: both __vt__Q23EGG6MsgRes and __vt__8MsgRes_c are 0xC =
   {0, 0, deleting dtor}.
+
+## Function definition order IS link order -- and the linker drops unreferenced weak copies but keeps their balign pads
+
+Confirmed and made expensive by `KokoopaSpFumiCheck_c` (2026-08-25, one
+rejected gate run): the DOL linker places each object's functions at the claim
+start **in the order they are defined in the .cpp**. A draft with the dtor
+defined first linked the dtor at the slice start and operate right after it,
+shifting every byte in the claim AND making the vtable's &dtor/&operate
+relocations resolve 0x160 bytes early. Retail order was operate first. The
+AGENT_CONTEXT rule "define in address order" applies to the WHOLE file even
+when a trailing one-liner destructor looks like an afterthought.
+
+Two finer findings from the same landing:
+
+- **An unreferenced weak inline copy emitted into your object (here
+  `getPlrNo__8dActor_cFv`, dragged in by a virtual call through
+  `daPlBase_c`) is NOT placed by the linker** — verified empirically: nothing
+  spilled past the claim end in the rejected build. But MWCC emits every
+  function 8-aligned inside the object, so the layout
+  `[fn A 0x158][8 zero pad][weak copy 8][8 zero pad][fn B]` links as
+  `[A][8 zeros][B]` — the weak copy vanishes, its preceding pad survives as
+  part of B's placement. This is exactly how retail's mysterious 8-byte ZERO
+  gap between two consecutive functions is reproduced: it is balign padding,
+  not content. Do not invent data to fill inter-function gaps; reorder or let
+  alignment produce them.
+- **Function-local float literals belong to YOU.** If the target listing shows
+  anonymous pool entries (`@NNNNN_8042C768@sda21`) referenced by your unit,
+  write plain literals (`0.0f`, `4.0f`) — MWCC pools them into your object's
+  own `.sdata2` contribution and the manifest claims that range. Pinning them
+  as `extern const float l_poolX_8042C7xx` instead compiles fine but references
+  storage nobody emits, and misstates who owns the bytes.
