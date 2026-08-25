@@ -72,3 +72,12 @@ public:
 
     dEnFumiCheck_c mFumiCheck;
 };
+
+/// @unofficial Standalone: retail carries no FumiCheckBase_c symbols and no
+/// leaf destructor chains a base dtor, so this check class owns its whole
+/// [~dt, operate] vtable pair itself.
+class KokoopaSpFumiCheck_c {
+public:
+    virtual ~KokoopaSpFumiCheck_c();
+    virtual bool operate(int &, dEn_c *, FumiCcInfo_c &);
+};
