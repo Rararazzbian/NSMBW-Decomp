@@ -1,0 +1,31 @@
+.include "macros.inc"
+.file "offprobe.cpp"
+
+# 0x00000000..0x00000014 | size: 0x14
+.section .sdata, "wa"
+.balign 8
+
+# .sdata:0x0 | size: 0x4
+.obj o1, global
+	.4byte 0x00000504
+.endobj o1
+
+# .sdata:0x4 | size: 0x4
+.obj o2, global
+	.4byte 0x000000AC
+.endobj o2
+
+# .sdata:0x8 | size: 0x4
+.obj o3, global
+	.4byte 0x000000E8
+.endobj o3
+
+# .sdata:0xC | size: 0x4
+.obj o4, global
+	.4byte 0x000001EC
+.endobj o4
+
+# .sdata:0x10 | size: 0x4
+.obj o5, global
+	.4byte 0x00000514
+.endobj o5
